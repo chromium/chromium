@@ -150,6 +150,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
 <translation id="1586324912145647027">Shko te tavolina e punës nga 1 deri në 8</translation>
+<translation id="158838227375272121">Uebsajti i "Klasës së Google"</translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1592682369233288537">Tavolina tjetër e punës: <ph name="NEXT_DESK_NAME" />, përdor Kërko + Hapësirë për ta aktivizuar.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + shigjeta poshtë</translation>
@@ -326,7 +327,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
 <translation id="2382875860893882175">Transmetimi është vendosur aktualisht në pauzë. Mund ta vazhdosh ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="2386292613071805067">Zgjidh gjithçka në faqe</translation>
-<translation id="2396594569364254378">Memoria: <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="2397416548179033562">Shfaq menynë e Chrome</translation>
 <translation id="240006516586367791">Kontrollet e medias</translation>
 <translation id="2402411679569069051">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit ose shkyç telefonin</translation>
@@ -1157,6 +1157,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5790085346892983794">Me sukses</translation>
 <translation id="5804651031882187592">Çaktivizo cilësimin "Kyç kartën SIM"</translation>
 <translation id="5805809050170488595">Kliko për të aktivizuar <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tasks në ueb</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
 <translation id="5837036133683224804">Ndalo <ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Shko te pjesa tjetër muzikore</translation>
@@ -1432,7 +1433,6 @@ Instalim i ri</translation>
 <translation id="6981291220124935078">Aktivizo qasjen</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="698231206551913481">Të gjithë skedarët dhe të dhënat lokale të lidhura me këtë përdorues do të fshihen përgjithmonë pasi të hiqet ky përdorues.</translation>
-<translation id="6985306450422696113">Memoria: <ph name="USED_MEMORY" /> në dispozicion nga <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="6989752354829085073">Kryej një turne të shpejtë për të mësuar se si të lëvizësh nëpër Chromebook. Bëhu gati dhe fillo me 6 hapa.</translation>
 <translation id="7004910047186208204">Lidhe me të dhënat celulare</translation>
 <translation id="7005239792648594238">Hap një aplikacion për të filluar</translation>

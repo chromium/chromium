@@ -135,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Сырсөзүңүздү уюмуңуз тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
 <translation id="1257553931232494454">чоңойтуп/кичирейтүү деңгээлдери</translation>
-<translation id="1258942153897182536">OCR аткарылууда ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлериңизди башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="1264309058268477500">Кошумча</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -293,7 +292,6 @@
 
       &lt;p&gt;Күн менен убакытты &lt;strong&gt;Параметрлер&lt;/strong&gt; колдонмосунун &lt;strong&gt;Жалпы&lt;/strong&gt; бөлүмүнөн тууралаңыз.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администраторуңуз түзмөктү <ph name="DATE" /> күнү саат <ph name="TIME" /> өчүрүп күйгүзөт</translation>
-<translation id="1564753300777780201">Сүрөттөр текстке өзгөргөн жок</translation>
 <translation id="156703335097561114">Даректер, интерфейс конфигурациясы жана байланыштын сапаты сыяктуу тармак маалыматы</translation>
 <translation id="1567040042588613346">Бул саясат талаптагыдай иштеп жатат, бирок ал башка жерде коюлган окшош мааниге алмаштырып койду.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> темасын кошуу</translation>
@@ -1381,7 +1379,6 @@
 <translation id="3901925938762663762">Картанын мөөнөтү бүткөн</translation>
 <translation id="390391808978419508">Ачуу убакыты аяктады</translation>
 <translation id="3905894480064208252">{0,plural, =1{Файлды өткөрүү бөгөттөлдү}other{<ph name="FILE_COUNT" /> файлды өткөрүү бөгөттөлдү}}</translation>
-<translation id="3906095212874392000">Алынган тексттин аягы</translation>
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Жалгаштырылган контент тууралуу кененирээк маалымат алыңыз</translation>
@@ -1606,7 +1603,6 @@
 <translation id="4331519897422864041">5-төшөгүч</translation>
 <translation id="4331708818696583467">Коопсуз эмес</translation>
 <translation id="4333561522337981382">Бардык экрандардагы терезелерди тескөө</translation>
-<translation id="4338709847516294988">Мазмундук менюда Издөө + М баскычын басып, "Сүрөттү текстке өзгөртүү" дегенди тандаңыз</translation>
 <translation id="4340575312453649552">Бул жарнама түзмөгүңүздүн ресурстарын ашыкча колдонуп жаткандыктан Chrome аны өчүрүп койду.</translation>
 <translation id="4340810192899866471">JSON'дон өткөрүп алуу</translation>
 <translation id="4340982228985273705">Бул компьютер ишкана тарабынан башкарылбаганы аныкталды, андыктан саясат Chrome Желе дүкөнүндө жайгашкан кеңейтүүлөрдү гана автоматтык түрдө орното алат. Chrome Желе дүкөнүн жаңыртуучу URL: "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1623,7 +1619,6 @@
 <translation id="4363222835916186793">Бул товар боюнча эскертүүлөр өчүрүлдү</translation>
 <translation id="4366943895537458493">Табак</translation>
 <translation id="437040971055499437">Коопсуздук иш-чарасы аныкталды</translation>
-<translation id="4371307856413138486">Алынган тексттин башталышы</translation>
 <translation id="4371591986692297148">Жигерсиз</translation>
 <translation id="4372948949327679948">Күтүлгөн <ph name="VALUE_TYPE" /> мааниси.</translation>
 <translation id="4375864595697821259">Теманы Chrome сизди кызыктырган нерселерди божомолдоодо тандай турган тизмеге кайрадан кошо аласыз</translation>
@@ -2402,7 +2397,6 @@
 <translation id="604124094241169006">Автоматтык</translation>
 <translation id="6041777658117377052">Камеранын температурасы</translation>
 <translation id="6042308850641462728">Дагы</translation>
-<translation id="6042688167654081154">Сүрөт текстке өзгөрдү</translation>
 <translation id="6044573915096792553">Өлчөмү: 12</translation>
 <translation id="6045164183059402045">Вёрстканын үлгүсү</translation>
 <translation id="6047233362582046994">Эгер коопсуздугуңузга кандай коркунуч келтирилип жаткандыгын жакшы түшүнсөңүз, зыянкеч колдонмолор алынып салынаардан мурун, <ph name="BEGIN_LINK" />бул сайтка кирип көрсөңүз<ph name="END_LINK" /> болот.</translation>
@@ -2440,7 +2434,6 @@
 <translation id="6116338172782435947">Алмашуу буферине көчүрүлгөн текстти жана сүрөттөрдү көрүү</translation>
 <translation id="6117833587752089929">Фотокагаз (сатин)</translation>
 <translation id="6118782133429281336">Түпнуска тизме бош.</translation>
-<translation id="6120179357481664955">UPI идентификаторуңуз сакталсынбы?</translation>
 <translation id="6120950591512958208">Сатып алган нерселериңиздин акысын төлөп жатканда бул кодду колдонуңуз.</translation>
 <translation id="6122181661879998141">картаңыздын алдыңкы бети</translation>
 <translation id="6124058285696691147">Тиркемени жүктөп алуу</translation>
@@ -2475,7 +2468,6 @@
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>
 <translation id="6197648101609735209">89 x 89 мм.</translation>
 <translation id="6198480336395236519">Узундугу боюнча кыркуу</translation>
-<translation id="6200386911308538077">Сүрөт талданып жатат</translation>
 <translation id="6203231073485539293">Интернет туташууңузду текшериңиз</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

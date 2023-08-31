@@ -65,7 +65,6 @@
 <translation id="1295289763199166823">Наладжванне меню</translation>
 <translation id="1305822519689023679">Каб заўсёды мець магчымасць выкарыстоўваць паролі ва Уліковым запісе Google, пацвердзіце сваю асобу.</translation>
 <translation id="1312721752506309252">Палепшаная абарона ўключана</translation>
-<translation id="1316466854070752597">Праглядайце ўсе адкрытыя ўкладкі</translation>
 <translation id="1321993286294231467">Памылка пры захаванні фота.</translation>
 <translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
@@ -155,6 +154,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}few{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}other{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
+<translation id="1882901927376062252">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1883255238294161206">Згарнуць спіс</translation>
 <translation id="1894023287452300670">Вы можаце сачыць за цаной тут</translation>
 <translation id="189531189292803889">Ваш планшэт iPad быў нядаўна адноўлены, таму стандартным мог стаць іншы браўзер.</translation>
@@ -298,6 +298,7 @@
 <translation id="2718352093833049315">Толькі па Wi-Fi</translation>
 <translation id="2747003861858887689">Папярэдняе поле</translation>
 <translation id="2749231692441336879">Вы падпісаліся на канал "<ph name="CHANNEL_NAME" />"</translation>
+<translation id="2762000892062317888">толькі што</translation>
 <translation id="2772667768515195373">Вы можаце выкарыстоўваць захаваныя адрасы ў розных прадуктах Google. Гэты адрас захоўваецца ў вашым Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Пошук у рэжыме інкогніта</translation>
 <translation id="277771892408211951">Выберыце мову</translation>
@@ -521,7 +522,6 @@
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
 <translation id="4063300985191096908">Перайсці да стужкі</translation>
 <translation id="4066639687323968621">Каб сінхранізаваць закладкі, гісторыю і іншыя даныя, увайдзіце ва Уліковы запіс Google.</translation>
-<translation id="408404951701638773">Панэллю пошуку цяпер карыстацца лягчэй</translation>
 <translation id="4092655288299341041">Паказаць даведку</translation>
 <translation id="4105841739161771091">{count,plural, =1{Выдаліць адрас}one{Выдаліць адрас}few{Выдаліць адрасы}many{Выдаліць адрасы}other{Выдаліць адрасы}}</translation>
 <translation id="4108998448622696017">Выяўляе небяспечныя падзеі і папярэджвае пра іх.</translation>
@@ -656,6 +656,7 @@
 <translation id="4850886885716139402">Праглядзець</translation>
 <translation id="4854345657858711387">Задайце пароль</translation>
 <translation id="4856498338299082007">Ва Уліковым запісе Google</translation>
+<translation id="4856841893565072365">Разумнае сартаванне для панэлі меню</translation>
 <translation id="4858786880085262208">Пераходзіць на HTTPS, калі гэта магчыма. Бяспечныя сайты могуць мець убудаванае змесціва, якое не з'яўляецца бяспечным.</translation>
 <translation id="4860895144060829044">Выклік</translation>
 <translation id="4872323082491632254">Праверка пароляў</translation>
@@ -691,6 +692,7 @@
 <translation id="5083464117946352670">Не ўдалося вызначыць памер файла.</translation>
 <translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
 <translation id="5094827893301452931">Твіт апублікаваны.</translation>
+<translation id="5100848274708256363">Далучэнне да сямейнай групы</translation>
 <translation id="5109892411553231226">Наладзіць спосабы аплаты</translation>
 <translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5118764316110575523">Выключана</translation>
@@ -714,7 +716,6 @@
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519530786644929958">Збой спампоўвання. Паўтарыць спробу нельга.</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
-<translation id="5209674813563615506">Адкрыйце новую ўкладку</translation>
 <translation id="5211488077761630279">Дазволіць сайту <ph name="SITE_NAME" /> выкарыстоўваць <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="5220945116117011963">Стварэнне падзей у календары на падставе дат</translation>
@@ -731,7 +732,6 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318298563956633672">Вы ўжо сочыце за гэтым прадуктам.</translation>
-<translation id="5325595483440111327">Паглядзець гісторыю прагляду сайтаў.</translation>
 <translation id="5339316356165661760">Уключыць сінхранізацыю</translation>
 <translation id="536067926684072644">Паказаць закладкі</translation>
 <translation id="5360976571138293719">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце на старонцы <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" />.</translation>
@@ -993,6 +993,7 @@
 <translation id="6642362222295953972">Пераключыцца на існуючую ўкладку</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Апошні запуск: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Рэдагаваць папку</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6668619169535738264">Рэдагаваць закладку</translation>
@@ -1020,7 +1021,6 @@
 <translation id="6785453220513215166">Адпраўка справаздачы аб збоях...</translation>
 <translation id="6790502149545262384">Неўзабаве пры адкрыцці новай укладкі вы будзеце бачыць гісторыі з сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6797885426782475225">Галасавы пошук</translation>
-<translation id="6801927553864092214">Для прагляду вэб-старонак у прыватным рэжыме адкрыйце ўкладку інкогніта</translation>
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="6822587385560699678">Калі гэты параметр уключаны, паролі захоўваюцца ва ўліковым запісе <ph name="ACCOUNT" />, а калі выключаны, захоўваюцца толькі на гэтай прыладзе.</translation>
@@ -1106,6 +1106,7 @@
 <translation id="7351537303876921605">Націсніце Create Link ("Стварыць спасылку") у кантэкстным меню</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
 <translation id="7353432112255316844">Пацвердзіць маю асобу</translation>
+<translation id="7380220816562673297">Цяпер вы можаце абагульваць паролі толькі з удзельнікамі сямейнай групы. <ph name="BEGIN_LINK" />Стварыце сямейную групу<ph name="END_LINK" /> (да 6 удзельнікаў) і карыстайцеся дадатковымі магчымасцямі прадуктаў і падпісак Google.</translation>
 <translation id="7383797227493018512">Спіс для чытання</translation>
 <translation id="7398893703713203428">Стварыць спасылку</translation>
 <translation id="7399802613464275309">Праверка бяспекі</translation>
@@ -1169,7 +1170,6 @@
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
 <translation id="7756478488453921771">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7760127703945531263">Блакіроўка ўкладак інкогніта</translation>
-<translation id="7762768971412105260">Даныя ва ўліковым запісе</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="777572173400717978">{count,plural, =1{Дададзена ў закладкі}one{Дададзена ў закладкі}few{Дададзена ў закладкі}many{Дададзена ў закладкі}other{Дададзена ў закладкі}}</translation>
@@ -1272,7 +1272,6 @@
 <translation id="8299613349954694191">Для прыватнага прагляду вэб-сайтаў адкрыйце ўкладку інкогніта.</translation>
 <translation id="8316944564970119719">Увядзіце адрас сайта і пароль, а затым націсніце Save ("Захаваць")</translation>
 <translation id="8319076807703933069">Новы пошук</translation>
-<translation id="8323906514956095947">Каб адкрыць дадатковыя параметры ўкладкі, націсніце і ўтрымлівайце гэту кнопку</translation>
 <translation id="8328777765163860529">Закрыць усе</translation>
 <translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="834783239627985533">Сайты, якія часцей за ўсё наведваліся</translation>
@@ -1429,6 +1428,7 @@
 <translation id="9223358826628549784">Справаздача аб збоях адпраўлена.</translation>
 <translation id="941747855997058526">Выбраць пароль…</translation>
 <translation id="948048872540558976">Стварыць новую ўкладку</translation>
+<translation id="952218985181984374">{count,plural, =1{Закладка захавана}one{{count} закладка захавана}few{{count} закладкі захаваны}many{{count} закладак захавана}other{{count} закладкі захаваны}}</translation>
 <translation id="952704832371081537">Скасаваць</translation>
 <translation id="953008885340860025">Уваход у Chrome не выкананы</translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>

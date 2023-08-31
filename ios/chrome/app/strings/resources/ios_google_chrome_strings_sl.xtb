@@ -22,6 +22,8 @@ Kaj je treba upoštevati:
 
   • Če zgodovino sinhronizirate z računom Google, lahko meritve vključujejo tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Uporabljate Chromovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
+<translation id="1675955119303651351">Nekateri podatki v Chromu še niso shranjeni v računu Google.
+        Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="1682483655351012182">Sinhronizacija podatkov v Chromu</translation>
 <translation id="1733654336159102143">Zaklepanje anonimnega načina, ko zapustite Chrome ali preklopite na drugo aplikacijo.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +31,7 @@ Kaj je treba upoštevati:
 <translation id="1917964099031477364">Ta račun in vsi neshranjeni podatki bodo odstranjeni iz Chroma in drugih Googlovih aplikacij v tej napravi.</translation>
 <translation id="2009224836393115614">Chromu ni uspelo preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2056123005618757196">Opravite več s preprostim in varnim Chromom, ki je hitrejši kot kdaj prej.</translation>
+<translation id="2120238739383482109">Odpre zaznamke v Chromu.</translation>
 <translation id="2147651015520127414">Chrome je preveril, da je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="2199719347983604670">Podatki iz Sinhronizacije za Chrome</translation>
 <translation id="2339201583852607431">Geslo bo shranjeno v računu Google (<ph name="EMAIL" />).</translation>
@@ -65,6 +68,7 @@ Kaj je treba upoštevati:
 <translation id="3594076341410558780">Skrijte možnost »Izkoristite Chrome na najboljši način«</translation>
 <translation id="3655656110921623717">To pomeni, da bo Chrome vsakič zahteval spletno mesto za mobilne naprave.</translation>
 <translation id="3720541637541300822">Zaklepanje anonimnih zavihkov po zaprtju Chroma</translation>
+<translation id="3741995255368156336">Odpre bralni seznam v Chromu.</translation>
 <translation id="3827545470516145620">V tej napravi uporabljate standardno varnostno zaščito</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne more uporabljati fotoaparata</translation>
 <translation id="3901001113120561395">Izkoristite Chrome na najboljši način.</translation>
@@ -76,7 +80,6 @@ Kaj je treba upoštevati:
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
 <translation id="4233521129555661685">Uporabnik <ph name="USER_EMAIL1" /> je uporabljal Chrome in pustil zaznamke, gesla in druge nastavitve v tej napravi.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
-<translation id="4249068189593983585">Nasvet za Chrome. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
 <translation id="4463378960278646000">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega se prijavljate, in način uporabe Chroma. Nekatere funkcije lahko nastavi ali omeji skrbnik.</translation>
 <translation id="4508370294876102450">Odpiranje Chroma v poljubni aplikaciji</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
@@ -92,6 +95,7 @@ Kaj je treba upoštevati:
 <translation id="4903674399067644695">Na tej kartici so prikazani predlogi, kako izkoristiti Chrome na najboljši način.</translation>
 <translation id="5030102366287574140">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="5108659628347594808">Izboljšajte Chrome</translation>
+<translation id="5112925986883715005">Ogled bralnega seznama v Chromu</translation>
 <translation id="5119391094379141756">Izberite Chrome.</translation>
 <translation id="5162467219239570114">Chrome je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chroma.</translation>
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
@@ -109,7 +113,6 @@ Kaj je treba upoštevati:
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5716154293141027663">Odpiranje Chroma ob vsakem dotiku povezav v drugih aplikacijah.</translation>
-<translation id="5854621639439811139">Nasvet za Chrome. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="5998675059699164418">Vaša organizacija zahteva, da se za uporabo Chroma prijavite.</translation>
 <translation id="6054613632208573261">Privzeto uporabljajte Chrome</translation>
 <translation id="6063091872902370735">Omogočanje prijave v Chrome</translation>
@@ -121,6 +124,7 @@ Kaj je treba upoštevati:
 <translation id="6427126399757991875">Vaša organizacija nastavlja Chrome …</translation>
 <translation id="6600954340915313787">Kopirano v Chrome</translation>
 <translation id="6634107063912726160">Če se odjavite, Chrome ne bo več sinhroniziral novih podatkov v račun Google. Predhodno sinhronizirani podatki ostanejo v računu.</translation>
+<translation id="6646696210740573446">Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome Googlu prav tako pošlje URL-je, vključno z delčki vsebine strani.</translation>
 <translation id="6648150602980899529">Prijavljate se v račun, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="6676840375528380067">Ali želite izbrisati podatke v Chromu iz te naprave?</translation>
 <translation id="6709398533399187136">Geslo je bilo razkrito zaradi podatkovne kršitve. Google Upravitelj gesel priporoča, da ga takoj spremenite.</translation>
@@ -155,9 +159,11 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="804638182476029347">Dovolite obvestila za Chrome, če želite prejemati opozorila o znižanju cen</translation>
 <translation id="81358522153858150">Chrome zdaj podpira uporabniške pravilnike za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
+<translation id="8213758103105806860">Ogled zaznamkov v Chromu</translation>
 <translation id="8357607116237445042">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="840168496893712993">Nekateri dodatki povzročajo zrušitve Chroma. Poskusite jih odstraniti.</translation>
+<translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>
 <translation id="8414886616817913619">Vaša organizacija zahteva, da se za uporabo Chroma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Še naprej uporabljajte podatke v Chromu v računu Google</translation>
 <translation id="8459495907675268833">Izbrani podatki so bili odstranjeni iz Chroma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na history.google.com.</translation>

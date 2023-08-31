@@ -135,7 +135,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Inilagay mo ang iyong password sa site na hindi pinamamahalaan ng iyong organisasyon. Para protektahan ang account mo, huwag gamiting muli ang iyong password sa iba pang app at site.</translation>
 <translation id="1257553931232494454">mga antas ng pag-zoom</translation>
-<translation id="1258942153897182536">Nagsasagawa ng OCR ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang iyong mga setting ng Chrome</translation>
 <translation id="1264309058268477500">Alternatibo</translation>
 <translation id="1264974993859112054">Pampalakasan</translation>
@@ -293,7 +292,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 
       &lt;p&gt;Mangyaring isaayos ang petsa at oras mula sa seksyong &lt;strong&gt;Pangkalahatan&lt;/strong&gt; ng app na &lt;strong&gt;Mga Setting&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ire-restart ng iyong administrator ang device mo nang <ph name="TIME" /> sa <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Walang text na na-convert mula sa mga larawan</translation>
 <translation id="156703335097561114">Impormasyon ng networking gaya ng mga address, configuration ng interface, at kalidad ng koneksyon</translation>
 <translation id="1567040042588613346">Gumagana ang patakarang ito tulad ng inaasahan pero itinatakda ang kaparehong value sa ibang lugar at nasasapawan ito ng patakarang ito.</translation>
 <translation id="1567405528131216114">Idagdag ang <ph name="TOPIC" /></translation>
@@ -1382,7 +1380,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3901925938762663762">Na-expire na ang card</translation>
 <translation id="390391808978419508">Nag-time out ang pagbubukas</translation>
 <translation id="3905894480064208252">{0,plural, =1{Na-block ang file para hindi mailipat}one{<ph name="FILE_COUNT" /> file ang na-block para hindi mailipat}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi mailipat}}</translation>
-<translation id="3906095212874392000">Dulo ng na-convert na text</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Matuto pa tungkol sa naka-embed na content</translation>
@@ -1607,7 +1604,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4331519897422864041">Stacker 5</translation>
 <translation id="4331708818696583467">Hindi Secure</translation>
 <translation id="4333561522337981382">Pamahalaan ang mga window sa lahat ng iyong display</translation>
-<translation id="4338709847516294988">Pindutin ang search plus m at mag-convert ng larawan sa text sa menu ng konteksto</translation>
 <translation id="4340575312453649552">Gumamit ang ad na ito ng masyadong maraming resource para sa iyong device kaya inalis ito ng Chrome.</translation>
 <translation id="4340810192899866471">Mag-import mula sa JSON</translation>
 <translation id="4340982228985273705">Hindi na-detect ang computer na ito bilang pinamamahalaan ng enterprise kaya awtomatiko lang na mai-install ng patakaran ang mga extension na hino-host sa Chrome Webstore. Ang URL ng pag-update ng Chrome Webstore ay "<ph name="CWS_UPDATE_URL" />."</translation>
@@ -1624,7 +1620,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4363222835916186793">Na-off ang mga alerto para sa produktong ito</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="437040971055499437">Nagkaroon ng event tungkol sa seguridad</translation>
-<translation id="4371307856413138486">Umpisa ng na-convert na text</translation>
 <translation id="4371591986692297148">Hindi Aktibo</translation>
 <translation id="4372948949327679948">Inaasahang <ph name="VALUE_TYPE" /> na halaga.</translation>
 <translation id="4375864595697821259">Magdagdag ng item pabalik kung gusto mo ito sa pool ng mga paksa kung saan puwedeng pumili ang Chrome kapag tinatantya ang iyong mga interes</translation>
@@ -2403,7 +2398,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="604124094241169006">Awtomatiko</translation>
 <translation id="6041777658117377052">Temperatura ng chamber</translation>
 <translation id="6042308850641462728">Marami pang iba</translation>
-<translation id="6042688167654081154">Na-convert ang larawan sa text</translation>
 <translation id="6044573915096792553">Laki 12</translation>
 <translation id="6045164183059402045">Template ng imposition</translation>
 <translation id="6047233362582046994">Kung nauunawaan mo ang mga panganib sa iyong seguridad, maaari mong <ph name="BEGIN_LINK" />bisitahin ang site na ito<ph name="END_LINK" /> bago maalis ang mga mapaminsalang app.</translation>
@@ -2441,7 +2435,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6116338172782435947">Tingnan ang text at mga larawang kinopya sa clipboard</translation>
 <translation id="6117833587752089929">Photo (Satin)</translation>
 <translation id="6118782133429281336">Walang laman ang listahan ng origin.</translation>
-<translation id="6120179357481664955">Natatandaan mo ang iyong UPI ID?</translation>
 <translation id="6120950591512958208">Gamitin ang code na ito kapag nag-checkout.</translation>
 <translation id="6122181661879998141">harap ng iyong card</translation>
 <translation id="6124058285696691147">I-download ang attachment</translation>
@@ -2476,7 +2469,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6196640612572343990">I-block ang mga third-party na cookie</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Mga Full Cut Tab</translation>
-<translation id="6200386911308538077">Sinusuri ang larawan</translation>
 <translation id="6203231073485539293">Suriin ang iyong koneksyon sa Internet</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

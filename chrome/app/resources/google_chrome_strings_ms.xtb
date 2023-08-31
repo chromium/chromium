@@ -105,8 +105,10 @@
 <translation id="2775140325783767197">Chrome tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2847461019998147611">Paparkan Google Chrome dalam bahasa ini</translation>
+<translation id="2853415089995957805">Chrome mempramuat halaman yang mungkin anda lawati supaya halaman tersebut dimuatkan dengan lebih pantas apabila dilawati</translation>
 <translation id="2857540653560290388">Melancarkan Chrome...</translation>
 <translation id="2857972467023607093">Profil Chrome dengan akaun ini telah pun wujud</translation>
+<translation id="286025080868315611">Ketahui sebab Chrome menghalang sesetengah muat turun</translation>
 <translation id="2861074815332034794">Mengemas kini Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Anda kini telah log masuk ke Chrome!</translation>
 <translation id="2876628302275096482">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chrome mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
@@ -385,6 +387,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8286862437124483331">Google Chrome cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="8290100596633877290">Alamak! Google Chrome mengalami ranap sistem. Lancarkan semula sekarang?</translation>
 <translation id="829923460755755423">Tambahkan pintasan pada Google Password Manager</translation>
+<translation id="8336463659890584292">Apabila laman meminta prapemuatan pautan secara peribadi pada halaman mereka, Chrome menggunakan pelayan Google. Tindakan ini akan menyembunyikan identiti anda daripada laman yang dipramuat, tetapi Google mengetahui laman yang dipramuat.</translation>
 <translation id="8342675569599923794">Fail ini berbahaya, maka Chrome telah menyekatnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chrome. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>

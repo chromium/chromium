@@ -159,6 +159,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="1854311313115643875">Dok probni periodi traju, Merenje oglasa omogućava sajtovima koje posećujete da od Chrome-a zatraže informacije koje sajtu pomažu da meri učinak oglasa. Merenje oglasa ograničava praćenje na više sajtova tako što prenosi što manje informacija između sajtova.
 
 Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete i povezane informacije o merenju. Pogledajte <ph name="BEGIN_LINK" />istoriju pregledanja<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Otvori u pregledaču Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastareo</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
@@ -704,7 +705,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4699172675775169585">Keširane slike i fajlovi</translation>
 <translation id="4710167854527459075">Sortiraj po najnovijem</translation>
 <translation id="4719927025381752090">Ponudi prevod</translation>
-<translation id="4720023427747327413">Otvori u <ph name="PRODUCT_NAME" />-u</translation>
 <translation id="47217992755561375">Pogledajte sajtove koje najčešće posećujete</translation>
 <translation id="4731877163452936634">Brzina reprodukcije: <ph name="PLAYBACK_SPEED" /> Kliknite da biste promenili.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5171045022955879922">Pretražite ili unesite URL adresu</translation>
 <translation id="5174700554036517242">Kartica se vratila na početnu visinu</translation>
-<translation id="5184329579814168207">Otvori u Chrome-u</translation>
 <translation id="5186634140793586141">Upravljajte temama i pretragama koje vas interesuju</translation>
 <translation id="5191251636205085390">Saznajte više o novim tehnologijama čiji je cilj da zamene kolačiće trećih strana i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano je u privremenu memoriju</translation>
@@ -1580,7 +1579,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="9022774213089566801">Često posećivano</translation>
 <translation id="9022871169049522985">Sajtovi i oglašavači mogu da mere učinak svojih oglasa</translation>
 <translation id="9035378196785279980">Premestite u\u2026</translation>
-<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video snimak}few{# video snimka}other{# video snimaka}}</translation>
+<translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video snimak}few{# video snimka}other{# videa}}</translation>
 <translation id="9042893549633094279">Privatnost i bezbednost</translation>
 <translation id="9050666287014529139">Pristupna fraza</translation>
 <translation id="9055497320631373736">Sajt je vraćen u potencijalne sajtove</translation>

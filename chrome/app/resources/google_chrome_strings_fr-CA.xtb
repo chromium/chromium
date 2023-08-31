@@ -106,6 +106,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2775140325783767197">Chrome ne peut pas vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2799223571221894425">Redémarrer</translation>
 <translation id="2847461019998147611">Afficher Google Chrome dans cette langue</translation>
+<translation id="2853415089995957805">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez</translation>
 <translation id="2857540653560290388">Lancement de Chrome en cours…</translation>
 <translation id="2857972467023607093">Un profil Chrome associé à ce compte existe déjà</translation>
 <translation id="2861074815332034794">Mise à jour de Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -388,6 +389,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="8290100596633877290">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
 <translation id="829923460755755423">Ajouter un raccourci vers le gestionnaire de mots de passe Google</translation>
+<translation id="8336463659890584292">Lorsqu'un site demande de précharger des liens en privé sur sa page, Chrome utilise les serveurs de Google. Ceci permet de masquer votre identité au site préchargé et permet à Google de savoir quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car il est dangereux.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>

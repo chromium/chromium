@@ -136,7 +136,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Wpisałeś swoje hasło na stronie, którą nie zarządza Twoja organizacja. Aby chronić konto, nie używaj swojego hasła w innych aplikacjach ani na innych stronach.</translation>
 <translation id="1257553931232494454">poziomy powiększenia</translation>
-<translation id="1258942153897182536">Rozpoznaję optycznie znaki…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="1264309058268477500">Alternatywne</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -294,7 +293,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 
       &lt;p&gt;Popraw datę i godzinę w sekcji &lt;strong&gt;Ogólne&lt;/strong&gt; w aplikacji &lt;strong&gt;Ustawienia&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator uruchomi urządzenie ponownie o <ph name="TIME" /> w dniu <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Brak tekstu przekonwertowanego z obrazów</translation>
 <translation id="156703335097561114">Dane sieciowe dotyczące adresów, konfiguracji interfejsu i jakości połączenia</translation>
 <translation id="1567040042588613346">Ta zasada działa w oczekiwany sposób, ale zastąpiła tę samą wartość ustawioną w innym miejscu.</translation>
 <translation id="1567405528131216114">Dodaj temat <ph name="TOPIC" /></translation>
@@ -1109,6 +1107,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3342018947887487892">Później odwiedzana przez Ciebie witryna może prosić o te informacje (tematy reklam lub reklamy sugerowane przez odwiedzane witryny).</translation>
 <translation id="3342366525167526994">Zdobienie ciała</translation>
+<translation id="3344167530090084176">Aby następnym razem zapłacić szybciej, zapisz kartę i kod bezpieczeństwa na urządzeniu</translation>
 <translation id="334438173029876234">Sprzęt do jazdy na deskorolce</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Zmień ustawienia serwera proxy...</translation>
@@ -1383,7 +1382,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3901925938762663762">Karta straciła ważność</translation>
 <translation id="390391808978419508">Upłynął limit czasu otwierania</translation>
 <translation id="3905894480064208252">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
-<translation id="3906095212874392000">Koniec przekonwertowanego tekstu</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Więcej informacji o ustawieniu „Umieszczona treść”</translation>
@@ -1412,6 +1410,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Brak}=1{Z 1 witryny }few{Z # witryn }many{Z # witryn }other{Z # witryny }}</translation>
+<translation id="3966044442021752214">Bezpieczeństwo produktu</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="3973234410852337861">Strona <ph name="HOST_NAME" /> jest zablokowana</translation>
 <translation id="3983340834939868135">Klucz dostępu od: „<ph name="VENDOR_NAME" />”</translation>
@@ -1608,7 +1607,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4331519897422864041">Układarka 5</translation>
 <translation id="4331708818696583467">Niezabezpieczona</translation>
 <translation id="4333561522337981382">Zarządzanie oknami na wszystkich wyświetlaczach</translation>
-<translation id="4338709847516294988">Naciśnij Wyszukaj + M i przekonwertuj obraz na tekst, używając menu kontekstowego</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340810192899866471">Importuj z JSON</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -1625,7 +1623,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4363222835916186793">Alerty dotyczące tego produktu zostały wyłączone</translation>
 <translation id="4366943895537458493">Płyta</translation>
 <translation id="437040971055499437">Wystąpiło zdarzenie związane z bezpieczeństwem</translation>
-<translation id="4371307856413138486">Początek przekonwertowanego tekstu</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4372948949327679948">Oczekiwano wartości typu <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Dodaj temat z powrotem, jeśli chcesz, aby był w puli tematów, na podstawie których Chrome może określić Twoje zainteresowania</translation>
@@ -2404,7 +2401,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="604124094241169006">Automatyczne</translation>
 <translation id="6041777658117377052">Temperatura w komorze</translation>
 <translation id="6042308850641462728">Więcej</translation>
-<translation id="6042688167654081154">Obraz został przekonwertowany na tekst</translation>
 <translation id="6044573915096792553">Rozmiar 12</translation>
 <translation id="6045164183059402045">Szablon impozycji</translation>
 <translation id="6047233362582046994">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />wejść na tę stronę<ph name="END_LINK" />, zanim szkodliwe aplikacje zostaną usunięte.</translation>
@@ -2442,7 +2438,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6116338172782435947">Mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="6117833587752089929">Zdjęcie (satyna)</translation>
 <translation id="6118782133429281336">Lista źródeł jest pusta.</translation>
-<translation id="6120179357481664955">Zapamiętać Twój identyfikator UPI?</translation>
 <translation id="6120950591512958208">Użyj tego kodu w momencie płatności.</translation>
 <translation id="6122181661879998141">z przodu karty</translation>
 <translation id="6124058285696691147">Pobierz załącznik</translation>
@@ -2477,7 +2472,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pełne wycięte zakładki</translation>
-<translation id="6200386911308538077">Analizuję obraz</translation>
 <translation id="6203231073485539293">Sprawdź połączenie z internetem</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

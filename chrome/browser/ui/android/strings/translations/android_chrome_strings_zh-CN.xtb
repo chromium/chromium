@@ -159,6 +159,7 @@
 <translation id="1854311313115643875">在试用期间，Ad measurement 允许您访问的网站向 Chrome 请求信息来对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。
 
 如果您删除了浏览记录（无论是全部删除，还是只删除了在特定网站上的浏览记录），关联的衡量信息会一并删除。请参阅<ph name="BEGIN_LINK" />您的浏览记录<ph name="END_LINK" />。</translation>
+<translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="1877026089748256423">Chrome版本太旧</translation>
 <translation id="1883903952484604915">我的文件</translation>
 <translation id="189358972401248634">其他语言</translation>
@@ -704,7 +705,6 @@
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4710167854527459075">按从新到旧排序</translation>
 <translation id="4719927025381752090">提供翻译</translation>
-<translation id="4720023427747327413">在<ph name="PRODUCT_NAME" />中打开</translation>
 <translation id="47217992755561375">查看为您推荐的热门网站</translation>
 <translation id="4731877163452936634">播放速度：<ph name="PLAYBACK_SPEED" />。点击即可更改。</translation>
 <translation id="4732120983431207637">堆栈展开程序</translation>
@@ -810,7 +810,6 @@
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
 <translation id="5174700554036517242">标签页已恢复至初始高度</translation>
-<translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5186634140793586141">管理您感兴趣的主题和搜索查询</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
@@ -1093,6 +1092,7 @@
 <translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6645629752388991326">控制哪些设备可在登录时将此设备用作安全密钥。</translation>
+<translation id="6646696210740573446">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google。</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648459603387803038">您的管理员可以远程更改您的浏览器设置。此设备上的活动可能也在接受 Chrome 外部的管理。</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}other{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}}</translation>
@@ -1452,6 +1452,7 @@
 <translation id="8394720698884623075">将网址与存储在 Chrome 中的不安全网站列表进行比对</translation>
 <translation id="8402673309244746971">前往“已关注”</translation>
 <translation id="8413126021676339697">显示全部历史记录</translation>
+<translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8414396119627470038">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">在 Chrome 设置中详细了解广告个性化</translation>
 <translation id="8419244640277402268">纳入</translation>

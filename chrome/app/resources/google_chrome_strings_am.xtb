@@ -108,8 +108,10 @@
 <translation id="2775140325783767197">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="2799223571221894425">ዳግም አስጀምር</translation>
 <translation id="2847461019998147611">Google Chromeን በዚህ ቋንቋ አሳይ</translation>
+<translation id="2853415089995957805">እርስዎ የመጎብኘት ዕድልዎ ከፍተኛ የሆኑባቸው ገፆች ሲጎበኟቸው ይበልጥ በፍጥነት እንዲጫኑ Chrome በቅድሚያ ይጭናቸዋል</translation>
 <translation id="2857540653560290388">Chromeን በማስጀመር ላይ...</translation>
 <translation id="2857972467023607093">ይህ መለያ ያለው የChrome መገለጫ አስቀድሞ አለ</translation>
+<translation id="286025080868315611">ለምን Chrome የተወሰኑ ውርዶችን እንደሚያግድ ይወቁ</translation>
 <translation id="2861074815332034794">Chromeን በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">ወደ Chrome ገብተዋል!</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome እንዴት የእርስዎን ውሂብ በግል እንደሚያስቀምጥ<ph name="END_LINK" /> የበለጠ ይወቁ</translation>
@@ -392,6 +394,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8286862437124483331">Google Chrome የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የእርስዎን Windows የይለፍ ቃል ይተይቡ።</translation>
 <translation id="8290100596633877290">ኧረ ገዳይ! Google Chrome ተሰናክሏል። አሁን እንደገና ይጀመር?</translation>
 <translation id="829923460755755423">ወደ Google የይለፍ ቃል አስተዳዳሪ አቋራጭ ያክሉ</translation>
+<translation id="8336463659890584292">አንድ ጣቢያ በገጻቸው ላይ በግል አገናኞችን ቅድሚያ ለመጫን ሲጠይቅ Chrome የGoogle አገልጋዮችን ይጠቀማል። ይህ ማንነትዎን ቅድሚያ ከተጫነው ጣቢያ ይደብቃል ነገር ግን Google ምን ጣቢያዎች ቅድሚያ እንደሚጫኑ ያውቃል።</translation>
 <translation id="8342675569599923794">ይህ ፋይል አደገኛ ስለሆነ Chrome አግዶታል።</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />ይህንን ውሂብ እንዴት እንደሚጠቀሙበት፦<ph name="END_BOLD" /> ጣቢያዎች በChrome አማካኝነት ስለዝንባሌዎችዎ መረጃን ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>

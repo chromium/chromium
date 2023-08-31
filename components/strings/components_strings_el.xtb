@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Γυαλί (Έγχρωμο)</translation>
 <translation id="1074497978438210769">Μη ασφαλής</translation>
 <translation id="1075079914415273530">Γεωργία και δασοπονία</translation>
+<translation id="1075364221219156102">Χρήση κλειδιού πρόσβασης</translation>
 <translation id="1080116354587839789">Προσαρμογή στο πλάτος</translation>
 <translation id="1081061862829655580">Τροφοδότης χαρτιού 19</translation>
 <translation id="1089439967362294234">Αλλαγή κωδικού πρόσβασης</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Έχετε εισαγάγει τον κωδικό πρόσβασής σας σε έναν ιστότοπο τον οποίο δεν διαχειρίζεται ο οργανισμός σας. Για να προστατεύσετε τον λογαριασμό σας, μην χρησιμοποιήσετε ξανά αυτόν τον κωδικό πρόσβασης σε άλλες εφαρμογές και ιστοτόπους.</translation>
 <translation id="1257553931232494454">επίπεδα εστίασης</translation>
-<translation id="1258942153897182536">OCR σε εξέλιξη …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε τις ρυθμίσεις του Chrome.</translation>
 <translation id="1264309058268477500">Εναλλακτικός</translation>
 <translation id="1264974993859112054">Αθλητικά</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;Προσαρμόστε την ημερομηνία και την ώρα από την ενότητα &lt;strong&gt;Γενικές&lt;/strong&gt; της εφαρμογής &lt;strong&gt;Ρυθμίσεις&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ο διαχειριστής σας θα επανεκκινήσει τη συσκευή σας στις <ph name="TIME" /> στις <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Δεν έγινε μετατροπή κειμένου από εικόνες</translation>
 <translation id="156703335097561114">Πληροφορίες δικτύωσης, όπως διευθύνσεις, διαμόρφωση διεπαφής και ποιότητα σύνδεσης</translation>
 <translation id="1567040042588613346">Αυτή η πολιτική λειτουργεί με τον αναμενόμενο τρόπο αλλά η ίδια τιμή έχει οριστεί αλλού και αντικαθίσταται από αυτήν την πολιτική.</translation>
 <translation id="1567405528131216114">Προσθήκη <ph name="TOPIC" /></translation>
@@ -1108,6 +1107,7 @@
 <translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3342018947887487892">Αργότερα, ένας ιστότοπος που επισκέπτεστε μπορεί να ζητήσει αυτές τις πληροφορίες, είτε πρόκειται για θέματα διαφημίσεων είτε για τις διαφημίσεις που προτείνονται από ιστοτόπους που έχετε επισκεφτεί.</translation>
 <translation id="3342366525167526994">Τέχνη σώματος</translation>
+<translation id="3344167530090084176">Για να πληρώσετε πιο γρήγορα την επόμενη φορά, αποθηκεύστε την κάρτα και τον κωδικό ασφαλείας στη συσκευή σας</translation>
 <translation id="334438173029876234">Εξοπλισμός σκέιτμπορντ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
@@ -1382,7 +1382,6 @@
 <translation id="3901925938762663762">Η κάρτα έχει λήξει</translation>
 <translation id="390391808978419508">Έληξε το χρονικό όριο για το άνοιγμα</translation>
 <translation id="3905894480064208252">{0,plural, =1{Η μεταφορά του αρχείου αποκλείστηκε}other{Αποκλείστηκε η μεταφορά <ph name="FILE_COUNT" /> αρχείων}}</translation>
-<translation id="3906095212874392000">Τέλος του κειμένου που μετατράπηκε</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Μάθετε περισσότερα για το ενσωματωμένο περιεχόμενο</translation>
@@ -1411,6 +1410,7 @@
 <translation id="3962859241508114581">Προηγούμενο κομμάτι</translation>
 <translation id="3963721102035795474">Λειτουργία αναγνώστη</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Κανένα}=1{Από 1 ιστότοπο }other{Από # ιστοτόπους }}</translation>
+<translation id="3966044442021752214">Ασφάλεια προϊόντος</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="3973234410852337861">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> είναι αποκλεισμένος</translation>
 <translation id="3983340834939868135">Κλειδί πρόσβασης από <ph name="VENDOR_NAME" /></translation>
@@ -1608,7 +1608,6 @@
 <translation id="4331519897422864041">Μονάδα στοίβαξης 5</translation>
 <translation id="4331708818696583467">Μη ασφαλές</translation>
 <translation id="4333561522337981382">Διαχείριση παραθύρων σε όλες τις οθόνες σας</translation>
-<translation id="4338709847516294988">Πατήστε αναζήτηση και m και μετατρέψτε την εικόνα σε κείμενο στο μενού περιβάλλοντος</translation>
 <translation id="4340575312453649552">Αυτή η διαφήμιση καταργήθηκε από το Chrome επειδή χρησιμοποιεί υπερβολικά πολλούς πόρους στη συσκευή σας.</translation>
 <translation id="4340810192899866471">Εισαγωγή από JSON</translation>
 <translation id="4340982228985273705">Αυτός ο υπολογιστής δεν έχει εντοπιστεί ως διαχειριζόμενος από επιχείρηση. Συνεπώς, η πολιτική μπορεί να εγκαθιστά αυτόματα μόνο επεκτάσεις οι οποίες φιλοξενούνται στο Chrome Webstore. Το URL ενημέρωσης του Chrome Webstore είναι το "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1625,7 +1624,6 @@
 <translation id="4363222835916186793">Οι ειδοποιήσεις για αυτό το προϊόν έχουν απενεργοποιηθεί.</translation>
 <translation id="4366943895537458493">Πλάκα</translation>
 <translation id="437040971055499437">Παρουσιάζεται συμβάν ασφαλείας</translation>
-<translation id="4371307856413138486">Αρχή του κειμένου που μετατράπηκε</translation>
 <translation id="4371591986692297148">Ανενεργή</translation>
 <translation id="4372948949327679948">Αναμενόμενη τιμή <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Προσθέστε ξανά ένα στοιχείο εάν θέλετε να υπάρχει στα θέματα από τα οποία το Chrome μπορεί να επιλέξει καθώς προσδιορίζει τα ενδιαφέροντά σας.</translation>
@@ -2404,7 +2402,6 @@
 <translation id="604124094241169006">Αυτόματη</translation>
 <translation id="6041777658117377052">Θερμοκρασία θαλάμου</translation>
 <translation id="6042308850641462728">Περισσότερα</translation>
-<translation id="6042688167654081154">Η εικόνα μετατράπηκε σε κείμενο</translation>
 <translation id="6044573915096792553">Μέγεθος 12</translation>
 <translation id="6045164183059402045">Πρότυπο ένθεσης</translation>
 <translation id="6047233362582046994">Εάν κατανοείτε τους κινδύνους για την ασφάλειά σας, μπορείτε να <ph name="BEGIN_LINK" />επισκεφτείτε αυτόν τον ιστότοπο<ph name="END_LINK" /> πριν από την κατάργηση των επιβλαβών εφαρμογών.</translation>
@@ -2442,7 +2439,6 @@
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
 <translation id="6117833587752089929">Φωτογραφία (Σατέν)</translation>
 <translation id="6118782133429281336">Η λίστα προέλευσης είναι κενή.</translation>
-<translation id="6120179357481664955">Θυμάστε το αναγνωριστικό UPI;</translation>
 <translation id="6120950591512958208">Χρησιμοποιήστε αυτόν τον κωδικό κατά την ολοκλήρωση αγοράς.</translation>
 <translation id="6122181661879998141">μπροστινό μέρος της κάρτας σας</translation>
 <translation id="6124058285696691147">Λήψη του συνημμένου</translation>
@@ -2477,7 +2473,6 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6197648101609735209">89 x 89 χιλ.</translation>
 <translation id="6198480336395236519">Καρτέλες πλήρους κοπής</translation>
-<translation id="6200386911308538077">Γίνεται ανάλυση της εικόνας</translation>
 <translation id="6203231073485539293">Ελέγξτε τη σύνδεσή σας στο Internet</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3145,6 +3140,7 @@
 <translation id="7554475479213504905">Επανάληψη φόρτωσης και εμφάνιση ούτως ή άλλως</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
 <translation id="7555777498260651025">Τηλεοπτικές εκπομπές για όλη την οικογένεια</translation>
+<translation id="7556328470713619625">Χρήση κλειδιού πρόσβασης</translation>
 <translation id="7559278538486662777">Δεν είναι δυνατή η αλλαγή μεγέθους αυτής της εφαρμογής.</translation>
 <translation id="7561784249784255101">Digital Versatile Disc (DVD)</translation>
 <translation id="7564049878696755256">Μπορεί να χάσετε την πρόσβαση στον λογαριασμό σας <ph name="ORG_NAME" /> ή να πέσετε θύμα κλοπής στοιχείων ταυτότητας. Το Chrome συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>

@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Каляровае шкло</translation>
 <translation id="1074497978438210769">Не абаронена</translation>
 <translation id="1075079914415273530">Сельская і лясная гаспадарка</translation>
+<translation id="1075364221219156102">Скарыстаць ключ доступу</translation>
 <translation id="1080116354587839789">Дапасаваць да шырыні старонкі</translation>
 <translation id="1081061862829655580">Латок 19</translation>
 <translation id="1089439967362294234">Змяніць пароль</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль у іншых праграмах і на іншых сайтах.</translation>
 <translation id="1257553931232494454">узроўні маштабавання</translation>
-<translation id="1258942153897182536">Выконваецца аптычнае распазнаванне сімвалаў…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць наладамі Chrome, націсніце Tab, затым Enter</translation>
 <translation id="1264309058268477500">Розныя</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;Змяніце дату і час у раздзеле &lt;strong&gt;Агульныя&lt;/strong&gt; праграмы &lt;strong&gt;Налады&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратар перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Відарысы не былі пераўтвораны ў тэкст</translation>
 <translation id="156703335097561114">Сеткавыя даныя, такая як адрасы, налады інтэрфейсу і якасць падключэння</translation>
 <translation id="1567040042588613346">Гэта палітыка працуе належным чынам, але замяняе аднолькавае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="1567405528131216114">Дадаць тэму "<ph name="TOPIC" />"</translation>
@@ -1381,7 +1380,6 @@
 <translation id="3901925938762663762">Тэрмін дзеяння карткі скончыўся</translation>
 <translation id="390391808978419508">Час чакання адкрыцця перавышаны</translation>
 <translation id="3905894480064208252">{0,plural, =1{Файл не можа быць перанесены па прычыне блакіроўкі}one{<ph name="FILE_COUNT" /> файл не можа быць перанесены па прычыне блакіроўкі}few{<ph name="FILE_COUNT" /> файлы не могуць быць перанесены па прычыне блакіроўкі}many{<ph name="FILE_COUNT" /> файлаў не могуць быць перанесены па прычыне блакіроўкі}other{<ph name="FILE_COUNT" /> файла не могуць быць перанесены па прычыне блакіроўкі}}</translation>
-<translation id="3906095212874392000">Канец атрыманага пераўтварэннем тэксту</translation>
 <translation id="3906954721959377182">Планшэт</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Даведацца больш пра ўбудаванае змесціва</translation>
@@ -1606,7 +1604,6 @@
 <translation id="4331519897422864041">Укладчык 5</translation>
 <translation id="4331708818696583467">Небяспечнае змесціва</translation>
 <translation id="4333561522337981382">Кіраваць вокнамі на ўсіх дысплэях</translation>
-<translation id="4338709847516294988">Націсніце Пошук + M і ў кантэкстным меню выберыце "Пераўтварыць відарыс у тэкст"</translation>
 <translation id="4340575312453649552">Гэта рэклама выкарыстоўвала занадта многа рэсурсаў прылады, таму Chrome выдаліў яе.</translation>
 <translation id="4340810192899866471">Імпартаваць з файла JSON</translation>
 <translation id="4340982228985273705">Не ўстаноўлена, што гэты камп'ютар знаходзіцца пад карпаратыўным кіраваннем, таму палітыка дазваляе аўтаматычна ўсталёўваць толькі пашырэнні з Chrome Webstore. URL-адрас абнаўлення ў Chrome Webstore: <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1623,7 +1620,6 @@
 <translation id="4363222835916186793">Абвесткі пра гэты прадукт выключаны</translation>
 <translation id="4366943895537458493">Друкарская форма</translation>
 <translation id="437040971055499437">Выяўляецца падзея бяспекі</translation>
-<translation id="4371307856413138486">Пачатак атрыманага пераўтварэннем тэксту</translation>
 <translation id="4371591986692297148">неактыўная</translation>
 <translation id="4372948949327679948">Чакаецца значэнне тыпу "<ph name="VALUE_TYPE" />".</translation>
 <translation id="4375864595697821259">Калі вы хочаце, каб тэма была сярод тэм, з якіх Chrome выбірае пры вызначэнні вашых інтарэсаў, можаце дадаць яе зноў</translation>
@@ -2402,7 +2398,6 @@
 <translation id="604124094241169006">Аўтаматычна</translation>
 <translation id="6041777658117377052">Тэмпература камеры</translation>
 <translation id="6042308850641462728">Яшчэ</translation>
-<translation id="6042688167654081154">Відарыс пераўтвораны ў тэкст</translation>
 <translation id="6044573915096792553">Памер 12</translation>
 <translation id="6045164183059402045">Шаблон накладання</translation>
 <translation id="6047233362582046994">Калі вы разумееце рызыкі бяспекі, можаце <ph name="BEGIN_LINK" />наведаць гэты сайт<ph name="END_LINK" /> да таго, як шкодныя праграмы будуць выдалены.</translation>
@@ -2440,7 +2435,6 @@
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="6117833587752089929">Сацініраваная фотапапера</translation>
 <translation id="6118782133429281336">Спіс крыніц пусты.</translation>
-<translation id="6120179357481664955">Запомніць ідэнтыфікатар UPI?</translation>
 <translation id="6120950591512958208">Выкарыстайце гэты код пры афармленні заказу.</translation>
 <translation id="6122181661879998141">пярэднім баку карты</translation>
 <translation id="6124058285696691147">Спампаваць далучэнне</translation>
@@ -2475,7 +2469,6 @@
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Матэрыялы з раздзяляльнікамі па ўсёй даўжыні</translation>
-<translation id="6200386911308538077">Ідзе аналіз відарыса</translation>
 <translation id="6203231073485539293">Праверце падключэнне да інтэрнэту</translation>
 <translation id="6205314730813004066">Прыватнасць у рэкламе</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3144,6 +3137,7 @@
 <translation id="7554475479213504905">Перазагрузіць і ўсё роўна паказаць</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7555777498260651025">Сямейныя тэлеперадачы</translation>
+<translation id="7556328470713619625">Скарыстаць ключ доступу</translation>
 <translation id="7559278538486662777">Памер праграмы нельга змяніць.</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">Вы можаце страціць доступ да свайго ўліковага запісу <ph name="ORG_NAME" />, або ў вас могуць скрасці асабістыя даныя. Chrome рэкамендуе змяніць пароль.</translation>

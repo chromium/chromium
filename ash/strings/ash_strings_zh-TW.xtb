@@ -327,7 +327,6 @@
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取網頁上的所有項目</translation>
-<translation id="2396594569364254378">記憶體用量：<ph name="USED_MEMORY" /> | 總量：<ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
 <translation id="240006516586367791">媒體控制項</translation>
 <translation id="2402411679569069051">如要解鎖 Chromebook，請使用指紋或解鎖手機</translation>
@@ -1430,7 +1429,6 @@
 <translation id="6981291220124935078">開啟存取權</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="698231206551913481">將這位使用者移除後，與這位使用者相關聯的所有檔案和本機資料都會遭到永久刪除。</translation>
-<translation id="6985306450422696113">記憶體總容量：<ph name="TOTAL_MEMORY" />；已用容量：<ph name="USED_MEMORY" /></translation>
 <translation id="6989752354829085073">請觀看快速導覽，瞭解如何操作 Chromebook。只要 6 個步驟就能開始運作。</translation>
 <translation id="7004910047186208204">連線至行動數據網路</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>

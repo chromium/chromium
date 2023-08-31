@@ -105,8 +105,10 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2775140325783767197">O Chrome não consegue verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2847461019998147611">Apresentar o Google Chrome neste idioma</translation>
+<translation id="2853415089995957805">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="2857540653560290388">A iniciar o Chrome…</translation>
 <translation id="2857972467023607093">Já existe um perfil do Chrome com esta conta.</translation>
+<translation id="286025080868315611">Saiba por que motivo o Chrome bloqueia algumas transferências</translation>
 <translation id="2861074815332034794">A atualizar o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Tem sessão iniciada no Chrome!</translation>
 <translation id="2876628302275096482">Saiba <ph name="BEGIN_LINK" />como o Chrome mantém os seus dados privados<ph name="END_LINK" /></translation>
@@ -385,6 +387,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8286862437124483331">O Google Chrome está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8290100596633877290">Ups! O Google Chrome falhou. Reiniciar agora?</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gestor de Palavras-passe da Google</translation>
+<translation id="8336463659890584292">Quando um site pede para pré-carregar links de forma privada na respetiva página, o Chrome usa os servidores da Google. Isto oculta a sua identidade no site pré-carregado, mas a Google aprende que sites são pré-carregados.</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso. Como tal, o Chrome bloqueou-o.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chrome sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>

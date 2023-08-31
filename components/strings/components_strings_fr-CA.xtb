@@ -135,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vous avez entré votre mot de passe sur un site qui n'est pas géré par votre organisation. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="1257553931232494454">Niveaux de zoom</translation>
-<translation id="1258942153897182536">ROC en cours…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les paramètres de Chrome</translation>
 <translation id="1264309058268477500">Autre version</translation>
 <translation id="1264974993859112054">Sports</translation>
@@ -293,7 +292,6 @@
 
           &lt;p&gt;Veuillez régler la date et l'heure depuis la section &lt;strong&gt;Général&lt;/strong&gt; de l'application &lt;strong&gt;Paramètres&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Votre administrateur va redémarrer votre appareil à <ph name="TIME" /> le <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Aucun texte converti à partir d'images</translation>
 <translation id="156703335097561114">Renseignements relatifs au réseautage tels que les adresses, la configuration d'interface et la qualité de connexion</translation>
 <translation id="1567040042588613346">Cette politique fonctionne comme prévu, mais notez que la même valeur a été définie ailleurs et que cette politique la remplace.</translation>
 <translation id="1567405528131216114">Ajouter <ph name="TOPIC" /></translation>
@@ -1364,7 +1362,6 @@
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="390391808978419508">L'ouverture a dépassé le délai</translation>
 <translation id="3905894480064208252">{0,plural, =1{Le transfert du fichier a été bloqué}one{Le transfert de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le transfert de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
-<translation id="3906095212874392000">Fin du texte converti</translation>
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Vous pouvez changer d'avis à tout moment dans les paramètres de Chrome</translation>
@@ -1588,7 +1585,6 @@
 <translation id="4331519897422864041">Empileur 5</translation>
 <translation id="4331708818696583467">Pas sécuritaire</translation>
 <translation id="4333561522337981382">Gérer les fenêtres sur tous vos écrans</translation>
-<translation id="4338709847516294988">Appuyez sur recherche plus m et convertissez l'image en texte dans le menu contextuel</translation>
 <translation id="4340575312453649552">Cette annonce utilisait trop de ressources pour votre appareil, alors Chrome l'a supprimée.</translation>
 <translation id="4340810192899866471">Importer à partir de JSON</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
@@ -1605,7 +1601,6 @@
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="4366943895537458493">Plaque</translation>
 <translation id="437040971055499437">Un événement relatif à la sécurité se produit</translation>
-<translation id="4371307856413138486">Début du texte converti</translation>
 <translation id="4371591986692297148">Inactif</translation>
 <translation id="4372948949327679948">Valeur <ph name="VALUE_TYPE" /> attendue.</translation>
 <translation id="4375864595697821259">Ajoutez un élément pour l'intégrer dans le répertoire de sujets parmi lesquels Chrome peut choisir pour son évaluation de vos intérêts</translation>
@@ -2379,7 +2374,6 @@
 <translation id="604124094241169006">Automatique</translation>
 <translation id="6041777658117377052">Température de la chambre</translation>
 <translation id="6042308850641462728">Plus</translation>
-<translation id="6042688167654081154">Image convertie en texte</translation>
 <translation id="6044573915096792553">Taille 12</translation>
 <translation id="6045164183059402045">Modèle d'imposition</translation>
 <translation id="6047233362582046994">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />vous rendre sur ce site<ph name="END_LINK" /> avant que les applications malveillantes aient été supprimées.</translation>
@@ -2417,7 +2411,6 @@
 <translation id="6116338172782435947">Voir le texte et les images copiés dans le presse-papiers</translation>
 <translation id="6117833587752089929">Photo (satiné)</translation>
 <translation id="6118782133429281336">La liste d'origine est vide.</translation>
-<translation id="6120179357481664955">Se souvenir de votre identifiant UPI?</translation>
 <translation id="6122181661879998141">devant de votre carte</translation>
 <translation id="6124058285696691147">Télécharger la pièce jointe</translation>
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
@@ -2451,7 +2444,6 @@
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6197648101609735209">89 mm x 89 mm</translation>
 <translation id="6198480336395236519">Onglets complets</translation>
-<translation id="6200386911308538077">L'image est en cours d'analyse</translation>
 <translation id="6203231073485539293">Vérifiez votre connexion Internet</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
 <translation id="6212314149070368045">Pli accordéon américain</translation>

@@ -159,6 +159,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="1854311313115643875">Genom annonsmätning, om provfunktioner är aktiverade, kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.
 
 När du raderar webbhistoriken, oavsett om det är all historik eller bara för en viss webbplats, raderar du också alla tillhörande mätningsuppgifter. Se <ph name="BEGIN_LINK" />webbhistoriken<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Öppna i Chrome-webbläsaren</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1883903952484604915">Mina filer</translation>
 <translation id="189358972401248634">Övriga språk</translation>
@@ -705,7 +706,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4699172675775169585">Cachade bilder och filer</translation>
 <translation id="4710167854527459075">Sortera efter senaste</translation>
 <translation id="4719927025381752090">Erbjud översättning</translation>
-<translation id="4720023427747327413">Öppna i <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Se dina mest besökta webbplatser</translation>
 <translation id="4731877163452936634">Uppspelningshastighet: <ph name="PLAYBACK_SPEED" />. Klicka för att ändra.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -811,7 +811,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5171045022955879922">Sök eller ange webbadress</translation>
 <translation id="5174700554036517242">Fliken är tillbaka till ursprunglig höjd</translation>
-<translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5186634140793586141">Hantera ämnen och sökningar som du är intresserad av</translation>
 <translation id="5191251636205085390">Läs mer om ny teknik som med tiden kan ersätta tredjepartscookies och hur du kan styra den</translation>
 <translation id="5193988420012215838">Kopierat till urklipp</translation>
@@ -1094,6 +1093,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6641780377503683465">Ta bort <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645629752388991326">Styr vilka enheter som får logga in med den här enheten som säkerhetsnyckel.</translation>
+<translation id="6646696210740573446">En obfuskerad del av webbadressen skickas till Google via en integritetsserver som döljer din IP-adress. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet.</translation>
 <translation id="6647441008198474441">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst</translation>
 <translation id="6648459603387803038">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
@@ -1453,6 +1453,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8394720698884623075">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome</translation>
 <translation id="8402673309244746971">Öppna Följer</translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
+<translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="8414396119627470038">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Läs mer om annonsanpassning i Chrome</translation>
 <translation id="8419244640277402268">Inkludera</translation>

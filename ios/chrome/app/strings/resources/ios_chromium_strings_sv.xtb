@@ -89,7 +89,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="5453478652154926037">Chromium kan inte kontrollera dina lösenord.</translation>
 <translation id="5521125884468363740">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="5522297504975449419">Vissa funktioner i Chromium kommer inte längre att vara tillgängliga.</translation>
-<translation id="5573014823074921752">Tips för Chromium. Tryck länge på Visa flikar i verktygsfältet så visas fler flikalternativ. Du hittar verktygsfältet längst ned eller högst upp på skärmen.</translation>
 <translation id="5688047395118852662">Det här kortet visar förslag på hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan inte kontrollera dina lösenord</translation>
 <translation id="5777187867430702742">Chromium-sida</translation>
@@ -141,7 +140,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7400689562045506105">Använd Chromium överallt</translation>
 <translation id="7523464085759699266">Aktivera Lås inkognitoflikar när du stänger Chromium.</translation>
 <translation id="7674213385180944843">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
-<translation id="7746854981345936341">Tips för Chromium. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
 <translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="7812317783196516890">Du är inloggad på och synkroniserar din data med ett konto som hanteras av <ph name="DOMAIN" />. Administratören kan nu ställa in användarpolicyer som gäller det kontot specifikt och som kan påverka hur Chromium fungerar.</translation>
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>

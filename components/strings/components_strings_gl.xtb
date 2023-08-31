@@ -135,7 +135,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduciches o teu contrasinal nun sitio que non está xestionado pola túa organización. Para protexer a túa conta, non reutilices o contrasinal noutras aplicacións ou sitios.</translation>
 <translation id="1257553931232494454">niveis de zoom</translation>
-<translation id="1258942153897182536">OCR en progreso…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
@@ -293,7 +292,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 
       &lt;p&gt;Axusta a data e a hora na sección &lt;strong&gt;Xeral&lt;/strong&gt; da aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O teu administrador reiniciará o dispositivo o <ph name="DATE" /> a esta hora: <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Non se converteu ningún texto a partir das imaxes</translation>
 <translation id="156703335097561114">Información das redes como enderezos, configuración de interfaces e calidade das conexións</translation>
 <translation id="1567040042588613346">Esta política funciona segundo o previsto, pero substitúe un valor equivalente que está definido noutro lugar.</translation>
 <translation id="1567405528131216114">Engadir <ph name="TOPIC" /></translation>
@@ -1382,7 +1380,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3901925938762663762">A tarxeta caducou</translation>
 <translation id="390391808978419508">Esgotouse o tempo de espera para a apertura</translation>
 <translation id="3905894480064208252">{0,plural, =1{Bloqueouse a transferencia do ficheiro}other{Bloqueouse a transferencia de <ph name="FILE_COUNT" /> ficheiros}}</translation>
-<translation id="3906095212874392000">Fin do texto convertido</translation>
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Máis información acerca do contido inserido</translation>
@@ -1607,7 +1604,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4331519897422864041">Amontoador 5</translation>
 <translation id="4331708818696583467">Non seguro</translation>
 <translation id="4333561522337981382">Xestionar ventás en todas as pantallas</translation>
-<translation id="4338709847516294988">Preme a tecla de busca + M para converter a imaxe en texto desde o menú contextual</translation>
 <translation id="4340575312453649552">Dado que este anuncio utilizaba demasiados recursos para o teu dispositivo, Chrome quitouno.</translation>
 <translation id="4340810192899866471">Importar desde JSON</translation>
 <translation id="4340982228985273705">Non se detectou que unha empresa xestione este ordenador, polo que a política só pode instalar automaticamente extensións aloxadas en Chrome Webstore. O URL de actualización de Chrome Webstore é <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1624,7 +1620,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4363222835916186793">Desactiváronse as alertas para este produto</translation>
 <translation id="4366943895537458493">Placas</translation>
 <translation id="437040971055499437">Prodúcese un evento de seguranza</translation>
-<translation id="4371307856413138486">Inicio do texto convertido</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4375864595697821259">Engade un elemento de novo se o queres incluír no grupo de temas que Chrome pode escoller ao estimar os teus intereses</translation>
@@ -2403,7 +2398,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura da cámara</translation>
 <translation id="6042308850641462728">Máis</translation>
-<translation id="6042688167654081154">A imaxe converteuse en texto</translation>
 <translation id="6044573915096792553">Tamaño 12</translation>
 <translation id="6045164183059402045">Modelo de imposición</translation>
 <translation id="6047233362582046994">Se aceptas os riscos para a túa seguranza, podes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se eliminen as aplicacións prexudiciais.</translation>
@@ -2441,7 +2435,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6116338172782435947">Ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">A lista de orixe está baleira.</translation>
-<translation id="6120179357481664955">Queres lembrar o teu código da UPI?</translation>
 <translation id="6120950591512958208">Usa este código cando tramites a compra.</translation>
 <translation id="6122181661879998141">anverso da tarxeta</translation>
 <translation id="6124058285696691147">Descargar o anexo</translation>
@@ -2476,7 +2469,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separador con pestanas enteiras</translation>
-<translation id="6200386911308538077">Estase analizando a imaxe</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>

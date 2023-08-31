@@ -159,6 +159,7 @@
 <translation id="1854311313115643875">‏ٹرائلز کے آن ہونے پر، Ad measurement آپ کی ملاحظہ کی جانے والی سائٹس کو Chrome سے معلومات کی درخواست کرنے کی اجازت دیتا ہے جس سے سائٹ کو اپنے اشتہارات کی کارکردگی کی پیمائش کرنے میں مدد ملتی ہے۔ Ad measurement سائٹس کے درمیان ممکنہ حد تک کم معلومات کی منتقلی کے ذریعے کراس سائٹ ٹریکنگ کو محدود کرتا ہے۔
 
 جب آپ تمام یا مخصوص سائٹ کی اپنی براؤزنگ کی سرگزشت کو حذف کرتے ہیں تو آپ پیمائش کی متعلقہ معلومات بھی حذف کر دیتے ہیں۔ <ph name="BEGIN_LINK" />اپنی براؤزنگ کی سرگزشت<ph name="END_LINK" /> دیکھیں۔</translation>
+<translation id="1871098866036088250">‏Chrome براؤزر میں کھولیں</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
@@ -704,7 +705,6 @@
 <translation id="4699172675775169585">کیش کردہ تصاویر اور فائلیں</translation>
 <translation id="4710167854527459075">جدید ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="4719927025381752090">ترجمہ کرنے کی پیشکش</translation>
-<translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> میں کھولیں</translation>
 <translation id="47217992755561375">اپنی سرفہرست سائٹس دیکھیں</translation>
 <translation id="4731877163452936634">پلے بیک کی رفتار: <ph name="PLAYBACK_SPEED" />۔ تبدیل کرنے کیلئے کلک کریں۔</translation>
 <translation id="4732120983431207637">‏انبار Unwinder</translation>
@@ -810,7 +810,6 @@
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5171045022955879922">‏تلاش کریں یا URL ٹائپ کریں</translation>
 <translation id="5174700554036517242">ٹیب ابتدائی اونچائی پر واپس آ گیا ہے</translation>
-<translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5186634140793586141">ان عنوانات اور تلاشوں کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
@@ -1093,6 +1092,7 @@
 <translation id="6641780377503683465"><ph name="INTEREST" /> ہٹائیں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6645629752388991326">کنٹرول کریں کہ کون سے آلات اس آلے کو سیکیورٹی کلید کے بطور استعمال کر کے سائن ان کر سکتے ہیں۔</translation>
+<translation id="6646696210740573446">‏رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chrome، ‏Google پر صفحہ کے مواد کے بِٹس سمیت URLs بھی بھیج سکتا ہے۔</translation>
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6648459603387803038">‏آپ کا منتظم دور سے آپ کے براؤزر کا سیٹ اپ تبدیل کر سکتا ہے۔ اس آلے پر ہونے والی سرگرمی کا نظم Chrome سے باہر بھی کیا جا سکتا ہے۔</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
@@ -1452,6 +1452,7 @@
 <translation id="8394720698884623075">‏Chrome میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے</translation>
 <translation id="8402673309244746971">درج ذيل پر جائيں</translation>
 <translation id="8413126021676339697">مکمل سرگزشت دکھائیں</translation>
+<translation id="8413795581997394485">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ جب آپ کسی سائٹ کو ملاحظہ کرتے ہیں تو Chrome رازداری کے سرور کے ذریعے URL کا ایک مبہم حصہ Google کو بھیجتا ہے جو آپ کا IP پتہ چھپاتا ہے۔ کسی سائٹ پر کچھ مشکوک لگنے پر مکمل URLs اور صفحہ کے مواد کے بِٹس بھی بھیجے جاتے ہیں۔</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> میں سائن ان کریں</translation>
 <translation id="8416347857511542594">‏Chrome میں اشتہارات کو ذاتی نوعیت کا بنانے کے بارے میں مزید جانیں</translation>
 <translation id="8419244640277402268">شامل کریں</translation>

@@ -159,6 +159,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="1854311313115643875">Apabila percubaan sedang berlangsung, pengukuran iklan membenarkan laman yang anda lawati meminta maklumat daripada Chrome yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.
 
 Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman tertentu — anda turut memadamkan maklumat ukuran yang berkaitan. Lihat <ph name="BEGIN_LINK" />sejarah penyemakan imbas anda<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Buka dalam penyemak imbas Chrome</translation>
 <translation id="1877026089748256423">Chrome sudah usang</translation>
 <translation id="1883903952484604915">Fail Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
@@ -704,7 +705,6 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4699172675775169585">Imej dan fail dicache</translation>
 <translation id="4710167854527459075">Isih mengikut yang terbaharu</translation>
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
-<translation id="4720023427747327413">Buka dalam <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Lihat laman web yang paling kerap anda lawati</translation>
 <translation id="4731877163452936634">Kelajuan main balik: <ph name="PLAYBACK_SPEED" />. Klik untuk menukar.</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
@@ -810,7 +810,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5171045022955879922">Buat carian atau taipkan URL</translation>
 <translation id="5174700554036517242">Tab kembali kepada ketinggian awal</translation>
-<translation id="5184329579814168207">Buka dalam Chrome</translation>
 <translation id="5186634140793586141">Urus topik dan cari perkara yang anda minati</translation>
 <translation id="5191251636205085390">Ketahui tentang teknologi baharu yang disasarkan untuk menggantikan kuki pihak ketiga dan kawal teknologi tersebut</translation>
 <translation id="5193988420012215838">Disalin ke papan keratan anda</translation>
@@ -1093,6 +1092,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6641780377503683465">Alih keluar <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6645629752388991326">Kawal peranti yang boleh log masuk dengan menggunakan peranti ini sebagai kunci keselamatan.</translation>
+<translation id="6646696210740573446">Menghantar bahagian pengeliruan URL kepada Google melalui pelayan privasi yang menyembunyikan alamat IP anda. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Google.</translation>
 <translation id="6647441008198474441">URL yang anda lawati dihantar kepada Google untuk meramal laman yang mungkin anda lawati seterusnya</translation>
 <translation id="6648459603387803038">Pentadbir anda boleh menukar persediaan penyemak imbas anda dari jauh. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}}</translation>
@@ -1452,6 +1452,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8394720698884623075">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chrome</translation>
 <translation id="8402673309244746971">Pergi ke Mengikuti</translation>
 <translation id="8413126021676339697">Paparkan sejarah penuh</translation>
+<translation id="8413795581997394485">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Apabila anda melawat laman, Chrome menghantar bahagian pengeliruan URL kepada Google melalui pelayan privasi yang menyembunyikan alamat IP anda. Jika laman melakukan sesuatu yang mencurigakan, URL penuh dan sedikit kandungan halaman turut dihantar.</translation>
 <translation id="8414396119627470038">Log masuk ke <ph name="SITE_ETLD_PLUS_ONE" /> menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Ketahui lebih lanjut tentang pemeribadian iklan dalam Chrome</translation>
 <translation id="8419244640277402268">Sertakan</translation>

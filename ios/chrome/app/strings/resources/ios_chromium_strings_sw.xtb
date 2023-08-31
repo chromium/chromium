@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Chagua <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Sawazisha Data Yako kwenye Chromium</translation>
 <translation id="2618596336309823556">Kwenye Mipangilio ya kifaa chako, fungua "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" kisha uchague "Chromium"</translation>
+<translation id="2631735236435791495">Shirika lako, <ph name="DOMAIN" />, linasimamia akaunti unayotumia kuingia na jinsi Chromium inavyotumika. Msimamizi wako anaweza kuweka mipangilio au kuzuia vipengele kadhaa.</translation>
 <translation id="2650312721222849884">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, washa kipengele cha kusawazisha</translation>
 <translation id="2684230048001240293">Weka Chromium iwe kivinjari chaguomsingi cha kusawazisha vichupo, manenosiri na maelezo yako ya malipo kwenye vifaa vyako vyote</translation>
 <translation id="2730884209570016437">Chromium imeshindwa kutumia kamera yako kwa sababu inatumiwa na programu nyingine</translation>
@@ -88,7 +89,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chromium kwe
 <translation id="5453478652154926037">Chromium imeshindwa kukagua manenosiri yako.</translation>
 <translation id="5521125884468363740">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chromium, ingia katika akaunti na uwashe kipengele cha kusawazisha</translation>
 <translation id="5522297504975449419">Baadhi ya vipengele vya Chromium havitapatikana tena.</translation>
-<translation id="5573014823074921752">Kidokezo cha Chromium. Ili upate chaguo zaidi za kichupo, gusa na ushikilie kitufe cha 'Onyesha Vichupo' katika upau wa vidhibiti unaopatikana katika sehemu ya chini au juu ya skrini yako.</translation>
 <translation id="5688047395118852662">Kadi hii hukuonyesha mapendekezo ya jinsi ya kunufaika zaidi na Chromium.</translation>
 <translation id="5700709190537129682">Chromium imeshindwa kukagua manenosiri yako</translation>
 <translation id="5777187867430702742">Ukurasa wa Chromium</translation>
@@ -140,7 +140,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="7400689562045506105">Tumia Chromium Kila mahali</translation>
 <translation id="7523464085759699266">Washa kipengele cha “Funga Vichupo Fiche Unapofunga Chromium.”</translation>
 <translation id="7674213385180944843">Fungua Mipangilio &gt; Faragha &gt; Kamera &gt; Chromium na uwashe kamera.</translation>
-<translation id="7746854981345936341">Kidokezo cha Chromium. Baadhi ya vitufe sasa vinapatikana katika sehemu ya chini ya skrini yako, kama vile kitufe cha Nyuma, Mbele na Tafuta.</translation>
 <translation id="7763454117143368771">Tumia Chromium kama kivinjari chako chaguomsingi ili uendelee kulindwa dhidi ya tovuti hatari na uhakikishe manenosiri yako ni salama</translation>
 <translation id="7812317783196516890">Umeingia katika akaunti na unasawazisha data yako ukitumia akaunti inayosimamiwa na <ph name="DOMAIN" /> ambapo msimamizi wake sasa anaweza kuzifanya sera za mtumiaji ziwe mahususi kwenye akaunti hiyo hivyo zinaweza kubadilisha tabia za Chromium.</translation>
 <translation id="7859018312476869945">Unapoandika kwenye sehemu ya anwani au kisanduku cha kutafutia, Chromium hutuma unachokiandika kwenye mtambo wako chaguomsingi wa kutafuta ili upate mapendekezo bora. Kipengele hiki huwa kimezimwa katika Hali fiche.</translation>

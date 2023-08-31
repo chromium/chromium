@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">유리(컬러)</translation>
 <translation id="1074497978438210769">주의 요함</translation>
 <translation id="1075079914415273530">농업 및 임업</translation>
+<translation id="1075364221219156102">패스키 사용</translation>
 <translation id="1080116354587839789">너비에 맞춤</translation>
 <translation id="1081061862829655580">트레이 19</translation>
 <translation id="1089439967362294234">비밀번호 변경</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">조직에서 관리하지 않는 사이트에 내 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="1257553931232494454">확대/축소 수준</translation>
-<translation id="1258942153897182536">OCR 처리 중...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 설정 관리</translation>
 <translation id="1264309058268477500">대체</translation>
 <translation id="1264974993859112054">스포츠</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;&lt;strong&gt;설정&lt;/strong&gt; 앱의 &lt;strong&gt;일반&lt;/strong&gt; 섹션에서 날짜와 시간을 맞추세요.&lt;/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> <ph name="TIME" />에 관리자가 기기를 다시 시작합니다.</translation>
-<translation id="1564753300777780201">이미지에서 변환된 텍스트 없음</translation>
 <translation id="156703335097561114">주소, 인터페이스 구성, 연결 품질 등의 네트워킹 정보</translation>
 <translation id="1567040042588613346">이 정책은 정상 작동 중이나 다른 위치에 같은 값이 설정되었으므로 이 정책에 의해 대체되었습니다.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> 추가</translation>
@@ -1382,7 +1381,6 @@
 <translation id="3901925938762663762">만료된 카드입니다.</translation>
 <translation id="390391808978419508">여는 시간 초과</translation>
 <translation id="3905894480064208252">{0,plural, =1{파일 전송 차단됨}other{파일 <ph name="FILE_COUNT" />개 전송 차단됨}}</translation>
-<translation id="3906095212874392000">변환된 텍스트의 끝</translation>
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">삽입된 콘텐츠에 대해 자세히 알아보기</translation>
@@ -1607,7 +1605,6 @@
 <translation id="4331519897422864041">스태커 5</translation>
 <translation id="4331708818696583467">주의 요함</translation>
 <translation id="4333561522337981382">모든 디스플레이의 창 관리</translation>
-<translation id="4338709847516294988">검색 메뉴에서 m을 누르고 컨텍스트 메뉴에서 이미지를 텍스트로 변환</translation>
 <translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340810192899866471">JSON에서 가져오기</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
@@ -1624,7 +1621,6 @@
 <translation id="4363222835916186793">제품 관련 알림이 사용 중지되었습니다.</translation>
 <translation id="4366943895537458493">플레이트</translation>
 <translation id="437040971055499437">보안 관련 활동 발생</translation>
-<translation id="4371307856413138486">변환된 텍스트의 시작</translation>
 <translation id="4371591986692297148">비활성</translation>
 <translation id="4372948949327679948">예상 <ph name="VALUE_TYPE" /> 값입니다.</translation>
 <translation id="4375864595697821259">관심분야를 예측할 때 Chrome에서 선택할 수 있는 주제 풀에 원하는 항목을 다시 추가하세요.</translation>
@@ -2403,7 +2399,6 @@
 <translation id="604124094241169006">자동</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
 <translation id="6042308850641462728">자세히</translation>
-<translation id="6042688167654081154">이미지가 텍스트로 변환됨</translation>
 <translation id="6044573915096792553">크기 12</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047233362582046994">유해한 앱이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />하는 경우 보안상 위험을 반드시 이해하시기 바랍니다.</translation>
@@ -2441,7 +2436,6 @@
 <translation id="6116338172782435947">클립보드에 복사된 텍스트 및 이미지를 확인합니다.</translation>
 <translation id="6117833587752089929">사진(새틴)</translation>
 <translation id="6118782133429281336">원본 목록이 비어 있습니다.</translation>
-<translation id="6120179357481664955">UPI ID를 저장하시겠습니까?</translation>
 <translation id="6120950591512958208">결제 시 이 코드를 사용하세요.</translation>
 <translation id="6122181661879998141">카드 앞면</translation>
 <translation id="6124058285696691147">첨부파일 다운로드</translation>
@@ -2476,7 +2470,6 @@
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6197648101609735209">89x89mm</translation>
 <translation id="6198480336395236519">풀 컷 탭</translation>
-<translation id="6200386911308538077">이미지 분석 중</translation>
 <translation id="6203231073485539293">인터넷 연결을 확인하세요.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6212314149070368045">미국 Fanfold</translation>
@@ -3143,6 +3136,7 @@
 <translation id="7554475479213504905">무시하고 새로고침 및 표시</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7555777498260651025">가족용 TV 프로그램</translation>
+<translation id="7556328470713619625">패스키 사용</translation>
 <translation id="7559278538486662777">이 앱은 크기를 조절할 수 없습니다.</translation>
 <translation id="7561784249784255101">디지털 다용도 디스크</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>

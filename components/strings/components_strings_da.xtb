@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Glas (farvet)</translation>
 <translation id="1074497978438210769">Ikke sikker</translation>
 <translation id="1075079914415273530">Landbrug og skovbrug</translation>
+<translation id="1075364221219156102">Brug en adgangsnøgle</translation>
 <translation id="1080116354587839789">Tilpas til bredden</translation>
 <translation id="1081061862829655580">Bakke 19</translation>
 <translation id="1089439967362294234">Skift adgangskode</translation>
@@ -135,7 +136,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Du indtastede din adgangskode på et website, der ikke administreres af din organisation. Du kan beskytte din konto ved at undgå at bruge din adgangskode i andre apps og på andre websites.</translation>
 <translation id="1257553931232494454">zoomniveauer</translation>
-<translation id="1258942153897182536">OCR er i gang …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere dine Chrome-indstillinger</translation>
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -293,7 +293,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 
       &lt;p&gt;Juster datoen og tiden i sektionen &lt;strong&gt;Generelt&lt;/strong&gt; i appen &lt;strong&gt;Indstillinger&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Din administrator vil genstarte din enhed klokken <ph name="TIME" /> den <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Ingen tekst konverteres fra billeder</translation>
 <translation id="156703335097561114">Netværksoplysninger som f.eks. adresser, grænsefladekonfiguration og forbindelseskvalitet</translation>
 <translation id="1567040042588613346">Denne politik fungerer efter hensigten, men et andet sted er den samme værdi blevet tilsidesat af denne politik.</translation>
 <translation id="1567405528131216114">Tilføj <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3901925938762663762">Kortet er udløbet</translation>
 <translation id="390391808978419508">Åbningen fik timeout</translation>
 <translation id="3905894480064208252">{0,plural, =1{FIlen er blokeret, så den ikke kan overføres}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan åbnes}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan åbnes}}</translation>
-<translation id="3906095212874392000">Slut på konverteret tekst</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Få flere oplysninger om indlejret indhold</translation>
@@ -1607,7 +1605,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4331519897422864041">Stabler 5</translation>
 <translation id="4331708818696583467">Ikke sikker</translation>
 <translation id="4333561522337981382">Administrere vinduer på alle dine skærme</translation>
-<translation id="4338709847516294988">Tryk på søgetasten plus m, og konverter billedet til tekst i genvejsmenuen</translation>
 <translation id="4340575312453649552">Denne annonce anvendte for mange ressourcer på din enhed, så Chrome har fjernet den.</translation>
 <translation id="4340810192899866471">Importér fra JSON</translation>
 <translation id="4340982228985273705">Denne computer registreres ikke som virksomhedsadministreret, så politikken kan kun automatisk installere udvidelser, der hostes i Chrome Webshop. Opdateringswebadressen til Chrome Webshop er "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1624,7 +1621,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4363222835916186793">Underretninger for dette produkt er deaktiveret</translation>
 <translation id="4366943895537458493">Plade</translation>
 <translation id="437040971055499437">Forekomst af sikkerhedshændelse</translation>
-<translation id="4371307856413138486">Start på konverteret tekst</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4372948949327679948">Forventet <ph name="VALUE_TYPE" />-værdi.</translation>
 <translation id="4375864595697821259">Tilføj et element igen, hvis du vil føje det til samlingen af emner, som Chrome kan vælge mellem, når dine interesser estimeres</translation>
@@ -2403,7 +2399,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6041777658117377052">Kabinettemperatur</translation>
 <translation id="6042308850641462728">Mere</translation>
-<translation id="6042688167654081154">Billedet er konverteret til tekst</translation>
 <translation id="6044573915096792553">Størrelse 12</translation>
 <translation id="6045164183059402045">Skabelon for indførelse</translation>
 <translation id="6047233362582046994">Hvis du er indforstået med de forbundne sikkerhedsrisici, kan du <ph name="BEGIN_LINK" />besøge dette website<ph name="END_LINK" />, inden de skadelige apps fjernes.</translation>
@@ -2441,7 +2436,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6116338172782435947">Se tekst og billeder, der er kopieret til udklipsholderen</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
 <translation id="6118782133429281336">Oprindelseslisten er tom.</translation>
-<translation id="6120179357481664955">Skal dit UPI-id huskes?</translation>
 <translation id="6120950591512958208">Brug denne kode ved betaling.</translation>
 <translation id="6122181661879998141">forsiden af dit kort</translation>
 <translation id="6124058285696691147">Download den vedhæftede fil</translation>
@@ -2476,7 +2470,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Faner i fuld længde</translation>
-<translation id="6200386911308538077">Billedet analyseres</translation>
 <translation id="6203231073485539293">Kontrollér din internetforbindelse</translation>
 <translation id="6205314730813004066">Privatliv ved annoncering</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3144,6 +3137,7 @@ Yderligere oplysninger:
 <translation id="7554475479213504905">Genindlæs, og vis alligevel</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7555777498260651025">Familieorienterede tv-shows</translation>
+<translation id="7556328470713619625">Brug en adgangsnøgle</translation>
 <translation id="7559278538486662777">Størrelsen på denne app kan ikke justeres.</translation>
 <translation id="7561784249784255101">Dvd</translation>
 <translation id="7564049878696755256">Du kan miste adgangen til din <ph name="ORG_NAME" />-konto eller udsættes for identitetstyveri. Chrome anbefaler, at du skifter din adgangskode nu.</translation>

@@ -76,7 +76,6 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
-<translation id="4249068189593983585">Chrome 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="4463378960278646000">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="4508370294876102450">从任意应用内打开 Chrome</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
@@ -109,7 +108,6 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">已离线，Chrome 无法检查是否有更新</translation>
 <translation id="5716154293141027663">每当您点按其他应用中的链接时，系统都会使用 Chrome 打开相应链接</translation>
-<translation id="5854621639439811139">Chrome 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="5998675059699164418">根据贵单位的要求，您必须登录才能使用 Chrome。</translation>
 <translation id="6054613632208573261">默认使用 Chrome</translation>
 <translation id="6063091872902370735">允许登录 Chrome</translation>
@@ -121,6 +119,7 @@
 <translation id="6427126399757991875">贵组织正在设置 Chrome…</translation>
 <translation id="6600954340915313787">已复制到 Chrome</translation>
 <translation id="6634107063912726160">当您退出登录后，Chrome 不会将任何新数据同步到您的 Google 账号。先前已同步的数据将会保留在账号中。</translation>
+<translation id="6646696210740573446">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google。</translation>
 <translation id="6648150602980899529">您正要登录由 <ph name="DOMAIN" /> 管理的账号，并要授权其管理员控制您的 Chrome 数据。您的数据将与此账号永久关联。退出 Chrome 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 账号中。</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
 <translation id="6709398533399187136">您的密码遭遇了数据泄露。Google 密码管理器建议您立即更改此密码。</translation>
@@ -158,6 +157,7 @@
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>
+<translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8414886616817913619">根据贵单位的要求，您必须登录才能使用 Chrome。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">请继续使用您的 Google 账号中的 Chrome 数据</translation>
 <translation id="8459495907675268833">所选数据已从 Chrome 和同步的设备中移除。不过，您的 Google 账号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>

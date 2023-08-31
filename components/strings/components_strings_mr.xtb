@@ -135,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तुमच्या संस्थेद्वारे व्यवस्थापित केल्या न जाणाऱ्या साइटवर तुम्ही तुमचा पासवर्ड एंटर केला आहे. तुमचे खाते संरक्षित करण्यासाठी इतर अ‍ॅप्स आणि साइटवर तुमच्या पासवर्डचा पुन्हा वापर करू नका.</translation>
 <translation id="1257553931232494454">झूम स्तर</translation>
-<translation id="1258942153897182536">OCR प्रगतीपथावर आहे ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमची Chrome सेटिंग्ज व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
 <translation id="1264309058268477500">पर्यायी</translation>
 <translation id="1264974993859112054">क्रीडा</translation>
@@ -293,7 +292,6 @@
 
       &lt;p&gt;कृपया &lt;strong&gt;सेटिंग्ज&lt;/strong&gt; ॲपच्या &lt;strong&gt;सर्वसाधारण&lt;/strong&gt; विभागातील तारीख आणि वेळ समायोजित करा.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमचे डिव्हाइस <ph name="DATE" /> रोजी <ph name="TIME" /> वाजता रीस्टार्ट करेल</translation>
-<translation id="1564753300777780201">इमेजमधून कोणत्याही मजकुराचे रूपांतर केले नाही</translation>
 <translation id="156703335097561114">पत्ते, इंटरफेस कॉंफिगरेशन आणि कनेक्शन गुणवत्ता यांसारखी नेटवर्किंग माहिती</translation>
 <translation id="1567040042588613346">हे धोरण अपेक्षेनुसार काम करत आहे पण, कुठेतरी समान मूल्य सेट केले आहे आणि हे धोरण ते मूल्य अधिग्रहित करत आहे.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> जोडा</translation>
@@ -1381,7 +1379,6 @@
 <translation id="3901925938762663762">कार्ड कालबाह्य झाले आहे</translation>
 <translation id="390391808978419508">उघडणे टाइम आउट झाले</translation>
 <translation id="3905894480064208252">{0,plural, =1{फाइल ट्रान्सफर करण्यापासून ब्लॉक केली आहे}other{<ph name="FILE_COUNT" /> फाइल ट्रान्सफर करण्यापासून ब्लॉक केल्या आहेत}}</translation>
-<translation id="3906095212874392000">रूपांतर केलेल्या मजकुराचा शेवट</translation>
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">एंबेड केलेल्या आशयाविषयी अधिक जाणून घ्या</translation>
@@ -1606,7 +1603,6 @@
 <translation id="4331519897422864041">स्टॅकर ५</translation>
 <translation id="4331708818696583467">सुरक्षित नाही</translation>
 <translation id="4333561522337981382">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करणे</translation>
-<translation id="4338709847516294988">सर्च + M प्रेस करा आणि कॉंटेक्स्ट मेनूमध्ये इमेजचे मजकुरामध्ये रूपांतर करा</translation>
 <translation id="4340575312453649552">या जाहिरातीने तुमच्या डिव्हाइससाठी खूप जास्त स्रोत वापरल्यामुळे, Chrome ने ती काढून टाकली.</translation>
 <translation id="4340810192899866471">JSON मधून इंपोर्ट करा</translation>
 <translation id="4340982228985273705">हा कॉंप्युटर एंटरप्राइझ व्यवस्थापित म्हणून आढळला नाही म्हणून धोरण फक्त Chrome वेबस्टोअरवर होस्ट केलेले एक्स्टेंशन आपोआप इंस्टॉल करू शकते. Chrome वेबस्टोअर अपडेट URL <ph name="CWS_UPDATE_URL" /> ही आहे.</translation>
@@ -1623,7 +1619,6 @@
 <translation id="4363222835916186793">या उत्पादनासाठी सूचना बंद केल्या आहेत</translation>
 <translation id="4366943895537458493">प्लेट</translation>
 <translation id="437040971055499437">सुरक्षितता इव्‍हेंट सुरू होतो</translation>
-<translation id="4371307856413138486">रूपांतर केलेल्या मजकुराची सुरुवात</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4372948949327679948">अपेक्षित <ph name="VALUE_TYPE" /> मूल्य.</translation>
 <translation id="4375864595697821259">तुमच्या स्वारस्यांचा अंदाज लावताना Chrome निवडू शकेल अशा विषयांच्या सूचीमध्ये तुम्हाला एखादा आयटम हवा असल्यास तो परत जोडा</translation>
@@ -2402,7 +2397,6 @@
 <translation id="604124094241169006">स्वयंचलित</translation>
 <translation id="6041777658117377052">चेंबरचे तापमान</translation>
 <translation id="6042308850641462728">अधिक</translation>
-<translation id="6042688167654081154">इमेजचे मजकुरामध्ये रूपांतर करण्यात आले</translation>
 <translation id="6044573915096792553">आकार १२</translation>
 <translation id="6045164183059402045">लागू करण्याचे टेम्पलेट</translation>
 <translation id="6047233362582046994">तुम्हाला तुमच्या सुरक्षेला असणारा धोका समजत असल्यास, हानिकारक अ‍ॅप्स काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
@@ -2440,7 +2434,6 @@
 <translation id="6116338172782435947">क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पहा</translation>
 <translation id="6117833587752089929">फोटो (सॅटिन)</translation>
 <translation id="6118782133429281336">ओरिजिनसंबंधित सूची रिकामी आहे.</translation>
-<translation id="6120179357481664955">तुमचा UPI आयडी लक्षात ठेवायचा आहे का?</translation>
 <translation id="6120950591512958208">चेकआउट करताना हा कोड वापरा.</translation>
 <translation id="6122181661879998141">तुमच्या कार्डची समोरची बाजू</translation>
 <translation id="6124058285696691147">अटॅचमेंट डाउनलोड करा</translation>
@@ -2476,7 +2469,6 @@
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6197648101609735209">८९ x ८९ मिमी</translation>
 <translation id="6198480336395236519">फूट कट टॅब</translation>
-<translation id="6200386911308538077">इमेजचे विश्लेषण केले जात आहे</translation>
 <translation id="6203231073485539293">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

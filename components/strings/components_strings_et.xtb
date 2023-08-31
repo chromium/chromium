@@ -136,7 +136,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Sisestasite oma parooli saidile, mida ei halda teie organisatsioon. Oma konto kaitsmiseks ärge kasutage oma parooli muudes rakendustes ega saitidel.</translation>
 <translation id="1257553931232494454">suumitasemed</translation>
-<translation id="1258942153897182536">OCR on pooleli …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, oma Chrome'i seadete haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
 <translation id="1264309058268477500">Alternatiivne</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -294,7 +293,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 
           &lt;p&gt;Kohandage kuupäeva ja kellaaega rakenduse &lt;strong&gt;Seaded&lt;/strong&gt; jaotises &lt;strong&gt;Üldine&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administraator taaskäivitab teie seadme kuupäeval <ph name="DATE" />, kell <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Tekst pole piltidest teisendatud</translation>
 <translation id="156703335097561114">Võrguteave, nagu aadressid, liidese seadistus ja ühenduse kvaliteet</translation>
 <translation id="1567040042588613346">See reegel töötab eesmärgipäraselt, kuid mujal on seadistatud sama väärtus, mis on selle reegliga asendatud.</translation>
 <translation id="1567405528131216114">Lisa <ph name="TOPIC" /></translation>
@@ -1383,7 +1381,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3901925938762663762">Kaart on aegunud</translation>
 <translation id="390391808978419508">Avamine aegus</translation>
 <translation id="3905894480064208252">{0,plural, =1{Faili edastamine on blokeeritud}other{<ph name="FILE_COUNT" /> faili edastamine on blokeeritud}}</translation>
-<translation id="3906095212874392000">Teisendatud teksti lõpp</translation>
 <translation id="3906954721959377182">Tahvelarvuti</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Lisateave manustatud sisu kohta</translation>
@@ -1608,7 +1605,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4331519897422864041">Virnastaja 5</translation>
 <translation id="4331708818696583467">Pole turvaline</translation>
 <translation id="4333561522337981382">hallata aknaid kõikidel teie ekraanidel.</translation>
-<translation id="4338709847516294988">Vajutage otsinguklahvi pluss m ja teisendage pilt kontekstimenüü kaudu tekstiks</translation>
 <translation id="4340575312453649552">See reklaam kasutas teie seadmes liiga palju ressursse, seetõttu Chrome eemaldas selle.</translation>
 <translation id="4340810192899866471">Impordi JSON-ist</translation>
 <translation id="4340982228985273705">Tuvastati, et tegemist ei ole ettevõtte hallatava arvutiga, seega saab reegel installida ainult Chrome'i veebipoes hostitavaid laiendusi. Chrome'i veebipoe värskenduse URL on „<ph name="CWS_UPDATE_URL" />”.</translation>
@@ -1625,7 +1621,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4363222835916186793">Selle toote teavitused on välja lülitatud</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="437040971055499437">Esineb turvalisusega seotud sündmus</translation>
-<translation id="4371307856413138486">Teisendatud teksti algus</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4372948949327679948">Oodatud väärtus: <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Lisage üksus tagasi, kui soovite selle kaasata teemade hulka, millest Chrome saab teie huvide prognoosimisel valiku teha</translation>
@@ -2404,7 +2399,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="604124094241169006">Automaatne</translation>
 <translation id="6041777658117377052">Kambri temperatuur</translation>
 <translation id="6042308850641462728">Rohkem</translation>
-<translation id="6042688167654081154">Pilt teisendati tekstiks</translation>
 <translation id="6044573915096792553">Suurus 12</translation>
 <translation id="6045164183059402045">Kehtestamise mall</translation>
 <translation id="6047233362582046994">Kui mõistate, kuidas see teie turvalisust ohustab, siis võite <ph name="BEGIN_LINK" />seda saiti külastada<ph name="END_LINK" /> enne, kui kahjulikud rakendused on eemaldatud.</translation>
@@ -2442,7 +2436,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6116338172782435947">näha lõikelauale kopeeritud teksti ja kujutisi</translation>
 <translation id="6117833587752089929">Foto (satiin)</translation>
 <translation id="6118782133429281336">Lähtekohtade loend on tühi.</translation>
-<translation id="6120179357481664955">Kas jätta teie UPI ID meelde?</translation>
 <translation id="6120950591512958208">Kasutage seda koodi kassas.</translation>
 <translation id="6122181661879998141">kaardi esiküljel</translation>
 <translation id="6124058285696691147">Manuse allalaadimine</translation>
@@ -2477,7 +2470,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Täispikkuses sakiga registrileht</translation>
-<translation id="6200386911308538077">Pilti analüüsitakse</translation>
 <translation id="6203231073485539293">Kontrollige Interneti-ühendust</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
 <translation id="6212314149070368045">USA lõõtspaber</translation>

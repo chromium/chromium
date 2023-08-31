@@ -968,6 +968,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
 <translation id="1838910874018595451">Configuration préremplie pour les demandes Kerberos</translation>
+<translation id="1843102210803941014">Activer uniquement les données et les cookies essentiels dans la recherche</translation>
 <translation id="1843117931376765605">Fréquence d'actualisation des règles relatives aux utilisateurs</translation>
 <translation id="1844620919405873871">Permet de configurer les règles associées au déverrouillage rapide.</translation>
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
@@ -1780,8 +1781,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="251050607781210155">Autoriser la navigation sécurisée côté client contre l'hameçonnage</translation>
 <translation id="2512972020817284317">Activer la fusion de règles cloud utilisateurs.</translation>
 <translation id="2515699738406900920">Disponibilité de l'outil de sélection du profil au démarrage</translation>
-<translation id="251594860034549963">Si vous activez cette règle, les fenêtres de navigateur se lanceront automatiquement depuis le dernier appareil dont s'est servi l'utilisateur actuel lorsque celui-ci se connecte.
-      Si vous la désactivez ou que vous ne la configurez pas, les paramètres de restauration complète décideront des éléments à lancer à la connexion.</translation>
 <translation id="2517466659416174529">Figer les onglets en arrière-plan</translation>
 <translation id="2518231489509538392">Autoriser la lecture audio</translation>
 <translation id="2519578205567666653">Autoriser les appareils de stockage externe</translation>
@@ -3217,7 +3216,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3791179836066841809">Documentation de la règle</translation>
-<translation id="3791556154364029875">Activer l'espace de travail flottant et lancer les fenêtres de navigateur distantes lors de la connexion</translation>
 <translation id="3792144912556572267">Cette règle permet de définir l'URL de la page d'accueil par défaut de <ph name="PRODUCT_NAME" />. La page d'accueil s'ouvre quand l'utilisateur clique sur le bouton d'accueil. Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par la règle <ph name="RESTORE_ON_STARTUP_POLICY_NAME" />.
 
 Si la page d'accueil est définie sur la page "Nouvel onglet", par l'utilisateur ou par <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, cette règle n'a aucune incidence.
@@ -3347,6 +3345,7 @@ Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut
       Si cette règle est désactivée, le protocole SPDY peut être utilisé.
 
       Si cette règle n'est pas définie, le protocole SPDY est disponible.</translation>
+<translation id="3885896818093825047">Autoriser la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="3889458462150559611">Autorise les sites Web à envoyer des requêtes à n'importe quel point de terminaison du réseau de façon non sécurisée.</translation>
 <translation id="388999630001435491">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils sur des adresses IP privées</translation>
 <translation id="3891175633496805812">Désactiver le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
@@ -3507,7 +3506,6 @@ Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut
       Si la règle n'est pas configurée, les utilisateurs peuvent choisir d'autoriser ou non cette fonctionnalité à accéder à ce contenu.</translation>
 <translation id="4016700865356669962">Si cette règle est activée, elle permet aux utilisateurs de se servir de modèles de bureau.  Si elle est désactivée ou si elle n'est pas configurée, ces modèles seront indisponibles.</translation>
 <translation id="4020682745012723568">Les applications Android n'ont pas accès aux cookies transférés vers le profil de l'utilisateur.</translation>
-<translation id="4025176296532430931">Désactiver l'espace de travail flottant et ne pas lancer les fenêtres de navigateur distantes lors de la connexion</translation>
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
@@ -4341,6 +4339,7 @@ Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</transl
 
       Si la taille de la page n'est pas disponible pour l'imprimante sélectionnée, cette règle est ignorée.</translation>
 <translation id="4789450349513792856">Bloquer les pop-up sur ces sites</translation>
+<translation id="4790391579868456557">Utiliser des cookies essentiels et non essentiels dans la recherche.</translation>
 <translation id="4790588245699320140">Autoriser l'Assistant Google à accéder au contexte de l'écran</translation>
 <translation id="4800438168909332958">Active la fonctionnalité d'annulation de l'écho audio du système. Cette fonctionnalité est un dispositif d'annulation de l'écho acoustique, c'est-à-dire un module de traitement audio qui supprime la lecture audio du système (écho) du signal du micro.
 Cette règle est temporaire et sera supprimée dès le lancement de l'annulation de l'écho audio du système.
@@ -4642,6 +4641,9 @@ Si cette règle est définie sur "True" ou si elle n'est pas définie, les rappo
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
 <translation id="5130213897914754028">Empêcher les sites d'utiliser SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Toujours proposer une traduction</translation>
+<translation id="5138579693170759139">Cette règle permet aux administrateurs de contrôler comment Google traite les données et les cookies envoyés à la recherche via <ph name="PRODUCT_OS_NAME" />.
+Lorsque cette règle est activée, l'utilisateur peut utiliser le champ de recherche du Lanceur d'applications de <ph name="PRODUCT_OS_NAME" /> et le champ d'adresse du navigateur <ph name="PRODUCT_NAME" /> dans <ph name="PRODUCT_OS_NAME" />. Les cookies et les données ne pourront être utilisés qu'à des fins essentielles.
+Si cette règle n'est pas configurée ou qu'elle est désactivée, les cookies et les données peuvent être utilisés à des fins non essentielles.</translation>
 <translation id="5141670636904227950">Activer la loupe plein écran sur l'écran de connexion</translation>
 <translation id="5142301680741828703">Toujours rendre les formats d'URL suivants dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Cette règle détermine si les informations exploitables à des fins d'identification des utilisateurs, telles que la connexion au système d'exploitation, la connexion au profil <ph name="PRODUCT_NAME" />, le nom du profil <ph name="PRODUCT_NAME" />, le chemin d'accès au profil <ph name="PRODUCT_NAME" /> et le chemin d'accès exécutable <ph name="PRODUCT_NAME" />, doivent être enregistrées.
@@ -6808,11 +6810,6 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
       * PasswordProtectionWarningOnPhishingReuse, l'avertissement est affiché lorsque les utilisateurs réutilisent leur mot de passe protégé sur un site d'hameçonnage.
 
       Si cette règle n'est pas configurée, le service de protection par mot de passe ne protège que les mots de passe Google. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
-<translation id="6969079025604591591">Si cette règle est activée ou qu'elle n'est pas configurée, l'Intégrité du code du moteur de rendu est activée.
-
-      Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
-
-      Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="6969108216182455619">Cette règle est obsolète. Elle sera supprimée dans Chrome 78 et ne sera pas remplacée.
 
       Cette règle active le protocole HTTP/0.9 sur les ports autres que 80 pour HTTP et 443 pour HTTPS.
@@ -7353,6 +7350,7 @@ Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur 
 Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", le flux <ph name="CLOUD_UPLOAD_NAME" /> est automatiquement configuré pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" />, de sorte que les fichiers dont les formats sont identiques sont déplacés par défaut vers <ph name="GOOGLE_DRIVE_NAME" /> et gérés par l'une des applis <ph name="GOOGLE_WORKSPACE_NAME" /> lorsque l'utilisateur tente de les ouvrir.
 
 Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards. Pour les utilisateurs de la version Enterprise, si cette règle n'est pas configurée, elle est définie par défaut sur "<ph name="DISALLOWED_NAME" />".</translation>
+<translation id="7438982301540282785">Automatiser la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">Si cette règle est activée, la configuration réseau est appliquée à tous les utilisateurs d'un appareil <ph name="PRODUCT_OS_NAME" />. La configuration réseau est une chaîne au format JSON conformément au format de configuration de réseau ouvert.</translation>
 <translation id="7446978687387327623">Autoriser les vérifications en temps réel via proxy pour la navigation sécurisée</translation>
 <translation id="7448430478749155471">Activer la fonctionnalité Sélectionner pour prononcer sur l'écran de connexion</translation>
@@ -7407,8 +7405,10 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
       Cette règle nécessite un réglage supplémentaire pour être appliquée. Pour en savoir plus, consultez la page https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="7481702249684965639">La corbeille est activée pour l'utilisateur.</translation>
 <translation id="7482768039644066614">Activer l'extraction des métadonnées de chargement de la page et les modèles de machine learning pour améliorer l'expérience de navigation</translation>
+<translation id="748292668225669178">Configure l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.</translation>
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
+<translation id="748873163367340515">Utiliser uniquement les données et les cookies essentiels dans la recherche.</translation>
 <translation id="7489661071474025727">Indique si le service de récupération de compte est activé pour vos utilisateurs sur les appareils <ph name="PRODUCT_OS_NAME" />.
 
       Lorsque cette règle est activée, la récupération des données utilisateur est activée. Si elle est désactivée ou si elle n'est pas configurée, la récupération des données utilisateur n'est pas activée.
@@ -8366,6 +8366,16 @@ Si elle est désactivée, la page est bloquée.</translation>
 <translation id="8316940611391250886">Interdire les certificats sans extension subjectAlternativeName</translation>
 <translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
+<translation id="8324872579207355449">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si cette règle est définie sur "<ph name="ALLOWED_NAME" />", l'utilisateur peut configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" /> s'il le souhaite.
+Une fois le processus de configuration terminé, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> sera installé dans le gestionnaire de fichiers.
+
+Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur ne peut pas configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", <ph name="MICROSOFT_ONE_DRIVE_NAME" /> est configuré automatiquement, si possible. En cas d'échec, le processus de configuration s'affiche.
+
+Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards et "<ph name="DISALLOWED_NAME" />" pour les utilisateurs de la version Enterprise.</translation>
 <translation id="8327651196906278510">Autoriser la capture d'onglet selon ces origines</translation>
 <translation id="8329434144708110">Déclencher les flux d'authentification pour synchroniser les mots de passe avec les fournisseurs SSO</translation>
 <translation id="8329984337216493753">Cette règle n'est active qu'en mode Point de vente.
@@ -8958,6 +8968,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="8882307005437314052">Activer le clavier à l'écran sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>
 <translation id="8883577480680089760">Désactive le service <ph name="PRODUCT_NAME" /> V2 et ne lance pas le bureau à distance lors de la connexion</translation>
 <translation id="8887709920496070892">Délai d'inactivité, en millisecondes, au terme duquel un message d'avertissement s'affiche.</translation>
+<translation id="8888289774309799423">Interdire la configuration de <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="8890438048579188548">Masquer les avertissements liés à l'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Désactiver les rapports sur les informations système de l'appareil</translation>
 <translation id="8892286064305622118">Espace disque libre requis pour <ph name="PLUGIN_VM_NAME" /></translation>

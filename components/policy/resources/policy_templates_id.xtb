@@ -978,6 +978,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
+<translation id="1843102210803941014">Hanya mengaktifkan cookie dan data penting di penelusuran</translation>
 <translation id="1843117931376765605">Segarkan peringkat untuk kebijakan pengguna</translation>
 <translation id="1844620919405873871">Mengonfigurasi kebijakan terkait buka kunci cepat.</translation>
 <translation id="1844972978764975668">Izinkan kueri ke server Google untuk mengambil stempel waktu yang akurat</translation>
@@ -1806,8 +1807,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="251050607781210155">Izinkan Perlindungan dari Phishing Sisi Klien Safe Browsing</translation>
 <translation id="2512972020817284317">Aktifkan penggabungan kebijakan cloud tingkat pengguna.</translation>
 <translation id="2515699738406900920">Ketersediaan pemilih profil saat browser dimulai</translation>
-<translation id="251594860034549963">Jika kebijakan disetel ke Aktif, jendela browser dari perangkat yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
-      Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh akan menentukan jendela browser mana yang diluncurkan saat login.</translation>
 <translation id="2517466659416174529">Izinkan pembekuan tab di latar belakang</translation>
 <translation id="2518231489509538392">Mengizinkan pemutaran audio</translation>
 <translation id="2519578205567666653">Izinkan perangkat penyimpanan eksternal</translation>
@@ -3276,7 +3275,6 @@ Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan 
 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
 <translation id="3791179836066841809">Dokumentasi kebijakan</translation>
-<translation id="3791556154364029875">Aktifkan ruang kerja mengambang dan luncurkan jendela browser jarak jauh saat login</translation>
 <translation id="3792144912556572267">Menyetel kebijakan akan menentukan URL halaman beranda default di <ph name="PRODUCT_NAME" />. Anda membuka halaman beranda menggunakan tombol Beranda. Di desktop, kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> mengontrol halaman yang dibuka saat browser mulai dijalankan.
 
 Jika halaman beranda disetel ke Halaman Tab Baru, oleh pengguna atau <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, kebijakan ini tidak akan berpengaruh.
@@ -3567,7 +3565,6 @@ Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat d
       Jika kebijakan ini tidak disetel, pengguna dapat memilih untuk mengizinkan Jawaban Cepat mengakses konten yang dipilih atau tidak.</translation>
 <translation id="4016700865356669962">Jika kebijakan disetel ke Aktif, pengguna akan dapat menggunakan template tata letak desktop.  Jika kebijakan disetel ke Nonaktif atau tidak disetel, template tersebut tidak akan tersedia.</translation>
 <translation id="4020682745012723568">Cookie yang ditransfer ke profil pengguna tidak dapat diakses oleh aplikasi Android.</translation>
-<translation id="4025176296532430931">Nonaktifkan ruang kerja mengambang dan jangan luncurkan jendela browser jarak jauh saat login</translation>
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
@@ -4440,6 +4437,7 @@ Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak aka
 
       Jika ukuran halaman tidak tersedia pada printer yang dipilih pengguna, kebijakan ini diabaikan.</translation>
 <translation id="4789450349513792856">Memblokir pop-up di situs ini</translation>
+<translation id="4790391579868456557">Gunakan cookie penting dan tidak penting di penelusuran.</translation>
 <translation id="4790588245699320140">Mengizinkan Asisten Google mengakses konteks layar</translation>
 <translation id="4800438168909332958">Mengaktifkan fitur pengurangan gema audio (AEC) sistem. AEC sistem adalah peredam gema akustik,
 yaitu modul pemrosesan audio yang menghapus pemutaran audio sistem (gema) dari sinyal mikrofon.
@@ -4752,6 +4750,9 @@ Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pelaporan data di
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5130935469849337738">Selalu tawarkan terjemahan</translation>
+<translation id="5138579693170759139">Kebijakan ini memungkinkan admin mengontrol cara Google memproses cookie dan data yang dikirim ke Penelusuran melalui <ph name="PRODUCT_OS_NAME" />.
+Jika kebijakan ini disetel ke aktif, pengguna akan dapat menggunakan kotak penelusuran Peluncur <ph name="PRODUCT_OS_NAME" />, dan kotak alamat Browser <ph name="PRODUCT_NAME" /> di <ph name="PRODUCT_OS_NAME" />, cookie dan data hanya dapat digunakan untuk tujuan penting.
+Jika kebijakan tidak disetel atau disetel ke nonaktif, cookie dan data dapat digunakan untuk tujuan yang tidak penting.</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi pengguna akan dilaporkan atau tidak, misalnya login OS, login Profil <ph name="PRODUCT_NAME" />, nama Profil <ph name="PRODUCT_NAME" />, jalur Profil <ph name="PRODUCT_NAME" />, dan jalur eksekusi <ph name="PRODUCT_NAME" />.
@@ -7009,11 +7010,6 @@ pemblokiran permintaan semacam itu akan diterapkan.</translation>
       * PasswordProtectionWarningOnPhishingReuse, peringatan perlindungan sandi akan ditampilkan saat pengguna menggunakan kembali sandi yang dilindungi di situs phishing.
 
       Jika kebijakan ini tidak disetel, layanan perlindungan sandi hanya akan melindungi sandi Google, tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="6969079025604591591">Jika kebijakan disetel ke Aktif atau tidak disetel, Integritas Kode Perender akan diaktifkan.
-
-      Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses perender <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses perender <ph name="PRODUCT_NAME" />.
-
-      Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6969108216182455619">Kebijakan ini sudah tidak digunakan lagi, dan dijadwalkan untuk dihapus di Chrome 78, tanpa adanya pengganti.
 
       Kebijakan ini memungkinkan dukungan HTTP/0.9 di port selain 80 untuk HTTP dan 443 untuk HTTPS.
@@ -7615,6 +7611,7 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetel kebijakan ke '<
 <translation id="7482768039644066614">Aktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="7485481791539008776">Aturan pemilihan printer default</translation>
 <translation id="7486205887492534734">Meminta pengguna memilih saat beberapa sertifikat cocok pada layar login</translation>
+<translation id="748873163367340515">Hanya gunakan cookie dan data penting di penelusuran.</translation>
 <translation id="7489661071474025727">Menentukan apakah layanan pemulihan akun diaktifkan untuk pengguna Anda di perangkat <ph name="PRODUCT_OS_NAME" />.
 
       Jika kebijakan ini disetel ke aktif, pemulihan data pengguna akan diaktifkan. Jika kebijakan ini disetel ke nonaktif atau tidak disetel, pemulihan data pengguna tidak akan diaktifkan.

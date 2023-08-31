@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">ಗ್ಲಾಸ್ (ಬಣ್ಣದ)</translation>
 <translation id="1074497978438210769">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="1075079914415273530">ಕೃಷಿ ಮತ್ತು ಅರಣ್ಯ</translation>
+<translation id="1075364221219156102">ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1080116354587839789">ಅಗಲಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="1081061862829655580">ಟ್ರೇ 19</translation>
 <translation id="1089439967362294234">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ನೀವು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಣೆ ಮಾಡದ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಮತ್ತು ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</translation>
 <translation id="1257553931232494454">ಝೂಮ್ ಹಂತಗಳು</translation>
-<translation id="1258942153897182536">OCR ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1264309058268477500">ಪರ್ಯಾಯ</translation>
 <translation id="1264974993859112054">ಕ್ರೀಡೆ</translation>
@@ -292,7 +292,6 @@
 
       &lt;p&gt;ದಯವಿಟ್ಟು ಅಪ್ಲಿಕೇಶನ್‌ನ &lt;strong&gt;ಸೆಟ್ಟಿಂಗ್‌ಗಳು&lt;/strong&gt; ವಿಭಾಗದ &lt;strong&gt;ಸಾಮಾನ್ಯ&lt;/strong&gt; ದಿಂದ ದಿನಾಂಕ ಮತ್ತು ಸಮಯವನ್ನು ಹೊಂದಿಸಿ.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="DATE" /> ರಂದು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸುತ್ತಾರೆ</translation>
-<translation id="1564753300777780201">ಚಿತ್ರಗಳಲ್ಲಿನ ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಪರಿವರ್ತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="156703335097561114">ವಿಳಾಸಗಳು, ಇಂಟರ್ ಫೇಸ್ ಕಾನ್ಫಿಗರೇಶನ್ ಮತ್ತು ಕನೆಕ್ಷನ್ ಗುಣಮಟ್ಟದಂತಹ ನೆಟ್‌ವರ್ಕಿಂಗ್ ಮಾಹಿತಿ</translation>
 <translation id="1567040042588613346">ಈ ನೀತಿಯು ಉದ್ದೇಶಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ, ಆದರೆ ಅದೇ ಮೌಲ್ಯವನ್ನು ಬೇರೆಡೆ ಹೊಂದಿಸಲಾಗಿದೆ ಮತ್ತು ಅದು ಈ ನೀತಿಯನ್ನು ರದ್ದುಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -1106,6 +1105,7 @@
 <translation id="3340978935015468852">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3342018947887487892">ಆನಂತರ, ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್ ಈ ಮಾಹಿತಿಯನ್ನು ಕೇಳಬಹುದು — ನಿಮ್ಮ ಜಾಹೀರಾತು ವಿಷಯಗಳು ಅಥವಾ ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಂದ ಸೂಚಿಸಲಾದ ಜಾಹೀರಾತುಗಳು.</translation>
 <translation id="3342366525167526994">ದೇಹ ಕಲೆ</translation>
+<translation id="3344167530090084176">ಮುಂದಿನ ಬಾರಿ ವೇಗವಾಗಿ ಪಾವತಿಸಲು, ನಿಮ್ಮ ಕಾರ್ಡ್ ಮತ್ತು ಭದ್ರತಾ ಕೋಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="334438173029876234">ಸ್ಕೇಟ್‌ಬೋರ್ಡಿಂಗ್ ಉಪಕರಣ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ...</translation>
@@ -1379,7 +1379,6 @@
 <translation id="3901925938762663762">ಕಾರ್ಡ್ ಅವಧಿಯು ಮುಗಿದಿದೆ</translation>
 <translation id="390391808978419508">ತೆರೆಯುವ ಸಮಯ ಮೀರಿದೆ</translation>
 <translation id="3905894480064208252">{0,plural, =1{ಫೈಲ್ ಅನ್ನು ವರ್ಗಾಯಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ವರ್ಗಾಯಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{<ph name="FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ವರ್ಗಾಯಿಸದಂತೆ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
-<translation id="3906095212874392000">ಪರಿವರ್ತಿತ ಪಠ್ಯದ ಮುಕ್ತಾಯ</translation>
 <translation id="3906954721959377182">ಟ್ಯಾಬ್ಲೆಟ್</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">ಎಂಬೆಡ್ ಮಾಡಲಾದ ಕಂಟೆಂಟ್ ಕುರಿತಾಗಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -1408,6 +1407,7 @@
 <translation id="3962859241508114581">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="3963721102035795474">ರೀಡರ್‌ ಮೋಡ್‌</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್‌ನಿಂದ }one{# ಸೈಟ್‌ಗಳಿಂದ }other{# ಸೈಟ್‌ಗಳಿಂದ }}</translation>
+<translation id="3966044442021752214">ಉತ್ಪನ್ನದ ಸುರಕ್ಷತೆ</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ಅವರ ಪಾಸ್‌ಕೀ</translation>
@@ -1604,7 +1604,6 @@
 <translation id="4331519897422864041">ಸ್ಟ್ಯಾಕರ್ 5</translation>
 <translation id="4331708818696583467">ಸುರಕ್ಷಿತವಲ್ಲ</translation>
 <translation id="4333561522337981382">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="4338709847516294988">ಹುಡುಕಾಟ+m ಬಟನ್ ಅನ್ನು ಒತ್ತಿ ಮತ್ತು ಸಂದರ್ಭ ಮೆನುವಿನಲ್ಲಿ ಚಿತ್ರವನ್ನು ಪಠ್ಯಕ್ಕೆ ಪರಿವರ್ತಿಸಿ</translation>
 <translation id="4340575312453649552">ಈ ಜಾಹೀರಾತು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ತೀರಾ ಹೆಚ್ಚು ಸಂಪನ್ಮೂಲಗಳನ್ನು ಬಳಸಿದೆ. ಆದ್ದರಿಂದ, Chrome ಇದನ್ನು ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="4340810192899866471">JSON ನಿಂದ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ</translation>
 <translation id="4340982228985273705">ಈ ಕಂಪ್ಯೂಟರ್‌ ಅನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆ ಮಾಡುತ್ತಿದೆ ಎಂದು ಪತ್ತೆಹಚ್ಚಲಾಗಿಲ್ಲ, ಆದ್ದರಿಂದ ಕಾರ್ಯನೀತಿಯು Chrome ವೆಬ್‌ ಸ್ಟೋರ್‌ನಲ್ಲಿ ಹೋಸ್ಟ್ ಮಾಡಲಾದ ವಿಸ್ತರಣೆಗಳನ್ನು ಮಾತ್ರ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು. Chrome ವೆಬ್‌ ಸ್ಟೋರ್‌ ಅಪ್‌ಡೇಟ್‌ URL "<ph name="CWS_UPDATE_URL" />" ಆಗಿರುತ್ತದೆ.</translation>
@@ -1621,7 +1620,6 @@
 <translation id="4363222835916186793">ಈ ಉತ್ಪನ್ನದ ಕುರಿತ ಅಲರ್ಟ್‌ಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4366943895537458493">ಪ್ಲೇಟ್</translation>
 <translation id="437040971055499437">ಭದ್ರತಾ ಈವೆಂಟ್‌ ಸಂಭವಿಸುತ್ತದೆ</translation>
-<translation id="4371307856413138486">ಪರಿವರ್ತಿತ ಪಠ್ಯದ ಪ್ರಾರಂಭ</translation>
 <translation id="4371591986692297148">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="4372948949327679948">ನಿರೀಕ್ಷಿತ <ph name="VALUE_TYPE" /> ಮೌಲ್ಯ.</translation>
 <translation id="4375864595697821259">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜು ಮಾಡುವಾಗ Chrome ಆಯ್ಕೆ ಮಾಡಬಹುದಾದ ವಿಷಯಗಳ ಪೂಲ್‌ನಲ್ಲಿ ನೀವು ಐಟಂ ಅನ್ನು ಬಯಸಿದರೆ ಅದನ್ನು ಪುನಃ ಸೇರಿಸಿ</translation>
@@ -2400,7 +2398,6 @@
 <translation id="604124094241169006">ಸ್ವಯಂಚಾಲಿತ</translation>
 <translation id="6041777658117377052">ಚೇಂಬರ್ ತಾಪಮಾನ</translation>
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
-<translation id="6042688167654081154">ಚಿತ್ರವನ್ನು ಪಠ್ಯಕ್ಕೆ ಪರಿವರ್ತಿಸಲಾಗಿದೆ</translation>
 <translation id="6044573915096792553">ಗಾತ್ರ 12</translation>
 <translation id="6045164183059402045">ಅಳವಡಿಕೆ ಟೆಂಪ್ಲೇಟ್</translation>
 <translation id="6047233362582046994">ನಿಮ್ಮ ಸುರಕ್ಷತೆ ಅಪಾಯಗಳು ನಿಮಗೆ ಅರ್ಥವಾಗಿದ್ದರೆ, ಅಪಾಯಕಾರಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದಕ್ಕೂ ಮೊದಲು ನೀವು <ph name="BEGIN_LINK" />ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ<ph name="END_LINK" /> ನೀಡಬಹುದು.</translation>
@@ -2438,7 +2435,6 @@
 <translation id="6116338172782435947">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಿರುವ ಪಠ್ಯ ಮತ್ತು ಚಿತ್ರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6117833587752089929">ಫೋಟೋ (ಸ್ಯಾಟಿನ್)</translation>
 <translation id="6118782133429281336">ಮೂಲ ಪಟ್ಟಿ ಖಾಲಿಯಾಗಿದೆ.</translation>
-<translation id="6120179357481664955">ನಿಮ್ಮ UPI ಐಡಿ ನೆನಪಿದೆಯೇ?</translation>
 <translation id="6120950591512958208">ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಈ ಕೋಡ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="6122181661879998141">ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗ</translation>
 <translation id="6124058285696691147">ಲಗತ್ತನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -2472,7 +2468,6 @@
 <translation id="6196640612572343990">ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="6197648101609735209">89 x 89 ಮಿಮೀ</translation>
 <translation id="6198480336395236519">ಪೂರ್ಣ ಕಟ್ ಟ್ಯಾಬ್‌ಗಳು</translation>
-<translation id="6200386911308538077">ಚಿತ್ರವನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6203231073485539293">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6205314730813004066">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3140,6 +3135,7 @@
 <translation id="7554475479213504905">ಹೇಗಿದ್ದರೂ ಮರುಲೋಡ್ ಮಾಡಿ ಮತ್ತು ತೋರಿಸಿ</translation>
 <translation id="7554791636758816595">ಹೊಸ ಟ್ಯಾಬ್</translation>
 <translation id="7555777498260651025">ಟಿವಿ ಕೌಟುಂಬಿಕ ಕಾರ್ಯಕ್ರಮಗಳು</translation>
+<translation id="7556328470713619625">ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="7559278538486662777">ಈ ಆ್ಯಪ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="7561784249784255101">ಡಿಜಿಟಲ್ ವರ್ಸಟೈಲ್ ಡಿಸ್ಕ್</translation>
 <translation id="7564049878696755256">ನಿಮ್ಮ <ph name="ORG_NAME" /> ಖಾತೆಗೆ ನೀವು ಪ್ರವೇಶವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು ಅಥವಾ ಗುರುತು ಕಳ್ಳತನಕ್ಕೆ ಒಳಗಾಗಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಇದೀಗ ಬದಲಾಯಿಸುವಂತೆ Chrome ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>

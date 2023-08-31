@@ -105,8 +105,10 @@
 <translation id="2775140325783767197">Chrome ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2847461019998147611">Prikaži Google Chrome na tom jeziku</translation>
+<translation id="2853415089995957805">Chrome predučitava stranice koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite</translation>
 <translation id="2857540653560290388">Pokretanje Chromea...</translation>
 <translation id="2857972467023607093">Već postoji profil u Chromeu s tim računom</translation>
+<translation id="286025080868315611">Saznajte zašto Chrome blokira neka preuzimanja</translation>
 <translation id="2861074815332034794">Ažuriranje Chromea (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Prijavljeni ste na Chrome!</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
@@ -385,6 +387,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8286862437124483331">Google Chrome pokušava prikazati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome je pao. Ponovo pokrenuti sada?</translation>
 <translation id="829923460755755423">Dodavanje prečaca Google upravitelju zaporki</translation>
+<translation id="8336463659890584292">Kad web-lokacija zatraži privatno predučitavanje veza na stranici, Chrome upotrebljava Googleove poslužitelje. Na taj se način vaš identitet sakriva od predučitane web-lokacije, ali Google saznaje koje se web-lokacije predučitavaju.</translation>
 <translation id="8342675569599923794">Datoteka je opasna i Chrome ju je blokirao.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: web-lokacije mogu pohraniti informacije o vašim interesima u Chrome. Na primjer, ako posjetite neku web-lokaciju da biste kupili tenisice za maraton, ta web-lokacija može definirati vaš interes kao trčanje maratona. Ako poslije posjetite neku drugu web-lokaciju da biste se registrirali za utrku, ta vam web-lokacija može prikazati oglas za tenisice za trčanje na temelju vaših interesa.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>

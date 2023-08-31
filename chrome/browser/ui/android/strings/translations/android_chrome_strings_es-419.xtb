@@ -159,6 +159,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1854311313115643875">Cuando comienzan las pruebas, la medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.
 
 Si borras el historial de navegación por completo o de un sitio específico, también se quita la información de medición relacionada. Consulta <ph name="BEGIN_LINK" />tu historial de navegación<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Abrir en el navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
@@ -704,7 +705,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4699172675775169585">Imágenes y archivos almacenados en caché</translation>
 <translation id="4710167854527459075">Ordenar por más reciente</translation>
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
-<translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Visualiza los sitios que más visitas</translation>
 <translation id="4731877163452936634">Velocidad de reproducción: <ph name="PLAYBACK_SPEED" />. Haz clic para cambiarla.</translation>
 <translation id="4732120983431207637">Desenredo de pila</translation>
@@ -810,7 +810,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
 <translation id="5174700554036517242">La pestaña regresó a la altura inicial</translation>
-<translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5186634140793586141">Administra los temas y las búsquedas que te interesan</translation>
 <translation id="5191251636205085390">Conoce y domina nuevas tecnologías diseñadas para reemplazar cookies de terceros.</translation>
 <translation id="5193988420012215838">Se copió en tu portapapeles</translation>
@@ -1093,6 +1092,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6645629752388991326">Controla los dispositivos que pueden acceder usando este dispositivo como llave de seguridad.</translation>
+<translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta la dirección IP. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, Chrome también puede enviar las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="6647441008198474441">Se enviarán a Google las URL que visites para predecir los sitios que posiblemente vayas a visitar</translation>
 <translation id="6648459603387803038">El administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
@@ -1452,6 +1452,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8394720698884623075">Revisa las URL con una lista de sitios no seguros almacenados en Chrome.</translation>
 <translation id="8402673309244746971">Ir a Seguidos</translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
+<translation id="8413795581997394485">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>
 <translation id="8414396119627470038">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
 <translation id="8419244640277402268">Incluir</translation>

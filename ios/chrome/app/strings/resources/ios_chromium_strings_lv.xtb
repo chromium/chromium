@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Atlasiet <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2590893390871230428">Sinhronizēt jūsu Chromium datus</translation>
 <translation id="2618596336309823556">Ierīces iestatījumos atveriet sadaļu “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” un atlasiet opciju “Chromium”.</translation>
+<translation id="2631735236435791495">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chromium lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="2650312721222849884">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, ieslēdziet sinhronizāciju.</translation>
 <translation id="2684230048001240293">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2730884209570016437">Chromium nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
@@ -88,7 +89,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="5453478652154926037">Pārlūkā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="5522297504975449419">Dažas Chromium funkcijas vairs nebūs pieejamas.</translation>
-<translation id="5573014823074921752">Chromium padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
 <translation id="5688047395118852662">Šajā kartītē tiek rādīti ieteikumi par to, kā pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>
@@ -140,7 +140,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="7400689562045506105">Chromium lietošana visur</translation>
 <translation id="7523464085759699266">Ieslēdziet iestatījumu “Bloķēt inkognito cilnes, kad pārlūks Chromium tiek aizvērts”.</translation>
 <translation id="7674213385180944843">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Chromium un ieslēdziet kameru.</translation>
-<translation id="7746854981345936341">Chromium padoms. Tagad dažas pogas ir ekrāna apakšdaļā, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="7763454117143368771">Parūpējieties par aizsardzību no bīstamām vietnēm un savu paroļu drošību, izmantojot pārlūku Chromium kā savu noklusējuma pārlūku</translation>
 <translation id="7812317783196516890">Jūs esat pierakstījies domēna <ph name="DOMAIN" /> pārvaldītā kontā un sinhronizējat ar to datus. Tagad šī konta administrators var kontā iestatīt lietotāju politikas, kas var mainīt pārlūka Chromium darbību.</translation>
 <translation id="7859018312476869945">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chromium nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>

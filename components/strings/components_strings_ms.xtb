@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Kaca (Berwarna)</translation>
 <translation id="1074497978438210769">Tidak selamat</translation>
 <translation id="1075079914415273530">Pertanian &amp; perhutanan</translation>
+<translation id="1075364221219156102">Gunakan Kunci Laluan</translation>
 <translation id="1080116354587839789">Muat ikut lebar</translation>
 <translation id="1081061862829655580">Dulang 19</translation>
 <translation id="1089439967362294234">Tukar Kata Laluan</translation>
@@ -135,7 +136,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Anda memasukkan kata laluan pada tapak yang tidak diurus oleh organisasi anda. Untuk melindungi akaun anda, jangan gunakan semula kata laluan anda pada apl dan tapak lain.</translation>
 <translation id="1257553931232494454">tahap zum</translation>
-<translation id="1258942153897182536">OCR dalam proses ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus tetapan Chrome anda</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Sukan</translation>
@@ -293,7 +293,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 
           &lt;p&gt;Sila laraskan tarikh dan masa daripada bahagian &lt;strong&gt;Umum&lt;/strong&gt; bagi apl &lt;strong&gt;Tetapan&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Pentadbir anda akan memulakan semula peranti anda pada <ph name="DATE" /> jam <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Tiada teks ditukarkan daripada imej</translation>
 <translation id="156703335097561114">Maklumat rangkaian seperti alamat, konfigurasi antara muka dan kualiti sambungan</translation>
 <translation id="1567040042588613346">Dasar ini berfungsi seperti yang diharapkan tetapi nilai yang sama ditetapkan di tempat lain dan digantikan oleh dasar ini.</translation>
 <translation id="1567405528131216114">Tambah <ph name="TOPIC" /></translation>
@@ -1108,6 +1107,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3342018947887487892">Kemudian, laman yang anda lawati boleh meminta maklumat ini — sama ada topik iklan anda atau iklan yang dicadangkan oleh laman yang anda lawati.</translation>
 <translation id="3342366525167526994">Seni badan</translation>
+<translation id="3344167530090084176">Untuk membayar dengan lebih cepat selepas ini, simpan kad dan kod keselamatan anda pada peranti anda</translation>
 <translation id="334438173029876234">Peralatan Papan Luncur</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Tukar tetapan proksi...</translation>
@@ -1383,7 +1383,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3901925938762663762">Kad telah tamat tempoh</translation>
 <translation id="390391808978419508">Pembukaan tamat masa</translation>
 <translation id="3905894480064208252">{0,plural, =1{Fail disekat daripada dipindahkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dipindahkan}}</translation>
-<translation id="3906095212874392000">Tamat teks yang ditukar</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Ketahui lebih lanjut tentang kandungan terbenam</translation>
@@ -1412,6 +1411,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963721102035795474">Mod Pembaca</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak }other{Daripada # tapak }}</translation>
+<translation id="3966044442021752214">Keselamatan produk</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
 <translation id="3983340834939868135">Kunci laluan daripada "<ph name="VENDOR_NAME" />"</translation>
@@ -1608,7 +1608,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4331519897422864041">Petak 5</translation>
 <translation id="4331708818696583467">Tidak Selamat</translation>
 <translation id="4333561522337981382">Urus tetingkap pada semua paparan anda</translation>
-<translation id="4338709847516294988">Tekan carian serta m dan tukar imej kepada teks dalam menu konteks</translation>
 <translation id="4340575312453649552">Iklan ini menggunakan terlalu banyak sumber untuk peranti anda, maka Chrome mengalih keluar iklan ini.</translation>
 <translation id="4340810192899866471">Import daripada JSON</translation>
 <translation id="4340982228985273705">Komputer ini tidak dikesan sebagai diurus perusahaan, jadi dasar hanya boleh memasang secara automatik sambungan yang dihoskan di Gedung Web Chrome. URL kemas kini Gedung Web Chrome ialah "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1625,7 +1624,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4363222835916186793">Makluman untuk produk ini telah dimatikan</translation>
 <translation id="4366943895537458493">Plat</translation>
 <translation id="437040971055499437">Peristiwa keselamatan berlaku</translation>
-<translation id="4371307856413138486">Permulaan teks yang ditukar</translation>
 <translation id="4371591986692297148">Tidak aktif</translation>
 <translation id="4372948949327679948">Nilai <ph name="VALUE_TYPE" /> yang dijangka.</translation>
 <translation id="4375864595697821259">Tambahkan kembali item jika anda mahu item tersebut termasuk dalam kumpulan topik yang boleh dipilih oleh Chrome semasa menganggarkan minat anda</translation>
@@ -2404,7 +2402,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="604124094241169006">Automatik</translation>
 <translation id="6041777658117377052">Suhu ruang</translation>
 <translation id="6042308850641462728">Lagi</translation>
-<translation id="6042688167654081154">Imej ditukarkan kepada teks</translation>
 <translation id="6044573915096792553">Saiz 12</translation>
 <translation id="6045164183059402045">Templat pengenaan</translation>
 <translation id="6047233362582046994">Jika anda memahami risiko terhadap keselamatan anda, anda boleh <ph name="BEGIN_LINK" />melawat tapak ini<ph name="END_LINK" /> sebelum program yang berbahaya ini dialih keluar.</translation>
@@ -2442,7 +2439,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6116338172782435947">Lihat teks dan imej yang disalin ke papan keratan</translation>
 <translation id="6117833587752089929">Foto (Satin)</translation>
 <translation id="6118782133429281336">Senarai asalan kosong.</translation>
-<translation id="6120179357481664955">Ingat ID UPI anda?</translation>
 <translation id="6120950591512958208">Gunakan kod ini semasa semak keluar.</translation>
 <translation id="6122181661879998141">bahagian hadapan kad anda</translation>
 <translation id="6124058285696691147">Muat turun lampiran</translation>
@@ -2477,7 +2473,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tab Potongan Penuh</translation>
-<translation id="6200386911308538077">Imej sedang dianalisis</translation>
 <translation id="6203231073485539293">Semak sambungan Internet anda</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6212314149070368045">Fanfold AS</translation>
@@ -3145,6 +3140,7 @@ Butiran tambahan:
 <translation id="7554475479213504905">Muatkan semula dan tunjukkan juga</translation>
 <translation id="7554791636758816595">Tab Baharu</translation>
 <translation id="7555777498260651025">Rancangan TV berorientasikan keluarga</translation>
+<translation id="7556328470713619625">Gunakan kunci laluan</translation>
 <translation id="7559278538486662777">Apl ini tidak dapat diubah saiz.</translation>
 <translation id="7561784249784255101">Cakera Serba Boleh Digital</translation>
 <translation id="7564049878696755256">Anda boleh kehilangan akses kepada akaun <ph name="ORG_NAME" /> anda atau mengalami kecurian identiti. Chrome mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>

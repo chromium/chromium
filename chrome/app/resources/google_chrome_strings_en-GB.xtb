@@ -108,8 +108,10 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="2799223571221894425">Relaunch</translation>
 <translation id="2847461019998147611">Display Google Chrome in this language</translation>
+<translation id="2853415089995957805">Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them</translation>
 <translation id="2857540653560290388">Launching Chrome...</translation>
 <translation id="2857972467023607093">A Chrome profile with this account already exists</translation>
+<translation id="286025080868315611">Learn why Chrome blocks some downloads</translation>
 <translation id="2861074815332034794">Updating Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">You're signed in to Chrome!</translation>
 <translation id="2876628302275096482">Learn more about <ph name="BEGIN_LINK" />how Chrome keeps your data private<ph name="END_LINK" /></translation>
@@ -392,6 +394,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
+<translation id="8336463659890584292">When a site asks to privately preload links on their page, Chrome uses Google servers. This hides your identity from the preloaded site, but Google learns what sites get preloaded.</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

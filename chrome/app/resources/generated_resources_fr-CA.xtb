@@ -652,7 +652,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1525740877599838384">Utiliser uniquement le réseau Wi-Fi pour déterminer l'emplacement</translation>
 <translation id="152629053603783244">Redémarrer Linux</translation>
-<translation id="1526335046150927198">Activer l'accélération du défilement pour le pavé tactile</translation>
 <translation id="1526560967942511387">Document sans titre</translation>
 <translation id="1527336312600375509">Fréquence d'actualisation du moniteur</translation>
 <translation id="152913213824448541">Contacts pour le partage à proximité</translation>
@@ -696,6 +695,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1558391695376153246">Fermer onglets navig. privée</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1558671750917454373">Reprendre la diffusion sur <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Nous procédons actuellement à la vérification de l'espace de stockage…</translation>
 <translation id="1562119309884184621">L'ajout de ce contact rendra son appareil visible la prochaine fois qu'il partagera du contenu</translation>
 <translation id="1563137369682381456">Date d'expiration</translation>
 <translation id="1563702743503072935">Les mots de passe stockés dans votre compte Google seront aussi accessibles sur cet appareil lorsque vous êtes connecté</translation>
@@ -1001,7 +1001,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1797117170091578105">Jouez à l'aide de votre clavier Chromebook. Vous pouvez affecter des touches à des actions particulières.</translation>
-<translation id="1801571666562084067">Convertit des images PDF en texte</translation>
 <translation id="180203835522132923">Rechercher+O, puis W</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
 <translation id="1802687198411089702">La page ne répond pas. Vous pouvez attendre qu'elle réponde ou la quitter.</translation>
@@ -1220,6 +1219,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Préparation en cours…</translation>
 <translation id="1969654639948595766">Journaux de texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1972313920920745320">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée. <ph name="BEGIN_LINK" />En savoir plus sur la façon de maintenir certains sites actifs<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Garder</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> ne peut pas être téléchargé de manière sécuritaire. Appuyez sur Maj+F6 pour accéder à la barre des téléchargements.</translation>
@@ -2362,7 +2362,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2850672011315104382">Style de ponctuation</translation>
 <translation id="2852385257476173980">Une liste de sites que vous visitez peut s'afficher ici au fur et à mesure que vous naviguez sur le Web</translation>
 <translation id="285241945869362924">Génère automatiquement des sous-titres pour les contenus audio et vidéo. L'audio et les sous-titres ne quittent jamais votre appareil.</translation>
-<translation id="2853415089995957805">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2859741939921354763">Importer des mots de passe dans <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Mise à jour terminée. Veuillez redémarrer le système.</translation>
@@ -2406,6 +2405,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2889043468805635730">Aucun problème trouvé</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
 <translation id="2890206081124517553">Mémorisez l'arrière-plan de votre bureau sur tous les appareils</translation>
+<translation id="2891464434568738544">Aucun site n'est accessible pour le moment. Visitez un site pour l'ajouter à cette liste.</translation>
 <translation id="2891566119238851894">Ouvrir la recherche dans le panneau latéral lorsque celle-ci n'y est pas ouverte.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" />?</translation>
 <translation id="2893013536106749396">Choisissez des cartes qui vous tiennent au courant des choses qui comptent pour vous</translation>
@@ -2563,7 +2563,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3012804260437125868">Connexions sécurisées sur un même site seulement</translation>
 <translation id="3012917896646559015">Veuillez communiquer avec le fabricant de votre matériel dans les plus brefs délais afin de faire réparer votre ordinateur.</translation>
 <translation id="3013652227108802944">Désactivée • Cette extension ne respecte pas la politique de la boutique en ligne Chrome Web Store</translation>
-<translation id="3014717196148502230">Chrome précharge encore plus de pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez.</translation>
 <translation id="301525898020410885">La langue est définie par votre organisation</translation>
 <translation id="3015639418649705390">Redémarrer maintenant</translation>
 <translation id="3016381065346027039">Aucune entrée de journal</translation>
@@ -2731,7 +2730,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3166443275568926403">Performance et état de la pile</translation>
 <translation id="3169930038976362151">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de maintenir le doigt sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
-<translation id="3174311489448105660">Numérisez des images PDF pour convertir le contenu en texte destiné au lecteur d'écran, lorsque disponible. Uniquement pris en charge sur le navigateur Chrome.</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177689682958561933">Activez pour revenir en arrière et avancer</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>
@@ -4295,7 +4293,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4461483878391246134">Ajouter des langues pour lesquelles ne jamais proposer de traduction</translation>
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
-<translation id="4463530025936541315">En continuant, vous autorisez des tiers à vérifier les informations qui identifient cet appareil sur le réseau</translation>
 <translation id="4465236939126352372">Une limite de temps de <ph name="TIME" /> a été définie pour <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Afficher vos souvenirs ici</translation>
 <translation id="4469324811108161144">Les notes peuvent contenir jusqu'à <ph name="CHARACTER_LIMIT" /> caractères.</translation>
@@ -5092,7 +5089,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5139955368427980650">&amp;Ouvrir</translation>
 <translation id="5141421572306659464">Compte principal</translation>
 <translation id="5141957579434225843">Par exemple, utilisez oà, oè, uỳ au lieu de òa, òe, ùy</translation>
-<translation id="5142793792982256885">Vitesse de défilement du pavé tactile</translation>
 <translation id="5143374789336132547">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5143612243342258355">Ce fichier est dangereux</translation>
 <translation id="5143712164865402236">Activer le mode plein écran</translation>
@@ -5548,6 +5544,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5522156646677899028">Cette extension contient une faille de sécurité grave.</translation>
 <translation id="5522403133543437426">Moteur de recherche utilisé dans la barre d'adresse.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Votre administrateur a installé une extension}one{Votre administrateur a installé # extension}other{Votre administrateur a installé # extensions}}</translation>
+<translation id="5523532775593636291">Les sites que vous ajoutez resteront toujours actifs et leur mémoire ne sera pas libérée</translation>
 <translation id="5523558474028191231">Le nom peut comprendre des lettres, des chiffres et des caractères spéciaux, et doit comporter un maximum de<ph name="MAX_CHARACTER_COUNT" /> caractères</translation>
 <translation id="5526701598901867718">Tout (non sécurisé)</translation>
 <translation id="5526745900034778153">Reconnectez-vous pour reprendre la synchronisation</translation>
@@ -6229,7 +6226,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Ouvrir la version agrandie</translation>
 <translation id="6096326118418049043">Nom X.500</translation>
-<translation id="609662062217584106">Identifiant UPI</translation>
 <translation id="6097480669505687979">Si vous ne libérez d'espace, des utilisateurs et des données peuvent être supprimés automatiquement.</translation>
 <translation id="6097600385983390082">Recherche vocale fermée</translation>
 <translation id="6098793583803863900">Un fichier inconnu est en cours d'analyse afin de vérifier que son contenu n'est pas dangereux.</translation>
@@ -6950,7 +6946,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> et 1 autre onglet}one{<ph name="PAGE_TITLE" /> et # autre onglet}other{<ph name="PAGE_TITLE" /> et # autres onglets}}</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6709357832553498500">Se connecter à l'aide de <ph name="EXTENSIONNAME" /></translation>
-<translation id="6709802811835274327">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710394144992407503">Vérifier les erreurs d'orthographe en cours de frappe sur des pages Web</translation>
 <translation id="671226373742585927">Cliquez sur le bouton « X » pour fermer le panneau latéral</translation>
@@ -7495,7 +7490,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7149893636342594995">24 dernières heures</translation>
 <translation id="7152478047064750137">Cette extension fonctionne sans autorisation spéciale</translation>
 <translation id="7154130902455071009">Utiliser l'adresse <ph name="START_PAGE" /> comme page de démarrage?</translation>
-<translation id="7156231244155528270">Convertir l'image en texte</translation>
 <translation id="7159953856712257647">Installé par défaut</translation>
 <translation id="7160182524506337403">Vous pouvez maintenant afficher les notifications de votre téléphone</translation>
 <translation id="7163202347044721291">Vérification du code d'activation en cours…</translation>
@@ -8405,6 +8399,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7893008570150657497">Accéder aux photos, à la musique et aux autres médias stockés sur votre ordinateur</translation>
 <translation id="7893153962594818789">Le Bluetooth est désactivé sur ce <ph name="DEVICE_TYPE" />. Entrez votre mot de passe et activez le Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (par défaut)</translation>
+<translation id="7894382333736164977">Nous procédons actuellement à la vérification de l'espace de stockage. <ph name="ITEMS_FOUND" /> éléments trouvés.</translation>
 <translation id="7896292361319775586">Enregistrer <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre périphérique amovible dans l'application Fichiers avant de le débrancher. Sinon, vous risquez de perdre des données.</translation>
@@ -8846,6 +8841,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8248381369318572865">Accéder à votre microphone et analyser votre discours</translation>
 <translation id="8248887045858762645">Conseil relatif à Chrome</translation>
 <translation id="8249048954461686687">Dossier OEM</translation>
+<translation id="8249239468199142122">Économiseur de pile</translation>
 <translation id="8250210000648910632">Espace de stockage insuffisant</translation>
 <translation id="8251441930213048644">Actualiser maintenant</translation>
 <translation id="8251509999076836464">Association avec l'appareil suivant :<ph name="DEVICE_NAME" /></translation>
@@ -8953,7 +8949,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="833262891116910667">Surligner</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>
 <translation id="8336407002559723354">Les mises à jour cesseront en <ph name="MONTH_AND_YEAR" /></translation>
-<translation id="8336463659890584292">Lorsqu'un site demande de précharger des liens en privé sur sa page, Chrome utilise les serveurs de Google. Ceci permet de masquer votre identité au site préchargé et permet à Google de savoir quels sites sont préchargés.</translation>
 <translation id="8336739000755212683">Changer l'image du compte sur l'appareil</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Cet appareil sera mémorisé pendant 1 heure, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {HOURS} heure, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {HOURS} heures, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="8337399713761067085">Vous êtes actuellement déconnecté</translation>
@@ -9476,7 +9471,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
-<translation id="8775329533241312400">La navigation et la recherche sont plus rapides que le préchargement standard.</translation>
 <translation id="8775653927968399786">{0,plural, =1{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}one{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # seconde.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.}other{Votre <ph name="DEVICE_TYPE" /> sera automatiquement verrouillé dans # secondes.

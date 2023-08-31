@@ -653,7 +653,6 @@
 <translation id="1524563461097350801">不用了</translation>
 <translation id="1525740877599838384">仅根据 Wi-Fi 确定位置</translation>
 <translation id="152629053603783244">重启 Linux</translation>
-<translation id="1526335046150927198">启用触控板滚屏加速</translation>
 <translation id="1526560967942511387">无标题文档</translation>
 <translation id="1527336312600375509">显示器刷新频率</translation>
 <translation id="152913213824448541">“附近分享”功能联系人</translation>
@@ -998,7 +997,6 @@
 <translation id="1784849162047402014">设备磁盘空间不足</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{卸载“<ph name="APP_NAME" />”也会卸载下面这个应用：}other{卸载“<ph name="APP_NAME" />”也会卸载下面这些应用：}}</translation>
 <translation id="1786290960428378411">请求进行读取和更改</translation>
-<translation id="1786981253739345937">您已禁止这些网站使用其保存的与您相关的信息</translation>
 <translation id="1787350673646245458">用户图片</translation>
 <translation id="1790976235243700817">移除访问权限</translation>
 <translation id="1791662854739702043">安装位置</translation>
@@ -1009,7 +1007,6 @@
 <translation id="1795214765651529549">使用经典主题背景</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
-<translation id="1801571666562084067">将 PDF 图片转换成文字</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
@@ -1959,7 +1956,6 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">确认您的用户名</translation>
 <translation id="2517472476991765520">扫描</translation>
-<translation id="2517890781170832772">您已允许这些网站使用它们保存的与您相关的信息</translation>
 <translation id="2518024842978892609">使用您的客户端证书</translation>
 <translation id="2519250377986324805">了解具体方法</translation>
 <translation id="2519517390894391510">证书名称</translation>
@@ -2383,7 +2379,6 @@
 <translation id="2850672011315104382">标点样式</translation>
 <translation id="2852385257476173980">当您浏览网页时，此处可能会列出您访问过的网站</translation>
 <translation id="285241945869362924">自动为音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
-<translation id="2853415089995957805">Chrome 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
 <translation id="2859741939921354763">将密码导入 <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
@@ -2588,7 +2583,6 @@
 <translation id="3012804260437125868">仅限同一网站的安全连接</translation>
 <translation id="3012917896646559015">请立即与您的硬件制造商联系，将您的计算机送至维修机构。</translation>
 <translation id="3013652227108802944">已关闭 • 此扩展程序违反了 Chrome 应用商店政策</translation>
-<translation id="3014717196148502230">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度。</translation>
 <translation id="301525898020410885">语言由贵单位设置</translation>
 <translation id="3015639418649705390">立即重新启动</translation>
 <translation id="3016381065346027039">没有日志条目</translation>
@@ -2758,7 +2752,6 @@
 <translation id="3166443275568926403">性能和电池状态</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
-<translation id="3174311489448105660">扫描 PDF 图片，将内容转换成文字供屏幕阅读器读取（如果可用）。仅适用于 Chrome 浏览器。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
 <translation id="3177689682958561933">开启即可向后/向前导航</translation>
 <translation id="3177909033752230686">网页语言：</translation>
@@ -4347,7 +4340,6 @@
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4461483878391246134">添加一律不提供翻译的语言</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
-<translation id="4463530025936541315">继续即表示您允许第三方验证相应网络中这部设备的标识信息</translation>
 <translation id="4465236939126352372">为“<ph name="APP_NAME" />”设置了 <ph name="TIME" />的使用时限</translation>
 <translation id="4466839823729730432">在此处查看您的回忆</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
@@ -5150,7 +5142,6 @@
 <translation id="5139955368427980650">打开(&amp;O)</translation>
 <translation id="5141421572306659464">主账号</translation>
 <translation id="5141957579434225843">例如，使用 oà、oè、uỳ 而非 òa、òe、ùy</translation>
-<translation id="5142793792982256885">触控板滚屏速度</translation>
 <translation id="5143374789336132547">“<ph name="EXTENSION_NAME" />”扩展程序更改了您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="5143612243342258355">此文件包含危险内容</translation>
 <translation id="5143712164865402236">进入全屏模式</translation>
@@ -6302,7 +6293,6 @@
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">以最大化模式打开</translation>
 <translation id="6096326118418049043">X.500 名称</translation>
-<translation id="609662062217584106">UPI ID</translation>
 <translation id="6097480669505687979">如果不释放空间，系统可能会自动移除用户和数据。</translation>
 <translation id="6097600385983390082">已关闭语音搜索</translation>
 <translation id="6098793583803863900">正在扫描一个不明文件以确认其中是否包含危险内容。</translation>
@@ -6954,6 +6944,7 @@
 <translation id="6644513150317163574">网址格式无效。使用 SSO 身份验证时，必须将服务器指定为主机名。</translation>
 <translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">关闭快速配对</translation>
+<translation id="6646696210740573446">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google。</translation>
 <translation id="6647228709620733774">Netscape 证书授权中心吊销网址</translation>
 <translation id="6647690760956378579">自然语音预览</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
@@ -7027,7 +7018,6 @@
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709357832553498500">使用“<ph name="EXTENSIONNAME" />”连接</translation>
-<translation id="6709802811835274327">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6710394144992407503">在网页上输入文字时检查是否有拼写错误</translation>
 <translation id="671226373742585927">点击“X”按钮即可关闭侧边栏</translation>
@@ -7577,7 +7567,6 @@
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
-<translation id="7156231244155528270">将图片转换为文字</translation>
 <translation id="7159953856712257647">默认安装</translation>
 <translation id="7160182524506337403">您现在可以查看手机中的通知</translation>
 <translation id="7163202347044721291">正在验证激活码…</translation>
@@ -8950,6 +8939,7 @@
 <translation id="8248381369318572865">使用您的麦克风并分析您的语音</translation>
 <translation id="8248887045858762645">Chrome 小窍门</translation>
 <translation id="8249048954461686687">OEM文件夹</translation>
+<translation id="8249239468199142122">省电模式</translation>
 <translation id="8250210000648910632">可用的存储空间不足</translation>
 <translation id="8251441930213048644">立即刷新</translation>
 <translation id="8251509999076836464">正在与“<ph name="DEVICE_NAME" />”配对</translation>
@@ -9057,7 +9047,6 @@
 <translation id="833262891116910667">突出显示</translation>
 <translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8336407002559723354">将于 <ph name="MONTH_AND_YEAR" />停止更新</translation>
-<translation id="8336463659890584292">当某个网站请求以私密方式预加载其网页上的链接时，Chrome 会使用 Google 服务器。这样既可以知道会预加载哪些网站，又能避免这些网站得知您的身份。</translation>
 <translation id="8336739000755212683">更改设备账号图片</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{此设备将被保存 1 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {HOURS} 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="8337399713761067085">您目前处于离线状态</translation>
@@ -9152,6 +9141,7 @@
 <translation id="84098433273647700">您已安装的当前主题。</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">授予了“<ph name="PERMISSION" />”权限和另外 <ph name="COUNT" /> 项权限</translation>
+<translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8413956290606243087">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="8414249071344507766">回忆已设为隐藏两天</translation>
 <translation id="8414396119627470038">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -9594,7 +9584,6 @@
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
-<translation id="8775329533241312400">与标准预加载相比，浏览和搜索速度更快。</translation>
 <translation id="8775653927968399786">{0,plural, =1{系统将在 # 秒后自动锁定您的 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}other{系统将在 # 秒后自动锁定您的 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>

@@ -109,8 +109,10 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2775140325783767197">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="2799223571221894425">Ail-lansio</translation>
 <translation id="2847461019998147611">Dangos Google Chrome yn yr iaith hon</translation>
+<translation id="2853415089995957805">Mae Chrome yn rhaglwytho tudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn ymweld â nhw</translation>
 <translation id="2857540653560290388">Wrthi'n lansio Chrome...</translation>
 <translation id="2857972467023607093">Mae proffil Chrome â'r cyfrif hwn eisoes yn bodoli</translation>
+<translation id="286025080868315611">Dysgu pam fod Chrome yn rhwystro rhai lawrlwythiadau</translation>
 <translation id="2861074815332034794">Wrthi'n diweddaru Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Rydych wedi mewngofnodi i Chrome!</translation>
 <translation id="2876628302275096482">Dysgu rhagor am <ph name="BEGIN_LINK" />sut mae Chrome yn cadw eich data yn breifat<ph name="END_LINK" /></translation>
@@ -393,6 +395,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8290100596633877290">Whoa! Mae Google Chrome wedi torri. Ail-lansio nawr?</translation>
 <translation id="829923460755755423">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau Google</translation>
+<translation id="8336463659890584292">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chrome yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chrome. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>

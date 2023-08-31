@@ -109,6 +109,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2775140325783767197">Chrome nemůže zkontrolovat vaše hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2799223571221894425">Restartovat</translation>
 <translation id="2847461019998147611">Zobrazit Google Chrome v tomto jazyce</translation>
+<translation id="2853415089995957805">Chrome předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji.</translation>
 <translation id="2857540653560290388">Spouštění Chromu...</translation>
 <translation id="2857972467023607093">Profil Chrome s tímto účtem už existuje</translation>
 <translation id="2861074815332034794">Aktualizace Chromu (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -393,6 +394,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8286862437124483331">Aplikace Google Chrome se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="8290100596633877290">Ouha! Prohlížeč Google Chrome spadl. Restartovat?</translation>
 <translation id="829923460755755423">Přidejte si zástupce do Správce hesel Google</translation>
+<translation id="8336463659890584292">Když web požádá o soukromé předběžné načtení odkazů na stránce, použije Chrome servery Google. To před předběžně načítaným webem skryje vaši identitu, ale Google se dozví, které weby se předběžně načítají.</translation>
 <translation id="8342675569599923794">Tento soubor je nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Jak tyto údaje využíváme:<ph name="END_BOLD" /> Weby mohou v prohlížeči Chrome ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>

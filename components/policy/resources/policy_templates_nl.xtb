@@ -968,6 +968,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je het beleid niet toepast of niet instelt, wordt de host voor hulp op afstand uitgevoerd in de context van de gebruiker en kunnen externe gebruikers geen vensters met verhoogde bevoegdheid op de desktop gebruiken.</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>
 <translation id="1838910874018595451">Vooraf ingestelde configuratie voor Kerberos-tickets</translation>
+<translation id="1843102210803941014">Alleen essentiële cookies en gegevens aanzetten voor zoeken</translation>
 <translation id="1843117931376765605">Vernieuwingsfrequentie voor gebruikersbeleid</translation>
 <translation id="1844620919405873871">Hiermee configureer je het beleid ten aanzien van snel ontgrendelen.</translation>
 <translation id="1844972978764975668">Toestaan dat query's naar een Google-server worden gestuurd om een nauwkeurig tijdstempel op te halen</translation>
@@ -1777,8 +1778,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="251050607781210155">Safe Browsing-bescherming tegen phishing aan de clientzijde toestaan</translation>
 <translation id="2512972020817284317">Samenvoegen van cloudbeleidsregels op gebruikersniveau aanzetten.</translation>
 <translation id="2515699738406900920">Beschikbaarheid van profielkiezer bij opstarten</translation>
-<translation id="251594860034549963">Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browservensters geopend van het apparaat dat de huidige gebruiker het laatst heeft gebruikt.
-      Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="2517466659416174529">Toestaan dat tabbladen op de achtergrond worden vastgezet</translation>
 <translation id="2518231489509538392">Het afspelen van audio toestaan</translation>
 <translation id="2519578205567666653">Externe opslagapparaten toestaan</translation>
@@ -3210,7 +3209,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde Enterprise-gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="3791179836066841809">Documentatie voor beleid</translation>
-<translation id="3791556154364029875">Floating Workspace aanzetten en externe browservensters openen bij inloggen</translation>
 <translation id="3792144912556572267">Als je het beleid instelt, wordt de standaard-URL voor de homepage ingesteld in <ph name="PRODUCT_NAME" />. Je kunt de homepage openen met de knop Homepage. Op desktops bepaalt het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> welke pagina's worden geopend als de browser wordt opgestart.
 
 Als de homepage is ingesteld op de pagina 'Nieuw tabblad' (door de gebruiker of <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />), heeft dit beleid geen effect.
@@ -3340,6 +3338,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
       Als je dit beleid niet toepast, kan het SPDY-protocol worden gebruikt.
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
+<translation id="3885896818093825047">Instellen van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> toestaan</translation>
 <translation id="3889458462150559611">Sta toe dat websites op een onbeveiligde manier verzoeken naar een netwerkeindpunt sturen.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> niet toestaan verbinding te maken met apparaten op privé-IP-adressen</translation>
 <translation id="3891175633496805812">De wilco-controller voor diagnostische gegevens en telemetrie uitzetten</translation>
@@ -3500,7 +3499,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je het beleid niet instelt, kunnen gebruikers bepalen of 'Snelle antwoorden' toegang tot geselecteerde content heeft.</translation>
 <translation id="4016700865356669962">Als je het beleid toepast, kunnen gebruikers templates voor bureaubladindelingen gebruiken.  Als je het beleid niet toepast of niet instelt, zijn deze templates niet beschikbaar.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
-<translation id="4025176296532430931">Floating Workspace uitzetten en geen externe browservensters openen bij inloggen</translation>
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
@@ -4323,6 +4321,7 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
 
       Als het paginaformaat niet beschikbaar is op de printer die de gebruiker heeft gekozen, wordt dit beleid genegeerd.</translation>
 <translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
+<translation id="4790391579868456557">Essentiële en niet-essentiële cookies gebruiken voor zoeken.</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
 <translation id="4800438168909332958">De functie voor systeemaudio-echo opheffen (AEC) aanzetten. Systeem-AEC is een akoestische echo-opheffing, ofwel een audioverwerkingsmodule waarmee systeemaudioweergave (echo) uit het microfoonsignaal wordt verwijderd.
 Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-echo wordt gelanceerd.
@@ -4626,6 +4625,9 @@ Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagn
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
 <translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5130935469849337738">Altijd een vertaling aanbieden</translation>
+<translation id="5138579693170759139">Met dit beleid kunnen beheerders bepalen hoe Google cookies en gegevens verwerkt die via <ph name="PRODUCT_OS_NAME" /> naar Zoeken worden gestuurd.
+Als je het beleid toepast, kunnen gebruikers het zoekvak van de <ph name="PRODUCT_OS_NAME" />-launcher en het adresvak van de <ph name="PRODUCT_NAME" />-browser in <ph name="PRODUCT_OS_NAME" /> gebruiken. De cookies en gegevens mogen alleen worden gebruikt voor essentiële doeleinden.
+Als je het beleid niet instelt of niet toepast, mogen de cookies en gegevens worden gebruikt voor niet-essentiële doeleinden.</translation>
 <translation id="5141670636904227950">Standaardtype van vergrootglas voor inlogscherm instellen</translation>
 <translation id="5142301680741828703">De volgende URL-patronen altijd verwerken in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om gebruikers te identificeren, zoals de OS-inloggegevens, de inloggegevens voor het <ph name="PRODUCT_NAME" />-profiel, de profielnaam voor <ph name="PRODUCT_NAME" />, het profielpad voor <ph name="PRODUCT_NAME" /> en het uitvoerbare pad voor <ph name="PRODUCT_NAME" />.
@@ -6775,11 +6777,6 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
       * PasswordProtectionWarningOnPhishingReuse, wordt de waarschuwing voor wachtwoordbeveiliging getoond als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
 
       Als dit beleid niet is ingesteld, beschermt de service voor wachtwoordbeveiliging alleen Google-wachtwoorden, maar de gebruiker kan deze instelling wijzigen.</translation>
-<translation id="6969079025604591591">Als je dit beleid toepast of niet instelt, staat Code-integriteit van weergaveprogramma aan.
-
-      Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" /> omdat onbekende en potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" /> moeten worden uitgevoerd.
-
-      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6969108216182455619">Dit beleid is beëindigd en wordt in Chrome 78 zonder vervanging verwijderd.
 
       Met dit beleid wordt HTTP/0.9 geactiveerd op alle poorten behalve poort 80 voor HTTP en poort 443 voor HTTPS.
@@ -7315,6 +7312,7 @@ Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kunnen gebruikers he
 Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces voor <ph name="GOOGLE_DRIVE_NAME" /> en<ph name="GOOGLE_WORKSPACE_NAME" /> automatisch in, zodat bestanden met overeenkomende bestandsindelingen standaard naar<ph name="GOOGLE_DRIVE_NAME" /> worden verplaatst en door een van de <ph name="GOOGLE_WORKSPACE_NAME" />-apps worden verwerkt als de gebruiker ze probeert te openen.
 
 Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.</translation>
+<translation id="7438982301540282785">Instellen van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatiseren</translation>
 <translation id="7443356543619955157">Als je het beleid instelt, kan de netwerkconfiguratie worden toegepast op alle gebruikers van een <ph name="PRODUCT_OS_NAME" />-apparaat. De netwerkconfiguratie is een json-tekenreeks zoals gedefinieerd in de Open Network Configuration-indeling.</translation>
 <translation id="7446978687387327623">Realtime checks via proxy voor Safe Browsing toestaan</translation>
 <translation id="7448430478749155471">Toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aanzetten</translation>
@@ -7369,8 +7367,10 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
       Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting voor meer informatie.</translation>
 <translation id="7481702249684965639">De prullenbak is aangezet voor de gebruiker.</translation>
 <translation id="7482768039644066614">Ophalen aanzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
+<translation id="748292668225669178">Hiermee stel je de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> in</translation>
 <translation id="7485481791539008776">Regels voor selectie van standaardprinter</translation>
 <translation id="7486205887492534734">Prompt voor als meerdere certificaten overeenkomen op het inlogscherm</translation>
+<translation id="748873163367340515">Alleen essentiële cookies en gegevens gebruiken voor zoeken.</translation>
 <translation id="7489661071474025727">Hiermee bepaal je of de service voor accountherstel is geactiveerd voor je gebruikers op <ph name="PRODUCT_OS_NAME" />-apparaten.
 
       Als je het beleid toepast, wordt herstel van gebruikersgegevens geactiveerd. Als je het beleid niet toepast of niet instelt, wordt herstel van gebruikersgegevens niet geactiveerd.
@@ -8324,6 +8324,16 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="8316940611391250886">Certificaten zonder de extensie subjectAlternativeName niet toestaan</translation>
 <translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
+<translation id="8324872579207355449">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
+
+Als je het beleid instelt op <ph name="ALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen als die dat wil.
+Nadat het instelproces is afgerond, wordt <ph name="MICROSOFT_ONE_DRIVE_NAME" /> geactiveerd in Bestandsbeheer.
+
+Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> niet instellen.
+
+Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, wordt geprobeerd <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisch in te stellen. Als dat niet werkt, wordt het instelproces weer getoond.
+
+Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.</translation>
 <translation id="8327651196906278510">Tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="8329434144708110">Verificatieprocessen activeren om wachtwoorden te synchroniseren met SSO-providers</translation>
 <translation id="8329984337216493753">Dit beleid wordt alleen toegepast in de winkelmodus.
@@ -8916,6 +8926,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="8882307005437314052">Schermtoetsenbord op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="8883577480680089760"><ph name="PRODUCT_NAME" /> V2-service uitzetten en geen extern bureau starten bij inloggen</translation>
 <translation id="8887709920496070892">De tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond (in milliseconden)</translation>
+<translation id="8888289774309799423">Instellen van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> niet toestaan</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8891334958985336685">Rapportage van systeeminformatie van apparaat uitzetten</translation>
 <translation id="8892286064305622118">Vrije schijfruimte vereist voor <ph name="PLUGIN_VM_NAME" /></translation>

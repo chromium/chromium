@@ -979,6 +979,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con permisos de administrador en el escritorio.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>
 <translation id="1838910874018595451">Configuración ya completada para tickets de Kerberos</translation>
+<translation id="1843102210803941014">Habilitar solo las cookies y los datos esenciales en la búsqueda</translation>
 <translation id="1843117931376765605">Frecuencia de actualización de la política de usuario</translation>
 <translation id="1844620919405873871">Configura políticas relacionadas con el desbloqueo rápido.</translation>
 <translation id="1844972978764975668">Permite que las consultas enviadas a un servidor de Google recuperen una marca de tiempo precisa</translation>
@@ -1806,8 +1807,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="251050607781210155">Permitir la protección contra la suplantación de identidad (phishing) del cliente en la Navegación segura</translation>
 <translation id="2512972020817284317">Habilitar la combinación de políticas de nube destinadas a los usuarios</translation>
 <translation id="2515699738406900920">Disponibilidad del selector de perfiles en el inicio</translation>
-<translation id="251594860034549963">Si habilitas la política, se abrirán automáticamente ventanas del navegador del último dispositivo utilizado por el usuario actual al acceder.
-      Si la inhabilitas o no la estableces, el restablecimiento completo de la configuración determinará qué se abrirá al acceder.</translation>
 <translation id="2517466659416174529">Permite la inmovilización de pestañas en segundo plano</translation>
 <translation id="2518231489509538392">Permitir la reproducción de audio</translation>
 <translation id="2519578205567666653">Permitir dispositivos de almacenamiento externo</translation>
@@ -3271,7 +3270,6 @@ Si no estableces la política, su función será equivalente a establecerla como
 
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="3791179836066841809">Documentación para la política</translation>
-<translation id="3791556154364029875">Habilitar Floating Workspace y abrir ventanas del navegador remotas al acceder</translation>
 <translation id="3792144912556572267">Si estableces la política, se determinará la URL predeterminada de la página principal en <ph name="PRODUCT_NAME" />. Podrás abrir la página principal con el botón correspondiente. En la computadora, la política <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controla las páginas que se abren al iniciar el navegador.
 
 Si el usuario o <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> establecen la página principal como la página Nueva pestaña, esta política no tendrá efecto.
@@ -3562,7 +3560,6 @@ El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una app web puede eje
       Si no se configura esta política, los usuarios podrán decidir si permiten que Respuestas rápidas acceda al contenido seleccionado.</translation>
 <translation id="4016700865356669962">Si habilitas la política, los usuarios podrán usar las plantillas de diseño de escritorio.  Si inhabilitas la política o no la estableces, estas plantillas no estarán disponibles.</translation>
 <translation id="4020682745012723568">Las apps de Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
-<translation id="4025176296532430931">Inhabilitar Floating Workspace y no abrir ventanas del navegador remotas al acceder</translation>
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
 <translation id="402759845255257575">No permitir que los sitios ejecuten JavaScript.</translation>
 <translation id="4027608872760987929">Habilitar el proveedor de búsqueda predeterminado</translation>
@@ -4437,6 +4434,7 @@ Si la inhabilitas, no se le mostrará la promoción para la extensión del Prove
 
       Si el tamaño de la página no está disponible en la impresora que elija el usuario, se ignorará esta política.</translation>
 <translation id="4789450349513792856">Bloquear ventanas emergentes en estos sitios</translation>
+<translation id="4790391579868456557">Usar cookies esenciales y no esenciales en la búsqueda</translation>
 <translation id="4790588245699320140">Permitir que Asistente de Google acceda al contexto de la pantalla</translation>
 <translation id="4800438168909332958">Habilita la función de cancelación del eco de audio (AEC) del sistema. El AEC del sistema es un cancelador de eco acústico,
 es decir, un módulo de procesamiento de audio que quita la reproducción de audio del sistema (echo) de la señal del micrófono.
@@ -4746,6 +4744,9 @@ Si no se establece esta política o se establece como verdadera, los informes so
 <translation id="5124368997194894978">Habilitar el inicio mediante CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios utilicen la política SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Ofrecer siempre la traducción</translation>
+<translation id="5138579693170759139">Esta política permite que los administradores controlen la manera en que Google procesa las cookies y los datos que se envían a la Búsqueda a través de <ph name="PRODUCT_OS_NAME" />.
+Si habilitas la política, el usuario podrá utilizar el cuadro de búsqueda del Selector de <ph name="PRODUCT_OS_NAME" /> y el cuadro de direcciones del navegador <ph name="PRODUCT_NAME" /> en <ph name="PRODUCT_OS_NAME" />. Las cookies y los datos solo se pueden usar para fines esenciales.
+Si no la estableces o la inhabilitas, las cookies y los datos se pueden usar para fines no esenciales.</translation>
 <translation id="5141670636904227950">Establece el tipo de lupa predeterminado habilitado en la pantalla de acceso.</translation>
 <translation id="5142301680741828703">Siempre procesar los siguientes patrones de URL en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política controla el envío de los datos que permiten identificar a los usuarios, como el acceso al SO, el acceso al perfil de <ph name="PRODUCT_NAME" />, el nombre de perfil de <ph name="PRODUCT_NAME" />, la ruta de acceso al perfil de <ph name="PRODUCT_NAME" /> y la ruta ejecutable de <ph name="PRODUCT_NAME" />.
@@ -6999,11 +7000,6 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
       * PasswordProtectionWarningOnPhishingReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice su contraseña protegida en un sitio de suplantación de identidad (phishing).
 
       Si no estableces la política, el servicio de protección de contraseñas solo protegerá las contraseñas de Google, pero los usuarios podrán cambiar esta configuración.</translation>
-<translation id="6969079025604591591">Si habilitas la política o no la estableces, se activará la integridad del código del renderizador.
-
-      Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en los procesos del renderizador de <ph name="PRODUCT_NAME" />.
-
-      Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="6969108216182455619">Esta política quedó obsoleta; se programó su eliminación en Chrome 78 y no se reemplazará.
 
       La función de esta política es habilitar HTTP/0.9 en puertos que no sean el 80 en el caso de HTTP ni el 443 en el caso de HTTPS.
@@ -7604,6 +7600,7 @@ Si no estableces la política, su función será equivalente a establecerla como
 <translation id="7482768039644066614">Habilitar la recuperación de metadatos de la carga de páginas y de modelos de aprendizaje automático para mejorar la experiencia de navegación</translation>
 <translation id="7485481791539008776">Normas de selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Notificar cuando coinciden varios certificados en la pantalla de acceso</translation>
+<translation id="748873163367340515">Usar solo las cookies y los datos esenciales en la búsqueda</translation>
 <translation id="7489661071474025727">Especifica si el servicio de recuperación de la cuenta está activado para tus usuarios en dispositivos <ph name="PRODUCT_OS_NAME" />.
 
       Si habilitas la política, se activa la recuperación de datos del usuario. Si la inhabilitas o no la estableces, no se activará la recuperación de datos del usuario.

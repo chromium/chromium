@@ -63,6 +63,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1217633719248931900">Ves a l'aplicació</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicació de Play Store</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">escriptori inactiu</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
 <translation id="1235458158152011030">Xarxes conegudes</translation>
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
@@ -149,6 +150,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1571697193564730395">Commuta el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Redueix quan la lupa estigui activada</translation>
 <translation id="1586324912145647027">Ves a l'escriptori de l'1 al 8</translation>
+<translation id="158838227375272121">Lloc web de Google Classroom</translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1592682369233288537">Escriptori següent: <ph name="NEXT_DESK_NAME" />. Utilitza Cerca+barra espaiadora per activar-lo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+fletxa avall</translation>
@@ -325,7 +327,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2382875860893882175">Actualment l'emissió està en pausa. Pots reprendre o aturar l'emissió en qualsevol moment.</translation>
 <translation id="2386292613071805067">Selecciona tots els elements de la pàgina</translation>
-<translation id="2396594569364254378">Memòria: <ph name="USED_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Mostra el menú de Chrome</translation>
 <translation id="240006516586367791">Controls multimèdia</translation>
 <translation id="2402411679569069051">Per desbloquejar el Chromebook, fes servir l'empremta digital o desbloqueja el telèfon</translation>
@@ -1000,6 +1001,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniments</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> i <ph name="IN_PLACE_APP" /> s'han combinat per crear una carpeta nova.</translation>
+<translation id="5203299837691351876">escriptori actiu</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificació més}other{# notificacions més}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
@@ -1155,6 +1157,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5790085346892983794">Amb èxit</translation>
 <translation id="5804651031882187592">Desactiva l'opció de configuració Bloqueja la SIM</translation>
 <translation id="5805809050170488595">Fes clic per activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tasks al web</translation>
 <translation id="5825969630400862129">Configuració dels dispositius connectats</translation>
 <translation id="5837036133683224804">Atura <ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Ves a la pista següent</translation>
@@ -1395,6 +1398,7 @@ Instal·lació nova</translation>
 <translation id="6819327813400217281">La càmera s'ha ajustat a l'extrem inferior esquerre</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6827049576281411231">Tanca el tauler d'esdeveniments</translation>
+<translation id="6831561626108366035">Ves al botó <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Fitxer perillós</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6855029042976311970">Editat fa un moment</translation>
@@ -1429,7 +1433,7 @@ Instal·lació nova</translation>
 <translation id="6981291220124935078">Activa l'accés</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
-<translation id="6985306450422696113"><ph name="USED_MEMORY" /> de memòria disponible d'un total de <ph name="TOTAL_MEMORY" /></translation>
+<translation id="6989752354829085073">Aprèn a navegar pel Chromebook amb una visita guiada ràpida. Posa't en marxa en 6 passos.</translation>
 <translation id="7004910047186208204">Cal connectar-se a dades mòbils</translation>
 <translation id="7005239792648594238">Obre una aplicació per començar</translation>
 <translation id="7007983414944123363">El PIN o la contrasenya no s'han pogut verificar. Torna-ho a provar.</translation>
@@ -1552,6 +1556,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
+<translation id="7567950130372125778">Hola! Chromebook és una mica diferent.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7571361473021531288">Bateria: <ph name="BATTERY_PERCENTAGE" />% | Temps restant: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Finestra activa acoblada a la dreta.</translation>

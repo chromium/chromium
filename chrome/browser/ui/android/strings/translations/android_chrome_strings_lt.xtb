@@ -159,6 +159,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1854311313115643875">Naudojant šias bandomąsias versijas, Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chrome“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.
 
 Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite ištrinti susijusią vertinimo informaciją. Žr. <ph name="BEGIN_LINK" />naršymo istoriją<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Atidaryti naršyklėje „Chrome“</translation>
 <translation id="1877026089748256423">„Chrome“ versija yra pasenusi</translation>
 <translation id="1883903952484604915">Mano failai</translation>
 <translation id="189358972401248634">Kitos kalbos</translation>
@@ -704,7 +705,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4699172675775169585">Talpykloje esantys vaizdai ir failai</translation>
 <translation id="4710167854527459075">Rūšiuoti nuo naujausio</translation>
 <translation id="4719927025381752090">Siūlyti versti</translation>
-<translation id="4720023427747327413">Atidaryti naudojant „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="47217992755561375">Peržiūrėkite populiariausias svetaines</translation>
 <translation id="4731877163452936634">Atkūrimo greitis: <ph name="PLAYBACK_SPEED" />. Spustelėkite ir pakeiskite.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
 <translation id="5174700554036517242">Grąžintas pradinis skirtuko aukštis</translation>
-<translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5186634140793586141">Tvarkykite jus dominančias temas ir paieškas</translation>
 <translation id="5191251636205085390">Sužinokite apie naujas technologijas, kurios pakeis trečiųjų šalių slapukus, ir valdykite jas</translation>
 <translation id="5193988420012215838">Nukopijuota į iškarpinę</translation>
@@ -1093,6 +1092,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6641780377503683465">Pašalinti „<ph name="INTEREST" />“</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
 <translation id="6645629752388991326">Kontroliuokite, kurie įrenginiai gali prisijungti naudodami šį įrenginį kaip saugos raktą.</translation>
+<translation id="6646696210740573446">Siunčiama klaidinanti URL dalis „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, „Google“.</translation>
 <translation id="6647441008198474441">URL, kuriais lankotės, siunčiami „Google“, kad numatytų, kokiose svetainėse galite vėliau apsilankyti</translation>
 <translation id="6648459603387803038">Administratorius gali nuotoliniu būdu keisti naršyklės sąranką. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1452,6 +1452,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8394720698884623075">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“</translation>
 <translation id="8402673309244746971">Eiti į skiltį „Stebima“</translation>
 <translation id="8413126021676339697">Rodyti visą istoriją</translation>
+<translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
 <translation id="8414396119627470038">Prisijungimas prie <ph name="SITE_ETLD_PLUS_ONE" /> naudojant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Sužinokite daugiau apie skelbimų suasmeninimą sistemoje „Chrome“</translation>
 <translation id="8419244640277402268">Įtraukti</translation>

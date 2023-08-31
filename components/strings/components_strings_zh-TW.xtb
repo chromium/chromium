@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">玻璃 (彩色)</translation>
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1075079914415273530">農業與林業</translation>
+<translation id="1075364221219156102">使用密碼金鑰</translation>
 <translation id="1080116354587839789">符合視窗寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
 <translation id="1089439967362294234">變更密碼</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">你在不是由貴機構管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="1257553931232494454">縮放等級</translation>
-<translation id="1258942153897182536">OCR 處理中...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可管理 Chrome 設定</translation>
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動資訊</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;請前往「設定」應用程式的「一般設定」專區調整日期和時間。&lt;strong&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/p&gt;</translation>
 <translation id="1559839503761818503">系統管理員將在 <ph name="DATE" /><ph name="TIME" /> 重新啟動你的裝置。</translation>
-<translation id="1564753300777780201">沒有從圖片中轉換的文字</translation>
 <translation id="156703335097561114">包括位址、介面設定和連線品質等網路資訊</translation>
 <translation id="1567040042588613346">這項政策運作正常，但與其他地方設定的值相同，並已取代該值。</translation>
 <translation id="1567405528131216114">新增「<ph name="TOPIC" />」</translation>
@@ -1107,6 +1106,7 @@
 <translation id="3340978935015468852">設定</translation>
 <translation id="3342018947887487892">在此之後，你造訪的網站可以要求取得這項資訊，包括廣告主題或是曾造訪網站的廣告建議。</translation>
 <translation id="3342366525167526994">人體藝術</translation>
+<translation id="3344167530090084176">將卡片資訊和安全碼儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="334438173029876234">滑板裝備</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">變更 Proxy 設定...</translation>
@@ -1381,7 +1381,6 @@
 <translation id="3901925938762663762">這張信用卡已過期</translation>
 <translation id="390391808978419508">開啟作業逾時</translation>
 <translation id="3905894480064208252">{0,plural, =1{禁止傳送這個檔案}other{禁止傳送這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
-<translation id="3906095212874392000">轉換文字結尾</translation>
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3910231615117880630">進一步瞭解嵌入的內容</translation>
@@ -1410,6 +1409,7 @@
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站 }other{來自 # 個網站 }}</translation>
+<translation id="3966044442021752214">產品安全</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 遭到封鎖</translation>
 <translation id="3983340834939868135">「<ph name="VENDOR_NAME" />」的密碼金鑰</translation>
@@ -1606,7 +1606,6 @@
 <translation id="4331519897422864041">堆疊出紙器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
 <translation id="4333561522337981382">管理所有螢幕上的視窗</translation>
-<translation id="4338709847516294988">按下搜尋鍵 + m 鍵，接著點選內容選單中的「將圖片轉成文字」</translation>
 <translation id="4340575312453649552">這個廣告使用了太多裝置資源，因此 Chrome 已將其移除。</translation>
 <translation id="4340810192899866471">從 JSON 匯入</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
@@ -1623,7 +1622,6 @@
 <translation id="4363222835916186793">這項產品的快訊已關閉</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
-<translation id="4371307856413138486">轉換文字開頭</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
 <translation id="4375864595697821259">你也可以將項目加回清單中，做為 Chrome 推測興趣喜好的依據</translation>
@@ -2402,7 +2400,6 @@
 <translation id="604124094241169006">自動</translation>
 <translation id="6041777658117377052">室內溫度</translation>
 <translation id="6042308850641462728">更多</translation>
-<translation id="6042688167654081154">圖片已轉成文字</translation>
 <translation id="6044573915096792553">粗細：12</translation>
 <translation id="6045164183059402045">拼版範本</translation>
 <translation id="6047233362582046994">如果你瞭解安全性風險，也可以選擇在有害應用程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
@@ -2440,7 +2437,6 @@
 <translation id="6116338172782435947">讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
-<translation id="6120179357481664955">還記得你的 UPI ID 嗎？</translation>
 <translation id="6120950591512958208">請於結帳時使用這個折扣代碼。</translation>
 <translation id="6122181661879998141">卡片正面</translation>
 <translation id="6124058285696691147">下載附件</translation>
@@ -2475,7 +2471,6 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 公釐</translation>
 <translation id="6198480336395236519">全頁隔頁紙</translation>
-<translation id="6200386911308538077">正在分析圖片</translation>
 <translation id="6203231073485539293">檢查網際網路連線</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
 <translation id="6212314149070368045">美國 Fanfold</translation>
@@ -3143,6 +3138,7 @@
 <translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7555777498260651025">適合家庭的電視節目</translation>
+<translation id="7556328470713619625">使用密碼金鑰</translation>
 <translation id="7559278538486662777">這個應用程式無法調整大小。</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">你可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或身分遭到冒用。Chrome 建議你立即變更密碼。</translation>

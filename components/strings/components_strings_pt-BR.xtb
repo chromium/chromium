@@ -135,7 +135,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Você informou sua senha em um site que não é gerenciado pela sua organização. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="1257553931232494454">níveis de zoom</translation>
-<translation id="1258942153897182536">OCR em andamento…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para gerenciar as configurações do Chrome</translation>
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Esportes</translation>
@@ -293,7 +292,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 
       &lt;p&gt;Ajuste a data e hora na seção &lt;strong&gt;Geral&lt;/strong&gt; do aplicativo &lt;strong&gt;Config.&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O administrador vai reiniciar seu dispositivo em <ph name="DATE" />, <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Nenhum texto convertido de imagens</translation>
 <translation id="156703335097561114">Informações de rede, como endereços, configuração da interface e qualidade da conexão</translation>
 <translation id="1567040042588613346">A política está funcionando da maneira esperada, mas o mesmo valor foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="1567405528131216114">Adicionar <ph name="TOPIC" /></translation>
@@ -1108,6 +1106,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3340978935015468852">configurações</translation>
 <translation id="3342018947887487892">Depois, um site que você visitar poderá pedir essa informação, sejam os temas ou anúncios sugeridos em sites acessados.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
+<translation id="3344167530090084176">Para agilizar o pagamento na próxima vez, salve o cartão e o código de segurança no seu dispositivo</translation>
 <translation id="334438173029876234">Equipamentos de skate</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
@@ -1382,7 +1381,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="390391808978419508">O tempo de abertura expirou</translation>
 <translation id="3905894480064208252">{0,plural, =1{A transferência do arquivo está bloqueada}one{A transferência de <ph name="FILE_COUNT" /> arquivo está bloqueada}other{A transferência de <ph name="FILE_COUNT" /> arquivos está bloqueada}}</translation>
-<translation id="3906095212874392000">Fim do texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saber mais sobre conteúdo incorporado</translation>
@@ -1411,6 +1409,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
+<translation id="3966044442021752214">Segurança do produto</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3983340834939868135">Chave de acesso de "<ph name="VENDOR_NAME" />"</translation>
@@ -1607,7 +1606,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4331519897422864041">Empilhador 5</translation>
 <translation id="4331708818696583467">Não seguro</translation>
 <translation id="4333561522337981382">Gerenciar janelas em todas as telas</translation>
-<translation id="4338709847516294988">Pressione a tecla de pesquisa + M para converter a imagem em texto no menu de contexto</translation>
 <translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340810192899866471">Importar do JSON</translation>
 <translation id="4340982228985273705">Este computador não foi detectado como gerenciado por empresa, portanto, a política só pode instalar automaticamente as extensões hospedadas na Chrome Web Store. O URL de atualização da Chrome Web Store é o seguinte: <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1624,7 +1622,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4363222835916186793">Os alertas para este produto foram desativados</translation>
 <translation id="4366943895537458493">Chapa</translation>
 <translation id="437040971055499437">Acontece uma ocorrência de segurança</translation>
-<translation id="4371307856413138486">Início do texto convertido</translation>
 <translation id="4371591986692297148">Inativos</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4375864595697821259">Adicione um item de volta se quiser incluí-lo no grupo de temas que o Chrome pode escolher ao estimar seus interesses</translation>
@@ -2403,7 +2400,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura da câmara</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6042688167654081154">Imagem convertida em texto</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se você conhece os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os apps prejudiciais serem removidos.</translation>
@@ -2441,7 +2437,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6116338172782435947">Ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinada)</translation>
 <translation id="6118782133429281336">A lista de origem está vazia.</translation>
-<translation id="6120179357481664955">Lembrar código da UPI?</translation>
 <translation id="6120950591512958208">Use este código ao finalizar a compra.</translation>
 <translation id="6122181661879998141">parte da frente do cartão</translation>
 <translation id="6124058285696691147">Fazer o download do anexo</translation>
@@ -2476,7 +2471,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores com aba integral</translation>
-<translation id="6200386911308538077">A imagem está sendo analisada</translation>
 <translation id="6203231073485539293">Verifique sua conexão com a Internet</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
 <translation id="6212314149070368045">Fanfold (EUA)</translation>

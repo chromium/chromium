@@ -150,6 +150,7 @@
 <translation id="1571697193564730395">Увімкнути або вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Віддалити, коли лупу ввімкнено</translation>
 <translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
+<translation id="158838227375272121">Веб-сайт у Google Класі</translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1592682369233288537">Наступний робочий стіл: <ph name="NEXT_DESK_NAME" />. Щоб активувати його, натисніть клавішу пошуку й пробіл.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрілка вниз</translation>
@@ -326,7 +327,6 @@
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2382875860893882175">Трансляцію зараз призупинено. Ви можете будь-коли продовжити або припинити її.</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
-<translation id="2396594569364254378">Обсяг використаної пам’яті: <ph name="USED_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Показати меню Chrome</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
 <translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
@@ -1157,6 +1157,7 @@
 <translation id="5790085346892983794">Готово</translation>
 <translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Завдання у веб-переглядачі</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="5841296711770970362">Перейти до наступної композиції</translation>
@@ -1432,7 +1433,6 @@
 <translation id="6981291220124935078">Увімкнути доступ</translation>
 <translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
-<translation id="6985306450422696113">Доступний обсяг пам’яті: <ph name="USED_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Ознайомтеся з коротким оглядом Chromebook. Щоб почати роботу, виконайте 6 кроків.</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>

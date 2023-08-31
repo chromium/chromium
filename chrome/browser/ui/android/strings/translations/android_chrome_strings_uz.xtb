@@ -159,6 +159,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1854311313115643875">Sinov muddatlari yoqilganida Reklama statistikasi orqali siz kiradigan saytlar ulardagi reklama unumdorligini hisoblashga yordam beradigan maʼlumotlarni Chrome ilovasidan olishi mumkin. Reklama statistikasi imkon qadar kam axborotni saytlararo ulashish orqali saytlardagi kuzatuv mexanizmlarini taqiqlaydi.
 
 Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida — saytga tegishli oʻlchov maʼlumotlari ham tozalanadi. <ph name="BEGIN_LINK" />Siz ochgan sahifalar tarixi<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Chrome brauzerida ochish</translation>
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
 <translation id="1883903952484604915">Fayllarim</translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
@@ -704,7 +705,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4710167854527459075">Avval yangilari asosida saralash</translation>
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
-<translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> orqali ochish</translation>
 <translation id="47217992755561375">Eng sara saytlaringiz</translation>
 <translation id="4731877163452936634">Ijro tezligi: <ph name="PLAYBACK_SPEED" />. Oʻzgartirish uchun bosing.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
 <translation id="5174700554036517242">Varaq dastlabki balandlikka qaytdi</translation>
-<translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5186634140793586141">Qiziq boʻlgan mavzu va qidiruvlarni boshqarish</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>

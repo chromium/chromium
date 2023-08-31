@@ -159,6 +159,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="1854311313115643875">Quan les proves estan activades, el mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.
 
 Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web específic) també suprimeixes la informació de mesurament associada. Consulta <ph name="BEGIN_LINK" />el teu historial de navegació<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Obre al navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
@@ -575,7 +576,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4062305924942672200">Informació legal</translation>
 <translation id="4072805772816336153">Torna-ho a provar més tard</translation>
-<translation id="4080602171844412446">Estadístiques relacionades</translation>
+<translation id="4080602171844412446">Informació relacionada</translation>
 <translation id="4084682180776658562">Adreça d'interès</translation>
 <translation id="4084712963632273211">Publicada originalment per <ph name="PUBLISHER_ORIGIN" />, <ph name="BEGIN_DEEMPHASIZED" />oferida per Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pots utilitzar aquesta tauleta per iniciar la sessió al dispositiu que està mostrant aquest codi QR.</translation>
@@ -704,7 +705,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4699172675775169585">Imatges i fitxers desats a la memòria cau</translation>
 <translation id="4710167854527459075">Ordena per més recent</translation>
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
-<translation id="4720023427747327413">Obre a <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Consulta els llocs web que més visites</translation>
 <translation id="4731877163452936634">Velocitat de reproducció: <ph name="PLAYBACK_SPEED" />. Fes clic per canviar.</translation>
 <translation id="4732120983431207637">Anul·lador de piles</translation>
@@ -810,7 +810,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5171045022955879922">Cerqueu o escriviu l'URL</translation>
 <translation id="5174700554036517242">La pestanya ha tornat a l'alçada inicial</translation>
-<translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5186634140793586141">Gestiona els temes i les cerques que t'interessen</translation>
 <translation id="5191251636205085390">Obtén informació sobre les noves tecnologies per substituir les galetes de tercers i controla-les</translation>
 <translation id="5193988420012215838">S'ha copiat al porta-retalls</translation>
@@ -1093,6 +1092,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6641780377503683465">Suprimeix <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6645629752388991326">Controla quins dispositius poden iniciar la sessió utilitzant aquest dispositiu com a clau de seguretat.</translation>
+<translation id="6646696210740573446">Envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Google.</translation>
 <translation id="6647441008198474441">Els URL que visites s'envien a Google per preveure quins llocs web és possible que visitis a continuació</translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
@@ -1452,6 +1452,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8394720698884623075">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome</translation>
 <translation id="8402673309244746971">Ves a Seguint</translation>
 <translation id="8413126021676339697">Mostra l'historial complet</translation>
+<translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="8414396119627470038">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Més informació sobre la personalització d'anuncis a Chrome</translation>
 <translation id="8419244640277402268">Inclou</translation>

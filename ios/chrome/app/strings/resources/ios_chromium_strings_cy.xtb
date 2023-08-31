@@ -33,17 +33,21 @@
 <translation id="2426113998523353159">Mae eich sefydliad yn gofyn i chi fewngofnodi i ddefnyddio Chromium.</translation>
 <translation id="2450140762465183767">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="2478931088402984578">Dewiswch <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2574528844022712255">Gweld Nodau Tudalen Chromium</translation>
 <translation id="2590893390871230428">Cysoni'ch Data Chromium</translation>
 <translation id="2618596336309823556">O'r Gosodiadau ar eich dyfais, agorwch "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" a dewiswch "Chromium"</translation>
 <translation id="2631735236435791495">Eich sefydliad, <ph name="DOMAIN" /> sy'n rheoli'r cyfrif rydych yn mewngofnodi iddo a sut y gellir defnyddio Chromium. Gall eich gweinyddwr sefydlu neu gyfyngu ar rai nodweddion.</translation>
 <translation id="2650312721222849884">I weld eich tabiau o ble bynnag rydych yn defnyddio Chromium, trowch gysoni ymlaen</translation>
 <translation id="2684230048001240293">Gosodwch Chromium fel eich porwr diofyn i gysoni'ch tabiau, eich cyfrineiriau, a'ch gwybodaeth talu ar eich holl ddyfeisiau</translation>
 <translation id="2730884209570016437">Ni all Chromium ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
+<translation id="2798503587425057129">Yn agor y Rhestr Ddarllen Chromium.</translation>
 <translation id="2915596697727466327">Mae Chromium yn defnyddio Face ID i sicrhau mynediad awdurdodedig at eich cyfrineiriau.</translation>
 <translation id="2918709798697875261">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chromium.</translation>
 <translation id="2942241131342758843">Defnyddiwch Chromium i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="2977470724722393594">Mae Chromium yn gyfoes</translation>
 <translation id="3102849287235003384">I allgofnodi o'ch Cyfrif Google ar bob gwefan, <ph name="BEGIN_LINK" />allgofnodwch o Chromium<ph name="END_LINK" />.</translation>
+<translation id="3228349498066165585">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto.
+        Rhowch gynnig ar aros ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="3256316712990552818">Copïwyd i Chromium</translation>
 <translation id="3344973607274501920">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="3472200483164753384">Ni chefnogir ar Chromium Canary</translation>
@@ -89,7 +93,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich
 <translation id="5453478652154926037">Ni all Chromium wirio'ch cyfrineiriau.</translation>
 <translation id="5521125884468363740">Er mwyn gweld eich tabiau o ble bynnag rydych yn defnyddio Chromium, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="5522297504975449419">Ni fydd rhai nodweddion Chromium ar gael mwyach.</translation>
-<translation id="5573014823074921752">Awgrym Chromium. Am ragor o opsiynau tabiau, cyffyrddwch a daliwch y botwm Dangos Tabiau yn y bar offer, sydd ar waelod neu ar frig eich sgrîn.</translation>
 <translation id="5688047395118852662">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="5777187867430702742">Tudalen Chromium</translation>
@@ -141,7 +144,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7400689562045506105">Defnyddiwch Chromium Ymhobman</translation>
 <translation id="7523464085759699266">Troi "Cloi Tabiau Anhysbys Pan Fyddwch yn Cau Chromium" ymlaen.</translation>
 <translation id="7674213385180944843">Agorwch Gosodiadau &gt; Preifatrwydd &gt; Camera &gt; Chromium a throwch y camera ymlaen.</translation>
-<translation id="7746854981345936341">Awgrym Chromium. Mae rhai botymau bellach ar waelod eich sgrîn, megis Back, Forward, a Search.</translation>
 <translation id="7763454117143368771">Defnyddiwch Chromium fel eich porwr diofyn i gadw yn ddiogel rhag gwefannau peryglus ac i gadw eich cyfrineiriau'n ddiogel</translation>
 <translation id="7812317783196516890">Rydych wedi mewngofnodi ac yn cysoni'ch data â chyfrif a reolir gan <ph name="DOMAIN" /> lle gall ei weinyddwr bellach osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
 <translation id="7859018312476869945">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chromium yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
@@ -150,6 +152,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7905064834449738336">Pan fyddwch yn defnyddio cyfrinair, mae Chromium yn eich rhybuddio os yw wedi'i gyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
 <translation id="7928628054454574139">Agor Chromium unrhyw bryd y byddwch yn tapio dolenni mewn apiau eraill</translation>
 <translation id="7931842119211730154">Cloi Tabiau Anhysbys Pan Fyddwch yn Cau Chromium</translation>
+<translation id="7934404985878918282">Gweld Rhestr Ddarllen Cromiwm</translation>
 <translation id="7980860476903281594">Mae Chromium yn rhannu eich lleoliad â gwefannau rydych yn eu caniatáu.</translation>
 <translation id="8013573822802650211">I weld eich tabiau o ble bynnag rydych yn defnyddio Chromium, mewngofnodwch ar eich holl ddyfeisiau</translation>
 <translation id="8071041515667087705">Mynd i Osodiadau Chromium.</translation>
@@ -172,6 +175,7 @@ Pethau i'w hystyried:
 
   • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Bydd y cyfrif hwn ac unrhyw ddata sydd heb eu cadw yn cael eu tynnu o Chromium.</translation>
+<translation id="88376265765385899">Yn agor y nodau tudalen Chromium.</translation>
 <translation id="894437814105052438">Pan fyddwch yn allgofnodi, ni fydd Chromium yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>
 <translation id="8963279154877372067">Caniatáu i hysbysiadau Chromium gael rhybuddion gostyngiad mewn prisiau</translation>
 <translation id="9022552996538154597">Mewngofnodi i Chromium</translation>

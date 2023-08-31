@@ -135,7 +135,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Du har angett ditt lösenord på en webbplats som inte hanteras av organisationen. Skydda kontot genom att inte återanvända lösenordet för andra appar och webbplatser.</translation>
 <translation id="1257553931232494454">zoomnivåer</translation>
-<translation id="1258942153897182536">OCR pågår …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera inställningarna för Chrome</translation>
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -293,7 +292,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 
       &lt;p&gt;Ändra datumet och tiden under &lt;strong&gt;Allmänt&lt;/strong&gt; i appen &lt;strong&gt;Inställningar&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratören startar om enheten kl. <ph name="TIME" /> den <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Ingen text har konverterats från bilder</translation>
 <translation id="156703335097561114">Nätverksinformation som adresser, gränssnittskonfiguration och anslutningskvalitet</translation>
 <translation id="1567040042588613346">Den här principen fungerar som avsett, men den har även ställts in på annan plats med samma värde och detta andra värde ersätts av denna princip.</translation>
 <translation id="1567405528131216114">Lägg till <ph name="TOPIC" /></translation>
@@ -1382,7 +1380,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3901925938762663762">Kortet gäller inte längre</translation>
 <translation id="390391808978419508">Tidsgränsen för att öppna överskreds</translation>
 <translation id="3905894480064208252">{0,plural, =1{Filen har blockerats från att överföras}other{<ph name="FILE_COUNT" /> filer har blockerats från att överföras}}</translation>
-<translation id="3906095212874392000">Slut på konverterad text</translation>
 <translation id="3906954721959377182">Surfplatta</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Läs mer om inbäddat innehåll</translation>
@@ -1607,7 +1604,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4331519897422864041">Utmatningsfack 5</translation>
 <translation id="4331708818696583467">Inte säker</translation>
 <translation id="4333561522337981382">Hantera fönster på alla skärmar</translation>
-<translation id="4338709847516294988">Tryck på sök plus m och konvertera bilden till text i snabbmenyn</translation>
 <translation id="4340575312453649552">Den här annonsen använde för många resurser för enheten, så den togs bort i Chrome.</translation>
 <translation id="4340810192899866471">Importera från JSON</translation>
 <translation id="4340982228985273705">Den här datorn har inte identifierats som företagshanterad, så bara tillägg på Chrome Web Store kan installeras automatiskt med principen. Uppdateringsadressen på Chrome Web Store är <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1624,7 +1620,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4363222835916186793">Aviseringar för den här produkten har inaktiverats</translation>
 <translation id="4366943895537458493">Plåt</translation>
 <translation id="437040971055499437">Säkerhetshändelse inträffar</translation>
-<translation id="4371307856413138486">Början på konverterad text</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4372948949327679948">Ett <ph name="VALUE_TYPE" />-värde förväntades.</translation>
 <translation id="4375864595697821259">Lägg till ett ämne igen om du vill att det ska ingå i en samling ämnen som Chrome kan välja bland när Chrome gissar dina intressen</translation>
@@ -2403,7 +2398,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="604124094241169006">Automatisk</translation>
 <translation id="6041777658117377052">Kammartemperatur</translation>
 <translation id="6042308850641462728">Mer</translation>
-<translation id="6042688167654081154">Bilden har konverterats till text</translation>
 <translation id="6044573915096792553">Storlek 12</translation>
 <translation id="6045164183059402045">Utskjutningsmall</translation>
 <translation id="6047233362582046994">Om du är medveten om säkerhetsriskerna kan du <ph name="BEGIN_LINK" />besöka webbplatsen<ph name="END_LINK" /> innan de skadliga apparna har tagits bort.</translation>
@@ -2441,7 +2435,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6116338172782435947">Tillgång till text och bilder som kopierats till Urklipp</translation>
 <translation id="6117833587752089929">Foto (satäng)</translation>
 <translation id="6118782133429281336">Ursprungslistan är tom.</translation>
-<translation id="6120179357481664955">Vill du spara UPI-id?</translation>
 <translation id="6120950591512958208">Använd följande kod i kassan.</translation>
 <translation id="6122181661879998141">framsidan av kortet</translation>
 <translation id="6124058285696691147">Ladda ned bilagan</translation>
@@ -2476,7 +2469,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Helt avskurna flikar</translation>
-<translation id="6200386911308538077">Bilden analyseras</translation>
 <translation id="6203231073485539293">Kontrollera internetanslutningen</translation>
 <translation id="6205314730813004066">Annonsintegritet</translation>
 <translation id="6212314149070368045">Amerikansk Fanfold</translation>

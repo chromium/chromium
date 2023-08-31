@@ -76,7 +76,7 @@
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
-<translation id="4249068189593983585">Chrome 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
+<translation id="4463378960278646000">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶及使用 Chrome 的方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="4508370294876102450">從任何應用程式開啟 Chrome</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -108,7 +108,6 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">目前處於離線狀態，因此 Chrome 無法檢查更新</translation>
 <translation id="5716154293141027663">只要輕觸其他應用程式中的連結，即可透過 Chrome 開啟</translation>
-<translation id="5854621639439811139">Chrome 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
 <translation id="5998675059699164418">貴機構要求你先登入才能使用 Chrome。</translation>
 <translation id="6054613632208573261">使用 Chrome 做為預設瀏覽器</translation>
 <translation id="6063091872902370735">允許登入 Chrome</translation>
@@ -120,6 +119,7 @@
 <translation id="6427126399757991875">貴機構正在設定 Chrome...</translation>
 <translation id="6600954340915313787">已複製到 Chrome</translation>
 <translation id="6634107063912726160">登出帳戶後，Chrome 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
+<translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
@@ -157,6 +157,7 @@
 <translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
+<translation id="8413795581997394485">防範已知的危險網站、下載內容和擴充功能。當你造訪網站時，Chrome 會透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站有可疑行為，系統也會傳送整個網址和部分網頁內容。</translation>
 <translation id="8414886616817913619">根據貴機構的政策規定，你必須先登入才能使用 Chrome。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">請繼續使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>

@@ -102,8 +102,10 @@
 <translation id="2775140325783767197">Chrome がパスワードを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="2799223571221894425">再起動</translation>
 <translation id="2847461019998147611">Google Chrome をこの言語で表示</translation>
+<translation id="2853415089995957805">アクセスする可能性の高いページはプリロードされるので、実際にアクセスしたときの読み込み時間が短縮されます</translation>
 <translation id="2857540653560290388">Chrome を起動しています...</translation>
 <translation id="2857972467023607093">このアカウントの Chrome プロファイルはすでに存在します</translation>
+<translation id="286025080868315611">Chrome で一部のダウンロードがブロックされる理由</translation>
 <translation id="2861074815332034794">Chrome を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="2871893339301912279">Chrome にログインしました</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome でユーザーデータのプライバシーを保護する方法<ph name="END_LINK" />についての詳細</translation>
@@ -380,6 +382,7 @@
 <translation id="8286862437124483331">Google Chrome でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8290100596633877290">エラー: Google Chrome で問題が発生しました。今すぐ再起動しますか？</translation>
 <translation id="829923460755755423">Google パスワード マネージャーへのショートカットを追加できます</translation>
+<translation id="8336463659890584292">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chrome は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="8342675569599923794">このファイルは危険なファイルであるため、Chrome でブロックしました。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chrome に保存できます。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

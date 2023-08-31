@@ -34,6 +34,7 @@
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="2590893390871230428">Chromium axborotini sinxronlash</translation>
 <translation id="2618596336309823556">Qurilma Sozlamalaridan “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sahifasini oching va “Chromium” bandini tanlang</translation>
+<translation id="2631735236435791495">Siz kirayotgan hisob va Chromium profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida. Administrator ayrim funksiyalarni sozlashi va cheklashi mumkin.</translation>
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="2684230048001240293">Chromium brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="2730884209570016437">Chromium kamerangizdan foydalana olmaydi, chunki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
@@ -87,7 +88,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5453478652154926037">Chromium parollaringizni tekshira olmadi.</translation>
 <translation id="5521125884468363740">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun hisobga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="5522297504975449419">Ayrim Chromium funksiyalari endi ishlamaydi.</translation>
-<translation id="5573014823074921752">Chromium maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="5688047395118852662">Bu bildirgi Chromiumning barcha imkoniyatlaridan foydalanish yuzasidan takliflar chiqaradi.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
 <translation id="5777187867430702742">Chromium sahifasi</translation>
@@ -139,7 +139,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="7400689562045506105">Chromium doim yoningizda</translation>
 <translation id="7523464085759699266">“Chromium yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>
 <translation id="7674213385180944843">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Chromium” bandini oching.</translation>
-<translation id="7746854981345936341">Chromium maslahati. Ba’zi tugmalar endi ekranning quyi qismida. Masalan: Orqaga, Oldinga va Qidiruv tugmalari.</translation>
 <translation id="7763454117143368771">Internetni xavfsiz kezish va parollaringizni himoyalashda Chromium birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="7812317783196516890">Siz tizimga kirdingiz va maʼlumotlaringizni <ph name="DOMAIN" /> boshqaradigan hisob bilan sinxronladingiz. Uning administratori endi Chromium funksiyasini oʻzgartirishi mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi mumkin.</translation>
 <translation id="7859018312476869945">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>

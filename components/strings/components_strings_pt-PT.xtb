@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Vidro (colorido)</translation>
 <translation id="1074497978438210769">Inseguro</translation>
 <translation id="1075079914415273530">Agricultura e silvicultura</translation>
+<translation id="1075364221219156102">Usar uma chave de acesso</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Tabuleiro 19</translation>
 <translation id="1089439967362294234">Alterar palavra-passe</translation>
@@ -135,7 +136,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduziu a palavra-passe num site que não é gerido pela sua organização. Para proteger a conta, não reutilize a sua palavra-passe noutras aplicações e sites.</translation>
 <translation id="1257553931232494454">níveis de zoom</translation>
-<translation id="1258942153897182536">OCR em curso…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir as definições do Chrome</translation>
 <translation id="1264309058268477500">Alternativo</translation>
 <translation id="1264974993859112054">Desporto</translation>
@@ -293,7 +293,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 
       &lt;p&gt;Ajuste a data e a hora na secção &lt;strong&gt;Geral&lt;/strong&gt; da aplicação &lt;strong&gt;Definições&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Nenhum texto convertido a partir de imagens</translation>
 <translation id="156703335097561114">Informações de rede, tais como endereços, a configuração da interface e a qualidade da ligação</translation>
 <translation id="1567040042588613346">Esta política está a funcionar conforme esperado, mas o mesmo valor está definido noutro local e foi substituído por esta política.</translation>
 <translation id="1567405528131216114">Adicionar <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3901925938762663762">O cartão expirou</translation>
 <translation id="390391808978419508">A abertura excedeu o tempo limite</translation>
 <translation id="3905894480064208252">{0,plural, =1{A transferência do ficheiro foi bloqueada}other{A transferência de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
-<translation id="3906095212874392000">Fim do texto convertido</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saiba mais sobre conteúdo incorporado</translation>
@@ -1607,7 +1605,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4331519897422864041">Empilhador 5</translation>
 <translation id="4331708818696583467">Inseguro</translation>
 <translation id="4333561522337981382">Gerir janelas em todos os seus ecrãs</translation>
-<translation id="4338709847516294988">Prima Pesquisa + m e converta a imagem em texto no menu de contexto</translation>
 <translation id="4340575312453649552">Uma vez que este anúncio utiliza demasiados recursos para o seu dispositivo, o Chrome removeu-o.</translation>
 <translation id="4340810192899866471">Importar de JSON</translation>
 <translation id="4340982228985273705">Este computador não é detetado como sendo gerido pela empresa, por isso, a política apenas pode instalar automaticamente extensões alojadas na Web Store do Chrome. O URL de atualização da Web Store do Chrome é "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1624,7 +1621,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4363222835916186793">Os alertas para este produto foram desativados</translation>
 <translation id="4366943895537458493">Placa</translation>
 <translation id="437040971055499437">Ocorre um evento de segurança</translation>
-<translation id="4371307856413138486">Início do texto convertido</translation>
 <translation id="4371591986692297148">Inativo</translation>
 <translation id="4372948949327679948">Valor <ph name="VALUE_TYPE" /> esperado.</translation>
 <translation id="4375864595697821259">Volte a adicionar um item caso queira incluí-lo no conjunto de tópicos que o Chrome pode escolher ao estimar os seus interesses</translation>
@@ -2403,7 +2399,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="604124094241169006">Automático</translation>
 <translation id="6041777658117377052">Temperatura na câmara</translation>
 <translation id="6042308850641462728">Mais</translation>
-<translation id="6042688167654081154">Imagem convertida em texto</translation>
 <translation id="6044573915096792553">Tamanho 12</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
 <translation id="6047233362582046994">Se compreende os riscos para a sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de as aplicações prejudiciais terem sido removidas.</translation>
@@ -2441,7 +2436,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6116338172782435947">Ver o texto e as imagens copiados para a área de transferência</translation>
 <translation id="6117833587752089929">Foto (acetinado)</translation>
 <translation id="6118782133429281336">A lista de origens está vazia.</translation>
-<translation id="6120179357481664955">Lembra-se do seu ID do UPI?</translation>
 <translation id="6120950591512958208">Use este código no ato de pagamento.</translation>
 <translation id="6122181661879998141">na frente do cartão</translation>
 <translation id="6124058285696691147">Transferir anexo</translation>
@@ -2476,7 +2470,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separadores completos</translation>
-<translation id="6200386911308538077">A imagem está a ser analisada</translation>
 <translation id="6203231073485539293">Rever a ligação à Internet</translation>
 <translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6212314149070368045">Fanfold dos EUA</translation>
@@ -3143,6 +3136,7 @@ Detalhes adicionais:
 <translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Novo separador</translation>
 <translation id="7555777498260651025">Programas de TV familiares</translation>
+<translation id="7556328470713619625">Usar uma chave de acesso</translation>
 <translation id="7559278538486662777">Não é possível redimensionar esta app.</translation>
 <translation id="7561784249784255101">Disco versátil digital</translation>
 <translation id="7564049878696755256">Pode perder o acesso à sua conta do serviço <ph name="ORG_NAME" /> ou ser vítima de roubo de identidade. O Chrome recomenda a alteração da palavra-passe agora.</translation>

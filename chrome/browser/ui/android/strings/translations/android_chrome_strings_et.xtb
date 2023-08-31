@@ -159,6 +159,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="1854311313115643875">Kui katsed on sisse lülitatud, võimaldab reklaamide mõõtmine külastatavatel saitidel taotleda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.
 
 Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo – kustutate ka seotud mõõtmisteabe. Vaadake <ph name="BEGIN_LINK" />oma sirvimisajalugu<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Ava Chrome'i brauseris</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
 <translation id="189358972401248634">Teised keeled</translation>
@@ -704,7 +705,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4699172675775169585">Vahemällu salvestatud kujutised ja failid</translation>
 <translation id="4710167854527459075">Sordi uusima järgi</translation>
 <translation id="4719927025381752090">Paku tõlkimist</translation>
-<translation id="4720023427747327413">Ava teenuses <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Vaadake oma sageli külastatud saite</translation>
 <translation id="4731877163452936634">Esituskiirus: <ph name="PLAYBACK_SPEED" /> Klõpsake muutmiseks.</translation>
 <translation id="4732120983431207637">Virnaharutaja</translation>
@@ -810,7 +810,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5171045022955879922">Otsige või sisestage URL</translation>
 <translation id="5174700554036517242">Vaheleht on tagasi algsel kõrgusel</translation>
-<translation id="5184329579814168207">Ava Chrome'is</translation>
 <translation id="5186634140793586141">Hallake teemasid ja otsinguid, mis teile huvi pakuvad</translation>
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
 <translation id="5193988420012215838">Kopeeritud lõikelauale</translation>
@@ -1093,6 +1092,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6641780377503683465">Eemalda <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6645629752388991326">Hallake, millised seadmed saavad seda seadet turvavõtmena kasutades sisse logida.</translation>
+<translation id="6646696210740573446">Saadab privaatse serveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata Google'ile ka URL-e, sh lehe sisu.</translation>
 <translation id="6647441008198474441">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada</translation>
 <translation id="6648459603387803038">Teie administraator saab brauseri seadistust kaugühenduse kaudu muuta. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1452,6 +1452,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8394720698884623075">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel.</translation>
 <translation id="8402673309244746971">Ava voog Jälgitav</translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
+<translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="8414396119627470038">Logige saidile <ph name="SITE_ETLD_PLUS_ONE" /> sisse teenusega <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Lisateave Chrome'is reklaamide isikupärastamise kohta</translation>
 <translation id="8419244640277402268">Kaasa</translation>

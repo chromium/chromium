@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">زجاج (ملوّن)</translation>
 <translation id="1074497978438210769">غير آمن</translation>
 <translation id="1075079914415273530">زراعة وحراجة</translation>
+<translation id="1075364221219156102">استخدام مفتاح مرور</translation>
 <translation id="1080116354587839789">ملاءمة مع العرض</translation>
 <translation id="1081061862829655580">الدُرج 19</translation>
 <translation id="1089439967362294234">تغيير كلمة المرور</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">لقد أدخلتَ كلمة المرور في موقع إلكتروني لا تديره مؤسستك. ينصح بعدم استخدام كلمة المرور مجددًا في التطبيقات ومواقع الويب الأخرى لحماية حسابك.</translation>
 <translation id="1257553931232494454">مستويات التكبير أو التصغير</translation>
-<translation id="1258942153897182536">جارٍ التعرّف بصريًا على الأحرف…</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة إعدادات Chrome.</translation>
 <translation id="1264309058268477500">الدُرج البديل</translation>
 <translation id="1264974993859112054">رياضة</translation>
@@ -293,7 +293,6 @@
 
           &lt;p&gt;يُرجى تعديل التاريخ والوقت من القسم &lt;strong&gt;عام&lt;/strong&gt; في تطبيق &lt;strong&gt;الإعدادات&lt;/strong&gt; .&lt;/p&gt;</translation>
 <translation id="1559839503761818503">سيعيد المشرف تشغيل الجهاز في <ph name="TIME" /> بتاريخ <ph name="DATE" />.</translation>
-<translation id="1564753300777780201">لم يتم تحويل أي نص من الصور.</translation>
 <translation id="156703335097561114">معلومات الشبكة، مثل العناوين وإعدادات الواجهة وجودة الاتصال</translation>
 <translation id="1567040042588613346">تعمل هذه السياسة على النحو المنشود، غير أنّ القيمة نفسها مُحدّدة في مكان آخر ومن ثمَّ تم استبدالها بموجب هذه السياسة.</translation>
 <translation id="1567405528131216114">إضافة <ph name="TOPIC" /></translation>
@@ -1384,7 +1383,6 @@
 <translation id="3901925938762663762">انتهت صلاحية البطاقة</translation>
 <translation id="390391808978419508">انتهت مهلة الفتح</translation>
 <translation id="3905894480064208252">{0,plural, =1{تم حظر نقل الملف}zero{تم حظر نقل <ph name="FILE_COUNT" /> ملف}two{تم حظر نقل ملفَين (<ph name="FILE_COUNT" />)}few{تم حظر نقل <ph name="FILE_COUNT" /> ملفات}many{تم حظر نقل <ph name="FILE_COUNT" /> ملفًا}other{تم حظر نقل <ph name="FILE_COUNT" /> ملف}}</translation>
-<translation id="3906095212874392000">نهاية النص المحوَّل</translation>
 <translation id="3906954721959377182">جهاز لوحي</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">مزيد من المعلومات حول المحتوى المضمَّن</translation>
@@ -1609,7 +1607,6 @@
 <translation id="4331519897422864041">المكدِّس 5</translation>
 <translation id="4331708818696583467">غير آمن</translation>
 <translation id="4333561522337981382">إدارة النوافذ على جميع شاشات أجهزتك</translation>
-<translation id="4338709847516294988">‏اضغط على مفتاح البحث + m وحوِّل الصورة إلى نص في قائمة السياق.</translation>
 <translation id="4340575312453649552">‏يستخدم هذا الإعلان العديد من الموارد لجهازك، لذلك أزاله متصفِّح Chrome.</translation>
 <translation id="4340810192899866471">‏الاستيراد من ملف JSON</translation>
 <translation id="4340982228985273705">‏لا يتم رصد جهاز الكمبيوتر هذا كمؤسسة مُدارة حتى تتمكن السياسة فقط من التثبيت التلقائي للإضافات التي تمت استضافتها في سوق Chrome الإلكتروني. ويكون عنوان URL للتحديث في سوق Chrome الإلكتروني هو "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1626,7 +1623,6 @@
 <translation id="4363222835916186793">تم إيقاف التنبيهات لهذا المنتج.</translation>
 <translation id="4366943895537458493">صحن</translation>
 <translation id="437040971055499437">وقوع حدث أمني</translation>
-<translation id="4371307856413138486">بداية النص المحوَّل</translation>
 <translation id="4371591986692297148">غير مفعّلة</translation>
 <translation id="4372948949327679948">القيمة <ph name="VALUE_TYPE" /> المتوقعة.</translation>
 <translation id="4375864595697821259">‏يمكنك إعادة إضافة موضوع إذا أردت إدراجه ضمن مجموعة المواضيع التي يمكن لمتصفِّح Chrome الاختيار منها عند تقدير اهتماماتك.</translation>
@@ -2407,7 +2403,6 @@
 <translation id="604124094241169006">تلقائي</translation>
 <translation id="6041777658117377052">درجة حرارة الغرفة</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
-<translation id="6042688167654081154">تم تحويل الصورة إلى نص.</translation>
 <translation id="6044573915096792553">الحجم 12</translation>
 <translation id="6045164183059402045">نموذج الأمر</translation>
 <translation id="6047233362582046994">إذا كنت على دراية بالمخاطر التي تهدد أمانك، يمكنك <ph name="BEGIN_LINK" />زيارة الموقع الإلكتروني هذا<ph name="END_LINK" /> قبل أن تتم إزالة التطبيقات الضارة.</translation>
@@ -2445,7 +2440,6 @@
 <translation id="6116338172782435947">الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة</translation>
 <translation id="6117833587752089929">تصوير (برّاق)</translation>
 <translation id="6118782133429281336">قائمة المصادر فارغة.</translation>
-<translation id="6120179357481664955">هل تتذكر معرّف واجهة الدفعات الموحّدة؟</translation>
 <translation id="6120950591512958208">يمكنك استخدام هذا الرمز عند الدفع.</translation>
 <translation id="6122181661879998141">الجهة الأمامية للبطاقة</translation>
 <translation id="6124058285696691147">تنزيل المرفق</translation>
@@ -2480,7 +2474,6 @@
 <translation id="6196640612572343990">حظر ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
 <translation id="6197648101609735209">89 × 89 ملم</translation>
 <translation id="6198480336395236519">ملحقات بطول الصفحة</translation>
-<translation id="6200386911308538077">جارٍ تحليل الصورة</translation>
 <translation id="6203231073485539293">التحقق من اتصالك بالإنترنت</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
 <translation id="6212314149070368045">‏‫Fanfold أمريكي</translation>
@@ -3148,6 +3141,7 @@
 <translation id="7554475479213504905">إعادة التحميل والعرض على أيّ حال</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7555777498260651025">برامج تلفزيونية للأسرة</translation>
+<translation id="7556328470713619625">استخدام مفتاح مرور</translation>
 <translation id="7559278538486662777">لا يمكن تغيير حجم نافذة هذا التطبيق.</translation>
 <translation id="7561784249784255101">قرص رقمي متعدد الاستخدامات</translation>
 <translation id="7564049878696755256">‏قد تفقد إمكانية الوصول إلى حسابك على <ph name="ORG_NAME" /> أو تتعرض لسرقة هويتك. لذا يوصي Chrome بتغيير كلمة مرورك الآن.</translation>

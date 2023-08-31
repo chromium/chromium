@@ -22,6 +22,8 @@ Points à prendre en compte :
 
   • Si vous synchronisez votre historique avec votre compte Google, les métriques peuvent aussi inclure des informations sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Vous disposez du plus haut niveau de sécurité de Chrome contre les sites dangereux</translation>
+<translation id="1675955119303651351">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
+        Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1733654336159102143">Verrouillez votre navigation privée lorsque vous quittez Chrome ou passez à une autre application.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +31,7 @@ Points à prendre en compte :
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="2009224836393115614">Chrome n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="2056123005618757196">Soyez plus efficace grâce à Google Chrome, un navigateur simple, sécurisé et encore plus rapide.</translation>
+<translation id="2120238739383482109">Ouvre les favoris Chrome.</translation>
 <translation id="2147651015520127414">Chrome a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Données de la synchronisation Chrome</translation>
 <translation id="2339201583852607431">Votre mot de passe sera enregistré dans votre compte Google (<ph name="EMAIL" />).</translation>
@@ -65,6 +68,7 @@ Points à prendre en compte :
 <translation id="3594076341410558780">Masquer la fiche "Profiter pleinement de Chrome"</translation>
 <translation id="3655656110921623717">Cela signifie que Chrome demandera la version pour mobile à chaque fois.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
+<translation id="3741995255368156336">Ouvre la liste de lecture Chrome.</translation>
 <translation id="3827545470516145620">Vous disposez de la protection standard sur cet appareil</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="3901001113120561395">Profitez pleinement de Chrome.</translation>
@@ -76,7 +80,7 @@ Points à prendre en compte :
 <translation id="417201473131094001">Non disponible dans Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> utilisait Chrome et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
-<translation id="4249068189593983585">Astuce Chrome : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
+<translation id="4463378960278646000">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="4508370294876102450">Ouvrir Chrome depuis n'importe quelle appli</translation>
 <translation id="4523886039239821078">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez les désinstaller.</translation>
 <translation id="4633328489441962921">Chrome ne parvient pas à rechercher les mises à jour</translation>
@@ -91,6 +95,7 @@ Points à prendre en compte :
 <translation id="4903674399067644695">Cette fiche vous propose des suggestions pour tirer le meilleur parti de Chrome.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="5108659628347594808">Améliorer Chrome</translation>
+<translation id="5112925986883715005">Afficher la liste de lecture Chrome</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5162467219239570114">Version de Chrome obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chrome.</translation>
 <translation id="5190139289262548459">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chrome est utilisé.</translation>
@@ -108,7 +113,6 @@ Points à prendre en compte :
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome ne parvient pas à rechercher les mises à jour, car vous êtes hors connexion</translation>
 <translation id="5716154293141027663">Chrome s'ouvrira chaque fois que vous appuierez sur des liens dans d'autres applis</translation>
-<translation id="5854621639439811139">Astuce Chrome. Certains boutons figurent désormais en bas de l'écran. C'est le cas, par exemple, des boutons Arrière, Avant et Rechercher.</translation>
 <translation id="5998675059699164418">Votre organisation exige que vous vous connectiez pour utiliser Chrome.</translation>
 <translation id="6054613632208573261">Utiliser Chrome par défaut</translation>
 <translation id="6063091872902370735">Autoriser la connexion à Chrome</translation>
@@ -120,6 +124,7 @@ Points à prendre en compte :
 <translation id="6427126399757991875">Votre organisation configure Chrome…</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="6634107063912726160">Lorsque vous vous déconnectez, Chrome cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
+<translation id="6646696210740573446">Envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à Google.</translation>
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="6676840375528380067">Supprimer vos données Chrome sur cet appareil ?</translation>
 <translation id="6709398533399187136">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement.</translation>
@@ -154,9 +159,11 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="804638182476029347">Autoriser les notifications Chrome à recevoir des alertes en cas de baisse de prix</translation>
 <translation id="81358522153858150">Chrome est désormais compatible avec les règles relatives aux utilisateurs de votre compte géré</translation>
 <translation id="8160472928944011082">Impossible mettre à jour Chrome</translation>
+<translation id="8213758103105806860">Afficher les favoris Chrome</translation>
 <translation id="8357607116237445042">Indiquez si vous voulez effacer ou garder les données Chrome de cet appareil</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840168496893712993">Certains modules complémentaires entraînent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>
+<translation id="8413795581997394485">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="8414886616817913619">Votre organisation exige que vous vous connectiez pour utiliser Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Continuez d'utiliser les données Chrome de votre compte Google</translation>
 <translation id="8459495907675268833">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page history.google.com concernant, par exemple, vos recherches ou vos activités via d'autres services Google.</translation>

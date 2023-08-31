@@ -159,6 +159,7 @@
 <translation id="1854311313115643875">Якщо пробні версії функцій увімкнено, відвідувані вами сайти можуть запитувати в Chrome інформацію, яка допомагає їм вимірювати ефективність реклами. Функція оцінки ефективності реклами обмежує міжсайтове відстеження, передаючи між сайтами мінімум даних.
 
 Коли ви видаляєте історію веб-перегляду (повністю або для певного сайту), також вилучається інформація для вимірювання ефективності. Перегляньте <ph name="BEGIN_LINK" />історію веб-перегляду<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Відкривати у веб-переглядачі Chrome</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
 <translation id="189358972401248634">Інші мови</translation>
@@ -704,7 +705,6 @@
 <translation id="4699172675775169585">Кешовані зображення та файли</translation>
 <translation id="4710167854527459075">Сортувати за новішими</translation>
 <translation id="4719927025381752090">Пропонувати переклад</translation>
-<translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Переглянути улюблені сайти</translation>
 <translation id="4731877163452936634">Швидкість відтворення: <ph name="PLAYBACK_SPEED" />. Натисніть, щоб змінити.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
 <translation id="5174700554036517242">Вкладку згорнуто до початкової висоти</translation>
-<translation id="5184329579814168207">Відкрити в Chrome</translation>
 <translation id="5186634140793586141">Керуйте темами й пошуковими запитами, які вас цікавлять</translation>
 <translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
 <translation id="5193988420012215838">Скопійовано в буфер обміну</translation>
@@ -1093,6 +1092,7 @@
 <translation id="6641780377503683465">Вилучити інтерес "<ph name="INTEREST" />"</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6645629752388991326">Керуйте пристроями, на яких можна входити в обліковий запис, використовуючи цей пристрій як ключ безпеки.</translation>
+<translation id="6646696210740573446">Надсилає в Google обфусковану частину URL-адреси через сервер конфіденційності, який приховує вашу IP-адресу. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати в Google URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
 <translation id="6648459603387803038">Адміністратор може змінити налаштування веб-переглядача віддалено. Діями на цьому пристрої можна керувати за межами Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1452,6 +1452,7 @@
 <translation id="8394720698884623075">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chrome</translation>
 <translation id="8402673309244746971">Перейти до стрічки "У підписках"</translation>
 <translation id="8413126021676339697">Показати всю історію</translation>
+<translation id="8413795581997394485">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Коли ви відвідуєте сайт, Chrome надсилає в Google обфусковану частину URL-адреси через сервер конфіденційності, який приховує вашу IP-адресу. Якщо на сайті виявлено підозрілу поведінку, Chrome також надсилає повні URL-адреси й уривки контенту сторінки.</translation>
 <translation id="8414396119627470038">Увійдіть на сайт <ph name="SITE_ETLD_PLUS_ONE" /> з обліковими даними <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Докладніше про персоналізацію реклами в Chrome</translation>
 <translation id="8419244640277402268">Так, враховувати</translation>

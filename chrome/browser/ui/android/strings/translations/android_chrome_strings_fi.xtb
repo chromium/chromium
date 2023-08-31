@@ -159,6 +159,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1854311313115643875">Kokeilujen aikana käyttämäsi sivustot voivat pyytää Chromelta mainosten mittaamisen avulla tietoja, jotka auttavat mittaamaan sivustoilla näkyvien mainosten suoriutumista. Mainosten mittaaminen rajoittaa sivustojen välistä seurantaa siirtämällä mahdollisimman vähän tietoja sivustojen välillä.
 
 Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat myös siihen liittyvät mittaustiedot. Tarkista <ph name="BEGIN_LINK" />selaushistoriasi<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Avaa Chrome-selaimessa</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
 <translation id="1883903952484604915">Omat tiedostot</translation>
 <translation id="189358972401248634">Muut kielet</translation>
@@ -704,7 +705,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4699172675775169585">Välimuistissa olevat kuvat ja tiedostot</translation>
 <translation id="4710167854527459075">Lajittele: uusin ensin</translation>
 <translation id="4719927025381752090">Tarjoudu kääntämään</translation>
-<translation id="4720023427747327413">Avaa kohteessa <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Katso suositut sivustosi</translation>
 <translation id="4731877163452936634">Toistonopeus: <ph name="PLAYBACK_SPEED" />. Muuta klikkaamalla.</translation>
 <translation id="4732120983431207637">Pinon tyhjentäjä</translation>
@@ -810,7 +810,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5171045022955879922">Kirjoita hakusanoja tai URL-osoite</translation>
 <translation id="5174700554036517242">Välilehti on taas alkuperäisen korkuinen</translation>
-<translation id="5184329579814168207">Avaa Chromessa</translation>
 <translation id="5186634140793586141">Valitse sinua kiinnostavia aiheita ja hakuja</translation>
 <translation id="5191251636205085390">Lue lisää uusista teknologioista, joilla on tarkoitus korvata kolmannen osapuolen evästeet, ja tee haluamasi valinnat</translation>
 <translation id="5193988420012215838">Kopioitu leikepöydälle</translation>
@@ -1093,6 +1092,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6641780377503683465">Poista <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6645629752388991326">Hallitse, mitkä laitteet voivat kirjautua sisään käyttämällä tätä laitetta suojausavaimena.</translation>
+<translation id="6646696210740573446">Lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Googlelle URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
 <translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6648459603387803038">Järjestelmänvalvoja voi muuttaa selaimen määrityksiä etäyhteydellä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromen ulkopuolelta.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muu}other{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
@@ -1452,6 +1452,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
 <translation id="8402673309244746971">Siirry Seurataan-fiidiin</translation>
 <translation id="8413126021676339697">Näytä koko selaushistoria</translation>
+<translation id="8413795581997394485">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Kun käyt sivustolla, Chrome lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto tekee jotakin epäilyttävää, koko URL-osoitteet ja osia sivun sisällöstä lähetetään.</translation>
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>
 <translation id="8416347857511542594">Lue lisää mainosten personoinnista Chromessa</translation>
 <translation id="8419244640277402268">Sisällytä</translation>

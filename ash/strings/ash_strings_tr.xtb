@@ -150,6 +150,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1571697193564730395">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Büyüteç açıkken uzaklaştırın</translation>
 <translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
+<translation id="158838227375272121">Google Classroom web sitesi</translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1592682369233288537">Sonraki Masa: <ph name="NEXT_DESK_NAME" />, etkinleştirmek için Arama+Boşluk tuşlarını kullanın.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + aşağı ok</translation>
@@ -326,7 +327,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2369165858548251131">Çince "Merhaba"</translation>
 <translation id="2382875860893882175">Yayın şu anda duraklatılmış durumda. İstediğiniz zaman yayını devam ettirebilir veya durdurabilirsiniz.</translation>
 <translation id="2386292613071805067">Sayfadaki her şeyi seç</translation>
-<translation id="2396594569364254378">Bellek <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> toplam</translation>
 <translation id="2397416548179033562">Chrome menüsünü göster</translation>
 <translation id="240006516586367791">Medya denetimleri</translation>
 <translation id="2402411679569069051">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın veya telefonunuzun kilidini açın</translation>
@@ -1157,6 +1157,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5790085346892983794">Başarılı</translation>
 <translation id="5804651031882187592">"SIM kilidi" ayarını devre dışı bırakın</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
+<translation id="5823239091726045201">Web'deki Google görevleri</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /> yayınını durdur</translation>
 <translation id="5841296711770970362">Sonraki parçaya gidin</translation>
@@ -1432,7 +1433,6 @@ Yeni yüklenmiş</translation>
 <translation id="6981291220124935078">Erişimi etkinleştir</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
 <translation id="698231206551913481">Bu kullanıcıyla ilişkilendirilen tüm dosyalar ve yerel veriler, bu kullanıcı kaldırıldıktan sonra kalıcı olarak silinir.</translation>
-<translation id="6985306450422696113">Toplam <ph name="TOTAL_MEMORY" /> bellekten <ph name="USED_MEMORY" /> kullanılabilir</translation>
 <translation id="6989752354829085073">Chromebook'unuzu nasıl kullanacağınızı öğrenmek için kısa turumuza katılın. Cihazınızı 6 adımda kullanmaya başlayın.</translation>
 <translation id="7004910047186208204">Hücresel veri bağlantısı kurma</translation>
 <translation id="7005239792648594238">Başlamak için bir uygulama açın</translation>

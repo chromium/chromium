@@ -89,7 +89,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="5453478652154926037">Chromium no pot comprovar les teves contrasenyes.</translation>
 <translation id="5521125884468363740">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió i activa la sincronització</translation>
 <translation id="5522297504975449419">Algunes funcions de Chromium ja no estaran disponibles.</translation>
-<translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5688047395118852662">Aquesta targeta mostra suggeriments sobre com pots treure el màxim profit de Chromium.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
@@ -141,7 +140,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7400689562045506105">Utilitza Chromium a tot arreu</translation>
 <translation id="7523464085759699266">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chromium.</translation>
 <translation id="7674213385180944843">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Chromium i activa la càmera.</translation>
-<translation id="7746854981345936341">Consell de Chromium. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="7763454117143368771">Utilitza Chromium com a navegador predeterminat per protegir-te de llocs web perillosos i mantenir les teves contrasenyes segures</translation>
 <translation id="7812317783196516890">Tens la sessió iniciada i sincronitzes les teves dades amb un compte gestionat per <ph name="DOMAIN" />. L'administrador d'aquest compte ara pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chromium.</translation>
 <translation id="7859018312476869945">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>

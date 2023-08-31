@@ -104,6 +104,7 @@
 <translation id="2775140325783767197">Chrome 无法检查您的密码。请检查您的互联网连接。</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2847461019998147611">以这种语言显示 Google Chrome</translation>
+<translation id="2853415089995957805">Chrome 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="2857540653560290388">正在启动 Chrome…</translation>
 <translation id="2857972467023607093">已有一份使用此账号创建的 Chrome 个人资料</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -384,6 +385,7 @@
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
+<translation id="8336463659890584292">当某个网站请求以私密方式预加载其网页上的链接时，Chrome 会使用 Google 服务器。这样既可以知道会预加载哪些网站，又能避免这些网站得知您的身份。</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

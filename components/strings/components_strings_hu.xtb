@@ -136,7 +136,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Olyan webhelyen adta meg a jelszavát, amelyet nem az Ön szervezete kezel. Fiókja védelme érdekében ne használja fel újra a jelszót más alkalmazásokban és webhelyeken.</translation>
 <translation id="1257553931232494454">nagyítási/kicsinyítési szintek</translation>
-<translation id="1258942153897182536">OCR folyamatban…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-beállítások kezeléséhez.</translation>
 <translation id="1264309058268477500">Alternatív</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -294,7 +293,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 
       &lt;p&gt;Módosítsa a dátumot és az időt a &lt;strong&gt;Beállítások&lt;/strong&gt; alkalmazás &lt;strong&gt;Általános&lt;/strong&gt; részében.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Adminisztrátora a következő időpontban újra fogja indítani az eszközét: <ph name="DATE" />, <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Nincs képekből konvertált szöveg</translation>
 <translation id="156703335097561114">Hálózati információk, többek között címek, a kezelőfelület beállításai és a kapcsolat minősége</translation>
 <translation id="1567040042588613346">A házirend az elvárt módon működik, de valahol máshol ugyanaz az érték van beállítva, amelyet felülír ez a házirend.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> hozzáadása</translation>
@@ -1381,7 +1379,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3901925938762663762">A kártya lejárt</translation>
 <translation id="390391808978419508">Időtúllépés történt a megnyitás során</translation>
 <translation id="3905894480064208252">{0,plural, =1{A fájl átvitele le van tiltva}other{<ph name="FILE_COUNT" /> fájl átvitele le van tiltva}}</translation>
-<translation id="3906095212874392000">Konvertált szöveg vége</translation>
 <translation id="3906954721959377182">Táblagép</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">További információ a beágyazott tartalmakról</translation>
@@ -1606,7 +1603,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4331519897422864041">5. kötegelő</translation>
 <translation id="4331708818696583467">Nem biztonságos</translation>
 <translation id="4333561522337981382">Ablakok kezelése az összes képernyőn</translation>
-<translation id="4338709847516294988">Nyomja le a Keresés + m billentyűkombinációt, és konvertálja a képet szöveggé a helyi menüben</translation>
 <translation id="4340575312453649552">Ez a hirdetés az eszköz túl sok erőforrását használta, ezért a Chrome eltávolította.</translation>
 <translation id="4340810192899866471">Importálás JSON-ból</translation>
 <translation id="4340982228985273705">A rendszer nem vállalat által kezeltként érzékeli ezt a számítógépet, ezért a házirend csak a Chrome Webáruházban tárolt bővítményeket tudja automatikusan telepíteni. A Chrome Webáruház frissítési URL-je: <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1623,7 +1619,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4363222835916186793">A termékhez tartozó értesítések ki vannak kapcsolva</translation>
 <translation id="4366943895537458493">Lemez</translation>
 <translation id="437040971055499437">Biztonsági esemény történik</translation>
-<translation id="4371307856413138486">A konvertált szöveg eleje</translation>
 <translation id="4371591986692297148">Inaktív</translation>
 <translation id="4372948949327679948">Várt <ph name="VALUE_TYPE" /> érték.</translation>
 <translation id="4375864595697821259">Újra felvehet egyes témákat, ha azt szeretné, hogy azon témák csoportjában legyenek, ahonnan a Chrome választhat, amikor megbecsüli az Ön érdeklődési köreit</translation>
@@ -2402,7 +2397,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="604124094241169006">Automatikus</translation>
 <translation id="6041777658117377052">Kamra hőmérséklete</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
-<translation id="6042688167654081154">Szöveggé konvertált kép</translation>
 <translation id="6044573915096792553">Méret: 12</translation>
 <translation id="6045164183059402045">Ráhelyezési sablon</translation>
 <translation id="6047233362582046994">Ha tisztában van a biztonságát fenyegető kockázatokkal, a káros alkalmazások eltávolítása előtt is <ph name="BEGIN_LINK" />felkeresheti ezt a webhelyet<ph name="END_LINK" />.</translation>
@@ -2440,7 +2434,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6116338172782435947">Megtekinteni a vágólapra másolt szövegeket és képeket</translation>
 <translation id="6117833587752089929">Fotó (szatén)</translation>
 <translation id="6118782133429281336">Az eredetlista üres.</translation>
-<translation id="6120179357481664955">Emlékszik UPI-azonosítójára?</translation>
 <translation id="6120950591512958208">Használja ezt a kódot a fizetésnél.</translation>
 <translation id="6122181661879998141">a kártya elején</translation>
 <translation id="6124058285696691147">A melléklet letöltése</translation>
@@ -2475,7 +2468,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6196640612572343990">Harmadik féltől származó cookie-k letiltása</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Teljes hosszban kivágott fülek</translation>
-<translation id="6200386911308538077">A kép elemzése folyamatban van</translation>
 <translation id="6203231073485539293">Ellenőrizze az internetkapcsolatot</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
 <translation id="6212314149070368045">„US Fanfold” méret</translation>

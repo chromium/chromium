@@ -108,8 +108,10 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2775140325783767197">Chrome-k ezin ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2799223571221894425">Abiarazi berriro</translation>
 <translation id="2847461019998147611">Bistaratu Google Chrome hizkuntza honetan</translation>
+<translation id="2853415089995957805">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen</translation>
 <translation id="2857540653560290388">Chrome abiarazten…</translation>
 <translation id="2857972467023607093">Badago kontu honen Chrome-ko profil bat</translation>
+<translation id="286025080868315611">Ikusi zergatik blokeatzen dituen Chrome-k deskarga batzuk</translation>
 <translation id="2861074815332034794">Chrome eguneratzen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome-n saioa hasi duzu.</translation>
 <translation id="2876628302275096482">Lortu <ph name="BEGIN_LINK" />Chrome-k zure datuen pribatutasuna babesteko duen moduari<ph name="END_LINK" /> buruzko informazio gehiago</translation>
@@ -392,6 +394,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8290100596633877290">Google Chrome-k huts egin du. Berriro abiarazi nahi duzu?</translation>
 <translation id="829923460755755423">Gehitu Google-ren Pasahitz-kudeatzailea zerbitzurako lasterbide bat</translation>
+<translation id="8336463659890584292">Webgune batek orriko estekak modu pribatuan aurrez kargatzeko eskatzen duenean, Chrome-k Google-ren zerbitzariak erabiltzen ditu. Horrela, zure identitatea ezkutatzen zaio aurrez kargatutako webguneari, baina Google-k aurrez kargatu diren webguneak hautematen ditu.</translation>
 <translation id="8342675569599923794">Fitxategia arriskutsua da; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Webguneek zure interesei buruzko informazioa gorde dezakete Chrome-n; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>

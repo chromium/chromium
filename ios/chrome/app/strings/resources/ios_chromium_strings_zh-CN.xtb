@@ -89,7 +89,6 @@
 <translation id="5453478652154926037">Chromium 无法检查您的密码。</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="5522297504975449419">您将无法再使用某些 Chromium 功能。</translation>
-<translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
@@ -141,7 +140,6 @@
 <translation id="7400689562045506105">随时随地使用 Chromium</translation>
 <translation id="7523464085759699266">开启“在您关闭 Chromium 时锁定无痕式标签页”。</translation>
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
-<translation id="7746854981345936341">Chromium 提示。现在屏幕底部会显示“后退”、“前进”和“搜索”等按钮。</translation>
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="7812317783196516890">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的账号。此网域的管理员现在可以专门针对该账号设置用户规范，这可能会改变 Chromium 的行为。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>

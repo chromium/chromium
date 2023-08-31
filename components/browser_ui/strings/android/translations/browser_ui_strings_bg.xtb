@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">Разрешено, но не и за трети страни</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="1994173015038366702">URL адрес на сайт</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{Изтича след 1 ден}other{Изтича след # дни}}</translation>
 <translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2025115093177348061">Обогатена реалност</translation>
 <translation id="2030769033451695672">Докоснете, за да се върнете към <ph name="URL_OF_THE_CURRENT_TAB" /></translation>

@@ -159,6 +159,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="1854311313115643875">Tijdens actieve proeven kunnen sites die je bezoekt Chrome via Advertentiemeting om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.
 
 Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor een specifieke site), verwijder je ook de hieraan gekoppelde metingsgegevens. Bekijk <ph name="BEGIN_LINK" />je browsegeschiedenis<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Openen in de Chrome-browser</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
 <translation id="189358972401248634">Andere talen</translation>
@@ -704,7 +705,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4699172675775169585">Gecachete afbeeldingen en bestanden</translation>
 <translation id="4710167854527459075">Sorteren op nieuwste</translation>
 <translation id="4719927025381752090">Aanbieden om te vertalen</translation>
-<translation id="4720023427747327413">Openen in <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Bekijk je populaire sites</translation>
 <translation id="4731877163452936634">Afspeelsnelheid: <ph name="PLAYBACK_SPEED" />. Klik om te wijzigen.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
 <translation id="5174700554036517242">Tabblad is teruggezet naar oorspronkelijke hoogte</translation>
-<translation id="5184329579814168207">Openen in Chrome</translation>
 <translation id="5186634140793586141">Beheer de onderwerpen en zoekopdrachten waarin je bent geïnteresseerd</translation>
 <translation id="5191251636205085390">Bekijk meer informatie over en beheer nieuwe technologieën die cookies van derden willen vervangen</translation>
 <translation id="5193988420012215838">Naar klembord gekopieerd</translation>
@@ -1093,6 +1092,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6641780377503683465"><ph name="INTEREST" /> verwijderen</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6645629752388991326">Bepaal welke apparaten kunnen inloggen door dit apparaat als beveiligingssleutel te gebruiken.</translation>
+<translation id="6646696210740573446">Stuurt een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen.</translation>
 <translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6648459603387803038">Je beheerder kan je browserinstellingen op afstand wijzigen. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}other{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}}</translation>
@@ -1452,6 +1452,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8394720698884623075">Checkt URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome</translation>
 <translation id="8402673309244746971">Naar Je volgt</translation>
 <translation id="8413126021676339697">Hele geschiedenis bekijken</translation>
+<translation id="8413795581997394485">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als je een site bezoekt, stuurt Chrome een geobfusceerd gedeelte van de URL naar Google via een privacyserver die je IP-adres verbergt. Doet een site iets verdachts, dan worden ook volledige URL's en delen van de paginacontent verstuurd.</translation>
 <translation id="8414396119627470038">Log in bij <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Meer informatie over advertentiepersonalisatie in Chrome</translation>
 <translation id="8419244640277402268">Opnemen</translation>

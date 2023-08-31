@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Valitse <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
 <translation id="2618596336309823556">Avaa laitteen asetuksista <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> ja valitse Chromium.</translation>
+<translation id="2631735236435791495">Organisaatiosi (<ph name="DOMAIN" />) ylläpitää tiliä, jolle kirjaudut ja sitä, miten Chromiumia käytetään. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="2684230048001240293">Aseta Chromium oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
@@ -88,7 +89,6 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="5453478652154926037">Chromium ei voi tarkistaa salasanojasi.</translation>
 <translation id="5521125884468363740">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="5522297504975449419">Jotkin Chromiumin ominaisuudet eivät ole enää käytettävissä.</translation>
-<translation id="5573014823074921752">Chromium-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
 <translation id="5688047395118852662">Tässä kortissa on ehdotuksia Chromiumin hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
 <translation id="5777187867430702742">Chromium-sivu</translation>
@@ -140,7 +140,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7400689562045506105">Käytä Chromiumia missä tahansa</translation>
 <translation id="7523464085759699266">Laita päälle "Lukitse incognito-välilehdet, kun suljet Chromiumin".</translation>
 <translation id="7674213385180944843">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Chromium ja ota kamera käyttöön.</translation>
-<translation id="7746854981345936341">Chromium-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
 <translation id="7763454117143368771">Käytä Chromiumia oletusselaimena, niin pysyt turvassa vaarallisilta sivustoilta ja pidät salasanasi turvassa</translation>
 <translation id="7812317783196516890">Olet kirjautunut sisään ja dataasi synkronoidaan <ph name="DOMAIN" />-osoitteen hallinnoimalle tilille. Sen järjestelmänvalvoja voi nyt asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromiumin käyttäytymistä.</translation>
 <translation id="7859018312476869945">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chromium lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>

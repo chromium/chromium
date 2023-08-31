@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Cam (Renkli)</translation>
 <translation id="1074497978438210769">Güvenli değil</translation>
 <translation id="1075079914415273530">Tarım ve ormancılık</translation>
+<translation id="1075364221219156102">Geçiş Anahtarı Kullanın</translation>
 <translation id="1080116354587839789">Genişliğe sığdır</translation>
 <translation id="1081061862829655580">Tepsi 19</translation>
 <translation id="1089439967362294234">Şifreyi Değiştir</translation>
@@ -135,7 +136,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Şifrenizi kuruluşunuz tarafından yönetilmeyen bir sitede girdiniz. Hesabınızı korumak için şifrenizi başka uygulama ve sitelerde tekrar kullanmayın.</translation>
 <translation id="1257553931232494454">yakınlaştırma seviyeleri</translation>
-<translation id="1258942153897182536">OCR devam ediyor...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızı yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Spor</translation>
@@ -293,7 +293,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 
       &lt;p&gt;Lütfen &lt;strong&gt;Ayarlar&lt;/strong&gt; uygulamasının &lt;strong&gt;Genel&lt;/strong&gt; bölümünden tarih ve saati ayarlayın.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Yöneticiniz cihazınızı <ph name="DATE" /> tarihinde saat <ph name="TIME" /> olunca yeniden başlatacak</translation>
-<translation id="1564753300777780201">Resimlerden dönüştürülmüş metin yok</translation>
 <translation id="156703335097561114">Adresler, arayüz yapılandırması ve bağlantı kalitesi gibi ağ iletişimi bilgileri</translation>
 <translation id="1567040042588613346">Bu politika beklenildiği gibi çalışıyor, ancak başka bir yerde ayarlanmış aynı değeri geçersiz kılıyor.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ekle</translation>
@@ -1382,7 +1381,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3901925938762663762">Kartın kullanım süresi doldu</translation>
 <translation id="390391808978419508">Açma zaman aşımına uğradı</translation>
 <translation id="3905894480064208252">{0,plural, =1{Dosyanın aktarılması engellendi}other{<ph name="FILE_COUNT" /> dosyanın aktarılması engellendi}}</translation>
-<translation id="3906095212874392000">Dönüştürülmüş metnin sonu</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Yerleştirilmiş içerik hakkında daha fazla bilgi</translation>
@@ -1607,7 +1605,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4331519897422864041">Yığınlayıcı 5</translation>
 <translation id="4331708818696583467">Güvenli Değil</translation>
 <translation id="4333561522337981382">Tüm ekranlarınızda pencereleri yönetmek</translation>
-<translation id="4338709847516294988">Arama + M tuşlarına basın ve içerik menüsünde resmi metne dönüştürün</translation>
 <translation id="4340575312453649552">Bu reklam, cihazınız için çok fazla kaynak kullandığından Chrome tarafından kaldırıldı.</translation>
 <translation id="4340810192899866471">JSON dosyasından içe aktar</translation>
 <translation id="4340982228985273705">Bu bilgisayarın kurumsal olarak yönetilmediği algılandığı için politika yalnızca Chrome Web Mağazası'nda barındırılan uzantıları otomatik olarak yükleyebilir. Chrome Web Mağazası'nın güncelleme URL'si "<ph name="CWS_UPDATE_URL" />" şeklindedir.</translation>
@@ -1624,7 +1621,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4363222835916186793">Bu ürünle ilgili uyarılar devre dışı bırakıldı</translation>
 <translation id="4366943895537458493">Plaka</translation>
 <translation id="437040971055499437">Güvenlik işlemi gerçekleşti</translation>
-<translation id="4371307856413138486">Dönüştürülmüş metnin başı</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
 <translation id="4372948949327679948">Beklenen <ph name="VALUE_TYPE" /> değeri.</translation>
 <translation id="4375864595697821259">Chrome'un ilgi alanlarınızı tahmin ederken seçebileceği konular havuzunda olmasını istediğiniz bir öğeyi tekrar ekleyin</translation>
@@ -2403,7 +2399,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="604124094241169006">Otomatik</translation>
 <translation id="6041777658117377052">Oda sıcaklığı</translation>
 <translation id="6042308850641462728">Daha fazla</translation>
-<translation id="6042688167654081154">Resim metne dönüştürüldü</translation>
 <translation id="6044573915096792553">Boyut 12</translation>
 <translation id="6045164183059402045">Tanzim şablonu</translation>
 <translation id="6047233362582046994">Güvenliğinize ilişkin riskleri anladıysanız zararlı programlar kaldırılmadan önce <ph name="BEGIN_LINK" />bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
@@ -2441,7 +2436,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6116338172782435947">Panoya kopyalanan metin ve resimleri görme</translation>
 <translation id="6117833587752089929">Fotoğraf (Saten)</translation>
 <translation id="6118782133429281336">Kaynak listesi boş.</translation>
-<translation id="6120179357481664955">UPI ID'nizi hatırlıyor musunuz?</translation>
 <translation id="6120950591512958208">Ödeme sırasında bu kodu kullanın.</translation>
 <translation id="6122181661879998141">kartınızın önünde</translation>
 <translation id="6124058285696691147">Eklentiyi indir</translation>
@@ -2476,7 +2470,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6196640612572343990">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tam Kesi Tablar</translation>
-<translation id="6200386911308538077">Resim analiz ediliyor</translation>
 <translation id="6203231073485539293">İnternet bağlantınızı kontrol edin</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3144,6 +3137,7 @@ Ek ayrıntılar:
 <translation id="7554475479213504905">Yine de yeniden yükle ve göster</translation>
 <translation id="7554791636758816595">Yeni Sekme</translation>
 <translation id="7555777498260651025">Ailelere yönelik TV programları</translation>
+<translation id="7556328470713619625">Geçiş anahtarı kullanın</translation>
 <translation id="7559278538486662777">Bu uygulama yeniden boyutlandırılamaz.</translation>
 <translation id="7561784249784255101">Dijital Çok Yönlü Disk</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>

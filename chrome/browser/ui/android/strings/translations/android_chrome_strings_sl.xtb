@@ -159,6 +159,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="1854311313115643875">Če so preizkusi vklopljeni, merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.
 
 Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brskanja, izbrišete tudi povezane podatke o meritvah. Glejte <ph name="BEGIN_LINK" />zgodovino brskanja<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Odpri v brskalniku Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
@@ -704,7 +705,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4699172675775169585">Predpomnjene slike in datoteke</translation>
 <translation id="4710167854527459075">Najprej najnovejši</translation>
 <translation id="4719927025381752090">Ponudi prevajanje</translation>
-<translation id="4720023427747327413">Odpri v: <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Ogled najbolj priljubljenih spletnih mest</translation>
 <translation id="4731877163452936634">Hitrost predvajanja: <ph name="PLAYBACK_SPEED" />. Kliknite za zamenjavo.</translation>
 <translation id="4732120983431207637">Modul za odstranitev sklada</translation>
@@ -810,7 +810,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5171045022955879922">Poiščite ali vnesite URL</translation>
 <translation id="5174700554036517242">Zavihek je spet na začetni višini</translation>
-<translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5186634140793586141">Upravljanje tem in iskanj, ki vas zanimajo</translation>
 <translation id="5191251636205085390">Preberite več o novih tehnologijah, katerih namen je zamenjava piškotkov drugih ponudnikov, in jih nadzirajte.</translation>
 <translation id="5193988420012215838">Kopirano v odložišče</translation>

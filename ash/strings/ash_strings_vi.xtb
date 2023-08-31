@@ -150,6 +150,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
 <translation id="1586324912145647027">Chuyển đến không gian làm việc từ 1 đến 8</translation>
+<translation id="158838227375272121">Trang web Google Lớp học</translation>
 <translation id="1589090746204042747">Truy cập vào tất cả hoạt động của bạn trong phiên này</translation>
 <translation id="1592682369233288537">Không gian làm việc tiếp theo: <ph name="NEXT_DESK_NAME" />, dùng tổ hợp phím Tìm kiếm + Phím cách để kích hoạt.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên xuống</translation>
@@ -326,7 +327,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2369165858548251131">"Xin chào" bằng tiếng Trung</translation>
 <translation id="2382875860893882175">Quá trình truyền đang tạm dừng. Bạn có thể tiếp tục hoặc ngừng truyền bất cứ lúc nào.</translation>
 <translation id="2386292613071805067">Chọn mọi nội dung trên trang</translation>
-<translation id="2396594569364254378"><ph name="USED_MEMORY" /> bộ nhớ | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Hiển thị menu Chrome</translation>
 <translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
 <translation id="2402411679569069051">Hãy dùng vân tay hoặc mở khóa điện thoại của bạn để mở khóa Chromebook</translation>
@@ -1157,6 +1157,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5790085346892983794">Thành công</translation>
 <translation id="5804651031882187592">Tắt chế độ cài đặt "Khoá SIM"</translation>
 <translation id="5805809050170488595">Nhấp để kích hoạt <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tasks trên web</translation>
 <translation id="5825969630400862129">Cài đặt thiết bị đã kết nối</translation>
 <translation id="5837036133683224804">Dừng <ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Chuyển sang bản nhạc tiếp theo</translation>
@@ -1432,7 +1433,6 @@ Mới cài đặt</translation>
 <translation id="6981291220124935078">Bật quyền truy cập</translation>
 <translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="698231206551913481">Tất cả các tệp và dữ liệu cục bộ liên quan tới người dùng này sẽ bị xóa vĩnh viễn sau khi người dùng này bị xóa.</translation>
-<translation id="6985306450422696113">Còn trống <ph name="USED_MEMORY" /> trong tổng số <ph name="TOTAL_MEMORY" /> bộ nhớ</translation>
 <translation id="6989752354829085073">Xem hướng dẫn nhanh để biết cách thao tác trên Chromebook. Thiết lập và sử dụng trong 6 bước.</translation>
 <translation id="7004910047186208204">Kết nối với dữ liệu di động</translation>
 <translation id="7005239792648594238">Mở một ứng dụng để bắt đầu</translation>

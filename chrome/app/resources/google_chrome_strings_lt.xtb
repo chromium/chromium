@@ -109,8 +109,10 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2775140325783767197">„Chrome“ negali patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2799223571221894425">Paleisti iš naujo</translation>
 <translation id="2847461019998147611">Pateikti „Google Chrome“ šia kalba</translation>
+<translation id="2853415089995957805">„Chrome“ iš anksto įkelia puslapius, kuriuose galite apsilankyti, kad jie būtų sparčiau įkeliami juose lankantis.</translation>
 <translation id="2857540653560290388">Pristatoma „Chrome“...</translation>
 <translation id="2857972467023607093">„Chrome“ profilis su tokia paskyra jau yra</translation>
+<translation id="286025080868315611">Sužinokite, kodėl „Chrome“ blokuoja kai kuriuos atsisiuntimus</translation>
 <translation id="2861074815332034794">Atnaujinama „Chrome“ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Esate prisijungę prie „Chrome“.</translation>
 <translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
@@ -393,6 +395,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8286862437124483331">„Google Chrome“ bando rodyti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="8290100596633877290">Oi! „Google Chrome“ užstrigo. Paleisti iš naujo dabar?</translation>
 <translation id="829923460755755423">Pridėkite šaukinį prie „Google“ slaptažodžių tvarkyklės</translation>
+<translation id="8336463659890584292">Kai svetainė paprašo privačiai iš anksto įkelti nuorodas savo puslapyje, „Chrome“ naudoja „Google“ serverius. Taip slepiama jūsų tapatybė nuo iš anksto įkeltos svetainės, bet „Google“ sužino, kokios svetainės įkeliamos iš anksto.</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> svetainėse gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>

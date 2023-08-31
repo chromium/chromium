@@ -159,6 +159,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1854311313115643875">Pan fydd treialon ymlaen, mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw i ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.
 
 Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol — rydych hefyd yn dileu gwybodaeth mesur gysylltiedig. Gweld <ph name="BEGIN_LINK" />eich hanes pori<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Agor mewn porwr Chrome</translation>
 <translation id="1877026089748256423">Rydych yn defnyddio hen fersiwn o Chrome</translation>
 <translation id="1883903952484604915">Fy Ffeiliau</translation>
 <translation id="189358972401248634">Ieithoedd eraill</translation>
@@ -704,7 +705,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4699172675775169585">Lluniau a ffeiliau sydd wedi'u storio dros dro</translation>
 <translation id="4710167854527459075">Trefnu yn ôl newydd</translation>
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
-<translation id="4720023427747327413">Agor yn <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Gweld eich hoff wefannau</translation>
 <translation id="4731877163452936634">Cyflymder chwarae: <ph name="PLAYBACK_SPEED" />. Cliciwch i newid.</translation>
 <translation id="4732120983431207637">Dadweindiwr pentyrrau</translation>
@@ -810,7 +810,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5171045022955879922">Chwiliwch neu teipiwch URL</translation>
 <translation id="5174700554036517242">Mae'r tab yn ôl i'r uchder cychwynnol</translation>
-<translation id="5184329579814168207">Agor yn Chrome</translation>
 <translation id="5186634140793586141">Rheoli'r pynciau a'r chwiliadau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="5191251636205085390">Dysgu am a rheoli technolegau newydd sy'n anelu at ddisodli cwcis trydydd parti</translation>
 <translation id="5193988420012215838">Wedi'i gopïo i'ch clipfwrdd</translation>
@@ -1093,6 +1092,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6641780377503683465">Tynnu <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6645629752388991326">Rheoli pa ddyfeisiau all fewngofnodi drwy ddefnyddio'r ddyfais hon fel allwedd ddiogelwch.</translation>
+<translation id="6646696210740573446">Yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Google.</translation>
 <translation id="6647441008198474441">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragfynegi pa wefannau y mae'n bosib y byddwch yn ymweld â nhw nesaf</translation>
 <translation id="6648459603387803038">Gall eich gweinyddwr newid gosodiadau eich porwr o bell. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chrome hefyd.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}zero{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}two{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}few{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}many{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}other{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}}</translation>
@@ -1452,6 +1452,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8394720698884623075">Yn gwirio cyfeiriadau URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome</translation>
 <translation id="8402673309244746971">Mynd i Yn Dilyn</translation>
 <translation id="8413126021676339697">Dangos hanes llawn</translation>
+<translation id="8413795581997394485">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Pan fyddwch yn ymweld â gwefan, mae Chrome yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn gwneud rhywbeth amheus, bydd URL llawn a darnau o gynnwys tudalen hefyd yn cael eu hanfon.</translation>
 <translation id="8414396119627470038">Mewngofnodwch i <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Dysgu rhagor am bersonoleiddio hysbysebion yn Chrome</translation>
 <translation id="8419244640277402268">Cynnwys</translation>

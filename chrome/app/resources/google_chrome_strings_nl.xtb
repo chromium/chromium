@@ -108,8 +108,10 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2775140325783767197">Chrome kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2847461019998147611">Google Chrome weergegeven in deze taal</translation>
+<translation id="2853415089995957805">Chrome laadt vooraf de pagina's die je waarschijnlijk gaat bezoeken, zodat de pagina's sneller laden als je ze bezoekt</translation>
 <translation id="2857540653560290388">Chrome starten…</translation>
 <translation id="2857972467023607093">Er bestaat al een Chrome-profiel voor dit account</translation>
+<translation id="286025080868315611">Meer informatie over waarom Chrome bepaalde downloads blokkeert</translation>
 <translation id="2861074815332034794">Chrome updaten (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Je bent ingelogd bij Chrome.</translation>
 <translation id="2876628302275096482">Meer informatie over <ph name="BEGIN_LINK" />hoe Chrome je gegevens privé houdt<ph name="END_LINK" /></translation>
@@ -390,6 +392,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
 <translation id="829923460755755423">Voeg een snelkoppeling toe naar Google Wachtwoordmanager</translation>
+<translation id="8336463659890584292">Als een site vraagt om links op de sitepagina privé vooraf te laden, gebruikt Chrome de servers van Google. Je identiteit wordt dan verborgen voor de vooraf geladen site, maar Google leert welke sites vooraf worden geladen.</translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>

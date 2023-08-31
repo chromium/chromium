@@ -136,7 +136,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Bạn đã nhập mật khẩu của mình trên một trang web không thuộc quyền quản lý của tổ chức bạn. Để bảo vệ tài khoản, không sử dụng lại mật khẩu của bạn trên các ứng dụng và trang web khác.</translation>
 <translation id="1257553931232494454">mức thu phóng</translation>
-<translation id="1258942153897182536">Đang nhận dạng ký tự quang học...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý chế độ cài đặt Chrome của bạn</translation>
 <translation id="1264309058268477500">Khay thay thế</translation>
 <translation id="1264974993859112054">Thể thao</translation>
@@ -294,7 +293,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 
       &lt;p&gt;Hãy điều chỉnh ngày và giờ từ phần &lt;strong&gt;Chung&lt;/strong&gt; của ứng dụng &lt;strong&gt;Cài đặt&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Quản trị viên của bạn sẽ khởi động lại thiết bị của bạn vào <ph name="TIME" /> <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Không có văn bản nào được chuyển đổi từ hình ảnh</translation>
 <translation id="156703335097561114">Thông tin nối mạng như địa chỉ, cấu hình giao diện và chất lượng kết nối</translation>
 <translation id="1567040042588613346">Chính sách này đang hoạt động như dự kiến nhưng lại thay thế cho cùng một giá trị được đặt trong một nguồn khác.</translation>
 <translation id="1567405528131216114">Thêm <ph name="TOPIC" /></translation>
@@ -1383,7 +1381,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3901925938762663762">Thẻ đã hết hạn</translation>
 <translation id="390391808978419508">Đã hết thời gian mở</translation>
 <translation id="3905894480064208252">{0,plural, =1{Tệp đã bị chặn không cho chuyển}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho chuyển}}</translation>
-<translation id="3906095212874392000">Kết thúc phần văn bản đã chuyển đổi</translation>
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Tìm hiểu thêm về nội dung được nhúng</translation>
@@ -1608,7 +1605,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4331519897422864041">Khay xếp chồng 5</translation>
 <translation id="4331708818696583467">Không bảo mật</translation>
 <translation id="4333561522337981382">Quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
-<translation id="4338709847516294988">Nhấn tìm kiếm + m và chuyển đổi hình ảnh thành văn bản trong trình đơn theo bối cảnh</translation>
 <translation id="4340575312453649552">Chrome đã xóa quảng cáo này vì quảng cáo sử dụng quá nhiều tài nguyên của thiết bị.</translation>
 <translation id="4340810192899866471">Nhập từ JSON</translation>
 <translation id="4340982228985273705">Máy tính này không được coi là máy tính do doanh nghiệp quản lý, vì vậy, chính sách này chỉ có thể tự động cài đặt các tiện ích được lưu trữ trên Cửa hàng Chrome trực tuyến. URL cập nhật Cửa hàng Chrome trực tuyến là "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1625,7 +1621,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4363222835916186793">Đã tắt thông báo về sản phẩm này</translation>
 <translation id="4366943895537458493">Bản in</translation>
 <translation id="437040971055499437">Xảy ra sự kiện bảo mật</translation>
-<translation id="4371307856413138486">Bắt đầu phần văn bản đã chuyển đổi</translation>
 <translation id="4371591986692297148">Không hoạt động</translation>
 <translation id="4372948949327679948">Giá trị <ph name="VALUE_TYPE" /> mong đợi.</translation>
 <translation id="4375864595697821259">Thêm lại một chủ đề nếu bạn muốn đưa chủ đề đó vào nhóm chủ đề mà Chrome có thể lựa chọn khi ước đoán mối quan tâm của bạn</translation>
@@ -2404,7 +2399,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="604124094241169006">Tự động</translation>
 <translation id="6041777658117377052">Nhiệt độ buồng</translation>
 <translation id="6042308850641462728">Xem thêm</translation>
-<translation id="6042688167654081154">Đã chuyển đổi hình ảnh thành văn bản</translation>
 <translation id="6044573915096792553">Kích thước 12</translation>
 <translation id="6045164183059402045">Mẫu áp dụng</translation>
 <translation id="6047233362582046994">Nếu bạn hiểu các rủi ro về bảo mật, bạn có thể <ph name="BEGIN_LINK" />truy cập trang này<ph name="END_LINK" /> trước khi các ứng dụng có hại bị xóa.</translation>
@@ -2442,7 +2436,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6116338172782435947">Xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm</translation>
 <translation id="6117833587752089929">Ảnh (Satin)</translation>
 <translation id="6118782133429281336">Danh sách nguồn gốc đang trống.</translation>
-<translation id="6120179357481664955">Ghi nhớ mã nhận dạng sản phẩm duy nhất (UPI) của bạn?</translation>
 <translation id="6120950591512958208">Sử dụng mã này khi thanh toán.</translation>
 <translation id="6122181661879998141">mặt trước thẻ</translation>
 <translation id="6124058285696691147">Tải tệp đính kèm xuống</translation>
@@ -2477,7 +2470,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Giấy có nhãn dài dọc cạnh</translation>
-<translation id="6200386911308538077">Hình ảnh đang được phân tích</translation>
 <translation id="6203231073485539293">Kiểm tra kết nối Internet của bạn</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
 <translation id="6212314149070368045">Fanfold Hoa Kỳ</translation>

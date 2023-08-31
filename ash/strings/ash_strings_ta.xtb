@@ -150,6 +150,7 @@
 <translation id="1571697193564730395">'தொந்தரவு செய்ய வேண்டாம்' அம்சத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">மேக்னிஃபயர் இயக்கப்பட்டிருக்கும்போது சிறிதாக்கு</translation>
 <translation id="1586324912145647027">8 டெஸ்க்குகளில் 1வது டெஸ்க்கிற்குச் செல்லும்</translation>
+<translation id="158838227375272121">Google Classroom இணையதளம்</translation>
 <translation id="1589090746204042747">இந்த அமர்விலுள்ள உங்கள் அனைத்துச் செயல்பாடுகளையும் அணுகுதல்</translation>
 <translation id="1592682369233288537">அடுத்த டெஸ்க்: <ph name="NEXT_DESK_NAME" />, செயல்படுத்த Search+Space அழுத்தவும்.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + கீழ்நோக்கிய அம்புக்குறி</translation>
@@ -326,7 +327,6 @@
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2382875860893882175">அலைபரப்பு தற்போது இடைநிறுத்தப்பட்டுள்ளது. அலைபரப்பை எப்போது வேண்டுமானாலும் மீண்டும் தொடங்கலாம் அல்லது நிறுத்தலாம்.</translation>
 <translation id="2386292613071805067">பக்கத்தில் உள்ள அனைத்தையும் தேர்ந்தெடுக்கும்</translation>
-<translation id="2396594569364254378">நினைவக உபயோகம்: <ph name="USED_MEMORY" /> | மொத்த நினைவகம்: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Chrome மெனுவைக் காட்டு</translation>
 <translation id="240006516586367791">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="2402411679569069051">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும் அல்லது மொபைலை அன்லாக் செய்யவும்</translation>
@@ -1157,6 +1157,7 @@
 <translation id="5790085346892983794">வெற்றி</translation>
 <translation id="5804651031882187592">"சிம்மைப் பூட்டு" அமைப்பை முடக்குதல்</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
+<translation id="5823239091726045201">இணையத்தில் Google Tasks</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
 <translation id="5841296711770970362">அடுத்த டிராக்குக்குச் செல்</translation>
@@ -1432,7 +1433,6 @@
 <translation id="6981291220124935078">அணுகலை ஆன் செய்</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
 <translation id="698231206551913481">இந்தப் பயனர் அகற்றப்பட்டதும், பயனருடன் தொடர்புடைய எல்லா கோப்புகளும் அகத் தரவும் நிரந்தரமாக நீக்கப்படும்.</translation>
-<translation id="6985306450422696113"><ph name="TOTAL_MEMORY" /> மொத்த நினைவகத்தில் <ph name="USED_MEMORY" /> மீதமுள்ளது</translation>
 <translation id="6989752354829085073">Chromebookகை எப்படிப் பயன்படுத்துவது என்று அறிந்துகொள்ள முன்னோட்டத்தைப் பாருங்கள். 6 படிகளில் அமைத்து பயன்படுத்தத் தொடங்கலாம்.</translation>
 <translation id="7004910047186208204">மொபைல் டேட்டாவுடன் இணைக்கவும்</translation>
 <translation id="7005239792648594238">தொடங்க ஆப்ஸைத் திறக்கவும்</translation>

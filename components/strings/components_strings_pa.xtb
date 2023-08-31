@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">ਗਲਾਸ (ਰੰਗੀਨ)</translation>
 <translation id="1074497978438210769">ਸੁਰੱਖਿਅਤ ਨਹੀਂ</translation>
 <translation id="1075079914415273530">ਖੇਤੀਬਾੜੀ ਅਤੇ ਵਣ ਵਿਗਿਆਨ</translation>
+<translation id="1075364221219156102">ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="1080116354587839789">ਚੁੜਾਈ ਤੱਕ ਫਿਟ</translation>
 <translation id="1081061862829655580">ਟ੍ਰੇਅ 19</translation>
 <translation id="1089439967362294234">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ਤੁਸੀਂ ਉਸ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ ਜੋ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਨਹੀਂ ਹੈ। ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਹੋਰਾਂ ਐਪਾਂ ਅਤੇ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ ਨਾ ਵਰਤੋ।</translation>
 <translation id="1257553931232494454">ਜ਼ੂਮ ਪੱਧਰ</translation>
-<translation id="1258942153897182536">OCR ਜਾਰੀ ਹੈ ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ਆਪਣੀਆਂ Chrome ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="1264309058268477500">ਵਿਕਲਪਿਕ</translation>
 <translation id="1264974993859112054">ਖੇਡਾਂ</translation>
@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ਐਕਸ਼ਨ ਅਤੇ ਪਲੇਟਫਾਰਮ ਗੇਮਾਂ</translation>
 <translation id="1413809658975081374">ਪਰਦੇਦਾਰੀ ਗੜਬੜ</translation>
 <translation id="1414134146594747368">ਪ੍ਰੀ-ਸਕੂਲ</translation>
+<translation id="141826476809826269">ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੀ ਲਿਖਤ ਦਾ ਸਮਾਪਨ</translation>
 <translation id="1419305130220238697">'Chrome ਵਿੱਚ ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="1422930527989633628">ਸਾਈਟ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਹੁਣੇ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਉਹ ਨਕਲੀ ਲੱਗਦੀ ਹੈ। ਹਮਲਾਵਰ ਕਦੇ-ਕਦਾਈ URL ਵਿੱਚ ਮੁਸ਼ਕਲ ਨਾਲ ਪਤਾ ਲੱਗਣ ਵਾਲੀਆਂ ਨਿੱਕੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਕੇ ਸਾਈਟਾਂ ਦੀ ਨਕਲ ਤਿਆਰ ਕਰਦੇ ਹਨ।</translation>
 <translation id="1532118530259321453">ਇਸ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
 <translation id="1536390784834419204">ਪੰਨੇ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
+<translation id="1537807545287921620">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਸੰਦਰਭ ਮੀਨੂ ਖੋਲ੍ਹੋ ਅਤੇ "PDF ਤੋਂ ਲਿਖਤ ਐਕਸਟ੍ਰੈਕਟ ਕਰੋ" ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1539840569003678498">ਰਿਪੋਰਟ ਭੇਜੀ ਗਈ:</translation>
 <translation id="1542105669288201090">ਕਾਰੋਬਾਰੀ ਸਿੱਖਿਆ</translation>
 <translation id="1545757265410828525">ਕੀਮਤ ਦਾ ਇਤਿਹਾਸ</translation>
@@ -293,7 +295,6 @@
 
           &lt;p&gt;ਕਿਰਪਾ ਕਰਕੇ &lt;strong&gt;ਸੈਟਿੰਗਾਂ&lt;/strong&gt; ਐਪ ਦੇ &lt;strong&gt;ਸਧਾਰਨ&lt;/strong&gt; ਭਾਗ ਤੋਂ ਮਿਤੀ ਅਤੇ ਸਮਾਂ ਅਨੁਕੂਲਿਤ ਕਰੋ।&lt;/p&gt;</translation>
 <translation id="1559839503761818503">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="DATE" /> ਨੂੰ <ph name="TIME" /> ਵਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੇਗਾ</translation>
-<translation id="1564753300777780201">ਕਿਸੇ ਲਿਖਤ ਨੂੰ ਚਿੱਤਰਾਂ ਤੋਂ ਰੂਪਾਂਤਰਿਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="156703335097561114">ਨੈੱਟਵਰਕਿੰਗ ਜਾਣਕਾਰੀ ਜਿਵੇਂ ਕਿ ਪਤੇ, ਇੰਟਰਫੇਸ ਸੰਰੂਪਣ, ਅਤੇ ਕਨੈਕਸ਼ਨ ਗੁਣਵੱਤਾ</translation>
 <translation id="1567040042588613346">ਇਹ ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ ਪਰ ਸਮਾਨ ਮੁੱਲ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਸੈੱਟ ਹੈ ਅਤੇ ਇਸ ਨੀਤੀ ਵੱਲੋਂ ਪ੍ਰਤਿਸਥਾਪਨ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -865,6 +866,7 @@
 <translation id="2803306138276472711">Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੇ <ph name="SITE" /> 'ਤੇ ਹੁਣੇ ਹੀ<ph name="BEGIN_LINK" /> ਮਲਵੇਅਰ ਖੋਜਿਆ<ph name="END_LINK" /> ਸੀ। ਜੋ ਵੈੱਬਸਾਈਟਾਂ ਆਮ ਤੌਰ ਤੇ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀਆਂ ਹਨ, ਉਹ ਵੀ ਕਦੇ-ਕਦੇ ਮਲਵੇਅਰ ਨਾਲ ਸੰਕ੍ਰਮਿਤ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="2807052079800581569">ਚਿੱਤਰ Y ਸਥਿਤੀ</translation>
 <translation id="2808278141522721006">ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ Windows Hello ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="2814184336982254349">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਸੰਦਰਭ ਮੀਨੂ ਖੋਲ੍ਹਣ ਲਈ ਖੋਜ ਪਲੱਸ m ਦਬਾਓ ਅਤੇ "PDF ਤੋਂ ਲਿਖਤ ਐਕਸਟ੍ਰੈਕਟ ਕਰੋ" ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2818338148457093657">ਸੁੰਦਰਤਾ ਸੇਵਾਵਾਂ ਅਤੇ ਸਪਾ</translation>
 <translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2824775600643448204">ਪਤਾ ਅਤੇ ਖੋਜ ਬਾਰ</translation>
@@ -1106,6 +1108,7 @@
 <translation id="3340978935015468852">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3342018947887487892">ਬਾਅਦ ਵਿੱਚ, ਤੁਸੀਂ ਜਿਹੜੀ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ ਉਹ ਇਹ ਜਾਣਕਾਰੀ ਮੰਗ ਸਕਦੀ ਹੈ — ਜਾਂ ਤਾਂ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਵਿਸ਼ੇ ਜਾਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਵਿਗਿਆਪਨ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਗਏ ਹੋ।</translation>
 <translation id="3342366525167526994">ਸਰੀਰਕ ਕਲਾ</translation>
+<translation id="3344167530090084176">ਅਗਲੀ ਵਾਰ ਜ਼ਿਆਦਾ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਆਪਣੇ ਕਾਰਡ ਅਤੇ ਸੁਰੱਖਿਆ ਕੋਡ ਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="334438173029876234">ਸਕੇਟਬੋਰਡਿੰਗ ਸੰਬੰਧੀ ਉਪਕਰਨ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਬਦਲੋ...</translation>
@@ -1166,6 +1169,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ਦੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਲਿਖਤ ਨੂੰ ਦੇਖਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3461824795358126837">ਉਜਾਗਰਕਰਤਾ</translation>
 <translation id="3462200631372590220">ਉੱਨਤ ਲੁਕਾਓ</translation>
+<translation id="3465972433695735758">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਗਿਆ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="346601286295919445">ਰਸਾਇਣ ਵਿਗਿਆਨ</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ਇਸ ਵੇਲੇ ਖੁੱਲ੍ਹੀ ਹੋਈ, ਖੁੱਲ੍ਹੀ ਟੈਬ 'ਤੇ ਜਾਣ ਲਈ ਟੈਬ ਬਟਨ ਅਤੇ ਫਿਰ ਐਂਟਰ ਦਬਾਓ</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾ ਕੇ, ਫਿਰ ਫ਼ਿਲਹਾਲ ਖੁੱਲ੍ਹੀਆਂ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
@@ -1183,6 +1187,7 @@
 <translation id="350069200438440499">ਫ਼ਾਈਲ ਦਾ ਨਾਮ:</translation>
 <translation id="3501300228850242680">ਮੈਟਲ (ਸੰਗੀਤ)</translation>
 <translation id="350421688684366066">ਲੇਬਲ (ਹਾਈ-ਗਲੋਸ)</translation>
+<translation id="350763432931695541">ਅਗਲੇ ਕੁਝ ਪੰਨਿਆਂ ਵਿੱਚ ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3507869775212388416">ਕਨੂੰਨੀ ਖੇਤਰ ਦੀਆਂ ਨੌਕਰੀਆਂ</translation>
 <translation id="3507936815618196901">ਆਪਣੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਓ ਅਤੇ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="3512163584740124171">ਇਸ ਨੀਤੀ ਨੂੰ ਅਣਡਿੱਠ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਕਿਉਂਕਿ ਉਸੇ ਨੀਤੀ ਗਰੁੱਪ ਵਿੱਚ ਕਿਸੇ ਹੋਰ ਨੀਤੀ ਦੀ ਉੱਚ ਤਰਜੀਹ ਹੁੰਦੀ ਹੈ।</translation>
@@ -1379,7 +1384,6 @@
 <translation id="3901925938762663762">ਕਾਰਡ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ</translation>
 <translation id="390391808978419508">ਖੋਲ੍ਹਣ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="3905894480064208252">{0,plural, =1{ਫ਼ਾਈਲ ਨੂੰ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲ ਨੂੰ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{<ph name="FILE_COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}}</translation>
-<translation id="3906095212874392000">ਰੂਪਾਂਤਰਿਤ ਲਿਖਤ ਸਮਾਪਤ</translation>
 <translation id="3906954721959377182">ਟੈਬਲੈੱਟ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">ਜੋੜੀ ਗਈ ਸਮੱਗਰੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
@@ -1408,6 +1412,7 @@
 <translation id="3962859241508114581">ਪਿਛਲਾ ਟਰੈਕ</translation>
 <translation id="3963721102035795474">ਪਾਠਕ ਮੋਡ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ ਤੋਂ }other{# ਸਾਈਟਾਂ ਤੋਂ }}</translation>
+<translation id="3966044442021752214">ਉਤਪਾਦ ਸੁਰੱਖਿਆ</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ਨੂੰ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ਤੋਂ ਪਾਸਕੀ</translation>
@@ -1604,7 +1609,6 @@
 <translation id="4331519897422864041">ਸਟੈਕਰ 5</translation>
 <translation id="4331708818696583467">ਸੁਰੱਖਿਅਤ ਨਹੀਂ</translation>
 <translation id="4333561522337981382">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="4338709847516294988">ਖੋਜੋ ਪਲੱਸ m ਦਬਾਓ ਅਤੇ ਸੰਦਰਭ ਮੀਨੂ ਵਿੱਚ ਚਿੱਤਰ ਨੂੰ ਲਿਖਤ ਵਿੱਚ ਬਦਲੋ</translation>
 <translation id="4340575312453649552">ਇਸ ਵਿਗਿਆਪਨ ਨੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸਰੋਤਾਂ ਨੂੰ ਵਰਤਿਆ, ਇਸ ਲਈ Chrome ਨੇ ਇਸਨੂੰ ਹਟਾ ਦਿੱਤਾ।</translation>
 <translation id="4340810192899866471">JSON ਤੋਂ ਆਯਾਤ ਕਰੋ</translation>
 <translation id="4340982228985273705">ਇਸ ਕੰਪਿਊਟਰ ਦਾ ਕਿਸੇ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤੇ ਜਾਣ ਦਾ ਪਤਾ ਨਹੀਂ ਲੱਗਿਆ ਹੈ, ਇਸ ਲਈ ਨੀਤੀ ਸਿਰਫ਼ Chrome ਵੈੱਬਸਟੋਰ 'ਤੇ ਹੋਸਟ ਕੀਤੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਥਾਪਤ ਕਰ ਸਕਦੀ ਹੈ। Chrome ਵੈੱਬਸਟੋਰ ਦਾ ਅੱਪਡੇਟ URL "<ph name="CWS_UPDATE_URL" />" ਹੈ।</translation>
@@ -1621,7 +1625,6 @@
 <translation id="4363222835916186793">ਇਸ ਉਤਪਾਦ ਲਈ ਸੁਚੇਤਨਾਵਾਂ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4366943895537458493">ਪਲੇਟ</translation>
 <translation id="437040971055499437">ਸੁਰੱਖਿਆ ਇਵੈਂਟ ਹੋਣ 'ਤੇ</translation>
-<translation id="4371307856413138486">ਰੂਪਾਂਤਰਿਤ ਲਿਖਤ ਦੀ ਸ਼ੁਰੂਆਤ</translation>
 <translation id="4371591986692297148">ਅਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="4372948949327679948">ਸੰਭਾਵਿਤ <ph name="VALUE_TYPE" /> ਵੈਲਯੂ।</translation>
 <translation id="4375864595697821259">ਕਿਸੇ ਆਈਟਮ ਨੂੰ ਵਾਪਸ ਸ਼ਾਮਲ ਕਰੋ, ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ ਉਹ ਉਨ੍ਹਾਂ ਵਿਸ਼ਿਆਂ ਦੇ ਪੂਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੇ ਜੋ Chrome ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਵੇਲੇ ਚੁਣ ਸਕਦਾ ਹੈ</translation>
@@ -2400,7 +2403,6 @@
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>
 <translation id="6041777658117377052">ਚੈਂਬਰ ਦਾ ਤਾਪਮਾਨ</translation>
 <translation id="6042308850641462728">ਹੋਰ</translation>
-<translation id="6042688167654081154">ਚਿੱਤਰ ਨੂੰ ਲਿਖਤ ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="6044573915096792553">ਆਕਾਰ 12</translation>
 <translation id="6045164183059402045">ਇੰਮਪੋਜ਼ਿਸ਼ਨ ਟੈਮਪਲੇਟ</translation>
 <translation id="6047233362582046994">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੀ ਸੁਰੱਖਿਆ ਵਿੱਚ ਹੋਣ ਵਾਲੇ ਖਤਰੇ ਨੂੰ ਸਮਝਦੇ ਹੋ, ਤਾਂ ਹਾਨੀਕਾਰਕ ਐਪਾਂ ਨੂੰ ਹਟਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਇਸ ਸਾਈਟ 'ਤੇ ਜਾ<ph name="END_LINK" /> ਸਕਦੇ ਹੋ।</translation>
@@ -2438,7 +2440,6 @@
 <translation id="6116338172782435947">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="6117833587752089929">ਫ਼ੋਟੋ (ਸਾਟਿਨ)</translation>
 <translation id="6118782133429281336">ਮੂਲ ਸੂਚੀ ਖਾਲੀ ਹੈ।</translation>
-<translation id="6120179357481664955">ਕੀ ਤੁਹਾਨੂੰ ਆਪਣੀ UPI ਆਈਡੀ ਯਾਦ ਹੈ?</translation>
 <translation id="6120950591512958208">ਚੈੱਕ-ਆਊਟ 'ਤੇ ਇਸ ਕੋਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="6122181661879998141">ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ ਅਗਲੇ ਪਾਸੇ</translation>
 <translation id="6124058285696691147">ਨੱਥੀ ਫ਼ਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -2472,7 +2473,6 @@
 <translation id="6196640612572343990">ਤੀਜੀ-ਧਿਰ ਵਾਲੀਆਂ ਕੁੱਕੀਜ਼ ਨੂੰ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="6197648101609735209">89 x 89 ਮਿ.ਮੀ.</translation>
 <translation id="6198480336395236519">ਫੁੱਲ ਕੱਟ ਟੈਬ</translation>
-<translation id="6200386911308538077">ਚਿੱਤਰ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6203231073485539293">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6205314730813004066">ਵਿਗਿਆਪਨ ਪਰਦੇਦਾਰੀ</translation>
 <translation id="6212314149070368045">US ਫੈਨਫੋਲਡ</translation>
@@ -2853,6 +2853,7 @@
 <translation id="6973988895180423160">3.5 x 5 ਇੰਚ</translation>
 <translation id="6978236010531171013">ਫਿਰ ਵੀ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੀ ਲਿਖਤ ਦੀ ਸ਼ੁਰੂਆਤ</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="6987806006823772670">ਐਨਵਲੋਪ (ਕੋਟੇਡ)</translation>
 <translation id="6989763994942163495">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ...</translation>
@@ -2908,6 +2909,7 @@
 <translation id="7102760431686146931">ਭੋਜਨ ਬਣਾਉਣ ਅਤੇ ਭੋਜਨ ਖਾਣ ਵਾਲੇ ਭਾਂਡੇ</translation>
 <translation id="7105998430540165694">iCloud Keychain ਤੋਂ ਪਾਸਕੀ</translation>
 <translation id="7106762743910369165">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="7107249414147762907">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਕਿਸੇ ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7108338896283013870">ਲੁਕਾਓ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ਦੀ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="7108819624672055576">ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
@@ -3140,6 +3142,7 @@
 <translation id="7554475479213504905">ਰੀਲੋਡ ਕਰੋ ਅਤੇ ਫਿਰ ਵੀ ਦਿਖਾਓ</translation>
 <translation id="7554791636758816595">ਨਵੀਂ ਟੈਬ</translation>
 <translation id="7555777498260651025">ਪਰਿਵਾਰਕ ਟੀਵੀ ਸ਼ੋਅ</translation>
+<translation id="7556328470713619625">ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="7559278538486662777">ਇਸ ਐਪ ਦਾ ਆਕਾਰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7561784249784255101">ਡਿਜੀਟਲ ਵਰਸੇਟਾਈਲ ਡਿਸਕ</translation>
 <translation id="7564049878696755256">ਤੁਸੀਂ ਆਪਣੇ <ph name="ORG_NAME" /> ਖਾਤੇ 'ਤੇ ਪਹੁੰਚ ਗੁਆ ਸਕਦੇ ਹੋ ਜਾਂ ਤੁਹਾਡੀ ਪਛਾਣ ਚੋਰੀ ਹੋ ਸਕਦੀ ਹੈ। Chrome ਵੱਲੋਂ ਹੁਣੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
@@ -3920,6 +3923,7 @@
 <translation id="917450738466192189">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਵੈਧ ਹੈ।</translation>
 <translation id="9174623988242579721">ਵਿਉਂਤੇ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਵਾਹਨ</translation>
 <translation id="9174917557437862841">ਟੈਬ ਬਦਲਣ ਦਾ ਬਟਨ, ਇਸ ਟੈਬ 'ਤੇ ਜਾਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
+<translation id="9177283544810807743">ਇਹ PDF ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ। ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="9179703756951298733">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਭੁਗਤਾਨਾਂ ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="9179907736442194268">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਈਮੇਲ ਸੁਚੇਤਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="9183302530794969518">Google Docs</translation>

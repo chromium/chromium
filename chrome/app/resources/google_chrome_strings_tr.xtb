@@ -104,8 +104,10 @@
 <translation id="2775140325783767197">Chrome, şifrelerinizi kontrol edemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2847461019998147611">Google Chrome'u bu dilde görüntüle</translation>
+<translation id="2853415089995957805">Chrome, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
 <translation id="2857540653560290388">Chrome başlatılıyor...</translation>
 <translation id="2857972467023607093">Bu hesaba sahip bir Chrome profili zaten var</translation>
+<translation id="286025080868315611">Chrome'un bazı indirme işlemlerini neden engellediğini öğrenin</translation>
 <translation id="2861074815332034794">Chrome güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome'da oturum açtınız!</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome'un verilerinizi nasıl gizli tuttuğu<ph name="END_LINK" /> hakkında daha fazla bilg edinin</translation>
@@ -386,6 +388,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8290100596633877290">Of! Google Chrome kilitlendi. Şimdi yeniden başlatılsın mı?</translation>
 <translation id="829923460755755423">Google Şifre Yöneticisi için kısayol ekleyin</translation>
+<translation id="8336463659890584292">Bir site kendi sayfasındaki bağlantıları gizli olarak önceden yüklemek istediğinde Chrome, Google sunucularını kullanır. Bu şekilde kimliğiniz önceden yüklenmiş siteden gizlenmiş olur, ancak Google hangi sitelerin önceden yüklendiğini öğrenir.</translation>
 <translation id="8342675569599923794">Bu dosya tehlikeli olduğu için Chrome tarafından engellendi.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>

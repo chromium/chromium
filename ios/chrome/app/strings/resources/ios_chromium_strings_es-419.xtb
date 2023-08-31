@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>
 <translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
 <translation id="2618596336309823556">En la configuración de tu dispositivo, abre "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" y selecciona "Chromium"</translation>
+<translation id="2631735236435791495">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chromium. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>
 <translation id="2684230048001240293">Establece Chromium como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
@@ -88,7 +89,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="5453478652154926037">Chromium no puede revisar las contraseñas.</translation>
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
 <translation id="5522297504975449419">Algunas funciones de Chromium ya no estarán disponibles.</translation>
-<translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
@@ -140,7 +140,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="7400689562045506105">Usa Chromium en todas partes</translation>
 <translation id="7523464085759699266">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chromium".</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
-<translation id="7746854981345936341">Sugerencia de Chromium: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
 <translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="7812317783196516890">Accediste y estás sincronizando tus datos en una cuenta administrada por <ph name="DOMAIN" />, donde su administrador puede establecer las políticas del usuario específicas para esa cuenta, que pueden cambiar el comportamiento de Chromium.</translation>
 <translation id="7859018312476869945">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>

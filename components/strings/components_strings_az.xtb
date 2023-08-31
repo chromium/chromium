@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Şüşə (rəngli)</translation>
 <translation id="1074497978438210769">Təhlükəsiz deyil</translation>
 <translation id="1075079914415273530">Kənd təsərrüfatı və meşə təsərrüfatı</translation>
+<translation id="1075364221219156102">Giriş açarı istifadə edin</translation>
 <translation id="1080116354587839789">Eninə uyğunlaşdırın</translation>
 <translation id="1081061862829655580">Qab 19</translation>
 <translation id="1089439967362294234">Parolu Dəyişin</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Təşkilatınızın idarə etmədiyi saytda parolunuzu daxil etdiniz. Hesabınızı qorumaq üçün digər tətbiq və saytlarda parolunuzdan təkrar istifadə etməyin.</translation>
 <translation id="1257553931232494454">zoom səviyyələri</translation>
-<translation id="1258942153897182536">OCR davam edir...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarınızı idarə edin</translation>
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">İdman</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;Lütfən, tarix və saatı &lt;strong&gt;Ayarlar&lt;/strong&gt; tətbiqinin &lt;strong&gt;Ümumi&lt;/strong&gt; bölməsində düzəldin.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator cihazınızı bu vaxt yenidən başladacaq: <ph name="TIME" />, <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Şəkillərdən mətn çevrilməyib</translation>
 <translation id="156703335097561114">Ünvanlar, interfeys konfiqurasiyası və bağlantı keyfiyyəti kimi şəbəkə məlumatları</translation>
 <translation id="1567040042588613346">Bu siyasət nəzərdə tutulduğu kimi işləyir, lakin eyni dəyər başqa bir yerdə təyin olunub və bu siyasət tərəfindən əvəz edilib.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> əlavə edin</translation>
@@ -1378,7 +1377,6 @@
 <translation id="3901925938762663762">Kartın vaxtı bitib.</translation>
 <translation id="390391808978419508">Açma vaxtı bitdi</translation>
 <translation id="3905894480064208252">{0,plural, =1{Faylın ötürülməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın ötürülməsi bloklandı}}</translation>
-<translation id="3906095212874392000">Çevrilmiş mətnin sonu</translation>
 <translation id="3906954721959377182">Planşet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Daxil edilmiş kontent haqqında ətraflı</translation>
@@ -1603,7 +1601,6 @@
 <translation id="4331519897422864041">Yığıcı 5</translation>
 <translation id="4331708818696583467">Təhlükəsiz deyil</translation>
 <translation id="4333561522337981382">Bütün displeylərinizdə pəncərələri idarə edin</translation>
-<translation id="4338709847516294988">Axtarış və m üzərinə basıb, kontekst menyusunda şəkli mətnə çevirin</translation>
 <translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4340810192899866471">JSON-dan import edin</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1620,7 +1617,6 @@
 <translation id="4363222835916186793">Bu məhsul üçün xəbərdarlıqlar deaktiv edilib</translation>
 <translation id="4366943895537458493">Lövhə</translation>
 <translation id="437040971055499437">Güvənlik tədbiri baş verir</translation>
-<translation id="4371307856413138486">Çevrilmiş mətnin başlanğıcı</translation>
 <translation id="4371591986692297148">Fəaliyyətsiz</translation>
 <translation id="4372948949327679948">Gözlənilən <ph name="VALUE_TYPE" /> dəyəri.</translation>
 <translation id="4375864595697821259">Maraqlarınızı qiymətləndirərkən Chrome'un seçə biləcəyi mövzular bazasında olmasını istəyirsinizsə, elementi geri əlavə edin</translation>
@@ -2399,7 +2395,6 @@
 <translation id="604124094241169006">Avtomatik</translation>
 <translation id="6041777658117377052">Kameranın temperaturu</translation>
 <translation id="6042308850641462728">Daha çox</translation>
-<translation id="6042688167654081154">Şəkil mətnə çevrildi</translation>
 <translation id="6044573915096792553">Ölçü 12</translation>
 <translation id="6045164183059402045">Tətbiq şablonu</translation>
 <translation id="6047233362582046994">Təhlükəsizliklə bağlı riskləri başa düşürsünüzsə, zərərli tətbiqlər silinmədən əvvəl <ph name="BEGIN_LINK" />bu sayta daxil ola<ph name="END_LINK" /> bilərsiniz.</translation>
@@ -2437,7 +2432,6 @@
 <translation id="6116338172782435947">Buferə kopyalanan mətn və şəkillərə baxın</translation>
 <translation id="6117833587752089929">Foto (hamar)</translation>
 <translation id="6118782133429281336">Mənşə siyahısı boşdur.</translation>
-<translation id="6120179357481664955">UPI ID'niz yadda saxlansın?</translation>
 <translation id="6120950591512958208">Ödəniş zamanı bu koddan istifadə edin.</translation>
 <translation id="6122181661879998141">kartınızın ön tərəfi</translation>
 <translation id="6124058285696691147">Qoşmanı endirin</translation>
@@ -2472,7 +2466,6 @@
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Tam kəsilmiş tablar</translation>
-<translation id="6200386911308538077">Şəkil təhlil edilir</translation>
 <translation id="6203231073485539293">İnternet bağlantısını yoxlayın</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6212314149070368045">ABŞ Fanfold</translation>
@@ -3140,6 +3133,7 @@
 <translation id="7554475479213504905">İstənilən halda yenidən yükləyin və göstərin</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
 <translation id="7555777498260651025">Ailəvi TV şouları</translation>
+<translation id="7556328470713619625">Giriş açarı istifadə edin</translation>
 <translation id="7559278538486662777">Bu tətbiqin ölçüsünü dəyişmək alınmadı.</translation>
 <translation id="7561784249784255101">Rəqəmsal çoxyönlü disk</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chrome parollarınızı indi dəyişməyi məsləhət görür.</translation>

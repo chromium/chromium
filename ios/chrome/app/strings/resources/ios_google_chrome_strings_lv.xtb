@@ -76,7 +76,7 @@ Svarīga informācija
 <translation id="417201473131094001">Netiek atbalstīta pārlūkā Chrome Canary.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chrome un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
-<translation id="4249068189593983585">Chrome padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
+<translation id="4463378960278646000">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chrome lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="4508370294876102450">Atveriet Chrome jebkurā lietotnē</translation>
 <translation id="4523886039239821078">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet šos papildinājumus:</translation>
 <translation id="4633328489441962921">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
@@ -108,7 +108,6 @@ Svarīga informācija
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Pārlūkā Chrome nevar pārbaudīt atjauninājumu pieejamību.</translation>
 <translation id="5716154293141027663">Tiks atvērts pārlūks Chrome ikreiz, kad pieskarsieties saitēm citās lietotnēs.</translation>
-<translation id="5854621639439811139">Chrome padoms. Tagad ekrāna apakšdaļā ir dažas pogas, piemēram, Atpakaļ, Pārsūtīt un Meklēt.</translation>
 <translation id="5998675059699164418">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chrome, jums ir jāpierakstās.</translation>
 <translation id="6054613632208573261">Chrome izmantošana pēc noklusējuma</translation>
 <translation id="6063091872902370735">Atļaut pierakstīšanos pārlūkā Chrome</translation>
@@ -120,6 +119,7 @@ Svarīga informācija
 <translation id="6427126399757991875">Notiek Chrome iestatīšana jūsu organizācijā...</translation>
 <translation id="6600954340915313787">Nokopēta pārlūkā Chrome.</translation>
 <translation id="6634107063912726160">Ja izrakstīsieties, jaunie dati pārlūkā Chrome netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
+<translation id="6646696210740573446">Google serveriem tiek nosūtīta pieslēpta URL daļa, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, pārlūks Chrome var arī nosūtīt Google serveriem attiecīgos URL, tostarp lapas satura fragmentus.</translation>
 <translation id="6648150602980899529">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chrome datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chrome, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>
 <translation id="6676840375528380067">Vai dzēst jūsu Chrome datus no šīs ierīces?</translation>
 <translation id="6709398533399187136">Jūsu parole tika atklāta datu aizsardzības pārkāpuma dēļ. Google paroļu pārvaldnieks iesaka to tūlīt nomainīt.</translation>
@@ -157,6 +157,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="8357607116237445042">Izvēlieties, vai notīrīt Chrome datus no šīs ierīces vai tos paturēt</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="840168496893712993">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet tos.</translation>
+<translation id="8413795581997394485">Tiek nodrošināta aizsardzība pret zināmām bīstamām vietnēm, lejupielādēm un paplašinājumiem. Kad apmeklējat kādu vietni, pārlūks Chrome nosūta Google serveriem pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="8414886616817913619">Saskaņā ar jūsu organizācijas prasībām, lai izmantotu pārlūku Chrome, jums ir jāpierakstās. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="84594714173170813">Turpiniet izmantot Google kontā saglabātos Chrome datus</translation>
 <translation id="8459495907675268833">Atlasītie dati ir noņemti no pārlūka Chrome un sinhronizētajām ierīcēm. Jūsu Google kontam vietnē history.google.com var būt citu veidu pārlūkošanas vēstures dati, piemēram, meklēšanas vaicājumi un darbības citos Google pakalpojumos.</translation>

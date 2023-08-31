@@ -65,7 +65,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1295289763199166823">Personalizar menu</translation>
 <translation id="1305822519689023679">Para se certificar de que pode sempre usar as palavras-passe na sua Conta Google, valide a sua identidade.</translation>
 <translation id="1312721752506309252">A proteção melhorada está ativada</translation>
-<translation id="1316466854070752597">Ver todos os separadores abertos</translation>
 <translation id="1321993286294231467">Erro ao guardar a imagem.</translation>
 <translation id="1322735045095424339">A sua entidade requer o Modo de navegação anónima</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -155,6 +154,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1836891464494477513">{count,plural, =1{Marcador guardado na sua Conta Google {email}}other{Marcadores guardados na sua Conta Google {email}}}</translation>
 <translation id="1870148520156231997">Mostrar palavra-passe</translation>
 <translation id="1872096359983322073">Lanterna</translation>
+<translation id="1882901927376062252">{count,plural, =1{Marcador guardado na sua Conta Google, {email}}other{{count} marcadores guardados na sua Conta Google, {email}}}</translation>
 <translation id="1883255238294161206">Fechar lista</translation>
 <translation id="1894023287452300670">Monitorize o preço aqui</translation>
 <translation id="189531189292803889">O seu iPad foi restaurado recentemente, o que pode ter alterado o navegador predefinido.</translation>
@@ -298,6 +298,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2718352093833049315">Apenas em Wi-Fi</translation>
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">A seguir o canal <ph name="CHANNEL_NAME" /></translation>
+<translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Pode usar moradas guardadas entre produtos Google. Esta morada está guardada na sua Conta Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pesquisa anónima</translation>
 <translation id="277771892408211951">Selecionar idioma</translation>
@@ -411,10 +412,12 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3340938510625667914">Ações do Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
+<translation id="3365529507898144230">Guardar no Fotos</translation>
 <translation id="3371831930909698441">A tradução está disponível. Opções disponíveis junto à parte inferior do ecrã.</translation>
 <translation id="3377063233124932127">Agora, os seus marcadores, palavras-passe e outros itens guardados estão na parte superior.</translation>
 <translation id="3393920035788932672">Pop-ups Permitidos</translation>
 <translation id="3399930248910934354">Abrir definições do Chrome</translation>
+<translation id="3404232721752787413">Guardar no Google Fotos</translation>
 <translation id="3404744938087714423">Terminar sessão desativa a sincronização.</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
@@ -521,7 +524,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
 <translation id="4063300985191096908">Aceder ao feed</translation>
 <translation id="4066639687323968621">Inicie sessão com a sua Conta Google para sincronizar os marcadores, o histórico e muito mais.</translation>
-<translation id="408404951701638773">Agora é mais fácil aceder à barra de pesquisa</translation>
 <translation id="4092655288299341041">Mostrar ajuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar morada}other{Eliminar moradas}}</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
@@ -656,6 +658,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854345657858711387">Definir um código secreto</translation>
 <translation id="4856498338299082007">Na sua Conta Google</translation>
+<translation id="4856841893565072365">Barra de menu com ordenação inteligente</translation>
 <translation id="4858786880085262208">Sempre que possível, atualize para HTTPS. Os sites seguros podem incorporar conteúdo que não é seguro.</translation>
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4872323082491632254">Verifique palavras-passe</translation>
@@ -691,6 +694,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5083464117946352670">Não é poss. deter. tam. fich.</translation>
 <translation id="5090832849094901128">Eliminar esta palavra-passe não elimina a sua conta em <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet concluído.</translation>
+<translation id="5100848274708256363">Adira a um grupo familiar</translation>
 <translation id="5109892411553231226">Gerir métodos de pagamento</translation>
 <translation id="5118713593561876160">Interesses</translation>
 <translation id="5118764316110575523">Desativado</translation>
@@ -714,7 +718,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519530786644929958">A transferência falhou e não pode tentar novamente.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5209674813563615506">Abrir um novo separador</translation>
 <translation id="5211488077761630279">Permitir que "<ph name="SITE_NAME" />" use a autorização <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Ajude a melhorar a segurança na Web para todos</translation>
 <translation id="5220945116117011963">Crie eventos de calendário a partir de datas</translation>
@@ -731,7 +734,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Já está a acompanhar este produto.</translation>
-<translation id="5325595483440111327">Veja o histórico de navegação.</translation>
 <translation id="5339316356165661760">Ativar sincronização</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5360976571138293719">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" />.</translation>
@@ -902,6 +904,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="6289501276895392862">Deixou de seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Para ativar a Navegação segura, abra <ph name="BEGIN_LINK" />Serviços Google<ph name="END_LINK" /> e toque em Navegação segura.</translation>
 <translation id="629730747756840877">Conta</translation>
+<translation id="630693926528731525">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chrome. Em seguida, tente novamente.</translation>
 <translation id="6321526113093607004">Adicionar aos Marcadores</translation>
 <translation id="6324669097367352121">Definições de início de sessão</translation>
 <translation id="6328337032497818759">Personalize o menu</translation>
@@ -993,6 +996,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6642362222295953972">Mudar para um separador existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">Código QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6647480763136463714">Última execução: <ph name="TIME" /></translation>
 <translation id="6656103420185847513">Editar Pasta</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6668619169535738264">Editar marcador</translation>
@@ -1020,7 +1024,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6785453220513215166">A enviar relatório de falha...</translation>
 <translation id="6790502149545262384">Em breve, vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="6797885426782475225">Pesquisa por voz</translation>
-<translation id="6801927553864092214">Para navegar em privado, abra um separador de navegação anónima</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
@@ -1106,6 +1109,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7351537303876921605">Toque em Criar link no menu de contexto</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7353432112255316844">Validar identidade</translation>
+<translation id="7380220816562673297">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e receba mais dos seus produtos e subscrições na rede Google.</translation>
 <translation id="7383797227493018512">Lista de leitura</translation>
 <translation id="7398893703713203428">Criar link</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
@@ -1169,7 +1173,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7749790401023484470">Não selecionou texto.</translation>
 <translation id="7756478488453921771">Menu → Definições → Métodos de pagamento</translation>
 <translation id="7760127703945531263">Bloqueio da Navegação anónima</translation>
-<translation id="7762768971412105260">Dados na sua conta</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="777572173400717978">{count,plural, =1{Adicionado aos marcadores}other{Adicionados aos marcadores}}</translation>
@@ -1272,7 +1275,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8299613349954694191">Abra um separador de navegação anónima para navegar na Web de forma privada.</translation>
 <translation id="8316944564970119719">Introduza o site e a palavra-passe e, em seguida, guarde</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
-<translation id="8323906514956095947">Toque sem soltar para obter mais opções de separadores.</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
 <translation id="834783239627985533">Sites mais visitados</translation>
@@ -1429,6 +1431,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="9223358826628549784">Relatório de falha enviado.</translation>
 <translation id="941747855997058526">Selecionar palavra-passe…</translation>
 <translation id="948048872540558976">Criar novo separador</translation>
+<translation id="952218985181984374">{count,plural, =1{Marcador guardado}other{{count} marcadores guardados}}</translation>
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Sessão terminada no Chrome</translation>
 <translation id="959066944189734975">Está a seguir <ph name="CHANNEL_NAME" /></translation>

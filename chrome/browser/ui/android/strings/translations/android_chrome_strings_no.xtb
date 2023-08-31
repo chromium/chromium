@@ -159,6 +159,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="1854311313115643875">Når prøveprosjekter er påslått, kan nettsteder du besøker, bruke annonsemålinger for å spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.
 
 Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for et bestemt nettsted, sletter du også tilknyttet målingsinformasjon. Se <ph name="BEGIN_LINK" />nettleserloggen din<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Åpne i Chrome-nettleseren</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre språk</translation>
@@ -704,7 +705,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4710167854527459075">Sorter etter nyeste</translation>
 <translation id="4719927025381752090">Tilby å oversette</translation>
-<translation id="4720023427747327413">Åpne i <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Se toppnettstedene dine</translation>
 <translation id="4731877163452936634">Avspillingshastighet: <ph name="PLAYBACK_SPEED" />. Klikk for å endre.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5171045022955879922">Søk, eller skriv inn en nettadresse</translation>
 <translation id="5174700554036517242">Fanen er tilbake i opprinnelig høyde</translation>
-<translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5186634140793586141">Administrer emnene og søkene du er interessert i</translation>
 <translation id="5191251636205085390">Finn ut om og kontroller nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>

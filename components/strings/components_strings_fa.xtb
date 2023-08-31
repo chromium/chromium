@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">شیشه (رنگی)</translation>
 <translation id="1074497978438210769">امن نیست</translation>
 <translation id="1075079914415273530">کشاورزی و جنگل‌داری</translation>
+<translation id="1075364221219156102">استفاده از «گذرکلید»</translation>
 <translation id="1080116354587839789">متناسب با پهنا</translation>
 <translation id="1081061862829655580">سینی ۱۹</translation>
 <translation id="1089439967362294234">تغییر گذرواژه</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">گذرواژه‌تان را در سایتی که توسط سازمانتان مدیریت نمی‌شود وارد کردید. برای محافظت از حسابتان، از گذرواژه‌تان در سایر برنامه‌ها و سایت‌ها مجدداً استفاده نکنید.</translation>
 <translation id="1257553931232494454">سطوح بزرگ‌نمایی</translation>
-<translation id="1258942153897182536">‏OCR درحال انجام…</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="1264309058268477500">جایگزین</translation>
 <translation id="1264974993859112054">ورزش</translation>
@@ -293,7 +293,6 @@
 
           &lt;p&gt;لطفاً تاریخ و زمان را در بخش &lt;strong&gt;عمومی&lt;/strong&gt; برنامه &lt;strong&gt;تنظیمات&lt;/strong&gt; تنظیم کنید.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">سرپرست دستگاهتان را ساعت <ph name="TIME" /> در تاریخ <ph name="DATE" /> بازراه‌اندازی خواهد کرد</translation>
-<translation id="1564753300777780201">هیچ نوشتاری از تصاویر تبدیل نشد</translation>
 <translation id="156703335097561114">اطلاعات شبکه، مثل نشانی‌ها، پیکربندی میانا، و کیفیت اتصال</translation>
 <translation id="1567040042588613346">این خط‌مشی درست کار می‌کند اما مقدار یکسانی در جای دیگری تنظیم شده است که این خط‌مشی آن را جایگزین می‌کند.</translation>
 <translation id="1567405528131216114">افزودن <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@
 <translation id="3901925938762663762">کارت منقضی شده است</translation>
 <translation id="390391808978419508">مهلت زمانی کپی کردن تمام شد</translation>
 <translation id="3905894480064208252">{0,plural, =1{انتقال فایل مسدود شده است}one{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}other{انتقال <ph name="FILE_COUNT" /> فایل مسدود شده است}}</translation>
-<translation id="3906095212874392000">انتهای نوشتار تبدیل‌شده</translation>
 <translation id="3906954721959377182">رایانه لوحی</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">درباره محتوای جاسازی‌شده بیشتر بدانید</translation>
@@ -1607,7 +1605,6 @@
 <translation id="4331519897422864041">پشته‌ساز ۵</translation>
 <translation id="4331708818696583467">امن نیست</translation>
 <translation id="4333561522337981382">پنجره‌های همه نمایشگرهایتان را مدیریت کند</translation>
-<translation id="4338709847516294988">‏کلید جستجو و m را فشار دهید و در منوی بافت، تصویر را به نوشتار تبدیل کنید</translation>
 <translation id="4340575312453649552">‏این آگهی از منابع زیادی برای دستگاهتان استفاده کرده بود، بنابراین Chrome آن را حذف کرد.</translation>
 <translation id="4340810192899866471">‏وارد کردن از JSON</translation>
 <translation id="4340982228985273705">‏این رایانه به‌صورت سازمانی مدیریت نمی‌شود، بنابراین خط‌مشی تنها می‌تواند به‌صورت خودکار افزونه‌های میزبانی‌شده در «نت‌بازار Chrome» را نصب کند. نشانی وب به‌روزرسانی «نت‌بازار Chrome» «<ph name="CWS_UPDATE_URL" />» است.</translation>
@@ -1624,7 +1621,6 @@
 <translation id="4363222835916186793">هشدارهای این محصول خاموش شد</translation>
 <translation id="4366943895537458493">صفحه</translation>
 <translation id="437040971055499437">رویداد امنیتی اتفاق می‌افتد</translation>
-<translation id="4371307856413138486">ابتدای نوشتار تبدیل‌شده</translation>
 <translation id="4371591986692297148">غیرفعال</translation>
 <translation id="4372948949327679948">مقدار مورد انتظار <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">‏اگر می‌خواهید موردی در مجموعه موضوعاتی باشد که Chrome می‌تواند هنگام برآورد کردن علایق شما از میان آن‌ها انتخاب کند، آن مورد را دوباره اضافه کنید</translation>
@@ -2403,7 +2399,6 @@
 <translation id="604124094241169006">خودکار</translation>
 <translation id="6041777658117377052">دمای محفظه</translation>
 <translation id="6042308850641462728">بیشتر</translation>
-<translation id="6042688167654081154">تصویر به نوشتار تبدیل شد</translation>
 <translation id="6044573915096792553">اندازه ۱۲</translation>
 <translation id="6045164183059402045">الگوی چاپ مضاعف</translation>
 <translation id="6047233362582046994">اگر خطری را که امنیتتان را تهدید می‌کند درک می‌کنید، می‌توانید قبل از حذف برنامه‌های مضر، <ph name="BEGIN_LINK" />از این سایت بازدید کنید<ph name="END_LINK" />.</translation>
@@ -2441,7 +2436,6 @@
 <translation id="6116338172782435947">به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
 <translation id="6117833587752089929">عکس (ساتن)</translation>
 <translation id="6118782133429281336">فهرست مبدأ خالی است.</translation>
-<translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
 <translation id="6120950591512958208">هنگام تصفیه‌حساب از این کد استفاده کنید.</translation>
 <translation id="6122181661879998141">روی کارت درج شده است</translation>
 <translation id="6124058285696691147">بارگیری پیوست</translation>
@@ -2476,7 +2470,6 @@
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="6197648101609735209">۸۹ × ۸۹ میلی‌متر</translation>
 <translation id="6198480336395236519">برگه‌های کامل برش‌خورده</translation>
-<translation id="6200386911308538077">تصویر درحال تجزیه‌وتحلیل است</translation>
 <translation id="6203231073485539293">اتصال اینترنتتان را بررسی کنید</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6212314149070368045">تاشوی آمریکایی</translation>
@@ -3144,6 +3137,7 @@
 <translation id="7554475479213504905">بار کردن مجدد و نمایش درهرصورت</translation>
 <translation id="7554791636758816595">برگهٔ جدید</translation>
 <translation id="7555777498260651025">نمایش تلویزیونی خانوادگی</translation>
+<translation id="7556328470713619625">استفاده از گذرکلید</translation>
 <translation id="7559278538486662777">اندازه این برنامه را نمی‌توان تغییر داد.</translation>
 <translation id="7561784249784255101">لوح چندمنظوره دیجیتال</translation>
 <translation id="7564049878696755256">‏ممکن است دسترسی به حساب <ph name="ORG_NAME" /> را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>

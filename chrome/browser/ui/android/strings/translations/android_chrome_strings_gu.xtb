@@ -159,6 +159,7 @@
 <translation id="1854311313115643875">અજમાયશો ચાલુ હોય ત્યારે, Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chrome પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.
 
 તમે જ્યારે — બધો અથવા અમુક ચોક્કસ સાઇટ — પરનો તમારો બ્રાઉઝિંગ ઇતિહાસ ડિલીટ કરો, ત્યારે તમે તેની સાથે સંકળાયેલી માપન સંબંધિત માહિતી પણ ડિલીટ કરો છો. <ph name="BEGIN_LINK" />તમારો બ્રાઉઝિંગ ઇતિહાસ<ph name="END_LINK" /> જુઓ.</translation>
+<translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
@@ -704,7 +705,6 @@
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4710167854527459075">નવું પહેલા મુજબ સૉર્ટ</translation>
 <translation id="4719927025381752090">અનુવાદ કરવાનું ઑફર કરો</translation>
-<translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> માં ખોલો</translation>
 <translation id="47217992755561375">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જુઓ</translation>
 <translation id="4731877163452936634">પ્લેબૅકની સ્પીડ: <ph name="PLAYBACK_SPEED" />. બદલવા માટે ક્લિક કરો.</translation>
 <translation id="4732120983431207637">સ્ટૅક અનવાઇન્ડર</translation>
@@ -810,7 +810,6 @@
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5171045022955879922">URL શોધો અથવા લખો</translation>
 <translation id="5174700554036517242">ટૅબ પ્રારંભિક ઊંચાઈ પર પાછું આવી ગયું છે</translation>
-<translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5186634140793586141">તમને જેમાં રુચિ હોય તેવા વિષયો અને શોધો મેનેજ કરો</translation>
 <translation id="5191251636205085390">ત્રીજા પક્ષની કુકીને બદલે વાપરવાના ઉદ્દેશ્યથી બનાવવામાં આવેલી નવી ટેક્નોલોજી વિશે જાણો અને તેમને નિયંત્રિત કરો</translation>
 <translation id="5193988420012215838">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવી</translation>
@@ -1093,6 +1092,7 @@
 <translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6645629752388991326">કયા ડિવાઇસ સિક્યુરિટી કી તરીકે આ ડિવાઇસનો ઉપયોગ કરીને સાઇન ઇન કરી શકે તે નિયંત્રિત કરો.</translation>
+<translation id="6646696210740573446">પ્રાઇવસી સર્વર મારફતે Googleને URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Googleને મોકલી શકે છે.</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648459603387803038">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝર સેટઅપને રિમોટલી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહારથી પણ મેનેજ કરી શકાય છે.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1452,6 +1452,7 @@
 <translation id="8394720698884623075">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
 <translation id="8402673309244746971">અનુસરે છે ફીડ પર જાઓ</translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
+<translation id="8413795581997394485">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે સુરક્ષિત રાખે છે. જ્યારે તમે કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome પ્રાઇવસી સર્વર મારફતે Googleને તે સાઇટના URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો સાઇટ પર કોઈ શંકાસ્પદ પ્રવૃત્તિ દેખાય, તો સંપૂર્ણ URLs અને પેજ કન્ટેન્ટના બિટ પણ મોકલવામાં આવે છે.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> વડે <ph name="SITE_ETLD_PLUS_ONE" />માં સાઇન ઇન કરો</translation>
 <translation id="8416347857511542594">Chromeમાં રુચિ મુજબ જાહેરાત વિશે વધુ જાણો</translation>
 <translation id="8419244640277402268">શામેલ કરો</translation>

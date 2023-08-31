@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Glas (gekleurd)</translation>
 <translation id="1074497978438210769">Niet beveiligd</translation>
 <translation id="1075079914415273530">Landbouw en bosbouw</translation>
+<translation id="1075364221219156102">Een toegangssleutel gebruiken</translation>
 <translation id="1080116354587839789">Aanpassen aan breedte</translation>
 <translation id="1081061862829655580">Lade 19</translation>
 <translation id="1089439967362294234">Wachtwoord wijzigen</translation>
@@ -135,7 +136,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Je hebt je wachtwoord ingevoerd op een site die niet door je organisatie wordt beheerd. Hergebruik je wachtwoord niet voor andere apps en sites om je account te beschermen.</translation>
 <translation id="1257553931232494454">zoomniveaus</translation>
-<translation id="1258942153897182536">OCR wordt uitgevoerd...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je Chrome-instellingen te beheren</translation>
 <translation id="1264309058268477500">Alternatief</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -293,7 +293,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 
           &lt;p&gt;Pas in het gedeelte &lt;strong&gt;Algemeen&lt;/strong&gt; van de app &lt;strong&gt;Instellingen&lt;/strong&gt; de datum en tijd aan.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Je beheerder start je apparaat opnieuw op om <ph name="TIME" /> op <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Geen tekst geconverteerd vanuit afbeeldingen</translation>
 <translation id="156703335097561114">Netwerkinformatie zoals adressen, interfaceconfiguratie en verbindingskwaliteit</translation>
 <translation id="1567040042588613346">Dit beleid werkt zoals bedoeld, maar ergens anders is dezelfde waarde ingesteld die wordt vervangen door dit beleid.</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> toevoegen</translation>
@@ -1377,7 +1376,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
 <translation id="390391808978419508">Time-out bij openen</translation>
 <translation id="3905894480064208252">{0,plural, =1{Bestand kan niet worden overgezet}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden overgezet}}</translation>
-<translation id="3906095212874392000">Einde van geconverteerde tekst</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Meer informatie over ingesloten content</translation>
@@ -1602,7 +1600,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4331519897422864041">Stapeleenheid 5</translation>
 <translation id="4331708818696583467">Niet beveiligd</translation>
 <translation id="4333561522337981382">Vensters beheren op al je schermen</translation>
-<translation id="4338709847516294988">Druk op Zoeken plus m en converteer de afbeelding naar tekst in het contextmenu</translation>
 <translation id="4340575312453649552">Deze advertentie gebruikte te veel bronnen voor je apparaat, dus Chrome heeft de advertentie verwijderd.</translation>
 <translation id="4340810192899866471">Importeren vanuit json</translation>
 <translation id="4340982228985273705">Deze computer is niet gedetecteerd als een zakelijk beheerde computer. Overeenkomstig het beleid kunnen alleen automatisch extensies worden geïnstalleerd die worden gehost in de Chrome Web Store. De update-URL van de Chrome Web Store is <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1619,7 +1616,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4363222835916186793">Meldingen voor dit product zijn uitgezet</translation>
 <translation id="4366943895537458493">Plaat</translation>
 <translation id="437040971055499437">Beveiligingsgebeurtenis vindt plaats</translation>
-<translation id="4371307856413138486">Begin van geconverteerde tekst</translation>
 <translation id="4371591986692297148">Inactief</translation>
 <translation id="4372948949327679948">Verwachte <ph name="VALUE_TYPE" /> waarde.</translation>
 <translation id="4375864595697821259">Voeg een item opnieuw toe als het op de lijst moet met onderwerpen waaruit Chrome kan kiezen als het een schatting maakt van je interesses</translation>
@@ -2398,7 +2394,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6041777658117377052">Temperatuur van ruimte</translation>
 <translation id="6042308850641462728">Meer</translation>
-<translation id="6042688167654081154">Afbeelding geconverteerd naar tekst</translation>
 <translation id="6044573915096792553">Grootte 12</translation>
 <translation id="6045164183059402045">Plaatsingstemplate</translation>
 <translation id="6047233362582046994">Als je de beveiligingsrisico's begrijpt, kun je <ph name="BEGIN_LINK" />deze site bezoeken<ph name="END_LINK" /> voordat de schadelijke apps zijn verwijderd.</translation>
@@ -2436,7 +2431,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6116338172782435947">Tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
 <translation id="6117833587752089929">Foto (satijn)</translation>
 <translation id="6118782133429281336">Oorspronglijst is leeg.</translation>
-<translation id="6120179357481664955">Weet je je UPI-ID nog?</translation>
 <translation id="6120950591512958208">Gebruik deze code bij het betalen.</translation>
 <translation id="6122181661879998141">voorkant van je kaart</translation>
 <translation id="6124058285696691147">De bijlage downloaden</translation>
@@ -2470,7 +2464,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Volledig gesneden tabbladen</translation>
-<translation id="6200386911308538077">Afbeelding wordt geanalyseerd</translation>
 <translation id="6203231073485539293">Controleer je internetverbinding</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3138,6 +3131,7 @@ Aanvullende informatie:
 <translation id="7554475479213504905">Opnieuw laden en toch bekijken</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
 <translation id="7555777498260651025">Tv-programma's voor het hele gezin</translation>
+<translation id="7556328470713619625">Een toegangssleutel gebruiken</translation>
 <translation id="7559278538486662777">Het formaat van deze app kan niet worden aangepast.</translation>
 <translation id="7561784249784255101">Digital versatile disc</translation>
 <translation id="7564049878696755256">Je kunt de toegang tot je account van <ph name="ORG_NAME" /> kwijtraken of slachtoffer worden van identiteitsdiefstal. Chrome raadt je aan je wachtwoord nu te wijzigen.</translation>

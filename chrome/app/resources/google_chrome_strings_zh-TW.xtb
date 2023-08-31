@@ -105,8 +105,10 @@
 <translation id="2775140325783767197">Chrome 無法檢查你的密碼，請查看你的網際網路連線狀態。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2847461019998147611">將 Google Chrome 的介面文字設為這種語言</translation>
+<translation id="2853415089995957805">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="2857540653560290388">正在啟動 Chrome…</translation>
 <translation id="2857972467023607093">該帳戶已有相關聯的 Chrome 設定檔</translation>
+<translation id="286025080868315611">瞭解 Chrome 封鎖某些下載內容的原因</translation>
 <translation id="2861074815332034794">正在更新 Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">你已登入 Chrome！</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
@@ -387,6 +389,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8286862437124483331">Google Chrome 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當掉了，要立即重新啟動嗎？</translation>
 <translation id="829923460755755423">新增 Google 密碼管理工具的捷徑</translation>
+<translation id="8336463659890584292">當網站要求以私密方式預先載入網頁上的連結時，Chrome 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="8342675569599923794">這個檔案並不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chrome 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>

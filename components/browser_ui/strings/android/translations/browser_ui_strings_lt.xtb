@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">Leidžiama (išskyrus trečiąsias šalis)</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="1994173015038366702">Svetainės URL</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{Galiojimo laikas baigsis po vienos dienos}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2025115093177348061">Išplėstoji realybė</translation>
 <translation id="2030769033451695672">Palieskite, kad grįžtumėte į <ph name="URL_OF_THE_CURRENT_TAB" /></translation>

@@ -104,8 +104,10 @@
 <translation id="2775140325783767197">Chrome kan ikke sjekke passordene dine. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2847461019998147611">Vis Google Chrome på dette språket</translation>
+<translation id="2853415089995957805">Chrome forhåndslaster sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
 <translation id="2857540653560290388">Starter Chrome ...</translation>
 <translation id="2857972467023607093">Det finnes allerede en Chrome-profil med denne kontoen</translation>
+<translation id="286025080868315611">Finn ut hvorfor Chrome blokkerer enkelte nedlastinger</translation>
 <translation id="2861074815332034794">Oppdaterer Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Du er nå logget på Chrome.</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
@@ -384,6 +386,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8286862437124483331">Google Chrome forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8290100596633877290">Google Chrome har krasjet. Vil du starte på nytt nå?</translation>
 <translation id="829923460755755423">Legg til en snarvei i Google Passordlagring</translation>
+<translation id="8336463659890584292">Når nettsteder ber om privat forhåndslasting av linker på sidene sine, bruker Chrome tjenerne til Google. Dermed skjules identiteten din for det forhåndslastede nettstedet, men Google får vite hvilke nettsteder som blir forhåndslastet.</translation>
 <translation id="8342675569599923794">Denne filen er farlig, så Chrome har blokkert den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Slik bruker vi disse dataene:<ph name="END_BOLD" /> Nettsteder kan lagre informasjon om interessene dine i Chrome. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>

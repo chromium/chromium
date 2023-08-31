@@ -65,7 +65,6 @@
 <translation id="1295289763199166823">Прилагодите мени</translation>
 <translation id="1305822519689023679">Да бисте били сигурни да увек можете да користите лозинке на Google налогу, потврдите свој идентитет.</translation>
 <translation id="1312721752506309252">Побољшана заштита је укључена</translation>
-<translation id="1316466854070752597">Прегледајте све отворене картице</translation>
 <translation id="1321993286294231467">Дошло је до грешке при чувању слике.</translation>
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -299,6 +298,7 @@
 <translation id="2718352093833049315">Само на WiFi-ју</translation>
 <translation id="2747003861858887689">Претходно поље</translation>
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
+<translation id="2762000892062317888">малопре</translation>
 <translation id="2772667768515195373">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Претрага без архивирања</translation>
 <translation id="277771892408211951">Изаберите језик</translation>
@@ -412,10 +412,12 @@
 <translation id="3328801116991980348">Информације о сајту</translation>
 <translation id="3340938510625667914">Chrome радње</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
+<translation id="3365529507898144230">Сачувај у Сликама</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
 <translation id="3377063233124932127">Сада су сачувани обележивачи, лозинке и друго у врху.</translation>
 <translation id="3393920035788932672">Дозвољени искачући прозори</translation>
 <translation id="3399930248910934354">Отвори подешавања Chrome-а</translation>
+<translation id="3404232721752787413">Сачувај у Google сликама</translation>
 <translation id="3404744938087714423">Одјављивањем се искључује синхронизација.</translation>
 <translation id="3409785640040772790">Мапе</translation>
 <translation id="3416023309465857378">25. октобар 2023.</translation>
@@ -522,7 +524,6 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4063300985191096908">Иди на фид</translation>
 <translation id="4066639687323968621">Пријавите се помоћу Google налога да бисте синхронизовали обележиваче, историју и друго.</translation>
-<translation id="408404951701638773">Трака за претрагу је сада доступнија</translation>
 <translation id="4092655288299341041">Приказује помоћ</translation>
 <translation id="4105841739161771091">{count,plural, =1{Избриши адресу}one{Избриши адресе}few{Избриши адресе}other{Избриши адресе}}</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
@@ -657,6 +658,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854345657858711387">Подесите шифру</translation>
 <translation id="4856498338299082007">На Google налогу</translation>
+<translation id="4856841893565072365">Трака менија паметног сортирања</translation>
 <translation id="4858786880085262208">Надоградите на HTTPS када је то могуће. Безбедни сајтови могу да уграде садржај који није безбедан.</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4872323082491632254">Проверите лозинке</translation>
@@ -716,7 +718,6 @@
 <translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="519530786644929958">Неуспело преузимање. Не можете да поновите.</translation>
 <translation id="5197255632782567636">Интернет</translation>
-<translation id="5209674813563615506">Отворите нову картицу</translation>
 <translation id="5211488077761630279">Желите да дозволите да <ph name="SITE_NAME" /> користи дозволу <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="5220945116117011963">Правите догађаје у календару од датума</translation>
@@ -733,7 +734,6 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318298563956633672">Већ пратите овај производ.</translation>
-<translation id="5325595483440111327">Прегледајте историју прегледања.</translation>
 <translation id="5339316356165661760">Укључи синхронизацију</translation>
 <translation id="536067926684072644">Прикажи обележиваче</translation>
 <translation id="5360976571138293719">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" />.</translation>
@@ -904,6 +904,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
 <translation id="629730747756840877">налог</translation>
+<translation id="630693926528731525">Лозинка се не дели. Проверите интернет везу и уверите се да сте пријављени у Chrome. Онда пробајте поново.</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6328337032497818759">Прилагодите мени</translation>
@@ -1023,7 +1024,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6785453220513215166">Слање извештаја о отказивању...</translation>
 <translation id="6790502149545262384">Ускоро ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
 <translation id="6797885426782475225">Гласовна претрага</translation>
-<translation id="6801927553864092214">Да бисте прегледали приватно, отворите картицу без архивирања</translation>
 <translation id="6807889908376551050">Прикажи све...</translation>
 <translation id="681368974849482173">Ставка је направљена</translation>
 <translation id="6822587385560699678">Када је укључено, лозинке се чувају на налогу <ph name="ACCOUNT" />. Када је искључено, лозинке се чувају само на овом уређају.</translation>
@@ -1173,7 +1173,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7749790401023484470">Нисте изабрали никакав текст.</translation>
 <translation id="7756478488453921771">Мени → Подешавања → Начини плаћања</translation>
 <translation id="7760127703945531263">Закључавање картица без архивирања</translation>
-<translation id="7762768971412105260">Подаци на налогу</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди приступну фразу</translation>
 <translation id="777572173400717978">{count,plural, =1{Додат је обележивач}one{Додати су обележивачи}few{Додати су обележивачи}other{Додати су обележивачи}}</translation>
@@ -1276,7 +1275,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8299613349954694191">Отворите картицу без архивирања да бисте приватно прегледали веб.</translation>
 <translation id="8316944564970119719">Унесите сајт и лозинку, па сачувајте</translation>
 <translation id="8319076807703933069">Нова претрага</translation>
-<translation id="8323906514956095947">Додирните и задржите ако желите више опција за картице</translation>
 <translation id="8328777765163860529">Затвори све</translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="834783239627985533">Најпосећенији сајтови</translation>

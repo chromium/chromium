@@ -37,10 +37,12 @@
 <translation id="1148499908455722006">פתיחת תיבת דו-שיח עם מידע על <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">יומן</translation>
 <translation id="1153356358378277386">מכשירים מותאמים</translation>
+<translation id="1155734730463845512">רמת הטעינה הנוכחית של הסוללה %<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="1160215328209699296">במצב מופעל ובשימוש</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">‏יכול להיות שכבל ה-USB-C שלך לא יתחבר למסכים כמו שצריך</translation>
 <translation id="1175572348579024023">גלילה</translation>
+<translation id="1175944128323889279">רמת הטעינה הנוכחית של הסוללה: %<ph name="BATTERY_PERCENTAGE" />, הזמן שנותר: <ph name="TIME" /></translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1182225749592316782">כך ניתן לגשת לכל האפליקציות והאתרים שיש להם הרשאות גישה למצלמה ולמיקרופון</translation>
@@ -126,6 +128,7 @@
 <translation id="1479909375538722835">תפריט נגישות צף</translation>
 <translation id="1480845547124508962">‏<ph name="CURRENT_TIME" />, אפשר לפתוח את תצוגת היומן בלחיצה על Enter</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1486307154719069822">‏עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. הדיבור נשלח אל Google לעיבוד. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="1487931858675166540">הפריט <ph name="SECOND_ITEM_TITLE" /> החליף את <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">הצגת כל ההצעות</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
@@ -147,6 +150,7 @@
 <translation id="1571697193564730395">הפעלה או השבתה של המצב 'נא לא להפריע'. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">הקטנת התצוגה כשמפעילים את הזכוכית המגדלת</translation>
 <translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
+<translation id="158838227375272121">‏אתר Google Classroom</translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1592682369233288537">שולחן העבודה הווירטואלי הבא: <ph name="NEXT_DESK_NAME" />, אפשר להפעיל אותו בעזרת המקשים 'חיפוש'+'רווח'.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + חץ למטה</translation>
@@ -210,6 +214,7 @@
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
 <translation id="1824922790784036530">הפעלת הגישה למיקום</translation>
 <translation id="1830308660060964064">ההצמדה של <ph name="ITEM_TITLE" /> בוטלה</translation>
+<translation id="1831565490995294689">בוחרים כדי לפתוח את <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">תאורת הלילה כבויה.</translation>
 <translation id="1854180393107901205">הפסקת ההעברה</translation>
 <translation id="1862380676329487333">עדכון ויציאה מהחשבון</translation>
@@ -271,6 +276,7 @@
 <translation id="2135456203358955318">מגדיל במצב מעוגן</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2149229036084364364">מעבר לטראק הקודם</translation>
+<translation id="2152895518047545149">נראה שכלום לא חסר. כל הכבוד!</translation>
 <translation id="2161132820593978283">אפשר להפעיל את הפריים האוטומטי במצלמה כדי למקם את עצמך במרכז המסך בשיחות וידאו. ניתן להפעיל אותו בהגדרות המהירות.</translation>
 <translation id="2170530631236737939">כדי לצאת מ'מסכים אחרונים', יש להחליק למטה בעזרת שלוש אצבעות</translation>
 <translation id="2185166372312820725">מעבר לכרטיסייה הקודמת</translation>
@@ -321,7 +327,6 @@
 <translation id="2369165858548251131">"שלום" בסינית</translation>
 <translation id="2382875860893882175">‏ההעברה (cast) מושהית. אפשר להמשיך בהעברה או להפסיק אותה בכל שלב.</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
-<translation id="2396594569364254378">שימוש בזיכרון: <ph name="USED_MEMORY" /> | הנפח הכולל: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
 <translation id="240006516586367791">פקדי מדיה</translation>
 <translation id="2402411679569069051">‏כדי לבטל את נעילת ה-Chromebook, עליך להשתמש בטביעת האצבע או לבטל את נעילת הטלפון שלך</translation>
@@ -342,6 +347,7 @@
 <translation id="2450205753526923158">מצב צילום מסך</translation>
 <translation id="2455994958736234930">‏הוספת www.‎ ו-‎.com לסרגל הכתובות, ופתיחת האתר לאחר מכן</translation>
 <translation id="2456008742792828469">יומן, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2465145153332031561">תקינות הסוללה: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, מספר המחזורים: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">אישור הרזולוציה</translation>
 <translation id="2475982808118771221">אירעה שגיאה</translation>
 <translation id="2482878487686419369">התראות</translation>
@@ -435,10 +441,12 @@
 <translation id="2891209721153296020">"ביטול הבחירה"</translation>
 <translation id="2894949423239620203">חיבור כבל עשוי להשפיע על הביצועים</translation>
 <translation id="2914580577416829331">צילומי מסך</translation>
+<translation id="2931572158271115754">אין משימות לביצוע ברשימת המשימות.</translation>
 <translation id="2941112035454246133">נמוכה</translation>
 <translation id="2942350706960889382">זכוכית מגדלת במצב עגינה</translation>
 <translation id="2942516765047364088">מיקום המדף</translation>
 <translation id="2946119680249604491">הוספת חיבור</translation>
+<translation id="2947835478872237115">רמת הטעינה הנוכחית של הסוללה: %<ph name="BATTERY_PERCENTAGE" />, <ph name="TIME" /> עד לטעינה מלאה</translation>
 <translation id="2949420361496057765">הקשה על <ph name="MODIFIER" /> ולחיצה על קישור</translation>
 <translation id="295852781144570696">אודיו מהמכשיר</translation>
 <translation id="2960314608273155470">‏מצב צילום מסך, ברירת המחדל היא <ph name="SOURCE" /> <ph name="TYPE" />. צריך להקיש על Tab כדי לנווט באמצעות המקלדת.</translation>
@@ -545,6 +553,7 @@
 <translation id="3378438761594387761">כאן יופיעו ההורדות האחרונות וצילומי המסך האחרונים</translation>
 <translation id="3386978599540877378">הזכוכית המגדלת במסך מלא</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
+<translation id="3389599499324569679">להפעיל מצב הכתבה?</translation>
 <translation id="3394432020929931914">, מורחבת</translation>
 <translation id="3400357268283240774">הגדרות נוספות</translation>
 <translation id="3405101454990027959">הפעלת הגישה למיקרופון</translation>
@@ -693,6 +702,7 @@
 <translation id="3945867833895287237">מתבצע חיבור אל לנקודת אינטרנט…</translation>
 <translation id="3950272133184491871">רוצה לצאת עכשיו?</translation>
 <translation id="3950820424414687140">כניסה</translation>
+<translation id="3953130726459169782">עדיין לא הושלמו מטלות.</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3969043077941541451">כבוי</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -733,6 +743,7 @@
 <translation id="4125970834901680537">לא ניתן לשדר אפליקציות במצב טאבלט. צריך לנסות שוב במצב מחשב נייד.</translation>
 <translation id="4129129681837227511">להצגת הודעות במסך הנעילה, יש לבטל את הנעילה כדי לשנות את ההגדרה</translation>
 <translation id="4131973331381812765">‏הטמפרטורה: <ph name="TEMPERATURE" />°C – המהירות הנוכחית: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
+<translation id="4132502210362661715">‏ה-Chromebook מגיע עם אפליקציות מובנות שיעזרו לך להשלים משימות. האפליקציות נמצאות במרכז האפליקציות.</translation>
 <translation id="4136724716305260864">התכונה פעילה עד הזריחה</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + חץ ימינה</translation>
 <translation id="4146671046252289537">עבור לסוף המילה הבאה</translation>
@@ -744,8 +755,10 @@
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4185671786623711291">העברת החלון הפעיל לשולחן העבודה הווירטואלי שבצד ימין</translation>
 <translation id="4189826113259617332">שמירת כל הדפים הפתוחים בחלון הנוכחי, בתור סימניות בתיקייה חדשה</translation>
+<translation id="4190143678693626113">‏כדי לחסוך זמן, אפשר להשיב במהירות ב-Chromebook להודעות הטקסט שבטלפון</translation>
 <translation id="4192112279662688596">או</translation>
 <translation id="4193857202545160520">הצגת קליקים ושימוש במקשים</translation>
+<translation id="4195579532193195633">הגרסה הנוכחית <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4195877955194704651">לחצן קליקים אוטומטיים</translation>
 <translation id="4197790712631116042">כבוי</translation>
@@ -926,6 +939,7 @@
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="493076006037866439">הקטנת התצוגה במסך</translation>
 <translation id="4936329710968938986">כולם, במצב כבוי</translation>
+<translation id="4937170330762390348">עם הכתבה, אפשר להקליד באמצעות הקול. מקישים על מקש ההכתבה או בוחרים בסמל המיקרופון שבתחתית המסך כשנמצאים בשדה טקסט. שפת ההכתבה שהוגדרה היא <ph name="LANGUAGE" />. תתבצע הורדה של קובצי דיבור כדי להשתמש בהכתבה במצב אופליין. אפשר לשנות את שפת ההכתבה בכל שלב בהגדרות &gt; נגישות.</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
 <translation id="4943007472417128747">‏הנקודה לשיתוף האינטרנט (Hotspot) כובתה כדי לאפשר שימוש ב-Wi-Fi. כדי להשתמש בנקודה לשיתוף האינטרנט צריך לכבות את ה-Wi-Fi.</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
@@ -1033,6 +1047,7 @@
 <translation id="536019650977002321">אין הרשאה מהאדמין להקליט אודיו. צריך לפנות לאדמין לקבלת מידע נוסף.</translation>
 <translation id="5361524080961918551">קובצי הדיבור ב<ph name="LANGUAGE" /> הורדו חלקית</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> מעבר לכרטיסייה הזו</translation>
+<translation id="5364693579536176785">שטח אחסון</translation>
 <translation id="5369717264580061086">תצוגה מקדימה של קובץ באפליקציה 'קבצים'</translation>
 <translation id="5377367976106153749">להפעיל את הגישה למצלמה?</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
@@ -1041,6 +1056,7 @@
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
 <translation id="5397578532367286026">‏המנהל (<ph name="MANAGER_EMAIL" />) יכול לבדוק את השימוש וההיסטוריה של משתמש זה ב-chrome.com.</translation>
 <translation id="5400461572260843123">הגדרות מהירות, יש להקיש על מקש החיפוש ביחד עם מקש חץ שמאלה כדי לגשת אל מרכז ההתראות.</translation>
+<translation id="5413656666631274079">דף ההגדרות</translation>
 <translation id="5414198321558177633">מתבצע רענון של רשימת הפרופילים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5426063383988017631">תפריט ההגדרות נסגר</translation>
 <translation id="5428899915242071344">אני רוצה להתחיל לבחור</translation>
@@ -1108,11 +1124,13 @@
 <translation id="5678564054339031017">הצגת השבוע הבא</translation>
 <translation id="5679050765726761783">המתאם שחיברת הוא בעל הספק נמוך</translation>
 <translation id="5682642926269496722">‏Google Assistant לא זמינה לחשבון המשתמש הנוכחי.</translation>
+<translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">‏Alt + מקש Backspace</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
 <translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
 <translation id="5699366815052349604">הקצאת חלון פעיל לכל שולחנות העבודה הווירטואליים</translation>
+<translation id="5701785125601597013">‏בעזרת Phone Hub, אפשר לשלוח הודעות בטלפון או להשיב להן במהירות</translation>
 <translation id="570390244361237317">כל האפליקציות, מנווטים בעזרת מקשי החיצים כדי לגשת לכל האפליקציות</translation>
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
@@ -1139,6 +1157,7 @@
 <translation id="5790085346892983794">הצלחה</translation>
 <translation id="5804651031882187592">‏השבתת ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="5805809050170488595">יש ללחוץ כדי להפעיל את <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">מעבר לטראק הבא</translation>
@@ -1277,6 +1296,7 @@
 <translation id="642644398083277086">ניקוי כל ההודעות</translation>
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
+<translation id="643593192654616063">נפח אחסון של <ph name="STORAGE_IN_USE_SIZE" /> בשימוש מתוך <ph name="STORAGE_TOTAL_SIZE" /> סה"כ</translation>
 <translation id="6442259747294754014">הגישה למיקרופון המכשיר מושבתת</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">‏המעבד (CPU)</translation>
@@ -1442,6 +1462,7 @@
 <translation id="7098053464892629930">‏אפשר להוריד את האפליקציה של <ph name="NAME" /> ב‑Google Play ולראות את כל התכונות הזמינות</translation>
 <translation id="7098389117866926363">‏מכשיר עם יציאת USB-C (יציאה שמאלית מאחור)</translation>
 <translation id="7100906357717321275">הצגת קבצים מוסתרים באפליקציה 'קבצים'</translation>
+<translation id="7108254681523785542">‏בוחרים בפריט כדי להדביק אותו. כדי לראות את הלוח, מקישים על <ph name="SHORTCUT_KEY_NAME" />‏ + v.</translation>
 <translation id="7116969082764510092">שולחן עבודה וירטואלי מספר 11</translation>
 <translation id="7118268675952955085">צילום מסך</translation>
 <translation id="7119327711295338600">בחירת המילה או האות הבאה</translation>
@@ -1546,6 +1567,7 @@
 <translation id="7573585051776738856">החלון הפעיל מוצמד לצד שמאל.</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
+<translation id="7598054670902114203">‏תמונת מצב של השימוש במעבד (CPU), %<ph name="CPU_USEAGE" />. טמפרטורה <ph name="TEMPERATURE" /> מעלות צלזיוס, מהירות זרם: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="7600875258240007829">הצגת כל ההתראות</translation>
 <translation id="7601417191446344542">להפעיל את התזכורת שהמיקרופון מושתק?</translation>
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
@@ -1790,6 +1812,7 @@
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת</translation>
 <translation id="8638637208069328956">הפעלה/כיבוי של המיקרופון</translation>
 <translation id="8639760480004882931">שיעור טעינה נותר - <ph name="PERCENTAGE" /></translation>
+<translation id="8641510901370802679">הצגת מידע על <ph name="ANSWER_TYPE" /></translation>
 <translation id="8646417893960517480">טיימר של <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏כדי להוסיף משתמש, יש להזין קוד גישה להורים ב-Family Link</translation>
 <translation id="8649597172973390955">המדף תמיד מוצג</translation>

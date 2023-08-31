@@ -22,6 +22,8 @@ Vær opmærksom på følgende:
 
   • Hvis du synkroniserer din historik med din Google-konto, omfatter metrics muligvis også oplysninger om de webadresser, du har besøgt.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Du har Chromes stærkeste beskyttelse mod skadelige websites</translation>
+<translation id="1675955119303651351">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto.
+        Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1733654336159102143">Lås dine inkognitofaner, når du forlader Chrome eller skifter til en anden app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +31,7 @@ Vær opmærksom på følgende:
 <translation id="1917964099031477364">Denne konto og data, som ikke er gemt, fjernes fra Chrome og andre Google-apps på denne enhed.</translation>
 <translation id="2009224836393115614">Chrome kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2056123005618757196">Få mere fra hånden med Google Chrome, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
+<translation id="2120238739383482109">Åbner Chrome-bogmærkerne.</translation>
 <translation id="2147651015520127414">Chrome verificerede, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
 <translation id="2339201583852607431">Din adgangskode gemmes på din Google-konto (<ph name="EMAIL" />).</translation>
@@ -65,6 +68,7 @@ Vær opmærksom på følgende:
 <translation id="3594076341410558780">Skjul "Få mest muligt ud af Chrome"</translation>
 <translation id="3655656110921623717">Det betyder, at Chrome anmoder om mobilwebsitet hver gang.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner, når du lukker Chrome</translation>
+<translation id="3741995255368156336">Åbner Chrome-læselisten.</translation>
 <translation id="3827545470516145620">Du får standardbeskyttelse på denne enhed</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
 <translation id="3901001113120561395">Få mest muligt ud af Chrome.</translation>
@@ -76,7 +80,6 @@ Vær opmærksom på følgende:
 <translation id="417201473131094001">Understøttes ikke i Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> brugte Chrome og gemte bogmærker, adgangskoder og andre indstillinger på denne enhed.</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
-<translation id="4249068189593983585">Chrome-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
 <translation id="4463378960278646000">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
 <translation id="4508370294876102450">Åbn Chrome fra en hvilken som helst app</translation>
 <translation id="4523886039239821078">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere:</translation>
@@ -92,6 +95,7 @@ Vær opmærksom på følgende:
 <translation id="4903674399067644695">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chrome.</translation>
 <translation id="5030102366287574140">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="5108659628347594808">Gør Chrome bedre</translation>
+<translation id="5112925986883715005">Se Chrome-læselisten</translation>
 <translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5162467219239570114">Chrome er forældet. Hvis der ikke er en tilgængelig opdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det skyldes, at din enhed ikke længere understøtter nye Chrome-versioner.</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du er logget ind på, og hvordan Chrome bruges.</translation>
@@ -109,7 +113,6 @@ Vær opmærksom på følgende:
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline – Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5716154293141027663">Åbn Chrome, hver gang du trykker på links i andre apps</translation>
-<translation id="5854621639439811139">Chrome-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="5998675059699164418">Din organisation kræver, at du logger ind for at bruge Chrome.</translation>
 <translation id="6054613632208573261">Brug Chrome som standard</translation>
 <translation id="6063091872902370735">Tillad login via Chrome</translation>
@@ -121,6 +124,7 @@ Vær opmærksom på følgende:
 <translation id="6427126399757991875">Din organisation konfigurerer Chrome...</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="6634107063912726160">Når du er logget ud, synkroniserer Chrome ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
+<translation id="6646696210740573446">Sender en sløret del af webadressen til Google via en privatlivsbeskyttende server, som skjuler din IP-adresse. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Google.</translation>
 <translation id="6648150602980899529">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
 <translation id="6709398533399187136">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Google Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
@@ -155,9 +159,11 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="804638182476029347">Tillad Chrome-notifikationer for at få underretninger om prisfald</translation>
 <translation id="81358522153858150">Chrome understøtter nu brugerpolitikker for din administrerede konto</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
+<translation id="8213758103105806860">Se Chrome-bogmærker</translation>
 <translation id="8357607116237445042">Vælg, om du vil rydde dine Chrome-data fra denne enhed eller beholde dem</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
+<translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="8414886616817913619">Din organisation kræver, at du logger ind for at bruge Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Fortsæt med at bruge Chrome-dataene på din Google-konto</translation>
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>

@@ -332,7 +332,6 @@
 <translation id="2369165858548251131">"สวัสดี" ในภาษาจีน</translation>
 <translation id="2382875860893882175">การแคสต์หยุดอยู่ชั่วคราวในขณะนี้ คุณแคสต์ต่อหรือหยุดการแคสต์ได้ทุกเมื่อ</translation>
 <translation id="2386292613071805067">เลือกทุกอย่างในหน้า</translation>
-<translation id="2396594569364254378">ใช้หน่วยความจำแล้ว <ph name="USED_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">แสดงเมนู Chrome</translation>
 <translation id="240006516586367791">การควบคุมสื่อ</translation>
 <translation id="2402411679569069051">ใช้ลายนิ้วมือหรือปลดล็อกโทรศัพท์เพื่อปลดล็อก Chromebook</translation>
@@ -1448,7 +1447,6 @@
 <translation id="6981291220124935078">เปิดการเข้าถึง</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
 <translation id="698231206551913481">ระบบจะลบไฟล์ทั้งหมดและข้อมูลในเครื่องที่เชื่อมโยงกับผู้ใช้รายนี้ออกอย่างถาวรหลังจากนำผู้ใช้รายนี้ออกแล้ว</translation>
-<translation id="6985306450422696113">เหลือหน่วยความจำ <ph name="USED_MEMORY" /> จากทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">ดูการแนะนำสั้นๆ เพื่อเรียนรู้วิธีการไปยังส่วนต่างๆ ของ Chromebook เริ่มต้นใช้งานได้ใน 6 ขั้นตอน</translation>
 <translation id="7004910047186208204">เชื่อมต่ออินเทอร์เน็ตมือถือ</translation>
 <translation id="7005239792648594238">เปิดแอปเพื่อเริ่มต้นใช้งาน</translation>

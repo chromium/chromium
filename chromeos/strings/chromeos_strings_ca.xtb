@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">Clau d'autenticació TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activa el mode de color fosc</translation>
+<translation id="2728460467788544679">Esborra tot l'historial d'impressions</translation>
 <translation id="2740531572673183784">D'acord</translation>
 <translation id="2744221223678373668">Compartides</translation>
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>
+<translation id="6461047516875166066">Dona'm més detalls</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vols tornar a escanejar la pàgina?}=1{Vols tornar a escanejar la pàgina {PAGE_NUMBER}?}other{Vols tornar a escanejar les pàgines {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>

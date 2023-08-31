@@ -106,6 +106,7 @@
 <translation id="2775140325783767197">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2847461019998147611">Rādīt Google Chrome šajā valodā</translation>
+<translation id="2853415089995957805">Pārlūkā Chrome tiek iepriekš ielādētas lapas, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="2857540653560290388">Notiek Chrome palaišana...</translation>
 <translation id="2857972467023607093">Chrome profils ar šādu kontu jau pastāv</translation>
 <translation id="2861074815332034794">Notiek Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -388,6 +389,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8286862437124483331">Google Chrome mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8290100596633877290">Eh! Google Chrome ir avarējis. Vai restartēt to tūlīt?</translation>
 <translation id="829923460755755423">Saīsnes pievienošana Google paroļu pārvaldniekam</translation>
+<translation id="8336463659890584292">Kad vietnē tiek piedāvāts privāti iepriekš ielādēt saites vietnes lapā, Chrome izmanto Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem, taču Google uzzina, kādas lapas tiek iepriekš ielādētas.</translation>
 <translation id="8342675569599923794">Šis fails ir bīstams, tāpēc Chrome to bloķēja.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> vietnes pārlūkā Chrome var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>

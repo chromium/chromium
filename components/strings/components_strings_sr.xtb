@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Стакло (у боји)</translation>
 <translation id="1074497978438210769">Није безбедно</translation>
 <translation id="1075079914415273530">Пољопривреда и шумарство</translation>
+<translation id="1075364221219156102">Користите приступни кôд</translation>
 <translation id="1080116354587839789">Уклопите по ширини</translation>
 <translation id="1081061862829655580">19. фиока</translation>
 <translation id="1089439967362294234">Промена лозинке</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Унели сте лозинку на сајту којим не управља ваша организација. Да бисте заштитили налог, не користите лозинку поново у другим апликацијама ни на другим сајтовима.</translation>
 <translation id="1257553931232494454">нивои зумирања</translation>
-<translation id="1258942153897182536">Оптичко препознавање знакова је у току ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали подешавањима Chrome-а</translation>
 <translation id="1264309058268477500">Алтернативно</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;Прилагодите датум и време у одељку &lt;strong&gt;Опште&lt;/strong&gt; у апликацији &lt;strong&gt;Подешавања&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администратор ће рестартовати уређај у <ph name="TIME" /> <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Текст није конвертован из слика</translation>
 <translation id="156703335097561114">Информације о мрежама попут адреса, конфигурације интерфејса и квалитета везе</translation>
 <translation id="1567040042588613346">Ове смернице раде као што је предвиђено, али иста вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="1567405528131216114">Додај <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@
 <translation id="3901925938762663762">Картица је истекла</translation>
 <translation id="390391808978419508">Време за отварање је истекло</translation>
 <translation id="3905894480064208252">{0,plural, =1{Пренос фајла је блокиран}one{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}few{Пренос <ph name="FILE_COUNT" /> фајла је блокиран}other{Пренос <ph name="FILE_COUNT" /> фајлова је блокиран}}</translation>
-<translation id="3906095212874392000">Крај конвертованог текста</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Сазнајте више о уграђеном садржају</translation>
@@ -1607,7 +1605,6 @@
 <translation id="4331519897422864041">5. преграда за слагање</translation>
 <translation id="4331708818696583467">Није безбедан</translation>
 <translation id="4333561522337981382">Управљајте прозорима на свим екранима</translation>
-<translation id="4338709847516294988">Притисните тастер за претрагу и m да бисте конвертовали слику у текст у контекстуалном менију</translation>
 <translation id="4340575312453649552">Овај оглас је користио превише ресурса за уређај, па га је Chrome уклонио.</translation>
 <translation id="4340810192899866471">Увези из JSON-а</translation>
 <translation id="4340982228985273705">Откривено је да овим рачунаром не управља предузеће, па смернице могу аутоматски да инсталирају само додатке који се хостују у Chrome веб-продавници. URL ажурирања у Chrome веб-продавници је „<ph name="CWS_UPDATE_URL" />“.</translation>
@@ -1624,7 +1621,6 @@
 <translation id="4363222835916186793">Обавештења за овај производ су искључена</translation>
 <translation id="4366943895537458493">Плоча</translation>
 <translation id="437040971055499437">Безбедносни догађај се дешава</translation>
-<translation id="4371307856413138486">Почетак конвертованог текста</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4372948949327679948">Очекивана вредност je <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Поново додајте ставку ако желите да буде у групи тема које Chrome може да изабере при процени интересовања</translation>
@@ -2403,7 +2399,6 @@
 <translation id="604124094241169006">Аутоматски</translation>
 <translation id="6041777658117377052">Температура коморе</translation>
 <translation id="6042308850641462728">Још</translation>
-<translation id="6042688167654081154">Слика је конвертована у текст</translation>
 <translation id="6044573915096792553">Величина 12</translation>
 <translation id="6045164183059402045">Шаблон распореда странице</translation>
 <translation id="6047233362582046994">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај сајт<ph name="END_LINK" /> пре него што уклонимо штетне апликације.</translation>
@@ -2441,7 +2436,6 @@
 <translation id="6116338172782435947">да види текст и слике који су копирани у привремену меморију</translation>
 <translation id="6117833587752089929">Слика (сатен)</translation>
 <translation id="6118782133429281336">Листа порекла је празна.</translation>
-<translation id="6120179357481664955">Желите да сачувате ИД за UPI?</translation>
 <translation id="6120950591512958208">Користите овај кôд при плаћању.</translation>
 <translation id="6122181661879998141">предњој страни картице</translation>
 <translation id="6124058285696691147">Преузми прилог</translation>
@@ -2475,7 +2469,6 @@
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6197648101609735209">89×89 mm</translation>
 <translation id="6198480336395236519">Потпуно изрезане картице</translation>
-<translation id="6200386911308538077">Слика се анализира</translation>
 <translation id="6203231073485539293">Проверите интернет везу</translation>
 <translation id="6205314730813004066">Приватност са огласима</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3143,6 +3136,7 @@
 <translation id="7554475479213504905">Ипак поново учитај и прикажи</translation>
 <translation id="7554791636758816595">Нова картица</translation>
 <translation id="7555777498260651025">Породичне ТВ емисије</translation>
+<translation id="7556328470713619625">Користите приступни кôд</translation>
 <translation id="7559278538486662777">Величина ове апликације не може да се промени.</translation>
 <translation id="7561784249784255101">Дигиталан разноврсни диск</translation>
 <translation id="7564049878696755256">Можете да изгубите приступ налогу за <ph name="ORG_NAME" /> или би могло да дође до крађе идентитета. Chrome вам препоручује да одмах промените лозинку.</translation>

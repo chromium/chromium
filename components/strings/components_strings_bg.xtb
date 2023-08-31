@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Стъкло (цветно)</translation>
 <translation id="1074497978438210769">Няма защита</translation>
 <translation id="1075079914415273530">Земеделие и гори</translation>
+<translation id="1075364221219156102">Използване на ключ за достъп</translation>
 <translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1081061862829655580">Тава 19</translation>
 <translation id="1089439967362294234">Промяна на паролата</translation>
@@ -135,7 +136,6 @@
 &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Въведохте паролата си на сайт, който не се управлява от организацията ви. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="1257553931232494454">нива на промяна на мащаба</translation>
-<translation id="1258942153897182536">Извършва се оптично разпознаване на знаци (OCR)...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате настройките си за Chrome</translation>
 <translation id="1264309058268477500">Алтернативна</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -293,7 +293,6 @@
 
 &lt;p&gt;Моля, коригирайте датата и часа от секцията &lt;strong&gt;General&lt;/strong&gt; на приложението &lt;strong&gt;Settings&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администраторът ще рестартира устройството ви в <ph name="TIME" /> на <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Няма текст, преобразуван от изображения</translation>
 <translation id="156703335097561114">Информация за мрежите, като например адреси, конфигурация на интерфейса и качество на връзката</translation>
 <translation id="1567040042588613346">Това правило работи нормално, но на друго място е зададена същата стойност, която е заменена от него.</translation>
 <translation id="1567405528131216114">Добавяне на <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@
 <translation id="3901925938762663762">Картата е с изтекла валидност</translation>
 <translation id="390391808978419508">Времето за изчакване при отваряне изтече</translation>
 <translation id="3905894480064208252">{0,plural, =1{Прехвърлянето на файла е блокирано}other{Прехвърлянето на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
-<translation id="3906095212874392000">Край на преобразувания текст</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Научете повече за вграденото съдържание</translation>
@@ -1607,7 +1605,6 @@
 <translation id="4331519897422864041">Стакер 5</translation>
 <translation id="4331708818696583467">Няма защита</translation>
 <translation id="4333561522337981382">Управление на прозорците на всичките ви дисплеи</translation>
-<translation id="4338709847516294988">Натиснете клавиша „търсене“ + m и преобразувайте изображението в текст в контекстното меню</translation>
 <translation id="4340575312453649552">Тази реклама бе премахната от Chrome, защото използваше твърде много от ресурсите на устройството ви.</translation>
 <translation id="4340810192899866471">Импортиране от JSON файл</translation>
 <translation id="4340982228985273705">Този компютър не се управлява корпоративно, така че правилото може да инсталира автоматично само разширения от уеб магазина на Chrome. URL адресът за актуализация за уеб магазина на Chrome е <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1624,7 +1621,6 @@
 <translation id="4363222835916186793">Сигналите за този продукт са изключени</translation>
 <translation id="4366943895537458493">Плака</translation>
 <translation id="437040971055499437">Възникване на събитие, свързано със сигурността</translation>
-<translation id="4371307856413138486">Начало на преобразувания текст</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4372948949327679948">Очаквана е стойност от тип <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Добавете отново даден елемент, ако искате да е част от групата теми, от които Chrome да избира, когато прогнозира интересите ви</translation>
@@ -2403,7 +2399,6 @@
 <translation id="604124094241169006">Автоматично</translation>
 <translation id="6041777658117377052">Температура на камерата</translation>
 <translation id="6042308850641462728">Още</translation>
-<translation id="6042688167654081154">Изображението е преобразувано в текст</translation>
 <translation id="6044573915096792553">Размер 12</translation>
 <translation id="6045164183059402045">Шаблон за налагане</translation>
 <translation id="6047233362582046994">Ако разбирате рисковете за сигурността си, може <ph name="BEGIN_LINK" />да посетите този сайт<ph name="END_LINK" /> преди премахването на опасните приложения.</translation>
@@ -2441,7 +2436,6 @@
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6117833587752089929">Снимка (сатен)</translation>
 <translation id="6118782133429281336">Списъкът с източници е празен.</translation>
-<translation id="6120179357481664955">Помните ли идентификационния си номер за UPI?</translation>
 <translation id="6120950591512958208">Използвайте този код при плащане.</translation>
 <translation id="6122181661879998141">предната страна на картата ви</translation>
 <translation id="6124058285696691147">Изтегляне на прикачения файл</translation>
@@ -2476,7 +2470,6 @@
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Показалци по цялата дължина</translation>
-<translation id="6200386911308538077">Изображението се анализира</translation>
 <translation id="6203231073485539293">Проверете връзката си с интернет</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3144,6 +3137,7 @@
 <translation id="7554475479213504905">Презареждане и показване въпреки това</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7555777498260651025">Семейни телевизионни предавания</translation>
+<translation id="7556328470713619625">Използване на ключ за достъп</translation>
 <translation id="7559278538486662777">Приложението не може да бъде преоразмерено.</translation>
 <translation id="7561784249784255101">DVD диск</translation>
 <translation id="7564049878696755256">Възможно е да загубите достъп до профила си в/ъв <ph name="ORG_NAME" /> или самоличността ви да бъде открадната. Chrome препоръчва да промените паролата си сега.</translation>

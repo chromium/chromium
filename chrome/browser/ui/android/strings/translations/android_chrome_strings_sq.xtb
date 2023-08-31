@@ -159,6 +159,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1854311313115643875">Kur provat janë aktive, Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.
 
 Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt specifik — mund të fshish gjithashtu informacionet e lidhura me matjet. Shiko <ph name="BEGIN_LINK" />historikun tënd të shfletimit<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Hapi në shfletuesin Chrome</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
 <translation id="1883903952484604915">Skedarët e mi</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
@@ -704,7 +705,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4699172675775169585">Imazhet dhe skedarët në memorien specifike</translation>
 <translation id="4710167854527459075">Rendit nga më i riu</translation>
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
-<translation id="4720023427747327413">Hape në <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Shiko sajtet e tua kryesore</translation>
 <translation id="4731877163452936634">Shpejtësia e luajtjes: <ph name="PLAYBACK_SPEED" /> Kliko për ta ndryshuar.</translation>
 <translation id="4732120983431207637">Moduli i zbërthimit të stivës</translation>
@@ -810,7 +810,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
 <translation id="5174700554036517242">Skeda është kthyer përsëri në lartësinë fillestare</translation>
-<translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5186634140793586141">Menaxho temat dhe kërkimet që të interesojnë</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>
@@ -1093,6 +1092,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6641780377503683465">Hiq <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6645629752388991326">Kontrollo se cilat pajisje mund të identifikohen duke përdorur këtë pajisje si çelës sigurie.</translation>
+<translation id="6646696210740573446">Dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te Google.</translation>
 <translation id="6647441008198474441">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim</translation>
 <translation id="6648459603387803038">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tjetër}other{<ph name="CONTACT_PREVIEW" />\u2026 dhe <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> të tjera}}</translation>
@@ -1452,6 +1452,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8394720698884623075">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome</translation>
 <translation id="8402673309244746971">Shko te "Po ndjek"</translation>
 <translation id="8413126021676339697">Shfaq historikun e plotë</translation>
+<translation id="8413795581997394485">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Kur ti viziton një sajt, Chrome dërgon një pjesë të pakuptueshme të URL-së te Google nëpërmjet një serveri të privatësisë që e fsheh adresën tënde IP. Nëse një sajt bën diçka të dyshimtë, dërgohen edhe URL-të e plota dhe pjesët e përmbajtjeve të faqeve.</translation>
 <translation id="8414396119627470038">Identifikohu në <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Mëso më shumë rreth personalizimit të reklamave në Chrome</translation>
 <translation id="8419244640277402268">Përfshi</translation>

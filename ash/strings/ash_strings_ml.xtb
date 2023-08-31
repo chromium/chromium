@@ -83,6 +83,7 @@
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ഫോൺ കണ്ടെത്തൽ</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> എന്ന പേരിൽ സംരക്ഷിച്ച ഡെസ്‌ക് നിലവിലുണ്ട്</translation>
+<translation id="1288276784862223576">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />-ന്‌ തിരികെ വരിക.</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1290982764014248209"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="DRAGGED_APP" /> നീക്കുക.</translation>
@@ -139,6 +140,7 @@
 <translation id="1528259147807435347">കഴിഞ്ഞ ആഴ്‌ച എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> ഉപയോഗിക്കാൻ നിങ്ങൾ ആദ്യം എല്ലാ അക്കൗണ്ടുകളിൽ നിന്നും സൈൻ ഔട്ട് ചെയ്യണം. സൈൻ ഔട്ട് ചെയ്യുന്നതിന്, "റദ്ദാക്കുക" തിരഞ്ഞെടുത്ത് തിരികെ പോകുക. തുടർന്ന്, സ്റ്റാറ്റസ് ഏരിയ തുറക്കുന്നതിനുള്ള സമയം തിരഞ്ഞെടുത്ത് 'സൈൻ ഔട്ട് ചെയ്യുക' തിരഞ്ഞെടുക്കുക. ശേഷം, വീണ്ടും <ph name="USER_EMAIL_ADDRESS_2" /> എന്ന വിലാസത്തിലേക്ക് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="15373452373711364">വലിയ മൗസ് കഴ്‌സർ</translation>
+<translation id="1545331255323159851">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുക</translation>
 <translation id="1546492247443594934">ഡെസ്‌ക് 2</translation>
 <translation id="1546930421365146760">ഈ ഉപകരണം Google അഡ്‌മിൻ കൺസോളിൽ സജ്ജീകരിക്കാൻ നിങ്ങളുടെ അഡ്‌മിനോട് ആവശ്യപ്പെടുക</translation>
 <translation id="1549512626801247439">സ്‌റ്റോറേജ് മാനേജ്‌മെന്റ്</translation>
@@ -155,6 +157,7 @@
 <translation id="1592682369233288537">അടുത്ത ഡെസ്‌ക്: <ph name="NEXT_DESK_NAME" />, സജീവമാക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1604857178818051494">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="1607312127821884567">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="1610778689852195798">"പഴയപടിയാക്കുക"</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
@@ -183,6 +186,7 @@
 <translation id="1731815243805539470">മുമ്പത്തെ ഉപയോക്താവിലേക്ക് മാറുക</translation>
 <translation id="1733996486177697563">ഡാർക്ക്, ലൈറ്റ് തീമുകൾ തമ്മിൽ മാറുക. ഡെസ്‌ക്ടോപ്പിൽ സ്‌പർശിച്ചുപിടിച്ച ശേഷം വാൾപേപ്പറും സ്റ്റൈലും തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1736898441010944794">Bluetooth ഉപകരണങ്ങൾക്ക് "<ph name="NAME" />" ദൃശ്യമാണ്.</translation>
+<translation id="1737078180382804488">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="174102739345480129">മാർക്കർ ഓഫാണ്.</translation>
 <translation id="1743570585616704562">തിരിച്ചറിഞ്ഞില്ല</translation>
 <translation id="1746730358044914197">ഇൻപുട്ട് രീതികൾ കോൺഫിഗർ ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്.</translation>
@@ -198,6 +202,7 @@
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="1774796056689732716">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" />, നിലവിൽ <ph name="DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" />-ൽ <ph name="NUM_SHOWN_ITEMS" /> എണ്ണം കാണിക്കുന്നു</translation>
+<translation id="178347895271755507">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1815245884418711390">ഹോട്ട്സ്‌പോട്ട് മാറ്റുക. ഹോട്ട്സ്പോട്ട് ഓഫാണ്.</translation>
@@ -327,7 +332,6 @@
 <translation id="2369165858548251131">"ഹലോ" എന്നത് ചൈനീസിൽ</translation>
 <translation id="2382875860893882175">കാസ്റ്റ് ചെയ്യുന്നത് നിലവിൽ താൽക്കാലികമായി നിർത്തി. നിങ്ങൾക്ക് ഏതുസമയത്തും കാസ്റ്റ് ചെയ്യൽ പുനരാരംഭിക്കുകയോ നിർത്തുകയോ ചെയ്യാം.</translation>
 <translation id="2386292613071805067">പേജിലെ എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
-<translation id="2396594569364254378">മെമ്മറി <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ആകെ</translation>
 <translation id="2397416548179033562">Chrome മെനു കാണിക്കുക</translation>
 <translation id="240006516586367791">മീഡിയാ നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2402411679569069051">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക അല്ലെങ്കിൽ ഫോൺ അൺലോക്ക് ചെയ്യുക</translation>
@@ -355,6 +359,7 @@
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2487915095798731898">ചേരുക</translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
+<translation id="2504454902900101003">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> നിർത്തുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -526,6 +531,7 @@
 <translation id="3260969790895726815">സംഭാഷണം ലോക്കലായി പ്രോസസ് ചെയ്യുകയും കേട്ടെഴുത്ത് ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുകയും ചെയ്യുന്നു, എന്നാൽ ചില ശബ്ദ കമാൻഡുകൾ പ്രവർത്തിക്കില്ല.</translation>
 <translation id="3265032511221679826">കൃത്യമായ ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="3269597722229482060">വലത് ക്ലിക്ക്</translation>
+<translation id="3274634049061007184">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുക</translation>
 <translation id="3289364673986435196">പവർ മെനു</translation>
 <translation id="3289544412142055976">Linux ആപ്പുകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
 <translation id="3289674678944039601">അഡാപ്‌റ്റർ വഴി ചാർജ് ചെയ്യുന്നു</translation>
@@ -593,6 +599,7 @@
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3533126039236445965">ഷെൽഫിലെ ആപ്പുകൾ</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ഹോട്ട്‌സ്‌പോട്ട്</translation>
+<translation id="3540893133818942399">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="3542066395059568317">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം. നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ വലത്-ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3552189655002856821">വൈഫൈ ഓഫാണ്</translation>
 <translation id="3554215588514239132">ഡെവലപ്പർ ടൂളുകളുടെ പാനൽ കാണിക്കുക അല്ലെങ്കിൽ മറയ്ക്കുക</translation>
@@ -607,6 +614,7 @@
 <translation id="3576141592585647168">സമയമേഖല മാറ്റുക</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3580650856351781466">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
+<translation id="3585296979871889131">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുക</translation>
 <translation id="3593039967545720377">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡ് കാണാൻ <ph name="SHORTCUT_KEY_NAME" /> + V അമർത്തുക, തുടർന്ന് ക്ലിപ്പ്ബോർഡ് ചരിത്രം ആക്‌സസ് ചെയ്യുക. ആരംഭിക്കാൻ ഒരു ഇനം പകർത്തുക.</translation>
 <translation id="3593646411856133110">തുറന്നിരിക്കുന്ന ആപ്പുകൾ കാണാൻ മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്ത് പിടിക്കുക</translation>
 <translation id="3595596368722241419">ബാറ്ററി നിറഞ്ഞു</translation>
@@ -706,6 +714,7 @@
 <translation id="3953130726459169782">നിലവിൽ പൂർത്തിയാക്കിയ അസൈൻമെന്റുകളൊന്നുമില്ല.</translation>
 <translation id="3962859241508114581">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="3969043077941541451">ഓഫാണ്</translation>
+<translation id="3970324493235864154">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുക</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="397726367135689299">ബാറ്ററി ശരിയായി ചാർജ് ആകുന്നുണ്ടാകില്ല.</translation>
 <translation id="3977512764614765090">ബാറ്ററി <ph name="PERCENTAGE" />% ഉണ്ട്, ചാർജ് ചെയ്യുകയുമാണ്.</translation>
@@ -757,6 +766,7 @@
 <translation id="4185671786623711291">സജീവ വിൻഡോ വലതുവശത്തെ ഡെസ്‌ക്കിലേക്ക് നീക്കുക</translation>
 <translation id="4189826113259617332">നിലവിലെ വിൻഡോയിൽ തുറന്നിരിക്കുന്ന എല്ലാ പേജുകളും ബുക്കുമാർക്കുകളായി ഒരു പുതിയ ഫോൾഡറിൽ സംരക്ഷിക്കുക</translation>
 <translation id="4190143678693626113">നിങ്ങളുടെ ഫോണിലെ ടെക്‌സ്റ്റുകൾക്ക് Chromebook-ൽ നിന്ന് അതിവേഗം മറുപടി നൽകി സമയം ലാഭിക്കൂ</translation>
+<translation id="4190780880566297084">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="4192112279662688596">അല്ലെങ്കിൽ</translation>
 <translation id="4193857202545160520">ക്ലിക്കുകളും കീകളും കാണിക്കുക</translation>
 <translation id="4195579532193195633">നിലവിലെ പതിപ്പ് <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -795,6 +805,7 @@
 <translation id="4302592941791324970">ലഭ്യമല്ല</translation>
 <translation id="4303223480529385476">സ്റ്റാറ്റസ് ഏരിയ വികസിപ്പിക്കുക</translation>
 <translation id="4305133312001648038">പേജിലെ സൂം നില റീസെറ്റ് ചെയ്യുക</translation>
+<translation id="4307713728991152670">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="4312840429157639164">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു. സിസ്റ്റം സർഫേസിനെ ഓവർലാപ്പ് ചെയ്യുന്നു.</translation>
 <translation id="4316910396681052118">എല്ലാ ആപ്പുകളും</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -835,6 +846,7 @@
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
+<translation id="4485506555414638855">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="450584155212756404">Dev ചാനൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4516212064498225455">നിലവിലെ ഡെസ്‌ക്: <ph name="CURRENT_DESK_NAME" />, എല്ലാ ഡെസ്‌ക്കുകളുടെ മെനു തുറക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
@@ -852,6 +864,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4566144812051858745">ഒരു നിർദ്ദേശങ്ങളിലും താൽപ്പര്യമില്ല</translation>
+<translation id="4569753163207712681">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുക</translation>
 <translation id="4573176682887762361">"ടൈപ്പ് ചെയ്യുക [വാക്ക് / ശൈലി]"</translation>
 <translation id="4577274620589681794"><ph name="LABEL" /> · സമയം കഴിഞ്ഞു</translation>
 <translation id="4577990005084629481">പ്രിവ്യുകൾ കാണിക്കുക</translation>
@@ -975,6 +988,7 @@
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">മ്യൂട്ട് ചെയ്തിരിക്കുമ്പോൾ സംസാരിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് അറിയിപ്പ് ലഭിക്കും. ഓഡിയോ നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് ഒരിക്കലും പുറത്തുപോകില്ല.</translation>
+<translation id="5077416371682039027">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083035541015925118">ctrl + alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
@@ -1206,6 +1220,7 @@
 <translation id="6018164090099858612">മിറർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">ഇടത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
+<translation id="6020147141355393792">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="6022924867608035986">തിരയൽ ബോക്‌സ് ടെക്‌സ്‌റ്റ് മായ്‌ക്കുക</translation>
 <translation id="602472752137106327">എല്ലാ ഡെസ്‌കുകളിൽ നിന്നുമുള്ള വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
@@ -1348,6 +1363,7 @@
 <translation id="6612889377159412215">ഉപടാസ്‌ക്</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> സ്റ്റോറേജ് ഉപയോഗത്തിലാണ് | ആകെ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">സ്വകാര്യതാ സ്‌ക്രീൻ ഓണാണ്</translation>
+<translation id="6622679827379792051">നിങ്ങളുടെ ഫോണിലെ ആപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="6625718907317144388">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> എന്നിവയിൽ നിന്നും മറ്റ് ആപ്പുകളിൽ നിന്നുമുള്ള അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
 <translation id="6627638273713273709">തിരയല്‍+Shift+K</translation>
 <translation id="662830937908749204">അടുത്ത പെയിനിലേക്ക് ഫോക്കസ് നീക്കുക</translation>
@@ -1366,6 +1382,7 @@
 <translation id="6671661918848783005">നിങ്ങളുടെ Chromebook അൺലോക്ക് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6682029141988159141">ക്ലിപ്പ്ബോർഡിലേക്ക് ഉള്ളടക്കം ഒട്ടിക്കുക</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>
+<translation id="6686023075541098243">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകൾ കാണുന്നത് സജ്ജീകരിക്കുക</translation>
 <translation id="6696025732084565524">നിങ്ങളുടെ വേർപെടുത്താനാകുന്ന കീബോഡിന് നിർണ്ണായക അപ്‌ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="6700713906295497288">IME മെനു ബട്ടൺ</translation>
 <translation id="6707693040195709527">മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റേണ്ട സമയം കഴിഞ്ഞു.</translation>
@@ -1434,7 +1451,6 @@
 <translation id="6981291220124935078">ആക്സസ് ഓണാക്കുക</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="698231206551913481">ഈ ഉപയോക്താവിനെ നീക്കംചെയ്യുമ്പോൾ അതോടൊപ്പം അയാളുമായി ബന്ധപ്പെട്ട എല്ലാ ഫയലുകളും പ്രാദേശിക വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കപ്പെടും.</translation>
-<translation id="6985306450422696113">ആകെയുള്ള <ph name="TOTAL_MEMORY" /> മെമ്മറിയിൽ <ph name="USED_MEMORY" /> ലഭ്യമാണ്</translation>
 <translation id="6989752354829085073">നിങ്ങളുടെ Chromebook-നെ കുറിച്ച് മനസ്സിലാക്കാൻ ഒരു ദ്രുത ടൂർ നടത്തുക. വെറും 6 ഘട്ടങ്ങൾ മാത്രം.</translation>
 <translation id="7004910047186208204">മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7005239792648594238">ആരംഭിക്കാൻ ഒരു ആപ്പ് തുറക്കുക</translation>
@@ -1563,6 +1579,7 @@
 <translation id="7564874036684306347">മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലേക്ക് വിൻഡോകൾ നീക്കുന്നത് അപ്രതീക്ഷിതമായ പ്രവർത്തനരീതിയ്‌ക്ക് ഇടയാക്കാം. തുടർന്നുള്ള അറിയിപ്പുകൾ, വിൻഡോകൾ, ഡയലോഗുകൾ എന്നിവ ഡെസ്‌ക്‌‌ടോപ്പുകൾക്കിടയിൽ വിഭജിക്കപ്പെടാം.</translation>
 <translation id="7567950130372125778">ഹായ്, അവിടെയുണ്ടോ. Chromebook അൽപ്പം വ്യത്യസ്‌തമാണ്.</translation>
 <translation id="7569509451529460200">Braille, ChromeVox എന്നിവ പ്രവർത്തനക്ഷമമാക്കി</translation>
+<translation id="7569886975397378678">നിങ്ങളുടെ ഫോണിലെ അറിയിപ്പുകളും ആപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി ചാർജ് | <ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="7573585051776738856">സജീവ വിൻഡോ വലതുവശത്ത് ഡോക്ക് ചെയ്‌തു.</translation>
 <translation id="7579778809502851308">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>

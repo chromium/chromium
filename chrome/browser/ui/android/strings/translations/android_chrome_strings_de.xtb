@@ -120,6 +120,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
 <translation id="1554532453982918912">Hilf dabei, Chrome für andere Nutzer wie dich zu verbessern</translation>
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
+<translation id="1568636008098739136">Diese Seite anhören. Zum Ändern Schaltfläche gedrückt halten.</translation>
 <translation id="1571304935088121812">Nutzernamen kopieren</translation>
 <translation id="1592864538817356322">Standardschutz</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> vorgeschlagene Elemente in der folgenden Liste.</translation>
@@ -128,6 +129,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="1633659023549081553">Entdecke neue Inhalte auf der Startseite von Chrome</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1642309806724967937">Abhängig von deinen Einstellungen kann Chrome auch Cookies und deine aktuelle URL versenden</translation>
 <translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1657932388559784161">Die Ansicht am unteren Rand mit den Seitenstatistiken ist geschlossen</translation>
@@ -157,6 +159,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1854311313115643875">Wenn Tests aktiviert sind, können mithilfe der Anzeigenanalyse von dir besuchte Websites Informationen von Chrome anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.
 
 Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bestimmte Website –, werden auch die damit verbundenen Analysedaten gelöscht. <ph name="BEGIN_LINK" />Hier kannst du deinen Browserverlauf aufrufen.<ph name="END_LINK" /></translation>
+<translation id="1871098866036088250">In Chrome-Browser öffnen</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
@@ -196,6 +199,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Fehler bei 1 Download}other{Fehler bei # Downloads}}</translation>
 <translation id="2067805253194386918">Text</translation>
 <translation id="2082238445998314030">Ergebnis <ph name="RESULT_NUMBER" /> von <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2093731487903423814">den letzten 15 Minuten</translation>
 <translation id="2096012225669085171">Geräteübergreifend synchronisieren und personalisieren</translation>
 <translation id="2100273922101894616">Automatisch anmelden</translation>
 <translation id="2100314319871056947">Teile den Text am besten in mehrere Abschnitte</translation>
@@ -572,6 +576,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
 <translation id="4072805772816336153">Versuchen Sie es später noch einmal</translation>
+<translation id="4080602171844412446">Weitere Informationen</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kannst dich über dieses Tablet auf dem Gerät anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
@@ -652,6 +657,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4484496141267039529">Keine Verbindung. Versuche es später noch einmal.</translation>
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
+<translation id="4491323382106587961">Wähle ein Konto aus. Aktuell ausgewählt: <ph name="EMAIL" />.</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4509501256689523862">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK_1" />den Werbethemen<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />deinen Cookie-Einstellungen<ph name="END_LINK_2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Vor # Tag}other{Vor # Tagen}}</translation>
@@ -659,6 +665,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4521489764227272523">Die ausgewählten Daten wurden aus Chrome und von allen deinen synchronisierten Geräten entfernt.
 
 Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Formen des Browserverlaufs wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
+<translation id="4523326818319942067">der letzten Stunde</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4528638190900283934">Melde dich für zusätzliche Funktionen an</translation>
 <translation id="4532845899244822526">Ordner auswählen</translation>
@@ -698,7 +705,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4710167854527459075">Nach neuestem sortieren</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
-<translation id="4720023427747327413">In <ph name="PRODUCT_NAME" /> öffnen</translation>
 <translation id="47217992755561375">Deine Top-Websites aufrufen</translation>
 <translation id="4731877163452936634">Wiedergabegeschwindigkeit: <ph name="PLAYBACK_SPEED" /> Zum Ändern klicken.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -707,6 +713,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4738836084190194332">Letzte Synchronisierung: <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Du erhältst bessere Vorschläge in der Adressleiste</translation>
 <translation id="4742970037960872810">Markierung entfernen</translation>
+<translation id="4743664893327841597">Deine Eingaben in der Adressleiste oder im Suchfeld werden an deine Standardsuchmaschine gesendet</translation>
 <translation id="4749960740855309258">Neuen Tab öffnen</translation>
 <translation id="4758061975920522644">Nur Bild teilen</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -715,6 +722,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4766678251456904326">Konto zum Gerät hinzufügen</translation>
 <translation id="4767947714785277816">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein: „Erfolgsmessung von Anzeigen“. Chrome gibt nur sehr wenige Informationen zwischen Websites und Apps weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit die Leistung von Werbung analysiert werden kann.</translation>
 <translation id="4769095993849849966">Neuer Dateiname</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> gelöscht</translation>
 <translation id="4778653490315793244">Noch keine Inhalte vorhanden</translation>
 <translation id="4787736314074622408">Möchtest du <ph name="ITEM_TITLE" /> löschen?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -802,7 +810,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
 <translation id="5174700554036517242">Tab hat wieder die ursprüngliche Höhe</translation>
-<translation id="5184329579814168207">In Chrome öffnen</translation>
 <translation id="5186634140793586141">Hier kannst du Themen und Suchanfragen verwalten, die dich interessieren</translation>
 <translation id="5191251636205085390">Weitere Informationen zu neuen Technologien als Ersatz für Drittanbieter-Cookies und ihrer Nutzung</translation>
 <translation id="5193988420012215838">In die Zwischenablage kopiert</translation>
@@ -816,6 +823,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5234971936051226002">Der Player „Diese Seite anhören“ ist minimiert.</translation>
 <translation id="5235196193381275927">Bei der Anmeldung ist ein Fehler aufgetreten</translation>
 <translation id="5246093389635966745">Verknüpfung auf Symbolleiste bearbeiten</translation>
+<translation id="5264813352784073502">den letzten 24 Stunden</translation>
 <translation id="5271967389191913893">Das Gerät kann den Inhalt, der heruntergeladen werden soll, nicht öffnen.</translation>
 <translation id="5292796745632149097">Senden an</translation>
 <translation id="5300426565656326054">Browserbasierte personalisierte Werbung</translation>
@@ -828,6 +836,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5329858041417644019">Dein Browser wird nicht verwaltet</translation>
 <translation id="5339031667684712858">Entfernte Websites</translation>
 <translation id="5342314432463739672">Berechtigungsanfragen</translation>
+<translation id="534580735623577507">Keine Websites aus <ph name="TIME_PERIOD" /></translation>
 <translation id="53537532693258630">Die von dir entfernten Websites werden hier angezeigt</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5361107212971249203">Text</translation>
@@ -843,6 +852,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
 <translation id="5439191312780166229">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst Warnungen von Chrome überspringen.</translation>
+<translation id="5441137934526263133">Website funktioniert nicht? Drittanbieter-Cookies werden blockiert.</translation>
 <translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
 <translation id="5444999712122199445">Zurück zur Website</translation>
@@ -940,6 +950,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5951119116059277034">Live-Seite wird angezeigt</translation>
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
 <translation id="5957442310066583693">Auf die Schaltfläche „Startseite“ tippen, um deine Top-Websites aufzurufen</translation>
+<translation id="59577092665511740">Wähle ein Konto aus.</translation>
 <translation id="5958275228015807058">Deine Dateien und Seiten findest du unter "Downloads"</translation>
 <translation id="5958994127112619898">Seite vereinfachen</translation>
 <translation id="5962718611393537961">Zum Minimieren tippen</translation>
@@ -1032,6 +1043,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6433501201775827830">Suchmaschine auswählen</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6437478888915024427">Seiteninfo</translation>
+<translation id="6440291723980579689">Seiten werden erst geladen, nachdem du sie öffnest</translation>
 <translation id="6441734959916820584">Name ist zu lang</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# Bild}other{# Bilder}}</translation>
 <translation id="6447558397796644647">Das Lesezeichen wurde nicht gefunden. Prüfe die Schreibweise oder füge ein neues Lesezeichen hinzu.</translation>
@@ -1285,7 +1297,9 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7641339528570811325">Browserdaten löschen…</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
+<translation id="7655240423373329753">den letzten 7 Tagen</translation>
 <translation id="7655900163790317559">Bluetooth wird aktiviert…</translation>
+<translation id="7656721520530864426">Keine Websites</translation>
 <translation id="7656862631699126784">Inkognitosperre aktivieren</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
@@ -1388,6 +1402,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8088176524274673045">Um diesen Inhalt mit Personen in deiner Nähe zu teilen, bitte sie, den QR-Code zu scannen</translation>
 <translation id="8090732854597034573">Wenn du Hilfe brauchst, sprich mit deinen Eltern</translation>
 <translation id="8100969750121413114">Anmelden, um Chrome zu personalisieren</translation>
+<translation id="8101414242770404289">Keine Tabs aus <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Inkognitotab</translation>
 <translation id="8105613260829665809">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen<ph name="END_TOS_LINK" />.\nChrome sendet Nutzungsstatistiken und Absturzberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_UMA_LINK" />Verwalten<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1439,6 +1454,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8414396119627470038">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> in <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8416347857511542594">Weitere Informationen zur Personalisierung von Werbung in Chrome</translation>
 <translation id="8419244640277402268">Einschließen</translation>
+<translation id="8422250855136581222">Keine Tabs auf diesem Gerät</translation>
 <translation id="8424781820952413435">Seite wurde gesendet. Öffne Chrome auf deinem <ph name="DEVICE_TYPE" />, um sie zu lesen.</translation>
 <translation id="8427875596167638501">Vorschau-Tab ist halb geöffnet</translation>
 <translation id="8428213095426709021">Einstellungen</translation>

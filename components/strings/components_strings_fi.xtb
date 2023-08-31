@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Lasi (värillinen)</translation>
 <translation id="1074497978438210769">Ei turvallinen</translation>
 <translation id="1075079914415273530">Maa- ja metsätalous</translation>
+<translation id="1075364221219156102">Käytä avainkoodia</translation>
 <translation id="1080116354587839789">Sovita leveyteen</translation>
 <translation id="1081061862829655580">Lokero 19</translation>
 <translation id="1089439967362294234">Vaihda salasana</translation>
@@ -135,7 +136,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Kirjoitit salasanan sivustolle, joka ei ole organisaatiosi hallinnoima. Älä käytä samaa salasanaa muissa sovelluksissa tai muilla sivustoilla tilisi turvallisuuden vuoksi.</translation>
 <translation id="1257553931232494454">zoomaustasot</translation>
-<translation id="1258942153897182536">Tekstintunnistus käynnissä…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, muuta Chromen asetuksia painamalla sarkainta ja sitten Enter</translation>
 <translation id="1264309058268477500">Vaihtoehtoinen</translation>
 <translation id="1264974993859112054">Urheilu</translation>
@@ -293,7 +293,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 
           &lt;p&gt;Muokkaa aikaa ja päivämäärää &lt;strong&gt;Asetukset&lt;/strong&gt;‑sovelluksen  &lt;strong&gt;Yleistä&lt;/strong&gt;‑osiossa.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Jäjestelmänvalvojasi käynnistää laitteen uudelleen <ph name="DATE" /> kello <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Näistä kuvista ei ole muunnettu tekstiä</translation>
 <translation id="156703335097561114">Verkkotiedot, kuten osoitteet, käyttöliittymän määritys ja yhteyden laatu</translation>
 <translation id="1567040042588613346">Tämä käytäntö toimii odotetusti, mutta sama arvo on asetettu muualla, ja tämä käytäntö korvaa sen.</translation>
 <translation id="1567405528131216114">Lisää <ph name="TOPIC" /></translation>
@@ -1383,7 +1382,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3901925938762663762">Kortti on vanhentunut.</translation>
 <translation id="390391808978419508">Avaaminen aikakatkaistu</translation>
 <translation id="3905894480064208252">{0,plural, =1{Tiedoston siirtäminen estetty}other{<ph name="FILE_COUNT" /> tiedoston siirtäminen estetty}}</translation>
-<translation id="3906095212874392000">Muunnetun tekstin loppu</translation>
 <translation id="3906954721959377182">Tabletti</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Lue lisää upotetusta sisällöstä</translation>
@@ -1608,7 +1606,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4331519897422864041">Pinoaja 5</translation>
 <translation id="4331708818696583467">Ei turvallinen</translation>
 <translation id="4333561522337981382">hallinnoida ikkunoita kaikilla näytöillä</translation>
-<translation id="4338709847516294988">Voit muuntaa kuvan tekstiksi kontekstivalikosta Haku + m</translation>
 <translation id="4340575312453649552">Chrome poisti tämän mainoksen, koska se käytti liian paljon laitteen resursseja.</translation>
 <translation id="4340810192899866471">Tuo JSON-tiedostosta</translation>
 <translation id="4340982228985273705">Havaintojen mukaan tämä tietokone ei ole yrityksen hallinnoima, joten käytäntö voi asentaa automaattisesti vain Chrome Web Storessa hostattuja laajennuksia. Chrome Web Storen päivitys-URL-osoite on <ph name="CWS_UPDATE_URL" />.</translation>
@@ -1625,7 +1622,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4363222835916186793">Tämän tuotteen ilmoitukset on laitettu pois päältä</translation>
 <translation id="4366943895537458493">Levy</translation>
 <translation id="437040971055499437">Tietoturvatapahtuma on havaittu</translation>
-<translation id="4371307856413138486">Muunnetun tekstin alku</translation>
 <translation id="4371591986692297148">Ei aktiivinen</translation>
 <translation id="4372948949327679948">Odotettu <ph name="VALUE_TYPE" />-arvo.</translation>
 <translation id="4375864595697821259">Lisää kohde takaisin, jos haluat sen näkyvän aiheissa, joista Chrome voi valita arvioidessaan kiinnostuksen kohteitasi</translation>
@@ -2404,7 +2400,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="604124094241169006">Automaattinen</translation>
 <translation id="6041777658117377052">Huoneen lämpötila</translation>
 <translation id="6042308850641462728">Lisää</translation>
-<translation id="6042688167654081154">Kuva muunnettu tekstiksi</translation>
 <translation id="6044573915096792553">Koko 12</translation>
 <translation id="6045164183059402045">Asetusmalli</translation>
 <translation id="6047233362582046994">Jos ymmärrät käyntiä koskevat turvallisuusriskit, voit <ph name="BEGIN_LINK" />siirtyä tälle sivustolle<ph name="END_LINK" /> jo ennen haitallisten sovellusten poistamista.</translation>
@@ -2442,7 +2437,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6116338172782435947">nähdä leikepöydälle kopioidun tekstin ja kuvat</translation>
 <translation id="6117833587752089929">Valokuva (satiini)</translation>
 <translation id="6118782133429281336">Alkuperäluettelo on tyhjä.</translation>
-<translation id="6120179357481664955">Muistatko UPI-tunnuksesi?</translation>
 <translation id="6120950591512958208">Käytä tämä koodi kassalla.</translation>
 <translation id="6122181661879998141">kortin etupuoli</translation>
 <translation id="6124058285696691147">Lataa liite</translation>
@@ -2477,7 +2471,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6196640612572343990">Estä kolmannen osapuolen evästeet</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Kokonaan leikatut sarkaimet</translation>
-<translation id="6200386911308538077">Kuvaa analysoidaan</translation>
 <translation id="6203231073485539293">Tarkista internetyhteytesi</translation>
 <translation id="6205314730813004066">Mainosyksityisyys</translation>
 <translation id="6212314149070368045">Yhdysvaltalainen taulukointipaperi</translation>
@@ -3145,6 +3138,7 @@ Lisätietoja:
 <translation id="7554475479213504905">Päivitä ja näytä siitä huolimatta</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7555777498260651025">Television perheohjelmat</translation>
+<translation id="7556328470713619625">Käytä avainkoodia</translation>
 <translation id="7559278538486662777">Tämän sovellusikkunan kokoa ei voi muuttaa.</translation>
 <translation id="7561784249784255101">DVD-levy</translation>
 <translation id="7564049878696755256">Saatat menettää <ph name="ORG_NAME" />-tilisi käyttöoikeuden tai joutua identiteettivarkauden uhriksi. Chrome suosittelee salasanan vaihtamista välittömästi.</translation>

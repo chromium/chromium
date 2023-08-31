@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">타사 쿠키만 제외하고 허용</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{1일 후에 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2025115093177348061">증강 현실</translation>
 <translation id="2030769033451695672">탭하여 <ph name="URL_OF_THE_CURRENT_TAB" />(으)로 돌아가기</translation>

@@ -32,17 +32,21 @@
 <translation id="2426113998523353159">Chromium を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="2450140762465183767">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>
 <translation id="2478931088402984578">[<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />] を選択する</translation>
+<translation id="2574528844022712255">Chromium ブックマークを表示</translation>
 <translation id="2590893390871230428">Chromium のデータを同期する</translation>
 <translation id="2618596336309823556">デバイスの設定で [<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />] を開いて [Chromium] を選択します</translation>
 <translation id="2631735236435791495">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chromium の使用方法を管理しています。管理者は特定の機能を設定または制限できます。</translation>
 <translation id="2650312721222849884">どのデバイスからでも Chromium で自分のタブにアクセスするには、同期をオンにしてください</translation>
 <translation id="2684230048001240293">Chromium を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
 <translation id="2730884209570016437">カメラは別のアプリが使用中のため、Chromium では使用できません</translation>
+<translation id="2798503587425057129">Chromium リーディング リストを開きます。</translation>
 <translation id="2915596697727466327">Chromium では Face ID の使用により、パスワードへの認証されたアクセスのみが許可されます。</translation>
 <translation id="2918709798697875261">組織が Chromium にログインしないように求めています。</translation>
 <translation id="2942241131342758843">Chromium を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="3102849287235003384">すべてのウェブサイトで Google アカウントからログアウトするには、<ph name="BEGIN_LINK" />Chromium からログアウト<ph name="END_LINK" />します。</translation>
+<translation id="3228349498066165585">Chromium データの一部が Google アカウントにまだ保存されていません。
+        数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="3256316712990552818">Chromium にコピー済み</translation>
 <translation id="3344973607274501920">Chromium でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="3472200483164753384">Chromium Canary ではサポートされていません</translation>
@@ -79,7 +83,6 @@
 <translation id="5453478652154926037">現在、Chromium ではパスワードをチェックできません。</translation>
 <translation id="5521125884468363740">どのデバイスからでも Chromium で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="5522297504975449419">Chromium の一部の機能は使用できなくなります。</translation>
-<translation id="5573014823074921752">Chromium の使い方のヒント: タブのオプションをさらに表示するには、画面の下部または上部のツールバーにある [タブを表示] を長押しします。</translation>
 <translation id="5688047395118852662">このカードでは、Chromium を最大限に活用するためのヒントを紹介しています。</translation>
 <translation id="5700709190537129682">Chromium でパスワードを確認できません</translation>
 <translation id="5777187867430702742">Chromium ページ</translation>
@@ -118,7 +121,6 @@
 <translation id="7400689562045506105">Chromium をどこでも使用</translation>
 <translation id="7523464085759699266">[Chromium を終了するときにシークレット タブをロックする] をオンにします。</translation>
 <translation id="7674213385180944843">[設定] &gt; [プライバシー] &gt; [カメラ] &gt; [Chromium] の順に選択し、カメラをオンにします。</translation>
-<translation id="7746854981345936341">Chromium の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="7763454117143368771">Chromium を既定のブラウザとして使用すると、危険なサイトから保護され、パスワードを安全に保つことができます</translation>
 <translation id="7812317783196516890">ログインしてデータを同期している、<ph name="DOMAIN" /> 管理のアカウントに対して、管理者が専用のユーザー ポリシーを設定して Chromimum の動作を変更できるようになりました。</translation>
 <translation id="7859018312476869945">Chromium でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -127,6 +129,7 @@
 <translation id="7905064834449738336">ウェブ上に公開されたことがあるパスワードを使用すると警告が表示されます。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
 <translation id="7928628054454574139">他のアプリでタップしたリンクを Chromium で開くことができます</translation>
 <translation id="7931842119211730154">Chromium を終了するときにシークレット タブをロックする</translation>
+<translation id="7934404985878918282">Chromium リーディング リストを表示</translation>
 <translation id="7980860476903281594">Chromium で、許可したサイトと現在地が共有されます。</translation>
 <translation id="8013573822802650211">どのデバイスからでも Chromium で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="8071041515667087705">Chromium 設定に移動します。</translation>
@@ -149,6 +152,7 @@
 
   • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">このアカウントと保存されていないデータは Chromium から削除されます。</translation>
+<translation id="88376265765385899">Chromium ブックマークを開きます。</translation>
 <translation id="894437814105052438">ログアウトすると、Chromium で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
 <translation id="8963279154877372067">Chromium の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>

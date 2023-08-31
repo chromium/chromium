@@ -108,6 +108,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2775140325783767197">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2847461019998147611">Shfaq Google Chrome në këtë gjuhë</translation>
+<translation id="2853415089995957805">Chrome ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="2857540653560290388">Po hapet Chrome...</translation>
 <translation id="2857972467023607093">Ekziston tashmë një profil i Chrome me këtë llogari</translation>
 <translation id="2861074815332034794">Po përditëson Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -392,6 +393,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8290100596633877290">Google Chrome pësoi një ndërprerje aksidentale. Dëshiron ta rinisësh tani?</translation>
 <translation id="829923460755755423">Shto një shkurtore për te "Menaxheri i fjalëkalimeve i Google"</translation>
+<translation id="8336463659890584292">Kur një sajt kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome përdor serverët e Google. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht, por Google mëson se çfarë sajtesh ngarkohen paraprakisht.</translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chrome. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>

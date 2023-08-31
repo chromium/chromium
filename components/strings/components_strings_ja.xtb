@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">ガラス（カラー）</translation>
 <translation id="1074497978438210769">保護されていない通信</translation>
 <translation id="1075079914415273530">農林業</translation>
+<translation id="1075364221219156102">パスキーを使用する</translation>
 <translation id="1080116354587839789">ウィンドウ幅に合わせる</translation>
 <translation id="1081061862829655580">トレイ 19</translation>
 <translation id="1089439967362294234">パスワードを変更</translation>
@@ -135,7 +136,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">組織が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="1257553931232494454">ズームレベル</translation>
-<translation id="1258942153897182536">OCR を処理しています...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定を管理します</translation>
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
@@ -293,7 +293,6 @@
 
       &lt;p&gt;&lt;strong&gt;設定&lt;/strong&gt;アプリの [&lt;strong&gt;全般&lt;/strong&gt;] セクションで日時を調整してください。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">お使いのデバイスは <ph name="DATE" /> 日 <ph name="TIME" /> 時に管理者によって再起動されます</translation>
-<translation id="1564753300777780201">画像から変換されたテキストはありません</translation>
 <translation id="156703335097561114">ネットワーク情報（アドレス、インターフェース設定、接続品質など）</translation>
 <translation id="1567040042588613346">このポリシーは想定どおり動作していますが、同じ値が設定されている別のポリシーが優先されています。</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> を追加</translation>
@@ -1227,6 +1226,7 @@
 <translation id="36224234498066874">閲覧履歴データを削除...</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
 <translation id="3624292976554877583">ラベル（非光沢）</translation>
+<translation id="3625929652356389713">ピクチャー イン ピクチャー ウィンドウを自動的に開くよう要求できるようにする</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> に転送することは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> に転送することは推奨されていません}}</translation>
 <translation id="3630155396527302611">ネットワークへのアクセスを許可されたプログラムとして既に表示されている場合は、
       いったんリストから削除し、もう一度追加してみてください。</translation>
@@ -1360,11 +1360,11 @@
 <translation id="388632593194507180">監視が検出されました</translation>
 <translation id="3886948180919384617">スタッカー 3</translation>
 <translation id="3890664840433101773">メールを追加</translation>
+<translation id="3893306401511601929">自動ピクチャー イン ピクチャー</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3901925938762663762">カードの有効期限が切れています</translation>
 <translation id="390391808978419508">開く処理がタイムアウトしました</translation>
 <translation id="3905894480064208252">{0,plural, =1{ファイルの転送がブロックされています}other{<ph name="FILE_COUNT" /> 個のファイルの転送がブロックされています}}</translation>
-<translation id="3906095212874392000">変換されたテキストの最後</translation>
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">この設定は Chrome の設定でいつでも変更できます</translation>
@@ -1588,7 +1588,6 @@
 <translation id="4331519897422864041">スタッカー 5</translation>
 <translation id="4331708818696583467">保護されていない通信</translation>
 <translation id="4333561522337981382">全ディスプレイのウィンドウを管理する</translation>
-<translation id="4338709847516294988">コンテキスト メニューで検索+M キーを押して画像をテキストに変換する</translation>
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340810192899866471">JSON からインポート</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
@@ -1605,7 +1604,6 @@
 <translation id="4363222835916186793">この商品のアラートをオフにしました</translation>
 <translation id="4366943895537458493">プレート</translation>
 <translation id="437040971055499437">セキュリティ イベントの発生</translation>
-<translation id="4371307856413138486">変換されたテキストの先頭</translation>
 <translation id="4371591986692297148">無効</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> 値が想定されます。</translation>
 <translation id="4375864595697821259">あなたの興味 / 関心を推測する際に Chrome が使用しても構わないトピックについては、プールに戻します</translation>
@@ -2137,6 +2135,7 @@
 <translation id="5512812358367123529">オフィス家具</translation>
 <translation id="5513528801833998679">デバイスのログイン情報を使用</translation>
 <translation id="5515388687005870733">55x85 mm</translation>
+<translation id="5516095341424241911">お支払い情報は Google のセキュリティ技術で保護されます</translation>
 <translation id="5518670652865028077">アート、エンターテインメント</translation>
 <translation id="5519516356611866228">変更後のバージョン</translation>
 <translation id="5519696598216267194">紙（穴開き）</translation>
@@ -2202,6 +2201,7 @@
 <translation id="5633259641094592098">カルト映画、インディーズ映画</translation>
 <translation id="563371367637259496">モバイル</translation>
 <translation id="5635237618724097525">スマートフォン</translation>
+<translation id="5642362243427711530"><ph name="FIRST_STRING" />。<ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">ステレオ システム、コンポーネント</translation>
 <translation id="5644090287519800334">1 面の画像の X 軸移動</translation>
 <translation id="5645132789250840550">プラスチック（半光沢）</translation>
@@ -2378,7 +2378,6 @@
 <translation id="604124094241169006">自動設定</translation>
 <translation id="6041777658117377052">チャンバーの温度</translation>
 <translation id="6042308850641462728">もっと見る</translation>
-<translation id="6042688167654081154">画像をテキストに変換しました</translation>
 <translation id="6044573915096792553">サイズ 12</translation>
 <translation id="6045164183059402045">面付けテンプレート</translation>
 <translation id="6047233362582046994">有害なアプリがまだ存在する可能性があるにもかかわらず<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上の危険性をあらかじめご認識ください。</translation>
@@ -2416,7 +2415,6 @@
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
 <translation id="6117833587752089929">写真（サテン）</translation>
 <translation id="6118782133429281336">オリジンのリストが空です。</translation>
-<translation id="6120179357481664955">UPI ID を保存しますか？</translation>
 <translation id="6122181661879998141">カードの表面</translation>
 <translation id="6124058285696691147">添付ファイルをダウンロードします</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
@@ -2450,7 +2448,6 @@
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6197648101609735209">89x89 mm</translation>
 <translation id="6198480336395236519">フルカットタブ</translation>
-<translation id="6200386911308538077">画像を分析しています</translation>
 <translation id="6203231073485539293">インターネット接続を確認してください</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6212314149070368045">米国ファンフォールド</translation>
@@ -3109,6 +3106,7 @@
 <translation id="7554475479213504905">再読み込みして表示</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7555777498260651025">ファミリー向け番組</translation>
+<translation id="7556328470713619625">パスキーを使用する</translation>
 <translation id="7559278538486662777">このアプリはサイズ変更できません。</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> アカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
@@ -3731,6 +3729,7 @@
 <translation id="885730110891505394">Google との共有</translation>
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="885906927438988819">タイプミスでない場合は、<ph name="BEGIN_LINK" />Windows ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
+<translation id="8863218129525348270">カードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="8864939224504814334">ビジネススーツ</translation>
 <translation id="8866132857352163524">サウンドトラック</translation>
 <translation id="8866481888320382733">ポリシー設定の解析中にエラーが発生しました</translation>
@@ -3906,6 +3905,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 広告のトピックは、最近の閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトのリスト）に基づきます。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940053046584497293">旅行、交通</translation>
+<translation id="944540589955480312">Google アカウントに保存したパスワードとパスキーを使用</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="949314938206378263">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
@@ -3941,5 +3941,6 @@
     &lt;li&gt;別のネットワークに接続してみてください&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">自動ピクチャー イン ピクチャー</translation>
 <translation id="997986563973421916">Google Pay から</translation>
 </translationbundle>

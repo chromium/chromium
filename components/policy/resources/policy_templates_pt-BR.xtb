@@ -975,6 +975,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, consulte a política DeviceMetricsReportin
       Se a política for definida como "Desativada" ou deixada sem definição, o host de assistência remota será executado no contexto do usuário e os usuários remotos não poderão interagir com janelas elevadas no computador.</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>
 <translation id="1838910874018595451">Configuração pré-preenchida para tíquetes do Kerberos</translation>
+<translation id="1843102210803941014">Ativa somente cookies e dados essenciais na pesquisa</translation>
 <translation id="1843117931376765605">Taxa de atualização da política do usuário</translation>
 <translation id="1844620919405873871">Configura as políticas relacionadas ao desbloqueio rápido.</translation>
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
@@ -1801,8 +1802,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="251050607781210155">Permitir a proteção contra phishing do lado do cliente na Navegação segura</translation>
 <translation id="2512972020817284317">Ativar a unificação das políticas da nuvem no nível do usuário.</translation>
 <translation id="2515699738406900920">Disponibilidade do seletor de perfil na inicialização</translation>
-<translation id="251594860034549963">Se a política for definida como "Ativada", as janelas do navegador do último dispositivo usado pelo usuário atual serão abertas automaticamente no login.
-      Se a política for definida como "Desativada" ou não for definida, as configurações de restauração completa vão determinar o que será iniciado no login.</translation>
 <translation id="2517466659416174529">Permitir congelamento das guias em segundo plano</translation>
 <translation id="2518231489509538392">Permitir a reprodução de áudio</translation>
 <translation id="2519578205567666653">Permitir dispositivos de armazenamento externo</translation>
@@ -3266,7 +3265,6 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
-<translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
 <translation id="3792144912556572267">Se a política for definida, o URL de página inicial padrão será definido no <ph name="PRODUCT_NAME" />. O botão "Página inicial" abrirá a página inicial. No computador, as políticas <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> controlam as páginas que são abertas na inicialização.
 
 Se a página inicial for definida como a página "Nova guia", seja pelo usuário ou por <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, esta política não terá efeito.
@@ -3557,7 +3555,6 @@ Na versão 117 e mais recentes, o campo <ph name="PREVENT_CLOSE_FIELD" /> especi
       Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
 <translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
-<translation id="4025176296532430931">Desativar o Workspace flutuante e não abrir janelas do navegador remoto ao fazer login</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
@@ -4432,6 +4429,7 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
 
       Se o tamanho da página não estiver disponível na impressora escolhida pelo usuário, esta política será ignorada.</translation>
 <translation id="4789450349513792856">Bloquear pop-ups nesses sites</translation>
+<translation id="4790391579868456557">Usa cookies essenciais e não essenciais na pesquisa.</translation>
 <translation id="4790588245699320140">Permitir que o Google Assistente acesse o contexto da tela</translation>
 <translation id="4800438168909332958">Ativar o recurso de cancelamento de eco do áudio do sistema (AEC, na sigla em inglês). O AEC do sistema é um cancelamento de eco acústico,
 ou seja, um módulo de processamento de áudio que remove a reprodução de áudio do sistema (eco) do sinal do microfone.
@@ -4741,6 +4739,9 @@ Se a política for definida como verdadeira ou for deixada sem definição, esse
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
 <translation id="5130213897914754028">Evitar que os sites usem o SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Sempre oferecer tradução</translation>
+<translation id="5138579693170759139">Esta política permite que os administradores controlem como o Google processa cookies e dados enviados à Pesquisa pelo <ph name="PRODUCT_OS_NAME" />.
+Quando a política está ativada, o usuário pode usar a caixa de pesquisa do acesso rápido do <ph name="PRODUCT_OS_NAME" /> e a caixa de endereço do navegador <ph name="PRODUCT_NAME" /> no <ph name="PRODUCT_OS_NAME" />. Os cookies e dados só podem ser usados para fins essenciais.
+Quando a política não está definida ou é desativada, os cookies e os dados podem ser usados para fins não essenciais.</translation>
 <translation id="5141670636904227950">Definir o tipo de lupa padrão ativada na tela de login</translation>
 <translation id="5142301680741828703">Sempre renderizar os seguintes padrões de URL no <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política controla a permissão de fornecimento de informações que podem ser usadas para identificar usuários, como o login do SO, o login do perfil do <ph name="PRODUCT_NAME" />, o nome do perfil do <ph name="PRODUCT_NAME" />, o caminho do perfil do <ph name="PRODUCT_NAME" /> e o caminho executável do <ph name="PRODUCT_NAME" />.
@@ -6987,11 +6988,6 @@ bloqueio dessas solicitações será aplicado.</translation>
       * PasswordProtectionWarningOnPhishingReuse, o aviso de proteção de senha será exibido quando os usuários reutilizarem senhas protegidas em sites de phishing.
 
       Se a política não for definida, o serviço protegerá apenas as senhas do Google, mas os usuários poderão mudar essa configuração.</translation>
-<translation id="6969079025604591591">Se a política for definida como "Ativada" ou for deixada sem definição, a integridade do código renderizador será ativada.
-
-      Se a política for definida como "Desativada", a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, uma vez que códigos desconhecidos e potencialmente hostis poderão ser carregados nos processos de renderização do <ph name="PRODUCT_NAME" />. Desative a política apenas se softwares de terceiros que precisam ser executados nos processos de renderizador do <ph name="PRODUCT_NAME" /> apresentarem problemas de compatibilidade.
-
-      Observação: leia mais sobre políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="6969108216182455619">Esta política foi descontinuada e será removida no Chrome 78, sem substituição.
 
       Ela ativa o HTTP/0.9 em portas diferentes de 80 para HTTP e de 443 para HTTPS.
@@ -7592,6 +7588,7 @@ Se a política não for definida, ela será funcionalmente equivalente a ser def
 <translation id="7482768039644066614">Ativar a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina para melhorar a experiência de navegação</translation>
 <translation id="7485481791539008776">Regras de seleção de impressora padrão</translation>
 <translation id="7486205887492534734">Pedir quando houver várias correspondências de certificado na tela de login</translation>
+<translation id="748873163367340515">Usa apenas dados e cookies essenciais na pesquisa.</translation>
 <translation id="7489661071474025727">Especifica se o serviço de recuperação de conta está ativado para usuários em dispositivos <ph name="PRODUCT_OS_NAME" />.
 
       Quando a política está ativada, a recuperação de dados do usuário é acionada. Quando a política está desativada ou sem definição, a recuperação de dados do usuário não é acionada.

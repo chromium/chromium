@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Zgjidh <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Sinkronizo të dhënat e Chromium</translation>
 <translation id="2618596336309823556">Nga Settings në pajisjen tënde, hap "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dhe zgjidh "Chromium"</translation>
+<translation id="2631735236435791495">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si mund të përdoret Chromium. Administratori yt mund të konfigurojë ose të kufizojë veçori të caktuara.</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
 <translation id="2684230048001240293">Caktoje Chromium si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="2730884209570016437">Chromium nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
@@ -88,7 +89,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="5453478652154926037">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua.</translation>
 <translation id="5521125884468363740">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="5522297504975449419">Disa veçori të Chromium nuk do të ofrohen më.</translation>
-<translation id="5573014823074921752">Këshillë për Chromium. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
 <translation id="5688047395118852662">Kjo kartë të shfaq sugjerime se si të përfitosh sa më shumë nga Chromium.</translation>
 <translation id="5700709190537129682">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
 <translation id="5777187867430702742">Faqe e Chromium</translation>
@@ -139,7 +139,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7400689562045506105">Përdore Chromium kudo</translation>
 <translation id="7523464085759699266">Aktivizo “Kyç skedat e fshehura kur mbyll Chromium”.</translation>
 <translation id="7674213385180944843">Hap Cilësimet &gt; Privatësia &gt; Kamera &gt; Chromium dhe aktivizo kamerën.</translation>
-<translation id="7746854981345936341">Këshillë për Chromium. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
 <translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="7812317783196516890">Je identifikuar dhe po sinkronizon të dhënat me një llogari të menaxhuar nga <ph name="DOMAIN" />, ku administratori i saj tani mund të caktojë politika përdoruesi specifike për atë llogari që mund të ndryshojnë sjelljen e Chromium.</translation>
 <translation id="7859018312476869945">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>

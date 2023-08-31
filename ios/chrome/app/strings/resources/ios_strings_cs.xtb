@@ -65,7 +65,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1295289763199166823">Přizpůsobit nabídku</translation>
 <translation id="1305822519689023679">Pokud chcete mít vždy možnost použít hesla ve svém účtu Google, ověřte svoji totožnost.</translation>
 <translation id="1312721752506309252">Je zapnutá vylepšená ochrana</translation>
-<translation id="1316466854070752597">Zobrazit všechny otevřené karty</translation>
 <translation id="1321993286294231467">Při ukládání obrázku došlo k chybě.</translation>
 <translation id="1322735045095424339">Vaše organizace vyžaduje anonymní režim</translation>
 <translation id="1323735185997015385">Smazat</translation>
@@ -299,6 +298,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2718352093833049315">Pouze v sítích Wi-Fi</translation>
 <translation id="2747003861858887689">Předchozí pole</translation>
 <translation id="2749231692441336879">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
+<translation id="2762000892062317888">právě teď</translation>
 <translation id="2772667768515195373">Uložené adresy můžete používat ve službách Google. Tato adresa je uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonymní vyhledávání</translation>
 <translation id="277771892408211951">Vyberte jazyk</translation>
@@ -412,10 +412,12 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3328801116991980348">Informace o stránkách</translation>
 <translation id="3340938510625667914">Akce v Chromu</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}many{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}other{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}}</translation>
+<translation id="3365529507898144230">Uložit do Fotek</translation>
 <translation id="3371831930909698441">Je k dispozici Překladač. Možnosti jsou k dispozici ve spodní části obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, hesla a další položky teď najdete nahoře.</translation>
 <translation id="3393920035788932672">Vyskakovací okna povolena</translation>
 <translation id="3399930248910934354">Otevřít nastavení Chromu</translation>
+<translation id="3404232721752787413">Uložit do Fotek Google</translation>
 <translation id="3404744938087714423">Odhlášením vypnete synchronizaci.</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. října 2023</translation>
@@ -522,7 +524,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4049507953662678203">Zkontrolujte, zda jste připojeni k síti a zkuste to znovu.</translation>
 <translation id="4063300985191096908">Přejít na informační kanál</translation>
 <translation id="4066639687323968621">Pokud chcete synchronizovat své záložky, historii a další položky, přihlaste se pomocí účtu Google.</translation>
-<translation id="408404951701638773">Vyhledávací pole je teď snáze dostupné</translation>
 <translation id="4092655288299341041">Zobrazit nápovědu</translation>
 <translation id="4105841739161771091">{count,plural, =1{Smazat adresu}few{Smazat adresy}many{Smazat adresy}other{Smazat adresy}}</translation>
 <translation id="4108998448622696017">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
@@ -716,7 +717,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5190835502935405962">Lišta záložek</translation>
 <translation id="519530786644929958">Stahování neúspěšné, nelze obnovit.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5209674813563615506">Otevřít novou kartu</translation>
 <translation id="5211488077761630279">Povolit webu <ph name="SITE_NAME" /> používat <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomáhejte se zlepšováním bezpečnosti internetu pro všechny</translation>
 <translation id="5220945116117011963">Vytváření událostí v kalendáři z dat</translation>
@@ -733,7 +733,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318298563956633672">Tento produkt již měříte.</translation>
-<translation id="5325595483440111327">Zobrazit historii prohlížení.</translation>
 <translation id="5339316356165661760">Zapnout synchronizaci</translation>
 <translation id="536067926684072644">Zobrazit záložky</translation>
 <translation id="5360976571138293719">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v části <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
@@ -904,6 +903,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="6289501276895392862">Přestali jste sledovat kanál <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Pokud chcete zapnout Bezpečné prohlížení, otevřete <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" /> a klepněte na Bezpečné prohlížení.</translation>
 <translation id="629730747756840877">Účet</translation>
+<translation id="630693926528731525">Vaše heslo nebylo sdíleno. Zkontrolujte připojení k internetu a ujistěte se, že jste do Chromu přihlášeni. Poté to zkuste znovu.</translation>
 <translation id="6321526113093607004">Přidat do záložek</translation>
 <translation id="6324669097367352121">Nastavení přihlášení</translation>
 <translation id="6328337032497818759">Přizpůsobit nabídku</translation>
@@ -1023,7 +1023,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6785453220513215166">Odesílání zprávy o selhání...</translation>
 <translation id="6790502149545262384">Brzy se vám po otevření nové karty začnou zobrazovat články z webu <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Hlasové vyhledávání</translation>
-<translation id="6801927553864092214">K prohlížení v soukromí otevřete anonymní kartu</translation>
 <translation id="6807889908376551050">Zobrazit vše…</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
 <translation id="6822587385560699678">Když je tato funkce zapnutá, hesla se ukládají do účtu <ph name="ACCOUNT" />. Když je tato funkce vypnutá, hesla se ukládají pouze do tohoto zařízení.</translation>
@@ -1173,7 +1172,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7749790401023484470">Nevybrali jste žádný text.</translation>
 <translation id="7756478488453921771">Nabídka → Nastavení → Platební metody</translation>
 <translation id="7760127703945531263">Zámek anonymního režimu</translation>
-<translation id="7762768971412105260">Data ve vašem účtu</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="777572173400717978">{count,plural, =1{Přidáno do záložek}few{Přidáno do záložek}many{Přidáno do záložek}other{Přidáno do záložek}}</translation>
@@ -1276,7 +1274,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8299613349954694191">Pokud web chcete prohlížet v soukromí, otevřete anonymní kartu.</translation>
 <translation id="8316944564970119719">Zadejte web a heslo a pak klikněte na Uložit</translation>
 <translation id="8319076807703933069">Nové vyhledávání</translation>
-<translation id="8323906514956095947">Přidržením zobrazíte další možnosti karet</translation>
 <translation id="8328777765163860529">Zavřít vše</translation>
 <translation id="8343993175958086504">Zálohujte si data a používejte je na libovolném zařízení.</translation>
 <translation id="834783239627985533">Nejnavštěvovanější weby</translation>

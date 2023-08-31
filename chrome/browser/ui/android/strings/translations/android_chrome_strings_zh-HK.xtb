@@ -159,6 +159,7 @@
 <translation id="1854311313115643875">在試用期間，「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。
 
 如果刪除所有或特定網站的瀏覽記錄，亦會同時刪除相關的評估資料。請查看<ph name="BEGIN_LINK" />您的瀏覽記錄<ph name="END_LINK" />。</translation>
+<translation id="1871098866036088250">在 Chrome 瀏覽器中開啟</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
@@ -704,7 +705,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4710167854527459075">按最新日期排序</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
-<translation id="4720023427747327413">用 <ph name="PRODUCT_NAME" /> 開啟</translation>
 <translation id="47217992755561375">查看熱門網站</translation>
 <translation id="4731877163452936634">播放速度：<ph name="PLAYBACK_SPEED" />。㩒一下就可以更改。</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5174700554036517242">分頁已經還原到初始高度</translation>
-<translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5186634140793586141">管理感興趣的主題和搜尋內容</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>

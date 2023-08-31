@@ -105,6 +105,7 @@
 <translation id="2775140325783767197">A Chrome nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2799223571221894425">Újraindítás</translation>
 <translation id="2847461019998147611">A Google Chrome megjelenítése ezen a nyelven</translation>
+<translation id="2853415089995957805">A Chrome előtölt olyan oldalakat, amelyeket Ön valószínűleg felkeres, így ha Ön valóban felkeresi őket, gyorsabban töltődnek be</translation>
 <translation id="2857540653560290388">A Chrome indítása…</translation>
 <translation id="2857972467023607093">Már létezik Chrome-profil ezzel a fiókkal</translation>
 <translation id="286025080868315611">További információ arról, hogy miért tilt le bizonyos letöltéseket a Chrome</translation>
@@ -386,6 +387,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8290100596633877290">Hmm. A Google Chrome összeomlott. Újraindítja most?</translation>
 <translation id="829923460755755423">Parancsikon hozzáadása Google Jelszókezelőhöz</translation>
+<translation id="8336463659890584292">Ha valamely webhely a linkek privát módon való előtöltését kéri az oldalán, a Chrome a Google szervereit használja. Ez a művelet elrejti az Ön személyazonosságát az előtöltött webhely előtt, de a Google megtanulja, hogy mely webhelyek töltődnek be előre.</translation>
 <translation id="8342675569599923794">Ez a fájl veszélyes, ezért a Chrome letiltotta.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chrome-ban. Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>

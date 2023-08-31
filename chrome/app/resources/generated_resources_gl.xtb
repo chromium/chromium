@@ -657,7 +657,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1525740877599838384">Utilizar só a wifi para determinar a localización</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
-<translation id="1526335046150927198">Activar aceleración de desprazamento do panel táctil</translation>
 <translation id="1526560967942511387">Documento sen título</translation>
 <translation id="1527336312600375509">Taxa de actualización do monitor</translation>
 <translation id="152913213824448541">Contactos de Compartir por Nearby</translation>
@@ -1001,7 +1000,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1784849162047402014">O dispositivo ten pouco espazo restante no disco</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Se desinstalas <ph name="APP_NAME" />, tamén se desinstalará esta aplicación:}other{Se desinstalas <ph name="APP_NAME" />, tamén se desinstalarán estas aplicacións:}}</translation>
 <translation id="1786290960428378411">Solicitude de lectura e cambio</translation>
-<translation id="1786981253739345937">Non permites que estes sitios usen a información que garden sobre ti</translation>
 <translation id="1787350673646245458">Imaxe do usuario</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Completouse a instalación</translation>
@@ -1012,7 +1010,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1795214765651529549">Usar tema clásico</translation>
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
 <translation id="1797117170091578105">Xoga usando o teclado do teu Chromebook. Podes personalizar as teclas para realizar accións específicas.</translation>
-<translation id="1801571666562084067">Converter as imaxes PDF en texto</translation>
 <translation id="180203835522132923">Buscar + O e despois W</translation>
 <translation id="1802624026913571222">Activar suspensión cando se peche a tapa</translation>
 <translation id="1802687198411089702">A páxina non responde. Podes esperar ou saír da páxina.</translation>
@@ -1236,6 +1233,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Preparando</translation>
 <translation id="1969654639948595766">Rexistros de texto WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1972313920920745320">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen. <ph name="BEGIN_LINK" />Máis información sobre como manter activos sitios específicos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
 <translation id="197288927597451399">Continuar</translation>
 <translation id="1973313062201924554">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se lle darán a esta aplicación.</translation>
@@ -1963,7 +1961,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma o teu nome de usuario</translation>
 <translation id="2517472476991765520">Buscar</translation>
-<translation id="2517890781170832772">Permitiches que estes sitios usen a información que garden sobre ti</translation>
 <translation id="2518024842978892609">Usar os teus certificados de cliente</translation>
 <translation id="2519250377986324805">Máis información</translation>
 <translation id="2519517390894391510">Nome do perfil do certificado</translation>
@@ -2388,7 +2385,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2850672011315104382">Estilo de puntuación</translation>
 <translation id="2852385257476173980">A medida que navegues pola Web, aquí poderá aparecer unha lista dos sitios que visites</translation>
 <translation id="285241945869362924">Crea subtítulos automaticamente para o contido de audio e de vídeo. O audio e os subtítulos nunca saen do dispositivo.</translation>
-<translation id="2853415089995957805">Chrome precargará as páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
 <translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2859741939921354763">Importa os contrasinais a <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Actualización do sistema completada. Reinicia o sistema.</translation>
@@ -2433,6 +2429,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2889043468805635730">Non se atoparon problemas</translation>
 <translation id="2889064240420137087">Abrir ligazón con...</translation>
 <translation id="2890206081124517553">Recorda o fondo de escritorio en todos os teus dispositivos</translation>
+<translation id="2891464434568738544">Non hai ningún sitio dispoñible actualmente. Visita un para engadilo a esta lista.</translation>
 <translation id="2891566119238851894">Abrir busca no panel lateral. A busca non está aberta no panel lateral.</translation>
 <translation id="2891922230654533301">Queres utilizar o teu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893013536106749396">Escolle tarxetas para manterte ao tanto do que che interesa</translation>
@@ -2592,7 +2589,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3012804260437125868">Só conexións seguras ao mesmo sitio</translation>
 <translation id="3012917896646559015">Ponte en contacto co fabricante do hardware inmediatamente para enviar o teu ordenador a un centro de reparación.</translation>
 <translation id="3013652227108802944">Desactivada • Esta extensión infrinxe a política de Chrome Web Store</translation>
-<translation id="3014717196148502230">Chrome precarga aínda máis páxinas que probablemente visites para que carguen máis rapidamente cando o fagas.</translation>
 <translation id="301525898020410885">A túa organización define o idioma</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">O rexistro está baleiro</translation>
@@ -2762,7 +2758,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3166443275568926403">Rendemento e estado da batería</translation>
 <translation id="3169930038976362151">Escolle o tema axeitado para as túas necesidades. Se queres cambiar de tema, fondo e protector de pantalla, entre outras cousas, só tes que manter premido o escritorio.</translation>
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
-<translation id="3174311489448105660">Escanea imaxes PDF co fin de converter o contido en texto para o lector de pantalla (cando estea dispoñible). Esta función só é compatible co navegador Chrome.</translation>
 <translation id="31774765611822736">Pestana nova á esquerda</translation>
 <translation id="3177689682958561933">Actívaa para desprazarte adiante e atrás</translation>
 <translation id="3177909033752230686">Idioma da páxina:</translation>
@@ -4357,7 +4352,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Engadir idiomas para os que non ofrecer nunca unha tradución</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
-<translation id="4463530025936541315">Ao continuar, permites que terceiros verifiquen a información que identifica este dispositivo na rede</translation>
 <translation id="4465236939126352372">Aplicouse un límite de tempo de <ph name="TIME" /> a <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Descubre as túas lembranzas aquí</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
@@ -5160,7 +5154,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5139955368427980650">&amp;Abrir</translation>
 <translation id="5141421572306659464">Conta principal</translation>
 <translation id="5141957579434225843">Por exemplo, usa "oà", "oè", "uỳ" en lugar de "òa", "òe", "ùy"</translation>
-<translation id="5142793792982256885">Velocidade de desprazamento do panel táctil</translation>
 <translation id="5143374789336132547">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao facer clic no botón Inicio.</translation>
 <translation id="5143612243342258355">Este ficheiro é perigoso</translation>
 <translation id="5143712164865402236">Acceder á pantalla completa</translation>
@@ -5624,6 +5617,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5522156646677899028">Esta extensión contén unha vulnerabilidade de seguranza grave.</translation>
 <translation id="5522403133543437426">O motor de busca que se utiliza na barra de enderezos.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{O administrador instalou 1 extensión}other{O administrador instalou # extensións}}</translation>
+<translation id="5523532775593636291">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen</translation>
 <translation id="5523558474028191231">O nome pode conter letras, números e caracteres especiais; debe incluír como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526701598901867718">All (todo), non seguro</translation>
 <translation id="5526745900034778153">Volve iniciar sesión para retomar a sincronización</translation>
@@ -6311,7 +6305,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Abrir de forma maximizada</translation>
 <translation id="6096326118418049043">Nome X.500</translation>
-<translation id="609662062217584106">Código da UPI</translation>
 <translation id="6097480669505687979">Se non liberas espazo, é posible que se eliminen usuarios e datos automaticamente.</translation>
 <translation id="6097600385983390082">Pechouse a busca por voz</translation>
 <translation id="6098793583803863900">Estase analizando un ficheiro descoñecido para comprobar se o seu contido é perigoso.</translation>
@@ -6963,6 +6956,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6644513150317163574">O formato do URL non é válido. O servidor debe especificarse como un nome de host cando se utilice a autenticación mediante inicio de sesión único (SSO).</translation>
 <translation id="6644846457769259194">Actualizando o teu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Vinculación rápida</translation>
+<translation id="6646696210740573446">Envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode enviarlle a Google os URL, así como fragmentos do contido das páxinas.</translation>
 <translation id="6647228709620733774">URL de revogación de autoridade de certificación de Netscape</translation>
 <translation id="6647690760956378579">Vista previa da voz natural</translation>
 <translation id="6648911618876616409">É necesario realizar unha actualización importante. Inicia sesión para comezar.</translation>
@@ -7036,7 +7030,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> e 1 pestana máis}other{<ph name="PAGE_TITLE" /> e # pestanas máis}}</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709357832553498500">Conectar a través de <ph name="EXTENSIONNAME" /></translation>
-<translation id="6709802811835274327">Se permites o uso de cookies, Chrome poderá utilizalas para as precargas.</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710394144992407503">Buscar erros ortográficos cando escribes texto en páxinas web</translation>
 <translation id="671226373742585927">Fai clic no botón X para pechar o panel lateral</translation>
@@ -7585,7 +7578,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión non necesita permisos especiais</translation>
 <translation id="7154130902455071009">Cambiar a páxina de inicio a: <ph name="START_PAGE" /></translation>
-<translation id="7156231244155528270">Converter imaxe en texto</translation>
 <translation id="7159953856712257647">Instalada de forma predeterminada</translation>
 <translation id="7160182524506337403">Xa podes acceder ás notificacións do teu teléfono</translation>
 <translation id="7163202347044721291">Verificando código de activación…</translation>
@@ -8956,6 +8948,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8248381369318572865">Acceder ao micrófono e analizar o que digas</translation>
 <translation id="8248887045858762645">Consello de Chrome</translation>
 <translation id="8249048954461686687">Cartafol de OEM</translation>
+<translation id="8249239468199142122">Aforro de batería</translation>
 <translation id="8250210000648910632">Non queda suficiente espazo de almacenamento</translation>
 <translation id="8251441930213048644">Actualizar agora</translation>
 <translation id="8251509999076836464">Vinculándose a <ph name="DEVICE_NAME" /></translation>
@@ -9063,7 +9056,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8335587457941836791">Deixar de fixar no estante</translation>
 <translation id="8336407002559723354">Deixarán de ofrecerse actualizacións en <ph name="MONTH_AND_YEAR" /></translation>
-<translation id="8336463659890584292">Cando un sitio solicita precargar ligazóns da súa páxina de forma privada, Chrome usa os servidores de Google. Deste xeito, ocúltaselle a túa identidade ao sitio precargado, pero Google descobre os sitios que se precargan.</translation>
 <translation id="8336739000755212683">Cambiar imaxe da conta do dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo gardarase durante 1 hora e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}other{Este dispositivo gardarase durante {HOURS} horas e poderás conectarte sen código a próxima vez. Esta preferencia definiuna o teu administrador.}}</translation>
 <translation id="8337399713761067085">Actualmente estás sen conexión</translation>
@@ -9158,6 +9150,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="84098433273647700">Tema que tes instalado actualmente.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitíronse os seguintes permisos: <ph name="PERMISSION" /> e <ph name="COUNT" /> máis</translation>
+<translation id="8413795581997394485">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a Google mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="8413956290606243087">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS?</translation>
 <translation id="8414249071344507766">Ocultáronse as lembranzas durante dous días</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -9599,7 +9592,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Marxe superior</translation>
 <translation id="8775144690796719618">URL non válido</translation>
-<translation id="8775329533241312400">A navegación e a busca son máis rápidas que coa precarga estándar.</translation>
 <translation id="8775653927968399786">{0,plural, =1{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente en # segundo.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente en # segundos.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>

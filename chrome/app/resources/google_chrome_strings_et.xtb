@@ -106,6 +106,7 @@
 <translation id="2775140325783767197">Chrome ei saa teie paroole kontrollida. Kontrollige internetiühendust.</translation>
 <translation id="2799223571221894425">Taaskäivita</translation>
 <translation id="2847461019998147611">Kuva Google Chrome selles keeles</translation>
+<translation id="2853415089995957805">Chrome eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
 <translation id="2857540653560290388">Chrome'i käivitamine …</translation>
 <translation id="2857972467023607093">Selle kontoga Chrome'i profiil on juba olemas</translation>
 <translation id="286025080868315611">Vaadake, miks Chrome mõned allalaadimised blokeerib</translation>
@@ -389,6 +390,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8286862437124483331">Google Chrome proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8290100596633877290">Tohoh! Google Chrome jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
 <translation id="829923460755755423">Lisage otsetee Google'i paroolihaldurisse</translation>
+<translation id="8336463659890584292">Kui sait palub lehel olevad lingid privaatselt eellaadida, kasutab Chrome Google'i servereid. See peidab teie identiteedi eellaaditud saidi eest, kuid Google saab teada, milliseid saite eellaaditakse.</translation>
 <translation id="8342675569599923794">Chrome blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>

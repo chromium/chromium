@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Glass (Colored)</translation>
 <translation id="1074497978438210769">Ni varno</translation>
 <translation id="1075079914415273530">Kmetijstvo in gozdarstvo</translation>
+<translation id="1075364221219156102">Uporaba ključa za dostop</translation>
 <translation id="1080116354587839789">Prilagoditev prikaza širini</translation>
 <translation id="1081061862829655580">Pladenj 19</translation>
 <translation id="1089439967362294234">Spremeni geslo</translation>
@@ -135,7 +136,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Vnesli ste geslo na spletnem mestu, ki ga ne upravlja vaša organizacija. Zaradi zaščite računa gesla ne uporabljajte za druge aplikacije in spletna mesta.</translation>
 <translation id="1257553931232494454">ravni povečave/pomanjšave</translation>
-<translation id="1258942153897182536">Optično prepoznavanje poteka …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati Chromove nastavitve</translation>
 <translation id="1264309058268477500">Nadomestni</translation>
 <translation id="1264974993859112054">Šport</translation>
@@ -293,7 +293,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 
       &lt;p&gt;V razdelku &lt;strong&gt;Splošno&lt;/strong&gt; aplikacije &lt;strong&gt;Nastavitve&lt;/strong&gt; prilagodite datum in uro.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Skrbnik bo znova zagnal napravo ob <ph name="TIME" /> dne <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Iz slik ni bilo pretvorjeno besedilo</translation>
 <translation id="156703335097561114">Podatki o omrežju, kot so naslovi, konfiguracija vmesnika in kakovost povezave</translation>
 <translation id="1567040042588613346">Ta pravilnik deluje, kot je predvideno, vendar je nekje drugje nastavljena enaka vrednost, ki jo ta pravilnik nadomesti.</translation>
 <translation id="1567405528131216114">Dodaj: <ph name="TOPIC" /></translation>
@@ -1382,7 +1381,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3901925938762663762">Kartica je potekla</translation>
 <translation id="390391808978419508">Časovna omejitev za odpiranje je potekla</translation>
 <translation id="3905894480064208252">{0,plural, =1{Prenos datoteke je blokiran}one{Prenos <ph name="FILE_COUNT" /> datoteke je blokiran}two{Prenos <ph name="FILE_COUNT" /> datotek je blokiran}few{Prenos <ph name="FILE_COUNT" /> datotek je blokiran}other{Prenos <ph name="FILE_COUNT" /> datotek je blokiran}}</translation>
-<translation id="3906095212874392000">Konec pretvorjenega besedila</translation>
 <translation id="3906954721959377182">Tablični računalnik</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Preberite več o vdelani vsebini</translation>
@@ -1607,7 +1605,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4331519897422864041">Zlagalnik 5</translation>
 <translation id="4331708818696583467">Ni varno</translation>
 <translation id="4333561522337981382">Upravljati okna na vseh zaslonih</translation>
-<translation id="4338709847516294988">Pritisnite tipko za iskanje in tipko m ter pretvorite sliko v besedilo v kontekstnem meniju</translation>
 <translation id="4340575312453649552">Ta oglas je uporabljal preveč sredstev za napravo, zato ga je Chrome odstranil.</translation>
 <translation id="4340810192899866471">Uvozi iz oblike JSON</translation>
 <translation id="4340982228985273705">Ta računalnik ni zaznan kot računalnik, ki ga upravlja podjetje, zato lahko pravilnik samodejno namesti samo razširitve, ki gostujejo v Spletni trgovini Chrome. URL za posodobitve v Spletni trgovini Chrome je »<ph name="CWS_UPDATE_URL" />«.</translation>
@@ -1624,7 +1621,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4363222835916186793">Opozorila za ta izdelek so bila izklopljena.</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="437040971055499437">Varnostni dogodek se zgodi</translation>
-<translation id="4371307856413138486">Začetek pretvorjenega besedila</translation>
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4372948949327679948">Pričakovana vrednost je vrste <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Dodajte element nazaj, če želite, da je v naboru tem, med katerimi lahko Chrome izbira pri ocenjevanju zanimanj.</translation>
@@ -2403,7 +2399,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="604124094241169006">Samodejno</translation>
 <translation id="6041777658117377052">Temperatura komore</translation>
 <translation id="6042308850641462728">Več</translation>
-<translation id="6042688167654081154">Slika je pretvorjena v besedilo</translation>
 <translation id="6044573915096792553">Velikost 12</translation>
 <translation id="6045164183059402045">Predloga za razvrstitev strani za tiskanje</translation>
 <translation id="6047233362582046994">Če se zavedate varnostnega tveganja, lahko <ph name="BEGIN_LINK" />obiščete to spletno mesto<ph name="END_LINK" />, preden bodo škodljive aplikacije odstranjene.</translation>
@@ -2441,7 +2436,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6116338172782435947">ogled besedila in slik, kopiranih v odložišče</translation>
 <translation id="6117833587752089929">Photo (Satin)</translation>
 <translation id="6118782133429281336">Seznam izhodišč je prazen.</translation>
-<translation id="6120179357481664955">Si želite zapomniti ID za UPI?</translation>
 <translation id="6120950591512958208">Na blagajni uporabite to kodo.</translation>
 <translation id="6122181661879998141">sprednji strani kartice</translation>
 <translation id="6124058285696691147">Prenos priloge</translation>
@@ -2476,7 +2470,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6196640612572343990">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Full Cut Tabs</translation>
-<translation id="6200386911308538077">Slika se analizira</translation>
 <translation id="6203231073485539293">Preverite internetno povezavo</translation>
 <translation id="6205314730813004066">Zasebnost pri oglaševanju</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3144,6 +3137,7 @@ Dodatne podrobnosti:
 <translation id="7554475479213504905">Vseeno znova naloži in pokaži</translation>
 <translation id="7554791636758816595">Nov zavihek</translation>
 <translation id="7555777498260651025">Družinske televizijske serije</translation>
+<translation id="7556328470713619625">Uporaba ključa za dostop</translation>
 <translation id="7559278538486662777">Velikosti te aplikacije ni mogoče spremeniti.</translation>
 <translation id="7561784249784255101">Digital Versatile Disc</translation>
 <translation id="7564049878696755256">Izgubite lahko dostop do računa za <ph name="ORG_NAME" /> ali postanete žrtev kraje identitete. Chrome priporoča, da spremenite geslo.</translation>

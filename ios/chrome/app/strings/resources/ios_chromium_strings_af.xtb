@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">Kies <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">Sinkroniseer jou Chromium-data</translation>
 <translation id="2618596336309823556">Maak “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" in jou toestel se Instellings oop en kies “Chromium”</translation>
+<translation id="2631735236435791495">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aanmeld en hoe Chromium gebruik kan word. Jou administrateur kan sekere kenmerke opstel of beperk.</translation>
 <translation id="2650312721222849884">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="2684230048001240293">Stel Chromium as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="2730884209570016437">Chromium kan nie jou kamera gebruik nie omdat dit deur 'n ander program gebruik word</translation>
@@ -88,7 +89,6 @@
 <translation id="5453478652154926037">Chromium kan nie jou wagwoorde nagaan nie.</translation>
 <translation id="5521125884468363740">Meld aan en skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="5522297504975449419">Sommige Chromium-kenmerke sal nie meer beskikbaar wees nie.</translation>
-<translation id="5573014823074921752">Chromium-wenk. Vir meer oortjieopsies, raak en hou die Wys Oortjies-knoppie op die nutsbalk aan die onderkant of bokant van jou skerm.</translation>
 <translation id="5688047395118852662">Hierdie kaart wys vir jou voorstelle oor hoe jy Chromium ten beste kan benut.</translation>
 <translation id="5700709190537129682">Chromium kan nie jou wagwoorde nagaan nie</translation>
 <translation id="5777187867430702742">Chromium-bladsy</translation>
@@ -140,7 +140,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7400689562045506105">Gebruik Chromium oral</translation>
 <translation id="7523464085759699266">Skakel “Sluit Incognito-oortjies wanneer jy Chromium toemaak” aan.</translation>
 <translation id="7674213385180944843">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Chromium oop en skakel kamera aan.</translation>
-<translation id="7746854981345936341">Chromium-wenk. Sekere knoppies soos Back, Forward en Search is nou aan die onderkant van jou skerm.</translation>
 <translation id="7763454117143368771">Gebruik Chromium as jou verstekblaaier om beskerm te word teen gevaarlike werwe en jou wagwoorde veilig te hou</translation>
 <translation id="7812317783196516890">Jy is aangemeld en sinkroniseer tans jou data met ’n rekening wat deur <ph name="DOMAIN" /> bestuur word. Die administrateur kan nou gebruikerbeleide spesifiek vir dié rekening stel, wat die gedrag van Chromium kan verander.</translation>
 <translation id="7859018312476869945">Wanneer jy iets in die adresbalk of soekkassie tik, stuur Chromium wat jy tik na jou versteksoekenjin toe om beter voorstelle te kry. Dit is af in Incognito.</translation>

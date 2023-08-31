@@ -33,17 +33,21 @@
 <translation id="2426113998523353159">Your organisation requires you to sign in to use Chromium.</translation>
 <translation id="2450140762465183767">You can now use Chromium any time that you tap links in messages, documents and other apps.</translation>
 <translation id="2478931088402984578">Select <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2574528844022712255">See Chromium bookmarks</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2618596336309823556">From your device's Settings, open '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' and select 'Chromium'</translation>
 <translation id="2631735236435791495">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chromium can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
 <translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
+<translation id="2798503587425057129">Opens the Chromium reading list.</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
 <translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="3102849287235003384">To sign out of your Google Account on all websites, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
+<translation id="3228349498066165585">Some of your Chromium data hasn't been saved in your Google Account yet.
+        Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="3256316712990552818">Copied to Chromium</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
@@ -89,7 +93,6 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your 
 <translation id="5453478652154926037">Chromium can't check your passwords.</translation>
 <translation id="5521125884468363740">To see your tabs from wherever you use Chromium, sign in and turn on sync</translation>
 <translation id="5522297504975449419">Some Chromium features won’t be available anymore.</translation>
-<translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
 <translation id="5688047395118852662">This card shows you suggestions on how to get the most out of Chromium.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5777187867430702742">Chromium page</translation>
@@ -141,7 +144,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7400689562045506105">Use Chromium Everywhere</translation>
 <translation id="7523464085759699266">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
-<translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="7812317783196516890">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chromium.</translation>
 <translation id="7859018312476869945">When you type in the address bar or search box, Chromium sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
@@ -150,6 +152,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7905064834449738336">When you use a password, Chromium warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="7928628054454574139">Open Chromium whenever you tap on links in other apps</translation>
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>
+<translation id="7934404985878918282">See Chromium reading list</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8071041515667087705">Go to Chrome settings</translation>
@@ -172,6 +175,7 @@ Things to consider:
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
+<translation id="88376265765385899">Opens the Chromium bookmarks.</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="8963279154877372067">Allow Chromium notifications to get price drop alerts</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>

@@ -159,6 +159,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="1854311313115643875">Jika uji coba diaktifkan, Pengukuran iklan akan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.
 
 Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untuk situs tertentu, berarti Anda juga menghapus informasi pengukuran terkait. Lihat <ph name="BEGIN_LINK" />histori penjelajahan Anda<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Buka di browser Chrome</translation>
 <translation id="1877026089748256423">Chrome terlalu lawas</translation>
 <translation id="1883903952484604915">File Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
@@ -704,7 +705,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4710167854527459075">Urutkan menurut yang terbaru</translation>
 <translation id="4719927025381752090">Tawarkan penerjemahan</translation>
-<translation id="4720023427747327413">Buka di <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Lihat situs teratas Anda</translation>
 <translation id="4731877163452936634">Kecepatan pemutaran: <ph name="PLAYBACK_SPEED" />. Klik untuk mengubah.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
@@ -810,7 +810,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5171045022955879922">Telusuri atau ketik URL</translation>
 <translation id="5174700554036517242">Tab kembali ke tinggi awal</translation>
-<translation id="5184329579814168207">Buka di Chrome</translation>
 <translation id="5186634140793586141">Mengelola topik dan penelusuran yang Anda minati</translation>
 <translation id="5191251636205085390">Pelajari dan kontrol teknologi baru yang ditujukan untuk menggantikan cookie pihak ketiga</translation>
 <translation id="5193988420012215838">Disalin ke papan klip Anda</translation>
@@ -1093,6 +1092,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6641780377503683465">Hapus <ph name="INTEREST" /></translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6645629752388991326">Kontrol perangkat mana yang dapat login dengan menggunakan perangkat ini sebagai kunci keamanan.</translation>
+<translation id="6646696210740573446">Mengirim bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Google.</translation>
 <translation id="6647441008198474441">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya</translation>
 <translation id="6648459603387803038">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
@@ -1452,6 +1452,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8394720698884623075">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome</translation>
 <translation id="8402673309244746971">Buka feed Mengikuti</translation>
 <translation id="8413126021676339697">Tampilkan histori lengkap</translation>
+<translation id="8413795581997394485">Melindungi dari situs, download, dan ekstensi yang bereputasi berbahaya. Saat Anda membuka situs, Chrome mengirimkan bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
 <translation id="8414396119627470038">Login ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Pelajari lebih lanjut personalisasi iklan di Chrome</translation>
 <translation id="8419244640277402268">Sertakan</translation>

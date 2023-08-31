@@ -95,6 +95,7 @@
 <translation id="174937106936716857">फाइलको कुल संख्या</translation>
 <translation id="1755345808328621801">यो फाइल Windows सफ्टवेयर प्रयोग गर्ने PC का लागि तयार पारिएको हो। यो फाइल ChromeOS चल्ने तपाईंको डिभाइससँग कम्प्याटिबल छैन। कृपया Chrome वेब स्टोरमा कुनै मिल्दो एप खोज्नुहोस् र उक्त एप इन्स्टल गर्नुहोस्।</translation>
 <translation id="1757915090001272240">वाइड ल्याटिन</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> मार्फत सेयर गर्नुहोस्</translation>
 <translation id="1773212559869067373">प्रमाणीकरण प्रमाणपत्र स्थायी रूपमा अस्विकार गरियो</translation>
 <translation id="1775381402323441512">भिडियोको जानकारी</translation>
 <translation id="180035236176489073">यी फाइलहरू पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">Linux प्रयोग गरी एप इन्स्टल गर्नुहोस्</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, विवरणहरू</translation>
 <translation id="2724954091494693138">तुर्किस F-किबोर्ड</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> सँग सेयर गरिने फाइल तथा फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2732839045120506979">भियतनामी VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop लाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="2764206540577097904">तपाईंले आफ्नो Google Workspace को व्यक्तिगत भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री सिंक गर्ने तयारी गरिँदै छ…</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
+<translation id="3523225005467146490">एउटा फोल्डर <ph name="VM_NAME" /> सँग सेयर गरिएको छ</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3548125359243647069">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो।</translation>
@@ -663,6 +666,7 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6170470584681422115">स्यान्डविच</translation>
 <translation id="6177854567773392726">भण्डारणमा रहेको खाली ठाउँ जाँच गरिँदै छ… <ph name="ITEMS_FOUND" /> वटा सामग्री भेटिएका छन्</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> लाई तपाईंको Google Drive मा भएका फाइलहरू एक्सेस गर्ने अनुमति दिनुहोस्। तपाईंले गरेका परिवर्तनहरू तपाईंका अन्य डिभाइसमा पनि सिंक हुने छन्।</translation>
 <translation id="6187719147498869044">हङ्गेरियाली</translation>
 <translation id="6198252989419008588">PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6199801702437275229">ठाउँ जानकारी प्रतिक्षा गर्दै...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">स्विडिस</translation>
 <translation id="6990081529015358884">तपाईंको खाली स्थान समाप्त भएको छ</translation>
 <translation id="6993826899923627728">यी फाइलहरू ट्र्यासमा छन्</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="7008426324576352165">अपलोड गर्ने कार्य पूरा गर्न तपाईंको सङ्गठनले भण्डारणमा थप ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="7009985720488544166">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल सार्न पाइँदैन</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">बेलारुसी</translation>
 <translation id="8336153091935557858">हिजो <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">यही नामको फाइल वा एक निर्देशिका पहिले नै अस्तित्वमा छ ।</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> लाई <ph name="FOLDER_NAME" /> फोल्डरमा भएका फाइलहरू एक्सेस गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8372852072747894550">ग्रिक</translation>
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> वटा फोल्डर <ph name="VM_NAME" /> सँग सेयर गरिएका छन्</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM कार्ड उपलब्ध छैन</translation>

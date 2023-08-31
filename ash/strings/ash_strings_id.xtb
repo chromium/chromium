@@ -83,6 +83,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Temukan ponsel</translation>
 <translation id="1287002645302686982">Desktop tersimpan bernama <ph name="DESK_TEMPLATE_NAME" /> sudah ada</translation>
+<translation id="1288276784862223576">Siapkan untuk melihat foto dan media terbaru ponsel Anda</translation>
 <translation id="1289185460362160437">Gunakan lagi hari <ph name="COME_BACK_DAY_OF_WEEK" /> pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1290982764014248209">Pindahkan <ph name="DRAGGED_APP" /> ke folder <ph name="FOLDER_NAME" />.</translation>
@@ -139,6 +140,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1528259147807435347">Diedit dalam seminggu terakhir</translation>
 <translation id="1536604384701784949">Untuk menggunakan <ph name="USER_EMAIL_ADDRESS" />, Anda perlu logout dari semua akun terlebih dahulu. Untuk logout, pilih Batal untuk kembali. Lalu, pilih waktu untuk membuka area status dan pilih Logout. Lalu login ke <ph name="USER_EMAIL_ADDRESS_2" /> lagi.</translation>
 <translation id="15373452373711364">Kursor mouse besar</translation>
+<translation id="1545331255323159851">Lihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="1546492247443594934">Halaman kerja 2</translation>
 <translation id="1546930421365146760">Minta administrator Anda untuk menyiapkan perangkat ini di konsol Google Admin</translation>
 <translation id="1549512626801247439">pengelolaan penyimpanan</translation>
@@ -150,10 +152,12 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1571697193564730395">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
 <translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
+<translation id="158838227375272121">Situs Google Classroom</translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
 <translation id="1592682369233288537">Desktop Berikutnya: <ph name="NEXT_DESK_NAME" />, gunakan Penelusuran + Spasi untuk mengaktifkan.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + panah bawah</translation>
 <translation id="1604857178818051494">Jeda media</translation>
+<translation id="1607312127821884567">Tutup penyiapan untuk melihat aplikasi ponsel Anda</translation>
 <translation id="1610778689852195798">"Urungkan"</translation>
 <translation id="1611993646327628135">Aktif</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -182,6 +186,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1731815243805539470">Beralih ke pengguna sebelumnya</translation>
 <translation id="1733996486177697563">Berpindah-pindah antara tema gelap dan terang. Sentuh lama desktop, lalu pilih Wallpaper &amp; Gaya.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" dapat dilihat oleh perangkat Bluetooth.</translation>
+<translation id="1737078180382804488">Tutup penyiapan untuk melihat notifikasi ponsel Anda</translation>
 <translation id="174102739345480129">Penanda nonaktif.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1746730358044914197">Metode masukan dikonfigurasi oleh administrator.</translation>
@@ -197,6 +202,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1771761307086386028">Scroll ke kanan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
 <translation id="1775598828170459419">Menampilkan <ph name="NUM_SHOWN_ITEMS" /> dari <ph name="NUM_TOTAL_ITEMS" /></translation>
+<translation id="178347895271755507">Siapkan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="181103072419391116">Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
 <translation id="1815245884418711390">Aktifkan/nonaktifkan Hotspot. Hotspot dinonaktifkan.</translation>
@@ -326,7 +332,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2382875860893882175">Transmisi saat ini dijeda. Anda dapat melanjutkan transmisi atau menghentikan transmisi kapan saja.</translation>
 <translation id="2386292613071805067">Pilih semuanya di halaman</translation>
-<translation id="2396594569364254378">Memori <ph name="USED_MEMORY" /> | Total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Tampilkan Menu Chrome</translation>
 <translation id="240006516586367791">Kontrol media</translation>
 <translation id="2402411679569069051">Untuk membuka kunci Chromebook, gunakan sidik jari atau buka kunci ponsel</translation>
@@ -354,6 +359,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk mengganti tata letak keyboard.</translation>
 <translation id="2487915095798731898">Gabung</translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
+<translation id="2504454902900101003">Tutup penyiapan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
 <translation id="2509468283778169019">CAPS LOCK aktif</translation>
 <translation id="2514415433888497495">Hentikan <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -525,6 +531,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3260969790895726815">Ucapan diproses secara lokal dan dikte berfungsi secara offline, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
 <translation id="3265032511221679826">Aktifkan akses lokasi presisi?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
+<translation id="3274634049061007184">Lihat aplikasi ponsel Anda</translation>
 <translation id="3289364673986435196">Menu daya</translation>
 <translation id="3289544412142055976">Aplikasi Linux saat ini tidak didukung</translation>
 <translation id="3289674678944039601">Mengisi daya melalui adaptor</translation>
@@ -592,6 +599,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="353086728817903341">Terhubung ke <ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="3533126039236445965">Aplikasi di rak</translation>
 <translation id="3539957339480430241">Hotspot <ph name="DEVICE_NAME" /></translation>
+<translation id="3540893133818942399">Tutup penyiapan untuk melihat foto dan media terbaru ponsel Anda</translation>
 <translation id="3542066395059568317">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat mengklik kanan untuk menghapus rekomendasi.</translation>
 <translation id="3552189655002856821">Wi-Fi dinonaktifkan</translation>
 <translation id="3554215588514239132">Tampilkan atau sembunyikan panel Developer Tools</translation>
@@ -606,6 +614,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3576141592585647168">Ubah zona waktu</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3580650856351781466">Mendownload file ucapan</translation>
+<translation id="3585296979871889131">Lihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="3593039967545720377">Akses histori papan klip dengan menekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Salin item untuk memulai.</translation>
 <translation id="3593646411856133110">Geser ke atas dan tahan untuk melihat aplikasi yang terbuka</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
@@ -705,6 +714,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3953130726459169782">Belum ada tugas yang diselesaikan.</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3969043077941541451">Nonaktif</translation>
+<translation id="3970324493235864154">Lihat notifikasi ponsel Anda</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="397726367135689299">Pengisian daya baterai mungkin tidak stabil.</translation>
 <translation id="3977512764614765090">Baterai <ph name="PERCENTAGE" />% dan masih mengisi.</translation>
@@ -756,6 +766,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4185671786623711291">Pindahkan jendela aktif ke desktop di sisi kanan</translation>
 <translation id="4189826113259617332">Simpan semua halaman yang terbuka di jendela saat ini sebagai bookmark dalam folder baru</translation>
 <translation id="4190143678693626113">Hemat waktu dengan membalas pesan di ponsel Anda dari Chromebook dengan cepat</translation>
+<translation id="4190780880566297084">Tutup penyiapan untuk melihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4192112279662688596">Atau</translation>
 <translation id="4193857202545160520">Tampilkan klik dan tombol</translation>
 <translation id="4195579532193195633">Versi sekarang <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -794,6 +805,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4302592941791324970">Tidak tersedia</translation>
 <translation id="4303223480529385476">Luaskan area status</translation>
 <translation id="4305133312001648038">Reset tingkat zoom di halaman</translation>
+<translation id="4307713728991152670">Siapkan untuk melihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4312840429157639164">Kamera dipaskan ke pojok kanan atas. Bertentangan dengan platform sistem.</translation>
 <translation id="4316910396681052118">SEMUA APLIKASI</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -834,6 +846,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4477892968187500306">Perangkat ini dapat memuat aplikasi yang belum diverifikasi oleh Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Perangkat tidak terhubung</translation>
+<translation id="4485506555414638855">Tutup penyiapan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="450584155212756404">Saluran Dev</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4516212064498225455">Desktop Saat Ini: <ph name="CURRENT_DESK_NAME" />, gunakan Penelusuran + Spasi untuk membuka menu semua desktop.</translation>
@@ -851,6 +864,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4566144812051858745">Tidak tertarik dengan saran apa pun</translation>
+<translation id="4569753163207712681">Lihat foto, media, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="4573176682887762361">"Ketik [kata/frasa]"</translation>
 <translation id="4577274620589681794">Waktu habis · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Tampilkan pratinjau</translation>
@@ -974,6 +988,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan. Audio tidak pernah dikirim keluar perangkat.</translation>
+<translation id="5077416371682039027">Siapkan untuk melihat foto, media, notifikasi, dan aplikasi terbaru ponsel Anda</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083035541015925118">ctrl + alt + panah atas</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
@@ -1157,6 +1172,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5790085346892983794">Berhasil</translation>
 <translation id="5804651031882187592">Nonaktifkan setelan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk mengaktifkan <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tasks di web</translation>
 <translation id="5825969630400862129">Setelan perangkat yang terhubung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> di <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Putar lagu berikutnya</translation>
@@ -1204,6 +1220,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6018164090099858612">Keluar dari mode transmisi</translation>
 <translation id="6019566113895157499">Pintasan Keyboard</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
+<translation id="6020147141355393792">Siapkan untuk melihat notifikasi dan aplikasi ponsel Anda</translation>
 <translation id="6022924867608035986">Hapus teks dari kotak penelusuran</translation>
 <translation id="602472752137106327">Menampilkan jendela dari semua desktop, tombol pilihan dipilih</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Dikelola oleh Administrator Anda</translation>
@@ -1346,6 +1363,7 @@ Baru diinstal</translation>
 <translation id="6612889377159412215">subtugas</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> penyimpanan sedang digunakan | Total <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Layar privasi aktif</translation>
+<translation id="6622679827379792051">Siapkan untuk melihat aplikasi ponsel Anda</translation>
 <translation id="6625718907317144388">Notifikasi <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" />, dan lainnya disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="6627638273713273709">Tombol Penelusuran+Shift+K</translation>
 <translation id="662830937908749204">Pindahkan fokus ke panel berikutnya</translation>
@@ -1364,6 +1382,7 @@ Baru diinstal</translation>
 <translation id="6671661918848783005">Tidak dapat membuka kunci Chromebook</translation>
 <translation id="6682029141988159141">Tempelkan konten dari papan klip</translation>
 <translation id="6683022854667115063">Headphone</translation>
+<translation id="6686023075541098243">Siapkan untuk melihat notifikasi ponsel Anda</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>
 <translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
@@ -1432,7 +1451,6 @@ Baru diinstal</translation>
 <translation id="6981291220124935078">Aktifkan akses</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
 <translation id="698231206551913481">Semua file dan data lokal yang dikaitkan ke pengguna ini akan dihapus secara permanen setelah pengguna ini dihapus.</translation>
-<translation id="6985306450422696113"><ph name="USED_MEMORY" /> memori tersedia dari total <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Ikuti tur singkat untuk mempelajari cara mengoperasikan Chromebook Anda. Siap digunakan dalam 6 langkah.</translation>
 <translation id="7004910047186208204">Hubungkan ke data seluler</translation>
 <translation id="7005239792648594238">Buka aplikasi untuk memulai</translation>
@@ -1561,6 +1579,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7564874036684306347">Memindahkan jendela ke desktop lain dapat mengakibatkan perilaku tak terduga. Notifikasi, jendela, dan dialog berikutnya dapat terpisah antardesktop.</translation>
 <translation id="7567950130372125778">Halo. Chromebook sedikit berbeda.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox diaktifkan</translation>
+<translation id="7569886975397378678">Tutup penyiapan untuk melihat notifikasi dan aplikasi ponsel Anda</translation>
 <translation id="7571361473021531288">Baterai <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> lagi</translation>
 <translation id="7573585051776738856">Jendela yang aktif dikaitkan di kanan.</translation>
 <translation id="7579778809502851308">Screenshot</translation>

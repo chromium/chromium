@@ -159,6 +159,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1854311313115643875">Když jsou zapnuté zkušební verze, měření reklam umožňuje navštíveným webům žádat Chrome o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.
 
 Když smažete historii prohlížení (celou nebo na určitém webu), smažou se i související informace o měření. Viz <ph name="BEGIN_LINK" />historie prohlížení<ph name="END_LINK" />.</translation>
+<translation id="1871098866036088250">Otevřít v prohlížeči Chrome</translation>
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
 <translation id="1883903952484604915">Moje soubory</translation>
 <translation id="189358972401248634">Ostatní jazyky</translation>
@@ -704,7 +705,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4710167854527459075">Seřadit od nejnovějších</translation>
 <translation id="4719927025381752090">Nabízet překlad</translation>
-<translation id="4720023427747327413">Otevřít v aplikaci <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Zobrazit vaše top weby</translation>
 <translation id="4731877163452936634">Rychlost přehrávání: <ph name="PLAYBACK_SPEED" /> Kliknutím změníte.</translation>
 <translation id="4732120983431207637">Rozbalovač zásobníku</translation>
@@ -810,7 +810,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
 <translation id="5174700554036517242">Karta má opět původní výšku</translation>
-<translation id="5184329579814168207">Otevřít v Chromu</translation>
 <translation id="5186634140793586141">Spravujte témata a vyhledávání, která vás zajímají</translation>
 <translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>

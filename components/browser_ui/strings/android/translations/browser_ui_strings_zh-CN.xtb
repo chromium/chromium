@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">允许（第三方除外）</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1994173015038366702">网站网址</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{1 天后过期}other{# 天后过期}}</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2025115093177348061">增强现实</translation>
 <translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>

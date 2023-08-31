@@ -22,6 +22,8 @@ Aspetos a considerar:
 
   • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tem a segurança mais avançada do Chrome contra Websites prejudiciais</translation>
+<translation id="1675955119303651351">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
+        Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
 <translation id="1733654336159102143">Bloqueie a sua Navegação anónima quando sai do Chrome ou muda para uma app diferente.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +31,7 @@ Aspetos a considerar:
 <translation id="1917964099031477364">Esta conta e quaisquer dados não guardados serão removidos do Chrome e de outras apps Google neste dispositivo.</translation>
 <translation id="2009224836393115614">O Chrome não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2056123005618757196">Faça mais com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
+<translation id="2120238739383482109">Abre os marcadores do Chrome.</translation>
 <translation id="2147651015520127414">O Chrome confirmou que <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="2199719347983604670">Dados da Sincronização do Chrome</translation>
 <translation id="2339201583852607431">A palavra-passe será guardada na sua Conta Google (<ph name="EMAIL" />).</translation>
@@ -65,6 +68,7 @@ Aspetos a considerar:
 <translation id="3594076341410558780">Oculte a mensagem "Tire o máximo partido do Chrome"</translation>
 <translation id="3655656110921623717">Isto significa que o Chrome irá pedir sempre o site para dispositivos móveis.</translation>
 <translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
+<translation id="3741995255368156336">Abre a Lista de leitura do Chrome.</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
 <translation id="3901001113120561395">Tire o máximo partido do Chrome.</translation>
@@ -76,7 +80,6 @@ Aspetos a considerar:
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> estava a utilizar o Chrome e deixou marcadores, palavras-passe e outras definições neste dispositivo.</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
-<translation id="4249068189593983585">Sugestão para o Chrome: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
 <translation id="4463378960278646000">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="4508370294876102450">Abra o Chrome a partir de qualquer app</translation>
 <translation id="4523886039239821078">Alguns suplementos provocam falhas no sistema do Chrome. Desinstale:</translation>
@@ -92,6 +95,7 @@ Aspetos a considerar:
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="5108659628347594808">Melhore o Chrome</translation>
+<translation id="5112925986883715005">Veja a Lista de leitura do Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
 <translation id="5190139289262548459">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chrome é usado.</translation>
@@ -109,7 +113,6 @@ Aspetos a considerar:
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Está offline. O Chrome não consegue verificar se existem atualizações.</translation>
 <translation id="5716154293141027663">Abra o Chrome sempre que tocar em links noutras apps</translation>
-<translation id="5854621639439811139">Sugestão para o Chrome: alguns botões encontram-se agora na parte inferior do ecrã, como Voltar, Avançar e Pesquisar.</translation>
 <translation id="5998675059699164418">A sua organização requer que inicie sessão para utilizar o Chrome.</translation>
 <translation id="6054613632208573261">Utilize o Chrome por predefinição</translation>
 <translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
@@ -121,6 +124,7 @@ Aspetos a considerar:
 <translation id="6427126399757991875">A sua entidade está a configurar o Chrome…</translation>
 <translation id="6600954340915313787">Copiado para o Chrome</translation>
 <translation id="6634107063912726160">Quando terminar sessão, o Chrome não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
+<translation id="6646696210740573446">Envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Google</translation>
 <translation id="6648150602980899529">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="6676840375528380067">Quer limpar os dados do Chrome deste dispositivo?</translation>
 <translation id="6709398533399187136">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe da Google recomenda que a altere agora.</translation>
@@ -155,9 +159,11 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="804638182476029347">Permita que as notificações do Chrome recebam alertas de descida do preço</translation>
 <translation id="81358522153858150">O Chrome suporta agora Políticas do Utilizador para a sua conta gerida</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
+<translation id="8213758103105806860">Veja os marcadores do Chrome</translation>
 <translation id="8357607116237445042">Escolha se quer limpar os seus dados do Chrome deste dispositivo ou mantê-los</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>
+<translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>
 <translation id="8414886616817913619">A sua organização requer que inicie sessão para utilizar o Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Continue a usar os dados do Chrome na sua Conta Google</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>

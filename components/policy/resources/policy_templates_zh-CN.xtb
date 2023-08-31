@@ -961,6 +961,7 @@
       如果此政策已停用或未设置，远程协助主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
 <translation id="1837165432382702436">页面的高度（以微米为单位）</translation>
 <translation id="1838910874018595451">Kerberos 票据的预填充配置</translation>
+<translation id="1843102210803941014">在搜索中仅启用必需 Cookie 和数据</translation>
 <translation id="1843117931376765605">用户策略的更新频率</translation>
 <translation id="1844620919405873871">配置快速解锁相关政策。</translation>
 <translation id="1844972978764975668">允许向 Google 服务器发送查询以检索准确的时间戳</translation>
@@ -1770,8 +1771,6 @@
 <translation id="251050607781210155">启用安全浏览客户端钓鱼式攻击保护</translation>
 <translation id="2512972020817284317">允许合并用户级云政策。</translation>
 <translation id="2515699738406900920">在 Chrome 启动时是否显示个人资料选择器</translation>
-<translation id="251594860034549963">如果此政策已启用，登录时会在当前用户上次使用的设备上自动启动浏览器窗口。
-      如果此政策已停用或未设置，则会由完整恢复设置决定登录时要启动的项目。</translation>
 <translation id="2517466659416174529">允许系统冻结后台标签页</translation>
 <translation id="2518231489509538392">允许播放视频</translation>
 <translation id="2519578205567666653">允许使用外部存储设备</translation>
@@ -3197,7 +3196,6 @@
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
-<translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
 <translation id="3792144912556572267">通过设置此政策，您可以配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址。您可以使用“主页”按钮打开主页。在桌面设备上，<ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策控制哪些页面会在 Chrome 启动时打开。
 
 如果用户或 <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" /> 将主页设为“新标签页”页面，此政策不会产生任何影响。
@@ -3488,7 +3486,6 @@
       如果此政策未设置，用户可以自行决定是否允许“快速解答”功能访问所选内容。</translation>
 <translation id="4016700865356669962">如果此政策已启用，用户便能使用桌面布局模板。如果此政策已停用或未设置，则意味着这些模板不可用。</translation>
 <translation id="4020682745012723568">Android 应用无法访问已转移到用户个人资料中的 Cookie。</translation>
-<translation id="4025176296532430931">停用悬浮式工作区，并且不在登录时启动远程浏览器窗口</translation>
 <translation id="4025500273782820766">允许用户在系统显示外部协议对话框时选择“始终允许”，以跳过后续的确认提示</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
@@ -4312,6 +4309,7 @@
 
       如果这一页面大小在用户选择的打印机上不适用，系统会忽略此政策。</translation>
 <translation id="4789450349513792856">禁止这些网站显示弹出式窗口</translation>
+<translation id="4790391579868456557">在搜索中使用必需 Cookie 和非必需 Cookie。</translation>
 <translation id="4790588245699320140">允许 Google 助理访问屏幕上的内容</translation>
 <translation id="4800438168909332958">启用系统音频回声消除 (AEC) 功能。系统 AEC 是一款回声消除工具，即一种用于从麦克风信号中移除系统音频播放（回声）的音频处理模块。
 此政策只是暂时性政策，待系统 AEC 功能发布后，此政策便会被移除。
@@ -4615,6 +4613,9 @@
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5130935469849337738">一律提供翻译</translation>
+<translation id="5138579693170759139">此政策让管理员能够控制 Google 以何种方式处理通过 <ph name="PRODUCT_OS_NAME" /> 向 Google 搜索发送的 Cookie 和数据。
+如果此政策已启用，用户不仅能使用 <ph name="PRODUCT_OS_NAME" /> 启动器搜索框，也能在 <ph name="PRODUCT_OS_NAME" /> 中使用 <ph name="PRODUCT_NAME" /> 浏览器地址框，不过 Cookie 和数据只能用于基本用途。
+如果此政策未设置或已停用，Cookie 和数据可能会用于非基本用途。</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
@@ -6767,11 +6768,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       * PasswordProtectionWarningOnPhishingReuse - 当用户在网上诱骗性质的网站上重复使用受保护的密码时，系统将会显示密码保护服务警告。
 
       如果您不设置此政策，密码保护服务将只保护 Google 密码，但用户能够更改该设置。</translation>
-<translation id="6969079025604591591">如果此政策已启用或未设置，系统会开启“渲染程序代码完整性”。
-
-      停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
-
-      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="6969108216182455619">此政策已被弃用，预定会在 Chrome 78 中被移除，且无替代政策。
 
       此政策用于在 80 (HTTP) 和 443 (HTTPS) 以外的端口上启用 HTTP/0.9。
@@ -7360,6 +7356,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7482768039644066614">启用页面加载元数据提取功能和用以提升浏览体验的机器学习模型</translation>
 <translation id="7485481791539008776">默认打印机选择规则</translation>
 <translation id="7486205887492534734">当登录屏幕上有多份证书匹配时，提示用户做出选择</translation>
+<translation id="748873163367340515">在搜索中仅使用必需 Cookie 和数据。</translation>
 <translation id="7489661071474025727">指定是否为使用 <ph name="PRODUCT_OS_NAME" /> 设备的用户启用账号恢复服务。
 
       如果此政策已启用，系统会启用用户数据恢复功能。如果此政策已停用或未设置，系统将不会启用用户数据恢复功能。

@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">ਅਨੁਮਤੀ ਦਿੱਤੀ, ਤੀਜੀ-ਪਾਰਟੀ ਨੂੰ ਛੱਡ ਕੇ</translation>
 <translation id="1989112275319619282">ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
 <translation id="1994173015038366702">ਸਾਈਟ URL</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{ਮਿਆਦ 1 ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="2004697686368036666">ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਕੰਮ ਨਾ ਕਰਨ</translation>
 <translation id="2025115093177348061">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> 'ਤੇ ਵਾਪਸ ਜਾਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -120,6 +119,7 @@
 <translation id="3008272652534848354">ਇਜਾਜ਼ਤਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="301521992641321250">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲੌਕ ਕੀਤੀ ਗਈ</translation>
 <translation id="3069226013421428034">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="310297983047869047">ਪਿਛਲੀ ਸਲਾਈਡ</translation>
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
 <translation id="3114012059975132928">ਵੀਡੀਓ ਪਲੇਅਰ</translation>

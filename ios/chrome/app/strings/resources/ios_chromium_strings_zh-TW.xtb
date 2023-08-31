@@ -35,6 +35,7 @@
 <translation id="2478931088402984578">選取 [Chromium]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2590893390871230428">同步處理你的 Chromium 資料</translation>
 <translation id="2618596336309823556">在裝置的「設定」中開啟「<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />」並選取「Chromium」</translation>
+<translation id="2631735236435791495">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶及使用 Chromium 的方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="2650312721222849884">開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="2684230048001240293">將 Chromium 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="2730884209570016437">另一個應用程式正在使用你的相機，因此 Chromium 無法使用</translation>
@@ -88,7 +89,6 @@
 <translation id="5453478652154926037">Chromium 無法檢查你的密碼。</translation>
 <translation id="5521125884468363740">登入帳戶並開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="5522297504975449419">部分 Chromium 功能將無法再使用。</translation>
-<translation id="5573014823074921752">Chromium 提示。如需更多分頁選項，請輕觸並按住工具列 (位於畫面底部或頂端) 中的 [顯示分頁] 按鈕。</translation>
 <translation id="5688047395118852662">這張資訊卡會建議你如何充分運用 Chromium 的各項功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查你的密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
@@ -140,7 +140,6 @@
 <translation id="7400689562045506105">Chromium 隨時隨地都能派上用場</translation>
 <translation id="7523464085759699266">開啟「關閉 Chromium 時鎖定無痕分頁」。</translation>
 <translation id="7674213385180944843">請前往 [設定] &gt; [隱私權] &gt; [相機] &gt; [Chromium]，並開啟相機。</translation>
-<translation id="7746854981345936341">Chromium 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
 <translation id="7763454117143368771">使用 Chromium 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="7812317783196516890">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chromium 行為的使用者政策。</translation>
 <translation id="7859018312476869945">在網址列或搜尋框中輸入時，Chromium 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>

@@ -108,8 +108,10 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2775140325783767197">Chrome ne parvient pas à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="2799223571221894425">Relancer</translation>
 <translation id="2847461019998147611">Afficher Google Chrome dans cette langue</translation>
+<translation id="2853415089995957805">Chrome précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="2857540653560290388">Lancement de Chrome…</translation>
 <translation id="2857972467023607093">Un profil Chrome existe déjà pour ce compte</translation>
+<translation id="286025080868315611">Découvrez pourquoi Chrome bloque certains téléchargements</translation>
 <translation id="2861074815332034794">Mise à jour de Chrome… (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Vous êtes connecté à Google Chrome.</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
@@ -392,6 +394,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="8290100596633877290">Google Chrome est bloqué. Voulez-vous le relancer maintenant ?</translation>
 <translation id="829923460755755423">Ajoutez un raccourci au Gestionnaire de mots de passe de Google</translation>
+<translation id="8336463659890584292">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chrome utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : les sites peuvent stocker des informations sur vos centres d'intérêt dans Chrome. Par exemple, si vous allez sur un site afin d'acheter des chaussures pour un marathon, le site peut définir le marathon comme l'un de vos centres d'intérêt. Ensuite, si vous consultez un autre site pour vous enregistrer pour une course, ce site peut diffuser une annonce pour des chaussures de running en se basant sur vos centres d'intérêt.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>

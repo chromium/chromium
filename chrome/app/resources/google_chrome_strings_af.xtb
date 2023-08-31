@@ -109,8 +109,10 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2775140325783767197">Chrome kan nie jou wagwoorde nagaan nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2847461019998147611">Wys Google Chrome in hierdie taal</translation>
+<translation id="2853415089995957805">Chrome laai bladsye wat jy moontlik sal besoek vooraf, sodat hulle vinniger laai wanneer jy hulle wel besoek</translation>
 <translation id="2857540653560290388">Begin tans Chrome …</translation>
 <translation id="2857972467023607093">'n Chrome-profiel met hierdie rekening bestaan reeds</translation>
+<translation id="286025080868315611">Vind uit hoekom Chrome sommige aflaaie blokkeer</translation>
 <translation id="2861074815332034794">Dateer tans Chrome op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Jy is by Chrome aangemeld!</translation>
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
@@ -393,6 +395,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8286862437124483331">Google Chrome probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8290100596633877290">Sjoe! Google Chrome het omgeval. Herbegin nou?</translation>
 <translation id="829923460755755423">Voeg ’n kortpad na Google Wagwoordbestuurder by</translation>
+<translation id="8336463659890584292">Chrome gebruik Google-bedieners wanneer ’n werf vra om skakels op hul bladsy vooraf te laai. Dit versteek jou identiteit vir die werf wat vooraf gelaai is, maar Google vind uit watter werwe vooraf gelaai word.</translation>
 <translation id="8342675569599923794">Hierdie lêer is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe ons hierdie data gebruik:<ph name="END_BOLD" /> Werwe kan inligting oor jou belangstellings in Chrome stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>

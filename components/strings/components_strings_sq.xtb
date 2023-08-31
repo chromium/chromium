@@ -135,7 +135,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ke futur fjalëkalimin tënd në një sajt që nuk menaxhohet nga organizata jote. Për të mbrojtur llogarinë tënde, mos e ripërdor fjalëkalimin në aplikacione dhe sajte të tjera.</translation>
 <translation id="1257553931232494454">nivelet e zmadhimit</translation>
-<translation id="1258942153897182536">OCR në vazhdim...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar cilësimet e Chrome</translation>
 <translation id="1264309058268477500">Alternative</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -293,7 +292,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 
           &lt;p&gt;Rregullo datën dhe orën nga seksioni &lt;strong&gt;Të përgjithshme&lt;/strong&gt; i aplikacionit &lt;strong&gt;Cilësimet&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratori yt do ta rinisë pajisjen në orën <ph name="TIME" /> më <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Asnjë tekst nuk është konvertuar nga imazhet</translation>
 <translation id="156703335097561114">Informacioni i rrjetit, si p.sh. adresat, konfigurimi i ndërfaqes dhe cilësia e lidhjes</translation>
 <translation id="1567040042588613346">Kjo politikë funksionon sipas parashikimit, por diku është caktuar e njëjta vlerë dhe ajo është zëvendësuar nga kjo politikë.</translation>
 <translation id="1567405528131216114">Shto <ph name="TOPIC" /></translation>
@@ -1382,7 +1380,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3901925938762663762">Karta ka skaduar</translation>
 <translation id="390391808978419508">Koha e hapjes skadoi</translation>
 <translation id="3905894480064208252">{0,plural, =1{Transferimi i skedarit është bllokuar}other{Transferimi i <ph name="FILE_COUNT" /> skedarëve është bllokuar}}</translation>
-<translation id="3906095212874392000">Fundi i tekstit të konvertuar</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Mëso më shumë për përmbajtjet e integruara</translation>
@@ -1607,7 +1604,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4331519897422864041">Stivuesi 5</translation>
 <translation id="4331708818696583467">Jo e sigurt</translation>
 <translation id="4333561522337981382">Të menaxhojë dritaret në të gjitha ekranet e tua</translation>
-<translation id="4338709847516294988">Shtyp "Kërko" + M dhe konvertoje imazhin në tekst në menynë kontekstuale</translation>
 <translation id="4340575312453649552">Kjo reklamë përdorte shumë burime për pajisjen tënde, prandaj Chrome e hoqi.</translation>
 <translation id="4340810192899866471">Importo nga JSON</translation>
 <translation id="4340982228985273705">Ky kompjuter nuk është zbuluar si i menaxhuar nga ndërmarrja, prandaj politika mund të instalojë automatikisht vetëm shtesat e strehuara në "Dyqanin e uebit të Chrome". URL-ja e përditësimit të "Dyqanit të uebit të Chrome" është "<ph name="CWS_UPDATE_URL" />".</translation>
@@ -1624,7 +1620,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4363222835916186793">Sinjalizimet për këtë produkt janë çaktivizuar</translation>
 <translation id="4366943895537458493">Pllakë</translation>
 <translation id="437040971055499437">Ndodh ngjarje sigurie</translation>
-<translation id="4371307856413138486">Fillimi i tekstit të konvertuar</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4372948949327679948">Pritet një vlerë <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Shtoje përsëri një artikull nëse e dëshiron atë në grupin e temave nga të cilat mund të zgjedhë Chrome kur vlerëson interesat e tu</translation>
@@ -2403,7 +2398,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="604124094241169006">Automatike</translation>
 <translation id="6041777658117377052">Temperatura e dhomës</translation>
 <translation id="6042308850641462728">Më shumë</translation>
-<translation id="6042688167654081154">Imazhi u konvertua në tekst</translation>
 <translation id="6044573915096792553">Madhësia 12</translation>
 <translation id="6045164183059402045">Shablloni i vendosjes</translation>
 <translation id="6047233362582046994">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë sajt<ph name="END_LINK" /> para se të jenë hequr aplikacionet e dëmshme.</translation>
@@ -2441,7 +2435,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6116338172782435947">Shiko tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="6117833587752089929">Fotografi (saten)</translation>
 <translation id="6118782133429281336">Lista e origjinave është bosh.</translation>
-<translation id="6120179357481664955">Të kujtohet ID-ja e UPI?</translation>
 <translation id="6120950591512958208">Përdor këtë kod në përfundim të blerjes.</translation>
 <translation id="6122181661879998141">pjesën e përparme të kartës</translation>
 <translation id="6124058285696691147">Shkarko bashkëngjitjen</translation>
@@ -2475,7 +2468,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Skeda me prerje të plotë</translation>
-<translation id="6200386911308538077">Imazhi po analizohet</translation>
 <translation id="6203231073485539293">Kontrollo lidhjen e internetit.</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6212314149070368045">Palosje fizarmonikë (SHBA)</translation>

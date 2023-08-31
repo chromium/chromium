@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">Dovoljeno, razen za druga spletna mesta</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="1994173015038366702">URL spletnega mesta</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{Poteče čez 1 dan}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="2025115093177348061">Razširjena resničnost</translation>
 <translation id="2030769033451695672">Dotaknite se, če se želite vrniti na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>

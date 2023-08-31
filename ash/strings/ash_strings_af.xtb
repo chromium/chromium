@@ -150,6 +150,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1571697193564730395">Wissel Moenie Steur Nie. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Zoem uit wanneer vergrootglas aan is</translation>
 <translation id="1586324912145647027">Gaan na lessenaar 1 tot 8</translation>
+<translation id="158838227375272121">Google Klaskamer-webwerf</translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
 <translation id="1592682369233288537">Volgende lessenaar: <ph name="NEXT_DESK_NAME" />, gebruik Soek+spasie om te aktiveer.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + afpyl</translation>
@@ -326,7 +327,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2369165858548251131">"Hallo" in Chinees</translation>
 <translation id="2382875860893882175">Uitsending is tans onderbreek. Jy kan enige tyd die uitsending hervat of ophou uitsaai.</translation>
 <translation id="2386292613071805067">Kies alles op bladsy</translation>
-<translation id="2396594569364254378">Geheue <ph name="USED_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totaal</translation>
 <translation id="2397416548179033562">Wys Chrome-kieslys</translation>
 <translation id="240006516586367791">Mediakontroles</translation>
 <translation id="2402411679569069051">Gebruik jou vingerafdruk of ontsluit jou foon om jou Chromebook te ontsluit</translation>
@@ -1158,6 +1158,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5790085346892983794">Suksesvol</translation>
 <translation id="5804651031882187592">Skakel "Sluit SIM"-instelling af</translation>
 <translation id="5805809050170488595">Klik om <ph name="NETWORK_NAME" /> te aktiveer</translation>
+<translation id="5823239091726045201">Google-take op die web</translation>
 <translation id="5825969630400862129">Instellings vir gekoppelde toestelle</translation>
 <translation id="5837036133683224804">Stop <ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Gaan na volgende snit</translation>
@@ -1433,7 +1434,6 @@ Nuwe installasie</translation>
 <translation id="6981291220124935078">Skakel toegang aan</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="698231206551913481">Alle lêers en plaaslike data wat met hierdie gebruiker geassosieer word, sal permanent uitgevee word sodra hierdie gebruiker verwyder word.</translation>
-<translation id="6985306450422696113"><ph name="USED_MEMORY" /> geheue beskikbaar uit totale <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Neem ’n vinnige toer om uit te vind hoe om verskillende goed op jou Chromebook te doen. Kom met 6 stappe aan die gang.</translation>
 <translation id="7004910047186208204">Koppel aan mobiele data</translation>
 <translation id="7005239792648594238">Maak ’n program oop om te begin</translation>

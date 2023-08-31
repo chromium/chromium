@@ -150,6 +150,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1571697193564730395">Activa o desactiva la función No interrumpir. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Alejar cuando la lupa esté activada</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
+<translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
 <translation id="1592682369233288537">Siguiente escritorio: <ph name="NEXT_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora para activarlo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo</translation>
@@ -326,7 +327,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2382875860893882175">La transmisión está en pausa. Puedes reanudar o detener la transmisión en cualquier momento.</translation>
 <translation id="2386292613071805067">Seleccionar todo en la página</translation>
-<translation id="2396594569364254378"><ph name="USED_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="2397416548179033562">Mostrar el menú de Chrome</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear la Chromebook, utiliza la huella dactilar o desbloquea el teléfono</translation>
@@ -1158,6 +1158,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5790085346892983794">Completado correctamente</translation>
 <translation id="5804651031882187592">Cómo desactivar la configuración "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Hacer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tasks en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Detener <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Ir a la pista siguiente</translation>
@@ -1433,7 +1434,6 @@ Nueva instalación</translation>
 <translation id="6981291220124935078">Activar el acceso</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="698231206551913481">Todos los archivos y datos locales asociados a este usuario se borrarán de forma permanente una vez que se quite este usuario.</translation>
-<translation id="6985306450422696113"><ph name="USED_MEMORY" /> de memoria disponible de un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Realiza un recorrido rápido para obtener más información sobre tu Chromebook. Ponte en marcha en 6 pasos.</translation>
 <translation id="7004910047186208204">Conectarse a una red de datos móviles</translation>
 <translation id="7005239792648594238">Abre una app para comenzar</translation>

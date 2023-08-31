@@ -51,7 +51,6 @@
 <translation id="1984937141057606926">Autorisés, sauf cookies tiers</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1994173015038366702">URL du site</translation>
-<translation id="1999195646219379110">{COUNT,plural, =1{Expire dans 1 jour}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
 <translation id="2030769033451695672">Appuyez pour revenir à l'adresse <ph name="URL_OF_THE_CURRENT_TAB" /></translation>

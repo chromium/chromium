@@ -105,6 +105,7 @@
 <translation id="2775140325783767197">O Chrome não pode verificar suas senhas. Verifique sua conexão com a Internet.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2847461019998147611">Exibir o Google Chrome neste idioma</translation>
+<translation id="2853415089995957805">O Chrome pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas.</translation>
 <translation id="2857540653560290388">Iniciando o Chrome…</translation>
 <translation id="2857972467023607093">Já existe um perfil do Chrome para essa conta</translation>
 <translation id="2861074815332034794">Atualizando o Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -385,6 +386,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8290100596633877290">Nossa! Houve uma falha no Google Chrome. Reiniciar agora?</translation>
 <translation id="829923460755755423">Adicione um atalho para o Gerenciador de senhas do Google</translation>
+<translation id="8336463659890584292">Quando um site pede para pré-carregar links anonimamente, o Chrome usa os servidores do Google. Isso oculta sua identidade para o site, mas o Google aprende quais sites são pré-carregados.</translation>
 <translation id="8342675569599923794">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: sites podem armazenar informações sobre seus interesses com o Chrome. Por exemplo, se você visitar um site para comprar sapatos de maratona, ele pode definir "maratonas" como um dos seus interesses. Depois, se você visitar outro site para se inscrever em uma maratona, esse site pode mostrar um anúncio de sapatos de corrida com base nos seus interesses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>

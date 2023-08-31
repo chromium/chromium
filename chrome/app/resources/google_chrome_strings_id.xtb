@@ -105,6 +105,7 @@
 <translation id="2775140325783767197">Chrome tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2847461019998147611">Tampilkan Google Chrome dalam bahasa ini</translation>
+<translation id="2853415089995957805">Chrome melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya</translation>
 <translation id="2857540653560290388">Meluncurkan Chrome...</translation>
 <translation id="2857972467023607093">Profil Chrome dengan akun ini sudah ada</translation>
 <translation id="2861074815332034794">Mengupdate Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -385,6 +386,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="829923460755755423">Tambahkan pintasan ke Pengelola Sandi Google</translation>
+<translation id="8336463659890584292">Saat sebuah situs meminta untuk melakukan pramuat link yang ada di halamannya secara pribadi, Chrome akan menggunakan server Google. Hal ini akan menyembunyikan identitas Anda dari situs yang dipramuat, tetapi Google akan mempelajari situs apa yang dipramuat.</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chrome. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>

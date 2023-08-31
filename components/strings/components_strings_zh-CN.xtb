@@ -135,7 +135,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">您在一个不受贵单位管理的网站上输入了您的密码。为了保护您的账号，请不要在其他应用和网站上重复使用您的密码。</translation>
 <translation id="1257553931232494454">缩放级别</translation>
-<translation id="1258942153897182536">正在进行 OCR…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可管理您的 Chrome 设置</translation>
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
@@ -293,7 +292,6 @@
 
       &lt;p&gt;请在&lt;strong&gt;设置&lt;/strong&gt;应用的&lt;strong&gt;通用&lt;/strong&gt;部分调整日期和时间。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 重启您的设备</translation>
-<translation id="1564753300777780201">没有任何从图片转换成的文字</translation>
 <translation id="156703335097561114">网络信息，例如地址、接口配置和连接质量</translation>
 <translation id="1567040042588613346">此政策正在正常运作，但与别处设置的值相同且已覆盖该值。</translation>
 <translation id="1567405528131216114">添加<ph name="TOPIC" /></translation>
@@ -1378,7 +1376,6 @@
 <translation id="3901925938762663762">此信用卡已过期</translation>
 <translation id="390391808978419508">打开超时</translation>
 <translation id="3905894480064208252">{0,plural, =1{此文件已被禁止传输}other{<ph name="FILE_COUNT" /> 个文件已被禁止传输}}</translation>
-<translation id="3906095212874392000">转换成的文字的末尾</translation>
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">详细了解嵌入式内容</translation>
@@ -1603,7 +1600,6 @@
 <translation id="4331519897422864041">堆叠出纸器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
 <translation id="4333561522337981382">管理您的所有显示屏上的窗口</translation>
-<translation id="4338709847516294988">按搜索键 + M，然后在随即显示的上下文菜单中选择将图片转换成文字</translation>
 <translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
 <translation id="4340810192899866471">从 JSON 文件导入</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 应用商店中的扩展程序。对应的 Chrome 应用商店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
@@ -1620,7 +1616,6 @@
 <translation id="4363222835916186793">针对此商品的提醒已被关闭</translation>
 <translation id="4366943895537458493">印版</translation>
 <translation id="437040971055499437">发生了安全性事件</translation>
-<translation id="4371307856413138486">转换成的文字的开头</translation>
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4372948949327679948">应使用<ph name="VALUE_TYPE" />值。</translation>
 <translation id="4375864595697821259">如果您想让 Chrome 在推测您的兴趣时可从主题列表中选择某个主题，请将此主题重新添加到列表中</translation>
@@ -2399,7 +2394,6 @@
 <translation id="604124094241169006">自动</translation>
 <translation id="6041777658117377052">室内温度</translation>
 <translation id="6042308850641462728">展开</translation>
-<translation id="6042688167654081154">图片已转换成文字</translation>
 <translation id="6044573915096792553">大小：12</translation>
 <translation id="6045164183059402045">拼版模板</translation>
 <translation id="6047233362582046994">如果您了解自己将面临的安全风险，则可在有害应用被移除之前<ph name="BEGIN_LINK" />访问此网站<ph name="END_LINK" />。</translation>
@@ -2437,7 +2431,6 @@
 <translation id="6116338172782435947">查看复制到剪贴板的文字和图片</translation>
 <translation id="6117833587752089929">相纸（磨光）</translation>
 <translation id="6118782133429281336">源列表为空。</translation>
-<translation id="6120179357481664955">要记住您的 UPI ID 吗？</translation>
 <translation id="6120950591512958208">结账时使用此折扣代码。</translation>
 <translation id="6122181661879998141">卡正面</translation>
 <translation id="6124058285696691147">下载该附件</translation>
@@ -2471,7 +2464,6 @@
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6198480336395236519">全剪切标签</translation>
-<translation id="6200386911308538077">正在分析图片</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6212314149070368045">美国 Fanfold</translation>

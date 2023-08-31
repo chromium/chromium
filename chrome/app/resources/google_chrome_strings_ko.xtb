@@ -109,8 +109,10 @@
 <translation id="2775140325783767197">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2847461019998147611">이 언어로 Chrome 표시</translation>
+<translation id="2853415089995957805">Chrome은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="2857540653560290388">Chrome 실행 중...</translation>
 <translation id="2857972467023607093">이 계정을 사용하는 Chrome 프로필이 이미 존재합니다.</translation>
+<translation id="286025080868315611">Chrome에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="2861074815332034794">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome에 로그인되어 있습니다.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
@@ -393,6 +395,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
 <translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
+<translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

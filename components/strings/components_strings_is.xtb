@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Gler (litað)</translation>
 <translation id="1074497978438210769">Ekki öruggt</translation>
 <translation id="1075079914415273530">Landbúnaður og skógrækt</translation>
+<translation id="1075364221219156102">Nota aðgangslykil</translation>
 <translation id="1080116354587839789">Laga að breidd</translation>
 <translation id="1081061862829655580">Bakki 19</translation>
 <translation id="1089439967362294234">Breyta aðgangsorði</translation>
@@ -135,7 +136,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Þú slóst inn aðgangsorðið þitt á síðu sem þitt fyrirtæki hefur ekki umsjón með. Til að vernda reikninginn þinn skaltu ekki nota sama aðgangsorð í öðrum forritum og á öðrum síðum.</translation>
 <translation id="1257553931232494454">aðdráttarstig</translation>
-<translation id="1258942153897182536">OCR í gangi ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að stjórna stillingum Chrome</translation>
 <translation id="1264309058268477500">Annað</translation>
 <translation id="1264974993859112054">Íþróttir</translation>
@@ -293,7 +293,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 
           &lt;p&gt;Stilltu dagsetningu og tíma í hlutanum &lt;strong&gt;Almennt&lt;/strong&gt; í forritinu &lt;strong&gt;Stillingar&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Stjórnandinn þinn endurræsir tækið klukkan <ph name="TIME" /> <ph name="DATE" /></translation>
-<translation id="1564753300777780201">Engum texta umbreytt úr myndum</translation>
 <translation id="156703335097561114">Upplýsingar um netkerfi á borð við vefföng, stillingar viðmóts og gæði tengingar</translation>
 <translation id="1567040042588613346">Þessi regla virkar sem skyldi en sama gildi er stillt annars staðar og þessi regla leysir það af hólmi.</translation>
 <translation id="1567405528131216114">Bæta <ph name="TOPIC" /> við</translation>
@@ -1382,7 +1381,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3901925938762663762">Kortið er útrunnið</translation>
 <translation id="390391808978419508">Opnun rann út á tíma</translation>
 <translation id="3905894480064208252">{0,plural, =1{Lokað er á flutning skráar}one{Lokað er á flutning <ph name="FILE_COUNT" /> skráar}other{Lokað er á flutning <ph name="FILE_COUNT" /> skráa}}</translation>
-<translation id="3906095212874392000">Lok umbreytts texta</translation>
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Nánar um innfellt efni</translation>
@@ -1607,7 +1605,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4331519897422864041">Staflari 5</translation>
 <translation id="4331708818696583467">Ekki öruggt</translation>
 <translation id="4333561522337981382">Stjórna gluggum á öllum skjáum</translation>
-<translation id="4338709847516294988">Ýttu á leitarlykilinn og m til að umbreyta mynd í texta á efnisvalmyndinni</translation>
 <translation id="4340575312453649552">Chrome fjarlægði þessa auglýsingu vegna þess að hún notaði of mikið af gögnum fyrir tækið þitt.</translation>
 <translation id="4340810192899866471">Flytja inn úr JSON</translation>
 <translation id="4340982228985273705">Tölvunni virðist ekki vera stýrt af fyrirtæki og því getur reglan aðeins sett sjálfkrafa upp viðbætur sem hýstar eru í vefverslun Chrome. Uppfærsluvefslóð vefverslunar Chrome er „<ph name="CWS_UPDATE_URL" />“.</translation>
@@ -1624,7 +1621,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4363222835916186793">Slökkt hefur verið á tilkynningum fyrir þessa vöru</translation>
 <translation id="4366943895537458493">Ljósmyndaplata</translation>
 <translation id="437040971055499437">Öryggisatvik á sér stað</translation>
-<translation id="4371307856413138486">Upphaf umbreytts texta</translation>
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4372948949327679948">Búist var við <ph name="VALUE_TYPE" /> gildi.</translation>
 <translation id="4375864595697821259">Bættu atriði við aftur ef þú vilt að það tilheyri hópi umfjöllunarefna sem Chrome getur notað til að áætla hvað höfðar til þín</translation>
@@ -2403,7 +2399,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="604124094241169006">Sjálfvirkt</translation>
 <translation id="6041777658117377052">Hitastig í hólfi</translation>
 <translation id="6042308850641462728">Meira</translation>
-<translation id="6042688167654081154">Mynd umbreytt í texta</translation>
 <translation id="6044573915096792553">Stærð 12</translation>
 <translation id="6045164183059402045">Ásetningarsniðmát</translation>
 <translation id="6047233362582046994">Ef þú skilur öryggisáhættuna sem það hefur í för með sér geturðu <ph name="BEGIN_LINK" />heimsótt þetta vefsvæði<ph name="END_LINK" /> áður en skaðlegu forritin hafa verið fjarlægð.</translation>
@@ -2441,7 +2436,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6116338172782435947">Sjá texta og myndir sem þú afritar á klippiborðið</translation>
 <translation id="6117833587752089929">Ljósmynd (satín)</translation>
 <translation id="6118782133429281336">Listi yfir upprunastaði er tómur.</translation>
-<translation id="6120179357481664955">Muna eftir UPI-auðkenni?</translation>
 <translation id="6120950591512958208">Notaðu þennan kóða við greiðslu.</translation>
 <translation id="6122181661879998141">framhlið kortsins</translation>
 <translation id="6124058285696691147">Sækja viðhengið</translation>
@@ -2476,7 +2470,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6196640612572343990">Loka á fótspor frá þriðja aðila</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Heil flipablöð</translation>
-<translation id="6200386911308538077">Verið er að greina mynd</translation>
 <translation id="6203231073485539293">Athugaðu internettenginguna</translation>
 <translation id="6205314730813004066">Persónuvernd auglýsinga</translation>
 <translation id="6212314149070368045">BNA Fanfold</translation>
@@ -3144,6 +3137,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7554475479213504905">Endurhlaða og sýna samt</translation>
 <translation id="7554791636758816595">Nýr flipi</translation>
 <translation id="7555777498260651025">Sjónvarpsþættir fyrir fjölskyldur</translation>
+<translation id="7556328470713619625">Nota aðgangslykil</translation>
 <translation id="7559278538486662777">Ekki er hægt að breyta stærð þessa forrits.</translation>
 <translation id="7561784249784255101">DVD-diskur</translation>
 <translation id="7564049878696755256">Þú gætir glatað aðganginum að <ph name="ORG_NAME" /> reikningnum þínum eða orðið fyrir auðkennisstuldi. Chrome mælir með því að þú skiptir um aðgangsorð núna.</translation>

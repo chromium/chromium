@@ -658,7 +658,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1525740877599838384">Usar solo redes Wi‑Fi para determinar la ubicación</translation>
 <translation id="152629053603783244">Reiniciar Linux</translation>
-<translation id="1526335046150927198">Habilitar aceleración de desplazamiento del panel táctil</translation>
 <translation id="1526560967942511387">Documento sin título</translation>
 <translation id="1527336312600375509">Frecuencia de actualización del monitor</translation>
 <translation id="152913213824448541">Contactos de Compartir con Nearby</translation>
@@ -1002,7 +1001,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1784849162047402014">Queda poco espacio en el disco del dispositivo</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Al desinstalar <ph name="APP_NAME" />, también se desinstalará esta aplicación:}other{Al desinstalar <ph name="APP_NAME" />, también se desinstalarán estas aplicaciones:}}</translation>
 <translation id="1786290960428378411">Solicitando leer y modificar</translation>
-<translation id="1786981253739345937">No permites que estos sitios usen información que hayan guardado sobre ti</translation>
 <translation id="1787350673646245458">Imagen del usuario</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Ubicación</translation>
@@ -1013,7 +1011,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1795214765651529549">Utilizar tema clásico</translation>
 <translation id="1796588414813960292">Las funciones que requieran reproducir sonido no funcionarán</translation>
 <translation id="1797117170091578105">Juega con el teclado de tu Chromebook. Puedes personalizar teclas con acciones específicas.</translation>
-<translation id="1801571666562084067">Convertir imágenes PDF a texto</translation>
 <translation id="180203835522132923">Tecla de búsqueda + O y, después, W</translation>
 <translation id="1802624026913571222">Suspender cuando se cierre la tapa</translation>
 <translation id="1802687198411089702">La página no responde. Puedes esperar a que lo haga o cerrarla.</translation>
@@ -1237,6 +1234,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Preparando</translation>
 <translation id="1969654639948595766">Registros de texto de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1972313920920745320">Los sitios que añadas siempre permanecerán activos y no se liberará memoria de ellos. <ph name="BEGIN_LINK" />Más información sobre cómo mantener activos determinados sitios<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se carga de forma proactiva en función de la página web en la que estás</translation>
 <translation id="197288927597451399">Descargar</translation>
 <translation id="1973313062201924554">Los permisos que concedas a <ph name="APP_NAME" /> también se concederán a esta aplicación.</translation>
@@ -1965,7 +1963,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Confirma tu nombre de usuario</translation>
 <translation id="2517472476991765520">Escanear</translation>
-<translation id="2517890781170832772">Permites que estos sitios usen información que hayan guardado sobre ti</translation>
 <translation id="2518024842978892609">Utilizar tus certificados de cliente</translation>
 <translation id="2519250377986324805">Ver cómo</translation>
 <translation id="2519517390894391510">Nombre de perfil del certificado</translation>
@@ -2390,7 +2387,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2850672011315104382">Estilo de puntuación</translation>
 <translation id="2852385257476173980">Una lista de sitios que visites puede aparecer aquí a medida que navegues por la Web</translation>
 <translation id="285241945869362924">Crea subtítulos de forma automática para contenido de audio y vídeo. El audio y los subtítulos no saldrán de tu dispositivo en ningún momento.</translation>
-<translation id="2853415089995957805">Chrome precarga páginas que probablemente visites para que se carguen más rápido cuando accedas a ellas</translation>
 <translation id="2856776373509145513">Crear un contenedor</translation>
 <translation id="2859741939921354763">Importa contraseñas a <ph name="BRAND" /></translation>
 <translation id="2861301611394761800">Se ha completado la actualización del sistema. Reinícialo.</translation>
@@ -2435,6 +2431,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2889043468805635730">No se han encontrado problemas</translation>
 <translation id="2889064240420137087">Abrir enlace con...</translation>
 <translation id="2890206081124517553">Recuerda tu fondo de escritorio en todos los dispositivos</translation>
+<translation id="2891464434568738544">No hay ningún sitio disponible en este momento. Visita un sitio para añadirlo a esta lista.</translation>
 <translation id="2891566119238851894">Abrir la búsqueda en el panel lateral. La búsqueda no está abierta en el panel lateral.</translation>
 <translation id="2891922230654533301">¿Usar tu dispositivo para iniciar sesión en <ph name="APP_NAME" />?</translation>
 <translation id="2893013536106749396">Elige tarjetas que te mantengan al día de las cosas que te importan.</translation>
@@ -2594,7 +2591,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3012804260437125868">Solo conexiones seguras al mismo sitio web</translation>
 <translation id="3012917896646559015">Ponte en contacto inmediatamente con el fabricante del hardware para enviar tu ordenador a un centro de reparación.</translation>
 <translation id="3013652227108802944">Desactivada • Esta extensión infringe la política de Chrome Web Store</translation>
-<translation id="3014717196148502230">Chrome precarga más páginas de las que es probable que visites para que se carguen más rápido si accedes a ellas.</translation>
 <translation id="301525898020410885">Tu organización establece el idioma</translation>
 <translation id="3015639418649705390">Reiniciar ahora</translation>
 <translation id="3016381065346027039">No hay ninguna entrada de registro</translation>
@@ -2764,7 +2760,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3166443275568926403">Rendimiento y estado de batería</translation>
 <translation id="3169930038976362151">Elige el tema que mejor se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el salvapantallas y otras opciones, mantén pulsado el escritorio.</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
-<translation id="3174311489448105660">Escanea imágenes PDF y convierte contenido en texto para el lector de pantalla (si está disponible). Solo es compatible con el navegador Chrome.</translation>
 <translation id="31774765611822736">Nueva pestaña a la izquierda</translation>
 <translation id="3177689682958561933">Activa esta opción para desplazarte hacia delante y hacia atrás</translation>
 <translation id="3177909033752230686">Idioma de la página:</translation>
@@ -4355,7 +4350,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4460014764210899310">Sin agrupar</translation>
 <translation id="4461483878391246134">Añadir idiomas para los que no ofrecer nunca una traducción</translation>
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
-<translation id="4463530025936541315">Si continúas, permitirás a terceros verificar la información que identifica a este dispositivo en la red</translation>
 <translation id="4465236939126352372">Se ha definido un límite de tiempo de <ph name="TIME" /> para <ph name="APP_NAME" /></translation>
 <translation id="4466839823729730432">Consulta tus recuerdos aquí</translation>
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
@@ -5158,7 +5152,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5139955368427980650">&amp;Abrir</translation>
 <translation id="5141421572306659464">Cuenta principal</translation>
 <translation id="5141957579434225843">Por ejemplo, usa oà, oè, uỳ en lugar de òa, òe, ùy</translation>
-<translation id="5142793792982256885">Velocidad de desplazamiento del panel táctil</translation>
 <translation id="5143374789336132547">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5143612243342258355">Este archivo es peligroso</translation>
 <translation id="5143712164865402236">Activar pantalla completa</translation>
@@ -5622,6 +5615,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5522156646677899028">Esta extensión tiene una vulnerabilidad de seguridad grave.</translation>
 <translation id="5522403133543437426">Buscador utilizado en la barra de direcciones.</translation>
 <translation id="5523149538118225875">{NUM_EXTENSIONS,plural, =1{Tu administrador ha instalado 1 extensión}other{Tu administrador ha instalado # extensiones}}</translation>
+<translation id="5523532775593636291">Los sitios que añadas siempre permanecerán activos y no se liberará memoria de ellos</translation>
 <translation id="5523558474028191231">El nombre puede contener letras, números y caracteres especiales, y debe tener como máximo <ph name="MAX_CHARACTER_COUNT" /> caracteres</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
 <translation id="5526745900034778153">Iniciar sesión para seguir con la sincronización</translation>
@@ -6312,7 +6306,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6095984072944024315">−</translation>
 <translation id="6096047740730590436">Abrir de forma maximizada</translation>
 <translation id="6096326118418049043">Nombre X.500</translation>
-<translation id="609662062217584106">ID de UPI</translation>
 <translation id="6097480669505687979">Si no liberas espacio, es posible que se eliminen automáticamente usuarios y datos.</translation>
 <translation id="6097600385983390082">La búsqueda por voz está cerrada</translation>
 <translation id="6098793583803863900">Se está analizando un archivo desconocido en busca de contenido peligroso.</translation>
@@ -6964,6 +6957,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6644513150317163574">El formato de la URL no es válido. Se debe especificar el servidor con un nombre de host cuando se usa la autenticación SSO.</translation>
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Emparejamiento rápido</translation>
+<translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Google.</translation>
 <translation id="6647228709620733774">URL de revocación de la entidad emisora de certificados de Netscape</translation>
 <translation id="6647690760956378579">Muestra de voz natural</translation>
 <translation id="6648911618876616409">Hay una actualización importante que puedes instalar. Inicia sesión para empezar.</translation>
@@ -7037,7 +7031,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> y 1 pestaña más}other{<ph name="PAGE_TITLE" /> y # pestañas más}}</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709357832553498500">Conectar con <ph name="EXTENSIONNAME" /></translation>
-<translation id="6709802811835274327">Si permites las cookies, es posible que Chrome las use en la precarga.</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710394144992407503">Comprobar si hay errores ortográficos cuando escribas texto en páginas web</translation>
 <translation id="671226373742585927">Haz clic en el botón X para cerrar el panel lateral</translation>
@@ -7587,7 +7580,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar página de inicio por: <ph name="START_PAGE" /></translation>
-<translation id="7156231244155528270">Convertir imagen a texto</translation>
 <translation id="7159953856712257647">Instalada de forma predeterminada</translation>
 <translation id="7160182524506337403">Ya puedes consultar las notificaciones de tu teléfono</translation>
 <translation id="7163202347044721291">Verificando código de activación...</translation>
@@ -8959,6 +8951,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8248381369318572865">Acceder a tu micrófono y analizar lo que dices</translation>
 <translation id="8248887045858762645">Consejo de Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
+<translation id="8249239468199142122">Ahorro de batería</translation>
 <translation id="8250210000648910632">No queda espacio de almacenamiento</translation>
 <translation id="8251441930213048644">Renovar ahora</translation>
 <translation id="8251509999076836464">Emparejando con <ph name="DEVICE_NAME" /></translation>
@@ -9066,7 +9059,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="833262891116910667">Resaltar</translation>
 <translation id="8335587457941836791">No fijar en la estantería</translation>
 <translation id="8336407002559723354">Fin de las actualizaciones: <ph name="MONTH_AND_YEAR" /></translation>
-<translation id="8336463659890584292">Cuando un sitio te pregunta si quieres precargar de forma privada los enlaces de su página, Chrome usa los servidores de Google. De este modo, se oculta tu identidad en el sitio precargado, pero Google sabe qué sitios se han precargado.</translation>
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo se guardará durante 1 hora y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {HOURS} horas y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="8337399713761067085">Actualmente no tienes conexión.</translation>
@@ -9161,6 +9153,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="84098433273647700">Tema instalado actualmente.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Con permiso: <ph name="PERMISSION" /> y <ph name="COUNT" /> más</translation>
+<translation id="8413795581997394485">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio hace algo sospechoso, también se envían URLs completas y fragmentos de contenido de la página.</translation>
 <translation id="8413956290606243087">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS?</translation>
 <translation id="8414249071344507766">Recuerdos ocultados durante 2 días</translation>
 <translation id="8414396119627470038">Inicia sesión en <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -9603,7 +9596,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8774379074441005279">Confirmar restauración</translation>
 <translation id="8774934320277480003">Margen superior</translation>
 <translation id="8775144690796719618">La URL no es válida</translation>
-<translation id="8775329533241312400">La navegación y la búsqueda son más rápidas que con la precarga estándar.</translation>
 <translation id="8775653927968399786">{0,plural, =1{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente dentro de # segundo.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.}other{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente dentro de # segundos.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.}}</translation>

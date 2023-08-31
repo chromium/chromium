@@ -64,7 +64,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1295289763199166823">Personnaliser le menu</translation>
 <translation id="1305822519689023679">Pour vous assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google, vérifiez qu'il s'agit bien de vous.</translation>
 <translation id="1312721752506309252">La protection renforcée est activée</translation>
-<translation id="1316466854070752597">Voir tous les onglets ouverts</translation>
 <translation id="1321993286294231467">Une erreur s'est produite lors de l'enregistrement de l'image.</translation>
 <translation id="1322735045095424339">Votre organisation vous demande d'utiliser le mode de navigation privée</translation>
 <translation id="1323735185997015385">Supprimer</translation>
@@ -294,6 +293,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
+<translation id="2762000892062317888">à l'instant</translation>
 <translation id="2772667768515195373">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse est enregistrée dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Recherche en mode de navigation privée</translation>
 <translation id="277771892408211951">Sélectionner la langue</translation>
@@ -512,7 +512,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4063300985191096908">Accéder au flux</translation>
 <translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et bien plus encore.</translation>
-<translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer les adresses}other{Supprimer les adresses}}</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
@@ -702,7 +701,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="519530786644929958">Le téléchargement a échoué et ne peut pas être réessayé.</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5209674813563615506">Ouvrir un nouvel onglet</translation>
 <translation id="5211488077761630279">Autoriser « <ph name="SITE_NAME" /> » à utiliser votre <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
@@ -719,7 +717,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318298563956633672">Vous suivez déjà ce produit.</translation>
-<translation id="5325595483440111327">Afficher l'historique de navigation</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
 <translation id="5360976571138293719">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la rubrique <ph name="BEGIN_LINK" />Services Google<ph name="END_LINK" /></translation>
@@ -1007,7 +1004,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6785453220513215166">Envoi du rapport de plantage en cours...</translation>
 <translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
-<translation id="6801927553864092214">Pour naviguer de manière incognito, ouvrez un onglet de navigation privée</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="6822587385560699678">Lorsque cette option est activée, les mots de passe sont enregistrés dans <ph name="ACCOUNT" />. Si cette option est désactivée, les mots de passe sont enregistrés uniquement sur cet appareil.</translation>
@@ -1148,7 +1144,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
 <translation id="7756478488453921771">Menu → Paramètres → Modes de paiement</translation>
 <translation id="7760127703945531263">Verrouillage de la Navigation privée</translation>
-<translation id="7762768971412105260">Données de votre compte</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="777572173400717978">{count,plural, =1{Marqué comme favori}one{Marqué comme favori}other{Marqués comme favoris}}</translation>
@@ -1251,7 +1246,6 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web de manière incognito.</translation>
 <translation id="8316944564970119719">Saisir le site et le mot de passe, puis enregistrer</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
-<translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
 <translation id="8343993175958086504">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="834783239627985533">Sites les plus visités</translation>

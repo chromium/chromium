@@ -158,6 +158,7 @@
 <translation id="1854311313115643875">試用期間中の広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。
 
 全サイトまたは特定のサイトの閲覧履歴を削除すると、関連する測定情報も削除されます。<ph name="BEGIN_LINK" />閲覧履歴<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="1871098866036088250">Chrome ブラウザで開く</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1883903952484604915">マイファイル</translation>
 <translation id="189358972401248634">その他の言語</translation>
@@ -699,7 +700,6 @@
 <translation id="4699172675775169585">キャッシュされた画像とファイル</translation>
 <translation id="4710167854527459075">新しい順に並べ替え</translation>
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
-<translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
 <translation id="47217992755561375">よく使用するサイトを表示します</translation>
 <translation id="4731877163452936634">再生速度: <ph name="PLAYBACK_SPEED" />。クリックすると変更できます。</translation>
 <translation id="4732120983431207637">スタック アンワインダー</translation>
@@ -803,7 +803,6 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5174700554036517242">タブが最初の高さに戻りました</translation>
-<translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5186634140793586141">関心のあるトピックと検索内容を管理する</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
@@ -1033,6 +1032,7 @@
 <translation id="6433501201775827830">検索エンジンを選択</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6437478888915024427">ページ情報</translation>
+<translation id="6440291723980579689">ページは開いてから読み込まれます</translation>
 <translation id="6441734959916820584">名前が長すぎます</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# 個の画像}other{# 個の画像}}</translation>
 <translation id="6447558397796644647">お探しのブックマークが見つかりません。つづりを確認するか、新しいブックマークを追加してください。</translation>
@@ -1081,6 +1081,7 @@
 <translation id="6641780377503683465"><ph name="INTEREST" /> を削除</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6645629752388991326">このデバイスをセキュリティ キーとして使用してログインできるデバイスを管理します。</translation>
+<translation id="6646696210740573446">ユーザーの　IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を　Google　に送信することがあります</translation>
 <translation id="6647441008198474441">アクセスした URL が Google に送信され、次にアクセスするサイトの予測が行われます</translation>
 <translation id="6648459603387803038">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件}other{<ph name="CONTACT_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件}}</translation>
@@ -1438,6 +1439,7 @@
 <translation id="8394720698884623075">Chrome に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="8402673309244746971">フォロー中のフィードに移動</translation>
 <translation id="8413126021676339697">全履歴を表示</translation>
+<translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ　コンテンツの一部も送信されます。</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> に <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> の情報を使用してログイン</translation>
 <translation id="8416347857511542594">Chrome での広告のパーソナライズの詳細</translation>
 <translation id="8419244640277402268">含める</translation>

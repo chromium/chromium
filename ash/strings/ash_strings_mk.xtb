@@ -150,6 +150,7 @@
 <translation id="1571697193564730395">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
+<translation id="158838227375272121">Веб-сајт на Google Classroom</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
 <translation id="1592682369233288537">Следна работна површина: <ph name="NEXT_DESK_NAME" />, користете Search+Space за активирање.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрелка надолу</translation>
@@ -326,7 +327,6 @@
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
 <translation id="2382875860893882175">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да го сопрете во секое време.</translation>
 <translation id="2386292613071805067">Избира сѐ на страницата</translation>
-<translation id="2396594569364254378">Меморија: <ph name="USED_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Прикажи мени на Chrome</translation>
 <translation id="240006516586367791">Контроли за аудиовизуелни содржини</translation>
 <translation id="2402411679569069051">За да го отклучите вашиот Chromebook, користете го отпечатокот или отклучете го телефонот</translation>
@@ -1158,6 +1158,7 @@
 <translation id="5790085346892983794">Успешно</translation>
 <translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Задачи во Google Tasks на интернет</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Одење на следната песна</translation>
@@ -1433,7 +1434,6 @@
 <translation id="6981291220124935078">Вклучи пристап</translation>
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
-<translation id="6985306450422696113">Достапна меморија: <ph name="USED_MEMORY" /> од вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Разгледајте накратко за да дознаете како се користи вашиот Chromebook. Подгответе се во 6 чекори.</translation>
 <translation id="7004910047186208204">Поврзете се на мобилен интернет</translation>
 <translation id="7005239792648594238">Отворете апликација за да започнете</translation>

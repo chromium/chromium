@@ -104,8 +104,10 @@
 <translation id="2775140325783767197">Chrome nu îți poate verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2847461019998147611">Afișează Google Chrome în această limbă</translation>
+<translation id="2853415089995957805">Chrome preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="2857540653560290388">Se lansează Chrome...</translation>
 <translation id="2857972467023607093">Există deja un profil Chrome asociat acestui cont</translation>
+<translation id="286025080868315611">Află de ce Chrome blochează unele descărcări</translation>
 <translation id="2861074815332034794">Se actualizează Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">V-ați conectat la Chrome!</translation>
 <translation id="2876628302275096482">Află mai multe despre <ph name="BEGIN_LINK" />cum îți păstrează Chrome datele private<ph name="END_LINK" /></translation>
@@ -384,6 +386,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
 <translation id="829923460755755423">Adaugă o comandă rapidă către Managerul de parole Google</translation>
+<translation id="8336463659890584292">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Chrome folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>

@@ -107,8 +107,10 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2775140325783767197">Chrome nemôže skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="2799223571221894425">Znova spustiť</translation>
 <translation id="2847461019998147611">Zobrazovať Google Chrome v tomto jazyku</translation>
+<translation id="2853415089995957805">Chrome prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
 <translation id="2857540653560290388">Spúšťa sa Chrome…</translation>
 <translation id="2857972467023607093">Profil Chromu s týmto účtom už existuje</translation>
+<translation id="286025080868315611">Prečo Chrome blokuje niektoré stiahnuté súbory</translation>
 <translation id="2861074815332034794">Aktualizuje sa Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Ste prihlásený/-á do prehliadača Chrome.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Ako Chrome uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
@@ -391,6 +393,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="8290100596633877290">Google Chrome zlyhal. Chcete ho spustiť znova?</translation>
 <translation id="829923460755755423">Pridajte odkaz na Správcu hesiel Google</translation>
+<translation id="8336463659890584292">Keď nejaký web požiada o súkromné prednačítanie odkazov na svojej stránke, Chrome použije servery Googlu. Týmto sa pred predinštalovaným webom skryje vaša identita, ale Google sa naučí, ktoré weby sa prednačítavajú.</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> weby môžu v Chrome ukladať údaje o vašich záujmoch. Ak napríklad navštívite web na nákup obuvi na maratón, daný web môže definovať váš záujem ako behanie maratónov. Ak neskôr navštívite iný, aby ste sa zaregistrovali na preteky, tento web vám môže zobraziť reklamu na bežeckú obuv na základe vašich záujmov.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>

@@ -139,7 +139,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում ձեր կազմակերպության կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառը այլ հավելվածներում և կայքերում:</translation>
 <translation id="1257553931232494454">մասշտաբավորման մակարդակներ</translation>
-<translation id="1258942153897182536">OCR-ն ընթացքում է...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome-ի ձեր կարգավորումները կառավարելու համար</translation>
 <translation id="1264309058268477500">Այլ</translation>
 <translation id="1264974993859112054">Սպորտ</translation>
@@ -297,7 +296,6 @@
 
       &lt;p&gt;Ուղղեք ամսաթիվը և ժամը &lt;strong&gt;Կարգավորումներ&lt;/strong&gt; հավելվածի &lt;strong&gt;Ընդհանուր&lt;/strong&gt; բաժնում:&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ձեր ադմինիստրատորը կվերագործարկի սարքը <ph name="DATE" />, <ph name="TIME" /></translation>
-<translation id="1564753300777780201">Պատկերներից փոխարկված տեքստ չկա</translation>
 <translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
 <translation id="1567405528131216114">Ավելացնել «<ph name="TOPIC" />» թեման</translation>
@@ -1390,7 +1388,6 @@
 <translation id="3901925938762663762">Քարտի ժամկետը սպառվել է</translation>
 <translation id="390391808978419508">Բացման ժամանակը սպառվել է</translation>
 <translation id="3905894480064208252">{0,plural, =1{Ֆայլի փոխանցումն արգելափակված է}one{<ph name="FILE_COUNT" /> ֆայլի փոխանցումն արգելափակված է}other{<ph name="FILE_COUNT" /> ֆայլի փոխանցումն արգելափակված է}}</translation>
-<translation id="3906095212874392000">Փոխարկված տեքստի ավարտ</translation>
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Իմանալ ավելին ներկառուցված բովանդակության մասին</translation>
@@ -1615,7 +1612,6 @@
 <translation id="4331519897422864041">Շեղջիչ 5</translation>
 <translation id="4331708818696583467">Անվտանգ չէ</translation>
 <translation id="4333561522337981382">Կառավարել պատուհանները ձեր բոլոր էկրաններին</translation>
-<translation id="4338709847516294988">Սեղմեք որոնման կոճակը + M և տեղային ընտրացանկում պատկերը փոխարկեք տեքստի</translation>
 <translation id="4340575312453649552">Այս գովազդը չափազանց շատ ռեսուրս է օգտագործել ձեր սարքում, այդ պատճառով Chrome-ը հեռացրել է այն։</translation>
 <translation id="4340810192899866471">Ներմուծել JSON-ից</translation>
 <translation id="4340982228985273705">Այս համակարգիչը կազմակերպության կողմից կառավարվող համակարգիչ չէ: Համաձայն կանոնի՝ ավտոմատ կարող են տեղադրվել միայն Chrome Web Store-ի ընդլայնումները: Chrome Web Store-ի թարմացման URL-ն է՝ «<ph name="CWS_UPDATE_URL" />»:</translation>
@@ -1632,7 +1628,6 @@
 <translation id="4363222835916186793">Այս ապրանքի մասին ծանուցումներն անջատված են</translation>
 <translation id="4366943895537458493">Ափսե</translation>
 <translation id="437040971055499437">Անվտանգությանը սպառնացող գործողություն է տեղի ունենում</translation>
-<translation id="4371307856413138486">Փոխարկված տեքստի սկիզբ</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
 <translation id="4372948949327679948">Սպասվող արժեք՝ <ph name="VALUE_TYPE" />:</translation>
 <translation id="4375864595697821259">Դուք կարող եք նորից ավելացնել թեման ցանկում, որից Chrome-ը, ըստ իր ուսումնասիրությունների, կարող է ընտրել ձեզ հետաքրքրող թեմաներ</translation>
@@ -2414,7 +2409,6 @@
 <translation id="604124094241169006">Ավտոմատ</translation>
 <translation id="6041777658117377052">Խցիկի ջերմաստիճանը</translation>
 <translation id="6042308850641462728">Ավելին</translation>
-<translation id="6042688167654081154">Պատկերը փոխարկվեց տեքստի</translation>
 <translation id="6044573915096792553">Չափ 12</translation>
 <translation id="6045164183059402045">Էջքի ձևանմուշ</translation>
 <translation id="6047233362582046994">Եթե դուք գիտակցում եք անվտանգության հետ կապված ռիսկերը, ապա կարող եք <ph name="BEGIN_LINK" />այցելել այս կայքը<ph name="END_LINK" /> նախքան վնասարար հավելվածները հեռացնելը:</translation>
@@ -2452,7 +2446,6 @@
 <translation id="6116338172782435947">Տեսնել սեղմատախտակին պատճենված տեքստը և պատկերները</translation>
 <translation id="6117833587752089929">Ֆոտոթուղթ (ատլաս)</translation>
 <translation id="6118782133429281336">Աղբյուրների ցանկը դատարկ է։</translation>
-<translation id="6120179357481664955">Հիշո՞ւմ եք ձեր UPI ID-ն</translation>
 <translation id="6120950591512958208">Կոդն օգտագործեք վճարման ժամանակ։</translation>
 <translation id="6122181661879998141">քարտի դիմացի կողմում</translation>
 <translation id="6124058285696691147">Ներբեռնել առդիրը</translation>
@@ -2487,7 +2480,6 @@
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6197648101609735209">89 x 89 մմ</translation>
 <translation id="6198480336395236519">Ամբողջական կտրված ներդիրներ</translation>
-<translation id="6200386911308538077">Պատկերը վերլուծվում է</translation>
 <translation id="6203231073485539293">Ստուգեք համացանցի կապակցումը</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
 <translation id="6212314149070368045">US Fanfold</translation>

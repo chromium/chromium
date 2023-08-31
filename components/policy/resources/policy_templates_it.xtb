@@ -962,6 +962,7 @@ Per <ph name="PRODUCT_OS_NAME" />, vedi DeviceMetricsReportingEnabled.</translat
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
+<translation id="1843102210803941014">Attiva solo dati e cookie essenziali nella ricerca</translation>
 <translation id="1843117931376765605">Frequenza di aggiornamento criteri relativi agli utenti</translation>
 <translation id="1844620919405873871">Consente di configurare le norme relative allo sblocco rapido.</translation>
 <translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
@@ -1773,8 +1774,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="251050607781210155">Consenti la protezione contro il phishing lato client di Navigazione sicura</translation>
 <translation id="2512972020817284317">Viene attivata l'unione dei criteri relativi al cloud a livello di utente.</translation>
 <translation id="2515699738406900920">Disponibilità del selettore profilo all'avvio</translation>
-<translation id="251594860034549963">Se il criterio viene impostato su Attivato, le finestre del browser verranno avviate automaticamente dall'ultimo dispositivo utilizzato dall'utente corrente al momento dell'accesso.
-      Se il criterio viene impostato su Disattivato o se non viene configurato, gli elementi da avviare al momento dell'accesso verranno determinati dalle impostazioni di ripristino completo.</translation>
 <translation id="2517466659416174529">Consenti il blocco delle schede in secondo piano</translation>
 <translation id="2518231489509538392">Consenti riproduzione audio</translation>
 <translation id="2519578205567666653">Consenti dispositivi di archiviazione esterni</translation>
@@ -3211,7 +3210,6 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3791179836066841809">Documentazione per le norme</translation>
-<translation id="3791556154364029875">Abilita l'area di lavoro mobile e avvia le finestre del browser remoto al momento dell'accesso</translation>
 <translation id="3792144912556572267">Questo criterio consente di impostare l'URL predefinito della pagina iniziale in <ph name="PRODUCT_NAME" />. È possibile aprire la pagina iniziale usando il pulsante omonimo. Sui computer, i criteri <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> consentono di stabilire le pagine da aprire all'avvio.
 
 Se come pagina iniziale viene impostata la pagina Nuova scheda, dall'utente o in base al criterio <ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />, questo criterio non ha effetto.
@@ -3341,6 +3339,7 @@ Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app w
       Se la norma viene disattivata sarà possibile utilizzare il protocollo.
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
+<translation id="3885896818093825047">Consenti la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="3889458462150559611">Consenti ai siti web di effettuare richieste a qualsiasi endpoint di rete in modo non sicuro.</translation>
 <translation id="388999630001435491">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati</translation>
 <translation id="3891175633496805812">Disattiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
@@ -3501,7 +3500,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se il criterio non viene impostato, gli utenti possono decidere se autorizzare Risposte rapide ad accedere ai contenuti selezionati.</translation>
 <translation id="4016700865356669962">Se il criterio viene impostato su Attivato, gli utenti possono usare i modelli di layout di scrivanie.  Se il criterio viene impostato su Disattivato o se non viene configurato, questi modelli non saranno disponibili.</translation>
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
-<translation id="4025176296532430931">Disabilita l'area di lavoro mobile e non avviare le finestre del browser remoto al momento dell'accesso</translation>
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
@@ -4338,6 +4336,7 @@ Se viene disattivato, all'utente non viene mostrata la promozione dell'estension
 
       Se le dimensioni della pagina non sono disponibili nella stampante scelta dall'utente, questo criterio viene ignorato.</translation>
 <translation id="4789450349513792856">Blocca popup su questi siti</translation>
+<translation id="4790391579868456557">Usa cookie essenziali e non essenziali nella ricerca.</translation>
 <translation id="4790588245699320140">Permetti all'Assistente Google di accedere al contesto dello schermo</translation>
 <translation id="4800438168909332958">Consente di attivare la funzionalità di cancellazione dell'eco per l'audio di sistema (AEC). La funzionalità AEC di sistema è un sistema di cancellazione dell'eco acustico, ovvero un modulo di elaborazione audio che rimuove la riproduzione dell'audio di sistema (eco) dal segnale del microfono.
 Questo criterio è temporaneo e verrà rimosso non appena verrà lanciata la funzionalità di cancellazione dell'eco per l'audio di sistema.
@@ -4646,6 +4645,9 @@ Se questo criterio viene impostato su true o se non viene configurato, la segnal
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
 <translation id="5130213897914754028">Impedisci ai siti di utilizzare il criterio SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Offri sempre la traduzione</translation>
+<translation id="5138579693170759139">Questo criterio consente agli amministratori di stabilire il modo in cui Google tratta i dati e i cookie inviati alla Ricerca tramite <ph name="PRODUCT_OS_NAME" />.
+Se il criterio viene attivato, l'utente potrà usare la casella di ricerca di Avvio app di <ph name="PRODUCT_OS_NAME" /> e la casella degli indirizzi del browser <ph name="PRODUCT_NAME" /> in <ph name="PRODUCT_OS_NAME" />. I dati e i cookie potranno essere usati soltanto per finalità essenziali.
+Se il criterio non viene configurato o se viene disattivato, i dati e i cookie potrebbero essere usati per finalità non essenziali.</translation>
 <translation id="5141670636904227950">Impostazione tipo di ingrandimento dello schermo predefinito attivato nella schermata di accesso</translation>
 <translation id="5142301680741828703">Visualizza sempre i seguenti schemi di URL in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Questo criterio consente di stabilire se segnalare o meno le informazioni che possono essere utilizzate per identificare gli utenti, ad esempio i dati di accesso al sistema operativo, i dati di accesso del profilo <ph name="PRODUCT_NAME" />, il nome del profilo <ph name="PRODUCT_NAME" />, il percorso del profilo <ph name="PRODUCT_NAME" /> e il percorso eseguibile di <ph name="PRODUCT_NAME" />.
@@ -6823,11 +6825,6 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
       * PasswordProtectionWarningOnPhishingReuse, l'avviso di protezione delle password viene mostrato quando l'utente riutilizza la propria password protetta su un sito di phishing.
 
       Se il criterio non viene configurato, il servizio di protezione delle password protegge soltanto le password Google, ma gli utenti possono modificare questa impostazione.</translation>
-<translation id="6969079025604591591">Se il criterio viene impostato su Attivato o se non viene configurato, l'integrità del codice del renderer viene attivata.
-
-      Se viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, in quanto codice sconosciuto e potenzialmente dannoso può essere caricato all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />. Disattivalo solo se si verificano dei problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer di <ph name="PRODUCT_NAME" />.
-
-      Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="6969108216182455619">Questo criterio è obsoleto ed è prevista la rimozione in Chrome 78. Non verrà sostituito da altri criteri.
 
       Questo criterio consente HTTP/0.9 su porte diverse dalla porta 80 per HTTP e 443 per HTTPS.
@@ -7361,6 +7358,7 @@ Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non 
 Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /> viene configurato automaticamente, quindi i file con formati file corrispondenti verranno spostati per impostazione predefinita su <ph name="GOOGLE_DRIVE_NAME" /> e gestiti da una delle app <ph name="GOOGLE_WORKSPACE_NAME" /> quando l'utente tenterà di aprirli.
 
 Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
+<translation id="7438982301540282785">Automatizza la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7443356543619955157">La configurazione del criterio consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="7446978687387327623">Consenti i controlli in tempo reale inviati tramite proxy di Navigazione sicura</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
@@ -7415,8 +7413,10 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="7481702249684965639">Il Cestino è attivo per l'utente.</translation>
 <translation id="7482768039644066614">Attiva il recupero dei metadati di caricamento delle pagine e dei modelli di machine learning per migliorare l'esperienza di navigazione</translation>
+<translation id="748292668225669178">Configura il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
 <translation id="7486205887492534734">Mostra una richiesta in caso di corrispondenza tra più certificati nella schermata di accesso</translation>
+<translation id="748873163367340515">Usa solo dati e cookie essenziali nella ricerca.</translation>
 <translation id="7489661071474025727">Specifica se il servizio di recupero dell'account è attivato per i tuoi utenti su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
       Se il criterio viene attivato, il recupero dei dati utente è attivato. Se il criterio è disattivato o se non viene configurato, il recupero dei dati utente non viene attivato.
@@ -8367,6 +8367,16 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8316940611391250886">Non consentire i certificati privi di un'estensione subjectAlternativeName</translation>
 <translation id="8319678975002906774">Imposta valori Managed Configuration per siti web corrispondenti a origini specifiche</translation>
 <translation id="8320149248919453401">Modalità di carica della batteria</translation>
+<translation id="8324872579207355449">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se il criterio viene impostato su "<ph name="ALLOWED_NAME" />", l'utente può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se vuole.
+Dopo aver completato la procedura di configurazione, l'app <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verrà montata in gestore di file.
+
+Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", questo tenta di configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automaticamente. In caso di errore, torna al flusso di configurazione.
+
+Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
 <translation id="8327651196906278510">Consenti acquisizione schede in base a queste origini</translation>
 <translation id="8329434144708110">Vengono attivati i flussi di autenticazione per la sincronizzazione delle password con fornitori di servizi SSO</translation>
 <translation id="8329984337216493753">Questa norma è attiva soltanto in modalità retail.
@@ -8960,6 +8970,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="8882307005437314052">Attiva la tastiera sullo schermo nella schermata di accesso e consenti all'utente di disattivarla temporaneamente</translation>
 <translation id="8883577480680089760">Disattiva il servizio <ph name="PRODUCT_NAME" /> V2 e non avviare la scrivania remota all'accesso</translation>
 <translation id="8887709920496070892">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene mostrata una finestra di dialogo di avviso.</translation>
+<translation id="8888289774309799423">Non consentire la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="8890438048579188548">Nascondi avvisi di ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8891334958985336685">Disattiva i report sulle informazioni di sistema del dispositivo</translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>

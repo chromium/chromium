@@ -49,6 +49,7 @@
 <translation id="1073690811593784042">شیشہ (رنگین)</translation>
 <translation id="1074497978438210769">محفوظ نہیں</translation>
 <translation id="1075079914415273530">زراعت اور علم جنگلات</translation>
+<translation id="1075364221219156102">پاس کی استعمال کریں</translation>
 <translation id="1080116354587839789">چوڑائی میں فٹ کریں</translation>
 <translation id="1081061862829655580">ٹرے 19</translation>
 <translation id="1089439967362294234">پاس ورڈ تبدیل کریں</translation>
@@ -136,7 +137,6 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو آپ کی تنظیم کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
 <translation id="1257553931232494454">زوم کے لیولز</translation>
-<translation id="1258942153897182536">‏OCR پیشرفت میں ہے ...</translation>
 <translation id="1262388120645841613">‏<ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنے Chrome کی ترتیبات کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="1264309058268477500">متبادل</translation>
 <translation id="1264974993859112054">کھیل</translation>
@@ -294,7 +294,6 @@
 
       &lt;p&gt;براہ کرم تاریخ اور وقت کو &lt;strong&gt;ترتیبات&lt;‎/strong&gt; ایپ کے &lt;strong&gt;عمومی&lt;‎/strong&gt; سیکشن سے ایڈجسٹ کریں۔&lt;‎/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم آپ کے آلے کو ری سٹارٹ کرے گا</translation>
-<translation id="1564753300777780201">تصاویر سے کوئی ٹیکسٹ تبدیل نہیں ہوا</translation>
 <translation id="156703335097561114">نیٹ ورکنگ معلومات جیسے پتے، انٹرفیس کنفیگریشن اور کنکشن کا معیار</translation>
 <translation id="1567040042588613346">یہ پالیسی توقع کے مطابق کام کر رہی ہے لیکن کسی دوسری جگہ ایک جیسی قدر سیٹ کی گئی ہے اور اس نے اس پالیسی کی جگہ لے لی ہے۔</translation>
 <translation id="1567405528131216114"><ph name="TOPIC" /> کو شامل کریں</translation>
@@ -1384,7 +1383,6 @@
 <translation id="3901925938762663762">اس کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="390391808978419508">کھولنے کا وقت ختم ہو گیا</translation>
 <translation id="3905894480064208252">{0,plural, =1{فائل کو منتقل ہونے سے مسدود کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو منتقل ہونے سے مسدود کر دیا گیا}}</translation>
-<translation id="3906095212874392000">تبدیل شدہ ٹیکسٹ کا اختتام</translation>
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">سرایت کردہ مواد کے بارے میں مزید جانیں</translation>
@@ -1609,7 +1607,6 @@
 <translation id="4331519897422864041">اسٹیکر 5</translation>
 <translation id="4331708818696583467">محفوظ نہیں</translation>
 <translation id="4333561522337981382">اپنے سبھی ڈسپلیز پر ونڈوز کا نظم کریں</translation>
-<translation id="4338709847516294988">‏تلاش کے ساتھ m دبائیں اور سیاق و سباق کے مینو میں تصویر کو ٹیکسٹ میں تبدیل کریں</translation>
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340810192899866471">‏JSON سے درآمد کریں</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
@@ -1626,7 +1623,6 @@
 <translation id="4363222835916186793">اس پروڈکٹ کے لیے الرٹس کو آف کر دیا گیا ہے</translation>
 <translation id="4366943895537458493">پلیٹ</translation>
 <translation id="437040971055499437">سیکیورٹی ایونٹ ہوتا ہے</translation>
-<translation id="4371307856413138486">تبدیل شدہ ٹیکسٹ کا آغاز</translation>
 <translation id="4371591986692297148">غیر فعال ہے</translation>
 <translation id="4372948949327679948">متوقع <ph name="VALUE_TYPE" /> قدر۔</translation>
 <translation id="4375864595697821259">‏اگر آپ آئٹم کے پول میں ایسا آئٹم چاہتے ہیں جسے Chrome آپ کی دلچسپیوں کا اندازہ لگاتے وقت استعمال کرے تو اسے دوبارہ شامل کریں</translation>
@@ -2405,7 +2401,6 @@
 <translation id="604124094241169006">خود کار</translation>
 <translation id="6041777658117377052">چمبر کا درجہ حرارت</translation>
 <translation id="6042308850641462728">مزید</translation>
-<translation id="6042688167654081154">تصویر کو ٹیکسٹ میں تبدیل کر دیا گیا</translation>
 <translation id="6044573915096792553">سائز 12</translation>
 <translation id="6045164183059402045">نفاذ کی تمثیل</translation>
 <translation id="6047233362582046994">اگر آپ اپنی سیکیورٹی کے خطرات کو سمجھتے ہیں تو آپ نقصان دہ ایپس کو ہٹائے جانے سے پہلے <ph name="BEGIN_LINK" />یہ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
@@ -2443,7 +2438,6 @@
 <translation id="6116338172782435947">کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھیں</translation>
 <translation id="6117833587752089929">تصویر (ساٹن)</translation>
 <translation id="6118782133429281336">اصل فہرست خالی ہے۔</translation>
-<translation id="6120179357481664955">‏آپ کی UPI ID یاد رکھیں؟</translation>
 <translation id="6120950591512958208">چیک آؤٹ پر یہ کوڈ استعمال کریں۔</translation>
 <translation id="6122181661879998141">آپ کے کارڈ کے سامنے</translation>
 <translation id="6124058285696691147">منسلکہ ڈاؤن لوڈ کریں</translation>
@@ -2479,7 +2473,6 @@
 <translation id="6196640612572343990">فریق ثالث کوکیز کو مسدود کریں</translation>
 <translation id="6197648101609735209">‏‎89 x 89 ملی میٹر</translation>
 <translation id="6198480336395236519">مکمل کٹ ٹیبز</translation>
-<translation id="6200386911308538077">تصویر کا تجزیہ کیا جا رہا ہے</translation>
 <translation id="6203231073485539293">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
@@ -3147,6 +3140,7 @@
 <translation id="7554475479213504905">دوبارہ لوڈ کریں اور بہرصورت دکھائیں</translation>
 <translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7555777498260651025">‏خاندان پر مرتکز TV شوز</translation>
+<translation id="7556328470713619625">پاس کی استعمال کریں</translation>
 <translation id="7559278538486662777">اس ایپ کا سائز تبدیل نہیں کیا جا سکتا۔</translation>
 <translation id="7561784249784255101">ڈیجیٹل ورسٹائل ڈسک</translation>
 <translation id="7564049878696755256">‏آپ اپنے <ph name="ORG_NAME" /> اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chrome آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>

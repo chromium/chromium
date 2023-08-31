@@ -150,6 +150,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1571697193564730395">Activar ou desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Afasta o zoom cando a lupa está activada</translation>
 <translation id="1586324912145647027">Vai do escritorio 1 ao 8</translation>
+<translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1592682369233288537">Seguinte escritorio: <ph name="NEXT_DESK_NAME" />. Usa Buscar + Espazo para activalo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + frecha abaixo</translation>
@@ -326,7 +327,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2382875860893882175">A emisión está en pausa. Podes retomala ou detela en calquera momento.</translation>
 <translation id="2386292613071805067">Selecciona todo na páxina</translation>
-<translation id="2396594569364254378">Uso da memoria: <ph name="USED_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
 <translation id="240006516586367791">Controis multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, utiliza a impresión dixital ou desbloquea o teléfono</translation>
@@ -1158,6 +1158,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5790085346892983794">Correcto</translation>
 <translation id="5804651031882187592">Desactivar a opción Bloquear SIM</translation>
 <translation id="5805809050170488595">Facer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Tarefas de Google na Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Deter <ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Ir á pista seguinte</translation>
@@ -1433,7 +1434,6 @@ Nova instalación</translation>
 <translation id="6981291220124935078">Activar acceso</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="698231206551913481">En canto se borre este usuario, eliminaranse permanentemente os ficheiros e os datos locais asociados con el.</translation>
-<translation id="6985306450422696113">Memoria dispoñible: <ph name="USED_MEMORY" /> dun total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="6989752354829085073">Fai unha visita rápida para familiarizarte co teu Chromebook. Comeza a usalo en 6 pasos.</translation>
 <translation id="7004910047186208204">Conéctate aos datos móbiles</translation>
 <translation id="7005239792648594238">Abre unha aplicación para comezar</translation>
