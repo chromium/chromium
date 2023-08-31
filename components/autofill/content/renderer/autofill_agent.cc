@@ -704,7 +704,7 @@ void AutofillAgent::FillOrPreviewForm(
     TriggerRefillIfNeeded(form);
     SendPotentiallySubmittedFormToBrowser();
   }
-  last_autofill_action_ = mojom::AutofillActionType::kFill;
+  last_action_type_ = mojom::AutofillActionType::kFill;
 }
 
 void AutofillAgent::UndoAutofill(
@@ -737,7 +737,7 @@ void AutofillAgent::UndoAutofill(
     form_util::ApplyAutofillAction(
         form, element_, mojom::AutofillActionType::kUndo, action_persistence);
   }
-  last_autofill_action_ = mojom::AutofillActionType::kUndo;
+  last_action_type_ = mojom::AutofillActionType::kUndo;
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(
@@ -774,7 +774,7 @@ void AutofillAgent::ClearPreviewedForm() {
       password_generation_agent_->DidClearGenerationSuggestion(element_)) {
     return;
   }
-  form_util::ClearPreviewedElements(last_autofill_action_, previewed_elements_,
+  form_util::ClearPreviewedElements(last_action_type_, previewed_elements_,
                                     element_, query_node_autofill_state_);
   previewed_elements_ = {};
 }

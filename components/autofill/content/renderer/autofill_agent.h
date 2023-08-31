@@ -374,7 +374,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Records the last autofill action (Fill or Undo) done by the agent. Used in
   // ClearPreviewedForm to get the default state of previewed fields
   // post-clearing.
-  mojom::AutofillActionType last_autofill_action_ =
+  mojom::AutofillActionType last_action_type_ =
       mojom::AutofillActionType::kFill;
 
   // Last form which was interacted with by the user.
