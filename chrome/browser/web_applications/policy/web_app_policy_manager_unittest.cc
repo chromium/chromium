@@ -67,6 +67,11 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/test/scoped_path_override.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace web_app {
 
 namespace {
@@ -550,6 +555,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
       fake_externally_managed_app_manager_ = nullptr;
   raw_ptr<WebAppPolicyManager, DanglingUntriaged> web_app_policy_manager_ =
       nullptr;
+
+#if BUILDFLAG(IS_WIN)
+  // This is used to prevent creating shortcuts in the start menu dir.
+  base::ScopedPathOverride override_start_dir_{base::DIR_START_MENU};
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;
