@@ -177,6 +177,18 @@ following command:
 git restore --staging <affected path>
 ```
 
+### How do I see what revision is pinned?
+
+`gclient getdep` will return whatever commit is pinned for the deps in `DEPS`
+(unstaged, staged, or committed). If the repo is using git submodules only
+(and has no git deps in `DEPS`) it will return the whatever pinned commit is
+staged or committed.
+
+```
+gclient getdep -r <path>
+```
+
+
 If you want to keep your gitlink, then run `git add <affected path>`.
 
 ### How can I provide feedback?
