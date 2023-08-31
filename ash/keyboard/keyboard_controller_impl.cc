@@ -13,6 +13,7 @@
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
 #include "ash/keyboard/virtual_keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -20,6 +21,8 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
+#include "ash/system/model/enterprise_domain_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -98,10 +101,15 @@ KeyboardControllerImpl::~KeyboardControllerImpl() {
 // static
 void KeyboardControllerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry,
                                                   std::string_view country) {
-  // Longpress diacritics pref is default on for NZ only, default off otherwise
+  // Longpress diacritics pref is default on for NZ managed users only, default
+  // off otherwise.
   registry->RegisterBooleanPref(
       ash::prefs::kLongPressDiacriticsEnabled,
-      country == "NZ" ||
+      (country == "NZ" &&
+       Shell::Get()
+               ->system_tray_model()
+               ->enterprise_domain()
+               ->management_device_mode() == ManagementDeviceMode::kNone) ||
           base::FeatureList::IsEnabled(
               ash::features::kDiacriticsOnPhysicalKeyboardLongpressDefaultOn),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
