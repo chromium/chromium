@@ -174,6 +174,7 @@ export {SettingsPrivacyGuideDialogElement} from './privacy_page/privacy_guide/pr
 export {PrivacyGuideHistorySyncFragmentElement} from './privacy_page/privacy_guide/privacy_guide_history_sync_fragment.js';
 export {PrivacyGuideMsbbFragmentElement} from './privacy_page/privacy_guide/privacy_guide_msbb_fragment.js';
 export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/privacy_guide_page.js';
+export {PrivacyGuidePreloadFragmentElement} from './privacy_page/privacy_guide/privacy_guide_preload_fragment.js';
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
 export {PrivacyGuideSearchSuggestionsFragmentElement} from './privacy_page/privacy_guide/privacy_guide_search_suggestions_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';

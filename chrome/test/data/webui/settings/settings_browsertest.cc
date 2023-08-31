@@ -748,6 +748,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CookiesFragment) {
           "runMochaSuite('CookiesFragment')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, PreloadFragment) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('PreloadFragment')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CompletionFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragment')");
