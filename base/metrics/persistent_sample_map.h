@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -81,15 +82,15 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // |records_| member after first initializing it if necessary.
   PersistentSampleMapRecords* GetRecords();
 
-  // Imports samples from persistent memory by iterating over all sample
-  // records found therein, adding them to the sample_counts_ map. If a
-  // count for the sample |until_value| is found, stop the import and return
-  // a pointer to that counter. If that value is not found, null will be
-  // returned after all currently available samples have been loaded. Pass
-  // true for |import_everything| to force the importing of all available
-  // samples even if a match is found.
-  HistogramBase::Count* ImportSamples(HistogramBase::Sample until_value,
-                                      bool import_everything);
+  // Imports samples from persistent memory by iterating over all sample records
+  // found therein, adding them to the sample_counts_ map. If a count for the
+  // sample |until_value| is found, stop the import and return a pointer to that
+  // counter. If that value is not found, null will be returned after all
+  // currently available samples have been loaded. Pass a nullopt for
+  // |until_value| to force the importing of all available samples (null will
+  // always be returned in this case).
+  HistogramBase::Count* ImportSamples(
+      absl::optional<HistogramBase::Sample> until_value);
 
   // All created/loaded sample values and their associated counts. The storage
   // for the actual Count numbers is owned by the |records_| object and its

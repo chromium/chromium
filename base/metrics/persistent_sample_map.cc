@@ -149,7 +149,8 @@ Count PersistentSampleMap::GetCount(Sample value) const {
 Count PersistentSampleMap::TotalCount() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(-1, true);
+  const_cast<PersistentSampleMap*>(this)->ImportSamples(
+      /*until_value=*/absl::nullopt);
 
   Count count = 0;
   for (const auto& entry : sample_counts_) {
@@ -161,14 +162,15 @@ Count PersistentSampleMap::TotalCount() const {
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::Iterator() const {
   // Have to override "const" in order to make sure all samples have been
   // loaded before trying to iterate over the map.
-  const_cast<PersistentSampleMap*>(this)->ImportSamples(-1, true);
+  const_cast<PersistentSampleMap*>(this)->ImportSamples(
+      /*until_value=*/absl::nullopt);
   return std::make_unique<PersistentSampleMapIterator>(sample_counts_);
 }
 
 std::unique_ptr<SampleCountIterator> PersistentSampleMap::ExtractingIterator() {
   // Make sure all samples have been loaded before trying to iterate over the
   // map.
-  ImportSamples(-1, true);
+  ImportSamples(/*until_value=*/absl::nullopt);
   return std::make_unique<ExtractingPersistentSampleMapIterator>(
       sample_counts_);
 }
@@ -244,7 +246,7 @@ Count* PersistentSampleMap::GetSampleCountStorage(Sample value) {
     return it->second;
 
   // Import any new samples from persistent memory looking for the value.
-  return ImportSamples(value, false);
+  return ImportSamples(/*until_value=*/value);
 }
 
 Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
@@ -276,7 +278,7 @@ Count* PersistentSampleMap::GetOrCreateSampleCountStorage(Sample value) {
   // Thread-safety within a process where multiple threads use the same
   // histogram object is delegated to the controlling histogram object which,
   // for sparse histograms, is a lock object.
-  count_pointer = ImportSamples(value, false);
+  count_pointer = ImportSamples(/*until_value=*/value);
   DCHECK(count_pointer);
   return count_pointer;
 }
@@ -292,15 +294,14 @@ PersistentSampleMapRecords* PersistentSampleMap::GetRecords() {
   return records_;
 }
 
-Count* PersistentSampleMap::ImportSamples(Sample until_value,
-                                          bool import_everything) {
-  Count* found_count = nullptr;
+Count* PersistentSampleMap::ImportSamples(absl::optional<Sample> until_value) {
   PersistentMemoryAllocator::Reference ref;
   PersistentSampleMapRecords* records = GetRecords();
   while ((ref = records->GetNext()) != 0) {
     SampleRecord* record = records->GetAsObject<SampleRecord>(ref);
-    if (!record)
+    if (!record) {
       continue;
+    }
 
     DCHECK_EQ(id(), record->id);
 
@@ -315,19 +316,15 @@ Count* PersistentSampleMap::ImportSamples(Sample until_value,
       DCHECK_EQ(0, record->count);
     }
 
-    // Check if it's the value being searched for and, if so, keep a pointer
-    // to return later. Stop here unless everything is being imported.
-    // Because race conditions can cause multiple records for a single value,
-    // be sure to return the first one found.
-    if (record->value == until_value) {
-      if (!found_count)
-        found_count = &record->count;
-      if (!import_everything)
-        break;
+    // Check if it's the value being searched for and, if so, stop here. Because
+    // race conditions can cause multiple records for a single value, be sure to
+    // return the first one found.
+    if (until_value.has_value() && record->value == until_value.value()) {
+      return &record->count;
     }
   }
 
-  return found_count;
+  return nullptr;
 }
 
 }  // namespace base
