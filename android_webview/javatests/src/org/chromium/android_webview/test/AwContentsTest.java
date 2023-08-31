@@ -1766,6 +1766,7 @@ public class AwContentsTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_REPORT_FRAME_METRICS})
     public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();

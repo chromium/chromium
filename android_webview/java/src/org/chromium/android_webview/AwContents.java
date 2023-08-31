@@ -1023,6 +1023,7 @@ public class AwContents implements SmartClipProvider {
     private class AwFrameMetricsListener {
         private FrameMetricsListener mFrameMetricsListener;
         private boolean mAttached;
+        private WeakReference<Window> mWindow;
 
         public AwFrameMetricsListener() {
             FrameMetricsStore metricsStore = new FrameMetricsStore();
@@ -1032,13 +1033,14 @@ public class AwContents implements SmartClipProvider {
 
         public void attachListener(Window window) {
             if (mAttached) return;
+            mWindow = new WeakReference<Window>(window);
             final Handler handler = new Handler();
             window.addOnFrameMetricsAvailableListener(mFrameMetricsListener, handler);
             mAttached = true;
         }
 
         public void detachListener(Window window) {
-            if (!mAttached) return;
+            if (!mAttached || window != mWindow.get()) return;
             window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
             mAttached = false;
         }
