@@ -48,6 +48,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   base::TimeDelta session_duration() const { return session_duration_; }
   base::Time end_time() const { return end_time_; }
   bool turn_on_do_not_disturb() const { return turn_on_do_not_disturb_; }
+  void set_turn_on_do_not_disturb(bool turn_on) {
+    turn_on_do_not_disturb_ = turn_on;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
