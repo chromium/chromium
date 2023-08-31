@@ -172,7 +172,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1));
 
-  // |mirror_container_| may be larger than |this|. In this case, it will be
+  // `mirror_container_` may be larger than `this`. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
   // for the previews and has no rendered content.
   mirror_container_ = AddChildView(std::make_unique<views::View>());
@@ -268,7 +268,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // The insets in the WindowCycleItemView are coming from its border, which
   // paints the focus ring around the view when it is highlighted. Exclude the
   // insets such that the spacing between the contents of the views rather
-  // than the views themselves is |kBetweenChildPaddingDp|.
+  // than the views themselves is `kBetweenChildPaddingDp`.
   const gfx::Insets cycle_item_insets =
       cycle_views_.empty() ? gfx::Insets() : cycle_views_.front()->GetInsets();
   layout->set_between_child_spacing(kBetweenChildPaddingDp -
@@ -286,13 +286,13 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
   if (layer_animator->is_animating()) {
     // There is an existing scaling animation occurring. To accurately get the
     // new bounds for the next layout, we must abort the ongoing animation so
-    // |this| will set the previous bounds of the widget and clear the clip
+    // `this` will set the previous bounds of the widget and clear the clip
     // rect.
     layer_animator->AbortAllAnimations();
   }
 
-  // |screen_bounds| is in screen coords so store it in local coordinates in
-  // |new_bounds|.
+  // `screen_bounds` is in screen coords so store it in local coordinates in
+  // `new_bounds`.
   gfx::Rect old_bounds = GetLocalBounds();
   gfx::Rect new_bounds = gfx::Rect(screen_bounds.size());
 
@@ -302,7 +302,7 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
   if (new_bounds.width() >= old_bounds.width()) {
     // In this case, the cycle view is growing. To achieve the scaling
     // animation we set the widget bounds immediately and scale the clipping
-    // rect of |this|'s layer from where the |old_bounds| would be in the
+    // rect of `this`'s layer from where the `old_bounds` would be in the
     // new local coordinates.
     GetWidget()->SetBounds(screen_bounds);
     old_bounds +=
@@ -335,7 +335,7 @@ void WindowCycleView::ScaleCycleView(const gfx::Rect& screen_bounds) {
 gfx::Rect WindowCycleView::GetTargetBounds() const {
   // The widget is sized clamped to the screen bounds. Its child, the mirror
   // container which is parent to all the previews may be larger than the
-  // widget as some previews will be offscreen. In Layout() of |cycle_view_|
+  // widget as some previews will be offscreen. In `Layout()` of `cycle_view_`
   // the mirror container will be slid back and forth depending on the target
   // window.
   gfx::Rect widget_rect = root_window_->GetBoundsInScreen();
@@ -365,7 +365,7 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
   }
 
   // If there was an ongoing drag session, it's now been completed so reset
-  // |horizontal_distance_dragged_|.
+  // `horizontal_distance_dragged_`.
   horizontal_distance_dragged_ = 0.f;
 
   gfx::Rect widget_rect = GetTargetBounds();
@@ -399,7 +399,7 @@ void WindowCycleView::ScrollToWindow(aura::Window* target) {
   current_window_ = target;
 
   // If there was an ongoing drag session, it's now been completed so reset
-  // |horizontal_distance_dragged_|.
+  // |`horizontal_distance_dragged_`.
   horizontal_distance_dragged_ = 0.f;
 
   if (GetWidget())
@@ -468,7 +468,7 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
     parent->RemoveChildViewT(preview);
   }
   // With one of its children now gone, we must re-layout `mirror_container_`.
-  // This must happen before ScrollToWindow() to make sure our own Layout()
+  // This must happen before `ScrollToWindow()` to make sure our own `Layout()`
   // works correctly when it's calculating highlight bounds.
   parent->Layout();
   SetTargetWindow(new_target);
@@ -545,9 +545,21 @@ void WindowCycleView::OnModePrefsChanged() {
   all_desks_tab_slider_button_->SetSelected(!per_desk);
 }
 
+bool WindowCycleView::IsEventInTabSliderContainer(
+    const gfx::Point& screen_point) const {
+  return tab_slider_ && tab_slider_->GetBoundsInScreen().Contains(screen_point);
+}
+
+int WindowCycleView::CalculateMaxWidth() const {
+  return root_window_->GetBoundsInScreen().size().width() -
+         2 * (chromeos::features::IsJellyrollEnabled()
+                  ? kBackgroundHorizontalInsetDpCrOSNext
+                  : kBackgroundHorizontalInsetDp);
+}
+
 gfx::Size WindowCycleView::CalculatePreferredSize() const {
   gfx::Size size = GetContentContainerBounds().size();
-  // |mirror_container_| can have window list that overflow out of the
+  // `mirror_container_` can have window list that overflow out of the
   // screen, but the window cycle view with a bandshield, cropping the
   // overflow window list, should remain within the specified horizontal
   // insets of the screen width.
@@ -556,8 +568,8 @@ gfx::Size WindowCycleView::CalculatePreferredSize() const {
   if (Shell::Get()
           ->window_cycle_controller()
           ->IsInteractiveAltTabModeAllowed()) {
-    DCHECK(tab_slider_);
-    // |mirror_container_| can have window list with width smaller the tab
+    CHECK(tab_slider_);
+    // `mirror_container_` can have window list with width smaller the tab
     // slider's width. The padding should be 64px from the tab slider.
     const int min_width = tab_slider_->GetPreferredSize().width() +
                           2 * WindowCycleView::kInsideBorderHorizontalPaddingDp;
@@ -580,8 +592,8 @@ void WindowCycleView::Layout() {
   }
 
   const bool first_layout = mirror_container_->bounds().IsEmpty();
-  // If |mirror_container_| has not yet been laid out, we must lay it and
-  // its descendants out so that the calculations based on |target_view|
+  // If `mirror_container_` has not yet been laid out, we must lay it and
+  // its descendants out so that the calculations based on `target_view`
   // work properly.
   if (first_layout) {
     mirror_container_->SizeToPreferredSize();
@@ -596,7 +608,7 @@ void WindowCycleView::Layout() {
     views::View::ConvertRectToTarget(target_view, mirror_container_,
                                      &target_bounds);
   } else {
-    DCHECK(no_recent_items_label_);
+    CHECK(no_recent_items_label_);
     target_bounds = gfx::RectF(no_recent_items_label_->bounds());
   }
 
@@ -620,7 +632,7 @@ void WindowCycleView::Layout() {
     x_offset = std::clamp(x_offset, minimum_x, 0);
 
     // If the user has dragged, offset the container based on how much they
-    // have dragged. Cap |horizontal_distance_dragged_| based on the available
+    // have dragged. Cap `horizontal_distance_dragged_` based on the available
     // distance from the container to the left and right boundaries.
     float clamped_horizontal_distance_dragged = std::clamp(
         horizontal_distance_dragged_, static_cast<float>(minimum_x - x_offset),
@@ -657,8 +669,8 @@ void WindowCycleView::Layout() {
     no_recent_items_label_->SetBoundsRect(no_recent_item_bounds_);
   }
 
-  // Enable animations only after the first Layout() pass. If |this| is
-  // animating or |defer_widget_bounds_update_|, don't animate as well since
+  // Enable animations only after the first `Layout()` pass. If `this` is
+  // animating or `defer_widget_bounds_update_`, don't animate as well since
   // the cycle view is already being animated or just finished animating for
   // mode switch.
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
@@ -681,8 +693,8 @@ void WindowCycleView::Layout() {
   }
   mirror_container_->SetBoundsRect(content_container_bounds);
 
-  // If an element in |no_previews_set_| is no onscreen (its bounds in |this|
-  // coordinates intersects |this|), create the rest of its elements and
+  // If an element in `no_previews_list_` is no onscreen (its bounds in `this`
+  // coordinates intersects `this`), create the rest of its elements and
   // remove it from the set.
   const gfx::RectF local_bounds(GetLocalBounds());
   for (auto it = no_previews_list_.begin(); it != no_previews_list_.end();) {
@@ -702,25 +714,13 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
   occlusion_tracker_pauser_.reset();
   layer()->SetClipRect(gfx::Rect());
   if (defer_widget_bounds_update_) {
-    // This triggers a Layout() so reset |defer_widget_bounds_update_| after
-    // calling SetBounds() to prevent the mirror container from animating.
+    // This triggers a `Layout()` so reset `defer_widget_bounds_update_` after
+    // calling `SetBounds()` to prevent the mirror container from animating.
     GetWidget()->SetBounds(GetTargetBounds());
     defer_widget_bounds_update_ = false;
   }
 
   shadow_->GetLayer()->SetVisible(true);
-}
-
-bool WindowCycleView::IsEventInTabSliderContainer(
-    const gfx::Point& screen_point) {
-  return tab_slider_ && tab_slider_->GetBoundsInScreen().Contains(screen_point);
-}
-
-int WindowCycleView::CalculateMaxWidth() const {
-  return root_window_->GetBoundsInScreen().size().width() -
-         2 * (chromeos::features::IsJellyrollEnabled()
-                  ? kBackgroundHorizontalInsetDpCrOSNext
-                  : kBackgroundHorizontalInsetDp);
 }
 
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {

@@ -119,19 +119,19 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // `tab_slider_container_` of the change.
   void OnModePrefsChanged();
 
+  // Returns whether or not the given `screen_point` is located in tab slider
+  // container.
+  bool IsEventInTabSliderContainer(const gfx::Point& screen_point) const;
+
+  // Returns the maximum width of the cycle view.
+  int CalculateMaxWidth() const;
+
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
-
-  // Returns whether or not the given `screen_point` is located in tab slider
-  // container.
-  bool IsEventInTabSliderContainer(const gfx::Point& screen_point);
-
-  // Returns the maximum width of the cycle view.
-  int CalculateMaxWidth() const;
 
   const views::View* mirror_container_for_testing() const {
     return mirror_container_;
