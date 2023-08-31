@@ -20,6 +20,34 @@
 {
   # Test suites.
   'basic_suites': {
+
+    'android_12_fieldtrial_webview_tests': {
+      'webview_trichrome_64_cts_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C',
+            }
+          ]
+        },
+        'test': 'webview_trichrome_64_cts_tests',
+      },
+      'webview_ui_test_app_test_apk_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'ci_only': True,
+        'test': 'webview_ui_test_app_test_apk',
+      },
+    },
+
     'android_ar_gtests': {
       'monochrome_public_test_ar_apk': {},
       # Name is vr_*, but actually has AR tests.
@@ -2237,61 +2265,6 @@
         ],
         'ci_only': True,
         'test': 'sync_integration_tests',
-      },
-    },
-    'fieldtrial_webview_tests': {
-      'webview_instrumentation_test_apk_no_field_trial': {
-        'args': ['--disable-field-trial-config'],
-        'swarming': {
-          'shards': 12,
-        },
-        'test': 'webview_instrumentation_test_apk',
-      },
-      'webview_trichrome_64_cts_tests_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-          'cipd_packages': [
-            {
-              "cipd_package": 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C',
-            }
-          ]
-        },
-        'test': 'webview_trichrome_64_cts_tests',
-      },
-      'webview_ui_test_app_test_apk_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'ci_only': True,
-        'test': 'webview_ui_test_app_test_apk',
-      },
-      'webview_ui_test_app_test_apk_single_group_per_study_prefer_existing_behavior': {
-        'args': [
-          '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json',
-          '--accept-empty-variations-seed-signature',
-          '--webview-verbose-logging',
-          '--disable-field-trial-config',
-          '--fake-variations-channel=stable',
-        ],
-        'ci_only': True,
-        'test': 'webview_ui_test_app_test_apk',
-      },
-      'webview_ui_test_app_test_apk_single_group_per_study_prefer_new_behavior': {
-        'args': [
-          '--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json',
-          '--accept-empty-variations-seed-signature',
-          '--webview-verbose-logging',
-          '--disable-field-trial-config',
-          '--fake-variations-channel=stable',
-        ],
-        'ci_only': True,
-        'test': 'webview_ui_test_app_test_apk',
       },
     },
     'finch_smoke_tests': {
@@ -6058,10 +6031,7 @@
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
     ],
-    'android_finch_fieldtrial_tests': [
-      'fieldtrial_android_tests',
-      'fieldtrial_webview_tests',
-    ],
+
     'android_marshmallow_gtests': [
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
@@ -7066,6 +7036,7 @@
     },
 
     'android_12_emulator_gtests': {
+      'android_12_fieldtrial_webview_tests': {},
       'android_emulator_specific_chrome_public_tests': {},
       'android_trichrome_smoke_tests': {},
       'android_smoke_tests': {},
@@ -7074,7 +7045,6 @@
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'fieldtrial_android_tests': {},
-      'fieldtrial_webview_tests': {},
       'linux_flavor_specific_chromium_gtests': {},
       'minidump_uploader_tests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
@@ -7116,6 +7086,27 @@
       },
       'webview_trichrome_64_cts_tests_no_field_trial': {},
       'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_fieldtrial_rel_webview_tests': {
+      'fieldtrial_android_tests': {},
+      'webview_bot_instrumentation_test_apk_gtest': {
+        'variants': [
+          'DISABLE_FIELD_TRIAL_CONFIG',
+        ]
+      },
+      'webview_trichrome_64_cts_tests': {
+        'variants': [
+          'DISABLE_FIELD_TRIAL_CONFIG',
+        ]
+      },
+      'webview_ui_instrumentation_tests': {
+        'variants': [
+          'DISABLE_FIELD_TRIAL_CONFIG',
+          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
+          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
+        ],
+      },
     },
 
     'chromeos_brya_skylab_tests': {

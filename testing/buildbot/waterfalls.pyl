@@ -3355,7 +3355,7 @@
         ],
         'os_type': 'android',
         'test_suites': {
-          'gtest_tests': 'android_finch_fieldtrial_tests',
+          'gtest_tests': 'android_fieldtrial_rel_webview_tests',
         },
       },
 

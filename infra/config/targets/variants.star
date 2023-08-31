@@ -5,6 +5,36 @@
 load("//lib/targets.star", "targets")
 
 targets.variant(
+    name = "DISABLE_FIELD_TRIAL_CONFIG",
+    identifier = "Disable Field Trial Config",
+    args = ["--disable-field-trial-config"],
+)
+
+targets.variant(
+    name = "SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR",
+    identifier = "Single Group Per Study Prefer Existing Behavior Field Trial Config",
+    args = [
+        "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+        "--accept-empty-variations-seed-signature",
+        "--webview-verbose-logging",
+        "--disable-field-trial-config",
+        "--fake-variations-channel=stable",
+    ],
+)
+
+targets.variant(
+    name = "SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR",
+    identifier = "Single Group Per Study Prefer New Behavior Field Trial Config",
+    args = [
+        "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+        "--accept-empty-variations-seed-signature",
+        "--webview-verbose-logging",
+        "--disable-field-trial-config",
+        "--fake-variations-channel=stable",
+    ],
+)
+
+targets.variant(
     name = "IPHONE_7_15_4_1",
     identifier = "iPhone 7 15.4.1",
     swarming = targets.swarming(
