@@ -34,13 +34,15 @@ DiagnosticRoutine::DiagnosticRoutine(
         control_remote,
     mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineObserver>
         observer_receiver,
-    RoutineInfo info)
+    RoutineInfo info,
+    DeleterCallback deleter_callback)
     : routine_control_(std::move(control_remote)),
       observation_(info.extension_id,
                    info.uuid,
                    info.browser_context,
                    std::move(observer_receiver)),
-      info_(info) {
+      info_(info),
+      deleter_callback_(std::move(deleter_callback)) {
   routine_control_.set_disconnect_with_reason_handler(
       base::BindOnce(&DiagnosticRoutine::OnRoutineControlDisconnect,
                      weak_factory.GetWeakPtr()));
@@ -64,15 +66,20 @@ void DiagnosticRoutine::OnRoutineControlDisconnect(uint32_t error_code,
   // The `EventRouter` might be unavailable in unittests.
   if (!extensions::EventRouter::Get(info_.browser_context)) {
     CHECK_IS_TEST();
-    return;
+  } else {
+    extensions::EventRouter::Get(info_.browser_context)
+        ->DispatchEventToExtension(info_.extension_id, std::move(event));
   }
-  extensions::EventRouter::Get(info_.browser_context)
-      ->DispatchEventToExtension(info_.extension_id, std::move(event));
+  CallDeleter();
 }
 
 mojo::Remote<crosapi::TelemetryDiagnosticRoutineControl>&
 DiagnosticRoutine::GetRemote() {
   return routine_control_;
+}
+
+void DiagnosticRoutine::CallDeleter() {
+  std::move(deleter_callback_).Run(this);
 }
 
 }  // namespace chromeos

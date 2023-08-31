@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/flat_tree.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
@@ -94,8 +95,12 @@ DiagnosticRoutineManager::CreateRoutine(
         std::piecewise_construct, std::forward_as_tuple(extension_id),
         std::forward_as_tuple());
   }
+  // SAFETY: We can use `Unretained` here since `DiagnosticRoutine` is a member
+  // of `this`.
   it->second.push_back(std::make_unique<DiagnosticRoutine>(
-      std::move(control_remote), std::move(observer_receiver), routine_info));
+      std::move(control_remote), std::move(observer_receiver), routine_info,
+      base::BindOnce(&DiagnosticRoutineManager::OnDiagnosticRoutineFinished,
+                     base::Unretained(this))));
 
   return base::ok(uuid);
 }
@@ -154,6 +159,16 @@ DiagnosticRoutineManager::CreateAppUiObserver(
       // Unretained is safe here because `this` will own the observer.
       base::BindOnce(&DiagnosticRoutineManager::OnAppUiClosed,
                      base::Unretained(this), extension_id));
+}
+
+void DiagnosticRoutineManager::OnDiagnosticRoutineFinished(
+    DiagnosticRoutine* routine) {
+  for (auto& [_, routines] : routines_per_extension_) {
+    base::EraseIf(routines,
+                  [routine](const std::unique_ptr<DiagnosticRoutine>& ptr) {
+                    return ptr.get() == routine;
+                  });
+  }
 }
 
 }  // namespace chromeos

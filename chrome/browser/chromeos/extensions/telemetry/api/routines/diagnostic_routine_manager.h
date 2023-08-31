@@ -79,6 +79,9 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
                  DiagnosticRoutineManager::Error>
   CreateAppUiObserver(extensions::ExtensionId extension_id);
 
+  // Called once a specific `DiagnosticRoutine` signals its destruction.
+  void OnDiagnosticRoutineFinished(DiagnosticRoutine* routine);
+
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutinesService>&
   GetRemoteService();
 

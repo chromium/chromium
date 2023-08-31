@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -35,12 +36,15 @@ class DiagnosticRoutine {
     raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context;
   };
 
+  using DeleterCallback = base::OnceCallback<void(DiagnosticRoutine*)>;
+
   explicit DiagnosticRoutine(
       mojo::PendingRemote<crosapi::mojom::TelemetryDiagnosticRoutineControl>
           control_remote,
       mojo::PendingReceiver<crosapi::mojom::TelemetryDiagnosticRoutineObserver>
           observer_receiver,
-      RoutineInfo info);
+      RoutineInfo info,
+      DeleterCallback deleter_callback);
 
   DiagnosticRoutine(const DiagnosticRoutine&) = delete;
   DiagnosticRoutine& operator=(const DiagnosticRoutine&) = delete;
@@ -55,6 +59,9 @@ class DiagnosticRoutine {
   void OnRoutineControlDisconnect(uint32_t error_code,
                                   const std::string& message);
 
+  // Signals that `this` can be destructed.
+  void CallDeleter();
+
  private:
   friend class TelemetryExtensionDiagnosticRoutinesManagerTest;
 
@@ -63,6 +70,7 @@ class DiagnosticRoutine {
   DiagnosticRoutineObservation observation_;
   RoutineInfo info_;
 
+  DeleterCallback deleter_callback_;
   base::WeakPtrFactory<DiagnosticRoutine> weak_factory{this};
 };
 
