@@ -1,0 +1,52 @@
+Test trace events for window.crypto encryption and decryption.
+Recording started
+Tracing complete
+Found DoEncrypt event:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Found DoEncryptReply event:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Found DoDecrypt event:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+Found DoDecryptReply event:
+Object: {
+	args: {
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
