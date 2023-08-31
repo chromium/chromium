@@ -73,6 +73,11 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   virtual void Trace(Visitor*) const;
 
  private:
+  enum class ScheduledFrameType {
+    kInline = 0,
+    kImmersive = 1,
+  };
+
   void OnImmersiveFrameData(device::mojom::blink::XRFrameDataPtr data);
   void OnNonImmersiveFrameData(XRSession* session,
                                device::mojom::blink::XRFrameDataPtr data);
@@ -95,7 +100,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   void OnProviderConnectionError(XRSession* session);
   void ProcessScheduledFrame(device::mojom::blink::XRFrameDataPtr frame_data,
-                             double high_res_now_ms);
+                             double high_res_now_ms,
+                             ScheduledFrameType type);
 
   // Called before dispatching a frame to an inline session. This method ensures
   // that inline session frame calls can be scheduled and that they are neither
@@ -148,6 +154,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // This frame ID is XR-specific and is used to track when frames arrive at the
   // XR compositor so that it knows which poses to use, when to apply bounds
   // updates, etc.
+  // TODO(https://crbug.com/1477016): Investigate making this get passed along
+  // the frame stack for the places it's used rather than be a member variable.
   int16_t frame_id_ = -1;
   bool pending_immersive_vsync_ = false;
   bool pending_non_immersive_vsync_ = false;

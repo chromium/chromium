@@ -1663,7 +1663,8 @@ void XRSession::UpdatePresentationFrameState(
     bool emulated_position) {
   TRACE_EVENT0("gpu", __func__);
   DVLOG(2) << __func__ << " : frame_data valid? " << (frame_data ? true : false)
-           << ", emulated_position=" << emulated_position;
+           << ", emulated_position=" << emulated_position
+           << ", frame_id=" << frame_id;
   // Don't process any outstanding frames once the session is ended.
   if (ended_)
     return;
