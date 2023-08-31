@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -22,10 +21,15 @@ import java.io.IOException;
  */
 @JNINamespace("base::android")
 public class ApkAssets {
-    private static final String LOGTAG = "ApkAssets";
+    private static final String TAG = "ApkAssets";
+
+    // This isn't thread safe, but that's ok because it's only used for debugging.
+    // Note reference operations are atomic so there is no security issue.
+    private static String sLastError;
 
     @CalledByNative
     public static long[] open(String fileName, String splitName) {
+        sLastError = null;
         AssetFileDescriptor afd = null;
         try {
             Context context = ContextUtils.getApplicationContext();
@@ -37,6 +41,7 @@ public class ApkAssets {
             return new long[] {afd.getParcelFileDescriptor().detachFd(), afd.getStartOffset(),
                     afd.getLength()};
         } catch (IOException e) {
+            sLastError = "Error while loading asset " + fileName + " from " + splitName + ": " + e;
             // As a general rule there's no point logging here because the caller should handle
             // receiving an fd of -1 sensibly, and the log message is either mirrored later, or
             // unwanted (in the case where a missing file is expected), or wanted but will be
@@ -48,7 +53,7 @@ public class ApkAssets {
             // informative (Android framework passes the filename as the message on actual file not
             // found, and the empty string also wouldn't give any useful information for debugging).
             if (!e.getMessage().equals("") && !e.getMessage().equals(fileName)) {
-                Log.e(LOGTAG, "Error while loading asset " + fileName + ": " + e);
+                Log.e(TAG, sLastError);
             }
             return new long[] {-1, -1, -1};
         } finally {
@@ -57,8 +62,15 @@ public class ApkAssets {
                     afd.close();
                 }
             } catch (IOException e2) {
-                Log.e(LOGTAG, "Unable to close AssetFileDescriptor", e2);
+                Log.e(TAG, "Unable to close AssetFileDescriptor", e2);
             }
         }
+    }
+
+    @CalledByNative
+    private static String takeLastErrorString() {
+        String rv = sLastError;
+        sLastError = null;
+        return rv;
     }
 }

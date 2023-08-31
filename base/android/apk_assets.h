@@ -37,6 +37,10 @@ BASE_EXPORT bool RegisterApkAssetWithFileDescriptorStore(
     const std::string& key,
     const base::FilePath& file_path);
 
+// If one of the above methods failed, call this to perform a
+// `DumpWithoutCrashing` containing errors relevant to the failure.
+BASE_EXPORT void DumpLastOpenApkAssetFailure();
+
 }  // namespace android
 }  // namespace base
 
