@@ -11,18 +11,16 @@
 #include <string>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "crypto/openssl_util.h"
-#include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
@@ -38,7 +36,6 @@
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
 #include "net/der/parser.h"
-#include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -374,10 +371,8 @@ bool X509Certificate::GetSubjectAltName(
       dns_names->push_back(std::string(dns_name));
   }
   if (ip_addrs) {
-    for (const IPAddress& addr : subject_alt_names->ip_addresses) {
-      ip_addrs->push_back(
-          std::string(reinterpret_cast<const char*>(addr.bytes().data()),
-                      addr.bytes().size()));
+    for (const auto& addr : subject_alt_names->ip_addresses) {
+      ip_addrs->push_back(std::string(addr.AsStringView()));
     }
   }
 

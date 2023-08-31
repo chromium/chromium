@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/parse_name.h"

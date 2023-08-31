@@ -11,6 +11,7 @@
 
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/ip_util.h"
 #include "net/cert/pki/string_util.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
@@ -35,29 +36,6 @@ DEFINE_CERT_ERROR_ID(kGeneralNamesEmpty,
                      "GeneralNames is a sequence of 0 elements");
 DEFINE_CERT_ERROR_ID(kFailedReadingGeneralName,
                      "Failed reading GeneralName TLV");
-
-// Return true if the bitmask |mask| contains only zeros after the first
-// |prefix_length| bits.
-bool IsSuffixZero(const IPAddressBytes& mask, unsigned prefix_length) {
-  size_t zero_bits = mask.size() * CHAR_BIT - prefix_length;
-  size_t zero_bytes = zero_bits / CHAR_BIT;
-  // We allocate the vector one byte bigger than needed to ensure there is a
-  // valid pointer to pass to memcmp for a zero length comparison.
-  std::vector<uint8_t> zeros(zero_bytes + 1, 0);
-  if (memcmp(zeros.data(), mask.data() + mask.size() - zero_bytes,
-             zero_bytes)) {
-    return false;
-  }
-  size_t leftover_bits = zero_bits % CHAR_BIT;
-  if (leftover_bits) {
-    uint8_t b = mask[mask.size() - zero_bytes - 1];
-    for (size_t i = 0; i < leftover_bits; ++i) {
-      if (b & (1 << i))
-        return false;
-    }
-  }
-  return true;
-}
 
 }  // namespace
 
@@ -193,12 +171,12 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
       // version 4, as specified in [RFC791], the octet string MUST contain
       // exactly four octets.  For IP version 6, as specified in [RFC2460],
       // the octet string MUST contain exactly sixteen octets.
-      if ((value.Length() != IPAddress::kIPv4AddressSize &&
-           value.Length() != IPAddress::kIPv6AddressSize)) {
+      if ((value.Length() != kIPv4AddressSize &&
+           value.Length() != kIPv6AddressSize)) {
         errors->AddError(kFailedParsingIp);
         return false;
       }
-      subtrees->ip_addresses.emplace_back(value.UnsafeData(), value.Length());
+      subtrees->ip_addresses.push_back(value);
     } else {
       BSSL_CHECK(ip_address_type == GeneralNames::IP_ADDRESS_AND_NETMASK);
       // RFC 5280 section 4.2.1.10:
@@ -211,21 +189,19 @@ std::unique_ptr<GeneralNames> GeneralNames::CreateFromValue(
       // constraint for "class C" subnet 192.0.2.0 is represented as the
       // octets C0 00 02 00 FF FF FF 00, representing the CIDR notation
       // 192.0.2.0/24 (mask 255.255.255.0).
-      if (value.Length() != IPAddress::kIPv4AddressSize * 2 &&
-          value.Length() != IPAddress::kIPv6AddressSize * 2) {
+      if (value.Length() != kIPv4AddressSize * 2 &&
+          value.Length() != kIPv6AddressSize * 2) {
         errors->AddError(kFailedParsingIp);
         return false;
       }
-      const IPAddress mask(value.UnsafeData() + value.Length() / 2,
-                           value.Length() / 2);
-      const unsigned mask_prefix_length = MaskPrefixLength(mask);
-      if (!IsSuffixZero(mask.bytes(), mask_prefix_length)) {
+      der::Input addr(value.UnsafeData(), value.Length() / 2);
+      der::Input mask(value.UnsafeData() + value.Length() / 2,
+                      value.Length() / 2);
+      if (!IsValidNetmask(mask)) {
         errors->AddError(kFailedParsingIp);
         return false;
       }
-      subtrees->ip_address_ranges.emplace_back(
-          IPAddress(value.UnsafeData(), value.Length() / 2),
-          mask_prefix_length);
+      subtrees->ip_address_ranges.emplace_back(addr, mask);
     }
   } else if (tag == der::ContextSpecificPrimitive(8)) {
     // registeredID                    [8]     OBJECT IDENTIFIER }

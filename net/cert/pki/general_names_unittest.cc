@@ -182,7 +182,8 @@ TEST(GeneralNames, IPAddress_v4) {
   ASSERT_TRUE(general_names);
   EXPECT_EQ(GENERAL_NAME_IP_ADDRESS, general_names->present_name_types);
   ASSERT_EQ(1U, general_names->ip_addresses.size());
-  EXPECT_EQ(IPAddress(192, 168, 6, 7), general_names->ip_addresses[0]);
+  static const uint8_t kIP[] = {192, 168, 6, 7};
+  EXPECT_EQ(der::Input(kIP), general_names->ip_addresses[0]);
   EXPECT_EQ(0U, general_names->ip_address_ranges.size());
 }
 
@@ -196,9 +197,9 @@ TEST(GeneralNames, IPAddress_v6) {
   ASSERT_TRUE(general_names);
   EXPECT_EQ(GENERAL_NAME_IP_ADDRESS, general_names->present_name_types);
   ASSERT_EQ(1U, general_names->ip_addresses.size());
-  EXPECT_EQ(
-      IPAddress(0xFE, 0x80, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
-      general_names->ip_addresses[0]);
+  static const uint8_t kIP[] = {0xFE, 0x80, 1, 2,  3,  4,  5,  6,
+                                7,    8,    9, 10, 11, 12, 13, 14};
+  EXPECT_EQ(der::Input(kIP), general_names->ip_addresses[0]);
   EXPECT_EQ(0U, general_names->ip_address_ranges.size());
 }
 

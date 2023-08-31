@@ -5,11 +5,8 @@
 #ifndef NET_CERT_PKI_NAME_CONSTRAINTS_H_
 #define NET_CERT_PKI_NAME_CONSTRAINTS_H_
 
-#include <stdint.h>
-
 #include <memory>
 
-#include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/general_names.h"
 
@@ -69,7 +66,7 @@ class NET_EXPORT NameConstraints {
   bool IsPermittedDirectoryName(const der::Input& name_rdn_sequence) const;
 
   // Returns true if the iPAddress |ip| is permitted.
-  bool IsPermittedIP(const IPAddress& ip) const;
+  bool IsPermittedIP(const der::Input& ip) const;
 
   // Returns a bitfield of GeneralNameTypes of all the types constrained by this
   // NameConstraints. Name types that aren't supported will only be present if

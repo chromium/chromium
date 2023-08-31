@@ -4,9 +4,9 @@
 
 #include "net/cert/pki/name_constraints.h"
 
+#include <array>
 #include <memory>
 
-#include "net/base/ip_address.h"
 #include "net/cert/pki/common_cert_errors.h"
 #include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +71,31 @@ namespace {
   if (!errors.ContainsError(cert_errors::kNotPermittedByNameConstraints))
     ADD_FAILURE() << "unexpected error " << errors.ToDebugString();
   return ::testing::AssertionFailure();
+}
+
+std::array<uint8_t, 4> IPAddress(uint8_t b0,
+                                 uint8_t b1,
+                                 uint8_t b2,
+                                 uint8_t b3) {
+  return {b0, b1, b2, b3};
+}
+std::array<uint8_t, 16> IPAddress(uint8_t b0,
+                                  uint8_t b1,
+                                  uint8_t b2,
+                                  uint8_t b3,
+                                  uint8_t b4,
+                                  uint8_t b5,
+                                  uint8_t b6,
+                                  uint8_t b7,
+                                  uint8_t b8,
+                                  uint8_t b9,
+                                  uint8_t b10,
+                                  uint8_t b11,
+                                  uint8_t b12,
+                                  uint8_t b13,
+                                  uint8_t b14,
+                                  uint8_t b15) {
+  return {b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15};
 }
 
 }  // namespace
@@ -488,56 +513,65 @@ TEST_P(ParseNameConstraints, IPAddresses) {
   // IPv4 tests:
 
   // Not in any permitted range.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 169, 0, 1)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 169, 0, 1))));
 
   // Within the permitted 192.168.0.0/255.255.0.0 range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 0, 1)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 0, 1))));
 
   // Within the permitted 192.168.0.0/255.255.0.0 range, however the
   // excluded 192.168.5.0/255.255.255.0 takes priority.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 5, 1)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 5, 1))));
 
   // Within the permitted 192.168.0.0/255.255.0.0 range as well as the
   // permitted 192.168.5.32/255.255.255.224 range, however the excluded
   // 192.168.5.0/255.255.255.0 still takes priority.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 5, 33)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 5, 33))));
 
   // Not in any permitted range. (Just outside the
   // 192.167.5.32/255.255.255.224 range.)
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 167, 5, 31)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 167, 5, 31))));
 
   // Within the permitted 192.167.5.32/255.255.255.224 range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 167, 5, 32)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 167, 5, 32))));
 
   // Within the permitted 192.167.5.32/255.255.255.224 range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 167, 5, 63)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 167, 5, 63))));
 
   // Not in any permitted range. (Just outside the
   // 192.167.5.32/255.255.255.224 range.)
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 167, 5, 64)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 167, 5, 64))));
 
   // Not in any permitted range, and also inside the extraneous excluded
   // 192.166.5.32/255.255.255.224 range.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 166, 5, 32)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 166, 5, 32))));
 
   // IPv6 tests:
 
   // Not in any permitted range.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1))));
 
   // Within the permitted
   // 102:304:506:708:90a:b0c::/ffff:ffff:ffff:ffff:ffff:ffff:: range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 1)));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 0, 0, 0, 1))));
 
   // Within the permitted
   // 102:304:506:708:90a:b0c::/ffff:ffff:ffff:ffff:ffff:ffff:: range, however
   // the excluded
   // 102:304:506:708:90a:b0c:500:0/ffff:ffff:ffff:ffff:ffff:ffff:ff00:0 takes
   // priority.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5, 0, 0, 1)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5, 0, 0, 1))));
 
   // Within the permitted
   // 102:304:506:708:90a:b0c::/ffff:ffff:ffff:ffff:ffff:ffff:: range as well
@@ -546,35 +580,35 @@ TEST_P(ParseNameConstraints, IPAddresses) {
   // however the excluded
   // 102:304:506:708:90a:b0c:500:0/ffff:ffff:ffff:ffff:ffff:ffff:ff00:0 takes
   // priority.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5, 33, 0, 1)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 5, 33, 0, 1))));
 
   // Not in any permitted range. (Just outside the
   // 102:304:506:708:90a:b0b:520:0/ffff:ffff:ffff:ffff:ffff:ffff:ff60:0
   // range.)
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 31, 255, 255)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 31, 255, 255))));
 
   // Within the permitted
   // 102:304:506:708:90a:b0b:520:0/ffff:ffff:ffff:ffff:ffff:ffff:ff60:0 range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 32, 0, 0)));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 32, 0, 0))));
 
   // Within the permitted
   // 102:304:506:708:90a:b0b:520:0/ffff:ffff:ffff:ffff:ffff:ffff:ff60:0 range.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 63, 255, 255)));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 63, 255, 255))));
 
   // Not in any permitted range. (Just outside the
   // 102:304:506:708:90a:b0b:520:0/ffff:ffff:ffff:ffff:ffff:ffff:ff60:0
   // range.)
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 64, 0, 0)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 11, 5, 64, 0, 0))));
 
   // Not in any permitted range, and also inside the extraneous excluded
   // 102:304:506:708:90a:b0a:520:0/ffff:ffff:ffff:ffff:ffff:ffff:ff60:0 range.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10, 5, 33, 0, 1)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 10, 5, 33, 0, 1))));
 
   EXPECT_EQ(GENERAL_NAME_IP_ADDRESS,
             name_constraints->constrained_name_types());
@@ -609,10 +643,12 @@ TEST_P(ParseNameConstraints, IPAddressesExcludeOnly) {
 
   // Only 192.168.5.0/255.255.255.0 is excluded, and since permitted is empty,
   // any iPAddress outside that is allowed.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 0, 1)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 5, 1)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 0, 1))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 5, 1))));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesExcludeAll) {
@@ -627,12 +663,14 @@ TEST_P(ParseNameConstraints, IPAddressesExcludeAll) {
   // 192.168.0.0/255.255.0.0 and
   // 102:304:506:708:90a:b0c::/ffff:ffff:ffff:ffff:ffff:ffff:: are permitted,
   // but since 0.0.0.0/0 and ::/0 are excluded nothing is permitted.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 0, 1)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(1, 1, 1, 1)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 0, 1))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(1, 1, 1, 1))));
   EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1)));
+      der::Input(IPAddress(2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 0, 0, 0, 1))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitSingleHost) {
@@ -644,12 +682,18 @@ TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitSingleHost) {
       NameConstraints::Create(der::Input(a), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress::IPv4AllZeros()));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 1)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 2)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 3)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 4)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(0, 0, 0, 0))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 1))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 2))));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 3))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 4))));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(
+      der::Input(IPAddress(255, 255, 255, 255))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen31) {
@@ -661,13 +705,20 @@ TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen31) {
       NameConstraints::Create(der::Input(a), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress::IPv4AllZeros()));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 1)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 2)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 3)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 4)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 5)));
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(0, 0, 0, 0))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 1))));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 2))));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 3))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 4))));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 5))));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(
+      der::Input(IPAddress(255, 255, 255, 255))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen1) {
@@ -679,12 +730,14 @@ TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitPrefixLen1) {
       NameConstraints::Create(der::Input(a), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress::IPv4AllZeros()));
   EXPECT_FALSE(
-      name_constraints->IsPermittedIP(IPAddress(0x7F, 0xFF, 0xFF, 0xFF)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(0x80, 0, 0, 0)));
+      name_constraints->IsPermittedIP(der::Input(IPAddress(0, 0, 0, 0))));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(
+      der::Input(IPAddress(0x7F, 0xFF, 0xFF, 0xFF))));
   EXPECT_TRUE(
-      name_constraints->IsPermittedIP(IPAddress(0xFF, 0xFF, 0xFF, 0xFF)));
+      name_constraints->IsPermittedIP(der::Input(IPAddress(0x80, 0, 0, 0))));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(
+      der::Input(IPAddress(0xFF, 0xFF, 0xFF, 0xFF))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitAll) {
@@ -696,9 +749,12 @@ TEST_P(ParseNameConstraints, IPAddressesNetmaskPermitAll) {
       NameConstraints::Create(der::Input(a), is_critical(), &errors));
   ASSERT_TRUE(name_constraints);
 
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress::IPv4AllZeros()));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 1)));
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(255, 255, 255, 255)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(0, 0, 0, 0))));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 1))));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(
+      der::Input(IPAddress(255, 255, 255, 255))));
 }
 
 TEST_P(ParseNameConstraints, IPAddressesFailOnInvalidAddr) {
@@ -740,26 +796,30 @@ TEST_P(ParseNameConstraints, IPAddressesMapped) {
   ASSERT_TRUE(name_constraints);
 
   // 192.168.1.0/24 is a permitted subtree.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 0)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 0))));
   // This does not cover ::ffff:192.168.1.0.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 1, 0)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 1, 0))));
   // 192.168.1.1 is excluded.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 1)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 1))));
   // ::ffff:192.168.1.2 is excluded, but that does not exclude 192.168.1.2.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(IPAddress(192, 168, 1, 2)));
+  EXPECT_TRUE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 1, 2))));
 
   // ::ffff:192.168.2.0/120 is a permitted subtree.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 0)));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 0))));
   // This does not cover 192.168.2.0.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(IPAddress(192, 168, 2, 0)));
+  EXPECT_FALSE(
+      name_constraints->IsPermittedIP(der::Input(IPAddress(192, 168, 2, 0))));
   // ::ffff:192.168.2.1 is excluded.
-  EXPECT_FALSE(name_constraints->IsPermittedIP(
-      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 1)));
+  EXPECT_FALSE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 1))));
   // 192.168.2.2 is excluded, but that does not exclude ::ffff:192.168.2.2.
-  EXPECT_TRUE(name_constraints->IsPermittedIP(
-      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 2)));
+  EXPECT_TRUE(name_constraints->IsPermittedIP(der::Input(
+      IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 192, 168, 2, 2))));
 }
 
 TEST_P(ParseNameConstraints, OtherNamesInPermitted) {

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
@@ -124,8 +125,8 @@ class NET_EXPORT IPAddress {
 
   // Copies the input address to |ip_address_|. The input is expected to be in
   // network byte order.
-  template <size_t N>
-  explicit IPAddress(const uint8_t (&address)[N]) : IPAddress(address, N) {}
+  explicit IPAddress(base::span<const uint8_t> address)
+      : IPAddress(address.data(), address.size()) {}
 
   // Copies the input address to |ip_address_| taking an additional length
   // parameter. The input is expected to be in network byte order.
