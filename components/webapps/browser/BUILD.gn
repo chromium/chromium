@@ -208,6 +208,13 @@ source_set("unit_tests") {
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
 
+  if (is_ios) {
+    # TODO(crbug.com/1476736): AppBannerSettingsHelperTest are failing on iOS
+    # port.
+    sources -= [ "banners/app_banner_settings_helper_unittest.cc" ]
+    deps += [ "//components/test:webapps_test_bundle_data" ]
+  }
+
   if (is_android) {
     sources += [ "android/installable/installable_ambient_badge_message_controller_unittest.cc" ]
     deps += [ "//components/messages/android:test_support" ]
