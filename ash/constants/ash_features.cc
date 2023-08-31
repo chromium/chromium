@@ -2878,7 +2878,9 @@ bool ArePromiseIconsEnabled() {
 }
 
 bool AreSideAlignedToastsEnabled() {
-  return base::FeatureList::IsEnabled(kSideAlignedToasts);
+  // Side aligned toasts are launching together with Notifier Collision.
+  return IsNotifierCollisionEnabled() ||
+         base::FeatureList::IsEnabled(kSideAlignedToasts);
 }
 
 bool AreSystemSoundsEnabled() {
