@@ -4191,6 +4191,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="Ash.LoginAnimation.Duration2.{TabletOrClamshell}"
+    units="ms" expires_after="2024-02-11">
+  <owner>oshima@chromium.org</owner>
+  <owner>zhzhliu@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    The duration of how long it took to finish all animations applied during the
+    login process, from the time the first animation is added, to the time the
+    last animation is finished. This metric is capped at 30 seconds, while above
+    &quot;Ash.LoginAnimation.Duration&quot; capped at 5 seconds.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram base="true" name="Ash.LoginAnimation.Jank" units="%"
     expires_after="2024-03-30">
   <owner>oshima@chromium.org</owner>
@@ -6829,33 +6846,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Clamshell" summary="Regular mode"/>
     <variant name="Tablet" summary="Tablet mode"/>
   </token>
-</histogram>
-
-<histogram base="true" name="Ash.UnlockAnimation.Duration" units="ms"
-    expires_after="2021-12-10">
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <summary>
-    The duration of how long it took to finish all animations applied during the
-    login process, from the time the first animation is added, to the time the
-    last animation is finished.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Ash.UnlockAnimation.Jank" units="%"
-    expires_after="2022-04-17">
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-wmp@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <summary>
-    Jank metrics of all animations applied during the unlock process. This
-    represents how often the frame update rate changed during animation.
-  </summary>
 </histogram>
 
 <histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
