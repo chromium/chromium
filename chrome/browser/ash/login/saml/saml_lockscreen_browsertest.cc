@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
 }
 
 // TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
 #define MAYBE_TriggerAndHideCaptivePortalDialog \
   DISABLED_TriggerAndHideCaptivePortalDialog
 #else
