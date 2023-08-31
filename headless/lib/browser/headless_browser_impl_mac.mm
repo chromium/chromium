@@ -12,6 +12,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
 #import "ui/base/cocoa/base_view.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -68,6 +69,10 @@ const NSActivityOptions kActivityOptions =
 }  // namespace
 
 void HeadlessBrowserImpl::PlatformInitialize() {
+  if (!geolocation_manager_) {
+    geolocation_manager_ =
+        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
+  }
   screen_ = std::make_unique<display::ScopedNativeScreen>();
   HeadlessPopUpMethods::Init();
 }
@@ -118,6 +123,15 @@ ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(
     HeadlessWebContentsImpl* web_contents) {
   // TODO(eseckler): Support BeginFrameControl on Mac.
   return nullptr;
+}
+
+device::GeolocationManager* HeadlessBrowserImpl::GetGeolocationManager() {
+  return geolocation_manager_.get();
+}
+
+void HeadlessBrowserImpl::SetGeolocationManagerForTesting(
+    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
+  geolocation_manager_ = std::move(fake_geolocation_manager);
 }
 
 }  // namespace headless

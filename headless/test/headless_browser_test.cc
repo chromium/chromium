@@ -99,8 +99,8 @@ void HeadlessBrowserTest::CreatedBrowserMainParts(
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
-  static_cast<HeadlessBrowserMainParts*>(parts)
-      ->SetGeolocationManagerForTesting(std::move(fake_geolocation_manager));
+  static_cast<HeadlessBrowserImpl*>(browser())->SetGeolocationManagerForTesting(
+      std::move(fake_geolocation_manager));
 }
 #endif
 

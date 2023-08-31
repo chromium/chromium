@@ -33,10 +33,6 @@
 #include "headless/lib/browser/policy/headless_policies.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #endif
@@ -63,8 +59,7 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
 #endif
   MaybeStartLocalDevToolsHttpHandler();
   SetHeadlessClipboardForCurrentThread();
-  browser_->PlatformInitialize();
-  browser_->RunOnStartCallback();
+  browser_->PreMainMessageLoopRun();
   HeadlessSelectFileDialogFactory::SetUp();
   return content::RESULT_CODE_NORMAL_EXIT;
 }
@@ -96,17 +91,6 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
   }
 #endif
 }
-
-#if BUILDFLAG(IS_MAC)
-device::GeolocationManager* HeadlessBrowserMainParts::GetGeolocationManager() {
-  return geolocation_manager_.get();
-}
-
-void HeadlessBrowserMainParts::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
-  geolocation_manager_ = std::move(fake_geolocation_manager);
-}
-#endif
 
 void HeadlessBrowserMainParts::QuitMainMessageLoop() {
   if (quit_main_message_loop_)

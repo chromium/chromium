@@ -22,10 +22,6 @@
 #include "headless/lib/browser/policy/headless_browser_policy_connector.h"
 #endif
 
-namespace device {
-class GeolocationManager;
-}  // namespace device
-
 namespace headless {
 
 class HeadlessBrowserImpl;
@@ -45,19 +41,10 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
-#if BUILDFLAG(IS_MAC)
-  void PreCreateMainMessageLoop() override;
-#endif
 #if BUILDFLAG(IS_POSIX)
   void PostCreateMainMessageLoop() override;
 #endif
   void QuitMainMessageLoop();
-
-#if BUILDFLAG(IS_MAC)
-  device::GeolocationManager* GetGeolocationManager();
-  void SetGeolocationManagerForTesting(
-      std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
-#endif
 
 #if defined(HEADLESS_USE_PREFS)
   PrefService* GetPrefs() { return local_state_.get(); }
@@ -85,9 +72,6 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
-#if BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
-#endif
 };
 
 }  // namespace headless

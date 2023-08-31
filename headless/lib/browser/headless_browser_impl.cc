@@ -23,6 +23,10 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -220,15 +224,6 @@ void HeadlessBrowserImpl::set_browser_main_parts(
   browser_main_parts_ = browser_main_parts;
 }
 
-void HeadlessBrowserImpl::RunOnStartCallback() {
-  // We don't support the tethering domain on this agent host.
-  agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
-      nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
-
-  PlatformStart();
-  std::move(on_start_callback_).Run(this);
-}
-
 HeadlessBrowserContext* HeadlessBrowserImpl::CreateBrowserContext(
     HeadlessBrowserContext::Builder* builder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -303,6 +298,17 @@ HeadlessBrowserContext* HeadlessBrowserImpl::GetBrowserContextForId(
   if (find_it == browser_contexts_.end())
     return nullptr;
   return find_it->second.get();
+}
+
+void HeadlessBrowserImpl::PreMainMessageLoopRun() {
+  PlatformInitialize();
+
+  // We don't support the tethering domain on this agent host.
+  agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
+      nullptr, content::DevToolsAgentHost::CreateServerSocketCallback());
+
+  PlatformStart();
+  std::move(on_start_callback_).Run(this);
 }
 
 #if defined(HEADLESS_USE_PREFS)

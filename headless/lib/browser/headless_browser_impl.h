@@ -30,6 +30,10 @@ class PolicyService;
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/display/screen.h"
+
+namespace device {
+class GeolocationManager;
+}  // namespace device
 #endif
 
 namespace ui {
@@ -77,8 +81,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   void set_browser_main_parts(HeadlessBrowserMainParts* browser_main_parts);
   HeadlessBrowserMainParts* browser_main_parts() const;
 
-  void RunOnStartCallback();
-
   void SetOptions(HeadlessBrowser::Options options);
   HeadlessBrowser::Options* options() { return &options_.value(); }
 
@@ -91,6 +93,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   HeadlessWebContentsImpl* GetWebContentsForWindowId(const int window_id);
 
   base::WeakPtr<HeadlessBrowserImpl> GetWeakPtr();
+
+  void PreMainMessageLoopRun();
 
   // All the methods that begin with Platform need to be implemented by the
   // platform specific headless implementation.
@@ -114,11 +118,13 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   policy::PolicyService* GetPolicyService();
 #endif
 
- private:
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<display::ScopedNativeScreen> screen_;
+  device::GeolocationManager* GetGeolocationManager();
+  void SetGeolocationManagerForTesting(
+      std::unique_ptr<device::GeolocationManager> geolocation_manager);
 #endif
 
+ private:
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   absl::optional<HeadlessBrowser::Options> options_;
   raw_ptr<HeadlessBrowserMainParts, AcrossTasksDanglingUntriaged>
@@ -132,6 +138,12 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
+#endif
+
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};
 };
 

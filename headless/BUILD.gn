@@ -372,7 +372,6 @@ component("headless_non_renderer") {
   if (is_mac) {
     sources += [
       "lib/browser/headless_browser_impl_mac.mm",
-      "lib/browser/headless_browser_main_parts_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
       "lib/browser/headless_shell_application_mac.mm",
       "lib/headless_content_main_delegate_mac.mm",
