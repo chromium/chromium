@@ -213,6 +213,8 @@ class MirroringActivity : public CastActivity,
 
   const absl::optional<MirroringType> mirroring_type_;
 
+  absl::optional<base::TimeDelta> target_playout_delay_;
+
   // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
   int frame_tree_node_id_;
   const CastSinkExtraData cast_data_;

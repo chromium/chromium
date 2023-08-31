@@ -10,11 +10,14 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
+#include "base/values.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_test_base.h"
 #include "chrome/browser/media/router/providers/cast/mock_mirroring_service_host.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
@@ -33,6 +36,7 @@ using base::test::IsJson;
 using testing::_;
 using testing::NiceMock;
 using testing::WithArg;
+using testing::WithArgs;
 
 namespace media_router {
 namespace {
@@ -157,14 +161,16 @@ class MirroringActivityTest
 
     if (route_is_local_) {
       EXPECT_CALL(*mirroring_service_, Start)
-          .WillOnce(WithArg<3>(
-              [this](mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
+          .WillOnce(WithArgs<0, 3>(
+              [this](mirroring::mojom::SessionParametersPtr session_params,
+                     mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
                          inbound_channel) {
                 ASSERT_FALSE(channel_to_service_);
                 auto channel = std::make_unique<MockCastMessageChannel>();
                 channel_to_service_ = channel.get();
                 mojo::MakeSelfOwnedReceiver(std::move(channel),
                                             std::move(inbound_channel));
+                session_params_ = std::move(session_params);
               }));
     }
 
@@ -188,6 +194,7 @@ class MirroringActivityTest
   base::MockCallback<MirroringActivity::OnStopCallback> on_stop_;
   base::MockCallback<OnSourceChangedCallback> on_source_changed_;
   std::unique_ptr<MirroringActivity> activity_;
+  mirroring::mojom::SessionParametersPtr session_params_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Namespaces,
@@ -741,6 +748,45 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
   // them to have been called.
   media_status_observer_1.FlushForTesting();
   media_status_observer_2.FlushForTesting();
+}
+
+TEST_F(MirroringActivityTest, TargetPlayoutDelaySetInRequest) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
+  feature_list.InitAndEnableFeatureWithParameters(
+      media_router::kCastMirroringPlayoutDelay, feature_params);
+
+  static constexpr char kUrl[] =
+      "cast:0F5096E8?streamingCaptureAudio=1&streamingTargetPlayoutDelayMillis="
+      "100";
+  GURL url(kUrl);
+  MediaSource source = MediaSource::ForPresentationUrl(url);
+  MakeActivity(source);
+
+  ASSERT_TRUE(session_params_);
+  ASSERT_TRUE(session_params_->target_playout_delay.has_value());
+  // Target playout delay should be the one set in the request url.
+  EXPECT_EQ(session_params_->target_playout_delay.value().InMilliseconds(),
+            100);
+}
+
+TEST_F(MirroringActivityTest, TargetPlayoutDelayFeatureFlagParam) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params[media_router::kCastMirroringPlayoutDelayMs.name] = "300";
+  feature_list.InitAndEnableFeatureWithParameters(
+      media_router::kCastMirroringPlayoutDelay, feature_params);
+
+  static constexpr char kUrl[] = "cast:0F5096E8?streamingCaptureAudio=1";
+  GURL url(kUrl);
+  MediaSource source = MediaSource::ForPresentationUrl(url);
+  MakeActivity(source);
+
+  ASSERT_TRUE(session_params_);
+  ASSERT_TRUE(session_params_->target_playout_delay.has_value());
+  EXPECT_EQ(session_params_->target_playout_delay.value().InMilliseconds(),
+            300);
 }
 
 }  // namespace media_router

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -22,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/media/cast_mirroring_service_host_factory.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
@@ -606,6 +608,11 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   mojo::PendingRemote<mirroring::mojom::CastMessageChannel> channel_remote;
   channel_receiver_.Bind(channel_remote.InitWithNewPipeAndPassReceiver());
 
+  // If the target playout delay has not yet been set (from site-initiated
+  // mirroring request) then try to set it from a feature or commandline.
+  target_playout_delay_ = cast_source->target_playout_delay().has_value()
+                              ? cast_source->target_playout_delay()
+                              : GetCastMirroringPlayoutDelay();
   should_fetch_stats_on_start_ = enable_rtcp_reporting;
 
   // If this fails, it's probably because CreateMojoBindings() hasn't been
@@ -618,8 +625,7 @@ void MirroringActivity::StartSession(const std::string& destination_id,
           SessionParameters::New(
               session_type, cast_data_.ip_endpoint.address(),
               cast_data_.model_name, sink_.sink().name(), destination_id,
-              message_handler_->source_id(),
-              cast_source->target_playout_delay(),
+              message_handler_->source_id(), target_playout_delay_,
               route().media_source().IsRemotePlaybackSource(),
               ShouldForceLetterboxing(cast_data_.model_name),
               enable_rtcp_reporting),

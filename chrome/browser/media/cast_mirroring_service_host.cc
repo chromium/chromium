@@ -209,13 +209,6 @@ void CastMirroringServiceHost::Start(
     return;
   }
 
-  // If the target playout delay has not yet been set (from site-initiated
-  // mirroring request) then try to set it from a feature or commandline.
-  if (!session_params->target_playout_delay) {
-    session_params->target_playout_delay =
-        media_router::GetCastMirroringPlayoutDelay();
-  }
-
   // Although the base::Features get propagated to the mirroring service, the
   // command line flags do not.
   const base::CommandLine& command_line =
