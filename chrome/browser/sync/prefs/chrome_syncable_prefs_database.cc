@@ -14,6 +14,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/model_type.h"
@@ -275,6 +276,8 @@ enum {
   kBrowserColorVariant = 100220,
   kGrayscaleThemeEnabled = 100221,
   kUserColor = 100222,
+  kBlockAll3pcToggleEnabled = 100223,
+  kTrackingProtectionLevel = 100224,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -948,6 +951,12 @@ const auto& SyncablePreferences() {
           syncer::PREFERENCES, false}},
         {promos_prefs::kiOSPasswordPromoOptOut,
          {syncable_prefs_ids::kiOSPasswordPromoOptOut, syncer::PREFERENCES,
+          false}},
+        {prefs::kBlockAll3pcToggleEnabled,
+         {syncable_prefs_ids::kBlockAll3pcToggleEnabled, syncer::PREFERENCES,
+          false}},
+        {prefs::kTrackingProtectionLevel,
+         {syncable_prefs_ids::kTrackingProtectionLevel, syncer::PREFERENCES,
           false}},
   });
   return kChromeSyncablePrefsAllowlist;

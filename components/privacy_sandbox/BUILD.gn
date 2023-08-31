@@ -9,6 +9,7 @@ static_library("privacy_sandbox_prefs") {
   ]
 
   deps = [
+    ":tracking_protection_prefs",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
   ]
@@ -131,4 +132,18 @@ source_set("test_support") {
     "//ui/base:base",
     "//url:url",
   ]
+}
+
+static_library("tracking_protection_prefs") {
+  sources = [
+    "tracking_protection_prefs.cc",
+    "tracking_protection_prefs.h",
+  ]
+
+  deps = [
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
 }

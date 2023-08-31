@@ -900,6 +900,7 @@ static_library("extensions") {
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/proxy_config",
     "//components/reading_list/core",
     "//components/resources",
