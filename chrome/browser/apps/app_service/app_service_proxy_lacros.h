@@ -148,7 +148,7 @@ class AppServiceProxyLacros : public KeyedService,
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback);
+                           LaunchCallback callback);
 
   // Launches an app for the given |app_id|, passing |url| to the app.
   // |event_flags| provides additional context about the action which launch the

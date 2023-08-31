@@ -175,17 +175,16 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
   ProxyLaunch(std::move(params));
 }
 
-void AppServiceProxyLacros::LaunchAppWithIntent(
-    const std::string& app_id,
-    int32_t event_flags,
-    IntentPtr intent,
-    LaunchSource launch_source,
-    WindowInfoPtr window_info,
-    base::OnceCallback<void(bool)> callback) {
+void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
+                                                int32_t event_flags,
+                                                IntentPtr intent,
+                                                LaunchSource launch_source,
+                                                WindowInfoPtr window_info,
+                                                LaunchCallback callback) {
   CHECK(intent);
 
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
 
@@ -195,7 +194,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(false);
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
 
@@ -204,13 +203,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
       window_info ? window_info->display_id : display::kInvalidDisplayId);
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
-  ProxyLaunch(
-      std::move(params),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback, LaunchResult&& result) {
-            std::move(callback).Run(ConvertLaunchResultToBool(result));
-          },
-          std::move(callback)));
+  ProxyLaunch(std::move(params), base::BindOnce(std::move(callback)));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
@@ -222,14 +215,13 @@ void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
   LaunchAppWithIntent(
       app_id, event_flags,
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info),
-      base::BindOnce(ConvertBoolToLaunchResult).Then(std::move(callback)));
+      launch_source, std::move(window_info), std::move(callback));
 }
 
 void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
                                                 LaunchCallback callback) {
   if (!remote_crosapi_app_service_proxy_) {
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
 
@@ -239,7 +231,7 @@ void AppServiceProxyLacros::LaunchAppWithParams(AppLaunchParams&& params,
     LOG(WARNING) << "Ash AppServiceProxy version "
                  << crosapi_app_service_proxy_version_
                  << " does not support Launch().";
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult(State::FAILED));
     return;
   }
 
