@@ -318,12 +318,22 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void setTextBaseline(const String&);
 
   String letterSpacing() const;
+  void setLetterSpacing(const String&);
+
   String wordSpacing() const;
+  void setWordSpacing(const String&);
+
   String textRendering() const;
+  void setTextRendering(const String&);
 
   String fontKerning() const;
+  void setFontKerning(const String&);
+
   String fontStretch() const;
+  void setFontStretch(const String&);
+
   String fontVariantCaps() const;
+  void setFontVariantCaps(const String&);
 
   String font() const;
   void setFont(const String& new_font);
@@ -431,6 +441,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  protected:
   virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
+  virtual FontSelector* GetFontSelector() const;
   const Font& AccessFont(HTMLCanvasElement* canvas);
 
   void WillUseCurrentFont() const;

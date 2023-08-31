@@ -116,14 +116,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void setFontForTesting(const String& new_font) override;
 
-  void setLetterSpacing(const String&);
-  void setWordSpacing(const String&);
-  void setTextRendering(const String&);
-
-  void setFontKerning(const String&);
-  void setFontStretch(const String&);
-  void setFontVariantCaps(const String&);
-
   void drawFormattedText(FormattedText* formatted_text,
                          double x,
                          double y,
@@ -221,6 +213,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
+  FontSelector* GetFontSelector() const final;
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();

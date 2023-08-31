@@ -639,129 +639,6 @@ Color CanvasRenderingContext2D::GetCurrentColor() const {
   return color;
 }
 
-void CanvasRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DLetterSpacing);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-
-  GetState().SetLetterSpacing(letter_spacing);
-}
-
-void CanvasRenderingContext2D::setWordSpacing(const String& word_spacing) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DWordSpacing);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-
-  GetState().SetWordSpacing(word_spacing);
-}
-
-void CanvasRenderingContext2D::setTextRendering(
-    const String& text_rendering_string) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DTextRendering);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-
-  absl::optional<blink::V8CanvasTextRendering> text_value =
-      V8CanvasTextRendering::Create(text_rendering_string);
-
-  if (!text_value.has_value()) {
-    return;
-  }
-
-  if (GetState().GetTextRendering() == text_value.value()) {
-    return;
-  }
-  GetState().SetTextRendering(text_value.value(), Host()->GetFontSelector());
-}
-
-void CanvasRenderingContext2D::setFontKerning(
-    const String& font_kerning_string) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DFontKerning);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-  FontDescription::Kerning kerning;
-  if (font_kerning_string == kAutoKerningString) {
-    kerning = FontDescription::kAutoKerning;
-  } else if (font_kerning_string == kNoneKerningString) {
-    kerning = FontDescription::kNoneKerning;
-  } else if (font_kerning_string == kNormalKerningString) {
-    kerning = FontDescription::kNormalKerning;
-  } else {
-    return;
-  }
-
-  if (GetState().GetFontKerning() == kerning)
-    return;
-
-  GetState().SetFontKerning(kerning, Host()->GetFontSelector());
-}
-
-void CanvasRenderingContext2D::setFontStretch(const String& font_stretch) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DFontStretch);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-
-  absl::optional<blink::V8CanvasFontStretch> font_value =
-      V8CanvasFontStretch::Create(font_stretch);
-
-  if (!font_value.has_value()) {
-    return;
-  }
-  if (GetState().GetFontStretch() == font_value.value()) {
-    return;
-  }
-  GetState().SetFontStretch(font_value.value(), Host()->GetFontSelector());
-}
-
-void CanvasRenderingContext2D::setFontVariantCaps(
-    const String& font_variant_caps_string) {
-  UseCounter::Count(canvas()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DFontVariantCaps);
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-  if (!GetState().HasRealizedFont())
-    setFont(font());
-  FontDescription::FontVariantCaps variant_caps;
-  if (font_variant_caps_string == kNormalVariantString) {
-    variant_caps = FontDescription::kCapsNormal;
-  } else if (font_variant_caps_string == kSmallCapsVariantString) {
-    variant_caps = FontDescription::kSmallCaps;
-  } else if (font_variant_caps_string == kAllSmallCapsVariantString) {
-    variant_caps = FontDescription::kAllSmallCaps;
-  } else if (font_variant_caps_string == kPetiteVariantString) {
-    variant_caps = FontDescription::kPetiteCaps;
-  } else if (font_variant_caps_string == kAllPetiteVariantString) {
-    variant_caps = FontDescription::kAllPetiteCaps;
-  } else if (font_variant_caps_string == kUnicaseVariantString) {
-    variant_caps = FontDescription::kUnicase;
-  } else if (font_variant_caps_string == kTitlingCapsVariantString) {
-    variant_caps = FontDescription::kTitlingCaps;
-  } else {
-    return;
-  }
-
-  if (GetState().GetFontVariantCaps() == variant_caps)
-    return;
-
-  GetState().SetFontVariantCaps(variant_caps, Host()->GetFontSelector());
-}
-
 void CanvasRenderingContext2D::drawFormattedText(
     FormattedText* formatted_text,
     double x,
@@ -962,6 +839,10 @@ RespectImageOrientationEnum CanvasRenderingContext2D::RespectImageOrientation()
 
 HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
   return canvas();
+}
+
+FontSelector* CanvasRenderingContext2D::GetFontSelector() const {
+  return canvas()->GetFontSelector();
 }
 
 }  // namespace blink

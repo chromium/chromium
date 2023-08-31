@@ -85,13 +85,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
            !dirty_rect_for_commit_.isEmpty();
   }
 
-  void setLetterSpacing(const String&);
-  void setWordSpacing(const String&);
-  void setTextRendering(const String&);
-  void setFontKerning(const String&);
-  void setFontStretch(const String&);
-  void setFontVariantCaps(const String&);
-
   // BaseRenderingContext2D implementation
   bool OriginClean() const final;
   void SetOriginTainted() final;
@@ -155,6 +148,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;
+  FontSelector* GetFontSelector() const final;
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
