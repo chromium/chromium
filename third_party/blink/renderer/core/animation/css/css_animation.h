@@ -27,6 +27,9 @@ class CORE_EXPORT CSSAnimation : public Animation {
   void ClearOwningElement() final { owning_element_ = nullptr; }
   Element* OwningElement() const override { return owning_element_; }
 
+  // Animation effect owner implementation.
+  bool IsEventDispatchAllowed() const override;
+
   const String& animationName() const { return animation_name_; }
   wtf_size_t AnimationIndex() const { return animation_index_; }
   void SetAnimationIndex(wtf_size_t absolute_position) {
