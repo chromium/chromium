@@ -805,6 +805,11 @@ const char kLoginUser[] = "login-user";
 // there are more than two signed in users i.e. inside multi-user session.
 const char kDisallowLacros[] = "disallow-lacros";
 
+// This flag disables "disallow-lacros" above, if both are set together.
+// I.e., if user flips feature flag, or policy is set, lacros can be
+// used, event if --disallow-lacros is set.
+const char kDisableDisallowLacros[] = "disable-disallow-lacros";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
