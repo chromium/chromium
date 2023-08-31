@@ -114,12 +114,7 @@ HeadlessContentBrowserClient::~HeadlessContentBrowserClient() = default;
 std::unique_ptr<content::BrowserMainParts>
 HeadlessContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
-  auto browser_main_parts =
-      std::make_unique<HeadlessBrowserMainParts>(browser_);
-
-  browser_->set_browser_main_parts(browser_main_parts.get());
-
-  return browser_main_parts;
+  return std::make_unique<HeadlessBrowserMainParts>(*browser_);
 }
 
 void HeadlessContentBrowserClient::OverrideWebkitPrefs(

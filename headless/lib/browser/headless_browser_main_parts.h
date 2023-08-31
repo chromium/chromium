@@ -13,15 +13,6 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_export.h"
 
-#if defined(HEADLESS_USE_PREFS)
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#endif
-
-#if defined(HEADLESS_USE_POLICY)
-#include "headless/lib/browser/policy/headless_browser_policy_connector.h"
-#endif
-
 namespace headless {
 
 class HeadlessBrowserImpl;
@@ -29,7 +20,7 @@ class HeadlessBrowserImpl;
 class HEADLESS_EXPORT HeadlessBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  explicit HeadlessBrowserMainParts(HeadlessBrowserImpl* browser);
+  explicit HeadlessBrowserMainParts(HeadlessBrowserImpl& browser);
 
   HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
   HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
@@ -44,34 +35,13 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 #if BUILDFLAG(IS_POSIX)
   void PostCreateMainMessageLoop() override;
 #endif
-  void QuitMainMessageLoop();
-
-#if defined(HEADLESS_USE_PREFS)
-  PrefService* GetPrefs() { return local_state_.get(); }
-#endif
-
-#if defined(HEADLESS_USE_POLICY)
-  policy::PolicyService* GetPolicyService();
-#endif
 
  private:
   void MaybeStartLocalDevToolsHttpHandler();
-#if defined(HEADLESS_USE_PREFS)
-  void CreatePrefService();
-#endif
 
-  raw_ptr<HeadlessBrowserImpl> browser_;    // Not owned.
-
-#if defined(HEADLESS_USE_POLICY)
-  std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;
-#endif
-
-#if defined(HEADLESS_USE_PREFS)
-  std::unique_ptr<PrefService> local_state_;
-#endif
+  raw_ref<HeadlessBrowserImpl> browser_;
 
   bool devtools_http_handler_started_ = false;
-  base::OnceClosure quit_main_message_loop_;
 };
 
 }  // namespace headless
