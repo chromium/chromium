@@ -478,7 +478,11 @@ void AuthenticatorRequestDialogModel::
       if (transport_availability_.has_platform_authenticator_credential ==
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential) {
-        StartPlatformAuthenticatorFlow();
+        if (transport_availability_.has_win_native_api_authenticator) {
+          StartWinNativeApi();
+        } else {
+          StartPlatformAuthenticatorFlow();
+        }
         return;
       }
     }
@@ -645,7 +649,8 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
         // select an iCloud Keychain credential.
         if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
           const auto cred =
-              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID)[0];
+              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID)
+                  .at(0);
           ephemeral_state_.creds_ = {std::move(cred)};
         } else {
           ephemeral_state_.creds_ = {

@@ -75,6 +75,33 @@ const base::flat_set<AuthenticatorTransport> kAllTransportsWithoutCable = {
 using TransportAvailabilityInfo =
     ::device::FidoRequestHandlerBase::TransportAvailabilityInfo;
 
+class RequestCallbackReceiver {
+ public:
+  base::RepeatingCallback<void(const std::string&)> Callback() {
+    return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
+                               weak_factory_.GetWeakPtr());
+  }
+
+  std::string WaitForResult() {
+    if (!authenticator_id_) {
+      run_loop_->Run();
+    }
+    std::string ret = std::move(*authenticator_id_);
+    authenticator_id_.reset();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    return ret;
+  }
+
+ private:
+  void OnRequest(const std::string& authenticator_id) {
+    authenticator_id_ = authenticator_id;
+    run_loop_->Quit();
+  }
+  absl::optional<std::string> authenticator_id_;
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+  base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
+};
+
 class MockDialogModelObserver
     : public AuthenticatorRequestDialogModel::Observer {
  public:
@@ -2023,6 +2050,34 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+// Regression test for crbug.com/1476884.
+TEST_F(AuthenticatorRequestDialogModelTest, JumpToWindowsWithNewUI) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnNewPasskeyUI};
+  AuthenticatorRequestDialogModel model(main_rfh());
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.available_transports = kAllTransports;
+  transports_info.has_win_native_api_authenticator = true;
+  transports_info.has_empty_allow_list = false;
+  transports_info.has_platform_authenticator_credential = device::
+      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
+  transports_info.recognized_credentials = {kWinCred1, kWinCred2};
+
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"win", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kWinNative));
+
+  RequestCallbackReceiver request_callback;
+  model.SetRequestCallback(request_callback.Callback());
+  model.StartFlow(std::move(transports_info),
+                  /*is_conditional_mediation=*/false);
+  EXPECT_EQ(request_callback.WaitForResult(), "win");
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
   AuthenticatorRequestDialogModel model(main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
@@ -2150,33 +2205,6 @@ class MultiplePlatformAuthenticatorsTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnNewPasskeyUI};
-};
-
-class RequestCallbackReceiver {
- public:
-  base::RepeatingCallback<void(const std::string&)> Callback() {
-    return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
-                               weak_factory_.GetWeakPtr());
-  }
-
-  std::string WaitForResult() {
-    if (!authenticator_id_) {
-      run_loop_->Run();
-    }
-    std::string ret = std::move(*authenticator_id_);
-    authenticator_id_.reset();
-    run_loop_ = std::make_unique<base::RunLoop>();
-    return ret;
-  }
-
- private:
-  void OnRequest(const std::string& authenticator_id) {
-    authenticator_id_ = authenticator_id;
-    run_loop_->Quit();
-  }
-  absl::optional<std::string> authenticator_id_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-  base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
 };
 
 template <class Value>
