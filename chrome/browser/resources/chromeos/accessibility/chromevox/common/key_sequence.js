@@ -27,6 +27,18 @@
 
 import {KeyCode} from '../../common/key_code.js';
 
+import {Command} from './command.js';
+
+/**
+ * @typedef {{
+ *     command: !Command,
+ *     sequence: !KeySequence,
+ *     keySeq: (string|undefined),
+ *     title: (string|undefined),
+ * }}
+ */
+export let KeyBinding;
+
 /**
  * @typedef {{
  *   cvoxModifier: (boolean|undefined),

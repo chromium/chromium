@@ -17,17 +17,7 @@
 import {KeyCode} from '../../common/key_code.js';
 
 import {Command} from './command.js';
-import {KeySequence, SerializedKeySequence} from './key_sequence.js';
-
-/**
- * @typedef {{
- *     command: !Command,
- *     sequence: !KeySequence,
- *     keySeq: (string|undefined),
- *     title: (string|undefined),
- * }}
- */
-export let KeyBinding;
+import {KeyBinding, KeySequence, SerializedKeySequence} from './key_sequence.js';
 
 export class KeyMap {
   /**
