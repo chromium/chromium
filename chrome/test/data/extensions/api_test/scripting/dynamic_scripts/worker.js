@@ -4,11 +4,28 @@
 
 import {openTab} from '/_test_resources/test_util/tabs_util.js';
 
-function getInjectedElementIds() {
-  let childIds = [];
-  for (const child of document.body.children)
-    childIds.push(child.id);
-  return childIds.sort();
+// Navigates to an url requested by the extension and returns the opened tab.
+async function navigateToRequestedUrl() {
+  const config = await chrome.test.getConfig();
+  const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
+  let tab = await openTab(url);
+  return tab;
+}
+
+// Returns the injected element ids in `tabId`.
+async function getInjectedElementIds(tabId) {
+  let injectedElements = await chrome.scripting.executeScript({
+    target: { tabId: tabId },
+    func: () => {
+      let childIds = [];
+      for (const child of document.body.children)
+        childIds.push(child.id);
+      return childIds.sort();
+    }
+  });
+
+  chrome.test.assertEq(1, injectedElements.length);
+  return injectedElements[0].result;
 };
 
 async function getTitleForTab(tabId) {
@@ -317,12 +334,11 @@ chrome.test.runTests([
     }];
 
     await chrome.scripting.registerContentScripts(scripts);
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    const tab = await openTab(url);
-    const title = await getTitleForTab(tab.id);
+    const tab = await navigateToRequestedUrl();
 
+    const title = await getTitleForTab(tab.id);
     chrome.test.assertEq('I CHANGED TITLE!!!', title);
+
     chrome.test.succeed();
   },
 
@@ -373,29 +389,22 @@ chrome.test.runTests([
     ];
 
     await chrome.scripting.registerContentScripts(scripts);
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    let tab = await navigateToRequestedUrl();
 
     // Both scripts should be injected, and both scripts should inject one
     // element.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+    chrome.test.assertEq(
+      ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
     scripts = await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(2, scripts.length);
 
     await chrome.scripting.unregisterContentScripts(
         {ids: ['inject_element_1']});
-    tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    tab = await navigateToRequestedUrl();
 
     // After removing the script with id 'inject_element_1' and opening a tab,
     // only 'inject_element_2' should be injected.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected_2'], results[0].result);
+    chrome.test.assertEq(['injected_2'], await getInjectedElementIds(tab.id));
 
     scripts = await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(1, scripts.length);
@@ -424,17 +433,11 @@ chrome.test.runTests([
     ];
 
     await chrome.scripting.registerContentScripts(contentScripts);
-
-    // Navigate to a requested url.
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    let tab = await navigateToRequestedUrl();
 
     // Verify content scripts are injected.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+    chrome.test.assertEq(
+      ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
 
     // Unregister all content scripts.
     await chrome.scripting.unregisterContentScripts();
@@ -445,11 +448,8 @@ chrome.test.runTests([
     chrome.test.assertEq(0, registeredContentScripts.length);
 
     // Re-navigate to the requested url, and verify no script is injected.
-    tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq([], results[0].result);
+    tab = await navigateToRequestedUrl();
+    chrome.test.assertEq([], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },
@@ -477,17 +477,11 @@ chrome.test.runTests([
     ];
 
     await chrome.scripting.registerContentScripts(contentScripts);
-
-    // Navigate to a requested url.
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-      { target: { tabId: tab.id }, func: getInjectedElementIds });
+    let tab = await navigateToRequestedUrl();
 
     // Verify content scripts are injected.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+    chrome.test.assertEq(
+      ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
 
     // Unregister all content scripts.
     await chrome.scripting.unregisterContentScripts({ ids: [] });
@@ -498,11 +492,8 @@ chrome.test.runTests([
     chrome.test.assertEq(0, registeredContentScripts.length);
 
     // Re-navigate to the requested url, and verify no script is injected.
-    tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-      { target: { tabId: tab.id }, func: getInjectedElementIds });
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq([], results[0].result);
+    tab = await navigateToRequestedUrl();
+    chrome.test.assertEq([], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },
@@ -570,27 +561,19 @@ chrome.test.runTests([
     }];
 
     await chrome.scripting.registerContentScripts(scripts);
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    let tab = await navigateToRequestedUrl();
 
     // One element with id 'injected' should be injected.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected'], results[0].result);
+    chrome.test.assertEq(['injected'], await getInjectedElementIds(tab.id));
     scripts = await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq(1, scripts.length);
 
     await chrome.scripting.updateContentScripts(updatedScripts);
-    tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    tab = await navigateToRequestedUrl();
 
     // After the script is updated, one element with id 'injected_2' should be
     // injected.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected_2'], results[0].result);
+    chrome.test.assertEq(['injected_2'], await getInjectedElementIds(tab.id));
 
     const expectedScripts = [{
       id: 'inject_element_1',
@@ -773,16 +756,12 @@ chrome.test.runTests([
     // First, register 2 scripts that each inject a different element into the
     // page.
     await chrome.scripting.registerContentScripts(scripts);
-    const config = await chrome.test.getConfig();
-    const url = `http://hostperms.com:${config.testServer.port}/simple.html`;
-    let tab = await openTab(url);
-    let results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    let tab = await navigateToRequestedUrl();
 
     // Both scripts should be injected, and both scripts should inject one
     // element.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected', 'injected_2'], results[0].result);
+    chrome.test.assertEq(
+      ['injected', 'injected_2'], await getInjectedElementIds(tab.id));
 
     // Now update `script_1` and `script_2` to inject different elements.
     const updatedScript1 = [{
@@ -806,14 +785,12 @@ chrome.test.runTests([
       chrome.scripting.updateContentScripts(updatedScript2)
     ]);
 
-    tab = await openTab(url);
-    results = await chrome.scripting.executeScript(
-        {target: {tabId: tab.id}, func: getInjectedElementIds});
+    tab = await navigateToRequestedUrl();
 
     // Check that the old versions of both scripts are not injected by checking
     // that the IDs of the elements injected pertain to the updated scripts.
-    chrome.test.assertEq(1, results.length);
-    chrome.test.assertEq(['injected_3', 'injected_4'], results[0].result);
+    chrome.test.assertEq(
+      ['injected_3', 'injected_4'], await getInjectedElementIds(tab.id));
 
     chrome.test.succeed();
   },
