@@ -61,6 +61,8 @@ namespace blink {
 
 namespace {
 
+webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec);
+
 // This enum is used for logging and values must match the ones in
 // tools/metrics/histograms/enums.xml
 enum class WebRtcScalabilityMode {
@@ -479,6 +481,52 @@ ToRtpParameters(ExecutionContext* context,
   return std::make_tuple(encodings, degradation_preference);
 }
 
+webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
+  webrtc::RtpCodec webrtc_codec;
+  std::string mime_type = codec->mimeType().Utf8();
+  auto slash_index = codec->mimeType().Find("/");
+  if (slash_index == WTF::kNotFound) {
+    webrtc_codec.kind = cricket::MEDIA_TYPE_UNSUPPORTED;
+    return webrtc_codec;
+  }
+  webrtc_codec.name = codec->mimeType().Substring(slash_index + 1).Utf8();
+  WTF::String codec_type = codec->mimeType().Substring(0, slash_index);
+
+  if (codec_type == "video") {
+    webrtc_codec.kind = cricket::MEDIA_TYPE_VIDEO;
+  } else if (codec_type == "audio") {
+    webrtc_codec.kind = cricket::MEDIA_TYPE_AUDIO;
+  } else {
+    webrtc_codec.kind = cricket::MEDIA_TYPE_UNSUPPORTED;
+    return webrtc_codec;
+  }
+
+  webrtc_codec.clock_rate = codec->clockRate();
+  if (codec->hasChannels()) {
+    webrtc_codec.num_channels = codec->channels();
+  }
+  if (codec->hasSdpFmtpLine()) {
+    WTF::Vector<WTF::String> fmtp_splits;
+    codec->sdpFmtpLine().Split(";", true, fmtp_splits);
+    for (const auto& fmtp_split : fmtp_splits) {
+      WTF::String parameter = fmtp_split.StripWhiteSpace();
+      auto equal_index = parameter.Find("=");
+      std::string name, value;
+      if (equal_index == WTF::kNotFound) {
+        // Handle parameters without any equal signs, such as RED "111/111"
+        name = "";
+        value = parameter.Utf8();
+      } else {
+        // Handle parameters with an equal sign "foo=bar"
+        name = parameter.Substring(0, equal_index).Utf8();
+        value = parameter.Substring(equal_index + 1).Utf8();
+      }
+      webrtc_codec.parameters[name] = value;
+    }
+  }
+  return webrtc_codec;
+}
+
 }  // namespace
 
 webrtc::RtpEncodingParameters ToRtpEncodingParameters(
@@ -495,6 +543,9 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
       PriorityToEnum(encoding->networkPriority());
   if (encoding->hasMaxBitrate()) {
     webrtc_encoding.max_bitrate_bps = ClampTo<int>(encoding->maxBitrate());
+  }
+  if (encoding->hasCodec()) {
+    webrtc_encoding.codec = ToWebrtcRtpCodec(encoding->codec());
   }
   if (kind == "video") {
     if (encoding->hasScaleResolutionDownBy()) {
@@ -696,6 +747,9 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         PriorityFromDouble(webrtc_encoding.bitrate_priority).c_str());
     encoding->setNetworkPriority(
         PriorityFromEnum(webrtc_encoding.network_priority).c_str());
+    if (webrtc_encoding.codec) {
+      encoding->setCodec(ToRtpCodec(*webrtc_encoding.codec));
+    }
     if (kind_ == "video") {
       if (webrtc_encoding.scale_resolution_down_by) {
         encoding->setScaleResolutionDownBy(

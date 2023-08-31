@@ -3169,6 +3169,11 @@
       status: "experimental",
       base_feature: "none",
     },
+    // Enables the use of |RTCRtpEncodingParameters.codec|
+    {
+      name: "RTCRtpEncodingParametersCodec",
+      status: "experimental",
+    },
     // Enables the use of |RTCRtpTransceiver::getHeaderExtensionsToNegotiate|,
     // |RTCRtpTransceiver::setHeaderExtensionsToNegotiate|, and
     // |RTCRtpTransceiver::getNegotiatedHeaderExtensions|.
