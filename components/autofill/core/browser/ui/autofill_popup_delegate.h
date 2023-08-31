@@ -22,10 +22,9 @@ class AutofillPopupDelegate {
   // Called when the Autofill popup is shown.
   virtual void OnPopupShown() = 0;
 
-  // Called when the Autofill popup is hidden.
+  // Called when the Autofill popup is hidden. This may also get called if the
+  // popup was never shown at all, e.g. because of insufficient space.
   virtual void OnPopupHidden() = 0;
-
-  virtual void OnPopupSuppressed() = 0;
 
   // Called when the autofill `suggestion` has been temporarily selected (e.g.,
   // hovered).

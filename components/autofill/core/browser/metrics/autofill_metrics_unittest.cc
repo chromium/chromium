@@ -2401,51 +2401,6 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardInteractedFormEvents) {
 }
 
 // Test that we log suggestion shown form events for credit cards.
-TEST_P(AutofillMetricsIFrameTest, CreditCardPopupSuppressedFormEvents) {
-  FormData form =
-      CreateForm({CreateTestFormField("Month", "card_month", "", "text"),
-                  CreateTestFormField("Year", "card_year", "", "text"),
-                  CreateTestFormField("Credit card", "cardnum", "", "text")});
-
-  std::vector<ServerFieldType> field_types = {
-      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating popup being suppressed.
-    base::HistogramTester histogram_tester;
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 1),
-                       Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    credit_card_form_events_frame_histogram_),
-                BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 1),
-                               Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-  }
-
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating popup being suppressed.
-    base::HistogramTester histogram_tester;
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
-        BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 2),
-                       Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    credit_card_form_events_frame_histogram_),
-                BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 2),
-                               Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-  }
-}
-
-// Test that we log suggestion shown form events for credit cards.
 TEST_P(AutofillMetricsIFrameTest, CreditCardShownFormEvents) {
   FormData form =
       CreateForm({CreateTestFormField("Month", "card_month", "", "text"),
@@ -4720,84 +4675,6 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
         &test_ukm_recorder(), form, UkmFormEventType::kEntryName,
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_INTERACTED_ONCE},
-          {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
-  }
-}
-
-// Test that popup suppressed form events for address are logged.
-TEST_F(AutofillMetricsTest, AddressSuppressedFormEvents) {
-  // Create a profile.
-  RecreateProfile(/*is_server=*/false);
-  FormData form =
-      CreateForm({CreateTestFormField("State", "state", "", "text"),
-                  CreateTestFormField("City", "city", "", "text"),
-                  CreateTestFormField("Street", "street", "", "text")});
-
-  std::vector<ServerFieldType> field_types = {
-      ADDRESS_HOME_STATE, ADDRESS_HOME_CITY, ADDRESS_HOME_STREET_ADDRESS};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating new popup being shown.
-    base::HistogramTester histogram_tester;
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-                BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 1),
-                               Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-
-    // Check if FormEvent UKM is logged properly
-    auto entries =
-        test_ukm_recorder().GetEntriesByName(UkmFormEventType::kEntryName);
-    EXPECT_EQ(2u, entries.size());
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmFormEventType::kEntryName,
-        {{{UkmFormEventType::kAutofillFormEventName,
-           FORM_EVENT_POPUP_SUPPRESSED},
-          {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
-         {{UkmFormEventType::kAutofillFormEventName,
-           FORM_EVENT_POPUP_SUPPRESSED_ONCE},
-          {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
-  }
-
-  // Reset the autofill manager state.
-  autofill_manager().Reset();
-  PurgeUKM();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulating two popups in the same page load.
-    base::HistogramTester histogram_tester;
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    autofill_manager().DidSuppressPopup(form, form.fields[0]);
-    EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-                BucketsInclude(Bucket(FORM_EVENT_POPUP_SUPPRESSED, 2),
-                               Bucket(FORM_EVENT_POPUP_SUPPRESSED_ONCE, 1)));
-
-    // Check if FormEvent UKM is logged properly
-    auto entries =
-        test_ukm_recorder().GetEntriesByName(UkmFormEventType::kEntryName);
-    EXPECT_EQ(3u, entries.size());
-    VerifyUkm(
-        &test_ukm_recorder(), form, UkmFormEventType::kEntryName,
-        {{{UkmFormEventType::kAutofillFormEventName,
-           FORM_EVENT_POPUP_SUPPRESSED},
-          {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
-         {{UkmFormEventType::kAutofillFormEventName,
-           FORM_EVENT_POPUP_SUPPRESSED_ONCE},
-          {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
-          {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
-         {{UkmFormEventType::kAutofillFormEventName,
-           FORM_EVENT_POPUP_SUPPRESSED},
           {UkmFormEventType::kFormTypesName,
            AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});

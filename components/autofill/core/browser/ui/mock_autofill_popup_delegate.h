@@ -22,7 +22,6 @@ class MockAutofillPopupDelegate : public AutofillPopupDelegate {
 
   MOCK_METHOD(void, OnPopupShown, (), (override));
   MOCK_METHOD(void, OnPopupHidden, (), (override));
-  MOCK_METHOD(void, OnPopupSuppressed, (), (override));
   MOCK_METHOD(void,
               DidSelectSuggestion,
               (const Suggestion& suggestion,

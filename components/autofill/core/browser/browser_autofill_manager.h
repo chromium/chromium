@@ -234,10 +234,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Upload the current pending form.
   void ProcessPendingFormForUpload();
 
-  // Invoked when the popup view can't be created. Main usage is to collect
-  // metrics.
-  void DidSuppressPopup(const FormData& form, const FormFieldData& field);
-
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
   CreditCardAccessManager* GetCreditCardAccessManager() override;

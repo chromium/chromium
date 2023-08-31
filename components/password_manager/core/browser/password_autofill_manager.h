@@ -50,7 +50,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
-  void OnPopupSuppressed() override;
 
   // The password manager doesn't distinguish between trigger sources and its
   // value is `kPasswordManager` for all password suggestions.

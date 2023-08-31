@@ -85,15 +85,6 @@ void FormEventLoggerBase::OnDidParseForm(const FormStructure& form) {
   has_parsed_form_ = true;
 }
 
-void FormEventLoggerBase::OnPopupSuppressed(const FormStructure& form,
-                                            const AutofillField& field) {
-  Log(FORM_EVENT_POPUP_SUPPRESSED, form);
-  if (!has_logged_popup_suppressed_) {
-    has_logged_popup_suppressed_ = true;
-    Log(FORM_EVENT_POPUP_SUPPRESSED_ONCE, form);
-  }
-}
-
 void FormEventLoggerBase::OnUserHideSuggestions(const FormStructure& form,
                                                 const AutofillField& field) {
   Log(FORM_EVENT_USER_HIDE_SUGGESTIONS, form);

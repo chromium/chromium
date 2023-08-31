@@ -84,9 +84,9 @@ enum FormEvent {
   FORM_EVENT_DID_DYNAMIC_REFILL = 28,
   // The form dynamically changed another time after the refill.
   FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL = 29,
-  // The popup was suppressed because the native view couldn't be created.
+
+  // The two events below are deprecated and no longer emitted.
   FORM_EVENT_POPUP_SUPPRESSED = 30,
-  // Same as above, but recoreded only once per page load.
   FORM_EVENT_POPUP_SUPPRESSED_ONCE = 31,
 
   // The form was parsed.

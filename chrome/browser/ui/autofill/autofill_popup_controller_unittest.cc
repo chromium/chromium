@@ -122,7 +122,6 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
   }
 
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
-  MOCK_METHOD(void, OnPopupSuppressed, (), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&, int, AutofillSuggestionTriggerSource),

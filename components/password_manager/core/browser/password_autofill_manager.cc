@@ -388,8 +388,6 @@ void PasswordAutofillManager::OnPopupShown() {}
 
 void PasswordAutofillManager::OnPopupHidden() {}
 
-void PasswordAutofillManager::OnPopupSuppressed() {}
-
 void PasswordAutofillManager::DidSelectSuggestion(
     const autofill::Suggestion& suggestion,
     autofill::AutofillSuggestionTriggerSource trigger_source) {

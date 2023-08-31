@@ -233,10 +233,6 @@ void AutofillExternalDelegate::OnPopupHidden() {
   manager_->OnPopupHidden();
 }
 
-void AutofillExternalDelegate::OnPopupSuppressed() {
-  manager_->DidSuppressPopup(query_form_, query_field_);
-}
-
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion,
     AutofillSuggestionTriggerSource trigger_source) {

@@ -1043,18 +1043,6 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
                               /*observed_submission=*/false);
 }
 
-void BrowserAutofillManager::DidSuppressPopup(const FormData& form,
-                                              const FormFieldData& field) {
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
-    return;
-
-  auto* logger = GetEventFormLogger(*autofill_field);
-  if (logger)
-    logger->OnPopupSuppressed(*form_structure, *autofill_field);
-}
-
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,

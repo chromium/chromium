@@ -47,8 +47,6 @@ class FormEventLoggerBase {
 
   void OnDidParseForm(const FormStructure& form);
 
-  void OnPopupSuppressed(const FormStructure& form, const AutofillField& field);
-
   void OnUserHideSuggestions(const FormStructure& form,
                              const AutofillField& field);
 
@@ -191,7 +189,6 @@ class FormEventLoggerBase {
   size_t local_record_type_count_ = 0;
   bool has_parsed_form_ = false;
   bool has_logged_interacted_ = false;
-  bool has_logged_popup_suppressed_ = false;
   bool has_logged_user_hide_suggestions_ = false;
   bool has_logged_suggestions_shown_ = false;
   bool has_logged_suggestion_filled_ = false;
