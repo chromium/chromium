@@ -1102,7 +1102,7 @@ void EventRouter::OnFileSystemMountFailed() {
 }
 
 void EventRouter::OnDriveConnectionStatusChanged(
-    drive::util::ConnectionStatusType status) {
+    drive::util::ConnectionStatus status) {
   NotifyDriveConnectionStatusChanged();
 }
 

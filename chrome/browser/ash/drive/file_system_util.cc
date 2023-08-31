@@ -8,18 +8,16 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/escape.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -31,7 +29,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -177,14 +174,36 @@ bool IsOobeDrivePinningEnabled() {
   return IsOobeDrivePinningEnabled(ProfileManager::GetActiveUserProfile());
 }
 
-ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
-  auto* drive_integration_service = GetIntegrationServiceByProfile(profile);
-  if (!drive_integration_service) {
-    return DRIVE_DISCONNECTED_NOSERVICE;
+std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
+  switch (status) {
+#define PRINT(s)               \
+  case ConnectionStatus::k##s: \
+    return out << #s;
+    PRINT(NoService)
+    PRINT(NoNetwork)
+    PRINT(NotReady)
+    PRINT(Metered)
+    PRINT(Connected)
+#undef PRINT
   }
+
+  return out << "ConnectionStatus("
+             << static_cast<std::underlying_type_t<ConnectionStatus>>(status)
+             << ")";
+}
+
+ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
+  using enum ConnectionStatus;
+
+  if (!GetIntegrationServiceByProfile(profile)) {
+    VLOG(1) << "GetDriveConnectionStatus: no Drive integration service";
+    return kNoService;
+  }
+
   auto* network_connection_tracker = content::GetNetworkConnectionTracker();
   if (network_connection_tracker->IsOffline()) {
-    return DRIVE_DISCONNECTED_NONETWORK;
+    VLOG(1) << "GetDriveConnectionStatus: no network";
+    return kNoNetwork;
   }
 
   auto connection_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
@@ -196,9 +215,12 @@ ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {
       profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular);
 
   if (is_connection_cellular && disable_sync_over_celluar) {
-    return DRIVE_CONNECTED_METERED;
+    VLOG(1) << "GetDriveConnectionStatus: metered";
+    return kMetered;
   }
-  return DRIVE_CONNECTED;
+
+  VLOG(1) << "GetDriveConnectionStatus: connected";
+  return kConnected;
 }
 
 bool IsPinnableGDocMimeType(const std::string& mime_type) {

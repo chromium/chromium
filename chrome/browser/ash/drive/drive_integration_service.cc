@@ -1836,14 +1836,16 @@ void DriveIntegrationService::GetDocsOfflineStats(
 
 void DriveIntegrationService::UpdateNetworkState(bool pause_syncing,
                                                  bool is_offline) {
+  const util::ConnectionStatus status =
+      util::GetDriveConnectionStatus(profile_);
+  VLOG(1) << "UpdateNetworkState: " << status;
+
   if (DriveFs* const drivefs = GetDriveFsInterface()) {
     drivefs->UpdateNetworkState(pause_syncing, is_offline);
   }
 
-  util::ConnectionStatusType connection_status =
-      util::GetDriveConnectionStatus(profile_);
-  for (auto& observer : observers_) {
-    observer.OnDriveConnectionStatusChanged(connection_status);
+  for (DriveIntegrationServiceObserver& observer : observers_) {
+    observer.OnDriveConnectionStatusChanged(status);
   }
 }
 
