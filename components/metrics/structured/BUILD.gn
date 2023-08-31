@@ -14,6 +14,7 @@ static_library("structured") {
     "external_metrics.h",
     "key_data.cc",
     "key_data.h",
+    "key_data_provider.h",
     "persistent_proto.cc",
     "persistent_proto.h",
     "reporting/structured_metrics_log_metrics.cc",
@@ -226,6 +227,8 @@ static_library("neutrino_logging_util") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "test/test_key_data_provider.cc",
+    "test/test_key_data_provider.h",
     "test/test_structured_metrics_provider.cc",
     "test/test_structured_metrics_provider.h",
   ]
@@ -254,6 +257,7 @@ source_set("unit_tests") {
     ":structured",
     ":structured_events",
     ":structured_metrics_validator",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
