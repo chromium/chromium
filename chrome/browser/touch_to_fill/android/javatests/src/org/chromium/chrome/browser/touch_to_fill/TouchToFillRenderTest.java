@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Credentia
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -69,6 +70,7 @@ import java.util.List;
  * These tests render screenshots of touch to fill sheet and compare them to a gold standard.
  */
 @RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillRenderTest {
