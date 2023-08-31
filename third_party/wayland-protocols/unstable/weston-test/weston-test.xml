@@ -34,6 +34,12 @@
 
       These requests may allow clients to do very bad things.
     </description>
+
+    <enum name="error">
+      <entry name="touch_up_with_coordinate" value="0"
+        summary="invalid coordinate"/>
+    </enum>
+
     <request name="move_surface">
       <description summary="do not use">
         Moves the surface to a specified location on screen.
@@ -46,6 +52,7 @@
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
     </request>
+
     <request name="move_pointer">
       <description summary="moves pointer to a specified location on the surface">
         Moves the pointer to a specified location on the surface. The
@@ -66,6 +73,7 @@
       <arg name="x" type="int"/>
       <arg name="y" type="int"/>
     </request>
+
     <request name="send_button">
       <description summary="sends a pointer button using the current location of the pointer">
         Sends a pointer button using the current location of the pointer. If
@@ -79,11 +87,13 @@
       <arg name="button" type="int"/>
       <arg name="state" type="uint"/>
     </request>
+
     <request name="reset_pointer">
       <description summary="resets pressed pointer buttons if any">
         Unpresses pressed mouse buttons if any.
       </description>
     </request>
+
     <request name="send_axis">
       <arg name="tv_sec_hi" type="uint"/>
       <arg name="tv_sec_lo" type="uint"/>
@@ -91,12 +101,14 @@
       <arg name="axis" type="uint"/>
       <arg name="value" type="fixed"/>
     </request>
+
     <request name="activate_surface">
       <description summary="activates the specified surface">
         Activates and raises the surface a client requested.
       </description>
       <arg name="surface" type="object" interface="wl_surface" allow-null="true"/>
     </request>
+
     <request name="send_key">
       <description summary="send a keyboard key">
         Sends a keyboard key to the currently active window. In order to send a
@@ -109,12 +121,15 @@
       <arg name="key" type="uint"/>
       <arg name="state" type="uint"/>
     </request>
+
     <request name="device_release">
       <arg name="device" type="string"/>
     </request>
+
     <request name="device_add">
       <arg name="device" type="string"/>
     </request>
+
     <event name="pointer_position">
       <description summary="a callback event that is called upon move_pointer request">
         Signals that the event has been sent. The x and y are the same values
@@ -123,6 +138,7 @@
       <arg name="x" type="fixed"/>
       <arg name="y" type="fixed"/>
     </event>
+
     <event name="pointer_button">
       <description summary="notifies current pointer button events">
         The pointer_button signal is sent after each send_button request.
@@ -130,6 +146,7 @@
       <arg name="button" type="int"/>
       <arg name="state" type="uint"/>
     </event>
+
     <event name="keyboard_key">
       <description summary="notifies current pointer button events">
         The keyboard_key signal is sent after each send_key request.
@@ -137,22 +154,7 @@
       <arg name="key" type="uint"/>
       <arg name="state" type="uint"/>
     </event>
-    <request name="capture_screenshot">
-      <description summary="records current screen image">
-        Records an image of what is currently displayed on a given
-        display output, returning the image as an event.
-      </description>
-      <arg name="output" type="object" interface="wl_output"
-           summary="output to capture from"/>
-      <arg name="buffer" type="object" interface="wl_buffer"
-           summary="buffer for returning screenshots to the test client"/>
-    </request>
-    <event name="capture_screenshot_done">
-	  <description summary="screenshot capture is done">
-		The capture_screenshot_done signal is sent when a screenshot has been copied into the
-		provided buffer.
-	  </description>
-    </event>
+
     <request name="send_touch">
       <arg name="tv_sec_hi" type="uint"/>
       <arg name="tv_sec_lo" type="uint"/>
@@ -162,6 +164,7 @@
       <arg name="y" type="fixed"/>
       <arg name="touch_type" type="uint"/>
     </request>
+
     <event name="touch_received">
       <description summary="a callback event that is called upon send_touch request">
         Signals that the event has been sent. The x and y are the same values

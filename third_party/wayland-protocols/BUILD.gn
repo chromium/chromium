@@ -128,6 +128,14 @@ wayland_protocol("stylus_tools_protocol") {
   sources = [ "unstable/stylus-tools/stylus-tools-unstable-v1.xml" ]
 }
 
+wayland_protocol("tablet_protocol") {
+  sources = [ "src/unstable/tablet/tablet-unstable-v2.xml" ]
+}
+
+wayland_protocol("tearing_control_protocol") {
+  sources = [ "src/staging/tearing-control/tearing-control-v1.xml" ]
+}
+
 wayland_protocol("text_input_extension_protocol") {
   sources = [ "unstable/text-input/text-input-extension-unstable-v1.xml" ]
 }

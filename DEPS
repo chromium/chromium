@@ -1970,7 +1970,7 @@ deps = {
     Var('skia_git') + '/external/github.com/google/wuffs-mirror-release-c.git' + '@' +  Var('wuffs_revision'),
 
   'src/third_party/weston/src': {
-      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/weston.git' + '@' + '420cfd00f2de91de74bd9d4d8348e43c582d29f0',
+      'url': Var('chromium_git') + '/external/anongit.freedesktop.org/git/wayland/weston.git' + '@' + '775f8a1edf357f59e6b2e284297f396f4fac95a4',
       'condition': 'checkout_linux',
   },
 

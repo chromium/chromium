@@ -20,33 +20,33 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 CHROMIUM_ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', '..'))
 
+CLANG_DIR = os.path.join(CHROMIUM_ROOT_DIR, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
+
 sys.path.append(os.path.join(CHROMIUM_ROOT_DIR, 'build'))
+
 import gn_helpers
 
-MESON = ['meson']
+MESON = ['meson', 'setup']
 
 DEFAULT_BUILD_ARGS = [
-    '-Dbuild_tests=false',
     '--buildtype', 'release',
+    '-Dbackend-drm=false',
     '-Dbackend-drm-screencast-vaapi=false',
+    '-Dbackend-pipewire=false',
     '-Dbackend-rdp=false',
-    '-Dxwayland=false',
-    '-Dcolor-management-lcms=false',
-    '-Dpipewire=false',
-    '-Dcolor-management-colord=false',
-    '-Dremoting=false',
-    '-Dsimple-dmabuf-drm=auto',
-    '-Dshell-ivi=false',
-    '-Ddemo-clients=false',
-    '-Dsimple-clients=egl',
-    '-Dlauncher-logind=false',
-    '-Dweston-launch=false',
     '-Dscreenshare=false',
-    '-Dsystemd=false',
+    '-Dbackend-vnc=false',
+    '-Dbackend-default=auto',
+    '-Dxwayland=false',
+    '-Dremoting=false',
+    '-Dpipewire=false',
+    '-Dshell-ivi=false',
+    '-Dcolor-management-lcms=false',
     '-Dimage-jpeg=false',
     '-Dimage-webp=false',
-    '-Dbackend-drm=false',
-    '-Dbackend-default=wayland'
+    '-Ddemo-clients=false',
+    '-Dsimple-clients=egl',
+    '-Dwcap-decode=false',
 ]
 
 
@@ -186,6 +186,7 @@ def RemoveUndesiredDefines():
 def main():
     env = os.environ
     env['CC'] = 'clang'
+    env['PATH'] = ':'.join([CLANG_DIR, env['PATH']])
     GenerateGitConfig(GetAbsPath('version'), env)
     GenerateConfig(GetAbsPath('config'), env)
     ChangeConfigPath()

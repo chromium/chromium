@@ -84,7 +84,6 @@ WestonTestInputEmulate::WestonTestInputEmulate() {
       &WestonTestInputEmulate::HandlePointerPosition,
       &WestonTestInputEmulate::HandlePointerButton,
       &WestonTestInputEmulate::HandleKeyboardKey,
-      nullptr,  // capture_screenshot_done
       &WestonTestInputEmulate::HandleTouchReceived,
   };
   weston_test_add_listener(weston_test_, &test_listener, this);

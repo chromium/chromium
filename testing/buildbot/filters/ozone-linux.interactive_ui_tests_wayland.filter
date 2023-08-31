@@ -54,3 +54,8 @@
 
 # TODO(crbug.com/1192997): Flaky on the bot. Locally runs fine.
 -BrowserActionInteractiveTest.TestOpenPopup
+
+# TODO(crbug.com/1464645): Enable when feature isn't buggy any more. (Used to pass with Weston 9,
+# but doesn't pass with Weston 12.)
+-FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
+-FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
