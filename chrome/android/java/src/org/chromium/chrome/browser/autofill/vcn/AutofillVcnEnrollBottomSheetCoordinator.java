@@ -91,8 +91,8 @@ import java.util.LinkedList;
                         cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         PropertyModelChangeProcessor.create(model, view, viewBinder::bind);
 
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(view.mContentView, view.mAcceptButton,
-                view.mCancelButton, onAccept, onCancel, onDismiss);
+        mMediator = new AutofillVcnEnrollBottomSheetMediator(view.mContentView, view.mScrollView,
+                view.mAcceptButton, view.mCancelButton, onAccept, onCancel, onDismiss);
     }
 
     private void launchChromeCustomTab(String url) {

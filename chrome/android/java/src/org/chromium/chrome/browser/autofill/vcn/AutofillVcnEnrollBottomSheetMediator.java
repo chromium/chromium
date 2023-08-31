@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 
@@ -18,6 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 /*package*/ class AutofillVcnEnrollBottomSheetMediator
         implements BottomSheetContent, View.OnClickListener {
     private final View mContentView;
+    private final ScrollView mScrollView;
     private final View mAcceptButton;
     private final View mCancelButton;
     private final Runnable mOnAccept;
@@ -29,15 +31,19 @@ import org.chromium.ui.base.WindowAndroid;
      * Constructs the mediator controller for the virtual card enrollment bottom sheet.
      *
      * @param contentView The bottom sheet content.
+     * @param scrollView The view that optionally scrolls the contents within the sheet on smaller
+     *                   screens.
      * @param acceptButton The button that the user taps when they accept the enrollment prompt.
      * @param cancelButton The button that the user taps when they cancel the enrollment prompt.
      * @param onAccept The callback to invoke when the user accepts the enrollment prompt.
      * @param onCancel The callback to invoke when the user cancels the enrollment prompt.
      * @param onDismiss The callback to invoke when the user dismisses the bottom sheet.
      */
-    /*package*/ AutofillVcnEnrollBottomSheetMediator(View contentView, View acceptButton,
-            View cancelButton, Runnable onAccept, Runnable onCancel, Runnable onDismiss) {
+    /*package*/ AutofillVcnEnrollBottomSheetMediator(View contentView, ScrollView scrollView,
+            View acceptButton, View cancelButton, Runnable onAccept, Runnable onCancel,
+            Runnable onDismiss) {
         mContentView = contentView;
+        mScrollView = scrollView;
 
         mAcceptButton = acceptButton;
         mAcceptButton.setOnClickListener(this);
@@ -97,7 +103,7 @@ import org.chromium.ui.base.WindowAndroid;
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        return mScrollView != null ? mScrollView.getScrollY() : 0;
     }
 
     @Override

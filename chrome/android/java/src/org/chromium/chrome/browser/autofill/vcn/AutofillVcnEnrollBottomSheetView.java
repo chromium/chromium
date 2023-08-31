@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
@@ -18,6 +19,9 @@ import org.chromium.chrome.R;
 /*package*/ class AutofillVcnEnrollBottomSheetView {
     /** The view that contains all other views. */
     /*package*/ final ViewGroup mContentView;
+
+    /** The view that optionally scrolls the contents on smaller screens. */
+    /*package*/ final ScrollView mScrollView;
 
     /** The title of the bottom sheet UI. */
     /*package*/ final TextView mDialogTitle;
@@ -57,6 +61,7 @@ import org.chromium.chrome.R;
     /*package*/ AutofillVcnEnrollBottomSheetView(Context context) {
         mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
+        mScrollView = mContentView.findViewById(R.id.scroll_view);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
         mCardContainer = mContentView.findViewById(R.id.card_container);

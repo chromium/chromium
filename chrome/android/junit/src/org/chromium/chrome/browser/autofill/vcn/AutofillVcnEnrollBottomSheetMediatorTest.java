@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
@@ -48,6 +49,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
 
     private WindowAndroid mWindow;
     private View mContentView;
+    private ScrollView mScrollView;
     private View mAcceptButton;
     private View mCancelButton;
     private boolean mAccepted;
@@ -62,13 +64,14 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         Context context = mWindow.getContext().get();
         mContentView = new View(context);
+        mScrollView = new ScrollView(context);
         mAcceptButton = new View(context);
         mCancelButton = new View(context);
         mAccepted = false;
         mCancelled = false;
         mDismissed = false;
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(mContentView, mAcceptButton,
-                mCancelButton, this::onAccept, this::onCancel, this::onDismiss);
+        mMediator = new AutofillVcnEnrollBottomSheetMediator(mContentView, mScrollView,
+                mAcceptButton, mCancelButton, this::onAccept, this::onCancel, this::onDismiss);
     }
 
     private void onAccept() {
@@ -165,6 +168,13 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     @Test
     public void testNoVerticalScrollOffset() {
         assertThat(mMediator.getVerticalScrollOffset(), equalTo(0));
+    }
+
+    @Test
+    public void testVerticalScrollOffset() {
+        mScrollView.setScrollY(1337);
+
+        assertThat(mMediator.getVerticalScrollOffset(), equalTo(1337));
     }
 
     @Test

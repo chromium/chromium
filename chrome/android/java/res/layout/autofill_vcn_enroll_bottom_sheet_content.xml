@@ -21,6 +21,7 @@ found in the LICENSE file.
         android:src="@drawable/drag_handlebar" />
 
     <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
