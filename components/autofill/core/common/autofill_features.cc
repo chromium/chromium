@@ -200,6 +200,13 @@ BASE_FEATURE(kAutofillEnableSupportForAddressOverflow,
              "AutofillEnableSupportForAddressOverflow",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Chrome support filling and importing address overflow and
+// landmark fields.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForAddressOverflowAndLandmark,
+             "AutofillEnableSupportForAddressOverflowAndLandmark",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,
@@ -537,6 +544,18 @@ const base::FeatureParam<int> kAutofillServerBehaviorsParam{
 // TODO(crbug.com/1304721): Enable this feature.
 BASE_FEATURE(kAutofillSharedAutofill,
              "AutofillSharedAutofill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If this feature is enabled, the AddressFieldParser does NOT try to parse
+// address lines once it has found a street name and house number or other
+// combinations of fields that indicate that an address form uses structured
+// addresses. This should be the default in all countries with fully supported
+// structured addresses. However, if a country is not sufficiently modeled,
+// autofill may still do the right thing if it recognizes "Street name, house
+// number, address line 2" as a sequence.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
+             "AutofillStructuredFieldsDisableAddressLines",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to offer a delete button for Autocomplete entries in the

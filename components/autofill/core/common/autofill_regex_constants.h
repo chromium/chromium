@@ -33,12 +33,13 @@ inline constexpr char16_t kCompanyRe[] =
     u"|회사|직장"                 // ko-KR
     u"|(nama.?)?perusahaan";      // id
 inline constexpr char16_t kStreetNameRe[] =
-    u"stra(ss|ß)e"              // de
-    u"|street"                  // en
-    u"|улица|название.?улицы"   // ru
-    u"|rua|avenida"             // pt-PT, pt-BR
-    u"|((?<!do |de )endereço)"  // pt-BR
-    u"|calle";                  // es-MX
+    u"stra(ss|ß)e"                 // de
+    u"|street"                     // en
+    u"|улица|название.?улицы"      // ru
+    u"|rua|avenida"                // pt-PT, pt-BR
+    u"|((?<!do |de )endere[çc]o)"  // pt-BR
+    u"|logradouro"                 // pt-BR
+    u"|calle";                     // es-MX
 inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"    // en
     u"|(haus|^)(nummer|nr)"                    // de
@@ -183,7 +184,14 @@ inline constexpr char16_t kStateRe[] =
     u"|^시[·・]?도"                                                   // ko-KR
     u"|provinci";                                                     // id
 
-inline constexpr char16_t kOverflowRe[] = u"complemento";  // pt-BR, pt-PT
+inline constexpr char16_t kOverflowRe[] =
+    u"complemento"               // pt-BR, pt-PT
+    u"|informações adicionais";  // pt-BR
+
+inline constexpr char16_t kOverflowAndLandmarkRe[] =
+    u"complement and reference"  // en (but could be generic)
+    // "complemento e referência" or "complemento e ponto de referência"
+    u"|complemento e.*referência";  // pt-BR
 
 inline constexpr char16_t kLandmarkRe[] =
     u"landmark"
@@ -374,6 +382,7 @@ inline constexpr char16_t kNameIgnoredRe[] =
 inline constexpr char16_t kFullNameRe[] =
     u"^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name"
     u"|name.*first.*last|firstandlastname|contact.?(name|person)"
+    u"|receiver"
     u"|nombre.*y.*apellidos"                    // es
     u"|^nom(?![a-zA-Z])"                        // fr-FR
     u"|お名前|氏名"                             // ja-JP

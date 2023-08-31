@@ -54,6 +54,7 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine1},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, HtmlFieldType::kAddressLine3},
+         {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, HtmlFieldType::kAddressLine2},
          {ADDRESS_HOME_OVERFLOW, HtmlFieldType::kAddressLine2}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
@@ -73,6 +74,7 @@ static constexpr auto kAutofillHeuristicsVsServerOverrides =
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_LINE3},
          {ADDRESS_HOME_LANDMARK, ADDRESS_HOME_LINE2},
+         {ADDRESS_HOME_OVERFLOW_AND_LANDMARK, ADDRESS_HOME_LINE2},
          {ADDRESS_HOME_OVERFLOW, ADDRESS_HOME_LINE2}});
 
 // Returns true, if the prediction is non-experimental and should be used by

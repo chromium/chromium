@@ -134,6 +134,11 @@ class AddressField : public FormField {
       const LanguageCode& page_language,
       PatternSource pattern_source);
 
+  ParseNameLabelResult ParseNameAndLabelForOverflowAndLandmark(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language,
+      PatternSource pattern_source);
+
   ParseNameLabelResult ParseNameAndLabelForOverflow(
       AutofillScanner* scanner,
       const LanguageCode& page_language,
@@ -164,6 +169,7 @@ class AddressField : public FormField {
   raw_ptr<AutofillField> landmark_ = nullptr;
   raw_ptr<AutofillField> between_streets_ = nullptr;
   raw_ptr<AutofillField> admin_level2_ = nullptr;
+  raw_ptr<AutofillField> overflow_and_landmark_ = nullptr;
   raw_ptr<AutofillField> overflow_ = nullptr;
 };
 

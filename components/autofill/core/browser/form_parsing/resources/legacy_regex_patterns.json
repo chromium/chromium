@@ -53,7 +53,7 @@
     ],
     "pt" : [
       {
-        "positive_pattern": "rua|avenida|((?<!do |de )endereço)",
+        "positive_pattern": "rua|avenida|((?<!do |de )endere[çc]o)|logradouro",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -1233,10 +1233,31 @@
       }
     ]
   },
+  "OVERFLOW_AND_LANDMARK": {
+    "en": [
+      {
+        "positive_pattern": "complement and reference",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ],
+    "pt": [
+      {
+        "__comment__": "e.g. 'complemento e referência' or 'complemento e ponto de referência'",
+        "positive_pattern": "complemento e.*referência|complement and reference",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "TEXT_AREA", "SEARCH"]
+      }
+    ]
+  },
   "OVERFLOW": {
     "pt": [
       {
-        "positive_pattern": "complemento",
+        "positive_pattern": "complemento|informações adicionais",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -2159,7 +2180,7 @@
   "FULL_NAME": {
     "en": [
       {
-        "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)",
+        "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)|receiver",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],

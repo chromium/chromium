@@ -1030,11 +1030,15 @@ bool AddAutofillProfileToTable(sql::Database* db,
   for (ServerFieldType type :
        AutofillTable::GetStoredTypesForAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
+        type == ADDRESS_HOME_OVERFLOW_AND_LANDMARK) {
+      continue;
+    }
+    if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForAddressOverflow) &&
         type == ADDRESS_HOME_OVERFLOW) {
       continue;
     }
-
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {
@@ -1150,6 +1154,7 @@ AutofillTable::GetStoredTypesForAutofillProfile() {
       ADDRESS_HOME_FLOOR,
       ADDRESS_HOME_OVERFLOW,
       ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
       ADDRESS_HOME_ADMIN_LEVEL2,
       EMAIL_ADDRESS,

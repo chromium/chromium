@@ -95,6 +95,8 @@ constexpr MatchParams kAdminLevel2MatchType =
                             MatchFieldType::kSelect>;
 constexpr MatchParams kOverflowMatchType =
     kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
+constexpr MatchParams kOverflowAndLandmarkMatchType =
+    kDefaultMatchParamsWith<MatchFieldType::kTextArea, MatchFieldType::kSearch>;
 
 }  // namespace
 
@@ -193,7 +195,7 @@ std::unique_ptr<FormField> AddressField::Parse(
       address_field->country_ || address_field->apartment_number_ ||
       address_field->dependent_locality_ || address_field->landmark_ ||
       address_field->between_streets_ || address_field->admin_level2_ ||
-      address_field->overflow_) {
+      address_field->overflow_and_landmark_ || address_field->overflow_) {
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
@@ -248,6 +250,8 @@ void AddressField::AddClassifications(
                     kBaseAddressParserScore, field_candidates);
   AddClassification(admin_level2_, ADDRESS_HOME_ADMIN_LEVEL2,
                     kBaseAddressParserScore, field_candidates);
+  AddClassification(overflow_and_landmark_, ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                    kBaseAddressParserScore, field_candidates);
   AddClassification(overflow_, ADDRESS_HOME_OVERFLOW, kBaseAddressParserScore,
                     field_candidates);
 }
@@ -268,9 +272,20 @@ bool AddressField::ParseCompany(AutofillScanner* scanner,
 bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
                                              const LanguageCode& page_language,
                                              PatternSource pattern_source) {
-  // Search for a sequence of a street name field followed by a house number
-  // field. Only if both are found in an abitrary order, the parsing is
-  // considered successful.
+  // Search for an uninterrupted sequence of fields that indicate that a form
+  // asks for structured information.
+  //
+  // Common examples are:
+  // - house number + street name
+  // - house number + zip code (in some countries the zip code and house number
+  //     fully identify a building)
+  // - house number + overflow (in some countries the zip code is requested
+  //     first and a followup form only asks for overflow + house number because
+  //     together with the zip code a building is fully identified)
+  // - house number + overflow and landmark
+  //
+  // Only if a house number and one of the extra fields are found in an
+  // arbitrary order the parsing is considered successful.
   const size_t cursor_position = scanner->CursorPosition();
 
   base::span<const MatchPatternRef> street_name_patterns =
@@ -280,8 +295,22 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
       ADDRESS_HOME_HOUSE_NUMBER, page_language, pattern_source);
   base::span<const MatchPatternRef> apartment_number_patterns =
       GetMatchPatterns(ADDRESS_HOME_APT_NUM, page_language, pattern_source);
+  base::span<const MatchPatternRef> overflow_patterns =
+      GetMatchPatterns("OVERFLOW", page_language, pattern_source);
+  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
+      GetMatchPatterns("OVERFLOW_AND_LANDMARK", page_language, pattern_source);
+
+  AutofillField* old_street_name_ = street_name_;
+  AutofillField* old_overflow_ = overflow_;
+  AutofillField* old_overflow_and_landmark_ = overflow_and_landmark_;
+  AutofillField* old_house_number_ = house_number_;
+  AutofillField* old_zip_ = zip_;
+  AutofillField* old_zip4_ = zip4_;
+  AutofillField* old_apartment_number_ = apartment_number_;
 
   while (!scanner->IsEnd()) {
+    // TODO(crbug.com/1474308) Factor out these ParseFieldSpecifics into
+    // ParseStreetName and similar functions.
     if (!street_name_ &&
         ParseFieldSpecifics(scanner, kStreetNameRe,
                             kDefaultMatchParamsWith<MatchFieldType::kSearch>,
@@ -289,6 +318,33 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
                             {log_manager_, "kStreetNameRe"})) {
       continue;
     }
+
+    if (ParseZipCode(scanner, page_language, pattern_source)) {
+      continue;
+    }
+
+    if (!(overflow_and_landmark_ || overflow_) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForAddressOverflowAndLandmark) &&
+        ParseFieldSpecifics(
+            scanner, kOverflowAndLandmarkRe, kOverflowAndLandmarkMatchType,
+            overflow_and_landmark_patterns, &overflow_and_landmark_,
+            {log_manager_, "kOverflowAndLandmarkRe"})) {
+      continue;
+    }
+
+    // Because `overflow_and_landmark_` and `overflow_` overflow in semantics
+    // we don't want them both to be in the same form section. This would
+    // probably point to some problem in the classification.
+    if (!(overflow_and_landmark_ || overflow_) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForAddressOverflow) &&
+        ParseFieldSpecifics(scanner, kOverflowRe, kOverflowMatchType,
+                            overflow_patterns, &overflow_,
+                            {log_manager_, "kOverflowRe"})) {
+      continue;
+    }
+
     if (!house_number_ &&
         ParseFieldSpecifics(scanner, kHouseNumberRe,
                             kDefaultMatchParamsWith<MatchFieldType::kNumber,
@@ -313,14 +369,21 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
     break;
   }
 
-  // The street name and house number are non-optional.
-  if (street_name_ && house_number_)
+  // Record success if the house number and at least one of the other
+  // fields were found because that indicates a structured address form.
+  if (house_number_ &&
+      (street_name_ || zip_ || overflow_ || overflow_and_landmark_)) {
     return true;
+  }
 
   // Reset all fields if the non-optional requirements could not be met.
-  street_name_ = nullptr;
-  house_number_ = nullptr;
-  apartment_number_ = nullptr;
+  street_name_ = old_street_name_;
+  house_number_ = old_house_number_;
+  overflow_ = old_overflow_;
+  overflow_and_landmark_ = old_overflow_and_landmark_;
+  zip_ = old_zip_;
+  zip4_ = old_zip4_;
+  apartment_number_ = old_apartment_number_;
 
   scanner->RewindTo(cursor_position);
   return false;
@@ -329,13 +392,19 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
 bool AddressField::ParseAddress(AutofillScanner* scanner,
                                 const LanguageCode& page_language,
                                 PatternSource pattern_source) {
-  if (street_name_ && house_number_) {
+  if (house_number_ &&
+      (street_name_ || zip_ || overflow_ || overflow_and_landmark_)) {
     return false;
   }
   // Do not inline these calls: After passing an address field sequence, there
   // might be an additional address line 2 to parse afterwards.
   bool has_field_sequence =
       ParseAddressFieldSequence(scanner, page_language, pattern_source);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillStructuredFieldsDisableAddressLines) &&
+      has_field_sequence) {
+    return true;
+  }
   bool has_address_lines =
       ParseAddressLines(scanner, page_language, pattern_source);
   return has_field_sequence || has_address_lines;
@@ -559,6 +628,17 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
       ParseNameAndLabelForCountry(scanner, page_language, pattern_source);
   if (country_result == RESULT_MATCH_NAME_LABEL)
     return true;
+  ParseNameLabelResult overflow_and_landmark_result =
+      ParseNameAndLabelForOverflowAndLandmark(scanner, page_language,
+                                              pattern_source);
+  if (overflow_and_landmark_result == RESULT_MATCH_NAME_LABEL) {
+    return true;
+  }
+  // This line bears some potential problems. A field with
+  // <label>Complemento e referência: <input name="complemento"><label>
+  // will match the "overflow" in the label and name. The function would
+  // exit here. Instead of later recognizing that "Complemento e referência"
+  // points to a different type.
   ParseNameLabelResult overflow_result =
       ParseNameAndLabelForOverflow(scanner, page_language, pattern_source);
   if (overflow_result == RESULT_MATCH_NAME_LABEL) {
@@ -589,7 +669,7 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
   for (const auto result :
        {dependent_locality_result, city_result, state_result, country_result,
         zip_result, landmark_result, between_streets_result,
-        admin_level2_result, overflow_result}) {
+        admin_level2_result, overflow_and_landmark_result, overflow_result}) {
     if (result != RESULT_MATCH_NONE)
       ++num_of_matches;
   }
@@ -604,6 +684,9 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
       return SetFieldAndAdvanceCursor(scanner, &state_);
     if (country_result != RESULT_MATCH_NONE)
       return SetFieldAndAdvanceCursor(scanner, &country_);
+    if (overflow_and_landmark_result != RESULT_MATCH_NONE) {
+      return SetFieldAndAdvanceCursor(scanner, &overflow_and_landmark_);
+    }
     if (overflow_result != RESULT_MATCH_NONE) {
       return SetFieldAndAdvanceCursor(scanner, &overflow_);
     }
@@ -646,6 +729,9 @@ bool AddressField::ParseAddressField(AutofillScanner* scanner,
       return SetFieldAndAdvanceCursor(scanner, &state_);
     if (country_result == result)
       return SetFieldAndAdvanceCursor(scanner, &country_);
+    if (overflow_and_landmark_result == result) {
+      return SetFieldAndAdvanceCursor(scanner, &overflow_and_landmark_);
+    }
     if (overflow_result == result) {
       return SetFieldAndAdvanceCursor(scanner, &overflow_);
     }
@@ -786,13 +872,35 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
       {log_manager_, "kCountryLocationRe"});
 }
 
+AddressField::ParseNameLabelResult
+AddressField::ParseNameAndLabelForOverflowAndLandmark(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language,
+    PatternSource pattern_source) {
+  //  TODO(crbug.com/1441904) Remove feature check when launched.
+  if (overflow_and_landmark_ || overflow_ ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflowAndLandmark)) {
+    return RESULT_MATCH_NONE;
+  }
+
+  base::span<const MatchPatternRef> overflow_and_landmark_patterns =
+      GetMatchPatterns("OVERFLOW_AND_LANDMARK", page_language, pattern_source);
+  auto result = ParseNameAndLabelSeparately(
+      scanner, kOverflowAndLandmarkRe, kOverflowAndLandmarkMatchType,
+      overflow_and_landmark_patterns, &overflow_and_landmark_,
+      {log_manager_, "kOverflowAndLandmarkRe"});
+  return result;
+}
+
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForOverflow(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
     PatternSource pattern_source) {
   // TODO(crbug.com/1441904) Remove feature check when launched.
-  if (overflow_ || !base::FeatureList::IsEnabled(
-                       features::kAutofillEnableSupportForAddressOverflow)) {
+  if (overflow_and_landmark_ || overflow_ ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAddressOverflow)) {
     return RESULT_MATCH_NONE;
   }
 

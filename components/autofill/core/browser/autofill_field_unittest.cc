@@ -407,6 +407,11 @@ INSTANTIATE_TEST_SUITE_P(
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kAddressLine2,
             .server_type = ADDRESS_HOME_LINE2,
+            .heuristic_type = ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+            .expected_result = ADDRESS_HOME_OVERFLOW_AND_LANDMARK},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kAddressLine2,
+            .server_type = ADDRESS_HOME_LINE2,
             .heuristic_type = ADDRESS_HOME_OVERFLOW,
             .expected_result = ADDRESS_HOME_OVERFLOW},
         // Final type is unknown if the html type is not valid.

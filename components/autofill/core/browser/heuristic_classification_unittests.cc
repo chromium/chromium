@@ -115,6 +115,7 @@
 
 #include <sstream>
 #include <string_view>
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -483,23 +484,6 @@ void HeuristicClassificationTests::SetUp() {
 }
 
 TEST_P(HeuristicClassificationTests, EndToEnd) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {// This is always enabled to classify autocomplete=invalid fields.
-       features::kAutofillPredictionsForAutocompleteUnrecognized,
-       // Support for new field types.
-       features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillEnableSupportForAdminLevel2,
-       features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForLandmark,
-       features::kAutofillEnableSupportForApartmentNumbers,
-       features::kAutofillEnableDependentLocalityParsing,
-       features::kAutofillEnableExpirationDateImprovements,
-       // Allow local heuristics to take precedence.
-       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete},
-      /*disabled_features=*/{});
-
   base::FilePath input_file = GetParam();
   SCOPED_TRACE(::testing::Message() << input_file);
 
@@ -525,6 +509,39 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, *country);
+
+  std::vector<base::test::FeatureRef> enabled_features = {
+      // This is always enabled to classify autocomplete=invalid fields.
+      features::kAutofillPredictionsForAutocompleteUnrecognized,
+      // Support for new field types.
+      features::kAutofillEnableSupportForBetweenStreets,
+      features::kAutofillEnableSupportForAdminLevel2,
+      features::kAutofillEnableSupportForAddressOverflow,
+      features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+      features::kAutofillEnableSupportForLandmark,
+      features::kAutofillEnableSupportForApartmentNumbers,
+      features::kAutofillEnableDependentLocalityParsing,
+      features::kAutofillEnableExpirationDateImprovements,
+      // Allow local heuristics to take precedence.
+      features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete};
+  std::vector<base::test::FeatureRef> disabled_features = {};
+
+  auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
+    if (value) {
+      enabled_features.push_back(feature);
+    } else {
+      disabled_features.push_back(feature);
+    }
+  };
+
+  std::vector<std::string> structured_fields_disable_address_lines = {"BR",
+                                                                      "MX"};
+  init_feature_to_value(
+      features::kAutofillStructuredFieldsDisableAddressLines,
+      base::Contains(structured_fields_disable_address_lines, *country));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 
   // Configure page language.
   const std::string* language = config->FindString("language");
