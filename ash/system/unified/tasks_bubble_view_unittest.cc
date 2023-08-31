@@ -13,12 +13,14 @@
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
@@ -123,6 +125,15 @@ class TasksBubbleViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter)));
   }
 
+  const IconButton* GetHeaderIconView() const {
+    return views::AsViewClass<IconButton>(
+        view_
+            ->GetViewByID(
+                base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView))
+            ->GetViewByID(base::to_underlying(
+                GlanceablesViewId::kTasksBubbleHeaderIcon)));
+  }
+
   const views::ProgressBar* GetProgressBar() const {
     return views::AsViewClass<views::ProgressBar>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kProgressBar)));
@@ -219,13 +230,42 @@ TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
   EXPECT_EQ(1, tasks_client()->completed_task_count());
 }
 
-TEST_F(TasksBubbleViewTest, ShowTasksWebUI) {
+TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromFooterView) {
+  base::UserActionTester user_actions;
   const auto* const see_all_button =
       views::AsViewClass<views::LabelButton>(GetListFooterView()->GetViewByID(
           base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
   GestureTapOn(see_all_button);
   EXPECT_EQ(new_window_delegate()->last_opened_url(),
             "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
+}
+
+TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
+  base::UserActionTester user_actions;
+
+  ASSERT_EQ(GetComboBoxView()->GetTextForRow(2), u"Task List 3 Title (empty)");
+  MenuSelectionAt(2);
+  EXPECT_FALSE(GetTaskItemsContainerView()->GetVisible());
+  EXPECT_TRUE(GetTaskItemsContainerView()->children().empty());
+  EXPECT_TRUE(GetAddNewTaskButton()->GetVisible());
+
+  GestureTapOn(GetAddNewTaskButton());
+  EXPECT_EQ(new_window_delegate()->last_opened_url(),
+            "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton"));
+}
+
+TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
+  base::UserActionTester user_actions;
+  const auto* const header_icon_button = GetHeaderIconView();
+  GestureTapOn(header_icon_button);
+  EXPECT_EQ(new_window_delegate()->last_opened_url(),
+            "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {

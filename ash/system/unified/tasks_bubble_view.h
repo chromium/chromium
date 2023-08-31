@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
@@ -89,7 +90,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
  private:
   // Handles press behavior for the "See all" button in `list_footer_view_` and
   // `add_new_task_button_`.
-  void ActionButtonPressed();
+  void ActionButtonPressed(TasksLaunchSource source);
 
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();

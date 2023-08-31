@@ -107,6 +107,8 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
+  tasks_header_view_->SetID(
+      base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
 
   progress_bar_ = AddChildView(std::make_unique<GlanceablesProgressBarView>());
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
@@ -127,16 +129,20 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
 
   add_new_task_button_ =
       AddChildView(CreateAddNewTaskButton(base::BindRepeating(
-          &TasksBubbleView::ActionButtonPressed, base::Unretained(this))));
+          &TasksBubbleView::ActionButtonPressed, base::Unretained(this),
+          TasksLaunchSource::kAddNewTaskButton)));
 
   auto* const header_icon =
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
-                              base::Unretained(this)),
+                              base::Unretained(this),
+                              TasksLaunchSource::kHeaderButton),
           IconButton::Type::kMedium, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
   header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
+  header_icon->SetID(
+      base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
 
   tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
@@ -160,7 +166,8 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
       l10n_util::GetStringUTF16(
           IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
       base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
-                          base::Unretained(this))));
+                          base::Unretained(this),
+                          TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
 
@@ -179,7 +186,8 @@ void TasksBubbleView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void TasksBubbleView::ActionButtonPressed() {
+void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
+  RecordTasksLaunchSource(source);
   NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kTasksManagementPage),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,

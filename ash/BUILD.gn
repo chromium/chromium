@@ -644,6 +644,8 @@ component("ash") {
     "glanceables/glanceables_controller.cc",
     "glanceables/glanceables_controller.h",
     "glanceables/glanceables_delegate.h",
+    "glanceables/glanceables_metrics.cc",
+    "glanceables/glanceables_metrics.h",
     "glanceables/glanceables_v2_controller.cc",
     "glanceables/glanceables_v2_controller.h",
     "glanceables/glanceables_view.cc",

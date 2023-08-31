@@ -37,6 +37,8 @@ enum class GlanceablesViewId {
   kTasksBubbleListContainer,
   kTasksBubbleAddNewButton,
   kTasksBubbleListFooter,
+  kTasksBubbleHeaderView,
+  kTasksBubbleHeaderIcon,
 
   // `GlanceablesTaskView`.
   kTaskItemTitleLabel,
