@@ -567,8 +567,10 @@ function extractFieldsFromControlElements_(
  * @param {Node} node The node to be processed.
  * @return {boolean} Whether the node is visible or not.
  */
-function isVisibleNode_(node) {
-  if (!node) return false;
+__gCrWeb.fill.isVisibleNode = function(node) {
+  if (!node) {
+    return false;
+  }
 
   if (node.nodeType === Node.ELEMENT_NODE) {
     const style = window.getComputedStyle(/** @type {Element} */ (node));
@@ -578,8 +580,8 @@ function isVisibleNode_(node) {
   }
 
   // Verify all ancestors are focusable.
-  return !node.parentNode || isVisibleNode_(node.parentNode);
-}
+  return !node.parentNode || __gCrWeb.fill.isVisibleNode(node.parentNode);
+};
 
 /**
  * For each label element, get the corresponding form control element, use the
@@ -1069,7 +1071,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
     field['is_autofilled'] = element['isAutofilled'];
     field['should_autocomplete'] = __gCrWeb.fill.shouldAutocomplete(element);
     field['is_focusable'] = !element.disabled && !element.readOnly &&
-        element.tabIndex >= 0 && isVisibleNode_(element);
+        element.tabIndex >= 0 && __gCrWeb.fill.isVisibleNode(element);
   }
 
   if (__gCrWeb.fill.isAutofillableInputElement(element)) {

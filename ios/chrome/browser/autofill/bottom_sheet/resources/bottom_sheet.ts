@@ -36,6 +36,13 @@ function isObservable_(element: HTMLElement): boolean {
  * @private
  */
 function showBottomSheet_(hasUserGesture: boolean): void {
+  // Verify that the window's layout viewport has a height and a width and also
+  // that the element is visible.
+  if (window.innerHeight == 0 || window.innerWidth == 0 ||
+      !gCrWeb.fill.isVisibleNode(lastBlurredElement_)) {
+    return;
+  }
+
   let field = null;
   let fieldType = '';
   let fieldValue = '';
