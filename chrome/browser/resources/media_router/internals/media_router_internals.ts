@@ -10,7 +10,7 @@ function formatJson(jsonObj: object) {
 }
 
 function displayMirroringStats(mirroringStats: object) {
-  getRequiredElement('mirroring-stats-enabled-div').textContent =
+  getRequiredElement('mirroring-stats-div').textContent =
       formatJson(mirroringStats);
 }
 
@@ -29,18 +29,5 @@ document.addEventListener('DOMContentLoaded', function() {
   addWebUiListener(
       'on-mirroring-stats-update',
       (mirroringStats: object) => displayMirroringStats(mirroringStats));
-
-  const checkbox = getRequiredElement('checkbox-input') as HTMLInputElement;
-  sendWithPromise('isMirroringStatsEnabled').then((enabled: boolean) => {
-    checkbox.checked = enabled;
-    if (enabled) {
-      sendWithPromise('getMirroringStats').then(displayMirroringStats);
-    }
-  });
-
-  checkbox.addEventListener('change', async function() {
-    const mirroringStats =
-        await sendWithPromise('setMirroringStatsEnabled', checkbox.checked);
-    displayMirroringStats(mirroringStats);
-  });
+  sendWithPromise('getMirroringStats').then(displayMirroringStats);
 });
