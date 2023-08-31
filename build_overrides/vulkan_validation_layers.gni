@@ -4,6 +4,8 @@
 
 import("//build_overrides/vulkan_common.gni")
 
+vulkan_utility_libraries_dir =
+    "//third_party/vulkan-deps/vulkan-utility-libraries/src"
 vvl_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"
 vvl_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
 vvl_glslang_dir = "//third_party/vulkan-deps/glslang/src"
