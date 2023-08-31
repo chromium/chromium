@@ -115,11 +115,8 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // -processWithPasswordFormFillData: is called.
   DCHECK(_webState.get());
 
-  password_manager::PasswordManagerJavaScriptFeature* feature =
-      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   const std::string frame_id = SysNSStringToUTF8(formQuery.frameID);
-  web::WebFrame* frame =
-      feature->GetWebFramesManager(_webState.get())->GetFrameWithId(frame_id);
+  web::WebFrame* frame = [self frameWithId:frame_id];
   DCHECK(frame);
 
   BOOL isPasswordField = [formQuery isOnPasswordField];
@@ -223,11 +220,21 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 #pragma mark - Private methods
 
 - (AccountSelectFillData*)getFillDataFromFrame:(const std::string&)frameId {
+  if (![self frameWithId:frameId]) {
+    return nullptr;
+  }
+
   auto it = _fillDataMap.find(frameId);
   if (it == _fillDataMap.end()) {
     return nullptr;
   }
   return it->second.get();
+}
+
+- (web::WebFrame*)frameWithId:(const std::string&)frameId {
+  password_manager::PasswordManagerJavaScriptFeature* feature =
+      password_manager::PasswordManagerJavaScriptFeature::GetInstance();
+  return feature->GetWebFramesManager(_webState.get())->GetFrameWithId(frameId);
 }
 
 @end
