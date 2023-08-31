@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/shorthand.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -1748,6 +1749,11 @@ void InspectorStyleSheet::ParseText(const String& text) {
         for (auto& property_source_data : rule_source_data->property_data) {
           if (!property_source_data.name.StartsWith("--") ||
               !property_source_data.parsed_ok) {
+            continue;
+          }
+
+          // The defaulting keywords are always allowed
+          if (css_parsing_utils::IsCSSWideKeyword(property_source_data.value)) {
             continue;
           }
 
