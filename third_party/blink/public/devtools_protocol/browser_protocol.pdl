@@ -9770,13 +9770,22 @@ experimental domain Storage
       string key
       UnsignedInt128AsBase16 value
 
+  experimental type AttributionReportingEventReportWindows extends object
+    properties
+      # duration in seconds
+      integer start
+      # duration in seconds
+      array of integer ends
+
   experimental type AttributionReportingSourceRegistration extends object
     properties
       Network.TimeSinceEpoch time
       # duration in seconds
       optional integer expiry
+      # eventReportWindow and eventReportWindows are mutually exclusive
       # duration in seconds
       optional integer eventReportWindow
+      optional AttributionReportingEventReportWindows eventReportWindows
       # duration in seconds
       optional integer aggregatableReportWindow
       AttributionReportingSourceType type

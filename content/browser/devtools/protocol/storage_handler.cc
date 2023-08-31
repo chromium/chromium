@@ -1738,6 +1738,24 @@ ToAggregationKeysEntries(const attribution_reporting::AggregationKeys& keys) {
   return out;
 }
 
+void SetEventReportWindowOrWindows(
+    const attribution_reporting::EventReportWindows& windows,
+    std::unique_ptr<Storage::AttributionReportingSourceRegistration>& out) {
+  if (windows.OnlySingularWindow()) {
+    out->SetEventReportWindow(windows.window_time().InSeconds());
+  } else {
+    auto end_times = std::make_unique<Array<int>>();
+    for (base::TimeDelta end_time : windows.end_times()) {
+      end_times->emplace_back(end_time.InSeconds());
+    }
+    out->SetEventReportWindows(
+        Storage::AttributionReportingEventReportWindows::Create()
+            .SetStart(windows.start_time().InSeconds())
+            .SetEnds(std::move(end_times))
+            .Build());
+  }
+}
+
 }  // namespace
 
 void StorageHandler::OnSourceHandled(
@@ -1774,10 +1792,9 @@ void StorageHandler::OnSourceHandled(
     out_source->SetExpiry(delta->InSeconds());
   }
 
-  if (registration.event_report_windows.has_value() &&
-      registration.event_report_windows->OnlySingularWindow()) {
-    base::TimeDelta delta = registration.event_report_windows->window_time();
-    out_source->SetEventReportWindow(delta.InSeconds());
+  if (registration.event_report_windows.has_value()) {
+    SetEventReportWindowOrWindows(*registration.event_report_windows,
+                                  out_source);
   }
 
   if (absl::optional<base::TimeDelta> delta =

@@ -11,6 +11,12 @@ Test that the Storage.attributionReportingSourceRegistered event is fired.
             [0] : https://a.example
         ]
         eventId : 123
+        eventReportWindows : {
+            ends : [
+                [0] : 86400
+            ]
+            start : 0
+        }
         filterData : [
             [0] : {
                 key : a
