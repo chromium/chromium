@@ -37,6 +37,12 @@ export interface DraggableTileListInterface {
   getDraggableTile(index: number): HTMLElement;
   // Given a draggable tile, return its corresponding index in the tile list.
   getDraggableTileIndex(tile: HTMLElement): number;
+
+  // On drag end, send back the indices of the tiles that were affected.
+  // initialIndex: is the index of the tile that was dragged.
+  // finalIndex: is the index of the tile that was targeted, the location at
+  // which the dragging tile was dropped.
+  onDradEnd(initialIndex: number, finalIndex: number): void;
 }
 
 // This delegate class allows any Polymer list container of tiles to add the
@@ -280,6 +286,10 @@ export class DragDropReorderTileListDelegate {
       // will take into account the changes and have all the tiles at their
       // right place.
       this.applyChanges_();
+
+      // Notfiy the list of the changes.
+      this.tileListInterface_.onDradEnd(
+          this.dragStartIndex_, this.dropTargetIndex_);
     }
 
     this.dropTargetIndex_ = -1;

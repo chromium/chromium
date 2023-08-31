@@ -20,7 +20,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'closeProfileStatistics', 'selectNewAccount',
       'createProfileAndOpenCustomizationDialog', 'setProfileName',
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
-      'confirmProfileSwitch', 'cancelProfileSwitch',
+      'confirmProfileSwitch', 'cancelProfileSwitch', 'updateProfileOrder',
       // <if expr="chromeos_lacros">
       'getAvailableAccounts', 'openAshAccountSettingsPage',
       'selectExistingAccountLacros', 'openDeviceGuestLinkLacros',
@@ -161,6 +161,10 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   cancelProfileSwitch() {
     this.methodCalled('cancelProfileSwitch');
+  }
+
+  updateProfileOrder(fromIndex: number, toIndex: number) {
+    this.methodCalled('updateProfileOrder', [fromIndex, toIndex]);
   }
 
   // <if expr="chromeos_lacros">

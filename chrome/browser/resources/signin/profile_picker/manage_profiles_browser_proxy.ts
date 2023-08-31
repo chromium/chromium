@@ -163,6 +163,15 @@ export interface ManageProfilesBrowserProxy {
    */
   cancelProfileSwitch(): void;
 
+  /**
+   * Sends the profile order changes
+   * @param fromIndex the initial index of the tile that was dragged.
+   * @param toIndex the index to which the profile has been moved/dropped.
+   * All other profiles between `fromIndex` and `toIndex` +/-1 should be shifted
+   * by +/-1 depending on the change direction.
+   */
+  updateProfileOrder(fromIndex: number, toIndex: number): void;
+
   // <if expr="chromeos_lacros">
   /**
    * Gets the available accounts, through WebUIListener.
@@ -261,6 +270,10 @@ export class ManageProfilesBrowserProxyImpl {
 
   cancelProfileSwitch() {
     chrome.send('cancelProfileSwitch');
+  }
+
+  updateProfileOrder(fromIndex: number, toIndex: number) {
+    chrome.send('updateProfileOrder', [fromIndex, toIndex]);
   }
 
   // <if expr="chromeos_lacros">

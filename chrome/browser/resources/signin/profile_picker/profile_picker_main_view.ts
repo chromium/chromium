@@ -237,6 +237,12 @@ export class ProfilePickerMainViewElement extends
   }
 
   // @override
+  onDradEnd(initialIndex: number, finalIndex: number): void {
+    this.manageProfilesBrowserProxy_.updateProfileOrder(
+        initialIndex, finalIndex);
+  }
+
+  // @override
   getDraggableTile(index: number): HTMLElement {
     return this.shadowRoot!.querySelector<HTMLElement>('#profile-' + index)!;
   }
