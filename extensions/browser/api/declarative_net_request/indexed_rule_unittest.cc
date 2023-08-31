@@ -133,7 +133,8 @@ TEST_F(IndexedRuleTest, OptionsParsing) {
       {dnr_api::DomainType::kNone, dnr_api::RuleActionType::kBlock,
        absl::nullopt,
        flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY |
-           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
+           flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
+           flat_rule::OptionFlag_IS_CASE_INSENSITIVE},
       {dnr_api::DomainType::kFirstParty, dnr_api::RuleActionType::kAllow, true,
        flat_rule::OptionFlag_IS_ALLOWLIST |
            flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY},
@@ -307,7 +308,7 @@ TEST_F(IndexedRuleTest, CaseInsensitiveLowerCased) {
   } test_cases[] = {
       {false, "/query"},
       {true, "/QUERY"},
-      {absl::nullopt, "/QUERY"}  // By default patterns are case sensitive.
+      {absl::nullopt, "/query"}  // By default patterns are case insensitive.
   };
 
   for (auto& test_case : test_cases) {

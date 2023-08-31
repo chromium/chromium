@@ -134,9 +134,9 @@ class UrlFilterParser {
 
 bool IsCaseSensitive(const dnr_api::Rule& parsed_rule) {
   // If case sensitivity is not explicitly specified, rules are considered case
-  // sensitive by default.
+  // insensitive by default.
   if (!parsed_rule.condition.is_url_filter_case_sensitive)
-    return true;
+    return false;
 
   return *parsed_rule.condition.is_url_filter_case_sensitive;
 }

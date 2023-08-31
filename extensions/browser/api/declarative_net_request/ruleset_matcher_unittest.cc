@@ -528,7 +528,9 @@ TEST_F(RulesetMatcherTest, RegexRules) {
 
   {
     TestCase test_case = {"http://www.collapse.com/PATH"};
-    // Filters are case sensitive by default, hence the request doesn't match.
+    // Filters are case insensitive by default, hence the request will match.
+    test_case.expected_action = CreateRequestActionForTesting(
+        RequestAction::Type::BLOCK, *block_rule.id);
     test_cases.push_back(std::move(test_case));
   }
 
@@ -621,11 +623,11 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
 
   // Add a case sensitive rule.
   TestRule path_rule = create_regex_rule(1, "/PATH");
+  path_rule.condition->is_url_filter_case_sensitive = true;
   rules.push_back(path_rule);
 
   // Add a case insensitive rule.
   TestRule xyz_rule = create_regex_rule(2, "/XYZ");
-  xyz_rule.condition->is_url_filter_case_sensitive = false;
   rules.push_back(xyz_rule);
 
   // Test `domains`, `excludedDomains`.
@@ -651,13 +653,13 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
       std::vector<std::string>({"b.example.com"});
   rules.push_back(request_domains_rule);
 
-  // Test |resourceTypes|.
+  // Test `resourceTypes`.
   TestRule sub_frame_rule = create_regex_rule(6, R"((abc|def)\.com)");
   sub_frame_rule.condition->resource_types =
       std::vector<std::string>({"sub_frame"});
   rules.push_back(sub_frame_rule);
 
-  // Test |domainType|.
+  // Test `domainType`.
   TestRule third_party_rule = create_regex_rule(7, R"(http://(\d+)\.com)");
   third_party_rule.condition->domain_type = "thirdParty";
   rules.push_back(third_party_rule);

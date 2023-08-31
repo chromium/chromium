@@ -221,7 +221,7 @@ namespace declarativeNetRequest {
     DOMString? regexFilter;
 
     // Whether the <code>urlFilter</code> or <code>regexFilter</code>
-    // (whichever is specified) is case sensitive. Default is true.
+    // (whichever is specified) is case sensitive. Default is false.
     boolean? isUrlFilterCaseSensitive;
 
     // The rule will only match network requests originating from the list of
