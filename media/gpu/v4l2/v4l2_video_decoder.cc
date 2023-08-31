@@ -242,10 +242,8 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
 #endif
   }
 
-  // Stop and reset the queues if we're currently decoding but want to
-  // re-initialize the decoder. This is not needed if the decoder is in the
-  // |kInitialized| state because the queues should still be stopped in that
-  // case.
+  // In the decoding state, we need to stop the queues since they have been
+  // started already.
   if (state_ == State::kDecoding) {
     if (!StopStreamV4L2Queue(true)) {
       LogAndRecordUMA(FROM_HERE,
@@ -259,7 +257,10 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                   V4L2Status(V4L2Status::Codes::kFailedToStopStreamQueue)));
       return;
     }
-
+  }
+  // In the decoding or initialized state, we need to tear everything else down
+  // as well.
+  if (state_ == State::kDecoding || state_ == State::kInitialized) {
     if (!input_queue_->DeallocateBuffers() ||
         !output_queue_->DeallocateBuffers()) {
       VLOGF(1) << "Failed to deallocate V4L2 buffers";
@@ -269,7 +270,6 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                   V4L2Status(V4L2Status::Codes::kFailedToDestroyQueueBuffers)));
       return;
     }
-
     input_queue_ = nullptr;
     output_queue_ = nullptr;
 
@@ -308,7 +308,17 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Call init_cb
+  V4L2Status status = InitializeBackend();
+  if (status != V4L2Status::Codes::kOk) {
+    LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kInitializeBackend);
+
+    SetState(State::kError);
+    std::move(init_cb).Run(DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+                               .AddCause(std::move(status)));
+    return;
+  }
+
+  // Call init_cb.
   output_cb_ = std::move(output_cb);
   SetState(State::kInitialized);
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
@@ -426,15 +436,6 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
-  // Start streaming input queue and polling. This is required for the stateful
-  // decoder, and doesn't hurt for the stateless one.
-  if (!StartStreamV4L2Queue(false)) {
-    LogAndRecordUMA(FROM_HERE,
-                    V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
-    return V4L2Status::Codes::kFailedToStartStreamQueue;
-  }
-
-  SetState(State::kDecoding);
   return V4L2Status::Codes::kOk;
 }
 
@@ -656,17 +657,19 @@ void V4L2VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   if (state_ == State::kInitialized) {
-    V4L2Status status = InitializeBackend();
-
-    if (status != V4L2Status::Codes::kOk) {
-      LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kInitializeBackend);
-
+    // Start streaming input queue and polling. This is required for the
+    // stateful decoder, and doesn't hurt for the stateless one.
+    if (!StartStreamV4L2Queue(false)) {
+      LogAndRecordUMA(FROM_HERE,
+                      V4l2VideoDecoderFunctions::kStartStreamV4L2Queue);
       SetState(State::kError);
       std::move(trampoline_decode_cb)
           .Run(DecoderStatus(DecoderStatus::Codes::kFailed)
-                   .AddCause(std::move(status)));
+                   .AddCause(V4L2Status(
+                       V4L2Status::Codes::kFailedToStartStreamQueue)));
       return;
     }
+    SetState(State::kDecoding);
   }
 
   backend_->EnqueueDecodeTask(std::move(buffer),
