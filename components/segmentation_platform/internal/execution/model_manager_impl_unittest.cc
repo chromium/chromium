@@ -304,6 +304,48 @@ TEST_F(ModelManagerTest,
   EXPECT_TRUE(segment_info.prediction_result().result().size() == 0);
 }
 
+TEST_F(ModelManagerTest, DatabaseUpdateForDeletedServerModel) {
+  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+
+  base::MockCallback<ModelManager::SegmentationModelUpdatedCallback>
+      model_updated_callback;
+  proto::SegmentInfo updated_segment_info;
+  EXPECT_CALL(model_updated_callback, Run(_))
+      .WillOnce(SaveArg<0>(&updated_segment_info));
+
+  // Fill in old data for a server model in the SegmentInfo database.
+  segment_database_->SetBucketDuration(segment_id, 456, proto::TimeUnit::MONTH,
+                                       proto::ModelSource::SERVER_MODEL_SOURCE);
+  segment_database_->AddUserActionFeature(
+      segment_id, /*user_action=*/"hello", /*bucket_count=*/2,
+      /*tensor_length=*/2, proto::Aggregation::BUCKETED_COUNT,
+      proto::ModelSource::SERVER_MODEL_SOURCE);
+  segment_database_->AddPredictionResult(
+      segment_id, 2, clock_.Now(), proto::ModelSource::SERVER_MODEL_SOURCE);
+
+  CreateModelManager({segment_id}, model_updated_callback.Get());
+
+  // If the server stops serving a model then we'll receive a callback with null
+  // metadata.
+  model_provider_data_.model_providers_callbacks[segment_id].Run(
+      segment_id, /* metadata = */ absl::nullopt, /* model_version = */ 0);
+
+  base::MockCallback<SegmentInfoDatabase::SegmentInfoCallback> db_callback;
+  absl::optional<proto::SegmentInfo> segment_info_from_db;
+  EXPECT_CALL(db_callback, Run(_)).WillOnce(SaveArg<0>(&segment_info_from_db));
+
+  // Try to get data from segment DB, it should have been deleted.
+  segment_database_->GetSegmentInfo(segment_id, proto::SERVER_MODEL_SOURCE,
+                                    db_callback.Get());
+  EXPECT_FALSE(segment_info_from_db.has_value());
+
+  // ModelManager should have called its SegmentationModelUpdatedCallback with a
+  // SegmentInfo without metadata.
+  EXPECT_EQ(updated_segment_info.segment_id(), segment_id);
+  EXPECT_EQ(updated_segment_info.model_source(), proto::SERVER_MODEL_SOURCE);
+  EXPECT_FALSE(updated_segment_info.has_model_metadata());
+}
+
 TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
   auto segment_id = kSearchUserSegmentId;
   // Fill in old data for default model in the SegmentInfo database.

@@ -30,8 +30,10 @@ class OptimizationGuideSegmentationModelHandler
     : public optimization_guide::ModelHandler<ModelProvider::Response,
                                               const ModelProvider::Request&> {
  public:
-  using ModelUpdatedCallback = base::RepeatingCallback<
-      void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;
+  using ModelUpdatedCallback = base::RepeatingCallback<void(
+      proto::SegmentId,
+      absl::optional<proto::SegmentationModelMetadata>,
+      int64_t)>;
 
   explicit OptimizationGuideSegmentationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -49,9 +51,10 @@ class OptimizationGuideSegmentationModelHandler
       const OptimizationGuideSegmentationModelHandler&) = delete;
 
   // optimization_guide::ModelHandler overrides.
-  void OnModelUpdated(optimization_guide::proto::OptimizationTarget segment_id,
-                      base::optional_ref<const optimization_guide::ModelInfo>
-                          model_info) override;
+  void OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
 
  private:
   // Callback to invoke whenever the model file has been updated. If there is

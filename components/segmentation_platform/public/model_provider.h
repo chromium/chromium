@@ -23,8 +23,10 @@ class ModelProvider {
   using Request = std::vector<float>;
   using Response = std::vector<float>;
 
-  using ModelUpdatedCallback = base::RepeatingCallback<
-      void(proto::SegmentId, proto::SegmentationModelMetadata, int64_t)>;
+  using ModelUpdatedCallback = base::RepeatingCallback<void(
+      proto::SegmentId,
+      absl::optional<proto::SegmentationModelMetadata>,
+      int64_t)>;
   using ExecutionCallback =
       base::OnceCallback<void(const absl::optional<Response>&)>;
 

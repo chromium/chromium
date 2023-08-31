@@ -145,11 +145,11 @@ TEST_F(SegmentationModelExecutorTest, ExecuteWithLoadedModel) {
       [](base::RunLoop* run_loop,
          proto::SegmentationModelMetadata original_metadata,
          proto::SegmentId segment_id,
-         proto::SegmentationModelMetadata actual_metadata,
+         absl::optional<proto::SegmentationModelMetadata> actual_metadata,
          int64_t model_version) {
         // Verify that the callback is invoked with the correct data.
         EXPECT_EQ(kSegmentId, segment_id);
-        EXPECT_TRUE(AreEqual(original_metadata, actual_metadata));
+        EXPECT_TRUE(AreEqual(original_metadata, actual_metadata.value()));
         EXPECT_EQ(kModelVersion, model_version);
         run_loop->Quit();
       },

@@ -110,6 +110,11 @@ void RecordModelDeliveryReceived(SegmentId segment_id,
 void RecordModelDeliverySaveResult(SegmentId segment_id,
                                    proto::ModelSource model_source,
                                    bool success);
+// Records the result of attempting to delete the previous version of a server
+// model metadata.
+void RecordModelDeliveryDeleteResult(SegmentId segment_id,
+                                     proto::ModelSource model_source,
+                                     bool success);
 // Records whether the currently stored segment_id matches the incoming
 // segment_id for a particular model_source, as these are expected to match.
 void RecordModelDeliverySegmentIdMatches(SegmentId segment_id,
@@ -261,7 +266,8 @@ enum class SegmentationModelAvailability {
   kModelHandlerCreated = 0,
   kModelAvailable = 1,
   kMetadataInvalid = 2,
-  kMaxValue = kMetadataInvalid
+  kNoModelAvailable = 3,
+  kMaxValue = kNoModelAvailable
 };
 // Records the availability of segmentation models for each target needed.
 void RecordModelAvailability(SegmentId segment_id,

@@ -457,6 +457,27 @@ chromium-metrics-reviews@google.com.
     way to check if a model is available, this histogram records an entry when
     model is requested and one when model is available. The difference should
     show how often a model is not returned.
+
+    Recorded every time the {SegmentationModel} model is updated, which can
+    happen at any time, but usually happens at least once during startup. If a
+    model becomes no longer available then we'll record a value of 3 (No model
+    metadata available) once before deleting the model metadata.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelDelivery.DeleteResult.{SegmentationModel}"
+    enum="BooleanSuccess" expires_after="2023-10-01">
+  <owner>salg@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records whether a deleted {SegmentationModel} server segmentation model was
+    successfully deleted from the local storage.
+
+    Recorded after deleting the local data of a server model, should only happen
+    if a server update removes a model that was stored locally.
   </summary>
   <token key="SegmentationModel" variants="SegmentationModel"/>
 </histogram>

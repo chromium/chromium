@@ -67,10 +67,11 @@ class ModelManagerImpl : public ModelManager {
   // Callback for whenever a SegmentationModelHandler is informed that the
   // underlying ML model file has been updated. If there is an available
   // model, this will be called at least once per session.
-  void OnSegmentationModelUpdated(proto::ModelSource model_source,
-                                  proto::SegmentId segment_id,
-                                  proto::SegmentationModelMetadata metadata,
-                                  int64_t model_version);
+  void OnSegmentationModelUpdated(
+      proto::ModelSource model_source,
+      proto::SegmentId segment_id,
+      absl::optional<proto::SegmentationModelMetadata> metadata,
+      int64_t model_version);
 
   // Callback after fetching the current SegmentInfo from the
   // SegmentInfoDatabase. This is part of the flow for informing the
@@ -88,6 +89,11 @@ class ModelManagerImpl : public ModelManager {
   // Responsible for invoking the SegmentationModelUpdatedCallback.
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
                                   bool success);
+
+  // Callback after deleting the previous version of the SegmentInfo.
+  void OnSegmentInfoDeleted(SegmentId segment_id,
+                            proto::ModelSource model_source,
+                            bool success);
 
   const base::flat_set<SegmentId>& segment_ids_;
 

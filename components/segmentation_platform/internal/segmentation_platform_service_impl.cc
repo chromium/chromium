@@ -289,6 +289,12 @@ void SegmentationPlatformServiceImpl::OnDatabaseInitialized(bool success) {
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
     proto::SegmentInfo segment_info) {
   CHECK(IsPlatformInitialized());
+  if (!segment_info.has_model_metadata()) {
+    signal_handler_.OnSignalListUpdated();
+    storage_service_->ExecuteDatabaseMaintenanceTasks(false);
+    return;
+  }
+
   DCHECK(metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info) ==
          metadata_utils::ValidationResult::kValidationSuccess);
 

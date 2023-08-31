@@ -95,7 +95,7 @@ void ModelManagerImpl::SetSegmentationModelUpdatedCallbackForTesting(
 void ModelManagerImpl::OnSegmentationModelUpdated(
     proto::ModelSource model_source,
     proto::SegmentId segment_id,
-    proto::SegmentationModelMetadata metadata,
+    absl::optional<proto::SegmentationModelMetadata> metadata,
     int64_t model_version) {
   TRACE_EVENT("segmentation_platform",
               "ModelManagerImpl::OnSegmentationModelUpdated");
@@ -104,11 +104,25 @@ void ModelManagerImpl::OnSegmentationModelUpdated(
     return;
   }
 
+  if (!metadata.has_value()) {
+    if (!segment_database_->GetCachedSegmentInfo(segment_id, model_source)) {
+      return;
+    }
+
+    segment_database_->UpdateSegment(
+        segment_id, model_source, absl::nullopt,
+        base::BindOnce(&ModelManagerImpl::OnSegmentInfoDeleted,
+                       weak_ptr_factory_.GetWeakPtr(), segment_id,
+                       model_source));
+    return;
+  }
+
   // Set or overwrite name hashes for metadata features based on the name
   // field.
-  metadata_utils::SetFeatureNameHashesFromName(&metadata);
+  metadata_utils::SetFeatureNameHashesFromName(&metadata.value());
 
-  auto validation = metadata_utils::ValidateMetadataAndFeatures(metadata);
+  auto validation =
+      metadata_utils::ValidateMetadataAndFeatures(metadata.value());
   stats::RecordModelDeliveryMetadataValidation(
       segment_id, model_source, /* processed = */ false, validation);
   if (validation != metadata_utils::ValidationResult::kValidationSuccess) {
@@ -118,7 +132,7 @@ void ModelManagerImpl::OnSegmentationModelUpdated(
   auto old_segment_info =
       segment_database_->GetCachedSegmentInfo(segment_id, model_source);
   OnSegmentInfoFetchedForModelUpdate(segment_id, model_source,
-                                     std::move(metadata), model_version,
+                                     std::move(metadata.value()), model_version,
                                      old_segment_info);
 }
 
@@ -197,6 +211,22 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
       segment_id, model_source, absl::make_optional(new_segment_info),
       base::BindOnce(&ModelManagerImpl::OnUpdatedSegmentInfoStored,
                      weak_ptr_factory_.GetWeakPtr(), new_segment_info));
+}
+
+void ModelManagerImpl::OnSegmentInfoDeleted(SegmentId segment_id,
+                                            proto::ModelSource model_source,
+                                            bool success) {
+  stats::RecordModelDeliveryDeleteResult(segment_id, model_source, success);
+
+  // `model_updated_callback_` only supports server models.
+  if (model_source == proto::ModelSource::DEFAULT_MODEL_SOURCE) {
+    return;
+  }
+
+  proto::SegmentInfo deleted_segment_info;
+  deleted_segment_info.set_segment_id(segment_id);
+  deleted_segment_info.set_model_source(model_source);
+  model_updated_callback_.Run(std::move(deleted_segment_info));
 }
 
 void ModelManagerImpl::OnUpdatedSegmentInfoStored(

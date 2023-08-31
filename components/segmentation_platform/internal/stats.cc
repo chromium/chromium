@@ -375,6 +375,16 @@ void RecordModelDeliverySaveResult(SegmentId segment_id,
       success);
 }
 
+void RecordModelDeliveryDeleteResult(SegmentId segment_id,
+                                     proto::ModelSource model_source,
+                                     bool success) {
+  base::UmaHistogramBoolean("SegmentationPlatform." +
+                                GetModelSourceAsString(model_source) +
+                                "ModelDelivery.DeleteResult." +
+                                SegmentIdToHistogramVariant(segment_id),
+                            success);
+}
+
 void RecordModelDeliverySegmentIdMatches(SegmentId segment_id,
                                          proto::ModelSource model_source,
                                          bool matches) {
