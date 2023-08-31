@@ -55,7 +55,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   void DisableEarcons();
 
-  void EnableChromeVox();
+  void EnableChromeVox(bool check_for_intro = true);
 
   void StablizeChromeVoxState();
 

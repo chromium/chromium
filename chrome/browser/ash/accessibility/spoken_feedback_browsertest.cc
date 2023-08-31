@@ -195,7 +195,7 @@ void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
           "})");
 }
 
-void LoggedInSpokenFeedbackTest::EnableChromeVox() {
+void LoggedInSpokenFeedbackTest::EnableChromeVox(bool check_for_intro) {
   // Test setup.
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
@@ -204,7 +204,8 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
 
   // Load ChromeVox and block until it's fully loaded.
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
-  sm_.ExpectSpeechPattern("*");
+  sm_.ExpectSpeechPattern(check_for_intro ? "ChromeVox spoken feedback is ready"
+                                          : "*");
   sm_.Call([this]() {
     ImportJSModuleForChromeVox("ChromeVox",
                                "/chromevox/background/chromevox.js");
@@ -289,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, ChromeVoxSpeaksIntro) {
-  EnableChromeVox();
+  EnableChromeVox(/* check_for_intro = */ false);
   sm_.ExpectSpeech("ChromeVox spoken feedback is ready");
   sm_.Replay();
 }
