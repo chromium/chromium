@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -22,6 +23,61 @@
 using chrome_test_util::ManageSyncSettingsButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsSignInRowMatcher;
+
+namespace {
+
+void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fakeIdentity) {
+  // Sign in with fake identity using the settings sign-in promo.
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
+                                   fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSStringF(
+                                           IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+                                           base::SysNSStringToUTF16(
+                                               fakeIdentity.userGivenName))),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  // Check that Settings is presented.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+}
+
+void SignOutFromAccountSettings() {
+  // Scroll to the bottom to view the signout button.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Tap the "Sign out" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+      performAction:grey_tap()];
+}
+
+void DismissSignOutSnackbar() {
+  // The tap checks the existence of the snackbar and also closes it.
+  NSString* snackbar_label = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbar_label)]
+      performAction:grey_tap()];
+}
+
+}  // namespace
 
 // Integration tests using the Google services settings screen.
 @interface ManageSyncSettingsTestCase : WebHttpServerChromeTestCase
@@ -62,33 +118,13 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // Tests that unified account settings row is showing, and the Sync row is not
 // showing when kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testShowingUnifiedAccountSettings_SyncToSigninEnabled {
-  [super setUp];
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Sign in with fake identity using the settings sign-in promo.
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::IdentityCellMatcherForEmail(
-                                   fakeIdentity.userEmail)]
-      performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(
-                                       l10n_util::GetNSStringF(
-                                           IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-                                           base::SysNSStringToUTF16(
-                                               fakeIdentity.userGivenName))),
-                                   grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  SignInWithPromoFromAccountSettings(fakeIdentity);
 
   // Verify the Sync settings row is not showing.
   [SigninEarlGrey verifySyncUIIsHidden];
@@ -96,15 +132,11 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Verify the account settings row is showing.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_notNil()];
-
-  [super tearDown];
 }
 
 // Tests sign out from the unified account settings page when
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSignOutFromUnifiedAccountSettings_SyncToSigninEnabled {
-  [super setUp];
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -114,23 +146,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Open the "manage sync" view.
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
-  // Scroll to the bottom to view the signout button.
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-  [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-  // Tap the "Sign out" button.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
-      performAction:grey_tap()];
-
-  // The tap checks the existence of the snackbar and also closes it.
-  NSString* snackbarLabel = l10n_util::GetNSString(
-      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
-      performAction:grey_tap()];
+  SignOutFromAccountSettings();
+  DismissSignOutSnackbar();
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [SigninEarlGrey verifySignedOut];
@@ -144,15 +161,11 @@ using chrome_test_util::SettingsSignInRowMatcher;
   // Verify the account settings row is not showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_notVisible()];
-
-  [super tearDown];
 }
 
 // Tests sign out from the manage accounts on device page when
 // kReplaceSyncPromosWithSignInPromos is enabled.
 - (void)testSignOutFromManageAccountsSettings_SyncToSigninEnabled {
-  [super setUp];
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -194,11 +207,137 @@ using chrome_test_util::SettingsSignInRowMatcher;
                                    kManageSyncTableViewAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 
-  // Verify the account settings row is showing in the settings menu.
+  // Verify the account settings row is not showing in the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_notVisible()];
+}
 
-  [super tearDown];
+// Tests that data type settings carry over signing out.
+- (void)testDataTypeSettingsCarryOverSignOut_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Change one of the toggles; say turn off Passwords.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+
+  SignOutFromAccountSettings();
+  DismissSignOutSnackbar();
+
+  [SigninEarlGrey verifySignedOut];
+
+  // Sign back in with the same identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity);
+
+  // Verify the account settings row is showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the account settings did not change with a signout; Passwords is
+  // off.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that data type settings do not carry over from one user to another.
+- (void)
+    testDataTypeSettingsDoNotCarryOverDifferentAccounts_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Change one of the toggles; say turn off Passwords.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+
+  SignOutFromAccountSettings();
+  DismissSignOutSnackbar();
+
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::SettingsDoneButton(),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Sign in with another identity.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Verify the account settings row is showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the account settings have the default value; Passwords is on.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that removing account from device clears the data type settings.
+- (void)testDataTypeSettingsAreClearedOnAccountRemoval_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Change one of the toggles; say turn off Passwords.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncPasswordsIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+
+  // Remove fakeIdentity from device.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   chrome_test_util::SettingsDoneButton(),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Sign in with the same identity.
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Verify the account settings row is showing in the settings menu.
+  [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the account settings are cleared and have the default value;
+  // Passwords is on.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
