@@ -68,8 +68,6 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
   }
 
   mixer[kColorPageActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorPageActionIconPressed] = {
-      ui::kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorPageInfoBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorPageInfoIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorPageInfoIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
@@ -372,7 +370,6 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorPageInfoIconPressed] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.16f * 255.0f))};
   mixer[kColorPageActionIconHover] = {kColorPageInfoIconHover};
-  mixer[kColorPageActionIconPressed] = {kColorPageInfoIconPressed};
   mixer[kColorPageActionIcon] = {kColorOmniboxResultsIcon};
 
   // Override omnibox colors per CR2023 spec.
