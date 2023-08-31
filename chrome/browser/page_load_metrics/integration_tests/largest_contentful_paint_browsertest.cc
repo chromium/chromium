@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
     // second added, because it is larger than the first added, it should also
     // update the LCP candidate value. Therefore we should see 2 LCP updates
     // before the test waiter can exit the waiting.
-    waiter->AddMinimumLargestContentfulPaintImageExpectation(i + 1);
+    waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
 
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
     EXPECT_EQ("", result.error);
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   waiter->Wait();
 
   // Load Larger image which becomes the LCP element.
-  waiter->AddMinimumLargestContentfulPaintImageExpectation(2);
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
 
   // The UKM recorded LCP should be that of the second image, which should be
   // larger than the LCP of first image.

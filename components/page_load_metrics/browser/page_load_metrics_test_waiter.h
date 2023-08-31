@@ -120,8 +120,12 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // set of expected behaviors.
   void AddLoadingBehaviorExpectation(int behavior_flags);
 
+  // Add minimum largest contentful paint image update count to be expected.
+  // Also reset observed largest contentful paint image count.
   void AddMinimumLargestContentfulPaintImageExpectation(int expected_minumum);
 
+  // Add minimum largest contentful paint text update count to be expected.
+  // Also reset observed largest contentful paint text count.
   void AddMinimumLargestContentfulPaintTextExpectation(int expected_minumum);
 
   void AddLargestContentfulPaintGreaterThanExpectation(double timestamp);

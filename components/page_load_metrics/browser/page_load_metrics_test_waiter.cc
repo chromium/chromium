@@ -247,11 +247,13 @@ void PageLoadMetricsTestWaiter::AddLoadingBehaviorExpectation(
 void PageLoadMetricsTestWaiter::
     AddMinimumLargestContentfulPaintImageExpectation(int expected_minimum) {
   expected_num_largest_contentful_paint_image_ = expected_minimum;
+  current_num_largest_contentful_paint_image_ = 0;
 }
 
 void PageLoadMetricsTestWaiter::AddMinimumLargestContentfulPaintTextExpectation(
     int expected_minimum) {
   expected_num_largest_contentful_paint_text_ = expected_minimum;
+  current_num_largest_contentful_paint_text_ = 0;
 }
 
 void PageLoadMetricsTestWaiter::AddLargestContentfulPaintGreaterThanExpectation(
