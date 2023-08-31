@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -120,7 +121,8 @@ class TrustSafetySentimentService
     kPrivacySandbox4ConsentDecline = 16,
     kPrivacySandbox4NoticeOk = 17,
     kPrivacySandbox4NoticeSettings = 18,
-    kMaxValue = kPrivacySandbox4NoticeSettings,
+    kSafeBrowsingInterstitial = 19,
+    kMaxValue = kSafeBrowsingInterstitial,
   };
 
   // Called when the user interacts with Privacy Sandbox 3, |feature_area|
@@ -128,6 +130,15 @@ class TrustSafetySentimentService
   virtual void InteractedWithPrivacySandbox3(FeatureArea feature_area);
 
   virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
+
+  // Called when the user interacts with a safe browsing blocking page.
+  virtual void InteractedWithSafeBrowsingInterstitial(
+      bool did_proceed,
+      safe_browsing::SBThreatType threat_type);
+
+  // Returns whether the threat_type is not in the phishing, malware, unwanted
+  // software, and billing threat categories.
+  bool IsOtherInterstitialCategory(safe_browsing::SBThreatType threat_type);
 
   // Checks that this feature area is valid for the current version.
   static bool VersionCheck(FeatureArea feature_area);

@@ -63,6 +63,8 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     TriggerManager* trigger_manager,
     bool is_proceed_anyway_disabled,
     bool is_safe_browsing_surveys_enabled,
+    base::OnceCallback<void(bool, SBThreatType)>
+        trust_safety_sentiment_service_trigger,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
                        web_contents,
@@ -79,7 +81,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       metrics_collector_(metrics_collector),
       trigger_manager_(trigger_manager),
       is_proceed_anyway_disabled_(is_proceed_anyway_disabled),
-      is_safe_browsing_surveys_enabled_(is_safe_browsing_surveys_enabled) {
+      is_safe_browsing_surveys_enabled_(is_safe_browsing_surveys_enabled),
+      trust_safety_sentiment_service_trigger_(
+          std::move(trust_safety_sentiment_service_trigger)) {
   if (unsafe_resources.size() == 1) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
@@ -163,6 +167,14 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
       metrics_collector_->AddBypassEventToPref(threat_source_);
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (trust_safety_sentiment_service_trigger_) {
+    std::move(trust_safety_sentiment_service_trigger_)
+        .Run(proceeded(), threat_type_);
+  }
+#endif
+
   BaseBlockingPage::OnInterstitialClosing();
 }
 

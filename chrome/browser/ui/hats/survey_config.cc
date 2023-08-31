@@ -91,6 +91,8 @@ constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk[] =
     "ts-v2-ps4-notice-ok";
 constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[] =
     "ts-v2-ps4-notice-settings";
+constexpr char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
+    "ts-v2-safe-browsing-interstitial";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
@@ -327,6 +329,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       features::
           kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsTriggerId
               .Get());
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurveyV2,
+      kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial,
+      features::kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialTriggerId
+          .Get());
 
   // Autofill surveys.
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,

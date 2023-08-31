@@ -61,6 +61,7 @@ extern const char
 extern const char kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk[];
 extern const char
     kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings[];
+extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
 extern const char kHatsSurveyTriggerWhatsNew[];
 #endif
 

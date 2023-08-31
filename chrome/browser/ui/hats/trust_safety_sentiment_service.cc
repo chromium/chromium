@@ -388,6 +388,41 @@ void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
   TriggerOccurred(feature_area, {});
 }
 
+void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
+    bool did_proceed,
+    safe_browsing::SBThreatType threat_type) {
+  std::map<std::string, bool> product_specific_data;
+  product_specific_data["User proceeded past interstitial"] = did_proceed;
+  product_specific_data["Enhanced protection enabled"] =
+      safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs());
+  product_specific_data["Threat is phishing"] =
+      threat_type == safe_browsing::SB_THREAT_TYPE_URL_PHISHING ||
+      threat_type == safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  product_specific_data["Threat is malware"] =
+      threat_type == safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+  product_specific_data["Threat is unwanted software"] =
+      threat_type == safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+  product_specific_data["Threat is billing"] =
+      threat_type == safe_browsing::SB_THREAT_TYPE_BILLING;
+  DCHECK(!IsOtherInterstitialCategory(threat_type));
+  TriggerOccurred(FeatureArea::kSafeBrowsingInterstitial,
+                  product_specific_data);
+}
+
+bool TrustSafetySentimentService::IsOtherInterstitialCategory(
+    safe_browsing::SBThreatType threat_type) {
+  switch (threat_type) {
+    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case safe_browsing::SB_THREAT_TYPE_BILLING:
+      return false;
+    default:
+      return true;
+  }
+}
+
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   // Only interested in the primary OTR profile i.e. the one used for incognito
@@ -527,6 +562,7 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
     case (FeatureArea::kBrowsingData):
     case (FeatureArea::kPrivacyGuide):
     case (FeatureArea::kControlGroup):
+    case (FeatureArea::kSafeBrowsingInterstitial):
       return isV2 == true;
     // Both Versions
     case (FeatureArea::kTrustedSurface):
@@ -569,6 +605,8 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeOk;
       case (FeatureArea::kPrivacySandbox4NoticeSettings):
         return kHatsSurveyTriggerTrustSafetyV2PrivacySandbox4NoticeSettings;
+      case (FeatureArea::kSafeBrowsingInterstitial):
+        return kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial;
       default:
         NOTREACHED();
         return "";
@@ -658,6 +696,11 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
         return base::RandDouble() <
                features::
                    kTrustSafetySentimentSurveyV2PrivacySandbox4NoticeSettingsProbability
+                       .Get();
+      case (FeatureArea::kSafeBrowsingInterstitial):
+        return base::RandDouble() <
+               features::
+                   kTrustSafetySentimentSurveyV2SafeBrowsingInterstitialProbability
                        .Get();
       default:
         NOTREACHED();

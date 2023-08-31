@@ -174,6 +174,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string privacy_sandbox_4_consent_decline_probability = "0.1";
     std::string privacy_sandbox_4_notice_ok_probability = "0.1";
     std::string privacy_sandbox_4_notice_settings_probability = "0.1";
+    std::string safe_browsing_interstitial_probability = "0.0";
     std::string browsing_data_trigger_id = "browsing-data-test";
     std::string control_group_trigger_id = "control-group-test";
     std::string password_check_trigger_id = "password-check-test";
@@ -214,6 +215,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
              params.privacy_sandbox_4_notice_ok_probability},
             {"privacy-sandbox-4-notice-settings-probability",
              params.privacy_sandbox_4_notice_settings_probability},
+            {"safe-browsing-interstitial-probability",
+             params.safe_browsing_interstitial_probability},
             {"browsing-data-trigger-id", params.browsing_data_trigger_id},
             {"control-group-trigger-id", params.control_group_trigger_id},
             {"password-check-trigger-id", params.password_check_trigger_id},
@@ -1040,6 +1043,7 @@ TEST_F(TrustSafetySentimentServiceTest, V2_AllFeatureAreasHaveProbabilities) {
   params.privacy_sandbox_4_consent_decline_probability = "1.0";
   params.privacy_sandbox_4_notice_ok_probability = "1.0";
   params.privacy_sandbox_4_notice_settings_probability = "1.0";
+  params.safe_browsing_interstitial_probability = "1.0";
 
   SetupFeatureParametersV2(params);
   for (int enum_value = 0;
@@ -1378,4 +1382,27 @@ TEST_F(TrustSafetySentimentServiceTest, V2_PrivacySandbox4NoticeSettings) {
   service()->InteractedWithPrivacySandbox4(
       TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeSettings);
   service()->OpenedNewTabPage();
+}
+
+TEST_F(TrustSafetySentimentServiceTest, V2_SafeBrowsingInterstitial) {
+  // Making a final decision on a safe browsing interstitial is considered a
+  // trigger, and should make a user eligible to receive a survey.
+  FeatureParamsV2 params;
+  params.safe_browsing_interstitial_probability = "1.0";
+  params.min_time_to_prompt = "0s";
+  params.ntp_visits_min_range = "0";
+  params.ntp_visits_max_range = "0";
+  SetupFeatureParametersV2(params);
+
+  // The correct survey should be launched.
+  EXPECT_CALL(
+      *mock_hats_service(),
+      LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial, _,
+                   _, _, _));
+  service()->InteractedWithSafeBrowsingInterstitial(
+      true, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
+  service()->OpenedNewTabPage();
+  CheckHistograms(
+      {TrustSafetySentimentService::FeatureArea::kSafeBrowsingInterstitial},
+      {TrustSafetySentimentService::FeatureArea::kSafeBrowsingInterstitial});
 }
