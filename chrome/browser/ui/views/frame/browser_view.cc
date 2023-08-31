@@ -3251,13 +3251,12 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
     Profile* profile) const {
   // Start with the tab title, which includes properties of the tab
   // like playing audio or network error.
-  const bool include_app_name = false;
   int active_index = browser_->tab_strip_model()->active_index();
   std::u16string title;
   if (active_index > -1)
-    title = GetAccessibleTabLabel(include_app_name, active_index);
+    title = GetAccessibleTabLabel(active_index);
   else
-    title = browser_->GetWindowTitleForCurrentTab(include_app_name);
+    title = browser_->GetWindowTitleForCurrentTab(false /* include_app_name */);
 
   // Add the name of the browser, unless this is an app window.
   if (browser()->is_type_normal() || browser()->is_type_popup()) {
@@ -3302,10 +3301,8 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   return title;
 }
 
-std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
-                                                  int index) const {
-  std::u16string title =
-      browser_->GetWindowTitleForTab(include_app_name, index);
+std::u16string BrowserView::GetAccessibleTabLabel(int index) const {
+  std::u16string title = browser_->GetWindowTitleForTab(index);
 
   absl::optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();

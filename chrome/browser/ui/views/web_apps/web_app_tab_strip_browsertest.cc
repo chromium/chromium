@@ -1158,4 +1158,34 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 }
 
+// Tests the page title, which is used for accessibility.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(app_browser);
+
+  EXPECT_EQ(browser_view->GetAccessibleTabLabel(0),
+            u"Tab Strip Customizations - Pinned");
+
+  chrome::NewTab(app_browser);
+  content::WaitForLoadStop(tab_strip->GetActiveWebContents());
+
+  EXPECT_EQ(browser_view->GetAccessibleTabLabel(0),
+            u"Tab Strip Customizations - Pinned");
+  EXPECT_EQ(browser_view->GetAccessibleTabLabel(1), u"Favicon only");
+}
+
 }  // namespace web_app

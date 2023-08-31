@@ -705,10 +705,19 @@ std::u16string Browser::GetWindowTitleForCurrentTab(
       include_app_name, tab_strip_model_->GetActiveWebContents());
 }
 
-std::u16string Browser::GetWindowTitleForTab(bool include_app_name,
-                                             int index) const {
-  return GetWindowTitleFromWebContents(
-      include_app_name, tab_strip_model_->GetWebContentsAt(index));
+std::u16string Browser::GetWindowTitleForTab(int index) const {
+  std::u16string title = base::UTF8ToUTF16(user_title_);
+
+  if (title.empty()) {
+    title = FormatTitleForDisplay(
+        tab_strip_model_->GetWebContentsAt(index)->GetTitle());
+  }
+
+  if (title.empty() && (is_type_normal() || is_type_popup())) {
+    title = CoreTabHelper::GetDefaultTitle();
+  }
+
+  return title;
 }
 
 std::u16string Browser::GetWindowTitleForMaxWidth(int max_width) const {
