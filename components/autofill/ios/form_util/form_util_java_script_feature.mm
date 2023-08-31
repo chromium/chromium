@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/values.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {
@@ -23,9 +24,7 @@ FormUtilJavaScriptFeature* FormUtilJavaScriptFeature::GetInstance() {
 
 FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
-          // once all scripts are converted to JavaScriptFeatures.
-          web::ContentWorld::kPageContentWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
                kFillScriptName,
                FeatureScript::InjectionTime::kDocumentStart,

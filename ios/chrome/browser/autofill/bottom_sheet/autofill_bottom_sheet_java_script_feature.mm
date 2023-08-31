@@ -6,6 +6,7 @@
 
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
 namespace {
@@ -37,9 +38,7 @@ AutofillBottomSheetJavaScriptFeature::GetInstance() {
 
 AutofillBottomSheetJavaScriptFeature::AutofillBottomSheetJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
-          // once all scripts are converted to JavaScriptFeatures.
-          web::ContentWorld::kPageContentWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

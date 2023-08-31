@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/ios/browser/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 
 namespace {
@@ -35,9 +36,7 @@ AutofillJavaScriptFeature* AutofillJavaScriptFeature::GetInstance() {
 
 AutofillJavaScriptFeature::AutofillJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1175793): Move autofill code to kIsolatedWorld
-          // once all scripts are converted to JavaScriptFeatures.
-          web::ContentWorld::kPageContentWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
