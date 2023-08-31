@@ -44,6 +44,9 @@ class VizPixelTest : public cc::PixelTest {
   bool is_software_renderer() const {
     return renderer_type_ == RendererType::kSoftware;
   }
+  bool is_skia_graphite() const {
+    return renderer_type_ == RendererType::kSkiaGraphite;
+  }
 
  protected:
   static GraphicsBackend RenderTypeToBackend(RendererType renderer_type);
