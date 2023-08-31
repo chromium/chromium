@@ -273,9 +273,14 @@ class BASE_EXPORT PersistentMemoryAllocator {
     kSizeAny = 1  // Constant indicating that any array size is acceptable.
   };
 
+  // Indicates the mode for accessing the underlying data.
   enum AccessMode {
     kReadOnly,
     kReadWrite,
+    // Open existing initialized data in R/W mode. If the passed data appears to
+    // not have been initialized, does not write to it and instead marks the
+    // allocator as corrupt (without writing anything to the underlying data.)
+    kReadWriteExisting,
   };
 
   // This is the standard file extension (suitable for being passed to the
@@ -511,7 +516,8 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // If there is some indication that the memory has become corrupted,
   // calling this will attempt to prevent further damage by indicating to
   // all processes that something is not as expected.
-  void SetCorrupt() const;
+  // If `allow_write` is false, the corrupt bit will not be written to the data.
+  void SetCorrupt(bool allow_write = true) const;
 
   // This can be called to determine if corruption has been detected in the
   // segment, possibly my a malicious actor. Once detected, future allocations

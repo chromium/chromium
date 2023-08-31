@@ -358,9 +358,12 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
   DCHECK(BlockHeader().next.is_lock_free());
   CHECK(corrupt_.is_lock_free());
 
+  // When calling SetCorrupt() during initialization, don't write to the memory
+  // in kReadOnly and kReadWriteExisting modes.
+  const bool allow_write_for_set_corrupt = (access_mode == kReadWrite);
   if (shared_meta()->cookie != kGlobalCookie) {
-    if (readonly) {
-      SetCorrupt();
+    if (access_mode != kReadWrite) {
+      SetCorrupt(allow_write_for_set_corrupt);
       return;
     }
 
@@ -384,7 +387,8 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
         first_block->type_id.load(std::memory_order_relaxed) != 0 ||
         first_block->next != 0) {
       // ...or something malicious has been playing with the metadata.
-      SetCorrupt();
+      CHECK(allow_write_for_set_corrupt);
+      SetCorrupt(allow_write_for_set_corrupt);
     }
 
     // This is still safe to do even if corruption has been detected.
@@ -420,7 +424,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
         shared_meta()->freeptr.load(std::memory_order_relaxed) == 0 ||
         shared_meta()->tailptr == 0 || shared_meta()->queue.cookie == 0 ||
         shared_meta()->queue.next.load(std::memory_order_relaxed) == 0) {
-      SetCorrupt();
+      SetCorrupt(allow_write_for_set_corrupt);
     }
     if (!readonly) {
       // The allocator is attaching to a previously initialized segment of
@@ -438,7 +442,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
 
       // Ensure that settings are still valid after the above adjustments.
       if (!IsMemoryAcceptable(memory.base, mem_size_, mem_page_, readonly)) {
-        SetCorrupt();
+        SetCorrupt(allow_write_for_set_corrupt);
       }
     }
   }
@@ -874,7 +878,7 @@ void PersistentMemoryAllocator::MakeIterable(Reference ref) {
 // iteration, this method may be called by other "const" methods. In this
 // case, it's safe to discard the constness and modify the local flag and
 // maybe even the shared flag if the underlying data isn't actually read-only.
-void PersistentMemoryAllocator::SetCorrupt() const {
+void PersistentMemoryAllocator::SetCorrupt(bool allow_write) const {
   if (!corrupt_.load(std::memory_order_relaxed) &&
       !CheckFlag(
           const_cast<volatile std::atomic<uint32_t>*>(&shared_meta()->flags),
@@ -884,16 +888,19 @@ void PersistentMemoryAllocator::SetCorrupt() const {
   }
 
   corrupt_.store(true, std::memory_order_relaxed);
-  if (access_mode_ != kReadOnly) {
+  if (allow_write && access_mode_ != kReadOnly) {
     SetFlag(const_cast<volatile std::atomic<uint32_t>*>(&shared_meta()->flags),
             kFlagCorrupt);
   }
 }
 
 bool PersistentMemoryAllocator::IsCorrupt() const {
-  if (corrupt_.load(std::memory_order_relaxed) ||
-      CheckFlag(&shared_meta()->flags, kFlagCorrupt)) {
-    SetCorrupt();  // Make sure all indicators are set.
+  if (corrupt_.load(std::memory_order_relaxed)) {
+    return true;
+  }
+  if (CheckFlag(&shared_meta()->flags, kFlagCorrupt)) {
+    // Set the local flag if we found the flag in the data.
+    SetCorrupt(/*allow_write=*/false);
     return true;
   }
   return false;
