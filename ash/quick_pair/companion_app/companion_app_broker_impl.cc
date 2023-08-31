@@ -54,7 +54,7 @@ void CompanionAppBrokerImpl::LaunchCompanionApp(scoped_refptr<Device> device) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL("https://www.google.com/"),
+      GURL(ash::features::kFastPairPwaCompanionInstallUri.Get()),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

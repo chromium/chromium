@@ -1020,6 +1020,11 @@ BASE_FEATURE(kFastPairPwaCompanion,
              "FastPairPwaCompanion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The URI for the Fast Pair web companion.
+const base::FeatureParam<std::string> kFastPairPwaCompanionInstallUri{
+    &kFastPairPwaCompanion, "pwa-companion-install-uri",
+    /*default*/ "https://www.google.com"};
+
 // Sets Fast Pair scanning to low power mode.
 BASE_FEATURE(kFastPairLowPower,
              "FastPairLowPower",
