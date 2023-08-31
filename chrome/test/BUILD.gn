@@ -7276,7 +7276,6 @@ test("unit_tests") {
       "../browser/download/download_dir_policy_handler_unittest.cc",
       "../browser/download/download_shelf_context_menu_unittest.cc",
       "../browser/download/download_shelf_unittest.cc",
-      "../browser/enterprise/data_controls/data_controls_policy_handler_unittest.cc",
       "../browser/enterprise/reporting/extension_info_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_notification_unittest.cc",
       "../browser/enterprise/reporting/extension_request/extension_request_observer_factory_unittest.cc",
@@ -7832,8 +7831,6 @@ test("unit_tests") {
       "//chrome/browser/companion/core/proto",
       "//chrome/browser/companion/visual_search:visual_search",
       "//chrome/browser/enterprise/connectors/analysis:features",
-      "//chrome/browser/enterprise/data_controls",
-      "//chrome/browser/enterprise/data_controls:test_support",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery:discovery",
@@ -8754,6 +8751,14 @@ test("unit_tests") {
       "../renderer/extensions/custom_types_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
+
+    if (enterprise_data_controls) {
+      sources += [ "../browser/enterprise/data_controls/data_controls_policy_handler_unittest.cc" ]
+      deps += [
+        "//chrome/browser/enterprise/data_controls",
+        "//chrome/browser/enterprise/data_controls:test_support",
+      ]
+    }
 
     if (enterprise_local_content_analysis) {
       sources += [

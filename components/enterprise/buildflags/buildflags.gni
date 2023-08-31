@@ -9,14 +9,17 @@ import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
-  # Enable support for content analysis against a cloud agent for Enterprise
+  # Indicates support for content analysis against a cloud agent for Enterprise
   # Connector policies.
   enterprise_cloud_content_analysis =
       is_win || is_mac || is_linux || is_chromeos
 
-  # Enable support for content analysis against a cloud agent for Enterprise
+  # Indicates support for content analysis against a cloud agent for Enterprise
   # Connector policies.
   enterprise_local_content_analysis = is_win || is_mac || is_linux
+
+  # Indicates support for Data Control rules.
+  enterprise_data_controls = is_win || is_mac || is_linux || is_chromeos
 }
 
 declare_args() {

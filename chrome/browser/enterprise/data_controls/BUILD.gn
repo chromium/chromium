@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_data_controls)
+
 source_set("data_controls") {
   sources = [
     "action_context.h",
@@ -15,6 +19,7 @@ source_set("data_controls") {
 
   deps = [
     "//base",
+    "//components/enterprise/data_controls:features",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
