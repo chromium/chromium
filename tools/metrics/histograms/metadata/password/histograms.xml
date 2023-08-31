@@ -2065,6 +2065,7 @@ chromium-metrics-reviews@google.com.
     Records the latency of a failed migration of PasswordStore to OSCrypt on iOS
     {Store}. Recorded when the migration finishes with an error.
   </summary>
+  <token key="Store" variants="Store"/>
 </histogram>
 
 <histogram
@@ -2076,6 +2077,7 @@ chromium-metrics-reviews@google.com.
     Records keychain retrieval error code received during the migration of
     PasswordStore to OSCrypt on iOS {Store}. Recorded when retrieval fails.
   </summary>
+  <token key="Store" variants="Store"/>
 </histogram>
 
 <histogram name="PasswordManager.MigrationToOSCrypt.{Store}SuccessLatency"
@@ -2086,6 +2088,7 @@ chromium-metrics-reviews@google.com.
     Records the latency of a successful migration of PasswordStore to OSCrypt on
     iOS {Store}. Recorded when the migration finishes successfully.
   </summary>
+  <token key="Store" variants="Store"/>
 </histogram>
 
 <histogram name="PasswordManager.MigrationToOSCrypt{StoreType}"
