@@ -1573,10 +1573,7 @@ virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/backplate/forced
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-04.html
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html
 virtual/forced-high-contrast-colors/html/details_summary/color-scheme-validation/details-with-summary-open.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-image.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/jpeg-missing-eoi.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/webp-color-profile-lossy.html
+
 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/border-color.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/entire-canvas-visible-zoom.html

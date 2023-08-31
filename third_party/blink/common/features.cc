@@ -561,19 +561,6 @@ BASE_FEATURE(kDecodeScriptSourceOffThread,
              "DecodeScriptSourceOffThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Decodes jpeg 4:2:0 formatted images to YUV instead of RGBX and stores in this
-// format in the image decode cache. See crbug.com/919627 for details on the
-// feature.
-BASE_FEATURE(kDecodeJpeg420ImagesToYUV,
-             "DecodeJpeg420ImagesToYUV",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Decodes lossy WebP images to YUV instead of RGBX and stores in this format
-// in the image decode cache. See crbug.com/900264 for details on the feature.
-BASE_FEATURE(kDecodeLossyWebPImagesToYUV,
-             "DecodeLossyWebPImagesToYUV",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, pages that don't specify a layout width will default to the
 // window width rather than the traditional mobile fallback width of 980px.
 // Has no effect unless viewport handling is enabled.

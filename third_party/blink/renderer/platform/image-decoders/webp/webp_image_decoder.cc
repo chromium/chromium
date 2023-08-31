@@ -250,8 +250,7 @@ bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
   }
   // Should have been updated with a recent call to UpdateDemuxer().
   WebPBitstreamFeatures features;
-  if (RuntimeEnabledFeatures::DecodeLossyWebPImagesToYUVEnabled() &&
-      (demux_state_ == WEBP_DEMUX_PARSED_HEADER ||
+  if ((demux_state_ == WEBP_DEMUX_PARSED_HEADER ||
        demux_state_ == WEBP_DEMUX_DONE) &&
       WebPGetFeatures(consolidated_data_->bytes(), consolidated_data_->size(),
                       &features) == VP8_STATUS_OK) {

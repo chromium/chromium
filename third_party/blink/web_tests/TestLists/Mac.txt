@@ -1419,7 +1419,6 @@ virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-color
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-nested-left.html
 virtual/fsa-incognito/external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html
 virtual/fsa-incognito/external/wpt/fs/FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html
-virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/webp-color-profile-lossy.html
 virtual/gpu-rasterization/images/2-comp.html
 virtual/gpu-rasterization/images/color-profile-animate.html
 virtual/gpu-rasterization/images/color-profile-border-image.html

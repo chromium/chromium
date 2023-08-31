@@ -1257,18 +1257,6 @@
       status: "test",
     },
     {
-      name: "DecodeJpeg420ImagesToYUV",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
-      name: "DecodeLossyWebPImagesToYUV",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "DeflateRawCompressionFormat",
       status: "stable",
       base_feature: "none",

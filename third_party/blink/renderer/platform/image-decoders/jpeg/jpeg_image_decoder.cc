@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
 
@@ -937,8 +936,6 @@ void JPEGImageDecoder::OnSetData(SegmentReader* data) {
   allow_decode_to_yuv_ =
       // Incremental YUV decoding is not currently supported (crbug.com/943519).
       IsAllDataReceived() &&
-      // TODO(sashamcintosh): Cleanup. Finch experiment is enabled by default.
-      RuntimeEnabledFeatures::DecodeJpeg420ImagesToYUVEnabled() &&
       // Ensures that the reader is created, the scale numbers are known,
       // the color profile is known, and the subsampling is known.
       IsSizeAvailable() &&

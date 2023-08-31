@@ -248,16 +248,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "gpu-rasterization-disable-yuv",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["images/yuv-decode-eligible"],
-    "args": ["--enable-gpu-rasterization",
-             "--disable-blink-features=DecodeLossyWebPImagesToYUV",
-             "--disable-blink-features=DecodeJpeg420ImagesToYUV",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "exotic-color-space",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images"],
