@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "dbus/bus.h"
@@ -164,6 +165,10 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     // The response object handle that the portal will send a signal to upon the
     // dialog's completion.
     raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle_ = nullptr;
+
+    // `response_handle_` owns callbacks with methods bound to `this`.  To prevent
+    // leaking, the callbacks are bound with weak references to `this`.
+    base::WeakPtrFactory<DialogInfo> weak_factory_{this};
   };
 
   // D-Bus configuration and initialization.
@@ -208,6 +213,11 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   static int handle_token_counter_;
 
   std::vector<PortalFilter> filters_;
+
+  // `DialogInfo` keeps callbacks to methods bound to `this`, and `this` keeps
+  // a strong reference to `DialogInfo`.  To prevent a reference cycle, the
+  // `DialogInfo` is instead passed callbacks that weakly reference `this`.
+  base::WeakPtrFactory<SelectFileDialogLinuxPortal> weak_factory_{this};
 };
 
 }  // namespace ui
