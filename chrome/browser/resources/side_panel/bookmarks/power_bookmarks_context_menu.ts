@@ -138,7 +138,8 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       },
     ];
 
-    if (!loadTimeData.getBoolean('incognitoMode')) {
+    if (!loadTimeData.getBoolean('incognitoMode') &&
+        loadTimeData.getBoolean('isIncognitoModeAvailable')) {
       menuItems.push({
         id: MenuItemId.OPEN_INCOGNITO,
         label: bookmarkCount < 2 ?

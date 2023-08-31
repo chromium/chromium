@@ -245,4 +245,44 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
             loadTimeData.getString('tooltipDelete')),
         true);
   });
+
+  test('ShowsMenuItemsForUserWithIncognitoDisabled', async () => {
+    loadTimeData.overrideValues({
+      isIncognitoModeAvailable: false,
+    });
+
+    const selection = [service.findBookmarkWithId('5')!];
+    powerBookmarksContextMenu.showAtPosition(
+        new MouseEvent('click'), selection, false, false);
+
+    await waitAfterNextRender(powerBookmarksContextMenu);
+
+    const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
+        '.dropdown-item');
+    assertEquals(menuItems.length, 6);
+    assertEquals(
+        menuItems[0]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTab')),
+        true);
+    assertEquals(
+        menuItems[1]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewWindow')),
+        true);
+    assertEquals(
+        menuItems[2]!.textContent!.includes(
+            loadTimeData.getString('menuOpenNewTabGroup')),
+        true);
+    assertEquals(
+        menuItems[3]!.textContent!.includes(
+            loadTimeData.getString('menuMoveToBookmarksBar')),
+        true);
+    assertEquals(
+        menuItems[4]!.textContent!.includes(
+            loadTimeData.getString('menuRename')),
+        true);
+    assertEquals(
+        menuItems[5]!.textContent!.includes(
+            loadTimeData.getString('tooltipDelete')),
+        true);
+  });
 });

@@ -75,6 +75,8 @@ class BookmarksSidePanelUI
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver)
       override;
 
+  bool IsIncognitoModeAvailable();
+
   std::unique_ptr<BookmarksPageHandler> bookmarks_page_handler_;
   mojo::Receiver<side_panel::mojom::BookmarksPageHandlerFactory>
       bookmarks_page_factory_receiver_{this};
