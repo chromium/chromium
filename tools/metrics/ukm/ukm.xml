@@ -19396,7 +19396,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="RecentCPUUsage">
     <summary>
-      The estimated CPU usage of the page over the last 2 minutes, with 100,000
+      The estimated CPU usage of the page over the last 2 minutes, with 10,000
       as 100% usage of 1 full core. (The same scale as the
       PerformanceMonitor.AverageCPU8.* histograms.)
     </summary>
@@ -19409,7 +19409,7 @@ be describing additional metrics about the same event.
   <metric name="TotalRecentCPUUsageAllPages">
     <summary>
       The sum of the estimated CPU usage of all pages over the last 2 minutes,
-      with 100,000 as 100% usage of 1 full core. (The same scale as the
+      with 10,000 as 100% usage of 1 full core. (The same scale as the
       PerformanceMonitor.AverageCPU8.* histograms.) RecentCPUUsage can be
       compared to this to find how the page compares to other open tabs.
     </summary>
