@@ -1135,13 +1135,13 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
 
   // Add the prefix for dynamic content scripts onto the IDs of all scripts in
   // `scripts` before continuing.
-  for (auto& script : scripts) {
-    if (!scripting::IsScriptIdValid(script.id, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
+  std::set<std::string> ids_to_update = scripting::CreateDynamicScriptIds(
+      scripts, UserScript::Source::kDynamicContentScript,
+      std::set<std::string>(), &error);
 
-    script.id = scripting::AddPrefixToDynamicScriptId(
-        script.id, UserScript::Source::kDynamicContentScript);
+  if (!error.empty()) {
+    CHECK(ids_to_update.empty());
+    return RespondNow(Error(std::move(error)));
   }
 
   ExtensionUserScriptLoader* loader =
@@ -1159,7 +1159,6 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
     }
   }
 
-  std::set<std::string> ids_to_update;
   for (const auto& script : scripts) {
     std::string error_script_id = UserScript::TrimPrefixFromScriptID(script.id);
     if (loaded_scripts_metadata.find(script.id) ==
@@ -1169,13 +1168,6 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
                                    "or is not fully registered",
                                    error_script_id.c_str())));
     }
-
-    if (base::Contains(ids_to_update, script.id)) {
-      return RespondNow(Error(base::StringPrintf("Duplicate script ID '%s'",
-                                                 error_script_id.c_str())));
-    }
-
-    ids_to_update.insert(script.id);
   }
 
   std::u16string parse_error;
