@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.vcn;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +24,9 @@ import org.chromium.chrome.R;
 
     /** The text that describes what a virtual card does. */
     /*package*/ final TextView mVirtualCardDescription;
+
+    /** The container for the card icon, label, and description. */
+    /*package*/ final View mCardContainer;
 
     /** The icon for the card. */
     /*package*/ final ImageView mIssuerIcon;
@@ -55,6 +59,7 @@ import org.chromium.chrome.R;
                 R.layout.autofill_vcn_enroll_bottom_sheet_content, null);
         mDialogTitle = mContentView.findViewById(R.id.dialog_title);
         mVirtualCardDescription = mContentView.findViewById(R.id.virtual_card_description);
+        mCardContainer = mContentView.findViewById(R.id.card_container);
         mIssuerIcon = mContentView.findViewById(R.id.issuer_icon);
         mCardLabel = mContentView.findViewById(R.id.card_label);
         mCardDescription = mContentView.findViewById(R.id.card_description);

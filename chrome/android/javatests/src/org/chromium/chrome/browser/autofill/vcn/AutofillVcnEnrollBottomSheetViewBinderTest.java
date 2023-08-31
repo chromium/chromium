@@ -116,6 +116,20 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
     @Test
     @SmallTest
+    public void testCardContainerAccessibilityDescription() {
+        ReadableObjectPropertyKey<String> descriptionProperty =
+                AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION;
+
+        bind(mModel.with(descriptionProperty, ""));
+        assertThat(String.valueOf(mView.mCardContainer.getContentDescription()), isEmptyString());
+
+        bind(mModel.with(descriptionProperty, "Content description"));
+        assertThat(String.valueOf(mView.mCardContainer.getContentDescription()),
+                equalTo("Content description"));
+    }
+
+    @Test
+    @SmallTest
     public void testIssuerIcon() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
 

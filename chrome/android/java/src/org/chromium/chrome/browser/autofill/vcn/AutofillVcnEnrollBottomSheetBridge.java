@@ -31,7 +31,8 @@ import java.util.LinkedList;
     @VisibleForTesting
     /*package*/ boolean requestShowContent(long nativeAutofillVcnEnrollBottomSheetBridge,
             WebContents webContents, String messageText, String descriptionText,
-            String learnMoreLinkText, Bitmap issuerIcon, String cardLabel, String cardDescription,
+            String learnMoreLinkText, String cardContainerAccessibilityDescription,
+            Bitmap issuerIcon, String cardLabel, String cardDescription,
             LinkedList<LegalMessageLine> googleLegalMessages,
             LinkedList<LegalMessageLine> issuerLegalMessages, String acceptButtonLabel,
             String cancelButtonLabel) {
@@ -44,9 +45,10 @@ import java.util.LinkedList;
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
         mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(window.getContext().get(),
-                messageText, descriptionText, learnMoreLinkText, issuerIcon, cardLabel,
-                cardDescription, googleLegalMessages, issuerLegalMessages, acceptButtonLabel,
-                cancelButtonLabel, this::onAccept, this::onCancel, this::onDismiss);
+                messageText, descriptionText, learnMoreLinkText,
+                cardContainerAccessibilityDescription, issuerIcon, cardLabel, cardDescription,
+                googleLegalMessages, issuerLegalMessages, acceptButtonLabel, cancelButtonLabel,
+                this::onAccept, this::onCancel, this::onDismiss);
 
         return mCoordinator.requestShowContent(window);
     }

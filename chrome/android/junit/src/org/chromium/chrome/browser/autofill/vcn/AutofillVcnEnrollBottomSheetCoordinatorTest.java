@@ -58,9 +58,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(mWindow.getContext().get(),
-                "Message text", "Description text. Learn more", "Learn more", /*issuerIcon=*/null,
-                "Card **** 1234", "Virtual card",
-                /*googleLegalMessages=*/new LinkedList<LegalMessageLine>(),
+                "Message text", "Description text. Learn more", "Learn more",
+                "Card container accessibility description", /*issuerIcon=*/null, "Card **** 1234",
+                "Virtual card", /*googleLegalMessages=*/new LinkedList<LegalMessageLine>(),
                 /*issuerLegalMessages=*/new LinkedList<LegalMessageLine>(), "Accept Button Text",
                 "Cancel Button Text", /*onAccept=*/() -> {}, /*onCancel=*/() -> {},
                 /*onDismiss=*/() -> {});

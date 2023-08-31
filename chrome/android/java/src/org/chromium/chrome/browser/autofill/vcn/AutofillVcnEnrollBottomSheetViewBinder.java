@@ -60,6 +60,12 @@ import java.util.LinkedList;
                     model.get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT)));
             view.mVirtualCardDescription.setMovementMethod(LinkMovementMethod.getInstance());
 
+        } else if (AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION
+                == propertyKey) {
+            view.mCardContainer.setContentDescription(
+                    model.get(AutofillVcnEnrollBottomSheetProperties
+                                      .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
+
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey) {
             view.mIssuerIcon.setImageBitmap(
                     scaleBitmap(model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)));

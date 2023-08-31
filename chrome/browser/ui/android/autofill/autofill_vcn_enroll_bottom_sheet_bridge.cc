@@ -53,6 +53,11 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
       ConvertUTF16ToJavaString(env, delegate_->GetMessageText()),
       ConvertUTF16ToJavaString(env, delegate_->GetDescriptionText()),
       ConvertUTF16ToJavaString(env, delegate_->GetLearnMoreLinkText()),
+      ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
+              delegate_->GetCardLabel())),
       gfx::ConvertToJavaBitmap(*delegate_->GetIssuerIcon()->bitmap()),
       ConvertUTF16ToJavaString(env, delegate_->GetCardLabel()),
       ConvertUTF16ToJavaString(

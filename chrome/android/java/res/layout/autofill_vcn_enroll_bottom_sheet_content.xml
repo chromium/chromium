@@ -73,9 +73,11 @@ found in the LICENSE file.
             <RelativeLayout
                 android:id="@+id/card_container"
                 android:background="@drawable/card_container_background"
-                android:layout_width="match_parent"
+                android:descendantFocusability="blocksDescendants"
+                android:importantForAccessibility="yes"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
+                android:layout_width="match_parent"
                 android:padding="@dimen/autofill_bottom_sheet_spacing_medium">
 
                 <!-- Card issuer icon -->

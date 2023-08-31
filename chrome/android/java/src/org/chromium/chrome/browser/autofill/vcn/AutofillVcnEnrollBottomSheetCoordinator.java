@@ -34,6 +34,9 @@ import java.util.LinkedList;
      *                        hides your actual card..." and so on. This text includes a "learn
      *                        more" link text.
      * @param learnMoreLinkText The text of the "learn more" link in descriptionText.
+     * @param cardContainerAccessibilityDescription The accessibility description for the UI element
+     *                                              that contains the issuer icon, card label, and
+     *                                              card description.
      * @param issuerIcon The icon for the card. For example, could be an American Express logo.
      * @param cardLabel The label for the card, e.g., "Amex ****1234".
      * @param cardDescription The description of the card, e.g., "Virtual Card".
@@ -46,7 +49,8 @@ import java.util.LinkedList;
      * @param onDismiss The callback to invoke when the user dismisses the bottom sheet.
      */
     /*package*/ AutofillVcnEnrollBottomSheetCoordinator(Context context, String messageText,
-            String descriptionText, String learnMoreLinkText, Bitmap issuerIcon, String cardLabel,
+            String descriptionText, String learnMoreLinkText,
+            String cardContainerAccessibilityDescription, Bitmap issuerIcon, String cardLabel,
             String cardDescription, LinkedList<LegalMessageLine> googleLegalMessages,
             LinkedList<LegalMessageLine> issuerLegalMessages, String acceptButtonLabel,
             String cancelButtonLabel, Runnable onAccept, Runnable onCancel, Runnable onDismiss) {
@@ -61,6 +65,9 @@ import java.util.LinkedList;
                         .with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, messageText)
                         .with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION_TEXT,
                                 descriptionTextComponents)
+                        .with(AutofillVcnEnrollBottomSheetProperties
+                                        .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
+                                cardContainerAccessibilityDescription)
                         .with(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON, issuerIcon)
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION,

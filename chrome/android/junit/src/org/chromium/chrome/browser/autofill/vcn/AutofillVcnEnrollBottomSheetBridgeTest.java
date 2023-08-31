@@ -83,9 +83,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
     private void requestShowContent(WebContents webContents) {
         mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, webContents,
-                "Message text", "Description text. Learn more", "Learn more", /*issuerIcon=*/null,
-                "Card label", "card description",
-                /*googleLegaleMessages=*/new LinkedList<LegalMessageLine>(),
+                "Message text", "Description text. Learn more", "Learn more",
+                "Card container accessibility description", /*issuerIcon=*/null, "Card label",
+                "Card description", /*googleLegaleMessages=*/new LinkedList<LegalMessageLine>(),
                 /*issuerLegalMessages=*/new LinkedList<LegalMessageLine>(), "Accept button label",
                 "Cancel button label");
     }

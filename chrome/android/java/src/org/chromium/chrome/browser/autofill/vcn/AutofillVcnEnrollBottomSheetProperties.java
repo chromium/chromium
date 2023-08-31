@@ -27,6 +27,13 @@ import java.util.LinkedList;
     /*package*/ static final ReadableObjectPropertyKey<ArrayList<String>> DESCRIPTION_TEXT =
             new ReadableObjectPropertyKey<>();
 
+    /**
+     * The accessibility description for the container that displays the issuer icon, card label,
+     * and card description.
+     */
+    /*package*/ static final ReadableObjectPropertyKey<String>
+            CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION = new ReadableObjectPropertyKey<>();
+
     /** The icon for the card. */
     /*package*/ static final ReadableObjectPropertyKey<Bitmap> ISSUER_ICON =
             new ReadableObjectPropertyKey<>();
@@ -55,7 +62,7 @@ import java.util.LinkedList;
     /*package*/ static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
-    /*package*/ static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, DESCRIPTION_TEXT, ISSUER_ICON,
-            CARD_LABEL, CARD_DESCRIPTION, GOOGLE_LEGAL_MESSAGES, ISSUER_LEGAL_MESSAGES,
-            ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL};
+    /*package*/ static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, DESCRIPTION_TEXT,
+            CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION, ISSUER_ICON, CARD_LABEL, CARD_DESCRIPTION,
+            GOOGLE_LEGAL_MESSAGES, ISSUER_LEGAL_MESSAGES, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL};
 }
