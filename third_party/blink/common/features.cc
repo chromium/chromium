@@ -277,7 +277,7 @@ BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,
 // crbug.com/1431169
 BASE_FEATURE(kBoostImagePriority,
              "BoostImagePriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // The number of images to bopost the priority of before returning
 // to the default (low) priority.
 const base::FeatureParam<int> kBoostImagePriorityImageCount{

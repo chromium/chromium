@@ -2383,30 +2383,6 @@
             ]
         }
     ],
-    "BoostImagePriority": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_5_2_20230808",
-                    "params": {
-                        "image_count": "5",
-                        "tight_medium_limit": "2"
-                    },
-                    "enable_features": [
-                        "BoostImagePriority"
-                    ]
-                }
-            ]
-        }
-    ],
     "BorealisPermitted": [
         {
             "platforms": [
