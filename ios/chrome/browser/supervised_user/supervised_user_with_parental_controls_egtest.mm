@@ -25,6 +25,7 @@ static const char* kEchoPath = "/echo";
 static const char* kEchoContent = "Echo";
 static const char* kInterstitialContent = "Ask your parent";
 static const char* kInterstitialWaitingContent = "Waiting for permission";
+static const char* kDetailsContent = "Details";
 }  // namespace
 
 // Tests the core user journeys of a supervised user with FamilyLink parental
@@ -78,6 +79,22 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
       stringWithFormat:@"%sdocument.getElementById('block-page-header').hidden",
                        isVisible ? "!" : ""];
   [ChromeEarlGrey waitForJavaScriptCondition:isBlockPageHeaderVisible];
+}
+
+- (void)checkShowDetailsLinkVisibility:(BOOL)isVisible {
+  NSString* isShowDetailsVisible = [NSString
+      stringWithFormat:@"getComputedStyle(document.getElementById('block-"
+                       @"reason-show-details-link')).display %s== \"none\"",
+                       isVisible ? "!" : "="];
+  [ChromeEarlGrey waitForJavaScriptCondition:isShowDetailsVisible];
+}
+
+- (void)checkHideDetailsLinkVisibility:(BOOL)isVisible {
+  NSString* isHideDetailsVisible = [NSString
+      stringWithFormat:@"getComputedStyle(document.getElementById('block-"
+                       @"reason-hide-details-link')).display %s== \"none\"",
+                       isVisible ? "!" : "="];
+  [ChromeEarlGrey waitForJavaScriptCondition:isHideDetailsVisible];
 }
 
 - (void)checkInterstitalIsShown {
@@ -263,6 +280,91 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
   [SupervisedUserSettingsAppInterface
       approveWebsiteDomain:net::NSURLWithGURL(blockedUrl)];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
+}
+
+#pragma mark - Interstitial UI Behaviour
+
+// Checks the behaviour of the "Details" link on click (expand/shrink details).
+- (void)testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen {
+#if !TARGET_IPHONE_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
+#endif
+  // Compact width only.
+  if (![ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_DISABLED(@"This is a narrow screen test case only.");
+  }
+
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [self checkShowDetailsLinkVisibility:YES];
+  [self checkHideDetailsLinkVisibility:NO];
+
+  // Expand the Details link.
+  [ChromeEarlGrey tapWebStateElementWithID:@"block-reason-show-details-link"];
+  [ChromeEarlGrey waitForWebStateContainingText:"This site is blocked"];
+  [self checkShowDetailsLinkVisibility:NO];
+  [self checkHideDetailsLinkVisibility:YES];
+
+  // Shrink the Details link.
+  [ChromeEarlGrey tapWebStateElementWithID:@"block-reason-hide-details-link"];
+  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [self checkShowDetailsLinkVisibility:YES];
+  [self checkHideDetailsLinkVisibility:NO];
+}
+
+// Checks that we don't regress to b/290000817: The 'Details' link should
+// be absernt from the interstitial 'Waiting' screen bor both existing (updated)
+// intersitials and new interstitials for already requested hosts.
+- (void)testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen {
+#if !TARGET_IPHONE_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"This is an iphone test case only.");
+#endif
+  // Compact width only.
+  if (![ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_DISABLED(@"This is a narrow screen test case only.");
+  }
+
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+
+  // Details link must be visible.
+  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [self checkShowDetailsLinkVisibility:YES];
+  [self checkHideDetailsLinkVisibility:NO];
+
+  // Case 1: Requested host on present (updated) intersitial:
+  // The Details link must not be visible on the
+  // "Waiting" screen on the existing interstitial.
+  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
+  [self checkInterstitalIsShownInWaitingScreen];
+  [self checkShowDetailsLinkVisibility:NO];
+  [self checkHideDetailsLinkVisibility:NO];
+
+  // Case 2: Already requested host on a new intersitial case:
+  // Tge Details link must not be visible on the
+  // "Waiting" screen on the new interstitial.
+  GURL otherUrl = self.testServer->GetURL("other.host", kEchoPath);
+  [ChromeEarlGrey loadURL:otherUrl];
+  [self checkInterstitalIsShown];
+
+  // Request the original blocked site. The interstitial "Waiting" screen is
+  // displayed without the Details.
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShownInWaitingScreen];
+  [self checkShowDetailsLinkVisibility:NO];
+  [self checkHideDetailsLinkVisibility:NO];
 }
 
 @end

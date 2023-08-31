@@ -166,9 +166,9 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
   // Hide block reason from the waiting screen.
-  $('block-reason').hidden = true;
-  $('block-reason-show-details-link').hidden = true;
-  $('block-reason-hide-details-link').hidden = true;
+  $('block-reason').style.display = 'none';
+  $('block-reason-show-details-link').style.display = 'none';
+  $('block-reason-hide-details-link').style.display = 'none';
   if (localWebApprovalsEnabled) {
     $('local-approvals-button').hidden = false;
   }

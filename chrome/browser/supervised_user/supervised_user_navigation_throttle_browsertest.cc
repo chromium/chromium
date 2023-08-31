@@ -512,13 +512,16 @@ bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
 }
 
 bool SupervisedUserIframeFilterTest::IsBlockReasonBeingShown(int frame_id) {
-  std::string command = "!document.getElementById('block-reason').hidden";
+  std::string command =
+      "getComputedStyle(document.getElementById('block-reason')).display !== "
+      "\"none\"";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
 bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(int frame_id) {
   std::string command =
-      "!document.getElementById('block-reason-show-details-link').hidden";
+      "getComputedStyle(document.getElementById('block-reason-show-details-"
+      "link')).display !== \"none\"";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
