@@ -215,6 +215,24 @@ Example of retrieving and iterating over `NetworkState` objects:
   }
 ```
 
+### Stub Networks
+
+In certain cases, cellular networks may not have an associated shill services.
+For example, when a SIM is locked, mobile network is unavailable or if eSIM profiles
+are unavailable through platform's modem manager. In such cases, we create stub network
+instances in place of those networks and make them available to the NetworkStateHandler.
+
+The interface for the StubCellularNetworkProvider is defined in the [`NetworkStateHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;l=84) and
+implemented by [`StubCellularNetworksProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/stub_cellular_networks_provider.h)
+
+StubCellularNetworkProvider interface provides two methods: AddOrRemoveStubCellularNetworks and GetStubNetworkMetadata
+
+AddOrRemoveStubCellularNetworks takes in a list of managed networks, empty list of stub ids and cellular device state instance. This function then looks for cases where a corresponding network in the list of managed networks is missing for a eSIM profile or a pSIM and goes onto create a new stub instance. It also remove stub instances for a profile if a corresponding network has been added to the managed network list. A boolean is returned to indicate if any changes to stub networks have taken place and the input parameter containing list of stub ids will be filled if new stub networks have been created.
+
+GetStubNetworkMetadata returns metadata for a stub network instance if one exists for the given iccid.
+
+NetworkStateHandler is the primary user of StubNetworkProvider. It attempts to make a change in stub networks if there is a change to the managed network list, change in the property of a network or a change in cellular technology state. For any of these changes, a call is made to the AddOrRemoveStubCellularNetworks function in stub network provider.
+
 ### Configuring Networks
 
 Networks on ChromeOS are created and configured using three primary classes.
