@@ -4,11 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {fakeSearchResults} from '../fake_data.js';
 import {ShortcutSearchHandler, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
-import {isSearchEnabled} from '../shortcut_utils.js';
-
-import {FakeShortcutSearchHandler} from './fake_shortcut_search_handler.js';
 
 /**
  * @fileoverview
@@ -22,27 +18,9 @@ export function setShortcutSearchHandlerForTesting(
   shortcutSearchHandler = testHandler;
 }
 
-/**
- * Create a Fake ShortcutSearchHandler with reasonable fake data.
- */
-export function setupFakeShortcutSearchHandler(): void {
-  // Create handler.
-  const handler = new FakeShortcutSearchHandler();
-
-  // Setup search response.
-  handler.setFakeSearchResult(fakeSearchResults);
-
-  // Set the fake handler.
-  setShortcutSearchHandlerForTesting(handler);
-}
-
 export function getShortcutSearchHandler(): ShortcutSearchHandlerInterface {
   if (!shortcutSearchHandler) {
-    if (isSearchEnabled()) {
-      shortcutSearchHandler = ShortcutSearchHandler.getRemote();
-    } else {
-      setupFakeShortcutSearchHandler();
-    }
+    shortcutSearchHandler = ShortcutSearchHandler.getRemote();
   }
   assert(!!shortcutSearchHandler);
   return shortcutSearchHandler;

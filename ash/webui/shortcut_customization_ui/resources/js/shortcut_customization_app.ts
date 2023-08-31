@@ -31,7 +31,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
-import {getCategoryNameStringId, isCustomizationDisabled, isSearchEnabled} from './shortcut_utils.js';
+import {getCategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 const oldKeyboardSettingsLink = 'chrome://os-settings/keyboard-overlay';
 const newKeyboardSettingsLink = 'chrome://os-settings/per-device-keyboard';
@@ -272,11 +272,6 @@ export class ShortcutCustomizationAppElement extends
 
   protected shouldHideRestoreAllButton(): boolean {
     return isCustomizationDisabled();
-  }
-
-  protected shouldHideSearchBox(): boolean {
-    // Hide the search box when flag is disabled.
-    return !isSearchEnabled();
   }
 
   static get template(): HTMLTemplateElement {

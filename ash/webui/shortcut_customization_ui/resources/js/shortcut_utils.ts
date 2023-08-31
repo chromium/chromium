@@ -43,11 +43,6 @@ export const isCustomizationDisabled = (): boolean => {
   return !loadTimeData.getBoolean('isCustomizationEnabled');
 };
 
-// Returns true if search is enabled via the feature flag.
-export const isSearchEnabled = (): boolean => {
-  return loadTimeData.getBoolean('isSearchEnabled');
-};
-
 export const isTextAcceleratorInfo =
     (accelInfo: AcceleratorInfo|MojoAcceleratorInfo):
         accelInfo is TextAcceleratorInfo => {

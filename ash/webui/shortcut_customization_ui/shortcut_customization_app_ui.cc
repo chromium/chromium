@@ -205,8 +205,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isCustomizationEnabled",
                           ::features::IsShortcutCustomizationEnabled());
-  html_source->AddBoolean("isSearchEnabled",
-                          features::IsSearchInShortcutsAppEnabled());
   html_source->AddBoolean(
       "isJellyEnabledForShortcutCustomization",
       ash::features::IsJellyEnabledForShortcutCustomization());
