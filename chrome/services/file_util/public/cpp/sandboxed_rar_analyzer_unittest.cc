@@ -456,5 +456,44 @@ TEST_F(SandboxedRarAnalyzerTest, InvalidPath) {
             safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
 }
 
+TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionCorrectPassword) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path =
+                              GetFilePath("header_encryption_passwd1234.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, /*password=*/"1234", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  ExpectBinary(kSignedExe, results.archived_binary.Get(0));
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownCorrect);
+}
+
+TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionIncorrectPassword) {
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path =
+                              GetFilePath("header_encryption_passwd1234.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, /*password=*/"5678", &results);
+
+  ASSERT_FALSE(results.success);
+  EXPECT_FALSE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 0);
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            EncryptionInfo::kKnownIncorrect);
+}
+
 }  // namespace
 }  // namespace safe_browsing

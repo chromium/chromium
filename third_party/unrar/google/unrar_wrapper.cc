@@ -22,7 +22,13 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
   rar_file_ = std::move(rar_file);
   temp_file_ = std::move(temp_file);
 
-  archive_ = std::make_unique<Archive>();
+  command_ = std::make_unique<CommandData>();
+  std::wstring password_flag = L"-p" + base::UTF8ToWide(password_);
+  command_->ParseArg(password_flag.data());
+  command_->ParseArg(const_cast<wchar_t*>(L"x"));
+  command_->ParseDone();
+
+  archive_ = std::make_unique<Archive>(command_.get());
   archive_->SetFileHandle(rar_file_.GetPlatformFile());
   archive_->SetTempFileHandle(temp_file_.GetPlatformFile());
 
@@ -33,12 +39,6 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
   bool is_valid_archive = archive_->IsArchive(/*EnableBroken=*/true);
   if (!is_valid_archive)
     return false;
-
-  command_ = std::make_unique<CommandData>();
-  std::wstring password_flag = L"-p" + base::UTF8ToWide(password_);
-  command_->ParseArg(password_flag.data());
-  command_->ParseArg(const_cast<wchar_t*>(L"x"));
-  command_->ParseDone();
 
   extractor_ = std::make_unique<CmdExtract>(command_.get());
   extractor_->ExtractArchiveInit(*archive_);
@@ -98,6 +98,14 @@ bool RarReader::ExtractNextEntry() {
 
 void RarReader::SetPassword(const std::string& password) {
   password_ = password;
+}
+
+bool RarReader::HeadersEncrypted() const {
+  return archive_->Encrypted;
+}
+
+bool RarReader::HeaderDecryptionFailed() const {
+  return archive_->FailedHeaderDecryption;
 }
 
 }  // namespace third_party_unrar

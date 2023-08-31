@@ -44,29 +44,6 @@ index d9518f1dc491a..08fef7b0e6c0e 100644
  
      BaseBlock ShortBlock;
      MarkHeader MarkHead;
-diff --git a/third_party/unrar/src/arcread.cpp b/third_party/unrar/src/arcread.cpp
-index d1df6c04108cd..468d387a24721 100644
---- a/third_party/unrar/src/arcread.cpp
-+++ b/third_party/unrar/src/arcread.cpp
-@@ -142,7 +142,8 @@ size_t Archive::ReadHeader15()
- 
-   if (Decrypt)
-   {
--#ifdef RAR_NOCRYPT // For rarext.dll and unrar_nocrypt.dll.
-+#if defined(RAR_NOCRYPT) || \
-+    defined(CHROMIUM_UNRAR)  // For rarext.dll and unrar_nocrypt.dll.
-     return 0;
- #else
-     RequestArcPassword();
-@@ -554,7 +555,7 @@ size_t Archive::ReadHeader50()
- 
-   if (Decrypt)
-   {
--#if defined(RAR_NOCRYPT)
-+#if defined(RAR_NOCRYPT) || defined(CHROMIUM_UNRAR)
-     return 0;
- #else
- 
 diff --git a/third_party/unrar/src/blake2s.hpp b/third_party/unrar/src/blake2s.hpp
 index f88ef37802c44..d8b30f94d0518 100644
 --- a/third_party/unrar/src/blake2s.hpp

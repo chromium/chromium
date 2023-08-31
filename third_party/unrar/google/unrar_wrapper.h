@@ -55,6 +55,9 @@ class RarReader {
 
   void SetPassword(const std::string& password);
 
+  bool HeadersEncrypted() const;
+  bool HeaderDecryptionFailed() const;
+
  private:
   // The temporary file used for extracting each entry. This allows RAR
   // extraction to safely occur within a sandbox.
