@@ -388,7 +388,6 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     change_processor()->ReportError(*error);
     return;
   }
-  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   for (const syncer::ModelTypeStore::Record& r : *entries) {
     sync_pb::WebauthnCredentialSpecifics specifics;
@@ -400,6 +399,7 @@ void PasskeySyncBridge::OnStoreReadAllMetadata(
     data_[std::move(storage_key)] = std::move(specifics);
   }
   NotifyPasskeysChanged();
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 void PasskeySyncBridge::OnStoreCommitWriteBatch(
