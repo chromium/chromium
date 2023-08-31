@@ -33,6 +33,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.BrowserParts;
@@ -53,6 +54,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {FirstRunIntegrationUnitTest.MockChromeBrowserInitializer.class})
+@DisabledTest(message = "https://crbug.com/1477411")
 public final class FirstRunIntegrationUnitTest {
     /** Do nothing version of {@link ChromeBrowserInitializer}. */
     @Implements(ChromeBrowserInitializer.class)
