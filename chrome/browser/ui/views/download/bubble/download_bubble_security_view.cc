@@ -795,6 +795,7 @@ void DownloadBubbleSecurityView::SetUIInfoForTesting(
 
 void DownloadBubbleSecurityView::UpdateViews() {
   CHECK(IsInitialized());
+  CHECK(ui_info_.HasSubpage());
   // Our multiline labels need to know the width of the bubble in order to size
   // themselves appropriately (see `GetMinimumLabelWidth`). This means that we
   // must reset fields that increase the width of the bubble before update. This

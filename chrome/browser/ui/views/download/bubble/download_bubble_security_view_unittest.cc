@@ -176,6 +176,19 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
         DownloadItemModel::Wrap(&download_item2_), row_list_view_.get(),
         bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
         browser_->AsWeakPtr(), bubble_width);
+
+    // Give both items a valid default security subpage
+    ON_CALL(download_item1_, GetDangerType())
+        .WillByDefault(Return(
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item1_, GetURL())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
+
+    ON_CALL(download_item2_, GetDangerType())
+        .WillByDefault(Return(
+            download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item2_, GetURL())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
   }
 
   void TearDown() override {
@@ -429,18 +442,22 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   // and down in these transitions.
   security_view_->InitializeForDownload(*row_view1_->model());
   security_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
-          std::u16string(), DownloadCommands::Command::DISCARD));
+      DownloadUIModel::BubbleUIInfo()
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
+          .AddSubpageSummary(std::u16string(u"Subpage warning")));
   int short_width =
       bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
 
   security_view_->Reset();
   security_view_->InitializeForDownload(*row_view1_->model());
   security_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
-          std::u16string(
-              u"really really really really really really long button text"),
-          DownloadCommands::Command::DISCARD));
+      DownloadUIModel::BubbleUIInfo()
+          .AddPrimarySubpageButton(
+              std::u16string(u"really really really really really really long "
+                             u"button text"),
+              DownloadCommands::Command::DISCARD)
+          .AddSubpageSummary(std::u16string(u"Subpage warning")));
   int medium_width =
       bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
 
@@ -449,8 +466,10 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   security_view_->Reset();
   security_view_->InitializeForDownload(*row_view1_->model());
   security_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo().AddPrimarySubpageButton(
-          std::u16string(), DownloadCommands::Command::DISCARD));
+      DownloadUIModel::BubbleUIInfo()
+          .AddPrimarySubpageButton(std::u16string(),
+                                   DownloadCommands::Command::DISCARD)
+          .AddSubpageSummary(std::u16string(u"Subpage warning")));
   EXPECT_EQ(short_width,
             bubble_delegate_->GetDialogClientView()->GetMinimumSize().width());
 }
