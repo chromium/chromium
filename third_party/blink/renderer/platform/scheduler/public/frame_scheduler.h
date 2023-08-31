@@ -146,7 +146,10 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
   // Tells the scheduler that the first meaningful paint has occurred for this
   // frame.
-  virtual void OnFirstMeaningfulPaint() = 0;
+  virtual void OnFirstMeaningfulPaint(base::TimeTicks timestamp) = 0;
+
+  // Tells the scheduler that the load event has been dispatched for this frame.
+  virtual void OnDispatchLoadEvent() = 0;
 
   // Returns true if this frame is should not throttled (e.g. due to an active
   // connection).

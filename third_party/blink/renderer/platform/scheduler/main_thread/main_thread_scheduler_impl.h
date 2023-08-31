@@ -446,6 +446,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   bool IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint() const;
   bool IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint() const;
+  bool IsAnyOrdinaryMainFrameLoading() const;
 
   class Policy {
     DISALLOW_NEW();
@@ -868,6 +869,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         waiting_for_any_main_frame_contentful_paint;
     TraceableState<bool, TracingCategory::kInfo>
         waiting_for_any_main_frame_meaningful_paint;
+    TraceableState<bool, TracingCategory::kInfo> is_any_main_frame_loading;
     TraceableState<bool, TracingCategory::kInfo>
         have_seen_input_since_navigation;
   };

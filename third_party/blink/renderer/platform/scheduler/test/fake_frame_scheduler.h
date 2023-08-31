@@ -139,7 +139,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       bool is_web_history_inert_commit,
       FrameScheduler::NavigationType navigation_type,
       DidCommitProvisionalLoadParams params) override {}
-  void OnFirstMeaningfulPaint() override {}
+  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   // |source_location| is nullptr when JS is not running.
   // |handle| is nullptr when sticky feature starts to be used.
   void OnStartedUsingNonStickyFeature(

@@ -173,7 +173,11 @@ FrameSchedulerImpl::FrameSchedulerImpl(
       waiting_for_meaningful_paint_(true,
                                     "FrameScheduler.WaitingForMeaningfulPaint",
                                     &tracing_controller_,
-                                    YesNoStateToString) {
+                                    YesNoStateToString),
+      is_load_event_dispatched_(false,
+                                "FrameScheduler.IsLoadEventDispatched",
+                                &tracing_controller_,
+                                YesNoStateToString) {
   frame_task_queue_controller_ = base::WrapUnique(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
@@ -570,6 +574,7 @@ void FrameSchedulerImpl::DidCommitProvisionalLoad(
   if (!is_same_document) {
     waiting_for_contentful_paint_ = true;
     waiting_for_meaningful_paint_ = true;
+    is_load_event_dispatched_ = false;
   }
 
   if (is_outermost_main_frame && !is_same_document) {
@@ -832,8 +837,9 @@ void FrameSchedulerImpl::OnMainFrameInteractive() {
   }
 }
 
-void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
+void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
   waiting_for_meaningful_paint_ = false;
+  first_meaningful_paint_timestamp_ = timestamp;
 
   if (GetFrameType() != FrameScheduler::FrameType::kMainFrame ||
       is_in_embedded_frame_tree_) {
@@ -843,12 +849,29 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   main_thread_scheduler_->OnMainFramePaint();
 }
 
+void FrameSchedulerImpl::OnDispatchLoadEvent() {
+  is_load_event_dispatched_ = true;
+}
+
 bool FrameSchedulerImpl::IsWaitingForContentfulPaint() const {
   return waiting_for_contentful_paint_;
 }
 
 bool FrameSchedulerImpl::IsWaitingForMeaningfulPaint() const {
   return waiting_for_meaningful_paint_;
+}
+
+bool FrameSchedulerImpl::IsLoading() const {
+  if (waiting_for_meaningful_paint_) {
+    return true;
+  }
+
+  if (is_load_event_dispatched_) {
+    return false;
+  }
+
+  return base::TimeTicks::Now() - first_meaningful_paint_timestamp_ <=
+         GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
 }
 
 bool FrameSchedulerImpl::IsOrdinary() const {

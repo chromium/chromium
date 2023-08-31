@@ -101,6 +101,18 @@ base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
       kForegroundTimersThrottledWakeUpIntervalMills.Get());
 }
 
+base::TimeDelta GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint() {
+  constexpr int kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis_Default =
+      0;
+  static const base::FeatureParam<int>
+      kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis{
+          &features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
+          "LoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis",
+          kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis_Default};
+  return base::Milliseconds(
+      kLoadingPhaseBufferTimeAfterFirstMeaningfulPaintMillis.Get());
+}
+
 BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
              base::FEATURE_DISABLED_BY_DEFAULT);

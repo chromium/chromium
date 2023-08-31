@@ -80,6 +80,11 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPrioritizeCompositingAfterDelayTrials);
 // feature is enabled.
 PLATFORM_EXPORT base::TimeDelta GetForegroundTimersThrottledWakeUpInterval();
 
+// Buffer time that we want to extend the loading state after the FMP is
+// received.
+PLATFORM_EXPORT base::TimeDelta
+GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint();
+
 // Finch flag for preventing rendering starvation during threaded scrolling.
 // With this feature enabled, the existing delay-based rendering anti-starvation
 // applies, and the compositor task queue priority is controlled with the

@@ -49,9 +49,11 @@
 #include "third_party/blink/renderer/platform/scheduler/common/process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
@@ -538,6 +540,11 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           "Scheduler.WaitingForMeaningfulPaint",
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString),
+      is_any_main_frame_loading(
+          false,
+          "Scheduler.IsAnyMainFrameLoading",
+          &main_thread_scheduler_impl->tracing_controller_,
+          YesNoStateToString),
       have_seen_input_since_navigation(
           false,
           "Scheduler.HaveSeenInputSinceNavigation",
@@ -604,6 +611,15 @@ bool MainThreadSchedulerImpl::
   for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
     if (ps->IsOrdinary() && ps->IsWaitingForMainFrameMeaningfulPaint())
       return true;
+  }
+  return false;
+}
+
+bool MainThreadSchedulerImpl::IsAnyOrdinaryMainFrameLoading() const {
+  for (const PageSchedulerImpl* ps : main_thread_only().page_schedulers) {
+    if (ps->IsOrdinary() && ps->IsMainFrameLoading()) {
+      return true;
+    }
   }
   return false;
 }
@@ -1721,8 +1737,16 @@ UseCase MainThreadSchedulerImpl::ComputeCurrentUseCase(
     if (any_thread().waiting_for_any_main_frame_contentful_paint)
       return UseCase::kEarlyLoading;
 
-    if (any_thread().waiting_for_any_main_frame_meaningful_paint)
-      return UseCase::kLoading;
+    if (base::FeatureList::IsEnabled(
+            features::kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint)) {
+      if (any_thread().waiting_for_any_main_frame_meaningful_paint) {
+        return UseCase::kLoading;
+      }
+    } else {
+      if (any_thread().is_any_main_frame_loading) {
+        return UseCase::kLoading;
+      }
+    }
   }
   return UseCase::kNone;
 }
@@ -1868,6 +1892,7 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
            any_thread().waiting_for_any_main_frame_contentful_paint);
   dict.Add("waiting_for_any_main_frame_meaningful_paint",
            any_thread().waiting_for_any_main_frame_meaningful_paint);
+  dict.Add("is_any_main_frame_loading", any_thread().is_any_main_frame_loading);
   dict.Add("have_seen_input_since_navigation",
            any_thread().have_seen_input_since_navigation);
   dict.Add(
@@ -2036,6 +2061,7 @@ void MainThreadSchedulerImpl::OnMainFramePaint() {
       IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
+  any_thread().is_any_main_frame_loading = IsAnyOrdinaryMainFrameLoading();
 
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
@@ -2051,6 +2077,7 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
       IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
+  any_thread().is_any_main_frame_loading = IsAnyOrdinaryMainFrameLoading();
   any_thread().have_seen_input_since_navigation = false;
   main_thread_only().idle_time_estimator.Clear();
   main_thread_only().have_reported_blocking_intervention_since_navigation =
@@ -2297,6 +2324,7 @@ void MainThreadSchedulerImpl::AddPageScheduler(
       IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
+  any_thread().is_any_main_frame_loading = IsAnyOrdinaryMainFrameLoading();
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
@@ -2323,6 +2351,7 @@ void MainThreadSchedulerImpl::RemovePageScheduler(
       IsAnyOrdinaryMainFrameWaitingForFirstContentfulPaint();
   any_thread().waiting_for_any_main_frame_meaningful_paint =
       IsAnyOrdinaryMainFrameWaitingForFirstMeaningfulPaint();
+  any_thread().is_any_main_frame_loading = IsAnyOrdinaryMainFrameLoading();
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 

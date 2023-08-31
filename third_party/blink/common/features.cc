@@ -1064,6 +1064,12 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 
 BASE_FEATURE(kLinkPreview, "LinkPreview", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A feature to control whether the loading phase should be extended beyond
+// First Meaningful Paint by a configurable buffer.
+BASE_FEATURE(kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint,
+             "LoadingPhaseBufferTimeAfterFirstMeaningfulPaint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes network loading tasks unfreezable so that they can be processed while
 // the page is frozen.
 BASE_FEATURE(kLoadingTasksUnfreezable,

@@ -22,6 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
@@ -422,7 +423,9 @@ TEST_F(PageSchedulerImplTest, IsLoadingTest) {
 
   // 2nd page finishes loading.
   frame_scheduler2->OnFirstContentfulPaintInMainFrame();
-  frame_scheduler2->OnFirstMeaningfulPaint();
+  frame_scheduler2->OnFirstMeaningfulPaint(
+      base::TimeTicks::Now() -
+      GetLoadingPhaseBufferTimeAfterFirstMeaningfulPaint());
 
   // Both pages are loaded.
   EXPECT_FALSE(page_scheduler_->IsLoading());

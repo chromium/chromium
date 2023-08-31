@@ -585,6 +585,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLinkPreview);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLoadingTasksUnfreezable);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kLoadingPhaseBufferTimeAfterFirstMeaningfulPaint);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kLogUnexpectedIPCPostedToBackForwardCachedDocuments);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyCanvas2dImageChromium);
