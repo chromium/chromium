@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
     Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2
   </obsolete>
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
     browser UI of lacros-chrome.
@@ -144,7 +144,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow2"
     units="%" expires_after="2024-01-29">
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow2 but emitted for the
     browser UI of lacros-chrome.
