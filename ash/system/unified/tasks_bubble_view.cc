@@ -258,6 +258,25 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
       ScrollViewToVisible();
     }
   }
+
+  // TODO(anasalazar): Record delay for non-initial updates on the bubble.
+  if (initial_update) {
+    auto* controller = Shell::Get()->glanceables_v2_controller();
+    base::TimeDelta initial_load_time =
+        base::TimeTicks::Now() - controller->last_bubble_show_time();
+
+    if (controller->bubble_shown_count() == 1) {
+      base::UmaHistogramMediumTimes(
+          "Ash.Glanceables.TimeManagement.Tasks.OpenToInitialLoadTime."
+          "FirstOcurrence",
+          initial_load_time);
+    } else {
+      base::UmaHistogramMediumTimes(
+          "Ash.Glanceables.TimeManagement.Tasks.OpenToInitialLoadTime."
+          "SubsequentOccurence",
+          initial_load_time);
+    }
+  }
 }
 
 void TasksBubbleView::AnnounceListStateOnComboBoxAccessibility() {

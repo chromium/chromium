@@ -9,6 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
@@ -60,8 +61,15 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   GlanceablesTasksClient* GetTasksClient() const;
 
   // Informs registered glanceables clients that the glanceables bubble UI has
-  // been closed.
+  // been closed and logs metrics.
   void NotifyGlanceablesBubbleClosed();
+
+  // Informs registered glanceables clients that the glanceables bubble UI has
+  // been closed and logs metrics.
+  void RecordGlanceablesBubbleShowTime(base::TimeTicks bubble_show_timestamp);
+
+  base::TimeTicks last_bubble_show_time() { return last_bubble_show_time_; }
+  size_t bubble_shown_count() { return bubble_shown_count_; }
 
  private:
   // The currently active user account id.
@@ -70,6 +78,13 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // Keeps track of all created clients (owned by `GlanceablesKeyedService`) per
   // account id.
   base::flat_map<AccountId, ClientsRegistration> clients_registry_;
+
+  // Keeps track of the last time the glanceables bubble was shown.
+  base::TimeTicks last_bubble_show_time_;
+
+  // The number of times the glanceables bubble had been shown within a user
+  // session.
+  size_t bubble_shown_count_ = 0;
 };
 
 }  // namespace ash

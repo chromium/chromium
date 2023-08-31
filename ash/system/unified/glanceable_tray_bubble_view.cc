@@ -133,6 +133,8 @@ GlanceableTrayBubbleView::GlanceableTrayBubbleView(
       shelf_(shelf),
       detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr)) {
+  Shell::Get()->glanceables_v2_controller()->RecordGlanceablesBubbleShowTime(
+      base::TimeTicks::Now());
 }
 
 GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {

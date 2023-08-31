@@ -21,6 +21,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -181,6 +182,25 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     if (!initial_update) {
       GetWidget()->LayoutRootViewIfNecessary();
       ScrollViewToVisible();
+    }
+  }
+
+  // TODO(anasalazar): Record delay for non-initial updates on the bubble.
+  if (initial_update) {
+    auto* controller = Shell::Get()->glanceables_v2_controller();
+    base::TimeDelta initial_load_time =
+        base::TimeTicks::Now() - controller->last_bubble_show_time();
+
+    if (controller->bubble_shown_count() == 1) {
+      base::UmaHistogramMediumTimes(
+          "Ash.Glanceables.TimeManagement.Classroom."
+          "OpenToInitialLoadTime.FirstOcurrence",
+          initial_load_time);
+    } else {
+      base::UmaHistogramMediumTimes(
+          "Ash.Glanceables.TimeManagement.Classroom."
+          "OpenToInitialLoadTime.SubsequentOccurence",
+          initial_load_time);
     }
   }
 }

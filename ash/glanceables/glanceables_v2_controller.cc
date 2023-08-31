@@ -10,6 +10,9 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -35,6 +38,7 @@ void GlanceablesV2Controller::RegisterUserProfilePrefs(
 void GlanceablesV2Controller::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
+  bubble_shown_count_ = 0;
 }
 
 bool GlanceablesV2Controller::AreGlanceablesAvailable() const {
@@ -69,6 +73,16 @@ void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
       clients.second.tasks_client->OnGlanceablesBubbleClosed();
     }
   }
+
+  base::UmaHistogramMediumTimes(
+      "Ash.Glanceables.TimeManagement.TotalShowTime",
+      base::TimeTicks::Now() - last_bubble_show_time_);
+}
+
+void GlanceablesV2Controller::RecordGlanceablesBubbleShowTime(
+    base::TimeTicks bubble_show_timestamp) {
+  last_bubble_show_time_ = base::TimeTicks::Now();
+  bubble_shown_count_++;
 }
 
 }  // namespace ash
