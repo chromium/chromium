@@ -58,16 +58,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     return os.path.join(app_data_path, 'Library', 'Application Support',
                         'Google', 'Chrome')
 
-  def _write_accepted_eula(self):
-    """Writes eula accepted to Local State.
-
-    This is needed once. Chrome host app doesn't have it accepted and variations
-    seed fetching requires it.
-    """
-    seed_helper.update_local_state(self._user_data_dir(),
-                                   {'EulaAccepted': True})
-    LOGGER.info('Wrote EulaAccepted: true to Local State.')
-
   def _reset_last_fetch_time(self):
     """Resets last fetch time to one day before so the next fetch can happen.
 
@@ -123,17 +113,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     Returns:
       Tuple of (bool, str) Success status and reason.
     """
-    # Launch app once to install app and create Local State file.
-    first_launch_result = self._launch_app_once('first_launch')
-    # Test will fail because there isn't EulaAccepted pref in Local State and no
-    # fetch will happen.
-    if first_launch_result.passed_tests():
-      log = 'Test passed (expected to fail) at first launch (to install app).'
-      LOGGER.error(log)
-      return False, log
-
-    self._write_accepted_eula()
-
     # Launch app to make it fetch seed from server.
     fetch_launch_result = self._launch_app_once(
         'fetch_launch', verify_fetched_within_launch=True)
