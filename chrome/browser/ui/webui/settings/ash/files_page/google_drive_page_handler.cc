@@ -30,6 +30,7 @@ google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
           ? base::UTF16ToUTF8(ui::FormatBytes(progress.free_space))
           : "";
   status->stage = progress.stage;
+  status->listed_files = progress.listed_files;
   status->is_error = progress.IsError();
   return status;
 }

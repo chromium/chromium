@@ -44,6 +44,7 @@ const GOOGLE_DRIVE_BULK_PINNING_PREF = 'drivefs.bulk_pinning_enabled';
 export enum ConfirmationDialogType {
   DISCONNECT = 'disconnect',
   BULK_PINNING_DISABLE = 'bulk-pinning-disable',
+  BULK_PINNING_LISTING_FILES = 'bulk-pinning-listing-files',
   BULK_PINNING_NOT_ENOUGH_SPACE = 'bulk-pinning-not-enough-space',
   BULK_PINNING_UNEXPECTED_ERROR = 'bulk-pinning-unexpected-error',
   BULK_PINNING_CLEAN_UP_STORAGE = 'bulk-pinning-clean-up-storage',
@@ -144,6 +145,18 @@ export class SettingsGoogleDriveSubpageElement extends
   private totalPinnedSize_: string|PinnedSizeType = PinnedSizeType.CALCULATING;
 
   /**
+   * The number of files that have currently been listed, this count is the one
+   * displayed in the UI which gets updated every 5s from the source at
+   * bulkPinningStatus_.listedFiles.
+   */
+  private listedFiles_: bigint = 0n;
+
+  /**
+   * The interval to update listedFiles_.
+   */
+  private updateListedFilesInterval_: number|undefined = undefined;
+
+  /**
    * Whether to show the spinner in the top right of the settings page.
    */
   private showSpinner: boolean = false;
@@ -189,6 +202,14 @@ export class SettingsGoogleDriveSubpageElement extends
   }
 
   /**
+   * Returns the current number of listed files.
+   * Used for testing.
+   */
+  get listedFiles() {
+    return this.listedFiles_;
+  }
+
+  /**
    * Returns the current confirmation dialog showing.
    */
   get dialogType() {
@@ -211,6 +232,8 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   private onServiceUnavailable_() {
     this.bulkPinningServiceUnavailable_ = true;
+    clearInterval(this.updateListedFilesInterval_);
+    this.updateListedFilesInterval_ = undefined;
   }
 
   /**
@@ -218,10 +241,25 @@ export class SettingsGoogleDriveSubpageElement extends
    * This could also end up in an error state (e.g. no free space).
    */
   private onProgress_(status: Status) {
+    this.bulkPinningServiceUnavailable_ = false;
+
     if (status.stage !== this.bulkPinningStatus_?.stage ||
         status.freeSpace !== this.bulkPinningStatus_?.freeSpace ||
-        status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace) {
+        status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace ||
+        status.listedFiles !== this.bulkPinningStatus_?.listedFiles) {
       this.bulkPinningStatus_ = status;
+
+      if (!this.updateListedFilesInterval_ &&
+          status.stage === Stage.kListingFiles) {
+        this.listedFiles_ = this.bulkPinningStatus_?.listedFiles || 0n;
+        this.updateListedFilesInterval_ = setInterval(() => {
+          this.listedFiles_ = this.bulkPinningStatus_?.listedFiles || 0n;
+        }, 5000);
+      }
+    }
+
+    if (status.stage !== Stage.kListingFiles) {
+      this.stopUpdatingListedFilesAndClearDialog_();
     }
 
     let requiredSpace: number;
@@ -233,6 +271,21 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     this.showSpinner = (status?.stage === Stage.kSyncing && requiredSpace > 0);
+  }
+
+  /**
+   * Whilst listing files an interval is maintained to not update the UI with
+   * too many changes. When listing files has finished, ensure the interval is
+   * cleared and the dialog is closed if it is kept open.
+   */
+  private stopUpdatingListedFilesAndClearDialog_() {
+    clearInterval(this.updateListedFilesInterval_);
+    this.updateListedFilesInterval_ = undefined;
+    this.listedFiles_ = 0n;
+    if (this.dialogType_ ===
+        ConfirmationDialogType.BULK_PINNING_LISTING_FILES) {
+      this.dialogType_ = ConfirmationDialogType.NONE;
+    }
   }
 
   /**
@@ -414,15 +467,24 @@ export class SettingsGoogleDriveSubpageElement extends
         return;
       }
 
-      // When the device is offline, don't allow the user to enable the toggle.
-      if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
-        this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
-        return;
-      }
-
       // If an error occurs (that is not related to low disk space) surface an
       // unexpected error dialog.
       this.dialogType_ = ConfirmationDialogType.BULK_PINNING_UNEXPECTED_ERROR;
+      return;
+    }
+
+    // When the device is offline, don't allow the user to enable the toggle.
+    if (this.bulkPinningStatus_?.stage === Stage.kPausedOffline) {
+      target.checked = false;
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_OFFLINE;
+      return;
+    }
+
+    // If currently enumerating the files, don't allow the user to enable file
+    // sync until we're certain the corpus will fit on the device.
+    if (this.bulkPinningStatus_?.stage === Stage.kListingFiles) {
+      target.checked = false;
+      this.dialogType_ = ConfirmationDialogType.BULK_PINNING_LISTING_FILES;
       return;
     }
 
@@ -461,6 +523,14 @@ export class SettingsGoogleDriveSubpageElement extends
         this.i18n('googleDriveCleanUpStorageLearnMoreLink'),
       ],
     });
+  }
+
+  private getListingFilesDialogBody_() {
+    return this.listedFiles_ > 0n ?
+        this.i18n(
+            'googleDriveFileSyncListingFilesItemsFoundBody',
+            this.listedFiles_.toLocaleString()) :
+        this.i18n('googleDriveFileSyncListingFilesBody');
   }
 
   /**

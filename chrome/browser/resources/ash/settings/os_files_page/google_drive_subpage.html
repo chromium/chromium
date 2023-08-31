@@ -59,6 +59,18 @@
   </template>
 
   <template is="dom-if"
+      if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-listing-files')]]"
+      restamp>
+    <settings-drive-confirmation-dialog
+        id="driveBulkPinningListingFilesDialog"
+        cancel-button-text="$i18n{googleDriveOkButtonText}"
+        title-text="$i18n{googleDriveFileSyncListingFilesTitle}"
+        body-text="[[getListingFilesDialogBody_(listedFiles_)]]"
+        on-close="onDriveConfirmationDialogClose_">
+    </settings-drive-confirmation-dialog>
+  </template>
+
+  <template is="dom-if"
       if="[[shouldShowConfirmationDialog_(dialogType_, 'bulk-pinning-not-enough-space')]]"
       restamp>
     <settings-drive-confirmation-dialog

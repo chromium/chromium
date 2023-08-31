@@ -1008,6 +1008,15 @@
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_TURN_OFF_BODY_TEXT" desc="Body text for the confirmation dialog that spawns when attempting to turn off bulk pinning in Settings: Files: Google Drive.">
     New files in My Drive will stop syncing automatically to this Chromebook
   </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_TITLE_TEXT" desc="Title text for the dialog that spawns  when a user tries to turn on bulk pinning whilst we're still listing files in Settings: Files: Google Drive.">
+    Checking storage space…
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_BODY_TEXT" desc="Body text for the dialog that spawns when a user tries to turn on bulk pinning whilst we're still listing files in Settings: Files: Google Drive.">
+    We are in the process of checking storage space…
+  </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_LISTING_FILES_ITEMS_FOUND_BODY_TEXT" desc="Body text for the dialog that spawns when a user tries to turn on bulk pinning whilst we're still listing files and we have a known count of listed files in Settings: Files: Google Drive.">
+    We are in the process of checking storage space. <ph name="ITEMS_FOUND">$1<ex>1,072</ex></ph> items found.
+  </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_REMOVE_ACCESS_BUTTON_LABEL" desc="Button label indicates that, when pressed, will disconnect the users Google Drive access in Settings: Files: Google Drive">
     Remove Drive access
   </message>

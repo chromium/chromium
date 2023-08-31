@@ -189,6 +189,41 @@ suite('<settings-google-drive-subpage>', function() {
             () => page.getPref('drivefs.bulk_pinning_enabled').value, 5000);
       });
 
+  test('clicking the toggle whilst listing files shows a dialog', async () => {
+    page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+    flush();
+
+    testBrowserProxy.observerRemote.onProgress({
+      freeSpace: '1,024 KB',
+      requiredSpace: '512 MB',
+      stage: Stage.kListingFiles,
+      listedFiles: BigInt(100),
+      isError: false,
+    });
+    testBrowserProxy.observerRemote.$.flushForTesting();
+    flush();
+
+    // Wait until the `onProgress` changes have been received.
+    await assertAsync(() => page.listedFiles === 100n);
+
+    // Toggle the bulk pinning toggle.
+    bulkPinningToggle.click();
+
+    // Wait for the clisting files dialog to appear and then close it.
+    await assertAsync(
+        () => page.dialogType ===
+            ConfirmationDialogType.BULK_PINNING_LISTING_FILES,
+        5000);
+    await clickConfirmationDialogButton('.cancel-button');
+
+    // Assert the bulk pinning pref was not enabled and the toggle was not
+    // checked.
+    assertFalse(
+        page.getPref('drivefs.bulk_pinning_enabled').value,
+        'Pinning pref should be false');
+    assertFalse(bulkPinningToggle.checked, 'Pinning toggle should be false');
+  });
+
   test(
       'progress sent via the browser proxy updates the sub title text',
       async function() {
@@ -221,6 +256,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kSuccess,
+          listedFiles: BigInt(100),
           isError: false,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
@@ -235,6 +271,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: '1,024 KB',
           requiredSpace: '512 MB',
           stage: Stage.kCannotGetFreeSpace,
+          listedFiles: BigInt(0),
           isError: true,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
@@ -288,6 +325,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: '512 MB',
           requiredSpace: '1,024 MB',
           stage: Stage.kNotEnoughSpace,
+          listedFiles: BigInt(100),
           isError: true,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
@@ -331,6 +369,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kCannotGetFreeSpace,
+          listedFiles: BigInt(0),
           isError: true,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
@@ -388,6 +427,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kStopped,
+          listedFiles: BigInt(100),
           isError: false,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
@@ -401,6 +441,7 @@ suite('<settings-google-drive-subpage>', function() {
           freeSpace: 'x',
           requiredSpace: 'y',
           stage: Stage.kSyncing,
+          listedFiles: BigInt(100),
           isError: false,
         });
         testBrowserProxy.observerRemote.$.flushForTesting();
