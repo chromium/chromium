@@ -11,8 +11,8 @@
 // Called when the value of prefs::kTabPickupEnabled changed.
 - (void)setTabPickupEnabled:(bool)enabled;
 
-// Called when the sync feature state changed.
-- (void)setSyncEnabled:(bool)enabled;
+// Called when the tab-sync state changed.
+- (void)setTabSyncEnabled:(bool)enabled;
 
 @end
 

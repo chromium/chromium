@@ -167,20 +167,16 @@ id<GREYMatcher> TabPickupPrivacyFooterGoogleServicesLink() {
   OpenTabsSettings();
   OpenTabPickupFromTabsSettings();
 
-  // The "Sync" links only exists without isReplaceSyncWithSigninEnabled.
-  if (![ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // Check the "Sync" link.
-    [[EarlGrey selectElementWithMatcher:TabPickupPrivacyFooterSyncLink()]
-        performAction:grey_tap()];
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
+  // Check the "Sync" link.
+  [[EarlGrey selectElementWithMatcher:TabPickupPrivacyFooterSyncLink()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(0)]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsMenuBackButton(
+                                          0)] performAction:grey_tap()];
 
   // Check the "Google Services" link.
   [[EarlGrey
