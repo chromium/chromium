@@ -9,7 +9,9 @@
 
 // All intent types available for donation.
 enum IntentType {
-  INTENT_SEARCH_IN_CHROME,  //< SearchInChromeIntent
+  INTENT_SEARCH_IN_CHROME,   // SearchInChromeIntent
+  INTENT_OPEN_READING_LIST,  // OpenReadingListIntent
+  INTENT_OPEN_BOOKMARKS,     // OpenBookmarksIntent
   INTENT_TYPE_COUNT,
 };
 

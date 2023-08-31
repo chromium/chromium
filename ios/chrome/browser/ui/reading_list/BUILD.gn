@@ -146,6 +146,7 @@ source_set("reading_list_ui") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",

@@ -5,6 +5,7 @@ source_set("intents_donation_helper") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/common/intents",
     "//ui/base",

@@ -6,7 +6,10 @@
 
 #import "base/notreached.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/common/intents/OpenBookmarksIntent.h"
+#import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -36,6 +39,26 @@
           IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
       INInteraction* interaction =
           [[INInteraction alloc] initWithIntent:searchInChromeIntent
+                                       response:nil];
+      return interaction;
+    }
+    case INTENT_OPEN_READING_LIST: {
+      OpenReadingListIntent* openReadingListIntent =
+          [[OpenReadingListIntent alloc] init];
+      openReadingListIntent.suggestedInvocationPhrase =
+          l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_READING_LIST_TITLE);
+      INInteraction* interaction =
+          [[INInteraction alloc] initWithIntent:openReadingListIntent
+                                       response:nil];
+      return interaction;
+    }
+    case INTENT_OPEN_BOOKMARKS: {
+      OpenBookmarksIntent* openBookmarksIntent =
+          [[OpenBookmarksIntent alloc] init];
+      openBookmarksIntent.suggestedInvocationPhrase =
+          l10n_util::GetNSString(IDS_IOS_INTENTS_OPEN_BOOKMARKS_TITLE);
+      INInteraction* interaction =
+          [[INInteraction alloc] initWithIntent:openBookmarksIntent
                                        response:nil];
       return interaction;
     }

@@ -14,6 +14,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -232,6 +233,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // we need to refresh the empty view margin after the layout is done, to apply
   // the correct top margin value according to the promo view's height.
   [self updateEmptyViewTopMargin];
+  [IntentDonationHelper donateIntent:INTENT_OPEN_READING_LIST];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
