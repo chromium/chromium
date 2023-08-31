@@ -379,9 +379,12 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
 
   cc::FuzzyPixelOffByOneComparator pixel_comparator;
   auto* pass_list = &aggregated_frame.render_pass_list;
-  EXPECT_TRUE(this->RunPixelTest(
-      pass_list, base::FilePath(FILE_PATH_LITERAL("delegated_ink_trail.png")),
-      pixel_comparator));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_trail.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(this->RunPixelTest(pass_list, expected_result, pixel_comparator));
 
   // Providing the damage rect as the target damage ensures that aggregation
   // occurs and DrawFrame() has something new to draw. If this doesn't cause

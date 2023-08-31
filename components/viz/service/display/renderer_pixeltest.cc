@@ -5850,7 +5850,7 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     return pass;
   }
 
-  bool DrawAndTestTrail(base::FilePath::StringPieceType file) {
+  bool DrawAndTestTrail(base::FilePath file) {
     gfx::Rect rect(this->device_viewport_size_);
 
     // Minimize the root render pass damage rect so that it has to be expanded
@@ -5872,8 +5872,7 @@ class DelegatedInkTest : public VizPixelTestWithParam,
     pass_list.push_back(std::move(pass));
 
     return this->RunPixelTest(
-        &pass_list, base::FilePath(file),
-        cc::AlphaDiscardingFuzzyPixelOffByOneComparator());
+        &pass_list, file, cc::AlphaDiscardingFuzzyPixelOffByOneComparator());
   }
 
  protected:
@@ -5904,13 +5903,18 @@ TEST_P(DelegatedInkTest, DrawTrailWithPredictionDisabled) {
   CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kCyan, kFirstTimestamp,
                         gfx::RectF(0, 0, 200, 200));
 
+  base::FilePath expected_result = base::FilePath(
+      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+
   // Confirm that the trail was drawn without prediction.
-  EXPECT_TRUE(DrawAndTestTrail(
-      FILE_PATH_LITERAL("delegated_ink_trail_no_prediction.png")));
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // The metadata should have been cleared after drawing, so confirm that there
   // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
 }
 
 class DelegatedInkWithPredictionTest : public DelegatedInkTest {
@@ -5955,12 +5959,16 @@ TEST_P(DelegatedInkWithPredictionTest, DrawOneTrailAndErase) {
                         gfx::RectF(0, 0, 175, 172));
   // Confirm that the trail was drawn. Test three times as
   // the trail will persist for two more frames before being erased.
-  EXPECT_TRUE(
-      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_one_trail.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // The metadata should have been cleared after drawing, so confirm that there
   // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
 }
 
 // Confirm that drawing a second trail completely removes the first trail.
@@ -5978,8 +5986,12 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
                         gfx::RectF(0, 0, 200, 200));
 
   // Confirm that the trail was drawn correctly.
-  EXPECT_TRUE(DrawAndTestTrail(
-      FILE_PATH_LITERAL("delegated_ink_two_trails_first.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_two_trails_first.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // Now provide new metadata and points to draw a new trail. Just use the last
   // point draw above as the starting point for the new trail. One point will
@@ -5989,11 +6001,16 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTwoTrailsAndErase) {
   CreateAndSendPointFromLastPoint(gfx::PointF(150, 81.44f));
 
   // Confirm the first trail is gone and only the second remains.
-  EXPECT_TRUE(DrawAndTestTrail(
-      FILE_PATH_LITERAL("delegated_ink_two_trails_second.png")));
+  base::FilePath expected_result_second =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_two_trails_second.png"));
+  if (is_skia_graphite()) {
+    expected_result_second =
+        expected_result_second.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result_second));
 
   // Confirm all trails are gone.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
 }
 
 // Confirm that the trail can't be drawn beyond the presentation area.
@@ -6017,8 +6034,12 @@ TEST_P(DelegatedInkWithPredictionTest, TrailExtendsBeyondPresentationArea) {
   CreateAndSendMetadata(kFirstPoint, 15.22f, SkColors::kCyan, kFirstTimestamp,
                         kPresentationArea);
 
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL(
-      "delegated_ink_trail_clipped_by_presentation_area.png")));
+  base::FilePath expected_result = base::FilePath(FILE_PATH_LITERAL(
+      "delegated_ink_trail_clipped_by_presentation_area.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 }
 
 // Confirm that the trail appears on top of everything, including batched quads
@@ -6057,11 +6078,15 @@ TEST_P(DelegatedInkWithPredictionTest, DelegatedInkTrailAfterBatchedQuads) {
   CreateAndSendMetadata(kFirstPoint, 7.77f, SkColors::kDkGray, kFirstTimestamp,
                         kPresentationArea);
 
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list,
-      base::FilePath(
-          FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png")),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+  base::FilePath expected_result = base::FilePath(
+      FILE_PATH_LITERAL("delegated_ink_trail_on_batched_quads.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+
+  EXPECT_TRUE(
+      this->RunPixelTest(&pass_list, expected_result,
+                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // Confirm that delegated ink trails are not drawn on non-root render passes.
@@ -6148,19 +6173,28 @@ TEST_P(DelegatedInkWithPredictionTest, DrawTrailsWithDifferentPointerIds) {
   // confirm that only that trail is drawn.
   CreateAndSendMetadata(kPointerId1StartPoint, 7, SkColors::kYellow,
                         kPointerId1StartTime, kPresentationArea);
-  EXPECT_TRUE(
-      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_pointer_id_1.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_pointer_id_1.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // Then send metadata that matches the first point of the other pointer id.
   // These points should not have been erased, so all 3 points should be drawn.
   CreateAndSendMetadata(kPointerId2StartPoint, 2.4f, SkColors::kRed,
                         kPointerId2StartTime, kPresentationArea);
-  EXPECT_TRUE(
-      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_pointer_id_2.png")));
+  base::FilePath expected_result_second =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_pointer_id_2.png"));
+  if (is_skia_graphite()) {
+    expected_result_second =
+        expected_result_second.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result_second));
 
   // The metadata should have been cleared after drawing, so confirm that there
   // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
 }
 
 // Draw a single trail and erase it, making sure that no bits of trail are left
@@ -6181,18 +6215,21 @@ TEST_P(DelegatedInkWithPredictionTest,
                         gfx::RectF(0, 0, 175, 172));
   // Confirm that the trail was drawn. Test three times as
   // the trail will persist for two more frames before being erased.
-  EXPECT_TRUE(
-      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("delegated_ink_one_trail.png"));
+  if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_graphite");
+  }
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // Send metadata again and expect the same trail to be drawn.
   CreateAndSendMetadata(kFirstPoint, 3.5f, SkColors::kBlack, kFirstTimestamp,
                         gfx::RectF(0, 0, 175, 172));
-  EXPECT_TRUE(
-      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_one_trail.png")));
+  EXPECT_TRUE(DrawAndTestTrail(expected_result));
 
   // The metadata should have been cleared after drawing, so confirm that there
   // is no trail after another draw.
-  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
+  EXPECT_TRUE(DrawAndTestTrail(base::FilePath(FILE_PATH_LITERAL("white.png"))));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
