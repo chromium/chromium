@@ -571,6 +571,11 @@ void OverviewGrid::PositionWindowsContinuously(float y_offset) {
     desks_bar->layer()->SetTransform(gfx::Transform::MakeTranslation(
         0, desks_bar->height() * (scroll_ratio - 1)));
   }
+
+  if (no_windows_widget_) {
+    no_windows_widget_->GetLayer()->SetOpacity(
+        std::clamp(0.01f, scroll_ratio, 1.f));
+  }
 }
 
 bool OverviewGrid::ShouldUseScrollingLayout(size_t ignored_items_size) const {
@@ -1936,7 +1941,9 @@ bool OverviewGrid::IsSavedDeskNameBeingModified() const {
   return false;
 }
 
-void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
+void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
+                                         bool animate,
+                                         bool is_continuous_enter) {
   // Hide the widget if there is an item in overview or the saved desk grid is
   // visible.
   if (!no_items || IsShowingSavedDeskLibrary()) {
@@ -1955,19 +1962,22 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items) {
     params.message_id = IDS_ASH_OVERVIEW_NO_RECENT_ITEMS;
     params.parent =
         root_window_->GetChildById(desks_util::GetActiveDeskContainerId());
-    if (overview_session_ &&
-        overview_session_->ShouldEnterWithoutAnimations()) {
-      params.disable_default_visibility_animation = true;
-    }
+    params.disable_default_visibility_animation = !animate;
+
     no_windows_widget_ = std::make_unique<RoundedLabelWidget>();
     no_windows_widget_->Init(std::move(params));
 
     aura::Window* widget_window = no_windows_widget_->GetNativeWindow();
     widget_window->parent()->StackChildAtBottom(widget_window);
     widget_window->SetId(kShellWindowId_OverviewNoWindowsLabelWindow);
-    ScopedOverviewAnimationSettings settings(OVERVIEW_ANIMATION_NO_RECENTS_FADE,
-                                             widget_window);
-    no_windows_widget_->SetOpacity(1.f);
+
+    ScopedOverviewAnimationSettings settings(
+        animate && !is_continuous_enter ? OVERVIEW_ANIMATION_NO_RECENTS_FADE
+                                        : OVERVIEW_ANIMATION_NONE,
+        widget_window);
+    // Start the opacity at zero for continuous enter. Its opacity will change
+    // with the trackpad events as they come.
+    no_windows_widget_->SetOpacity(is_continuous_enter ? 0.f : 1.f);
   }
 
   RefreshNoWindowsWidgetBounds(/*animate=*/false);
@@ -2757,7 +2767,8 @@ void OverviewGrid::OnSavedDeskGridFadedOut() {
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
   desks_bar_view_->OnSavedDeskLibraryHidden();
   UpdateSaveDeskButtons();
-  UpdateNoWindowsWidget(/*no_items=*/empty());
+  UpdateNoWindowsWidget(/*no_items=*/empty(), /*animate=*/true,
+                        /*is_continuous_enter=*/false);
 }
 
 void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {

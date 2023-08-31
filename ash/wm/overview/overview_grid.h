@@ -378,7 +378,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Updates the visibility of the `no_windows_widget_`. If `no_items` is true,
   // the widget will be shown. If `no_items` is false or the desk templates grid
   // is visible, the widget will be hidden.
-  void UpdateNoWindowsWidget(bool no_items);
+  void UpdateNoWindowsWidget(bool no_items,
+                             bool animate,
+                             bool is_continous_enter);
 
   // Refreshes the bounds of `no_windows_widget_`, animating if `animate` is
   // true.

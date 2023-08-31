@@ -431,8 +431,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // initialization.
   void RemoveAllObservers();
 
-  // Updates the no windows widget on each OverviewGrid.
-  void UpdateNoWindowsWidgetOnEachGrid();
+  // Updates the no windows widget on each `OverviewGrid`.
+  void UpdateNoWindowsWidgetOnEachGrid(bool animate, bool is_continuous_enter);
 
   // Refreshes the bounds of the no windows widget on each OverviewGrid.
   void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);

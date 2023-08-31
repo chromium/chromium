@@ -5826,6 +5826,7 @@ TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
   const gfx::Rect final_bounds1 = gfx::ToEnclosedRect(item1->target_bounds());
   const gfx::Rect final_bounds2 = gfx::ToEnclosedRect(item2->target_bounds());
   const gfx::Rect final_bounds3 = gfx::ToEnclosedRect(item3->target_bounds());
+
   ToggleOverview();
   ASSERT_FALSE(InOverviewSession());
 
@@ -5870,6 +5871,47 @@ TEST_P(ContinuousOverviewAnimationTest, WindowSizesAndOpacities) {
                       ->opacity();
   EXPECT_NE(opacity, 1.f);
   EXPECT_NE(opacity, 0.f);
+}
+
+// Tests that the opacity of the "No recent items" label is continuous.
+TEST_P(ContinuousOverviewAnimationTest, NoRecentItemsLabel) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start scrolling to enter overview. The no recent items label should have an
+  // opacity between 0.f and 1.f and not be animating.
+  const float short_scroll = 50.f;
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/false);
+  ASSERT_TRUE(InOverviewSession());
+
+  views::Widget* no_windows_widget =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
+          ->no_windows_widget();
+  ASSERT_TRUE(no_windows_widget);
+
+  ui::Layer* no_windows_layer = no_windows_widget->GetLayer();
+
+  EXPECT_GT(no_windows_layer->opacity(), 0.f);
+  EXPECT_LT(no_windows_layer->opacity(), 1.f);
+  EXPECT_FALSE(no_windows_layer->GetAnimator()->is_animating());
+
+  // Complete the enter overview scroll. The no recent items label should be
+  // opaque.
+  const float long_scroll = 500.f;
+  ThreeFingerScroll(0, long_scroll, /*complete_scroll=*/false);
+  EXPECT_EQ(1.f, no_windows_layer->opacity());
+
+  ThreeFingerScroll(0, short_scroll, /*complete_scroll=*/true);
+  EXPECT_EQ(1.f, no_windows_layer->opacity());
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Start scrolling to exit overview. The no recent items label should have an
+  // opacity between 0.f and 1.f and not be animating.
+  ThreeFingerScroll(0, -short_scroll, /*complete_scroll=*/false);
+  EXPECT_GT(no_windows_layer->opacity(), 0.f);
+  EXPECT_LT(no_windows_layer->opacity(), 1.f);
+  EXPECT_FALSE(no_windows_layer->GetAnimator()->is_animating());
 }
 
 // Test that the rounded corners and shadows are shown at the correct times

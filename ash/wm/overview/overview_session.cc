@@ -218,26 +218,30 @@ void OverviewSession::Init(const WindowList& windows,
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
     overview_grid->PrepareForOverview();
 
-    // Do not animate if there is any window that is being dragged in the
-    // grid.
+    // If we are entering because of a continuous scroll, don't
+    // position overview items for starting a continuous scroll as we will
+    // place them during future scroll updates.
+    if (enter_exit_overview_type_ ==
+        OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
+      break;
+    }
+
     if (ShouldEnterWithoutAnimations()) {
       overview_grid->PositionWindows(/*animate=*/false);
-    } else {
-      // Exit only types should not appear here:
-      DCHECK_NE(enter_exit_overview_type_, OverviewEnterExitType::kFadeOutExit);
-
-      // If the feature ContinuousOverviewScrollAnimation is enabled, don't
-      // animate overview items for starting a continuous scroll as we will
-      // place them during future scroll updates.
-      if (enter_exit_overview_type_ !=
-          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
-        overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
-                                       OverviewTransition::kEnter);
-      }
+      continue;
     }
+
+    // Exit only types should not appear here.
+    DCHECK_NE(enter_exit_overview_type_, OverviewEnterExitType::kFadeOutExit);
+    overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
+                                   OverviewTransition::kEnter);
   }
 
-  UpdateNoWindowsWidgetOnEachGrid();
+  const bool is_continuous_enter =
+      enter_exit_overview_type_ ==
+      OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate;
+  const bool animate = !is_continuous_enter && !ShouldEnterWithoutAnimations();
+  UpdateNoWindowsWidgetOnEachGrid(animate, is_continuous_enter);
 
   // Create the widget that will receive focus while in overview mode for
   // accessibility purposes. Add a button as the contents so that
@@ -378,7 +382,8 @@ void OverviewSession::OnGridEmpty() {
 
   if (SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->InTabletSplitViewMode()) {
-    UpdateNoWindowsWidgetOnEachGrid();
+    UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
+                                    /*is_continuous_enter=*/false);
   } else if (!allow_empty_desk_without_exiting_ &&
              !IsShowingSavedDeskLibrary()) {
     EndOverview(OverviewEndAction::kLastWindowRemoved);
@@ -576,7 +581,8 @@ void OverviewSession::RemoveItem(OverviewItemBase* overview_item,
                                              reposition);
   --num_items_;
 
-  UpdateNoWindowsWidgetOnEachGrid();
+  UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
+                                  /*is_continuous_enter=*/false);
   UpdateAccessibilityFocus();
 }
 
@@ -1066,10 +1072,14 @@ bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
       overview_grid->PositionWindows(/*animate=*/true, /*ignored_items=*/{},
                                      /*transition=*/OverviewTransition::kEnter);
 
-      // Move the desk bar back to its final position.
-      // TODO(b/292125336): Animate the desk bar transformation.
+      // TODO(b/292125336): Animate the desk bar transformation and no windows
+      // label opacity.
       if (auto* desks_bar = overview_grid->desks_bar_view()) {
         desks_bar->layer()->SetTransform({});
+      }
+
+      if (auto* no_windows_widget = overview_grid->no_windows_widget()) {
+        no_windows_widget->SetOpacity(1.f);
       }
     }
     return true;
@@ -1108,7 +1118,8 @@ void OverviewSession::ShowSavedDeskLibrary(
     saved_desk_presenter_->GetAllEntries(item_to_focus, saved_desk_name,
                                          root_window);
   }
-  UpdateNoWindowsWidgetOnEachGrid();
+  UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
+                                  /*is_continuous_enter=*/false);
 
   UpdateAccessibilityFocus();
 
@@ -1565,12 +1576,15 @@ void OverviewSession::RemoveAllObservers() {
   active_window_before_overview_ = nullptr;
 }
 
-void OverviewSession::UpdateNoWindowsWidgetOnEachGrid() {
+void OverviewSession::UpdateNoWindowsWidgetOnEachGrid(
+    bool animate,
+    bool is_continuous_enter) {
   if (is_shutting_down_)
     return;
 
-  for (auto& grid : grid_list_)
-    grid->UpdateNoWindowsWidget(IsEmpty());
+  for (auto& grid : grid_list_) {
+    grid->UpdateNoWindowsWidget(IsEmpty(), animate, is_continuous_enter);
+  }
 }
 
 void OverviewSession::RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate) {
@@ -1585,7 +1599,8 @@ void OverviewSession::RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate) {
 
 void OverviewSession::OnItemAdded(aura::Window* window) {
   ++num_items_;
-  UpdateNoWindowsWidgetOnEachGrid();
+  UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
+                                  /*is_continuous_enter=*/false);
 
   OverviewGrid* grid = GetGridWithRootWindow(window->GetRootWindow());
   // The drop target window is non-activatable, so no need to transfer focus.
