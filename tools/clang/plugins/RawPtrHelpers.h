@@ -296,6 +296,9 @@ clang::ast_matchers::internal::Matcher<clang::TypeLoc>
 RawPtrToStackAllocatedTypeLoc(
     const chrome_checker::StackAllocatedPredicate* predicate);
 
+clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
+    const CastingUnsafePredicate& casting_unsafe_predicate);
+
 // If `field_decl` declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.
 // Otherwise, just returns the original `field_decl` argument.
