@@ -48,7 +48,9 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // previews.
   static constexpr int kInsideBorderHorizontalPaddingDp = 64;
 
-  WindowCycleView(aura::Window* root_window, const WindowList& windows);
+  WindowCycleView(aura::Window* root_window,
+                  const WindowList& windows,
+                  const bool same_app_only);
   WindowCycleView(const WindowCycleView&) = delete;
   WindowCycleView& operator=(const WindowCycleView&) = delete;
   ~WindowCycleView() override;
@@ -155,6 +157,9 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
 
   // The root window that `this` resides on.
   const raw_ptr<aura::Window, ExperimentalAsh> root_window_;
+
+  // True if the `this` is built for same app cycling.
+  const bool same_app_only_;
 
   // Constructed as the child views of `mirror_container` and used for window
   // cycling.

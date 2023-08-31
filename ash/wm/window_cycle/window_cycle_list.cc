@@ -17,10 +17,12 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -90,24 +92,26 @@ bool IsWindowInSnapGroup(aura::Window* window) {
          snap_group_controller->GetSnapGroupForGivenWindow(window);
 }
 
-// Returns true if the given `window` is in a snap group and we need to step
-// twice to get to the next window cycle item.
-bool ShouldDoubleCycleStep(aura::Window* window,
-                           WindowCyclingDirection direction) {
-  if (!IsWindowInSnapGroup(window)) {
-    return false;
+// Returns the mru window with the existence of snap groups. If a snap group is
+// at the beginning of the window cycle list, we need to check the activation
+// order of the two windows in the snap group since the window list has been
+// reordered to reflect the actual window layout with the primarily snapped
+// window comes before the secondarily snapped window, which makes the front
+// window in the window lists not guaranteed to be the mru window.
+aura::Window* GetMruWindow(const std::vector<aura::Window*>& windows) {
+  aura::Window* front_window = windows.front();
+  if (IsWindowInSnapGroup(front_window)) {
+    SnapGroup* snap_group =
+        SnapGroupController::Get()->GetSnapGroupForGivenWindow(front_window);
+    aura::Window* window1 = snap_group->window1();
+    aura::Window* window2 = snap_group->window2();
+    CHECK_EQ(front_window, window1);
+    if (window_util::IsStackedBelow(window1, window2)) {
+      return window2;
+    }
   }
 
-  SnapGroup* snap_group =
-      SnapGroupController::Get()->GetSnapGroupForGivenWindow(window);
-  switch (direction) {
-    case WindowCyclingDirection::kForward: {
-      return window == snap_group->window1();
-    }
-    case WindowCyclingDirection::kBackward: {
-      return window == snap_group->window2();
-    }
-  }
+  return front_window;
 }
 
 }  // namespace
@@ -312,6 +316,35 @@ void WindowCycleList::SetDisableInitialDelayForTesting(bool disabled) {
   g_disable_initial_delay = disabled;
 }
 
+bool WindowCycleList::ShouldDoubleCycleStep(
+    aura::Window* window,
+    WindowCyclingDirection direction) const {
+  if (!IsWindowInSnapGroup(window)) {
+    return false;
+  }
+
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(window);
+  aura::Window* window1 = snap_group->window1();
+  aura::Window* window2 = snap_group->window2();
+
+  // We should show group cycle item view only when both windows belong to the
+  // same app if cycling for the same app.
+  if (!same_app_only_ || (same_app_only_ && base::Contains(windows_, window1) &&
+                          base::Contains(windows_, window2))) {
+    switch (direction) {
+      case WindowCyclingDirection::kForward: {
+        return window == window1;
+      }
+      case WindowCyclingDirection::kBackward: {
+        return window == window2;
+      }
+    }
+  }
+
+  return false;
+}
+
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {
   window->RemoveObserver(this);
 
@@ -390,7 +423,7 @@ void WindowCycleList::InitWindowCycleView() {
       tray_button->CloseBubble();
   }
 
-  cycle_view_ = new WindowCycleView(root_window, windows_);
+  cycle_view_ = new WindowCycleView(root_window, windows_, same_app_only_);
   const bool is_interactive_alt_tab_mode_allowed =
       Shell::Get()->window_cycle_controller()->IsInteractiveAltTabModeAllowed();
   DCHECK(!windows_.empty() || is_interactive_alt_tab_mode_allowed);
@@ -488,12 +521,13 @@ void WindowCycleList::Scroll(int offset) {
 }
 
 void WindowCycleList::MakeSameAppOnly() {
-  DCHECK(same_app_only_);
+  CHECK(same_app_only_);
   if (windows_.size() < 2) {
     return;
   }
+
   const std::string* const mru_window_app_id =
-      windows_.front()->GetProperty(kAppIDKey);
+      GetMruWindow(windows_)->GetProperty(kAppIDKey);
   if (!mru_window_app_id) {
     return;
   }
@@ -541,20 +575,21 @@ void WindowCycleList::MaybeReportNonSameAppSkippedWindows(
     return;
   }
 
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  const bool per_active_desk = window_cycle_controller->IsAltTabPerActiveDesk()
+                                   ? kActiveDesk
+                                   : kAllDesks;
   const WindowList original_windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
-          Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
-              ? kActiveDesk
-              : kAllDesks);
+      window_cycle_controller->BuildWindowListForWindowCycling(
+          per_active_desk ? kActiveDesk : kAllDesks);
 
-  // Count up the skipped windows between the starting window and the chosen
-  // window.
-  int skipped_windows = 0;
   const std::string* const mru_window_app_id =
       target_window->GetProperty(kAppIDKey);
   if (!mru_window_app_id) {
     return;
   }
+
   // The window at index 0 is the window cycling started on. It can't be a
   // skipped window, so start at index 1.
   int start = 1;
@@ -566,6 +601,9 @@ void WindowCycleList::MaybeReportNonSameAppSkippedWindows(
     increment = -1;
   }
 
+  // Count up the skipped windows between the starting window and the chosen
+  // window.
+  int skipped_windows = 0;
   aura::Window* current_window = nullptr;
   for (int i = start; i >= 0 && i < static_cast<int>(original_windows.size()) &&
                       current_window != target_window;

@@ -91,6 +91,7 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
         AddChildView(std::make_unique<views::Separator>());
     separator->SetColorId(kColorAshWindowHeaderStrokeColor);
   }
+
   SetFlexForView(icon_label_view_, 1);
 }
 
@@ -128,28 +129,27 @@ void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
       /*for_border_thickness=*/0));
 }
 
+void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
+    gfx::RoundedCornersF& header_view_rounded_corners) {
+  header_view_rounded_corners_ = header_view_rounded_corners;
+}
+
+void WindowMiniViewHeaderView::ResetRoundedCorners() {
+  header_view_rounded_corners_.reset();
+}
+
 gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
     aura::Window* window) const {
   const float scale = window->layer()->GetTargetTransform().To2dScale().x();
-  const float scaled_corner_radius = kHeaderTopCornerRadius / scale;
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  if (snap_group_controller) {
-    SnapGroup* snap_group =
-        snap_group_controller->GetSnapGroupForGivenWindow(window);
-    if (snap_group) {
-      auto* window1 = snap_group->window1();
-      auto* window2 = snap_group->window2();
-      CHECK(window == window1 || window == window2);
-      // `window1` is guaranteed to be the primary snapped window in a snap
-      // group and `window2` is guaranteed to be the secondary snapped window in
-      // a snap group.
-      return window == window1
-                 ? gfx::RoundedCornersF(scaled_corner_radius, 0, 0, 0)
-                 : gfx::RoundedCornersF(0, scaled_corner_radius, 0, 0);
-    }
+  if (header_view_rounded_corners_.has_value()) {
+    const auto raw_value = header_view_rounded_corners_.value();
+    return gfx::RoundedCornersF(
+        raw_value.upper_left() / scale, raw_value.upper_right() / scale,
+        raw_value.lower_right() / scale, raw_value.lower_left() / scale);
   }
-  return gfx::RoundedCornersF(scaled_corner_radius, scaled_corner_radius, 0, 0);
+
+  return gfx::RoundedCornersF(kHeaderTopCornerRadius / scale,
+                              kHeaderTopCornerRadius / scale, 0, 0);
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView, views::View)

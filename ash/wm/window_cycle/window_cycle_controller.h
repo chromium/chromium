@@ -156,10 +156,19 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
   void OnDeskRemoved(const Desk* desk) override;
 
  private:
+  friend class WindowCycleList;
+
   // Gets a list of windows from the currently open windows, removing windows
   // with transient roots already in the list. The returned list of windows
   // is used to populate the window cycle list.
   WindowList CreateWindowList();
+
+  // Builds the window list for window cycling, `desks_mru_type` determines
+  // whether to include or exclude windows from the inactive desks. The list is
+  // built based on `BuildWindowForCycleWithPipList()` and revised so that
+  // windows in a snap group are put together with primary window comes before
+  // secondary snapped window.
+  WindowList BuildWindowListForWindowCycling(DesksMruType desks_mru_type);
 
   // Populates |active_desk_container_id_before_cycle_| and
   // |active_window_before_window_cycle_| when the window cycle list is

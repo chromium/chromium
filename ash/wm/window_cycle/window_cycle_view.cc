@@ -20,6 +20,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -110,22 +111,30 @@ constexpr base::TimeDelta kToggleModeScaleDuration = base::Milliseconds(150);
 // Builds the item view for window cycling for the given `window` with the
 // correct parent. If the given `window` is a free-form window, the direct
 // parent will be `mirror_container`. For `window` that belongs to a snap group,
-// however, a `GroupContainerCycleView` will be added.
+// however, a `GroupContainerCycleView` will be added. If `same_app_only` is
+// true, `GroupContainerCycleView` will only be created if both the windows in
+// snap group belongs to the same app.
 WindowMiniViewBase* BuildAndConfigureCycleView(
     aura::Window* window,
     views::View* mirror_container,
-    std::vector<WindowMiniViewBase*>& cycle_views) {
+    std::vector<WindowMiniViewBase*>& cycle_views,
+    const std::vector<aura::Window*>& windows,
+    const bool same_app_only) {
   if (auto* snap_group_controller = SnapGroupController::Get()) {
     if (auto* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      // Create `GroupContainerCycleView` if `window` is primary snapped,
-      // which adds two child views subsequently. Skip adding
-      // `GroupContainerCycleView` if `window` is secondary snapped since the
-      // corresponding container view has been built.
-      return window == snap_group->window1()
-                 ? mirror_container->AddChildView(
-                       std::make_unique<GroupContainerCycleView>(snap_group))
-                 : nullptr;
+      if (!same_app_only ||
+          (same_app_only && base::Contains(windows, snap_group->window1()) &&
+           base::Contains(windows, snap_group->window2()))) {
+        // Create `GroupContainerCycleView` if `window` is primary snapped,
+        // which adds two child views subsequently. Skip adding
+        // `GroupContainerCycleView` if `window` is secondary snapped since the
+        // corresponding container view has been built.
+        return window == snap_group->window1()
+                   ? mirror_container->AddChildView(
+                         std::make_unique<GroupContainerCycleView>(snap_group))
+                   : nullptr;
+      }
     }
   }
 
@@ -138,8 +147,9 @@ WindowMiniViewBase* BuildAndConfigureCycleView(
 }  // namespace
 
 WindowCycleView::WindowCycleView(aura::Window* root_window,
-                                 const WindowList& windows)
-    : root_window_(root_window) {
+                                 const WindowList& windows,
+                                 const bool same_app_only)
+    : root_window_(root_window), same_app_only_(same_app_only) {
   const bool is_interactive_alt_tab_mode_allowed =
       Shell::Get()->window_cycle_controller()->IsInteractiveAltTabModeAllowed();
 
@@ -258,8 +268,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   }
 
   for (auto* window : windows) {
-    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_,
-                                                cycle_views_)) {
+    if (auto* view = BuildAndConfigureCycleView(
+            window, mirror_container_, cycle_views_, windows, same_app_only)) {
       cycle_views_.push_back(view);
       no_previews_list_.push_back(view);
     }
@@ -357,8 +367,8 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
     return;
 
   for (auto* window : windows) {
-    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_,
-                                                cycle_views_)) {
+    if (auto* view = BuildAndConfigureCycleView(
+            window, mirror_container_, cycle_views_, windows, same_app_only_)) {
       cycle_views_.push_back(view);
       no_previews_list_.push_back(view);
     }

@@ -137,8 +137,8 @@ bool WindowCycleItemView::HandleAccessibleAction(
 void WindowCycleItemView::RefreshItemVisuals() {
   header_view()->UpdateIconView(source_window());
   SetShowPreview(/*show=*/true);
-  UpdateHeaderViewRoundedCorners();
-  UpdatePreviewRoundedCorners(/*show=*/true);
+  RefreshHeaderViewRoundedCorners();
+  RefreshPreviewRoundedCorners(/*show=*/true);
 }
 
 BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
@@ -149,6 +149,7 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
       std::make_unique<WindowCycleItemView>(snap_group->window1()));
   mini_view2_ = AddChildView(
       std::make_unique<WindowCycleItemView>(snap_group->window2()));
+  RefreshItemVisuals();
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
@@ -184,6 +185,18 @@ aura::Window* GroupContainerCycleView::GetWindowAtPoint(
 }
 
 void GroupContainerCycleView::RefreshItemVisuals() {
+  if (mini_view1_ && mini_view2_) {
+    mini_view1_->SetRoundedCornersRadius(gfx::RoundedCornersF(
+        /*upper_left=*/WindowMiniView::kWindowMiniViewCornerRadius,
+        /*upper_right=*/0, /*lower_right=*/0,
+        /*lower_left=*/WindowMiniView::kWindowMiniViewCornerRadius));
+    mini_view2_->SetRoundedCornersRadius(gfx::RoundedCornersF(
+        /*upper_left=*/0,
+        /*upper_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
+        /*lower_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
+        /*lower_left=*/0));
+  }
+
   for (auto mini_view : {mini_view1_, mini_view2_}) {
     if (mini_view) {
       mini_view->RefreshItemVisuals();
@@ -196,12 +209,15 @@ int GroupContainerCycleView::TryRemovingChildItem(
   std::vector<raw_ptr<WindowCycleItemView>*> mini_views_ptrs = {&mini_view1_,
                                                                 &mini_view2_};
   for (auto* mini_view_ptr : mini_views_ptrs) {
-    if (auto& mini_view = *mini_view_ptr;
-        mini_view && mini_view->Contains(destroying_window)) {
-      auto* temp = mini_view.get();
-      // Explicitly reset the `mini_view` to avoid dangling pointer detection.
-      mini_view = nullptr;
-      RemoveChildViewT(temp);
+    if (auto& mini_view = *mini_view_ptr; mini_view) {
+      // Explicitly reset the current visuals.
+      mini_view->ResetRoundedCorners();
+      if (mini_view->Contains(destroying_window)) {
+        auto* temp = mini_view.get();
+        // Explicitly reset the `mini_view` to avoid dangling pointer detection.
+        mini_view = nullptr;
+        RemoveChildViewT(temp);
+      }
     }
   }
 

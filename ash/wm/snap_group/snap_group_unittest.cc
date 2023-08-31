@@ -8,6 +8,7 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -175,7 +176,8 @@ class SnapGroupTest : public AshTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kSnapGroup, {{"AutomaticLockGroup", "false"}}},
          {chromeos::features::kJellyroll, {}},
-         {chromeos::features::kJelly, {}}},
+         {chromeos::features::kJelly, {}},
+         {features::kSameAppWindowCycle, {}}},
         {});
   }
   SnapGroupTest(const SnapGroupTest&) = delete;
@@ -189,6 +191,7 @@ class SnapGroupTest : public AshTestBase {
         WorkspaceControllerTestApi(ShellTestApi().workspace_controller())
             .GetEventHandler();
     resize_controller_ = event_handler->multi_window_resize_controller();
+    WindowCycleList::SetDisableInitialDelayForTesting(true);
   }
 
   void SnapOneTestWindow(aura::Window* window,
@@ -531,6 +534,14 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
       window_cycle_controller->HandleCycleWindow(direction);
       EXPECT_TRUE(window_cycle_controller->IsCycling());
     }
+  }
+
+  // TODO(michelefan): Consider put this test util in a base class or test file.
+  std::unique_ptr<aura::Window> CreateTestWindowWithAppID(
+      std::string app_id_key) {
+    std::unique_ptr<aura::Window> window = CreateTestWindow();
+    window->SetProperty(kAppIDKey, std::move(app_id_key));
+    return window;
   }
 
  private:
@@ -1318,6 +1329,127 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowCycleRoundedCorners) {
     EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
               gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
   }
+  CompleteWindowCycling();
+}
+
+// Tests that two windows in a snap group is allowed to be shown as group item
+// view only if both of them belong to the same app as the mru window. If only
+// one window belongs to the app, the representation of the window will be shown
+// as the individual window cycle item view.
+TEST_F(SnapGroupEntryPointArm1Test, SameAppWindowCycle) {
+  struct app_id_pair {
+    const char* trace_message;
+    const std::string app_id_2;
+    const std::string app_id_3;
+    const size_t windows_size;
+    const size_t cycle_views_count;
+  } kTestCases[]{
+      {/*trace_message=*/"Windows in snap group with same app id",
+       /*app_id_2=*/"A", /*app_id_3=*/"A", /*windows_size=*/4u,
+       /*cycle_views_count=*/3u},
+      {/*trace_message=*/"Windows in snap group with different app ids",
+       /*app_id_2=*/"A", /*app_id_3=*/"B", /*windows_size=*/3u,
+       /*cycle_views_count=*/3u},
+  };
+
+  std::unique_ptr<aura::Window> w0(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w3(CreateTestWindowWithAppID(std::string("A")));
+  SnapTwoTestWindowsInArm1(w2.get(), w3.get());
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  for (const auto& test_case : kTestCases) {
+    w2->SetProperty(kAppIDKey, std::move(test_case.app_id_2));
+    w3->SetProperty(kAppIDKey, std::move(test_case.app_id_3));
+
+    wm::ActivateWindow(w2.get());
+    ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
+
+    // Simulate pressing Alt + Backtick to trigger the same app cycling.
+    auto* event_generator = GetEventGenerator();
+    event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+    event_generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+
+    const auto* window_cycle_list =
+        window_cycle_controller->window_cycle_list();
+    ASSERT_TRUE(window_cycle_list->same_app_only());
+
+    // Verify the number of windows for the cycling.
+    const auto& windows = window_cycle_list->windows_for_testing();
+    EXPECT_EQ(windows.size(), test_case.windows_size);
+    EXPECT_TRUE(window_cycle_controller->IsCycling());
+    const auto* cycle_view = window_cycle_list->cycle_view();
+    ASSERT_TRUE(cycle_view);
+
+    // Verify the number of cycle views.
+    auto& cycle_item_views = cycle_view->cycle_views_for_testing();
+    EXPECT_EQ(cycle_item_views.size(), test_case.cycle_views_count);
+    event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  }
+}
+
+// Tests and verifies that if one of the window in a snap group gets destroyed
+// while doing same app window cycling the corresponding window cycle item view
+// will be properly removed and re-configured with no crash.
+TEST_F(SnapGroupEntryPointArm1Test, WindowDestructionDuringSameAppWindowCycle) {
+  std::unique_ptr<aura::Window> w0(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowWithAppID(std::string("A")));
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  // Simulate pressing Alt + Backtick to trigger the same app cycling.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  event_generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  ASSERT_TRUE(window_cycle_list->same_app_only());
+  const auto* cycle_view = window_cycle_list->cycle_view();
+  ASSERT_TRUE(cycle_view);
+  const auto& windows = window_cycle_list->windows_for_testing();
+  EXPECT_EQ(windows.size(), 3u);
+  w0.reset();
+
+  // After the window destruction, the window cycle view is still available.
+  ASSERT_TRUE(cycle_view);
+  const auto& updated_windows = window_cycle_list->windows_for_testing();
+  EXPECT_EQ(updated_windows.size(), 2u);
+  CompleteWindowCycling();
+}
+
+// Tests that if a snap group is at the beginning of a window cycling list, the
+// mru window will depend on the mru window between the two windows in the snap
+// group, since the windows are reordered so that it reflects the actual window
+// layout.
+TEST_F(SnapGroupEntryPointArm1Test, MruWindowForSameApp) {
+  // Generate 5 windows with 3 of them from app A and 2 of them from app B.
+  std::unique_ptr<aura::Window> w0(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w1(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w3(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w4(CreateTestWindowWithAppID(std::string("B")));
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  // Specifically activate the secondary snapped window with app type B.
+  wm::ActivateWindow(w1.get());
+
+  // Simulate pressing Alt + Backtick to trigger the same app cycling.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  event_generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  ASSERT_TRUE(window_cycle_list->same_app_only());
+  const auto& windows = window_cycle_list->windows_for_testing();
+
+  // Verify that the windows in the list that are been cycled all belong to app
+  // B.
+  EXPECT_EQ(windows.size(), 2u);
   CompleteWindowCycling();
 }
 

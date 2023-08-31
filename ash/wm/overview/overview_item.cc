@@ -550,7 +550,7 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   const bool should_show_rounded_corners =
       !is_shutting_down && show_rounded_corners_for_start_animation;
   if (transform_window_.IsMinimizedOrTucked()) {
-    overview_item_view_->UpdatePreviewRoundedCorners(
+    overview_item_view_->RefreshPreviewRoundedCorners(
         should_show_rounded_corners);
   } else {
     transform_window_.UpdateRoundedCorners(should_show_rounded_corners);

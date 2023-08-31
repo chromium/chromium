@@ -8,15 +8,12 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
-
-namespace gfx {
-class RoundedCornersF;
-}  // namespace gfx
 
 namespace views {
 class ImageView;
@@ -53,6 +50,13 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   // (WmPixelDiffTest.WindowCycleBasic).
   void RefreshHeaderViewRoundedCorners();
 
+  void SetHeaderViewRoundedCornerRadius(
+      gfx::RoundedCornersF& header_view_rounded_corners);
+
+  // Resets the preset rounded corners values i.e.
+  // `header_view_rounded_corners_`.
+  void ResetRoundedCorners();
+
   gfx::RoundedCornersF GetHeaderRoundedCorners(aura::Window* window) const;
 
  private:
@@ -67,6 +71,8 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   // Views for the icon and title. Owned by the views hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
+
+  absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
 };
 
 }  // namespace ash

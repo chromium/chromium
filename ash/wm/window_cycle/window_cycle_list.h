@@ -113,6 +113,11 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   friend class WindowCycleListTestApi;
   friend class WindowCycleControllerTest;
 
+  // Returns true if the given `window` is in a snap group and we need to step
+  // twice to get to the next window cycle item.
+  bool ShouldDoubleCycleStep(aura::Window* window,
+                             WindowCyclingDirection direction) const;
+
   // aura::WindowObserver:
   // There is a chance a window is destroyed, for example by JS code. We need to
   // take care of that even if it is not intended for the user to close a window

@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view.h"
 
 namespace aura {
@@ -18,12 +19,7 @@ class Window;
 
 namespace gfx {
 class Point;
-class RoundedCornersF;
 }  // namespace gfx
-
-namespace views {
-class View;
-}  // namespace views
 
 namespace ash {
 class WindowMiniViewHeaderView;
@@ -42,6 +38,11 @@ class WindowMiniViewBase : public views::View {
 
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
+
+  // Sets rounded corners on the exposed corners, the inner corners will be
+  // sharp.
+  void SetRoundedCornersRadius(
+      const gfx::RoundedCornersF& exposed_rounded_corners);
 
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
@@ -67,6 +68,11 @@ class WindowMiniViewBase : public views::View {
 
  protected:
   WindowMiniViewBase();
+
+  // If these optional values are set, the preset rounded corners will be used
+  // otherwise the default rounded corners will be used.
+  absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
+  absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
 
  private:
   void InstallFocusRing();
@@ -114,10 +120,14 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void SetShowPreview(bool show);
 
   // Sets or hides rounded corners on `preview_view_`, if it exists.
-  void UpdatePreviewRoundedCorners(bool show);
+  void RefreshPreviewRoundedCorners(bool show);
 
   // Updates the rounded corners on `header_view_`, if it exists.
-  void UpdateHeaderViewRoundedCorners();
+  void RefreshHeaderViewRoundedCorners();
+
+  // Resets the preset rounded corners values i.e.
+  // `header_view_rounded_corners_` and `preview_view_rounded_corners_`.
+  void ResetRoundedCorners();
 
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
