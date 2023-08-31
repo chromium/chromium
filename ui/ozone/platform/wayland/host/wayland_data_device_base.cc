@@ -6,14 +6,10 @@
 
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/location.h"
 #include "base/logging.h"
-#include "base/task/task_traits.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
-#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
 
@@ -28,7 +24,6 @@ const std::vector<std::string>& WaylandDataDeviceBase::GetAvailableMimeTypes()
     static std::vector<std::string> dummy;
     return dummy;
   }
-
   return data_offer_->mime_types();
 }
 
@@ -63,15 +58,12 @@ PlatformClipboard::Data WaylandDataDeviceBase::ReadFromFD(
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
-  DCHECK(!deferred_read_callback_);
+  DCHECK(!sync_callback_);
+  sync_callback_.reset(wl_display_sync(connection_->display_wrapper()));
 
-  deferred_read_callback_.reset(
-      wl_display_sync(connection_->display_wrapper()));
-
-  static constexpr wl_callback_listener kListener = {&DeferredReadCallback};
-
-  wl_callback_add_listener(deferred_read_callback_.get(), &kListener, this);
-
+  static constexpr wl_callback_listener kSyncCallbackListener = {
+      .done = &OnSyncDone};
+  wl_callback_add_listener(sync_callback_.get(), &kSyncCallbackListener, this);
   connection_->Flush();
 }
 
@@ -81,23 +73,22 @@ void WaylandDataDeviceBase::RegisterDeferredReadClosure(
 }
 
 // static
-void WaylandDataDeviceBase::DeferredReadCallback(void* data,
-                                                 struct wl_callback* cb,
-                                                 uint32_t time) {
-  auto* data_device = static_cast<WaylandDataDeviceBase*>(data);
-  DCHECK(data_device);
-  data_device->DeferredReadCallbackInternal(cb, time);
+void WaylandDataDeviceBase::OnSyncDone(void* data,
+                                       wl_callback* cb,
+                                       uint32_t time) {
+  auto* self = static_cast<WaylandDataDeviceBase*>(data);
+  DCHECK(self);
+  self->DoDeferredRead(cb, time);
 }
 
-void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
-                                                         uint32_t time) {
+void WaylandDataDeviceBase::DoDeferredRead(wl_callback* cb, uint32_t time) {
   DCHECK(!deferred_read_closure_.is_null());
 
   // The callback must be reset before invoking the closure because the latter
   // may want to set another callback.  That typically happens when
   // non-trivial data types are dropped; they have fallbacks to plain text so
   // several roundtrips to data are chained.
-  deferred_read_callback_.reset();
+  sync_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
 }

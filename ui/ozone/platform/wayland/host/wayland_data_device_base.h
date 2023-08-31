@@ -68,12 +68,10 @@ class WaylandDataDeviceBase {
   void NotifySelectionOffer(WaylandDataOfferBase* offer) const;
 
  private:
-  // wl_callback_listener callback
-  static void DeferredReadCallback(void* data,
-                                   struct wl_callback* cb,
-                                   uint32_t time);
+  // wl_callback_listener callbacks:
+  static void OnSyncDone(void* data, wl_callback* cb, uint32_t time);
 
-  void DeferredReadCallbackInternal(struct wl_callback* cb, uint32_t time);
+  void DoDeferredRead(wl_callback* cb, uint32_t time);
 
   SelectionOfferCallback selection_offer_callback_;
 
@@ -87,7 +85,7 @@ class WaylandDataDeviceBase {
 
   // Before blocking on read(), make sure server has written data on the pipe.
   base::OnceClosure deferred_read_closure_;
-  wl::Object<wl_callback> deferred_read_callback_;
+  wl::Object<wl_callback> sync_callback_;
 };
 
 }  // namespace ui
