@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -353,7 +354,35 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
 }
 
 void SetPlatformPolicies(const base::Value::Dict& values) {
-  // TODO(crbug.com/1464354): implement.
+  const CFStringRef domain = CFSTR("com.google.Keystone");
+
+  // Synchronize just to be safe. Ignore spurious errors if the domain
+  // does not yet exist.
+  CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
+                           kCFPreferencesCurrentHost);
+
+  NSMutableDictionary* all_policies = [NSMutableDictionary dictionary];
+  for (const auto [app_id, policies] : values) {
+    ASSERT_TRUE(policies.is_dict());
+    NSMutableDictionary* app_policies = [NSMutableDictionary dictionary];
+    for (const auto [name, value] : policies.GetDict()) {
+      NSString* key = base::SysUTF8ToNSString(name);
+      if (value.is_string()) {
+        app_policies[key] = base::SysUTF8ToNSString(value.GetString());
+      } else if (value.is_int()) {
+        app_policies[key] = [NSNumber numberWithInt:value.GetInt()];
+      } else if (value.is_bool()) {
+        app_policies[key] = [NSNumber numberWithInt:value.GetBool()];
+      }
+    }
+    all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
+  }
+
+  CFPreferencesSetValue(CFSTR("updatePolicies"),
+                        base::apple::NSToCFPtrCast(all_policies), domain,
+                        kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
+  ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
+                                       kCFPreferencesCurrentHost));
 }
 
 }  // namespace updater::test
