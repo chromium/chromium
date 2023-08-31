@@ -36,7 +36,7 @@ class RemovalObserver : public content::BrowsingDataRemover::Observer {
   }
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   base::OnceClosure callback_;  // Owns `this`.
 };
 

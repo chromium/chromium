@@ -545,10 +545,11 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   webapps::InstallResultCode install_result_code_ =
       webapps::InstallResultCode::kSuccessNewInstall;
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   raw_ptr<FakeExternallyManagedAppManager, DanglingUntriaged>
-      fake_externally_managed_app_manager_;
-  raw_ptr<WebAppPolicyManager, DanglingUntriaged> web_app_policy_manager_;
+      fake_externally_managed_app_manager_ = nullptr;
+  raw_ptr<WebAppPolicyManager, DanglingUntriaged> web_app_policy_manager_ =
+      nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::TestSystemWebAppManager> test_system_app_manager_;

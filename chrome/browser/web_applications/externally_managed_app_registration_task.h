@@ -83,7 +83,7 @@ class ExternallyManagedAppRegistrationTask
   const raw_ptr<WebAppUrlLoader> url_loader_;
   const raw_ptr<content::WebContents> web_contents_;
   RegistrationCallback callback_;
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_ = nullptr;
 
   base::OneShotTimer registration_timer_;
 

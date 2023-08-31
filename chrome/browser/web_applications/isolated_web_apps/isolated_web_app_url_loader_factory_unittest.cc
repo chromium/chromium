@@ -257,7 +257,7 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   bool enable_dev_mode_feature_flag_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<ScopedUrlHandler> url_handler_;
 
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;

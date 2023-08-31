@@ -108,8 +108,8 @@ class WebAppCommandManager {
 
   std::vector<std::unique_ptr<WebAppCommand>> commands_waiting_for_start_;
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   std::unique_ptr<content::WebContents> shared_web_contents_;
 

@@ -176,8 +176,8 @@ class WebAppPolicyManager {
   void PopulateDisabledWebAppsIdsLists();
   void OnWebAppForceInstallPolicyParsed();
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

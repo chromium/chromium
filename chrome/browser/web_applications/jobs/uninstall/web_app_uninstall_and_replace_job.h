@@ -56,7 +56,7 @@ class WebAppUninstallAndReplaceJob {
 
   void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   // `this` must exist within the scope of a WebAppCommand's AppLock.
   raw_ref<AppLock> to_app_lock_;
   std::vector<AppId> from_apps_or_extensions_;

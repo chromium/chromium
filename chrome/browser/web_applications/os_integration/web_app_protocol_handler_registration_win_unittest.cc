@@ -163,7 +163,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest,

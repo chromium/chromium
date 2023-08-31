@@ -190,7 +190,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool is_isolated_web_app_for_testing_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<const ash::SystemWebAppDelegate> system_app_;
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   mutable absl::optional<ui::ImageModel> app_icon_;
 

@@ -48,7 +48,7 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
   }
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 };
 
 ExtensionInstallGate::~ExtensionInstallGate() = default;

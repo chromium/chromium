@@ -126,7 +126,7 @@ class WebAppLockManager {
                    const base::Location& location);
 
   content::PartitionedLockManager lock_manager_;
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
   base::WeakPtrFactory<WebAppLockManager> weak_factory_{this};
 };
 

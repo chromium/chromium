@@ -61,7 +61,7 @@ class WebAppTranslationManager {
  private:
   void OnTranslationsRead(ReadCallback callback, const AllTranslations& proto);
 
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
   base::FilePath web_apps_directory_;
   // Cache of the translations on disk for the current device language.
   std::map<AppId, blink::Manifest::TranslationItem> translation_cache_;

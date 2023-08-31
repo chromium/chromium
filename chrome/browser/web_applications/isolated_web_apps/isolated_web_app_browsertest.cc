@@ -101,7 +101,7 @@ class BaseServiceWorkerVersionWaiter
   }
 
  protected:
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_ = nullptr;
 
  private:
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -488,11 +488,13 @@ class IsolatedWebAppBrowserServiceWorkerTest
 
   const GURL& app_url() const { return app_url_; }
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_window_;
-  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> app_web_contents_;
-  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged> app_frame_;
+  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_window_ = nullptr;
+  raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
+      app_web_contents_ = nullptr;
+  raw_ptr<content::RenderFrameHost, AcrossTasksDanglingUntriaged> app_frame_ =
+      nullptr;
   raw_ptr<content::StoragePartition, AcrossTasksDanglingUntriaged>
-      storage_partition_;
+      storage_partition_ = nullptr;
   GURL app_url_;
 
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;

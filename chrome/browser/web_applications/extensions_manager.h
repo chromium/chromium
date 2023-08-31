@@ -62,8 +62,8 @@ class ExtensionsManager {
   }
 
  private:
-  raw_ptr<Profile> profile_;
-  raw_ptr<extensions::ExtensionRegistry> registry_;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> registry_ = nullptr;
 
   base::OneShotEvent on_garbage_collect_storage_partitions_done_for_testing_;
 };

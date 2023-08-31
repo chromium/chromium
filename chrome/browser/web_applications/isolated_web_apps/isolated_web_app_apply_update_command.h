@@ -171,7 +171,7 @@ class IsolatedWebAppApplyUpdateCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
-  raw_ptr<const WebApp> installed_app_;
+  raw_ptr<const WebApp> installed_app_ = nullptr;
 
   base::OnceCallback<void(
       base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>

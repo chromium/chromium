@@ -119,7 +119,7 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   std::string notification_text_;
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

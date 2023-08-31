@@ -53,7 +53,7 @@ class RemoveInstallUrlJob : public UninstallJob {
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
-  raw_ptr<AllAppsLock> lock_;
+  raw_ptr<AllAppsLock> lock_ = nullptr;
   Callback callback_;
 
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;

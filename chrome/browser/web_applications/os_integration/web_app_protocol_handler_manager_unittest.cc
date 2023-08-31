@@ -78,7 +78,7 @@ class WebAppProtocolHandlerManagerTest : public WebAppTest {
   }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 TEST_F(WebAppProtocolHandlerManagerTest, GetAppProtocolHandlerInfos) {

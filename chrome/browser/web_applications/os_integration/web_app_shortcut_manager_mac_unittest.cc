@@ -107,7 +107,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 TEST_F(WebAppShortcutManagerMacTest, InitialVersionIsStored) {

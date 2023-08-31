@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"

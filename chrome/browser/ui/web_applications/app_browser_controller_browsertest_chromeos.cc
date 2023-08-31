@@ -86,7 +86,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<Browser> browser_ = nullptr;
   SkColor color_at_navigation_;
   base::RunLoop run_loop_;
 };

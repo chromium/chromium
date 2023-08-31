@@ -111,8 +111,8 @@ class ExternallyManagedAppInstallTask {
       WebAppManagement::Type source_type,
       base::OnceCallback<void(absl::optional<AppId>)> callback);
 
-  const raw_ptr<Profile> profile_;
-  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_;
+  const raw_ptr<Profile> profile_ = nullptr;
+  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_ = nullptr;
   const raw_ref<WebAppProvider> provider_;
 
   DataRetrieverFactory data_retriever_factory_;

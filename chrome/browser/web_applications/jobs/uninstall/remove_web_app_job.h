@@ -54,7 +54,7 @@ class RemoveWebAppJob : public UninstallJob {
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
-  raw_ptr<AllAppsLock> lock_;
+  raw_ptr<AllAppsLock> lock_ = nullptr;
   Callback callback_;
 
   bool app_data_deleted_ = false;

@@ -41,7 +41,7 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
       absl::optional<WebAppIconDiagnostic::Result> result);
   void RecordDiagnosticResults();
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   apps::AppType app_type_;
   AppTypeInitializedEvent web_apps_published_event_;
 

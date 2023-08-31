@@ -343,10 +343,10 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
 
    private:
     raw_ptr<TestExternallyManagedAppManager>
-        externally_managed_app_manager_impl_;
+        externally_managed_app_manager_impl_ = nullptr;
     const raw_ref<TestExternallyManagedAppInstallTaskManager>
         test_install_task_manager_;
-    raw_ptr<Profile> profile_;
+    raw_ptr<Profile> profile_ = nullptr;
     raw_ref<WebAppProvider> provider_;
   };
 

@@ -66,7 +66,7 @@ class TestUninstallAndReplaceJobCommand
   void OnShutdown() override {}
 
  private:
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
@@ -107,7 +107,7 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   TestShortcutManager* shortcut_manager() { return shortcut_manager_; }
 
  private:
-  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_;
+  raw_ptr<TestShortcutManager, DanglingUntriaged> shortcut_manager_ = nullptr;
 };
 
 // `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app

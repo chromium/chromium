@@ -122,7 +122,7 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
     complete_callback_.Reset();
   }
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_ = nullptr;
   base::OnceCallback<void(int64_t)> complete_callback_;
   base::RepeatingClosure model_loaded_closure_;
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;

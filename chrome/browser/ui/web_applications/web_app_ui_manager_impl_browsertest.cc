@@ -65,9 +65,10 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
-  raw_ptr<TestShortcutManager, AcrossTasksDanglingUntriaged> shortcut_manager_;
+  raw_ptr<TestShortcutManager, AcrossTasksDanglingUntriaged> shortcut_manager_ =
+      nullptr;
   raw_ptr<FakeOsIntegrationManager, AcrossTasksDanglingUntriaged>
-      os_integration_manager_;
+      os_integration_manager_ = nullptr;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {

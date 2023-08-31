@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -158,7 +159,7 @@ class ExternallyManagedAppManagerTest : public WebAppTest {
   int deduped_install_count_ = 0;
   int deduped_uninstall_count_ = 0;
 
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 // Test that destroying ExternallyManagedAppManager during a synchronize call

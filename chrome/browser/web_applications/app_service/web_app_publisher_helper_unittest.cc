@@ -88,7 +88,7 @@ class WebAppPublisherHelperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   NoOpWebAppPublisherDelegate no_op_delegate_;
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
   std::unique_ptr<WebAppPublisherHelper> publisher_;
 };
 

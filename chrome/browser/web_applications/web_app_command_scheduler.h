@@ -418,7 +418,7 @@ class WebAppCommandScheduler {
   bool IsShuttingDown() const;
 
   const raw_ref<Profile> profile_;
-  raw_ptr<WebAppProvider> provider_;
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   bool is_in_shutdown_ = false;
 

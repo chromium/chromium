@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -182,7 +183,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
   WebAppProvider& provider() { return *provider_; }
 
  private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
