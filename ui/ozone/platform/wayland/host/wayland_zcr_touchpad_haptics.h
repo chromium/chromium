@@ -36,13 +36,11 @@ class WaylandZcrTouchpadHaptics
   void Play(int32_t effect, int32_t strength);
 
  private:
-  // zcr_touchpad_haptics_v1_listener
-  static void OnActivated(
-      void* data,
-      struct zcr_touchpad_haptics_v1* zcr_touchpad_haptics_v1);
-  static void OnDeactivated(
-      void* data,
-      struct zcr_touchpad_haptics_v1* zcr_touchpad_haptics_v1);
+  // zcr_touchpad_haptics_v1_listener callbacks:
+  static void OnActivated(void* data,
+                          zcr_touchpad_haptics_v1* touchpad_haptics);
+  static void OnDeactivated(void* data,
+                            zcr_touchpad_haptics_v1* touchpad_haptics);
 
   wl::Object<zcr_touchpad_haptics_v1> obj_;
   const raw_ptr<WaylandConnection> connection_;

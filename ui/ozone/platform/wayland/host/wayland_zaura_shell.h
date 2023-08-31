@@ -61,7 +61,7 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
   display::TabletState GetTabletState() const;
 
  private:
-  // zaura_shell_listener handler functions:
+  // zaura_shell_listener callbacks:
   static void OnLayoutMode(void* data,
                            struct zaura_shell* zaura_shell,
                            uint32_t layout_mode);

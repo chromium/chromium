@@ -41,31 +41,31 @@ class WaylandZAuraOutput {
   // For unit test use only.
   WaylandZAuraOutput();
 
-  // zaura_output_listeners
+  // zaura_output_listener callbacks:
   static void OnScale(void* data,
-                      struct zaura_output* zaura_output,
+                      zaura_output* output,
                       uint32_t flags,
                       uint32_t scale);
   static void OnConnection(void* data,
-                           struct zaura_output* zaura_output,
+                           zaura_output* output,
                            uint32_t connection);
   static void OnDeviceScaleFactor(void* data,
-                                  struct zaura_output* zaura_output,
+                                  zaura_output* output,
                                   uint32_t scale);
   static void OnInsets(void* data,
-                       struct zaura_output* zaura_output,
+                       zaura_output* output,
                        int32_t top,
                        int32_t left,
                        int32_t bottom,
                        int32_t right);
   static void OnLogicalTransform(void* data,
-                                 struct zaura_output* zaura_output,
+                                 zaura_output* output,
                                  int32_t transform);
   static void OnDisplayId(void* data,
-                          struct zaura_output* zaura_output,
+                          zaura_output* output,
                           uint32_t display_id_hi,
                           uint32_t display_id_lo);
-  static void OnActivated(void* data, struct zaura_output* zaura_output);
+  static void OnActivated(void* data, zaura_output* output);
 
   // Tracks whether this zaura_output is considered "ready". I.e. it has
   // received all of its relevant Display state from the server followed by a

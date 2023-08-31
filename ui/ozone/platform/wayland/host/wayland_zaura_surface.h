@@ -95,27 +95,27 @@ class WaylandZAuraSurface {
   // Returns true if `zaura_surface_` version is equal or newer than `version`.
   bool IsSupported(uint32_t version) const;
 
-  // zaura_surface listeners:
-  static void OcclusionChanged(void* data,
-                               zaura_surface* surface,
-                               wl_fixed_t occlusion_fraction,
-                               uint32_t occlusion_reason);
-  static void LockFrame(void* data, zaura_surface* surface);
-  static void UnlockFrame(void* data, zaura_surface* surface);
-  static void OcclusionStateChanged(void* data,
-                                    zaura_surface* surface,
-                                    uint32_t mode);
-  static void DeskChanged(void* data, zaura_surface* surface, int state);
-  static void StartThrottle(void* data, zaura_surface* surface);
-  static void EndThrottle(void* data, zaura_surface* surface);
-  static void TooltipShown(void* data,
-                           zaura_surface* surface,
-                           const char* text,
-                           int32_t x,
-                           int32_t y,
-                           int32_t width,
-                           int32_t height);
-  static void TooltipHidden(void* data, zaura_surface* surface);
+  // zaura_surface_listeners callbacks:
+  static void OnOcclusionChanged(void* data,
+                                 zaura_surface* surface,
+                                 wl_fixed_t occlusion_fraction,
+                                 uint32_t occlusion_reason);
+  static void OnLockFrameNormal(void* data, zaura_surface* surface);
+  static void OnUnlockFrameNormal(void* data, zaura_surface* surface);
+  static void OnOcclusionStateChanged(void* data,
+                                      zaura_surface* surface,
+                                      uint32_t mode);
+  static void OnDeskChanged(void* data, zaura_surface* surface, int state);
+  static void OnStartThrottle(void* data, zaura_surface* surface);
+  static void OnEndThrottle(void* data, zaura_surface* surface);
+  static void OnTooltipShown(void* data,
+                             zaura_surface* surface,
+                             const char* text,
+                             int32_t x,
+                             int32_t y,
+                             int32_t width,
+                             int32_t height);
+  static void OnTooltipHidden(void* data, zaura_surface* surface);
 
   // Use a weak ptr as lifetime guarantees are not well defined. E.g. this is
   // typically a WaylandWindow subclass that may be destroyed independently of

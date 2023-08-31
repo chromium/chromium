@@ -64,7 +64,7 @@ class WaylandZAuraOutputManager
   // point all mandatory state for the output has been received.
   bool IsReady(WaylandOutput::Id output_id) const;
 
-  // zaura_output_manager_listeners
+  // zaura_output_manager_listener callbacks:
   static void OnDone(void* data,
                      zaura_output_manager* output_manager,
                      wl_output* output);

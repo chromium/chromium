@@ -53,18 +53,19 @@ class WaylandZcrColorSpace : public base::RefCounted<WaylandZcrColorSpace> {
   };
 
   gfx::ColorSpace GetPriorityInformationType();
-  // zcr_color_space_v1_listener
+
+  // zcr_color_space_v1_listener callbacks:
   static void OnIccFile(void* data,
-                        struct zcr_color_space_v1* cs,
+                        zcr_color_space_v1* cs,
                         int32_t icc,
                         uint32_t icc_size);
   static void OnNames(void* data,
-                      struct zcr_color_space_v1* cs,
+                      zcr_color_space_v1* cs,
                       uint32_t eotf,
                       uint32_t chromaticity,
                       uint32_t whitepoint);
   static void OnParams(void* data,
-                       struct zcr_color_space_v1* cs,
+                       zcr_color_space_v1* cs,
                        uint32_t eotf,
                        uint32_t primary_r_x,
                        uint32_t primary_r_y,
@@ -75,14 +76,14 @@ class WaylandZcrColorSpace : public base::RefCounted<WaylandZcrColorSpace> {
                        uint32_t whitepoint_x,
                        uint32_t whitepoint_y);
   static void OnCompleteNames(void* data,
-                              struct zcr_color_space_v1* cs,
+                              zcr_color_space_v1* cs,
                               uint32_t eotf,
                               uint32_t chromaticity,
                               uint32_t whitepoint,
                               uint32_t matrix,
                               uint32_t range);
   static void OnCompleteParams(void* data,
-                               struct zcr_color_space_v1* cs,
+                               zcr_color_space_v1* cs,
                                uint32_t eotf,
                                uint32_t matrix,
                                uint32_t range,
@@ -94,7 +95,7 @@ class WaylandZcrColorSpace : public base::RefCounted<WaylandZcrColorSpace> {
                                uint32_t primary_b_y,
                                uint32_t whitepoint_x,
                                uint32_t whitepoint_y);
-  static void OnDone(void* data, struct zcr_color_space_v1* cs);
+  static void OnDone(void* data, zcr_color_space_v1* cs);
 
   // Information events should store color space info at their enum index in
   // this array. Cleared on the OnDone event. Choosing the highest priority
