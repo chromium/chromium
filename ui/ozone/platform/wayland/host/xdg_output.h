@@ -5,10 +5,10 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_OUTPUT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_OUTPUT_H_
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 #include "base/gtest_prod_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -18,7 +18,7 @@ namespace ui {
 
 class XDGOutput {
  public:
-  explicit XDGOutput(struct zxdg_output_v1* xdg_output);
+  explicit XDGOutput(zxdg_output_v1* xdg_output);
   XDGOutput(const XDGOutput&) = delete;
   XDGOutput& operator=(const XDGOutput&) = delete;
   ~XDGOutput();
@@ -28,7 +28,7 @@ class XDGOutput {
   bool IsReady() const;
 
   // Called after wl_output.done event has been received for this output.
-  void OnDone();
+  void HandleDone();
 
   // Called after processing the wl_output.done event. Translates the received
   // state into the metrics object as part of a chained atomic update.
@@ -39,22 +39,20 @@ class XDGOutput {
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, NameAndDescriptionFallback);
   FRIEND_TEST_ALL_PREFIXES(WaylandOutputTest, ScaleFactorFallback);
 
-  static void OutputHandleLogicalPosition(void* data,
-                                          struct zxdg_output_v1* zxdg_output_v1,
-                                          int32_t x,
-                                          int32_t y);
-  static void OutputHandleLogicalSize(void* data,
-                                      struct zxdg_output_v1* zxdg_output_v1,
-                                      int32_t width,
-                                      int32_t height);
-  static void OutputHandleDone(void* data,
-                               struct zxdg_output_v1* zxdg_output_v1);
-  static void OutputHandleName(void* data,
-                               struct zxdg_output_v1* zxdg_output_v1,
-                               const char* name);
-  static void OutputHandleDescription(void* data,
-                                      struct zxdg_output_v1* zxdg_output_v1,
-                                      const char* description);
+  // zxdg_output_v1_listener callbacks:
+  static void OnLogicalPosition(void* data,
+                                zxdg_output_v1* output,
+                                int32_t x,
+                                int32_t y);
+  static void OnLogicalSize(void* data,
+                            zxdg_output_v1* output,
+                            int32_t width,
+                            int32_t height);
+  static void OnDone(void* data, zxdg_output_v1* output);
+  static void OnName(void* data, zxdg_output_v1* output, const char* name);
+  static void OnDescription(void* data,
+                            zxdg_output_v1* output,
+                            const char* description);
 
   // Tracks whether this xdg_output is considered "ready". I.e. it has received
   // all of its relevant Display state from the server followed by a

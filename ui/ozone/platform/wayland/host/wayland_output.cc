@@ -294,7 +294,7 @@ void WaylandOutput::OnDone(void* data, wl_output* output) {
   self->is_ready_ = true;
 
   if (auto& xdg_output = self->xdg_output_) {
-    xdg_output->OnDone();
+    xdg_output->HandleDone();
   }
 
   if (auto& aura_output = self->aura_output_) {

@@ -102,15 +102,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
     return false;
   }
 
-  static constexpr xdg_toplevel_listener xdg_toplevel_listener = {
-      &ConfigureTopLevel,
-      &CloseTopLevel,
-      // Since v4
-      &ConfigureBounds,
-      // Since v5
-      &WmCapabilities,
-  };
-
   if (!xdg_surface_wrapper_)
     return false;
 
@@ -138,7 +129,15 @@ bool XDGToplevelWrapperImpl::Initialize() {
     }
   }
 
-  xdg_toplevel_add_listener(xdg_toplevel_.get(), &xdg_toplevel_listener, this);
+  static constexpr xdg_toplevel_listener kXdgToplevelListener = {
+      .configure = &OnToplevelConfigure,
+      .close = &OnToplevelClose,
+      // Since v4
+      .configure_bounds = &OnConfigureBounds,
+      // Since v5
+      .wm_capabilities = &OnWmCapabilities,
+  };
+  xdg_toplevel_add_listener(xdg_toplevel_.get(), &kXdgToplevelListener, this);
 
   InitializeXdgDecoration();
 
@@ -266,14 +265,13 @@ bool XDGToplevelWrapperImpl::IsConfigured() {
 }
 
 // static
-void XDGToplevelWrapperImpl::ConfigureTopLevel(
-    void* data,
-    struct xdg_toplevel* xdg_toplevel,
-    int32_t width,
-    int32_t height,
-    struct wl_array* states) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
+void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
+                                                 xdg_toplevel* toplevel,
+                                                 int32_t width,
+                                                 int32_t height,
+                                                 wl_array* states) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
 
   WaylandWindow::WindowStates window_states{
       .is_maximized =
@@ -285,7 +283,7 @@ void XDGToplevelWrapperImpl::ConfigureTopLevel(
   };
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (xdg_toplevel_get_version(xdg_toplevel) >=
+  if (xdg_toplevel_get_version(toplevel) >=
       XDG_TOPLEVEL_STATE_TILED_LEFT_SINCE_VERSION) {
     // All four tiled states have the same since version, so it is enough to
     // check only one.
@@ -298,23 +296,55 @@ void XDGToplevelWrapperImpl::ConfigureTopLevel(
   }
 #endif  // IS_LINUX || IS_CHROMEOS_LACROS
 
-  surface->wayland_window_->HandleToplevelConfigure(width, height,
-                                                    window_states);
+  self->wayland_window_->HandleToplevelConfigure(width, height, window_states);
 }
 
 // static
-void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
+void XDGToplevelWrapperImpl::OnToplevelClose(void* data,
+                                             xdg_toplevel* toplevel) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
+  self->wayland_window_->OnCloseRequest();
+}
+
+// static
+void XDGToplevelWrapperImpl::OnConfigureBounds(void* data,
+                                               xdg_toplevel* toplevel,
+                                               int32_t width,
+                                               int32_t height) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void XDGToplevelWrapperImpl::OnWmCapabilities(void* data,
+                                              xdg_toplevel* toplevel,
+                                              wl_array* capabilities) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void XDGToplevelWrapperImpl::OnDecorationConfigure(
     void* data,
-    struct zaura_toplevel* zaura_toplevel,
+    zxdg_toplevel_decoration_v1* decoration,
+    uint32_t mode) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
+  self->decoration_mode_ = ToDecorationMode(mode);
+}
+
+// static
+void XDGToplevelWrapperImpl::OnAuraToplevelConfigure(
+    void* data,
+    zaura_toplevel* aura_toplevel,
     int32_t x,
     int32_t y,
     int32_t width,
     int32_t height,
-    struct wl_array* states) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
+    wl_array* states) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
 
-  surface->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height, {
+  self->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height, {
     .is_maximized =
         CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
     .is_fullscreen =
@@ -336,65 +366,40 @@ void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
 }
 
 // static
-void XDGToplevelWrapperImpl::OnOriginChange(
-    void* data,
-    struct zaura_toplevel* zaura_toplevel,
-    int32_t x,
-    int32_t y) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  auto* wayland_toplevel_window =
-      static_cast<WaylandToplevelWindow*>(surface->wayland_window_);
-  wayland_toplevel_window->SetOrigin(gfx::Point(x, y));
+void XDGToplevelWrapperImpl::OnOriginChange(void* data,
+                                            zaura_toplevel* aura_toplevel,
+                                            int32_t x,
+                                            int32_t y) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
+  auto* toplevel_window =
+      static_cast<WaylandToplevelWindow*>(self->wayland_window_);
+  toplevel_window->SetOrigin(gfx::Point(x, y));
 }
 
 // static
-void XDGToplevelWrapperImpl::ConfigureRasterScale(
+void XDGToplevelWrapperImpl::OnConfigureRasterScale(
     void* data,
-    struct zaura_toplevel* zaura_toplevel,
+    zaura_toplevel* aura_toplevel,
     uint32_t scale_as_uint) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  auto* wayland_window = static_cast<WaylandWindow*>(surface->wayland_window_);
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
+  auto* wayland_window = static_cast<WaylandWindow*>(self->wayland_window_);
   float scale = *reinterpret_cast<float*>(&scale_as_uint);
   wayland_window->SetPendingRasterScale(scale);
 }
 
 // static
-void XDGToplevelWrapperImpl::OnRotateFocus(
-    void* data,
-    struct zaura_toplevel* zaura_toplevel,
-    uint32_t serial,
-    uint32_t direction,
-    uint32_t restart) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  auto* wayland_toplevel_window =
-      static_cast<WaylandToplevelWindow*>(surface->wayland_window_);
-  wayland_toplevel_window->OnRotateFocus(serial, direction, restart);
-}
-
-// static
-void XDGToplevelWrapperImpl::CloseTopLevel(void* data,
-                                           struct xdg_toplevel* xdg_toplevel) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  surface->wayland_window_->OnCloseRequest();
-}
-
-// static
-void XDGToplevelWrapperImpl::ConfigureBounds(void* data,
-                                             struct xdg_toplevel* xdg_toplevel,
-                                             int32_t width,
-                                             int32_t height) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-// static
-void XDGToplevelWrapperImpl::WmCapabilities(void* data,
-                                            struct xdg_toplevel* xdg_toplevel,
-                                            struct wl_array* capabilities) {
-  NOTIMPLEMENTED_LOG_ONCE();
+void XDGToplevelWrapperImpl::OnRotateFocus(void* data,
+                                           zaura_toplevel* aura_toplevel,
+                                           uint32_t serial,
+                                           uint32_t direction,
+                                           uint32_t restart) {
+  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(self);
+  auto* toplevel_window =
+      static_cast<WaylandToplevelWindow*>(self->wayland_window_);
+  toplevel_window->OnRotateFocus(serial, direction, restart);
 }
 
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
@@ -406,28 +411,19 @@ void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
                                        ToInt32(requested_mode));
 }
 
-// static
-void XDGToplevelWrapperImpl::ConfigureDecoration(
-    void* data,
-    struct zxdg_toplevel_decoration_v1* decoration,
-    uint32_t mode) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  surface->decoration_mode_ = ToDecorationMode(mode);
-}
-
 void XDGToplevelWrapperImpl::InitializeXdgDecoration() {
   if (connection_->xdg_decoration_manager_v1()) {
     DCHECK(!zxdg_toplevel_decoration_);
-    static constexpr zxdg_toplevel_decoration_v1_listener decoration_listener =
-        {
-            &ConfigureDecoration,
-        };
     zxdg_toplevel_decoration_.reset(
         zxdg_decoration_manager_v1_get_toplevel_decoration(
             connection_->xdg_decoration_manager_v1(), xdg_toplevel_.get()));
-    zxdg_toplevel_decoration_v1_add_listener(zxdg_toplevel_decoration_.get(),
-                                             &decoration_listener, this);
+
+    static constexpr zxdg_toplevel_decoration_v1_listener
+        kToplevelDecorationListener = {
+            .configure = &OnDecorationConfigure,
+        };
+    zxdg_toplevel_decoration_v1_add_listener(
+        zxdg_toplevel_decoration_.get(), &kToplevelDecorationListener, this);
   }
 }
 
@@ -541,11 +537,12 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
   }
   zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
 
-  static constexpr zaura_toplevel_listener aura_toplevel_listener = {
-      &ConfigureAuraTopLevel, &OnOriginChange, &ConfigureRasterScale,
-      &OnRotateFocus};
-
-  zaura_toplevel_add_listener(aura_toplevel_.get(), &aura_toplevel_listener,
+  static constexpr zaura_toplevel_listener kAuraToplevelListener = {
+      .configure = &OnAuraToplevelConfigure,
+      .origin_change = &OnOriginChange,
+      .configure_raster_scale = &OnConfigureRasterScale,
+      .rotate_focus = &OnRotateFocus};
+  zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
                               this);
 }
 #endif

@@ -168,12 +168,6 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
   if (params_.bounds.IsEmpty())
     params_.bounds.set_size({1, 1});
 
-  static constexpr struct xdg_popup_listener xdg_popup_listener = {
-      &XDGPopupWrapperImpl::Configure,
-      &XDGPopupWrapperImpl::PopupDone,
-      &XDGPopupWrapperImpl::Repositioned,
-  };
-
   auto positioner = CreatePositioner();
   if (!positioner)
     return false;
@@ -205,7 +199,12 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
 
   GrabIfPossible(connection_, wayland_window_->parent_window());
 
-  xdg_popup_add_listener(xdg_popup_.get(), &xdg_popup_listener, this);
+  static constexpr xdg_popup_listener kXdgPopupListener = {
+      .configure = &OnConfigure,
+      .popup_done = &OnPopupDone,
+      .repositioned = &OnRepositioned,
+  };
+  xdg_popup_add_listener(xdg_popup_.get(), &kXdgPopupListener, this);
 
   wayland_window_->root_surface()->Commit();
   return true;
@@ -309,37 +308,37 @@ wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
 }
 
 // static
-void XDGPopupWrapperImpl::Configure(void* data,
-                                    struct xdg_popup* xdg_popup,
-                                    int32_t x,
-                                    int32_t y,
-                                    int32_t width,
-                                    int32_t height) {
+void XDGPopupWrapperImpl::OnConfigure(void* data,
+                                      xdg_popup* popup,
+                                      int32_t x,
+                                      int32_t y,
+                                      int32_t width,
+                                      int32_t height) {
   // As long as the Wayland compositor repositions/requires to position windows
   // relative to their parents, do not propagate final bounds information to
   // Chromium. The browser places windows in respect to screen origin, but
   // Wayland requires doing so in respect to parent window's origin. To properly
   // place windows, the bounds are translated and adjusted according to the
   // Wayland compositor needs during WaylandWindow::CreateXdgPopup call.
-  WaylandWindow* window =
-      static_cast<XDGPopupWrapperImpl*>(data)->wayland_window_;
+  auto* self = static_cast<XDGPopupWrapperImpl*>(data);
+  WaylandWindow* window = self->wayland_window_;
   DCHECK(window);
   window->HandlePopupConfigure({x, y, width, height});
 }
 
 // static
-void XDGPopupWrapperImpl::PopupDone(void* data, struct xdg_popup* xdg_popup) {
-  WaylandWindow* window =
-      static_cast<XDGPopupWrapperImpl*>(data)->wayland_window_;
+void XDGPopupWrapperImpl::OnPopupDone(void* data, xdg_popup* popup) {
+  auto* self = static_cast<XDGPopupWrapperImpl*>(data);
+  WaylandWindow* window = self->wayland_window_;
   DCHECK(window);
   window->Hide();
   window->OnCloseRequest();
 }
 
 // static
-void XDGPopupWrapperImpl::Repositioned(void* data,
-                                       struct xdg_popup* xdg_popup,
-                                       uint32_t token) {
+void XDGPopupWrapperImpl::OnRepositioned(void* data,
+                                         xdg_popup* popup,
+                                         uint32_t token) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

@@ -38,9 +38,9 @@ class XdgActivation::Token {
   ~Token();
 
  private:
-  static void Done(void* data,
-                   struct xdg_activation_token_v1* xdg_activation_token_v1,
-                   const char* token);
+  static void OnDone(void* data,
+                     xdg_activation_token_v1* activation_token,
+                     const char* token);
 
   wl::Object<xdg_activation_token_v1> token_;
 
@@ -131,8 +131,10 @@ XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
                             absl::optional<wl::Serial> serial,
                             ActivationDoneCallback callback)
     : token_(std::move(token)), callback_(std::move(callback)) {
-  static constexpr xdg_activation_token_v1_listener kListener = {&Done};
-  xdg_activation_token_v1_add_listener(token_.get(), &kListener, this);
+  static constexpr xdg_activation_token_v1_listener kXdgActivationListener = {
+      .done = &OnDone};
+  xdg_activation_token_v1_add_listener(token_.get(), &kXdgActivationListener,
+                                       this);
   if (surface) {
     xdg_activation_token_v1_set_surface(token_.get(), surface);
   }
@@ -145,12 +147,13 @@ XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
 XdgActivation::Token::~Token() = default;
 
 // static
-void XdgActivation::Token::Done(
-    void* data,
-    struct xdg_activation_token_v1* xdg_activation_token_v1,
-    const char* token) {
-  auto* const self = static_cast<XdgActivation::Token*>(data);
-  std::move(self->callback_).Run(token);
+void XdgActivation::Token::OnDone(void* data,
+                                  xdg_activation_token_v1* activation_token,
+                                  const char* token) {
+  if (auto* const self = static_cast<XdgActivation::Token*>(data)) {
+    DCHECK(!self->callback_.is_null());
+    std::move(self->callback_).Run(token);
+  }
 }
 
 }  // namespace ui

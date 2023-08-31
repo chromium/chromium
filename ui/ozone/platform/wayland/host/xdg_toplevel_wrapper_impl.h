@@ -80,46 +80,43 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
  private:
-  // xdg_toplevel_listener
-  static void ConfigureTopLevel(void* data,
-                                struct xdg_toplevel* xdg_toplevel,
+  // xdg_toplevel_listener callbacks:
+  static void OnToplevelConfigure(void* data,
+                                  xdg_toplevel* toplevel,
+                                  int32_t width,
+                                  int32_t height,
+                                  wl_array* states);
+  static void OnToplevelClose(void* data, xdg_toplevel* toplevel);
+  static void OnConfigureBounds(void* data,
+                                xdg_toplevel* toplevel,
                                 int32_t width,
-                                int32_t height,
-                                struct wl_array* states);
-  static void CloseTopLevel(void* data, struct xdg_toplevel* xdg_toplevel);
-  static void ConfigureBounds(void* data,
-                              struct xdg_toplevel* xdg_toplevel,
-                              int32_t width,
-                              int32_t height);
-  static void WmCapabilities(void* data,
-                             struct xdg_toplevel* xdg_toplevel,
-                             struct wl_array* capabilities);
+                                int32_t height);
+  static void OnWmCapabilities(void* data,
+                               xdg_toplevel* toplevel,
+                               wl_array* capabilities);
 
-  // zxdg_decoration_listener
-  static void ConfigureDecoration(
-      void* data,
-      struct zxdg_toplevel_decoration_v1* decoration,
-      uint32_t mode);
+  // zxdg_decoration_listener callbacks:
+  static void OnDecorationConfigure(void* data,
+                                    zxdg_toplevel_decoration_v1* decoration,
+                                    uint32_t mode);
 
-  // aura_toplevel_listener
-  static void ConfigureAuraTopLevel(void* data,
-                                    struct zaura_toplevel* zaura_toplevel,
-                                    int32_t x,
-                                    int32_t y,
-                                    int32_t width,
-                                    int32_t height,
-                                    struct wl_array* states);
-
+  // zaura_toplevel_listener callbacks:
+  static void OnAuraToplevelConfigure(void* data,
+                                      zaura_toplevel* aura_toplevel,
+                                      int32_t x,
+                                      int32_t y,
+                                      int32_t width,
+                                      int32_t height,
+                                      wl_array* states);
   static void OnOriginChange(void* data,
-                             struct zaura_toplevel* zaura_toplevel,
+                             zaura_toplevel* aura_toplevel,
                              int32_t x,
                              int32_t y);
-
-  static void ConfigureRasterScale(void* data,
-                                   struct zaura_toplevel* zaura_toplevel,
-                                   uint32_t scale_as_uint);
+  static void OnConfigureRasterScale(void* data,
+                                     zaura_toplevel* aura_toplevel,
+                                     uint32_t scale_as_uint);
   static void OnRotateFocus(void* data,
-                            struct zaura_toplevel* zaura_toplevel,
+                            zaura_toplevel* aura_toplevel,
                             uint32_t serial,
                             uint32_t direction,
                             uint32_t restart);
