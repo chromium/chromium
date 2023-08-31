@@ -194,7 +194,6 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
       "gaiaPath",
       GaiaUrls::GetInstance()->embedded_setup_chromeos_url().path().substr(1));
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.Set("dontResizeNonEmbeddedPages", false);
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
   bool do_saml_redirect =
