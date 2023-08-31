@@ -406,33 +406,37 @@
       'cros_img': 'dedede-release/R115-15474.70.0',
     },
   },
-  'CROS_EVE_RELEASE_LKGM': {
-    'identifier': 'EVE_RELEASE_LKGM',
+  'CROS_PUFF_RELEASE_LKGM': {
+    'identifier': 'PUFF_RELEASE_LKGM',
     'skylab': {
-      'cros_board': 'eve',
-      'cros_img': 'eve-release/R118-15597.0.0',
+      'cros_board': 'puff',
+      'cros_img': 'puff-release/R118-15597.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
+      'dut_pool': 'chrome',
     },
   },
-  'CROS_EVE_RELEASE_DEV': {
-    'identifier': 'EVE_RELEASE_DEV',
+  'CROS_PUFF_RELEASE_DEV': {
+    'identifier': 'PUFF_RELEASE_DEV',
     'skylab': {
-      'cros_board': 'eve',
-      'cros_img': 'eve-release/R117-15563.0.0',
+      'cros_board': 'puff',
+      'cros_img': 'puff-release/R117-15563.0.0',
+      'dut_pool': 'chrome',
     },
   },
-  'CROS_EVE_RELEASE_BETA': {
-    'identifier': 'EVE_RELEASE_BETA',
+  'CROS_PUFF_RELEASE_BETA': {
+    'identifier': 'PUFF_RELEASE_BETA',
     'skylab': {
-      'cros_board': 'eve',
-      'cros_img': 'eve-release/R116-15509.50.0',
+      'cros_board': 'puff',
+      'cros_img': 'puff-release/R116-15509.50.0',
+      'dut_pool': 'chrome',
     },
   },
-  'CROS_EVE_RELEASE_STABLE': {
-    'identifier': 'EVE_RELEASE_STABLE',
+  'CROS_PUFF_RELEASE_STABLE': {
+    'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
-      'cros_board': 'eve',
-      'cros_img': 'eve-release/R115-15474.70.0',
+      'cros_board': 'puff',
+      'cros_img': 'puff-release/R115-15474.70.0',
+      'dut_pool': 'chrome',
     },
   },
   'CROS_EVE_PUBLIC_LKGM': {

@@ -1514,9 +1514,10 @@
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
-        "cros_board": "eve",
-        "cros_img": "eve-release/R118-15597.0.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
+        "cros_board": "puff",
+        "cros_img": "puff-release/R118-15597.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests PUFF_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1527,12 +1528,13 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_LKGM"
+        "variant_id": "PUFF_RELEASE_LKGM"
       },
       {
-        "cros_board": "eve",
-        "cros_img": "eve-release/R117-15563.0.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
+        "cros_board": "puff",
+        "cros_img": "puff-release/R117-15563.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests PUFF_RELEASE_DEV",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1543,12 +1545,13 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_DEV"
+        "variant_id": "PUFF_RELEASE_DEV"
       },
       {
-        "cros_board": "eve",
-        "cros_img": "eve-release/R116-15509.50.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
+        "cros_board": "puff",
+        "cros_img": "puff-release/R116-15509.50.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests PUFF_RELEASE_BETA",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1559,12 +1562,13 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_BETA"
+        "variant_id": "PUFF_RELEASE_BETA"
       },
       {
-        "cros_board": "eve",
-        "cros_img": "eve-release/R115-15474.70.0",
-        "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
+        "cros_board": "puff",
+        "cros_img": "puff-release/R115-15474.70.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests PUFF_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1575,7 +1579,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "EVE_RELEASE_STABLE"
+        "variant_id": "PUFF_RELEASE_STABLE"
       }
     ]
   },
