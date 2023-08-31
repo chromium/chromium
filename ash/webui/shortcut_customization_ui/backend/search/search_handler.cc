@@ -32,12 +32,13 @@ SearchHandler::SearchHandler(
     SearchConceptRegistry* search_concept_registry,
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy)
     : search_concept_registry_(search_concept_registry) {
-  DCHECK(local_search_service_proxy);
+  CHECK(local_search_service_proxy);
   local_search_service_proxy->GetIndex(
       local_search_service::IndexId::kShortcutsApp,
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
-  DCHECK(index_remote_.is_bound());
+  CHECK(index_remote_.is_bound());
+  CHECK(search_concept_registry_);
 
   search_concept_registry_->AddObserver(this);
 
@@ -47,7 +48,9 @@ SearchHandler::SearchHandler(
 }
 
 SearchHandler::~SearchHandler() {
-  search_concept_registry_->RemoveObserver(this);
+  if (search_concept_registry_) {
+    search_concept_registry_->RemoveObserver(this);
+  }
 }
 
 void SearchHandler::BindInterface(
