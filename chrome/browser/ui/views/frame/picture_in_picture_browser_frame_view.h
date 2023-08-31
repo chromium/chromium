@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
+#include "base/containers/flat_set.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
@@ -26,6 +27,21 @@
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/window_frame_provider.h"
 #endif
+
+// On Windows and Linux, child dialogs don't draw outside of their parent
+// window, so to prevent cutting off important dialogs we resize the
+// picture-in-picture window to fit them. While ChromeOS also uses Aura, it does
+// not have this issue so we do not resize on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG 1
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
+#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+#include "base/scoped_multi_source_observation.h"
+#include "ui/aura/client/transient_window_client.h"
+#include "ui/aura/client/transient_window_client_observer.h"
+#include "ui/aura/window_observer.h"
+#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 namespace views {
 class FlexLayoutView;
@@ -204,6 +220,86 @@ class PictureInPictureBrowserFrameView
   };
 
   CloseReason close_reason_ = CloseReason::kOther;
+
+#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+  // Observe child dialogs so that we can resize to ensure that they fit on
+  // platforms where child dialogs would otherwise be cut off by our typically
+  // small size.
+  class ChildDialogObserverHelper
+      : public views::WidgetObserver,
+        public aura::WindowObserver,
+        public aura::client::TransientWindowClientObserver {
+   public:
+    explicit ChildDialogObserverHelper(views::Widget* pip_widget);
+    ChildDialogObserverHelper(const ChildDialogObserverHelper&) = delete;
+    ChildDialogObserverHelper& operator=(const ChildDialogObserverHelper&) =
+        delete;
+    ~ChildDialogObserverHelper() override;
+
+    // views::WidgetObserver:
+    void OnWidgetBoundsChanged(views::Widget* widget,
+                               const gfx::Rect& new_bounds) override;
+    void OnWidgetDestroying(views::Widget* widget) override;
+    void OnWidgetVisibilityChanged(views::Widget* widget,
+                                   bool visible) override;
+
+    // aura::WindowObserver:
+    void OnWindowAdded(aura::Window* new_window) override;
+
+    // aura::client::TransientWindowClientObserver:
+    void OnTransientChildWindowAdded(aura::Window* parent,
+                                     aura::Window* transient_child) override;
+    void OnTransientChildWindowRemoved(aura::Window* parent,
+                                       aura::Window* transient_child) override {
+    }
+
+   private:
+    enum class ResizingState {
+      // We are not currently resized for a child dialog.
+      kNormal,
+
+      // We are currently transitioning to a new size to fit a child dialog.
+      kDuringInitialResizeForNewChild,
+
+      // We have finished transitioning to a new size to fit a child dialog and
+      // we have not yet returned to the original size (because the child dialog
+      // is still open).
+      kSizedToChildren,
+    };
+
+    void OnChildDialogOpened(views::Widget* child_dialog);
+    void MaybeResizeForChildDialog(views::Widget* child_dialog);
+    void MaybeRevertSizeAfterChildDialogCloses();
+
+    const raw_ptr<views::Widget> pip_widget_;
+
+    ResizingState resizing_state_ = ResizingState::kNormal;
+
+    base::ScopedObservation<aura::Window, aura::WindowObserver>
+        aura_window_observation_{this};
+    base::ScopedObservation<aura::client::TransientWindowClient,
+                            aura::client::TransientWindowClientObserver>
+        transient_window_observation_{this};
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        pip_widget_observation_{this};
+
+    base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+        child_dialog_observations_{this};
+
+    // Tracks child dialogs that have not yet been shown.
+    base::flat_set<views::Widget*> invisible_child_dialogs_;
+
+    // The bounds that we forced the window to be in response to a child dialog
+    // opening.
+    gfx::Rect latest_child_dialog_forced_bounds_;
+
+    // The bounds that the window would ideally be if we did not have to enlarge
+    // to fit a child dialog.
+    gfx::Rect latest_user_desired_bounds_;
+  };
+
+  std::unique_ptr<ChildDialogObserverHelper> child_dialog_observer_helper_;
+#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // A model required to use LocationIconView.
   std::unique_ptr<LocationBarModel> location_bar_model_;

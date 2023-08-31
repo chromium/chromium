@@ -99,6 +99,23 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
     return pip_frame_view_->GetLocalBounds().Contains(point_in_screen);
   }
 
+#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+  std::unique_ptr<views::Widget> OpenChildDialog(const gfx::Size& size) {
+    views::Widget::InitParams init_params(
+        views::Widget::InitParams::TYPE_WINDOW);
+    init_params.ownership =
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    init_params.child = true;
+    init_params.parent = pip_frame_view_->GetWidget()->GetNativeWindow();
+
+    auto child_dialog = std::make_unique<views::Widget>(std::move(init_params));
+    child_dialog->GetContentsView()->SetPreferredSize(size);
+    child_dialog->SetSize(size);
+    child_dialog->Show();
+    return child_dialog;
+  }
+#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+
   PictureInPictureBrowserFrameView* pip_frame_view() { return pip_frame_view_; }
 
  private:
@@ -152,5 +169,108 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
   ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
 }
+
+#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       ResizesToFitChildDialogs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Open a child dialog that is larger than the pip window.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
+                                    initial_pip_bounds.height() + 10);
+  auto child_dialog = OpenChildDialog(child_dialog_size);
+
+  // The pip window should increase its size to contain the child dialog.
+  gfx::Rect new_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_NE(initial_pip_bounds, new_pip_bounds);
+  EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
+  EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
+
+  // Close the dialog.
+  child_dialog->CloseNow();
+
+  // The pip window should return to its original bounds.
+  EXPECT_EQ(initial_pip_bounds,
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       RespectsUserLocationChangesAfterChildDialogCloses) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Open a child dialog that is larger than the pip window.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
+                                    initial_pip_bounds.height() + 10);
+  auto child_dialog = OpenChildDialog(child_dialog_size);
+
+  // The pip window should increase its size to contain the child dialog.
+  gfx::Rect new_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_NE(initial_pip_bounds, new_pip_bounds);
+  EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
+  EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
+
+  // The user then moves the dialog.
+  gfx::Rect moved_bounds = new_pip_bounds;
+  moved_bounds.set_x(moved_bounds.x() - 10);
+  moved_bounds.set_y(moved_bounds.y() - 10);
+  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+
+  // Close the dialog.
+  child_dialog->CloseNow();
+
+  // Since the user moved the window but did not resize, it should return to
+  // its original size but keep the new position.
+  gfx::Rect expected_final_bounds = moved_bounds;
+  expected_final_bounds.set_width(initial_pip_bounds.width());
+  expected_final_bounds.set_height(initial_pip_bounds.height());
+  EXPECT_EQ(expected_final_bounds,
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       RespectsUserBoundsChangesAfterChildDialogCloses) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  gfx::Rect initial_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+
+  // Open a child dialog that is larger than the pip window.
+  const gfx::Size child_dialog_size(initial_pip_bounds.width() + 20,
+                                    initial_pip_bounds.height() + 10);
+  auto child_dialog = OpenChildDialog(child_dialog_size);
+
+  // The pip window should increase its size to contain the child dialog.
+  gfx::Rect new_pip_bounds =
+      pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_NE(initial_pip_bounds, new_pip_bounds);
+  EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());
+  EXPECT_GE(new_pip_bounds.height(), child_dialog_size.height());
+
+  // The user then moves and resizes the dialog.
+  gfx::Rect moved_bounds = new_pip_bounds;
+  moved_bounds.set_width(moved_bounds.width() + 10);
+  moved_bounds.set_height(moved_bounds.height() + 10);
+  moved_bounds.set_x(moved_bounds.x() - 10);
+  moved_bounds.set_y(moved_bounds.y() - 10);
+  pip_frame_view()->GetWidget()->SetBounds(moved_bounds);
+
+  // Close the dialog.
+  child_dialog->CloseNow();
+
+  // Since the user both moved and resized the window, it should not change back
+  // when the child dialog closes.
+  EXPECT_EQ(moved_bounds,
+            pip_frame_view()->GetWidget()->GetWindowBoundsInScreen());
+}
+
+#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 }  // namespace
