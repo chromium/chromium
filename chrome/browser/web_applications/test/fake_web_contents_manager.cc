@@ -56,11 +56,12 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
       : manager_(manager) {}
   ~FakeUrlLoader() override = default;
 
-  void LoadUrl(const GURL& url,
+  void LoadUrl(content::NavigationController::LoadURLParams load_url_params,
                content::WebContents* web_contents,
                UrlComparison url_comparison,
                ResultCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    const GURL& url = load_url_params.url;
     CHECK(manager_);
     DVLOG(1) << "FakeWebContentsManager::FakeUrlLoader::LoadUrl " << url.spec();
     auto page_it = manager_->page_state_.find(url);

@@ -86,6 +86,14 @@ void TestSignedWebBundleBuilder::AddHtml(base::StringPiece url,
                        html_content);
 }
 
+void TestSignedWebBundleBuilder::AddJavaScript(
+    base::StringPiece url,
+    base::StringPiece script_content) {
+  builder_.AddExchange(
+      url, {{":status", "200"}, {"content-type", "application/javascript"}},
+      script_content);
+}
+
 void TestSignedWebBundleBuilder::AddPrimaryUrl(GURL url) {
   builder_.AddPrimaryURL(url);
 }

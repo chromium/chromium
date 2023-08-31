@@ -121,6 +121,9 @@ class TestSignedWebBundleBuilder {
   // Adds a text/html type payload to the bundle.
   void AddHtml(base::StringPiece url, base::StringPiece html_content);
 
+  // Adds an application/javascript type payload to the bundle.
+  void AddJavaScript(base::StringPiece url, base::StringPiece script_content);
+
   // Adds the primary url to the bundle. DO NOT use this for IWAs - primary URLs
   // are not supported in IWAs.
   void AddPrimaryUrl(GURL url);

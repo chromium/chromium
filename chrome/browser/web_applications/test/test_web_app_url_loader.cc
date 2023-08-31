@@ -49,10 +49,12 @@ void TestWebAppUrlLoader::AddNextLoadUrlResults(
     responses.results.push(result);
 }
 
-void TestWebAppUrlLoader::LoadUrl(const GURL& url,
-                                  content::WebContents* web_contents,
-                                  UrlComparison url_comparison,
-                                  ResultCallback callback) {
+void TestWebAppUrlLoader::LoadUrl(
+    content::NavigationController::LoadURLParams load_url_params,
+    content::WebContents* web_contents,
+    UrlComparison url_comparison,
+    ResultCallback callback) {
+  const GURL& url = load_url_params.url;
   load_url_tracker_.Run(url, web_contents, url_comparison);
 
   if (should_save_requests_) {

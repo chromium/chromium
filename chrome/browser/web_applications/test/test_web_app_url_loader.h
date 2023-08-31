@@ -42,8 +42,8 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
   void AddNextLoadUrlResults(const GURL& url,
                              const std::vector<Result>& results);
 
-  // WebAppUrlLoader
-  void LoadUrl(const GURL& url,
+  // `WebAppUrlLoader`:
+  void LoadUrl(content::NavigationController::LoadURLParams load_url_params,
                content::WebContents* web_contents,
                UrlComparison url_comparison,
                ResultCallback callback) override;
