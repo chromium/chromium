@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/favicon/ios/web_favicon_driver.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
@@ -33,8 +32,24 @@ namespace {
 NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
     @"StartSurfaceSceneEnterIntoBackgroundTime";
 
-// Creates a TabResumptionItem corresponding to the last synced tab then invokes
+// Fetches the favicon for the given `item` then asynchronously invokes
 // `item_block_handler` and exits.
+void FetchFaviconForItem(
+    TabResumptionItem* item,
+    FaviconLoader* favicon_loader,
+    TabResumptionHelper::TabResumptionItemCompletionBlock item_block_handler) {
+  favicon_loader->FaviconForPageUrl(
+      item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        if (!attributes.usesDefaultImage) {
+          item.faviconImage = attributes.faviconImage;
+          item_block_handler(item);
+        }
+      });
+}
+
+// Creates a TabResumptionItem corresponding to the last synced tab then
+// asynchronously invokes `item_block_handler` and exits.
 void LastSyncedTabItemFromSession(
     const synced_sessions::DistantSession* session,
     FaviconLoader* favicon_loader,
@@ -51,21 +66,15 @@ void LastSyncedTabItemFromSession(
   tab_resumption_item.tabURL = tab->virtual_url;
 
   // Fetch the favicon.
-  favicon_loader->FaviconForPageUrl(
-      tab_resumption_item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
-        if (!attributes.usesDefaultImage) {
-          tab_resumption_item.faviconImage = attributes.faviconImage;
-          item_block_handler(tab_resumption_item);
-        }
-      });
+  FetchFaviconForItem(tab_resumption_item, favicon_loader, item_block_handler);
 }
 
-// Creates a TabResumptionItem corresponding to the last synced tab then invokes
-// `item_block_handler` and exits.
+// Creates a TabResumptionItem corresponding to the last synced tab then
+// asynchronously invokes `item_block_handler` and exits.
 void MostRecentTabItemFromWebState(
     web::WebState* web_state,
     base::Time opened_time,
+    FaviconLoader* favicon_loader,
     TabResumptionHelper::TabResumptionItemCompletionBlock item_block_handler) {
   TabResumptionItem* tab_resumption_item = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kMostRecentTab];
@@ -74,17 +83,8 @@ void MostRecentTabItemFromWebState(
   tab_resumption_item.syncedTime = opened_time;
   tab_resumption_item.tabURL = web_state->GetLastCommittedURL();
 
-  // Retrieve favicon associated to the `web_state`.
-  favicon::WebFaviconDriver* driver =
-      favicon::WebFaviconDriver::FromWebState(web_state);
-  if (driver->FaviconIsValid()) {
-    gfx::Image favicon = driver->GetFavicon();
-    if (!favicon.IsEmpty()) {
-      tab_resumption_item.faviconImage = favicon.ToUIImage();
-    }
-  }
-
-  item_block_handler(tab_resumption_item);
+  // Fetch the favicon.
+  FetchFaviconForItem(tab_resumption_item, favicon_loader, item_block_handler);
 }
 
 }  // namespace
@@ -148,6 +148,6 @@ void TabResumptionHelper::LastTabResumptionItem(
     LastSyncedTabItemFromSession(session, favicon_loader_, item_block_handler);
   } else {
     MostRecentTabItemFromWebState(most_recent_tab, most_recent_tab_opened_time,
-                                  item_block_handler);
+                                  favicon_loader_, item_block_handler);
   }
 }
