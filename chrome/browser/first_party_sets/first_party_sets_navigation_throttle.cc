@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "net/base/features.h"
 
 namespace first_party_sets {
 
@@ -81,10 +82,12 @@ FirstPartySetsNavigationThrottle::MaybeCreateNavigationThrottle(
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile);
   CHECK(service);
-  if (features::kFirstPartySetsNavigationThrottleTimeout.Get().is_zero() ||
+  if (service->is_ready() ||
+      !base::FeatureList::IsEnabled(
+          net::features::kWaitForFirstPartySetsInit) ||
+      features::kFirstPartySetsNavigationThrottleTimeout.Get().is_zero() ||
       !features::kFirstPartySetsClearSiteDataOnChangedSets.Get() ||
-      navigation_handle->GetParentFrameOrOuterDocument() ||
-      service->is_ready()) {
+      navigation_handle->GetParentFrameOrOuterDocument()) {
     return nullptr;
   }
   return std::make_unique<FirstPartySetsNavigationThrottle>(navigation_handle,

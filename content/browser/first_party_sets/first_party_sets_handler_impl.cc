@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "net/base/features.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -43,6 +45,12 @@ constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
 
 // Global FirstPartySetsHandler instance for testing.
 FirstPartySetsHandler* g_test_instance = nullptr;
+
+base::TaskPriority GetTaskPriority() {
+  return base::FeatureList::IsEnabled(net::features::kWaitForFirstPartySetsInit)
+             ? base::TaskPriority::USER_BLOCKING
+             : base::TaskPriority::BEST_EFFORT;
+}
 
 }  // namespace
 
@@ -248,7 +256,7 @@ void FirstPartySetsHandlerImpl::SetDatabase(
     return;
   }
   db_helper_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
-                         {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+                         {base::MayBlock(), GetTaskPriority(),
                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
                      user_data_dir.Append(kFirstPartySetsDatabase));
 }
