@@ -228,6 +228,10 @@ public class XrSessionCoordinator {
                 XrSessionCoordinator.this, surface, rootWindow, rotation, width, height);
     }
 
+    public static XrSessionCoordinator getActiveInstanceForTesting() {
+        return sActiveSessionInstance;
+    }
+
     public void onDrawingSurfaceTouch(
             boolean isPrimary, boolean isTouching, int pointerId, float x, float y) {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceTouch");
