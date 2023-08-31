@@ -156,7 +156,7 @@ TimeOfDay ScheduledFeature::GetCustomEndTime() const {
 
 void ScheduledFeature::SetEnabled(bool enabled) {
   DVLOG(1) << "Setting " << GetFeatureName() << " enabled to " << enabled
-           << " at " << clock_->Now();
+           << " at " << Now();
   if (active_user_pref_service_)
     active_user_pref_service_->SetBoolean(prefs_path_enabled_, enabled);
 }
@@ -229,6 +229,10 @@ void ScheduledFeature::SuspendDone(base::TimeDelta sleep_duration) {
           /*keep_manual_toggles_during_schedules=*/true);
 }
 
+base::Time ScheduledFeature::Now() const {
+  return clock_->Now();
+}
+
 void ScheduledFeature::SetClockForTesting(const Clock* clock) {
   CHECK(clock);
   clock_ = clock;
@@ -257,7 +261,7 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
   }
 
   const ScheduleSnapshot& snapshot_to_restore = iter->second;
-  const base::Time now = clock_->Now();
+  const base::Time now = Now();
   // It may be that the device was suspended for a very long time that the
   // target time is no longer valid.
   if (snapshot_to_restore.target_time <= now) {
@@ -354,7 +358,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
           sunset_time == GeolocationController::kNoSunRiseSet) {
         // Simply disable the feature in this corner case. Since sunset and
         // sunrise are exactly the same, there is no time for it to be enabled.
-        start_time = clock_->Now();
+        start_time = Now();
         end_time = start_time;
       } else if (!sunrise_time.is_null() && !sunset_time.is_null()) {
         start_time = sunset_time;
@@ -374,7 +378,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
   // b/285187343: Timestamps can legitimately be null if getting local time
   // fails.
   if (!start_time || !end_time) {
-    LOG(ERROR) << "Received null start/end times at " << clock_->Now();
+    LOG(ERROR) << "Received null start/end times at " << Now();
     ScheduleNextRefreshRetry(keep_manual_toggles_during_schedules);
     // Best effort to still make `current_checkpoint_` as accurate as possible
     // before exiting and not be in an inconsistent state. The next successful
@@ -405,7 +409,7 @@ void ScheduledFeature::RefreshScheduleTimer(
     return;
   }
 
-  const base::Time now = clock_->Now();
+  const base::Time now = Now();
   const schedule_utils::Position schedule_position =
       schedule_utils::GetCurrentPosition(now, start_time, end_time,
                                          schedule_type);
@@ -516,7 +520,7 @@ void ScheduledFeature::SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint) {
 
   DVLOG(1) << "Setting " << GetFeatureName() << " ScheduleCheckpoint from "
            << current_checkpoint_ << " to " << new_checkpoint << " at "
-           << clock_->Now();
+           << Now();
   current_checkpoint_ = new_checkpoint;
   for (CheckpointObserver& obs : checkpoint_observers_) {
     obs.OnCheckpointChanged(this, current_checkpoint_);

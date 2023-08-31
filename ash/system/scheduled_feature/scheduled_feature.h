@@ -117,6 +117,9 @@ class ASH_EXPORT ScheduledFeature
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
+  // Returns now time from the `clock_`.
+  base::Time Now() const;
+
   void SetClockForTesting(const Clock* clock);
   void SetLocalTimeConverterForTesting(
       const LocalTimeConverter* local_time_converter);
