@@ -64,6 +64,12 @@ export class ChromeVoxState {
   restoreLastValidRangeIfNeeded() {}
 
   /**
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   */
+  setFocusToRange(range, prevRange) {}
+
+  /**
    * Handles a braille command.
    * @param {!BrailleKeyEvent} evt
    * @param {!NavBraille} content
