@@ -2243,6 +2243,9 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
         controller_->autocomplete_controller()->autocomplete_provider_client(),
         input_, input_.canonicalized_url(), false));
 
+    base::UmaHistogramBoolean("Omnibox.Search.CtrlEnterResolvedAsUrl",
+                              url_match.destination_url.is_valid());
+
     if (url_match.destination_url.is_valid()) {
       // We have a valid URL, we use this newly generated AutocompleteMatch.
       match = url_match;

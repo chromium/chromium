@@ -1581,6 +1581,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Search.CtrlEnterResolvedAsUrl" enum="Boolean"
+    expires_after="2024-04-01">
+  <owner>ender@google.com</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    Whenever Ctrl+Enter is used to complete an interaction with the Omnibox,
+    this metric captures whether the keystroke was used to initiate navigation
+    to a website (by affixing &quot;.com&quot;) or execute a search query (if
+    affixing &quot;.com&quot; would not produce a valid URL).
+
+    Recorded each time Ctrl+Enter is used to complete an interaction.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Search.OffTheRecord" enum="BooleanOffTheRecord"
     expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
