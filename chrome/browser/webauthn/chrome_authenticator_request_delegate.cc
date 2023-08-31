@@ -64,6 +64,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -93,6 +94,8 @@ namespace {
 
 ChromeAuthenticatorRequestDelegate::TestObserver* g_observer = nullptr;
 
+static constexpr char kGoogleRpId[] = "google.com";
+
 // Returns true iff |relying_party_id| is listed in the
 // SecurityKeyPermitAttestation policy.
 bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
@@ -118,6 +121,34 @@ bool IsOriginListedInEnterpriseAttestationSwitch(
       origin_strings, [&caller_origin](base::StringPiece origin_string) {
         return url::Origin::Create(GURL(origin_string)) == caller_origin;
       });
+}
+
+// Returns true iff the credential is reported as being present on the platform
+// authenticator (i.e. it is not a phone or icloud credential).
+bool IsCredentialFromPlatformAuthenticator(
+    device::DiscoverableCredentialMetadata cred) {
+  return cred.source != device::AuthenticatorType::kICloudKeychain &&
+         cred.source != device::AuthenticatorType::kPhone;
+}
+
+// Returns true iff |cred_id| starts with the prefix reserved for passkeys used
+// to authenticate to Google services.
+bool CredIdHasGooglePasskeyAuthPrefix(const std::vector<uint8_t>& cred_id) {
+  constexpr std::string_view kPrefix = "GOOGLE_ACCOUNT:";
+  if (cred_id.size() < kPrefix.size()) {
+    return false;
+  }
+  return memcmp(cred_id.data(), kPrefix.data(), kPrefix.size()) == 0;
+}
+
+// Filters |passkeys| to only contain credentials that are used to authenticate
+// to Google services.
+void FilterGoogleAuthPasskeys(
+    std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
+  std::erase_if(*passkeys, [](const auto& passkey) {
+    return IsCredentialFromPlatformAuthenticator(passkey) &&
+           !CredIdHasGooglePasskeyAuthPrefix(passkey.user.id);
+  });
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -844,6 +875,23 @@ void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
+      dialog_model()->relying_party_id() == kGoogleRpId) {
+    // Regrettably, Chrome will create webauthn credentials for things other
+    // than authentication (e.g. credit card autofill auth) under the rp id
+    // "google.com". To differentiate those credentials from actual passkeys you
+    // can use to sign in, Google adds a prefix to the user id.
+    // This code filter passkeys that do not match that prefix.
+    FilterGoogleAuthPasskeys(&data.recognized_credentials);
+    if (data.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential &&
+        std::ranges::none_of(data.recognized_credentials,
+                             IsCredentialFromPlatformAuthenticator)) {
+      data.has_platform_authenticator_credential = device::
+          FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
+    }
+  }
   if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys) &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&

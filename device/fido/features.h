@@ -164,6 +164,11 @@ BASE_DECLARE_FEATURE(kWebAuthnSortRecognizedCredentials);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries);
 
+// Filter a priori discovered credentials on google.com to those that have a
+// user id that starts with "GOOGLE_ACCOUNT:".
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

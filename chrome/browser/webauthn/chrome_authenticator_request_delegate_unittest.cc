@@ -37,6 +37,7 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
@@ -749,6 +750,90 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   EXPECT_EQ(credential.user.display_name, "Hatsune Miku");
   EXPECT_EQ(credential.user.name, "hmiku");
   EXPECT_EQ(credential.user.id, std::vector<uint8_t>({5, 6, 7, 8}));
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnFilterGooglePasskeys};
+  auto HasCreds = device::FidoRequestHandlerBase::RecognizedCredential::
+      kHasRecognizedCredential;
+  auto NoCreds = device::FidoRequestHandlerBase::RecognizedCredential::
+      kNoRecognizedCredential;
+  auto UnknownCreds =
+      device::FidoRequestHandlerBase::RecognizedCredential::kUnknown;
+  constexpr char kGoogle[] = "google.com";
+  constexpr char kOtherRpId[] = "example.com";
+  struct {
+    std::string rp_id;
+    device::FidoRequestHandlerBase::RecognizedCredential recognized_credential;
+    std::vector<std::string> user_ids;
+
+    device::FidoRequestHandlerBase::RecognizedCredential
+        expected_recognized_credential;
+    std::vector<std::string> expected_user_ids;
+  } kTests[] = {
+      {kOtherRpId,
+       HasCreds,
+       {"GOOGLE_ACCOUNT:c1", "c2"},
+       HasCreds,
+       {"GOOGLE_ACCOUNT:c1", "c2"}},
+      {kGoogle,
+       HasCreds,
+       {"GOOGLE_ACCOUNT:c1", "c2", "AUTOFILL_AUTH:c3"},
+       HasCreds,
+       {"GOOGLE_ACCOUNT:c1"}},
+      {kGoogle, HasCreds, {"c2", "AUTOFILL_AUTH:c3"}, NoCreds, {}},
+      {kGoogle, UnknownCreds, {}, UnknownCreds, {}},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(::testing::Message() << "rp_id=" << test.rp_id);
+    SCOPED_TRACE(::testing::Message()
+                 << "creds=" << base::JoinString(test.user_ids, ","));
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo data;
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo result;
+    EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
+        .WillOnce([&result](const auto* _, const auto* new_tai) {
+          result = std::move(*new_tai);
+        });
+
+    for (const std::string& user_id : test.user_ids) {
+      data.recognized_credentials.emplace_back(
+          device::AuthenticatorType::kOther, test.rp_id,
+          std::vector<uint8_t>{0},
+          device::PublicKeyCredentialUserEntity(
+              std::vector<uint8_t>(user_id.begin(), user_id.end())));
+    }
+    data.has_platform_authenticator_credential = test.recognized_credential;
+
+    // Mix in an icloud keychain credential. These should not be filtered or
+    // affect setting the recognized credentials flag.
+    data.recognized_credentials.emplace_back(
+        device::AuthenticatorType::kICloudKeychain, test.rp_id,
+        std::vector<uint8_t>{0}, device::PublicKeyCredentialUserEntity({1}));
+    data.has_icloud_keychain_credential = device::FidoRequestHandlerBase::
+        RecognizedCredential::kHasRecognizedCredential;
+
+    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+    delegate.SetRelyingPartyId(test.rp_id);
+    delegate.OnTransportAvailabilityEnumerated(std::move(data));
+
+    EXPECT_EQ(result.has_platform_authenticator_credential,
+              test.expected_recognized_credential);
+    EXPECT_EQ(result.has_icloud_keychain_credential,
+              device::FidoRequestHandlerBase::RecognizedCredential::
+                  kHasRecognizedCredential);
+    ASSERT_EQ(result.recognized_credentials.size(),
+              test.expected_user_ids.size() + 1);
+    for (size_t i = 0; i < test.expected_user_ids.size(); ++i) {
+      std::string expected_id = test.expected_user_ids[i];
+      EXPECT_EQ(result.recognized_credentials[i].user.id,
+                std::vector<uint8_t>(expected_id.begin(), expected_id.end()));
+    }
+    EXPECT_EQ(result.recognized_credentials.back().source,
+              device::AuthenticatorType::kICloudKeychain);
+    testing::Mock::VerifyAndClearExpectations(&observer_);
+  }
 }
 
 #if BUILDFLAG(IS_MAC)
