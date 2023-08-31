@@ -63,3 +63,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ThemeSnapshot) {
 IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ChromeColors) {
   RunTest("side_panel/customize_chrome/chrome_colors_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearch) {
+  RunTest("side_panel/customize_chrome/wallpaper_search_test.js",
+          "mocha.run()");
+}
