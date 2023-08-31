@@ -430,7 +430,7 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_row_secondary_inner_size">39dp</dimen>
     <dimen name="improved_bookmark_row_secondary_inner_half_size">19.5dp</dimen>
 
-    <!-- Autofill bottom sheet dimensions. -->
+    <!-- Autofill "save card" bottom sheet dimensions. -->
     <dimen name="autofill_bottom_sheet_card_chip_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_confirm_button_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_credit_card_height">24dp</dimen>
@@ -438,9 +438,19 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_credit_card_width">40dp</dimen>
     <dimen name="autofill_bottom_sheet_drag_handlebar_spacing_top">8dp</dimen>
     <dimen name="autofill_bottom_sheet_logo_height">32dp</dimen>
+    <dimen name="autofill_bottom_sheet_title_top_margin">24dp</dimen>
+
+    <!-- Autofill "virtual card number enrollment" bottom sheet dimensions. -->
+    <dimen name="autofill_bottom_sheet_drag_handlebar_height">4dp</dimen>
+    <dimen name="autofill_bottom_sheet_drag_handlebar_width">32dp</dimen>
+    <dimen name="autofill_bottom_sheet_illustration_min_height">93dp</dimen>
+    <dimen name="autofill_bottom_sheet_logo_min_height">32dp</dimen>
+    <dimen name="autofill_bottom_sheet_spacing_large">22dp</dimen>
+    <dimen name="autofill_bottom_sheet_spacing_small">12dp</dimen>
+
+    <!-- Common autofill bottom sheet dimensions. -->
     <dimen name="autofill_bottom_sheet_padding_horizontal">24dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_extra_small">8dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_medium">16dp</dimen>
-    <dimen name="autofill_bottom_sheet_title_top_margin">24dp</dimen>
 
 </resources>
