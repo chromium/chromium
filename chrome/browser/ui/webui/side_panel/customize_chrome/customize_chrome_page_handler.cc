@@ -7,6 +7,9 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/browser_features.h"
+#include "chrome/browser/manta/manta_service_factory.h"
+#include "chrome/browser/manta/snapper_provider.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,8 +26,10 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -85,6 +90,13 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
 
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
+
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(features::kMantaService)) {
+    manta_service_ = manta::MantaServiceFactory::GetForProfile(profile_);
+    snapper_provider_ = manta_service_->CreateSnapperProvider();
+  }
 }
 
 CustomizeChromePageHandler::~CustomizeChromePageHandler() {
@@ -207,6 +219,23 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
 void CustomizeChromePageHandler::RemoveBackgroundImage() {
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->ResetCustomBackgroundInfo();
+  }
+}
+
+void CustomizeChromePageHandler::WallpaperSearchCallback(
+    std::unique_ptr<EndpointResponse> response) {
+  return;
+}
+
+void CustomizeChromePageHandler::GetWallpaperSearchBackground() {
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kCustomizeChromeWallpaperSearch) &&
+      base::FeatureList::IsEnabled(features::kMantaService)) {
+    const std::string json = R"({"data": ""})";
+    snapper_provider_->Call(
+        json,
+        base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
