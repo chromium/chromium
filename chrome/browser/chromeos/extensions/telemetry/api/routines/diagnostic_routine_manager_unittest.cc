@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -88,6 +88,13 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
     chromeos::LacrosService::Get()->InjectRemoteForTesting(
         fake_routines_service_impl_->receiver().BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    fake_routines_service_impl_ = nullptr;
+#endif
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
@@ -169,8 +176,7 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<FakeDiagnosticRoutinesService, base::RawPtrTraits::kMayDangle>
-      fake_routines_service_impl_;
+  raw_ptr<FakeDiagnosticRoutinesService> fake_routines_service_impl_;
   FakeDiagnosticRoutinesServiceFactory fake_routines_service_factory_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -76,16 +76,19 @@ class TelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    fake_events_service_impl_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
       // Since one of tests opens browser window UI in Ash, it should close the
       // UI so that it won't pollute other tests running against the shared Ash.
       CloseAllAshBrowserWindows();
     }
+#endif
     BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
   }
-#endif
 
  protected:
   FakeEventsService* GetFakeService() {
@@ -97,8 +100,7 @@ class TelemetryExtensionEventsApiBrowserTest
   // SAFETY: This pointer is owned in a unique_ptr by the EventManager. Since
   // the EventManager lives longer than this test, it is always safe to access
   // the fake in the test body.
-  raw_ptr<FakeEventsService, base::RawPtrTraits::kMayDangle>
-      fake_events_service_impl_;
+  raw_ptr<FakeEventsService> fake_events_service_impl_;
   FakeEventsServiceFactory fake_events_service_factory_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
