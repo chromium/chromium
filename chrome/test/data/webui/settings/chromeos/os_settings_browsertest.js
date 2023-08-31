@@ -93,11 +93,11 @@ TEST_F('OSSettingsOsBluetoothDevicesSubpageTest', 'AllJsTests', () => {
 
 // TODO (b/238647706) Move this test back into the list of tests below once
 // Fast pair is launched.
-var OSSettingsOsBluetoothSavedDevicesSubpageTest =
+var OSSettingsOsBluetoothPageOsBluetoothSavedDevicesSubpageTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_subpage_tests.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_bluetooth_saved_devices_subpage_test.js';
   }
 
   /** @override */
@@ -114,9 +114,11 @@ var OSSettingsOsBluetoothSavedDevicesSubpageTest =
 
 // TODO (b/238647706) Move this test back into the list of tests below once
 // Fast pair is launched.
-TEST_F('OSSettingsOsBluetoothSavedDevicesSubpageTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsOsBluetoothPageOsBluetoothSavedDevicesSubpageTest', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
