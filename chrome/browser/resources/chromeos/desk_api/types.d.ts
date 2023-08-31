@@ -28,6 +28,7 @@ export interface SwitchDeskOperands {
  */
 export interface RemoveDeskOptions {
   combineDesks?: boolean;
+  allowUndo?: boolean;
 }
 
 /**
@@ -36,6 +37,7 @@ export interface RemoveDeskOptions {
 export interface GetDeskByIdOperands {
   deskId: string;
 }
+
 
 /**
  * Confirmation window setting for desk removal.
@@ -104,6 +106,9 @@ export interface DeskApi {
   getActiveDesk(callback: DeskIdCallback): void;
   switchDesk(deskId: string, callback: VoidCallback): void;
   getDeskById(deskId: string, callback: DeskCallback): void;
+  addDeskAddedListener(callback: DeskAddCallback): void;
+  addDeskRemovedListener(callback: DeskIdCallback): void;
+  addDeskSwitchedListener(callback: DeskSwitchCallback): void;
 }
 
 /**
@@ -137,3 +142,14 @@ export type ClickEventListener =
  * Callback for desk output.
  */
 export type DeskCallback = (desk: Desk) => void;
+
+/**
+ * Callback for desk switch.
+ */
+export type DeskSwitchCallback = (activated: string, deactivated: string) =>
+    void;
+
+/**
+ * Callback for desk add.
+ */
+export type DeskAddCallback = (deskId: string, fromUndo: boolean) => void;

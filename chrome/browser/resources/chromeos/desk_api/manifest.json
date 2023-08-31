@@ -5,7 +5,7 @@
     "matches": [ "$DOMAIN_LIST" ],
     "accepts_tls_channel_id": false
   },
-  "version": "0.2.1",
+  "version": "0.3.1",
   "icons": {
     "128": "templates_icon.png"
   },

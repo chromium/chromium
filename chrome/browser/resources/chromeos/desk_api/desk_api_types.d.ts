@@ -48,6 +48,8 @@ export interface Tab {
  * with the DeskApi
  */
 export interface ServiceWorker {
+  //@ts-ignore
+  registerEventsListener(port: chrome.runtime.Port): void;
   handleMessage(message: DeskApiBridgeRequest, sender: MessageSender):
       Promise<DeskApiBridgeResponse>;
   deskApi: DeskApi;
@@ -59,3 +61,8 @@ export interface ServiceWorker {
  * either the popup or background scripts receive a message.
  */
 export type SendMessageResponse = (response: DeskApiBridgeResponse) => void;
+
+/**
+ * Type of chrome.
+ */
+export type ChromeApi = typeof chrome;

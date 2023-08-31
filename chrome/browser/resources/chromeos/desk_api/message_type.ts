@@ -21,3 +21,13 @@ export enum ResponseType {
   OPERATION_SUCCESS = 'OperationSuccess',
   OPERATION_FAILURE = 'OperationFailure',
 }
+
+/**
+ * Enum of desk events type.
+ */
+export enum EventType {
+  DESK_ADDED = 'DeskAdded',
+  DESK_REMOVED = 'DeskRemoved',
+  DESK_SWITCHED = 'DeskSwitched',
+  DESK_UNDONE = 'DeskUndone',
+}
