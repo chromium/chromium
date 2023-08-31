@@ -28,6 +28,15 @@ void AppServiceShortcutShelfItemController::ItemSelected(
   return;
 }
 
+void AppServiceShortcutShelfItemController::GetContextMenu(
+    int64_t display_id,
+    GetContextMenuCallback callback) {
+  ChromeShelfController* controller = ChromeShelfController::instance();
+  const ash::ShelfItem* item = controller->GetItem(shelf_id());
+  context_menu_ = ShelfContextMenu::Create(controller, item, display_id);
+  context_menu_->GetMenuModel(std::move(callback));
+}
+
 void AppServiceShortcutShelfItemController::ExecuteCommand(
     bool from_context_menu,
     int64_t command_id,
