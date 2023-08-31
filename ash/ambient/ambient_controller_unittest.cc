@@ -2174,9 +2174,9 @@ class AmbientControllerDurationTest : public AmbientAshTestBase {
 TEST_F(AmbientControllerDurationTest, SetScreenSaverDuration) {
   EXPECT_TRUE(ash::features::IsScreenSaverDurationEnabled());
 
-  // Duration is default to 10 minutes.
+  // Duration is default to forever.
   SetAmbientModeEnabled(true);
-  EXPECT_EQ(10, GetScreenSaverDuration());
+  EXPECT_EQ(0, GetScreenSaverDuration());
 
   // Set screen saver duration.
   SetScreenSaverDuration(5);

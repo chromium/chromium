@@ -60,9 +60,6 @@ constexpr base::TimeDelta kLockScreenBackgroundTimeout = base::Seconds(5);
 // The default interval to refresh photos.
 constexpr base::TimeDelta kPhotoRefreshInterval = base::Seconds(60);
 
-// The default time to run screen saver before put the device into sleep.
-constexpr base::TimeDelta kDefaultScreenSaverDuration = base::Minutes(10);
-
 // The default animation playback speed. Not used in slideshow mode.
 constexpr float kAnimationPlaybackSpeed = 1.f;
 

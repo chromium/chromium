@@ -266,8 +266,7 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kManagedScreensaverImageRefreshInterval.InSeconds());
 
   registry->RegisterIntegerPref(
-      ambient::prefs::kAmbientModeRunningDurationMinutes,
-      kDefaultScreenSaverDuration.InMinutes());
+      ambient::prefs::kAmbientModeRunningDurationMinutes, kDurationForever);
 }
 
 AmbientController::AmbientController(
@@ -735,8 +734,8 @@ void AmbientController::SetScreenSaverDuration(int minutes) {
 }
 
 void AmbientController::StartTimerToReleaseWakeLock() {
-  DCHECK(ash::features::IsScreenSaverDurationEnabled());
-  DCHECK(!screensaver_running_timer_.IsRunning());
+  CHECK(ash::features::IsScreenSaverDurationEnabled());
+  CHECK(!screensaver_running_timer_.IsRunning());
 
   auto* pref_service = GetPrimaryUserPrefService();
   if (!pref_service) {
@@ -745,7 +744,7 @@ void AmbientController::StartTimerToReleaseWakeLock() {
 
   const int session_duration_in_minutes = pref_service->GetInteger(
       ambient::prefs::kAmbientModeRunningDurationMinutes);
-  DCHECK(session_duration_in_minutes >= 0);
+  CHECK(session_duration_in_minutes >= 0);
 
   if (session_duration_in_minutes != kDurationForever) {
     const base::TimeDelta delay = base::Minutes(session_duration_in_minutes);
