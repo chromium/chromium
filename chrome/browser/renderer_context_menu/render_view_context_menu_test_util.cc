@@ -26,24 +26,23 @@ TestRenderViewContextMenu::~TestRenderViewContextMenu() {}
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
     content::WebContents* web_contents,
-    const GURL& frame_url,
+    const GURL& page_url,
     const GURL& link_url,
-    bool is_subframe) {
-  return Create(web_contents->GetPrimaryMainFrame(), frame_url, link_url,
-                is_subframe);
+    const GURL& frame_url) {
+  return Create(web_contents->GetPrimaryMainFrame(), page_url, link_url,
+                frame_url);
 }
 
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(
     content::RenderFrameHost* render_frame_host,
-    const GURL& frame_url,
+    const GURL& page_url,
     const GURL& link_url,
-    bool is_subframe) {
+    const GURL& frame_url) {
   content::ContextMenuParams params;
-  params.page_url = frame_url;
-  params.frame_url = frame_url;
+  params.page_url = page_url;
   params.link_url = link_url;
-  params.is_subframe = is_subframe;
+  params.frame_url = frame_url;
   auto menu =
       std::make_unique<TestRenderViewContextMenu>(*render_frame_host, params);
   menu->Init();
