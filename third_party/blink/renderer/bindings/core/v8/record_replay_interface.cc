@@ -2487,10 +2487,7 @@ function StackingContext(window, options) {
   this.zIndexElements = new Map();
 
   this.root = root;
-  // If the root element of this stacking context is provided, add its
-  // children to this context.  This does not apply to iframes,
-  // which will have their inner document manually added by the caller.
-  if (root && root.raw.tagName !== "IFRAME") {
+  if (root) {
     this.addChildrenWithParent(root);
   }
 }
@@ -2681,7 +2678,7 @@ StackingContext.prototype = {
       top: this.offset.top + top,
     };
     elem.context = new StackingContext(this.window, {
-      parent: this,
+      parentContext: this,
       root: elem,
       offset,
       realStackingContext,
