@@ -52,7 +52,7 @@ public final class FullScreenSyncPromoUtil {
             final List<CoreAccountInfo> coreAccountInfos =
                     AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
                             AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-            prefManager.setSigninPromoLastAccountNames(
+            prefManager.setSigninPromoLastAccountEmails(
                     new HashSet<>(AccountUtils.toAccountEmails(coreAccountInfos)));
             return true;
         }
@@ -116,10 +116,10 @@ public final class FullScreenSyncPromoUtil {
         }
 
         final List<String> currentAccountEmails = AccountUtils.toAccountEmails(coreAccountInfos);
-        final Set<String> previousAccountNames = prefManager.getSigninPromoLastAccountNames();
+        final Set<String> previousAccountEmails = prefManager.getSigninPromoLastAccountEmails();
         // Don't show if no new accounts have been added after the last time promo was shown.
-        return previousAccountNames == null
-                || !previousAccountNames.containsAll(currentAccountEmails);
+        return previousAccountEmails == null
+                || !previousAccountEmails.containsAll(currentAccountEmails);
     }
 
     private FullScreenSyncPromoUtil() {}

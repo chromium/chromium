@@ -78,21 +78,21 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Returns a set of account names on the device when signin promo was last shown,
+     * Returns a set of account emails on the device when signin promo was last shown,
      * or null if promo hasn't been shown yet.
      */
     @Nullable
-    public Set<String> getSigninPromoLastAccountNames() {
+    public Set<String> getSigninPromoLastAccountEmails() {
         return mManager.readStringSet(
                 ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, null);
     }
 
     /**
-     * Stores a set of account names on the device when signin promo is shown.
+     * Stores a set of account emails on the device when signin promo is shown.
      */
-    public void setSigninPromoLastAccountNames(Set<String> accountNames) {
+    public void setSigninPromoLastAccountEmails(Set<String> accountEmails) {
         mManager.writeStringSet(
-                ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, accountNames);
+                ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES, accountEmails);
     }
 
     /**
