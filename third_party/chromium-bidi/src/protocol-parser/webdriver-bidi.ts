@@ -1905,6 +1905,7 @@ export namespace Script {
     z.object({
       functionDeclaration: z.string(),
       arguments: z.array(Script.ChannelValueSchema).optional(),
+      contexts: z.array(BrowsingContext.BrowsingContextSchema).optional(),
       sandbox: z.string().optional(),
     })
   );
