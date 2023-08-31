@@ -11,15 +11,36 @@ declare_args() {
   mediapipe_build_with_gpu_support = is_win
 }
 
+action("stamp_metadata_parser_version") {
+  script = "stamp_metadata_parser_version.py"
+
+  _template_file = "src/mediapipe/tasks/cc/metadata/metadata_parser.h.template"
+  _schema_file = "src/mediapipe/tasks/metadata/metadata_schema.fbs"
+  _output_file =
+      "$target_gen_dir/src/mediapipe/tasks/cc/metadata/metadata_parser.h"
+
+  outputs = [ _output_file ]
+
+  args = [
+    "--schema",
+    rebase_path(_schema_file, root_build_dir),
+    "--template",
+    rebase_path(_template_file, root_build_dir),
+    "--output",
+    rebase_path(_output_file, root_build_dir),
+  ]
+
+  sources = [
+    _schema_file,
+    _template_file,
+  ]
+}
+
 config("mediapipe_config") {
   include_dirs = [
     "src",
     "shims",
     "shims/protobuf",
-
-    # TODO(b/283522287): Change the file under this directory to a gn action
-    # instead.
-    "generated",
   ]
 }
 
@@ -434,6 +455,7 @@ tflite_static_library("mediapipe_core") {
     ":mediapipe_flatbuffer_schema",
     ":mediapipe_proto",
     ":mediapipe_shims",
+    ":stamp_metadata_parser_version",
     "//third_party/abseil-cpp:absl",
     "//third_party/gemmlowp",
     "//third_party/protobuf:protobuf_lite",
