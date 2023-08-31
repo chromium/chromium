@@ -345,7 +345,9 @@ export class ParagraphUtils {
     const clipOverflowWords = options.clipOverflowWords || false;
     let node = nodes[index];
     let next = nodes[index + 1];
-    const blockParent = ParagraphUtils.getFirstBlockAncestor(nodes[index]);
+    const blockParent = node.clickable ?
+        node :
+        ParagraphUtils.getFirstBlockAncestor(nodes[index]);
     const result = new ParagraphUtils.NodeGroup(blockParent);
     let staticTextParent = null;
     let currentLanguage = undefined;
@@ -412,8 +414,11 @@ export class ParagraphUtils {
       //  1. we have no more nodes to process.
       //  2. we need to check for a paragraph split and if the next node is not
       //  part of the same paragraph.
+      //  3. The next node is clickable, which can be considered as a paragraph
+      //  in Android.
       if (index + 1 >= nodes.length ||
-          (splitOnParagraph && !ParagraphUtils.inSameParagraph(node, next))) {
+          (splitOnParagraph && !ParagraphUtils.inSameParagraph(node, next)) ||
+          next.clickable) {
         break;
       }
 
