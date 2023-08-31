@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.LifetimeAssert;
@@ -47,6 +48,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.multidex.ChromiumMultiDexInstaller;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -121,6 +123,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
 
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
+
+    static {
+        CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
+    }
 
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context)

@@ -82,8 +82,6 @@ public final class CommandLineFlags {
     private static final String DISABLE_FEATURES = "disable-features";
     private static final String ENABLE_FEATURES = "enable-features";
 
-    private static boolean sInitializedForTest;
-
     // These members are used to track CommandLine state modifications made by the class/test method
     // currently being run, to be undone when the class/test method finishes.
     private static Set<String> sClassFlagsToRemove;
@@ -124,12 +122,8 @@ public final class CommandLineFlags {
      * trying to remove a flag set externally, i.e. by the command-line flags file, will not work.
      */
     public static void setUpClass(Class<?> clazz) {
-        // The command line may already have been initialized by Application-level init. We need to
-        // re-initialize it with test flags.
-        if (!sInitializedForTest) {
-            CommandLine.reset();
+        if (!CommandLine.isInitialized()) {
             CommandLineInitUtil.initCommandLine(getTestCmdLineFile());
-            sInitializedForTest = true;
         }
 
         Set<String> flags = new HashSet<>();

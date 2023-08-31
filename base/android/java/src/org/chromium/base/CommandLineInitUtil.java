@@ -34,7 +34,19 @@ public final class CommandLineInitUtil {
      */
     private static final String COMMAND_LINE_FILE_PATH_DEBUG_APP = "/data/local/tmp";
 
+    /**
+     * The name of the command line file to pull arguments from.
+     */
+    private static String sFilenameOverrideForTesting;
+
     private CommandLineInitUtil() {
+    }
+
+    /**
+     * Set the filename to use.
+     */
+    public static void setFilenameOverrideForTesting(String value) {
+        sFilenameOverrideForTesting = value;
     }
 
     /**
@@ -52,6 +64,9 @@ public final class CommandLineInitUtil {
      */
     public static void initCommandLine(
             String fileName, @Nullable Supplier<Boolean> shouldUseDebugFlags) {
+        if (sFilenameOverrideForTesting != null) {
+            fileName = sFilenameOverrideForTesting;
+        }
         assert !CommandLine.isInitialized();
         File commandLineFile = new File(COMMAND_LINE_FILE_PATH_DEBUG_APP, fileName);
         // shouldUseDebugCommandLine() uses IPC, so don't bother calling it if no flags file exists.
