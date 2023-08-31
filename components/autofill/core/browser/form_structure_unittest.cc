@@ -2185,6 +2185,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   {
     AutofillPageQueryRequest::Form* query_form = query.add_forms();
     query_form->set_signature(form_signature.value());
+    query_form->set_alternative_signature(
+        form_structure.alternative_form_signature().value());
     query_form->add_fields()->set_signature(412125936U);
     query_form->add_fields()->set_signature(1917667676U);
     query_form->add_fields()->set_signature(2226358947U);
@@ -2193,12 +2195,16 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
 
     query_form = query.add_forms();
     query_form->set_signature(12345UL);
+    query_form->set_alternative_signature(
+        form_structure.alternative_form_signature().value());
     query_form->add_fields()->set_signature(1917667676U);
     query_form->add_fields()->set_signature(747221617U);
     query_form->add_fields()->set_signature(4108155786U);
 
     query_form = query.add_forms();
     query_form->set_signature(67890UL);
+    query_form->set_alternative_signature(
+        form_structure.alternative_form_signature().value());
     query_form->add_fields()->set_signature(2226358947U);
   }
 
@@ -2247,6 +2253,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   {
     AutofillPageQueryRequest::Form* query_form = query.add_forms();
     query_form->set_signature(2608858059775241169);
+    query_form->set_alternative_signature(
+        form_structure3.alternative_form_signature().value());
     query_form->add_fields()->set_signature(412125936U);
     query_form->add_fields()->set_signature(1917667676U);
     query_form->add_fields()->set_signature(2226358947U);
@@ -4638,6 +4646,96 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
             form_structure->FormSignatureAsStr());
 }
 
+TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureLarge) {
+  FormData large_form;
+  large_form.url = GURL("http://foo.com/login?q=a#ref");
+
+  FormFieldData field1;
+  field1.form_control_type = "text";
+  large_form.fields.push_back(field1);
+
+  FormFieldData field2;
+  field2.form_control_type = "text";
+  large_form.fields.push_back(field2);
+
+  FormFieldData field3;
+  field3.form_control_type = "email";
+  large_form.fields.push_back(field3);
+
+  FormFieldData field4;
+  field4.form_control_type = "tel";
+  large_form.fields.push_back(field4);
+
+  // Alternative form signature string of a form with more than two fields
+  // should only concatenate scheme, host, and field types.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&text&email&tel"),
+            std::make_unique<FormStructure>(large_form)
+                ->alternative_form_signature()
+                .value());
+}
+
+TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallPath) {
+  FormData small_form_path;
+  small_form_path.url = GURL("http://foo.com/login?q=a#ref");
+
+  FormFieldData field1;
+  field1.form_control_type = "text";
+  small_form_path.fields.push_back(field1);
+
+  FormFieldData field2;
+  field2.form_control_type = "text";
+  small_form_path.fields.push_back(field2);
+
+  // Alternative form signature string of a form with 2 fields or less should
+  // concatenate scheme, host, field types, and path if it is non-empty.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&text/login"),
+            std::make_unique<FormStructure>(small_form_path)
+                ->alternative_form_signature()
+                .value());
+}
+
+TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallRef) {
+  FormData small_form_ref;
+  small_form_ref.url = GURL("http://foo.com?q=a#ref");
+
+  FormFieldData field1;
+  field1.form_control_type = "text";
+  small_form_ref.fields.push_back(field1);
+
+  FormFieldData field2;
+  field2.form_control_type = "text";
+  small_form_ref.fields.push_back(field2);
+
+  // Alternative form signature string of a form with 2 fields or less and
+  // without a path should concatenate scheme, host, field types, and reference
+  // if it is non-empty.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&text#ref"),
+            std::make_unique<FormStructure>(small_form_ref)
+                ->alternative_form_signature()
+                .value());
+}
+
+TEST_F(FormStructureTestImpl, CheckAlternativeFormSignatureSmallQuery) {
+  FormData small_form_query;
+  small_form_query.url = GURL("http://foo.com?q=a");
+
+  FormFieldData field1;
+  field1.form_control_type = "text";
+  small_form_query.fields.push_back(field1);
+
+  FormFieldData field2;
+  field2.form_control_type = "text";
+  small_form_query.fields.push_back(field2);
+
+  // Alternative form signature string of a form with 2 fields or less and
+  // without a path or reference should concatenate scheme, host, field types,
+  // and query if it is non-empty.
+  EXPECT_EQ(StrToHash64Bit("http://foo.com&text&text?q=a"),
+            std::make_unique<FormStructure>(small_form_query)
+                ->alternative_form_signature()
+                .value());
+}
+
 TEST_F(FormStructureTestImpl, ToFormData) {
   FormData form;
   form.name = u"the-name";
@@ -4704,6 +4802,8 @@ TEST_F(FormStructureTestImpl, SkipFieldTest) {
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
+  query_form->set_alternative_signature(
+      form_structure.alternative_form_signature().value());
 
   query_form->add_fields()->set_signature(239111655U);
   query_form->add_fields()->set_signature(420638584U);
@@ -4753,6 +4853,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLabels) {
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
+  query_form->set_alternative_signature(
+      form_structure.alternative_form_signature().value());
 
   query_form->add_fields()->set_signature(239111655U);
   query_form->add_fields()->set_signature(420638584U);
@@ -4804,6 +4906,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLongLabels) {
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
+  query_form->set_alternative_signature(
+      form_structure.alternative_form_signature().value());
 
   query_form->add_fields()->set_signature(239111655U);
   query_form->add_fields()->set_signature(420638584U);
@@ -4850,6 +4954,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
+  query_form->set_alternative_signature(
+      form_structure.alternative_form_signature().value());
 
   query_form->add_fields()->set_signature(239111655U);
   query_form->add_fields()->set_signature(1318412689U);

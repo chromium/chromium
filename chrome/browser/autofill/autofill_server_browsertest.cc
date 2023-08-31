@@ -230,6 +230,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
   query_form->set_signature(15916856893790176210U);
+  query_form->set_alternative_signature(1512434549531087U);
 
   query_form->add_fields()->set_signature(2594484045U);
   query_form->add_fields()->set_signature(2750915947U);
@@ -325,6 +326,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
   query_form->set_signature(8900697631820480876U);
+  query_form->set_alternative_signature(8962829409320837774U);
 
   query_form->add_fields()->set_signature(2594484045U);
   query_form->add_fields()->set_signature(2750915947U);

@@ -354,8 +354,11 @@ void AutofillManager::OnFormsSeen(
         continue;
       DCHECK(form_structure);
 
-      if (update_form_signature)
+      if (update_form_signature) {
         form_structure->set_form_signature(CalculateFormSignature(form));
+        form_structure->set_alternative_form_signature(
+            CalculateAlternativeFormSignature(form));
+      }
 
       parsed_forms.push_back(form);
       AutofillMetrics::LogParseFormTiming(AutofillTickClock::NowTicks() -
@@ -722,8 +725,11 @@ void AutofillManager::ParseFormsAsync(
       // Not updating signatures of credit card forms is legacy behaviour. We
       // believe that the signatures are kept stable for voting purposes.
       DenseSet<FormType> form_types = cached_form_structure->GetFormTypes();
-      if (form_types.size() > form_types.count(FormType::kCreditCardForm))
+      if (form_types.size() > form_types.count(FormType::kCreditCardForm)) {
         form_structure->set_form_signature(CalculateFormSignature(form_data));
+        form_structure->set_alternative_form_signature(
+            CalculateAlternativeFormSignature(form_data));
+      }
     }
 
     form_structure->set_current_page_language(GetCurrentPageLanguage());

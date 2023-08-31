@@ -26,9 +26,9 @@ message AutofillPageResourceQueryRequest {
 // see this as batched form requests.
 // Next ID: 4
 message AutofillPageQueryRequest {
-  // Next ID: 3
+  // Next ID: 5
   message Form {
-    // Next ID: 4
+    // Next ID: 5
     message Field {
       // Signature made of the field |name| and |control_type|.
       optional fixed32 signature = 1;
@@ -49,6 +49,13 @@ message AutofillPageQueryRequest {
     repeated Field fields = 2;
     // Metadata around the form.
     optional AutofillRandomizedFormMetadata metadata = 3;
+    // Alternative signature of the form that is made of:
+    //  - URL scheme (e.g., "http")
+    //  - URL domain page (e.g., "google.com")
+    //  - Concatenated fields' form control types (e.g., "text", "password")
+    //  - For forms with 1-2 fields, one of the following non-empty elements
+    //  ordered by preference: path, reference, or query.
+    optional fixed64 alternative_signature = 4;
   };
   // Version of the client. Do not use, deprecated.
   optional string client_version = 1 [deprecated = true];

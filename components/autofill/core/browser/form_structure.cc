@@ -373,6 +373,7 @@ FormStructure::FormStructure(const FormData& form)
   }
 
   form_signature_ = CalculateFormSignature(form);
+  alternative_form_signature_ = CalculateAlternativeFormSignature(form);
   // Do further processing on the fields, as needed.
   ProcessExtractedFields();
   SetFieldTypesFromAutocompleteAttribute();
@@ -1293,12 +1294,14 @@ void FormStructure::EncodeFormForQuery(
   // |field| from |fields_| that meets |necessary_condition|. Repeated calls for
   // the same |form| have no effect (early return if |processed_forms| contains
   // |form|).
-  auto AddFormIf = [&](FormSignature form, auto necessary_condition) mutable {
+  auto AddFormIf = [&](FormSignature form, FormSignature alternative_signature,
+                       auto necessary_condition) mutable {
     if (!processed_forms->insert(form).second)
       return;
 
     AutofillPageQueryRequest::Form* query_form = query->add_forms();
     query_form->set_signature(form.value());
+    query_form->set_alternative_signature(alternative_signature.value());
     queried_form_signatures->push_back(form);
 
     for (const auto& field : fields_) {
@@ -1311,13 +1314,15 @@ void FormStructure::EncodeFormForQuery(
     }
   };
 
-  AddFormIf(form_signature(), [](auto& f) { return true; });
+  AddFormIf(form_signature(), alternative_form_signature(),
+            [](auto& f) { return true; });
 
   for (const auto& field : fields_) {
     if (field->host_form_signature) {
-      AddFormIf(field->host_form_signature, [&](const auto& f) {
-        return f->host_form_signature == field->host_form_signature;
-      });
+      AddFormIf(field->host_form_signature, alternative_form_signature(),
+                [&](const auto& f) {
+                  return f->host_form_signature == field->host_form_signature;
+                });
     }
   }
 }

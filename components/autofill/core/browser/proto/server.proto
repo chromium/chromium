@@ -12,8 +12,8 @@ package autofill;
 
 import "password_requirements.proto";
 
-// Request to query field suggestions for forms in a page from legacy Autofill
-// API.
+// NOT USED ANYMORE. Please use `AutofillPageQueryRequest` in api_v1.proto
+// instead.
 // Next available id: 15
 message AutofillQueryContents {
   reserved 11;  // Reserved for server use.
