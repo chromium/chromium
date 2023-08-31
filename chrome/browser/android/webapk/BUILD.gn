@@ -6,6 +6,8 @@ import("//chrome/android/webapk/shell_apk/request_update_for_version.gni")
 
 source_set("webapk_sources") {
   sources = [
+    "webapk_database.cc",
+    "webapk_database.h",
     "webapk_features.cc",
     "webapk_features.h",
     "webapk_handler_delegate.cc",
@@ -16,6 +18,9 @@ source_set("webapk_sources") {
     "webapk_metrics.h",
     "webapk_post_share_target_navigator.cc",
     "webapk_post_share_target_navigator.h",
+    "webapk_registrar.h",
+    "webapk_registry_update.cc",
+    "webapk_registry_update.h",
     "webapk_ukm_recorder.cc",
     "webapk_ukm_recorder.h",
     "webapk_update_data_fetcher.cc",
@@ -23,8 +28,10 @@ source_set("webapk_sources") {
   ]
   deps = [
     "//chrome/android:jni_headers",
+    "//chrome/browser/android/webapk/proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_share_target",
+    "//components/sync",
     "//components/webapps/browser",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
