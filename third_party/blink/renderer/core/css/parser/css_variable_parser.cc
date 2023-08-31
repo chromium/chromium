@@ -222,9 +222,6 @@ CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
 
 StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
     StringView text) {
-  // Leading whitespace should already have been stripped.
-  DCHECK(text.empty() || !IsHTMLSpace(text[0]));
-
   // Comments may (unfortunately!) be unfinished, so we can't rely on
   // looking for */; if there's /* anywhere, we'll need to scan through
   // the string from the start. We do a very quick heuristic first
@@ -264,7 +261,15 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
       }
     }
   }
-  return StringView(text, 0, string_len);
+
+  StringView ret = StringView(text, 0, string_len);
+
+  // Leading whitespace should already have been stripped.
+  // (This test needs to be after we stripped trailing spaces,
+  // or we could look at trailing space believing it was leading.)
+  DCHECK(ret.empty() || !IsHTMLSpace(ret[0]));
+
+  return ret;
 }
 
 }  // namespace blink
