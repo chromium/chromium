@@ -451,14 +451,15 @@ PolicySettings GetPolicySettings(const std::string& policy,
       settings.source = POLICY_SOURCE_CLOUD;
     else if (*source == "active_directory")
       settings.source = POLICY_SOURCE_ACTIVE_DIRECTORY;
-    else if (*source == "local_account_override")
-      settings.source = POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED;
     else if (*source == "platform")
       settings.source = POLICY_SOURCE_PLATFORM;
     else if (*source == "merged")
       settings.source = POLICY_SOURCE_MERGED;
     else if (*source == "cloud_from_ash")
       settings.source = POLICY_SOURCE_CLOUD_FROM_ASH;
+    else {
+      NOTREACHED();
+    }
   }
 
   const std::string* scope = settings_value->FindString("scope");

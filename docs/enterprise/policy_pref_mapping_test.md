@@ -196,8 +196,8 @@ field's value is a dictionary, where the key is a policy name (should be one of
 the policies set in `policies`) and the value is a dictionary with `scope`
 (possible values are [`user`, `machine`], defaults to `user`) and `source`
 (possible values are [`enterprise_default`, `command_line`, `cloud`,
-`active_directory`, `local_account_override`, `platform`, `merged`,
-`cloud_from_ash`], defaults to `cloud`).
+`active_directory`, `platform`, `merged`, `cloud_from_ash`], defaults to
+`cloud`).
 
 Each `PolicyPrefMappingTest` can also have a `required_buildflags`,
 which defines a list of required buildflags for the test to run.

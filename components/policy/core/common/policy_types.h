@@ -51,16 +51,16 @@ enum PolicySource {
   // The policy was set by an Active Directory source.
   POLICY_SOURCE_ACTIVE_DIRECTORY,
 
+  // Deprecated. Not removed to avoid disturbing the reporting enum mapping.
   // Any non-platform policy was overridden because we are running in a
   // public session or kiosk mode.
-  // TODO(crbug.com/1225922): Remove deprecated policy source.
   POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
 
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,
 
+  // Deprecated. Not removed to avoid disturbing the reporting enum mapping.
   // The policy was set by a cloud source that has higher priroity.
-  // TODO(crbug.com/1249611): Remove deprecated policy source.
   POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED,
 
   // The policy coming from multiple sources and its value has been merged.
