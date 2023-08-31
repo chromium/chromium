@@ -60,8 +60,20 @@ constexpr char kHistogramSessionLengthOffscreenTab[] =
 constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
 
+constexpr char kHistogramAudioTransmissionKbps[] =
+    "CastStreaming.Sender.Audio.TransmissionRate";
+constexpr char kHistogramAudioAverageNetworkLatency[] =
+    "CastStreaming.Sender.Audio.AverageNetworkLatency";
+constexpr char kHistogramAudioRetransmittedPacketsPercentage[] =
+    "CastStreaming.Sender.Audio.RetransmittedPacketsPercentage";
 constexpr char kHistogramAudioExceededPlayoutDelayPacketsPercentage[] =
     "CastStreaming.Sender.Audio.ExceededPlayoutDelayPacketsPercentage";
+constexpr char kHistogramVideoTransmissionKbps[] =
+    "CastStreaming.Sender.Video.TransmissionRate";
+constexpr char kHistogramVideoAverageNetworkLatency[] =
+    "CastStreaming.Sender.Video.AverageNetworkLatency";
+constexpr char kHistogramVideoRetransmittedPacketsPercentage[] =
+    "CastStreaming.Sender.Video.RetransmittedPacketsPercentage";
 constexpr char kHistogramVideoExceededPlayoutDelayPacketsPercentage[] =
     "CastStreaming.Sender.Video.ExceededPlayoutDelayPacketsPercentage";
 
@@ -804,6 +816,9 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
 
   static constexpr char kJsonStats[] = R"({
     "audio": {
+      "TRANSMISSION_KBPS": 20.0,
+      "AVG_NETWORK_LATENCY_MS": 5.0,
+      "NUM_PACKETS_SENT": 500.0,
       "NETWORK_LATENCY_MS_HISTO": [
         {"<20": 50.0},
         {"20-39": 150.0},
@@ -813,6 +828,10 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
       ]
     },
     "video": {
+      "TRANSMISSION_KBPS": 1020.0,
+      "AVG_NETWORK_LATENCY_MS": 4.0,
+      "NUM_PACKETS_SENT": 500.0,
+      "NUM_PACKETS_RETRANSMITTED": 50.0,
       "NETWORK_LATENCY_MS_HISTO": [
         {"0-19": 100.0},
         {"200-219": 700.0},
@@ -847,6 +866,18 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
 
   activity_.reset();
 
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioTransmissionKbps), 20);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoTransmissionKbps), 1020);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageNetworkLatency), 5);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoAverageNetworkLatency), 4);
+  // No audio retransmitted packet.
+  EXPECT_EQ(
+      uma_recorder.GetTotalSum(kHistogramAudioRetransmittedPacketsPercentage),
+      0);
+  // Video retransmitted packet percentage is 50/500 = 10%
+  EXPECT_EQ(
+      uma_recorder.GetTotalSum(kHistogramVideoRetransmittedPacketsPercentage),
+      10);
   // Audio network latency histo has 300-319 and >=800 buckets where the min
   // latency is above 200ms (target playout delay set by feature flag), sum of
   // packets in these 2 buckets is 200 + 400 = 600, sum of all packets is 1000,

@@ -99,6 +99,12 @@ constexpr char kHistogramStartSuccessAccessCodeRememberedDevice[] =
 
 const char kHistogramTypeAudio[] = "Audio";
 const char kHistogramTypeVideo[] = "Video";
+constexpr char kHistogramTransmissionKbps[] =
+    "CastStreaming.Sender.%s.TransmissionRate";
+constexpr char kHistogramAverageNetworkLatency[] =
+    "CastStreaming.Sender.%s.AverageNetworkLatency";
+constexpr char kHistogramRetransmittedPacketsPercentage[] =
+    "CastStreaming.Sender.%s.RetransmittedPacketsPercentage";
 constexpr char kHistogramExceededPlayoutDelayPacketsPercentage[] =
     "CastStreaming.Sender.%s.ExceededPlayoutDelayPacketsPercentage";
 
@@ -224,6 +230,49 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
       stats_dict_key == media::cast::StatsEventSubscriber::kAudioStatsDictKey
           ? kHistogramTypeAudio
           : kHistogramTypeVideo;
+
+  const std::string transmission_kbps_key =
+      media::cast::StatsEventSubscriber::CastStatToString(
+          media::cast::StatsEventSubscriber::TRANSMISSION_KBPS);
+  const absl::optional<double> transmission_kbps =
+      mirroring_stats->FindDouble(transmission_kbps_key);
+  if (transmission_kbps.has_value()) {
+    const std::string transmission_rate_histogram_name =
+        base::StringPrintf(kHistogramTransmissionKbps, histogram_type);
+    base::UmaHistogramMemoryKB(transmission_rate_histogram_name,
+                               transmission_kbps.value());
+  }
+
+  const std::string avg_network_latency_ms_key =
+      media::cast::StatsEventSubscriber::CastStatToString(
+          media::cast::StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
+  const absl::optional<double> avg_network_latency_ms =
+      mirroring_stats->FindDouble(avg_network_latency_ms_key);
+  if (avg_network_latency_ms.has_value()) {
+    const std::string avg_network_latency_histogram_name =
+        base::StringPrintf(kHistogramAverageNetworkLatency, histogram_type);
+    base::UmaHistogramTimes(avg_network_latency_histogram_name,
+                            base::Milliseconds(avg_network_latency_ms.value()));
+  }
+
+  const std::string num_packets_sent_key =
+      media::cast::StatsEventSubscriber::CastStatToString(
+          media::cast::StatsEventSubscriber::NUM_PACKETS_SENT);
+  const size_t num_packets_sent =
+      mirroring_stats->FindDouble(num_packets_sent_key).value_or(0);
+  if (num_packets_sent > 0) {
+    const std::string num_packets_retransmitted_key =
+        media::cast::StatsEventSubscriber::CastStatToString(
+            media::cast::StatsEventSubscriber::NUM_PACKETS_RETRANSMITTED);
+    const size_t num_packets_retransmitted =
+        mirroring_stats->FindDouble(num_packets_retransmitted_key).value_or(0);
+    const std::string retransmit_packets_percent_histogram_name =
+        base::StringPrintf(kHistogramRetransmittedPacketsPercentage,
+                           histogram_type);
+    base::UmaHistogramPercentage(
+        retransmit_packets_percent_histogram_name,
+        num_packets_retransmitted * 100 / num_packets_sent);
+  }
 
   const std::string network_latency_ms_histo_key =
       media::cast::StatsEventSubscriber::CastStatToString(
