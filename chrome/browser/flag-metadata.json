@@ -3455,11 +3455,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-rgb-keyboard",
-    "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
-    "expiry_milestone": 118
-  },
-  {
     "name": "enable-run-on-os-login",
     "owners": [ "sfiss" ],
     "expiry_milestone": 130
