@@ -8,11 +8,8 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -20,17 +17,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** The Chrome implementation of AccessibilitySettingsDelegate. */
 public class ChromeAccessibilitySettingsDelegate implements AccessibilitySettingsDelegate {
-    private static class AccessibilityTabSwitcherDelegate implements BooleanPreferenceDelegate {
-        @Override
-        public boolean isEnabled() {
-            return SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
-        }
-
-        @Override
-        public void setEnabled(boolean value) {}
-    }
-
     private static class ReaderForAccessibilityDelegate implements BooleanPreferenceDelegate {
         private final Profile mProfile;
 
@@ -62,14 +48,6 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
         return mProfile;
-    }
-
-    @Override
-    public BooleanPreferenceDelegate getAccessibilityTabSwitcherDelegate() {
-        if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            return null;
-        }
-        return new AccessibilityTabSwitcherDelegate();
     }
 
     @Override

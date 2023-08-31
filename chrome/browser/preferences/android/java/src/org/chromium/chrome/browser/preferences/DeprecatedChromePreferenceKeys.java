@@ -66,6 +66,7 @@ public class DeprecatedChromePreferenceKeys {
                 "PhysicalWeb.UrlSelected",
                 "PrefMigrationVersion",
                 "ServiceManagerFeatures",
+                "accessibility_tab_switcher",
                 "allow_low_end_device_ui",
                 "allow_prefetch",
                 "allow_starting_service_manager_only",

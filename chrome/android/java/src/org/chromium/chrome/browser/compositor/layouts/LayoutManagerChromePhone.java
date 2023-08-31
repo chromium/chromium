@@ -12,7 +12,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -85,9 +84,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     public void onTabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            startShowing(DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
-                            ? mOverviewListLayout
-                            : (mTabSwitcherLayout != null ? mTabSwitcherLayout : mOverviewLayout),
+            startShowing(mTabSwitcherLayout != null ? mTabSwitcherLayout : mOverviewLayout,
                     /* animate= */ false);
         }
         super.onTabsAllClosing(incognito);

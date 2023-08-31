@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -578,10 +577,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // We show the re-auth screen only in Incognito mode.
         boolean isIncognitoReauthShowing = isIncognito && (mIncognitoReauthController != null)
                 && mIncognitoReauthController.isReauthPageShowing();
-        boolean isTabSelectionEditorContext = isOverviewModeMenu
-                && !DeviceClassManager.enableAccessibilityLayout(mContext);
 
-        boolean isMenuSelectTabsVisible = isTabSelectionEditorContext;
+        boolean isMenuSelectTabsVisible = isOverviewModeMenu;
         boolean isMenuSelectTabsEnabled = !isIncognitoReauthShowing && isMenuSelectTabsVisible
                 && mTabModelSelector.getTabModelFilterProvider()
                                 .getCurrentTabModelFilter()

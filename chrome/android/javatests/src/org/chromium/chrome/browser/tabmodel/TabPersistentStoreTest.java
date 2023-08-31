@@ -36,7 +36,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
@@ -1163,8 +1162,7 @@ public class TabPersistentStoreTest {
     /**
      * Close all Tabs in the regular TabModel, then undo the operation to restore the Tabs.
      * This simulates how {@link StripLayoutHelper} and {@link UndoBarController} would close
-     * all of a {@link TabModel}'s tabs on tablets, which is different from how the
-     * {@link OverviewListLayout} would do it on phones.
+     * all of a {@link TabModel}'s tabs on tablets.
      */
     private void closeAllTabsThenUndo(TabModelSelector selector, TabModelMetaDataInfo info) {
         // Close all the tabs, using an Observer to determine what is actually being closed.

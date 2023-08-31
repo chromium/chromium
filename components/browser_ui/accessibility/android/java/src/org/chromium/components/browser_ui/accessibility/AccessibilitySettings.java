@@ -39,7 +39,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
     private BooleanPreferenceDelegate mReaderForAccessibilityDelegate;
-    private BooleanPreferenceDelegate mAccessibilityTabSwitcherDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
 
     private FontSizePrefs mFontSizePrefs;
@@ -115,16 +114,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             readerForAccessibilityPref.setOnPreferenceChangeListener(this);
         } else {
             getPreferenceScreen().removePreference(readerForAccessibilityPref);
-        }
-
-        ChromeSwitchPreference accessibilityTabSwitcherPref =
-                (ChromeSwitchPreference) findPreference(
-                        AccessibilityConstants.ACCESSIBILITY_TAB_SWITCHER);
-        mAccessibilityTabSwitcherDelegate = mDelegate.getAccessibilityTabSwitcherDelegate();
-        if (mAccessibilityTabSwitcherDelegate != null) {
-            accessibilityTabSwitcherPref.setChecked(mAccessibilityTabSwitcherDelegate.isEnabled());
-        } else {
-            getPreferenceScreen().removePreference(accessibilityTabSwitcherPref);
         }
 
         Preference captions = findPreference(PREF_CAPTIONS);

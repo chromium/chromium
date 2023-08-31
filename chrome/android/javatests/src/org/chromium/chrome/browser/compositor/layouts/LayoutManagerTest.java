@@ -55,7 +55,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout.LayoutState;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -693,22 +692,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();
-    }
-
-    private void launchAndVerifyOverviewListLayout() {
-        launchedChromeAndEnterTabSwitcher();
-        verifyOverviewListLayoutShown();
-    }
-
-    /**
-     * Verify the {@link OverviewListLayout} is in used. The {@link OverviewListLayout} is used when
-     * accessibility is turned on. It is also used for low end device.
-     */
-    private void verifyOverviewListLayoutShown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Layout activeLayout = getActiveLayout();
-            Assert.assertTrue(activeLayout instanceof OverviewListLayout);
-        });
     }
 
     private void verifyTabSwitcherLayoutEnable(

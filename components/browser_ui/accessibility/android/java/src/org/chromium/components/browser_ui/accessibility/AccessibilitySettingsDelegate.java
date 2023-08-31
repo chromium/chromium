@@ -33,12 +33,6 @@ public interface AccessibilitySettingsDelegate {
     BrowserContextHandle getBrowserContextHandle();
 
     /**
-     * @return the BooleanPreferenceDelegate instance that should be used when rendering the
-     * accessibility tab switcher preference. Return null to omit the preference.
-     */
-    BooleanPreferenceDelegate getAccessibilityTabSwitcherDelegate();
-
-    /**
      * @return the BooleanPreferenceDelegate instance that should be used when rendering the reader
      * for accessibility preference. Return null to omit the preference.
      */

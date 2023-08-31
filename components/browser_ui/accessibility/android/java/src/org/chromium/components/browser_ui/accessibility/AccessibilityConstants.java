@@ -20,11 +20,4 @@ public final class AccessibilityConstants {
      */
     public static final String FONT_USER_FONT_SCALE_FACTOR = "user_font_scale_factor";
     public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM = "user_set_force_enable_zoom";
-
-    /**
-     * Whether the simplified tab switcher is enabled when accessibility mode is enabled. Keep in
-     * sync with accessibility_preferences.xml.
-     * Default value is true.
-     */
-    public static final String ACCESSIBILITY_TAB_SWITCHER = "accessibility_tab_switcher";
 }

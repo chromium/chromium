@@ -23,7 +23,6 @@ public class LegacyChromePreferenceKeys {
     static List<String> getKeysInUse() {
         // clang-format off
         return Arrays.asList(
-                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER,
                 ChromePreferenceKeys.APP_LOCALE,
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED,
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ONBOARDING_ACCEPTED,

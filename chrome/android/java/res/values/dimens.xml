@@ -6,14 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Accessibility tab switcher -->
-    <dimen name="accessibility_tab_height">65dp</dimen>
-    <dimen name="accessibility_tab_switcher_top_padding">8dp</dimen>
-    <dimen name="accessibility_tab_switcher_item_close_button_padding_start">23dp</dimen>
-    <dimen name="accessibility_tab_switcher_item_close_button_padding_end">13dp</dimen>
-
-    <!-- TabSwitcher - The minimum distance from the edge to commit a side swap. -->
-    <dimen name="swipe_commit_distance">120dp</dimen>
     <!-- TabSwitcher - The space between tabs in the toolbar swiping transition. -->
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->

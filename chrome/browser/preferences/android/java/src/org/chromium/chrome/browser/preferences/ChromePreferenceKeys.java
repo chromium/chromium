@@ -47,14 +47,6 @@ import java.util.List;
  * validity of this file.
  */
 public final class ChromePreferenceKeys {
-    /**
-     * Whether the simplified tab switcher is enabled when accessibility mode is enabled. Keep in
-     * sync with accessibility_preferences.xml.
-     * Default value is true.
-     */
-    public static final String ACCESSIBILITY_TAB_SWITCHER =
-            AccessibilityConstants.ACCESSIBILITY_TAB_SWITCHER;
-
     /** Whether the current adaptive toolbar customization is enabled. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED =
             "Chrome.AdaptiveToolbarCustomization.Enabled";

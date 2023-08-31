@@ -60,7 +60,6 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
-import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.TabbedActivityLaunchCauseMetrics;
@@ -233,8 +232,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This is the main activity for ChromeMobile when not running in document mode.  All the tabs
  * are accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent>
-        implements ChromeAccessibilityUtil.Observer {
+public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent> {
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";
@@ -303,8 +301,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private boolean mUIWithNativeInitialized;
 
-    private Boolean mIsAccessibilityTabSwitcherEnabled;
-
     private LocaleManager mLocaleManager;
 
     private AppIndexingUtil mAppIndexingUtil;
@@ -312,7 +308,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private Runnable mShowHistoryRunnable;
 
     private CompositorViewHolder mCompositorViewHolder;
-    private OverviewListLayout mOverviewListLayout;
     /**
      * Keeps track of whether or not a specific tab was created based on the startup intent.
      */
@@ -851,7 +846,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
 
             mUIWithNativeInitialized = true;
-            onAccessibilityTabSwitcherModeChanged();
 
             // The dataset has already been created, we need to initialize our state.
             mTabModelSelector.notifyChanged();
@@ -949,9 +943,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (BackPressManager.isEnabled()) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, this::initializeBackPressHandlers);
             }
-            PostTask.postTask(TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(
-                            this::onAccessibilityTabSwitcherModeChanged));
 
             PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
@@ -960,7 +951,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mCallbackController.makeCancelable(this::initJourneyManager));
             PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::finishNativeInitialization));
-            ChromeAccessibilityUtil.get().addObserver(this);
         }
     }
 
@@ -971,9 +961,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = getCompositorViewHolderSupplier().get();
-            mOverviewListLayout = (OverviewListLayout) mLayoutManager.getOverviewListLayout();
             getTabObscuringHandler().addObserver(mCompositorViewHolder);
-            getTabObscuringHandler().addObserver(mOverviewListLayout);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) {
@@ -1451,40 +1439,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
     }
 
-    @Override
-    public void onAccessibilityModeChanged(boolean enabled) {
-        onAccessibilityTabSwitcherModeChanged();
-    }
-
-    private void onAccessibilityTabSwitcherModeChanged() {
-        if (!mUIWithNativeInitialized) return;
-
-        boolean accessibilityTabSwitcherEnabled =
-                DeviceClassManager.enableAccessibilityLayout(this);
-        if (isInOverviewMode()
-                && (mIsAccessibilityTabSwitcherEnabled == null
-                        || mIsAccessibilityTabSwitcherEnabled
-                                != DeviceClassManager.enableAccessibilityLayout(this))) {
-            /**
-             * If Start surface homepage is showing and launching NTP will show the Start surface
-             * again, skips the calls of hideOverview() and launchNTP(). We need to check
-             * {@link ReturnToChromeUtil#shouldShowStartSurfaceHomeAsNewTab(Context,
-             * boolean, boolean)} to see whether Start surface can be shown when accessibility is
-             * enabled.
-             */
-            if (mStartSurfaceSupplier.get() == null
-                    || !mStartSurfaceSupplier.get().isHomepageShown()
-                    || !ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
-                            this, getCurrentTabModel().isIncognito(), isTablet())) {
-                mLayoutManager.showLayout(LayoutType.BROWSING, true);
-                if (getTabModelSelector().getCurrentModel().getCount() == 0) {
-                    getCurrentTabCreator().launchNTP();
-                }
-            }
-        }
-        mIsAccessibilityTabSwitcherEnabled = accessibilityTabSwitcherEnabled;
-    }
-
     /**
      * Internal class which performs the intent handling operations delegated by IntentHandler.
      */
@@ -1882,8 +1836,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             if (shouldShowOverviewPageOnStart()) {
                 mLayoutManager.setTabModelSelector(mTabModelSelector);
-                mIsAccessibilityTabSwitcherEnabled =
-                        DeviceClassManager.enableAccessibilityLayout(this);
                 assert !mHasDeterminedOverviewStateForCurrentSession;
                 setInitialOverviewState(true /* shouldShowOverviewPageOnStart */);
             }
@@ -2671,14 +2623,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || state == StartSurfaceState.SHOWING_HOMEPAGE
                 || state == StartSurfaceState.SHOWING_PREVIOUS
                 || state == StartSurfaceState.SHOWING_START);
-        if (mIsAccessibilityTabSwitcherEnabled != null && mIsAccessibilityTabSwitcherEnabled
-                && mLayoutManager != null) {
-            // TODO(1200727): This is a temporary fix that should be removed once grid tab switcher
-            //                is completely launched. The "start surface" is now created regardless
-            //                of the state of accessibility, so we check that mode first and try
-            //                showing the overview list before going to the start surface.
-            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
-        } else if (mStartSurfaceSupplier.get() != null) {
+        if (mStartSurfaceSupplier.get() != null) {
             if (!isStartSurfaceRefactorEnabled()) {
                 if (ReturnToChromeUtil.shouldHideStartSurfaceWithAccessibilityOn(this)
                         || !HomepageManager.isHomepageEnabled()) {
@@ -2824,11 +2769,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
         if (tabObscuringHandler != null) {
             getTabObscuringHandler().removeObserver(mCompositorViewHolder);
-            getTabObscuringHandler().removeObserver(mOverviewListLayout);
         }
 
         if (isTablet()) ChromeAccessibilityUtil.get().removeObserver(mCompositorViewHolder);
-        ChromeAccessibilityUtil.get().removeObserver(this);
         ChromeAccessibilityUtil.get().removeObserver(mLayoutManager);
 
         if (mTabDelegateFactory != null) mTabDelegateFactory.destroy();
@@ -2929,11 +2872,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @VisibleForTesting
     public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderSupplier() {
         return mLayoutStateProviderSupplier;
-    }
-
-    @VisibleForTesting
-    public Layout getOverviewListLayout() {
-        return getLayoutManager().getOverviewListLayout();
     }
 
     @VisibleForTesting

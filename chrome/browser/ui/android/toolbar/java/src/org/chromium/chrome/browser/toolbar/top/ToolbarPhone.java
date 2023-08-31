@@ -48,7 +48,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -1872,10 +1871,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         updateButtonsTranslationY();
-
-        if (DeviceClassManager.enableAccessibilityLayout(getContext())) {
-            finishAnimations();
-        }
 
         postInvalidateOnAnimation();
     }

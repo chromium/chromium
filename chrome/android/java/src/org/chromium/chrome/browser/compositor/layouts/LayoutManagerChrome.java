@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -52,8 +51,6 @@ import java.util.List;
 public class LayoutManagerChrome
         extends LayoutManagerImpl implements ChromeAccessibilityUtil.Observer {
     // Layouts
-    /** An {@link Layout} that should be used as the accessibility tab switcher. */
-    protected OverviewListLayout mOverviewListLayout;
     /** A {@link Layout} that should be used when the user is swiping sideways on the toolbar. */
     protected ToolbarSwipeLayout mToolbarSwipeLayout;
     /**
@@ -272,8 +269,6 @@ public class LayoutManagerChrome
                 mHost.getBrowserControlsManager();
 
         // Build Layouts
-        mOverviewListLayout =
-                new OverviewListLayout(context, this, renderHost, browserControlsStateProvider);
         mToolbarSwipeLayout = new ToolbarSwipeLayout(context, this, renderHost,
                 browserControlsStateProvider, this, topUiColorProvider);
 
@@ -282,7 +277,6 @@ public class LayoutManagerChrome
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
         mToolbarSwipeLayout.setTabModelSelector(selector, content);
-        mOverviewListLayout.setTabModelSelector(selector, content);
         if (mOverviewLayout != null) {
             mOverviewLayout.setTabModelSelector(selector, content);
             mOverviewLayout.onFinishNativeInitialization();
@@ -337,9 +331,6 @@ public class LayoutManagerChrome
             mStartSurfaceHomeLayout.destroy();
             mStartSurfaceHomeLayout = null;
         }
-        if (mOverviewListLayout != null) {
-            mOverviewListLayout.destroy();
-        }
         if (mToolbarSwipeLayout != null) {
             mToolbarSwipeLayout.destroy();
         }
@@ -351,9 +342,7 @@ public class LayoutManagerChrome
         if (layoutType == LayoutType.TOOLBAR_SWIPE) {
             layout = mToolbarSwipeLayout;
         } else if (layoutType == LayoutType.TAB_SWITCHER) {
-            if (shouldUseAccessibilityTabSwitcher()) {
-                layout = mOverviewListLayout;
-            } else if (mTabSwitcherLayout != null) {
+            if (mTabSwitcherLayout != null) {
                 layout = mTabSwitcherLayout;
             } else {
                 layout = mOverviewLayout;
@@ -364,22 +353,6 @@ public class LayoutManagerChrome
             layout = super.getLayoutForType(layoutType);
         }
         return layout;
-    }
-
-    /** @return Whether to use the accessibility tab switcher instead of the default one. */
-    private boolean shouldUseAccessibilityTabSwitcher() {
-        boolean useAccessibility = DeviceClassManager.enableAccessibilityLayout(mHost.getContext());
-
-        boolean accessibilityIsVisible =
-                useAccessibility && getActiveLayout() == mOverviewListLayout;
-        boolean normalIsVisible = (getActiveLayout() == mOverviewLayout && mOverviewLayout != null)
-                || (getActiveLayout() == mTabSwitcherLayout && mTabSwitcherLayout != null);
-
-        // We only want to use the AccessibilityOverviewLayout if the following are all valid:
-        // 1. We're already showing the AccessibilityOverviewLayout OR we're using accessibility.
-        // 2. We're not already showing the normal OverviewLayout (or we are on a tablet, in which
-        //    case the normal layout is always visible).
-        return (accessibilityIsVisible || useAccessibility) && !normalIsVisible;
     }
 
     @Override
@@ -423,14 +396,6 @@ public class LayoutManagerChrome
         if (getActiveLayout() == mStaticLayout) return;
 
         super.onTabsAllClosing(incognito);
-    }
-
-    /**
-     * @return The {@link OverviewListLayout} managed by this class.
-     */
-    @VisibleForTesting
-    public Layout getOverviewListLayout() {
-        return mOverviewListLayout;
     }
 
     /**
@@ -588,9 +553,7 @@ public class LayoutManagerChrome
             }
 
             if (direction == ScrollDirection.DOWN) {
-                boolean isAccessibility =
-                        DeviceClassManager.enableAccessibilityLayout(mHost.getContext());
-                return isTabSwitcherReady() && !isAccessibility;
+                return isTabSwitcherReady();
             }
 
             return direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT;

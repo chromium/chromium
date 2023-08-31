@@ -31,11 +31,6 @@ found in the LICENSE file.
         android:summary="@string/reader_for_accessibility_summary"
         android:title="@string/reader_for_accessibility_title" />
 
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="accessibility_tab_switcher"
-        android:summary="@string/accessibility_tab_switcher_summary"
-        android:title="@string/accessibility_tab_switcher_title" />
-
     <Preference
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>

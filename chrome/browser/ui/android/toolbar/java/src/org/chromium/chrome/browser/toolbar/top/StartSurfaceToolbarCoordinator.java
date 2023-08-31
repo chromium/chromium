@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -83,8 +82,6 @@ public class StartSurfaceToolbarCoordinator {
                         .build();
 
         mShouldCreateLogoInToolbar = shouldCreateLogoInToolbar;
-        boolean isTabToGtsFadeAnimationEnabled = isTabToGtsAnimationEnabled
-                && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext());
         mToolbarMediator = new StartSurfaceToolbarMediator(mStub.getContext(), mPropertyModel,
                 (iphCommandBuilder)
                         -> {
@@ -96,7 +93,7 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 menuButtonCoordinator, identityDiscController, identityDiscButtonSupplier,
-                isTabToGtsFadeAnimationEnabled, isIncognitoModeEnabledSupplier, logoClickedCallback,
+                isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier, logoClickedCallback,
                 isRefactorEnabled, StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(),
                 shouldCreateLogoInToolbar, finishedTransitionCallback, toolbarColorObserverManager);
 

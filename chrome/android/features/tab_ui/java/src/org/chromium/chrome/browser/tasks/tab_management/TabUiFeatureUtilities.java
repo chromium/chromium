@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -114,8 +113,7 @@ public class TabUiFeatureUtilities {
      * @return Whether the instant start is supported.
      */
     public static boolean supportInstantStart(boolean isTablet, Context context) {
-        return !DeviceClassManager.enableAccessibilityLayout(context)
-                && ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
+        return ChromeFeatureList.sInstantStart.isEnabled() && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
 }

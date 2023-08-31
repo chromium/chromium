@@ -204,7 +204,6 @@ extern const char kWinJumplistAction[];
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAuthAndroidNegotiateAccountType[];
-extern const char kEnableAccessibilityTabSwitcher[];
 extern const char kForceDeviceOwnership[];
 extern const char kForceEnableNightMode[];
 extern const char kForceShowUpdateMenuBadge[];

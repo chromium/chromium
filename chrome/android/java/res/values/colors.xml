@@ -13,10 +13,6 @@ found in the LICENSE file.
     <color name="dark_action_bar_color">@color/google_blue_grey_900</color>
     <color name="dark_status_bar_color">#161E21</color>
 
-    <!-- Tab Switcher Colors -->
-    <color name="tab_switcher_background">#14181C</color>
-    <color name="accessibility_tab_switcher_list_item">#252525</color>
-
     <!-- App menu colors -->
     <color name="update_menu_item_text_color">@color/default_red</color>
 
