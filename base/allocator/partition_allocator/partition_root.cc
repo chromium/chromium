@@ -549,7 +549,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
 #if !BUILDFLAG(IS_WIN)
         // Memorize index of the last slot in the list, as it may be able to
         // participate in an optimization related to page discaring (below), due
-        // to its next pointer being represented as 0.
+        // to its next pointer encoded as 0.
         last_slot =
             bucket->GetSlotNumber(SlotStartPtr2Addr(back) - slot_span_start);
 #endif
@@ -593,20 +593,21 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   }
 
   // Next, walk the slots and for any not in use, consider which system pages
-  // are no longer needed. We can release any system pages back to the system as
+  // are no longer needed. We can discard any system pages back to the system as
   // long as we don't interfere with a freelist pointer or an adjacent used
-  // slot.
+  // slot. Note they'll be automatically paged back in when touched, and
+  // zero-initialized (except Windows).
   for (size_t i = 0; i < num_provisioned_slots; ++i) {
     if (slot_usage[i]) {
       continue;
     }
 
     // The first address we can safely discard is just after the freelist
-    // pointer. There's one quirk: if the freelist pointer is actually nullptr,
-    // we can discard that pointer value too (except on Windows).
+    // pointer. There's one optimization opportunity: if the freelist pointer is
+    // encoded as 0, we can discard that pointer value too (except on
+    // Windows).
     begin_addr = slot_span_start + (i * slot_size);
     end_addr = begin_addr + slot_size;
-
     bool can_discard_free_list_pointer = false;
 #if !BUILDFLAG(IS_WIN)
     if (i != last_slot) {
@@ -641,6 +642,11 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       size_t partial_slot_bytes = end_addr - begin_addr;
       discardable_bytes += partial_slot_bytes;
       if (!accounting_only) {
+        // Discard the pages. But don't be tempted to decommit it (as done
+        // above), because here we're getting rid of provisioned pages amidst
+        // used pages, so we're relying on them to materialize automatically
+        // when the virtual address is accessed, so the mapping needs to be
+        // intact.
         ScopedSyscallTimer timer{root};
         DiscardSystemPages(begin_addr, partial_slot_bytes);
       }
