@@ -24,11 +24,14 @@ async function perform2SecondsOfWebSocketActivity() {
   // seconds have passed. Otherwise, this would keep the service worker alive
   // and invalidate the test.
   const MESSAGE = 'test message';
-  const start = Date.now();
+  const start = performance.now();
   const waitForMs = 2 * 1000; // wait for 2 seconds.
 
+  let reachedEnd = false;
+
   socket.onclose = () => {
-    chrome.test.sendScriptResult('closed');
+    const endMessage = reachedEnd ? 'closed' : 'port unexpectedly closed';
+    chrome.test.sendScriptResult(endMessage);
   };
 
   // Send messages back and forth to the web socket for two seconds.
@@ -38,8 +41,9 @@ async function perform2SecondsOfWebSocketActivity() {
     }
 
     // Close the port if two seconds have passed; otherwise, keep messaging.
-    const millis = Date.now() - start;
+    const millis = performance.now() - start;
     if (millis > waitForMs) {
+      reachedEnd = true;
       socket.close();
     } else {
       socket.send(MESSAGE);
