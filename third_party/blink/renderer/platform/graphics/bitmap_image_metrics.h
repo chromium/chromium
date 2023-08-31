@@ -10,10 +10,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace gfx {
-class Size;
-}
-
 namespace blink {
 
 class UseCounter;
@@ -75,8 +71,6 @@ class PLATFORM_EXPORT BitmapImageMetrics {
                                        int image_min_side,
                                        uint64_t density_centi_bpp,
                                        size_t image_size_bytes);
-  static void CountJpegArea(const gfx::Size& size);
-  static void CountJpegColorSpace(JpegColorSpace color_space);
 };
 
 }  // namespace blink
