@@ -38,14 +38,6 @@ export class OsSettingsSmartInputsPageElement extends
 
   static get properties() {
     return {
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       allowEmojiSuggestion_: {
         type: Boolean,
         value() {
@@ -59,16 +51,6 @@ export class OsSettingsSmartInputsPageElement extends
           return loadTimeData.getBoolean('allowOrca');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kShowEmojiSuggestions,
-        ]),
-      },
     };
   }
 
@@ -77,9 +59,9 @@ export class OsSettingsSmartInputsPageElement extends
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set<Setting>([
-  //   Setting.kShowEmojiSuggestions,
-  // ]);
+  override supportedSettingIds = new Set([
+    Setting.kShowEmojiSuggestions,
+  ]);
 
   // loadTimeData flags.
   private allowEmojiSuggestion_: boolean;

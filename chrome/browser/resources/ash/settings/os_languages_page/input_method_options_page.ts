@@ -103,14 +103,6 @@ export class SettingsInputMethodOptionsPageElement extends
     return {
       languageHelper: Object,
 
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Input method ID.
        */

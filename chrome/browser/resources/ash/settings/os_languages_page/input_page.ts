@@ -63,14 +63,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   static get properties() {
     return {
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /* Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Read-only reference to the languages model provided by the
        * 'os-settings-languages' instance.
@@ -95,21 +87,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       showAddSpellcheckLanguagesDialog_: {
         type: Boolean,
         value: false,
-      },
-
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in DeepLinkingMixin, and move the default value to
-      // the field initializer.
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kShowInputOptionsInShelf,
-          Setting.kAddInputMethod,
-          Setting.kSpellCheck,
-        ]),
       },
 
       languageSettingsJapaneseEnabled_: {
@@ -177,11 +154,11 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set<Setting>([
-  //   Setting.kShowInputOptionsInShelf,
-  //   Setting.kAddInputMethod,
-  //   Setting.kSpellCheck,
-  // ]);
+  override supportedSettingIds = new Set([
+    Setting.kShowInputOptionsInShelf,
+    Setting.kAddInputMethod,
+    Setting.kSpellCheck,
+  ]);
 
   // Internal state.
   private showAddSpellcheckLanguagesDialog_: boolean;

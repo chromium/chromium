@@ -34,14 +34,6 @@ class OsSettingsAddSpellcheckLanguagesDialogElement extends
 
   static get properties() {
     return {
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /* Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       languages: Object,
 
       languageHelper: Object,

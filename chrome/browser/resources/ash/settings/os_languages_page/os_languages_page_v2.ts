@@ -72,16 +72,6 @@ export class OsSettingsLanguagesPageV2Element extends
 
   static get properties() {
     return {
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in PrefsMixin.
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Read-only reference to the languages model provided by the
        * 'os-settings-languages' instance.
@@ -126,21 +116,6 @@ export class OsSettingsLanguagesPageV2Element extends
         },
       },
 
-      // TODO(b/265554350): Remove this property from properties() as it is
-      // already specified in DeepLinkingMixin, and move the default value to
-      // the field initializer.
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAddLanguage,
-          Setting.kChangeDeviceLanguage,
-          Setting.kOfferTranslation,
-        ]),
-      },
-
       languageSettingsV2Update2Enabled_: Boolean,
     };
   }
@@ -157,11 +132,11 @@ export class OsSettingsLanguagesPageV2Element extends
 
   // Internal properties for mixins.
   // From DeepLinkingMixin.
-  // override supportedSettingIds = new Set<Setting>([
-  //   Setting.kAddLanguage,
-  //   Setting.kChangeDeviceLanguage,
-  //   Setting.kOfferTranslation,
-  // ]);
+  override supportedSettingIds = new Set([
+    Setting.kAddLanguage,
+    Setting.kChangeDeviceLanguage,
+    Setting.kOfferTranslation,
+  ]);
 
   // Internal state.
   private detailLanguage_?: {state: LanguageState, index: number};
