@@ -67,6 +67,7 @@ namespace {
 
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::mojom::RegistrationEligibility;
+using ::net::test_server::EmbeddedTestServer;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -86,13 +87,7 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    https_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    net::test_server::RegisterDefaultHandlers(https_server_.get());
-    https_server_->ServeFilesFromSourceDirectory(
-        "content/test/data/attribution_reporting");
-    https_server_->ServeFilesFromSourceDirectory("content/test/data");
+    https_server_ = CreateAttributionTestHttpsServer();
     ASSERT_TRUE(https_server_->Start());
 
     MockAttributionHost::Override(web_contents());
@@ -112,6 +107,20 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
     AttributionHost* attribution_host =
         AttributionHost::FromWebContents(web_contents());
     return *static_cast<MockAttributionHost*>(attribution_host);
+  }
+
+ protected:
+  std::unique_ptr<EmbeddedTestServer> CreateAttributionTestHttpsServer() {
+    auto https_server =
+        std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
+
+    https_server->SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+    RegisterDefaultHandlers(https_server.get());
+    https_server->ServeFilesFromSourceDirectory(
+        "content/test/data/attribution_reporting");
+    https_server->ServeFilesFromSourceDirectory("content/test/data");
+
+    return https_server;
   }
 
  private:
@@ -212,11 +221,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcWindowOpen_MultipleFeatures_RequestsAll) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -247,11 +253,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcWindowOpen_URLEncoded_SourceRegistered) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -280,11 +283,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcWindowOpen_RetainsOriginalURLCase) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -313,11 +313,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcWindowOpen_NonAsciiUrl) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -345,11 +342,8 @@ IN_PROC_BROWSER_TEST_F(
     AttributionSrcWindowOpenNoUserGesture_NoBackgroundRequestNoImpression) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -447,13 +441,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AttributionSrcImgSlowResponse_SourceRegistered) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -510,13 +499,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        NoReferrerPolicy_UsesDefault) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -541,13 +525,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        Img_SetsAttributionReportingEligibleHeader) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -630,13 +609,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        ReferrerPolicy_RespectsDocument) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -774,13 +748,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -821,11 +790,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcMultipleBackgroundRequestTest,
                        AllRegistered) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1179,13 +1145,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,
                        Img_SupportHeaderNotSet) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1245,13 +1206,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
                        Img_SetsSupportHeader) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1313,13 +1269,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
                        Register) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1368,13 +1319,8 @@ IN_PROC_BROWSER_TEST_F(
     OsLevelEnabledPostRendererInitialization_SetsSupportHeader) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   auto register_response1 =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -1473,13 +1419,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  std::unique_ptr<EmbeddedTestServer> https_server =
+      CreateAttributionTestHttpsServer();
 
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
