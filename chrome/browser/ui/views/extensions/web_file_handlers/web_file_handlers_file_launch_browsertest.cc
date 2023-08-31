@@ -545,32 +545,24 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
     ]
   })";
 
+  const char* kScript = R"(
+        chrome.test.assertTrue('launchQueue' in window);
+        launchQueue.setConsumer((launchParams) => {
+          chrome.test.assertEq(%d, launchParams.files.length);
+          chrome.test.assertTrue(
+              launchParams.files.every(file => file.kind === "file"));
+          chrome.test.succeed();
+        });
+      )";
+
+  const char* kScriptTag = R"(<script src="%s"></script><body>Test</body>)";
+
   // Create files.
   base::flat_map<std::string, std::string> files = {
-      {"open-csv.js",
-       R"(
-        chrome.test.assertTrue('launchQueue' in window);
-        launchQueue.setConsumer((launchParams) => {
-          chrome.test.assertEq(2, launchParams.files.length);
-          chrome.test.assertTrue(
-              launchParams.files.every(file => file.kind === "file"));
-          chrome.test.succeed();
-        });
-      )"},
-      {"open-csv.html",
-       R"(<script src="/open-csv.js"></script><body>Test</body>)"},
-      {"open-txt.js",
-       R"(
-        chrome.test.assertTrue('launchQueue' in window);
-        launchQueue.setConsumer((launchParams) => {
-          chrome.test.assertTrue(launchParams.files.length === 1);
-          chrome.test.assertTrue(
-              launchParams.files.every(file => file.kind === "file"));
-          chrome.test.succeed();
-        });
-      )"},
-      {"open-txt.html",
-       R"(<script src="/open-txt.js"></script><body>Test</body>)"},
+      {"open-csv.js", base::StringPrintf(kScript, 2)},
+      {"open-csv.html", base::StringPrintf(kScriptTag, "/open-csv.js")},
+      {"open-txt.js", base::StringPrintf(kScript, 1)},
+      {"open-txt.html", base::StringPrintf(kScriptTag, "/open-txt.js")},
   };
 
   // Load extension.
