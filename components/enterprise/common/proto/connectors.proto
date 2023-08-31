@@ -73,7 +73,7 @@ message ContentMetaData {
   optional PrintMetadata print_metadata = 11;
 
   // Password for an encrypted archive.
-  optional bytes password = 12;
+  optional bytes decryption_key = 12;
 }
 
 message ClientMetadata {

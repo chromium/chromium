@@ -231,7 +231,8 @@ void BinaryUploadService::Request::set_printer_type(
 }
 
 void BinaryUploadService::Request::set_password(const std::string& password) {
-  content_analysis_request_.mutable_request_data()->set_password(password);
+  content_analysis_request_.mutable_request_data()->set_decryption_key(
+      password);
 }
 
 void BinaryUploadService::Request::set_reason(
@@ -304,9 +305,9 @@ GURL BinaryUploadService::Request::tab_url() const {
 
 base::optional_ref<const std::string> BinaryUploadService::Request::password()
     const {
-  return content_analysis_request_.request_data().has_password()
+  return content_analysis_request_.request_data().has_decryption_key()
              ? base::optional_ref(
-                   content_analysis_request_.request_data().password())
+                   content_analysis_request_.request_data().decryption_key())
              : absl::nullopt;
 }
 
