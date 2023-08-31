@@ -10843,12 +10843,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCcoTest1)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"floating-workspace-v2", flag_descriptions::kFloatingWorkspaceV2Name,
-     flag_descriptions::kFloatingWorkspaceV2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFloatingWorkspaceV2)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"draw-immediately-when-interactive",
      flag_descriptions::kDrawImmediatelyWhenInteractiveName,
