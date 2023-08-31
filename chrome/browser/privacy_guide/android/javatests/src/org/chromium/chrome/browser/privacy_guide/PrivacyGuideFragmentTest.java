@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -529,6 +530,7 @@ public class PrivacyGuideFragmentTest {
     @Feature({"PrivacyGuide"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     @SuppressWarnings("CheckReturnValue")
+    @DisabledTest(message = "crbug.com/1477852, likely because of the TODOs(crbug.com/1469988)")
     public void testBackwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);
@@ -588,6 +590,7 @@ public class PrivacyGuideFragmentTest {
     @EnableFeatures(
             {ChromeFeatureList.PRIVACY_GUIDE_POST_MVP, ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3})
     @SuppressWarnings("CheckReturnValue")
+    @DisabledTest(message = "crbug.com/1477852, likely because of the TODOs(crbug.com/1469988)")
     public void
     testBackwardNavAllActionsPG3() {
         setMSBBState(false);
