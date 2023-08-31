@@ -27,12 +27,18 @@ wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
       return wgpu::TextureFormat::R8Unorm;
     case DXGI_FORMAT_R8G8_UNORM:
       return wgpu::TextureFormat::RG8Unorm;
+    case DXGI_FORMAT_R16_UNORM:
+      return wgpu::TextureFormat::R16Unorm;
+    case DXGI_FORMAT_R16G16_UNORM:
+      return wgpu::TextureFormat::RG16Unorm;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return wgpu::TextureFormat::RGBA16Float;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
       return wgpu::TextureFormat::RGB10A2Unorm;
     case DXGI_FORMAT_NV12:
       return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+    case DXGI_FORMAT_P010:
+      return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
     default:
       NOTREACHED();
       return wgpu::TextureFormat::Undefined;
@@ -44,8 +50,9 @@ wgpu::TextureUsage GetAllowedDawnUsages(
     const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
     const wgpu::TextureFormat wgpu_format) {
   DCHECK_EQ(wgpu_format, DXGIToWGPUFormat(d3d11_texture_desc.Format));
-  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-    // R8BG8Biplanar420Unorm is only supported as a texture binding.
+  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+      wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+    // The bi-planar 420 formats are only supported as a texture binding.
     return wgpu::TextureUsage::TextureBinding;
   }
 

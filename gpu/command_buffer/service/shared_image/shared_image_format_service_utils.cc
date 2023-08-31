@@ -305,6 +305,9 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   } else if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
              format == viz::MultiPlaneFormat::kNV12) {
     return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+  } else if (format == viz::LegacyMultiPlaneFormat::kP010 ||
+             format == viz::MultiPlaneFormat::kP010) {
+    return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
   }
 
   // TODO(crbug.com/1175525): Add R8BG8A8Triplanar420Unorm format for dawn.
@@ -331,7 +334,19 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
 #endif
     return plane_index == 0 ? wgpu::TextureFormat::R8Unorm
                             : wgpu::TextureFormat::RG8Unorm;
+  } else if (wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+    // kP010 creates a separate image per plane and returns the single planar
+    // equivalents.
+    // TODO(crbug.com/1449108): The above reasoning does not hold unilaterally
+    // on Android, and this function will need more information to determine the
+    // correct operation to take on that platform.
+#if BUILDFLAG(IS_ANDROID)
+    CHECK(false);
+#endif
+    return plane_index == 0 ? wgpu::TextureFormat::R16Unorm
+                            : wgpu::TextureFormat::RG16Unorm;
   }
+
   return wgpu_format;
 }
 

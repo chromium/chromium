@@ -22,7 +22,9 @@ namespace gpu {
 namespace {
 wgpu::TextureView CreatePlaneView(const wgpu::Texture& texture,
                                   int plane_index) {
-  CHECK_EQ(texture.GetFormat(), wgpu::TextureFormat::R8BG8Biplanar420Unorm);
+  CHECK(texture.GetFormat() == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
+        texture.GetFormat() ==
+            wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm);
   wgpu::TextureViewDescriptor view_desc;
   if (plane_index == 0) {
     view_desc.aspect = wgpu::TextureAspect::Plane0Only;
@@ -82,7 +84,8 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
     wgpu::Texture texture) {
   std::vector<skgpu::graphite::BackendTexture> backend_textures;
   CHECK(plane_views_.empty());
-  if (format() == viz::MultiPlaneFormat::kNV12) {
+  if (format() == viz::MultiPlaneFormat::kNV12 ||
+      format() == viz::MultiPlaneFormat::kP010) {
     backend_textures.reserve(format().NumberOfPlanes());
     plane_views_.reserve(format().NumberOfPlanes());
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();
