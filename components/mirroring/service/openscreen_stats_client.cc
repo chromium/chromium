@@ -121,10 +121,14 @@ base::Value::Dict OpenscreenStatsClient::ConvertStatisticsListToDict(
     const openscreen::cast::SenderStats::StatisticsList& stats_list) const {
   base::Value::Dict ret;
   for (std::size_t i = 0; i < stats_list.size(); ++i) {
-    ret.Set(media::cast::StatsEventSubscriber::CastStatToString(
-                StatisticTypeToCastStat(
-                    static_cast<openscreen::cast::StatisticType>(i))),
-            stats_list[i]);
+    const char* key = media::cast::StatsEventSubscriber::CastStatToString(
+        StatisticTypeToCastStat(
+            static_cast<openscreen::cast::StatisticType>(i)));
+    if (std::isfinite(stats_list[i])) {
+      ret.Set(key, stats_list[i]);
+    } else {
+      ret.Set(key, "null");
+    }
   }
   return ret;
 }
