@@ -1207,31 +1207,40 @@ public class BookmarkManagerMediatorTest {
     public void testSearchTextChangeCallback() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
+        reset(mHideKeyboardRunnable);
         assertEquals(3, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
 
-        PropertyModel propertyModel = mModelList.get(0).model;
+        PropertyModel searchBoxModel = mModelList.get(0).model;
         Callback<String> searchTextChangeCallback =
-                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+                searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
         assertNotNull(searchTextChangeCallback);
 
         String searchText = "foo";
         searchTextChangeCallback.onResult(searchText);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(searchText, searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         verify(mBookmarkModel).searchBookmarks(eq(searchText), anyInt());
-        assertTrue(mModelList.get(0).model.get(
-                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
-
-        reset(mHideKeyboardRunnable);
-        searchTextChangeCallback.onResult("");
-        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
-        verify(mBookmarkModel, never()).searchBookmarks(eq(""), anyInt());
-        verify(mBookmarkModel, never()).searchBookmarks(eq(null), anyInt());
-        assertFalse(mModelList.get(0).model.get(
-                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
-        assertFalse(propertyModel.get(
+        assertTrue(searchBoxModel.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
         verifyNoInteractions(mHideKeyboardRunnable);
+
+        searchText = "";
+        searchTextChangeCallback.onResult(searchText);
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(searchText, searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        verify(mBookmarkModel).searchBookmarks(eq(searchText), anyInt());
+        assertFalse(searchBoxModel.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        verifyNoInteractions(mHideKeyboardRunnable);
+
+        searchTextChangeCallback.onResult("bar");
+        mMediator.onBackPressed();
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        assertEquals("", searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+        assertFalse(searchBoxModel.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
+        verify(mHideKeyboardRunnable).run();
     }
 
     @Test
@@ -1592,5 +1601,29 @@ public class BookmarkManagerMediatorTest {
         assertEquals(
                 queryWithWhitespace, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         verify(mBookmarkModel).searchBookmarks(eq("foo"), anyInt());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testModelChangeDuringSearch() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        PropertyModel searchBoxModel = mModelList.get(0).model;
+
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId1));
+        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId1);
+
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId2));
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkModelChanged();
+
+        // Should still be in search mode, and should have refreshed and picked up new results.
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId2);
     }
 }

@@ -180,9 +180,9 @@ class BookmarkManagerMediator
         @Override
         public void bookmarkModelChanged() {
             clearHighlight();
-
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                    && TextUtils.isEmpty(getCurrentSearchText()) && mCurrentPowerFilter.isEmpty()) {
+            if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                    && getCurrentUiMode() == BookmarkUiMode.SEARCHING
+                    && TextUtils.isEmpty(getCurrentSearchText())) {
                 onEndSearch();
             } else {
                 refresh();
@@ -226,10 +226,9 @@ class BookmarkManagerMediator
                     getCurrentFolderId(), mCurrentPowerFilter));
             updateEmptyViewText();
 
-            // Unclear if the search box still has focus or not, and what caused us to switch here.
-            // But if this is a result of a folder navigation, we need to clear out the search UI.
             if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
                 setSearchTextAndUpdateButtonVisibility("");
+                clearSearchBoxFocus();
             }
         }
 
@@ -634,9 +633,6 @@ class BookmarkManagerMediator
         RecordUserAction.record("MobileBookmarkManagerOpenFolder");
         setState(BookmarkUiState.createFolderState(folder, mBookmarkModel));
         mRecyclerView.scrollToPosition(0);
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            setSearchBoxFocusAndHideKeyboardIfNeeded(false);
-        }
     }
 
     @Override
@@ -897,7 +893,7 @@ class BookmarkManagerMediator
 
     private void clearSearchBoxFocus() {
         assertIsAndroidImprovedBookmarksEnabled();
-        onSearchBoxFocusChange(false);
+        setSearchBoxFocusAndHideKeyboardIfNeeded(false);
     }
 
     private PropertyModel getSearchBoxPropertyModel() {
@@ -1388,7 +1384,7 @@ class BookmarkManagerMediator
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             setSearchTextAndUpdateButtonVisibility(searchText);
         }
-        onSearchChange(searchText, mCurrentPowerFilter);
+        onSearchChange(searchText);
     }
 
     private void onClearSearchTextRunnable() {
@@ -1409,7 +1405,11 @@ class BookmarkManagerMediator
 
     private void setSearchBoxFocusAndHideKeyboardIfNeeded(boolean hasFocus) {
         getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
-        if (!hasFocus) {
+        if (hasFocus) {
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                setState(BookmarkUiState.createSearchState(""));
+            }
+        } else {
             mHideKeyboardRunnable.run();
         }
     }
@@ -1426,9 +1426,8 @@ class BookmarkManagerMediator
         refresh();
     }
 
-    private void onSearchChange(
-            @Nullable String searchText, @NonNull Set<PowerBookmarkType> powerFilter) {
-        if (TextUtils.isEmpty(searchText) && powerFilter.isEmpty()
+    private void onSearchChange(@Nullable String searchText) {
+        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled() && TextUtils.isEmpty(searchText)
                 && getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             onEndSearch();
         } else {
