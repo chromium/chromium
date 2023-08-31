@@ -1138,6 +1138,15 @@ class PrintRenderFrameHelperPreviewTest
         /*has_selection=*/false);
     print_render_frame_helper->PrintPreview(print_settings_.Clone());
     preview_ui()->WaitUntilPreviewUpdate();
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+    if (const mojom::DidPreviewDocumentParams* preview_params =
+            preview_ui()->did_preview_document_params()) {
+      const auto& region = preview_params->content->metafile_data_region;
+      ASSERT_TRUE(region.IsValid());
+      printer()->GeneratePageImages(region.Map());
+    }
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
   }
 
   void OnPrintPreviewRerender() {
@@ -2068,6 +2077,125 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintForSystemDialog) {
   VerifyPrintPreviewGenerated(true);
   VerifyPagesPrinted(true);
 }
+
+#if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+TEST_F(PrintRenderFrameHelperPreviewTest, IgnorePageSizeAndMargin) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 2000px;
+        margin: 100px;
+      }
+      html, body { height:100%; }
+      body {
+        margin: 0;
+      }
+      .flex {
+        display: flex;
+        height: 100%;
+        justify-content: flex-end;
+        align-items: flex-end;
+      }
+      .flex > div {
+        width: 1pt;
+        height: 1pt;
+        background: #00ff00;
+      }
+    </style>
+    <div class="flex"><div></div></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  base::Value::Dict custom_margins;
+  custom_margins.Set(kSettingMarginTop, 12);
+  custom_margins.Set(kSettingMarginRight, 6);
+  custom_margins.Set(kSettingMarginBottom, 12);
+  custom_margins.Set(kSettingMarginLeft, 6);
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kCustomMargins));
+  print_settings().Set(kSettingMarginsCustom, std::move(custom_margins));
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image& image(page->image());
+
+  // The specified page size is much larger than 8.5x11 inches, but it should be
+  // ignored, because CSS page size and margins are to be ignored, according to
+  // the settings above.
+
+  ASSERT_EQ(image.size(), gfx::Size(612, 792));
+
+  // Find the green point in the bottom right corner of the page.
+  EXPECT_EQ(image.pixel_at(605, 779), 0x00ff00U);
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, LandscapeIgnorePageSizeAndMargin) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: landscape;
+        margin: 100px;
+      }
+      html, body { height:100%; }
+      body {
+        margin: 0;
+      }
+      .flex {
+        display: flex;
+        height: 100%;
+        justify-content: flex-end;
+        align-items: flex-end;
+      }
+      .flex > div {
+        width: 1pt;
+        height: 1pt;
+        background: #00ff00;
+      }
+    </style>
+    <div class="flex"><div></div></div>
+  )HTML");
+
+  print_settings().Set(kSettingPrinterType,
+                       static_cast<int>(mojom::PrinterType::kLocal));
+  print_settings().Set(kSettingShouldPrintBackgrounds, true);
+
+  base::Value::Dict custom_margins;
+  // TODO(crbug.com/1477190): Would be neat to test with different vertical and
+  // horizontal margins here.
+  custom_margins.Set(kSettingMarginTop, 12);
+  custom_margins.Set(kSettingMarginRight, 12);
+  custom_margins.Set(kSettingMarginBottom, 12);
+  custom_margins.Set(kSettingMarginLeft, 12);
+  print_settings().Set(kSettingMarginsType,
+                       static_cast<int>(mojom::MarginType::kCustomMargins));
+  print_settings().Set(kSettingMarginsCustom, std::move(custom_margins));
+
+  printer()->set_should_generate_page_images(true);
+
+  OnPrintPreview();
+  const MockPrinterPage* page = printer()->GetPrinterPage(0);
+  ASSERT_TRUE(page);
+  const printing::Image& image(page->image());
+
+  // Specified page size should be ignored, according to the settings
+  // above. Page orientation (landscape vs portrait) should still be honored,
+  // though.
+
+  ASSERT_EQ(image.size(), gfx::Size(792, 612));
+
+  // Find the green point in the bottom right corner of the page.
+  EXPECT_EQ(image.pixel_at(779, 599), 0x00ff00U);
+}
+
+#endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
 class PrintRenderFrameHelperTaggedPreviewTest
     : public PrintRenderFrameHelperPreviewTest,

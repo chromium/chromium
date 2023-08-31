@@ -2775,7 +2775,9 @@ void Document::GetPageDescription(const ComputedStyle& style,
         description->size.Transpose();
       break;
     case PageSizeType::kFixed:
-      description->size = style.PageSize();
+      if (!description->ignore_page_size) {
+        description->size = style.PageSize();
+      }
       break;
     default:
       NOTREACHED();

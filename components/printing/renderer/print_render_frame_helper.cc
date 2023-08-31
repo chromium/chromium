@@ -163,7 +163,8 @@ mojom::PageOrientation FromBlinkPageOrientation(
 
 blink::WebPrintPageDescription GetDefaultPageDescription(
     const mojom::PrintParams& page_params,
-    bool ignore_css_margins) {
+    bool ignore_css_margins,
+    bool fit_to_page) {
   int dpi = GetDPI(page_params);
 
   blink::WebPrintPageDescription description;
@@ -183,6 +184,7 @@ blink::WebPrintPageDescription GetDefaultPageDescription(
   description.margin_left =
       ConvertUnitFloat(page_params.margin_left, dpi, kPixelsPerInch);
   description.ignore_css_margins = ignore_css_margins;
+  description.ignore_page_size = ignore_css_margins && fit_to_page;
 
   return description;
 }
@@ -190,9 +192,10 @@ blink::WebPrintPageDescription GetDefaultPageDescription(
 mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
                                         uint32_t page_index,
                                         const mojom::PrintParams& page_params,
-                                        bool ignore_css_margins) {
+                                        bool ignore_css_margins,
+                                        bool fit_to_page) {
   blink::WebPrintPageDescription description =
-      GetDefaultPageDescription(page_params, ignore_css_margins);
+      GetDefaultPageDescription(page_params, ignore_css_margins, fit_to_page);
   if (frame)
     frame->GetPageDescription(page_index, &description);
 
@@ -351,7 +354,8 @@ void EnsureOrientationMatches(const mojom::PrintParams& css_params,
 blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
     const mojom::PrintParams& print_params,
     bool source_is_pdf,
-    bool ignore_css_margins) {
+    bool ignore_css_margins,
+    bool fit_to_page) {
   blink::WebPrintParams webkit_print_params;
   int dpi = GetDPI(print_params);
   webkit_print_params.printer_dpi = dpi;
@@ -398,7 +402,7 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
 
   webkit_print_params.default_page_description =
-      GetDefaultPageDescription(print_params, ignore_css_margins);
+      GetDefaultPageDescription(print_params, ignore_css_margins, fit_to_page);
 
   return webkit_print_params;
 }
@@ -568,8 +572,8 @@ mojom::PrintParamsPtr CalculatePrintParamsForCss(
     bool ignore_css_margins,
     bool fit_to_page,
     double* scale_factor) {
-  mojom::PrintParamsPtr css_params =
-      GetCssPrintParams(frame, page_index, page_params, ignore_css_margins);
+  mojom::PrintParamsPtr css_params = GetCssPrintParams(
+      frame, page_index, page_params, ignore_css_margins, fit_to_page);
 
   mojom::PrintParamsPtr params = page_params.Clone();
   EnsureOrientationMatches(*css_params, params.get());
@@ -1115,7 +1119,7 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
     bool ignore_css_margins,
     bool fit_to_page) {
   web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_params, is_pdf, ignore_css_margins);
+      *print_params, is_pdf, ignore_css_margins, fit_to_page);
   frame->PrintBegin(web_print_params_, node_to_print_);
   double scale_factor = GetScaleFactor(print_params->scale_factor, is_pdf);
   print_params = CalculatePrintParamsForCss(frame, /*page_index=*/0,
@@ -1125,7 +1129,7 @@ void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
     *selection = frame->SelectionAsMarkup().Utf8();
   frame->PrintEnd();
   web_print_params_ = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_params, is_pdf, ignore_css_margins);
+      *print_params, is_pdf, ignore_css_margins, fit_to_page);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
@@ -1698,8 +1702,9 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   blink::WebNode node = delegate_->GetPdfElement(frame);
   bool is_pdf = IsPrintingPdfFrame(frame, node);
+  bool fit_to_page = IsPrintScalingOptionFitToPage(*print_pages_params.params);
   blink::WebPrintParams web_print_params = ComputeWebKitPrintParamsInDesiredDpi(
-      *print_pages_params.params, is_pdf, ignore_css_margins_);
+      *print_pages_params.params, is_pdf, ignore_css_margins_, fit_to_page);
   uint32_t page_count = frame->PrintBegin(web_print_params, node);
   if (page_count == 0) {
     frame->PrintEnd();

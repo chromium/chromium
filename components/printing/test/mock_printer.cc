@@ -101,46 +101,8 @@ void MockPrinter::OnDocumentPrinted(mojom::DidPrintDocumentParamsPtr params) {
   EXPECT_TRUE(pages_.empty());
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
-  if (should_generate_page_images_) {
-    // Load the data sent from a RenderView object and create a PageData object.
-    ASSERT_TRUE(params->content->metafile_data_region.IsValid());
-    base::ReadOnlySharedMemoryMapping mapping =
-        params->content->metafile_data_region.Map();
-    ASSERT_TRUE(mapping.IsValid());
-    EXPECT_GT(mapping.size(), 0U);
-
-    base::span<const uint8_t> pdf_buffer =
-        mapping.GetMemoryAsSpan<const uint8_t>();
-
-    int page_count;
-    bool success = chrome_pdf::GetPDFDocInfo(pdf_buffer, &page_count, nullptr);
-    ASSERT_TRUE(success);
-    for (int page_index = 0; page_index < page_count; page_index++) {
-      absl::optional<gfx::SizeF> page_size =
-          chrome_pdf::GetPDFPageSizeByIndex(pdf_buffer, page_index);
-      ASSERT_TRUE(page_size);
-      gfx::Size size = gfx::ToCeiledSize(*page_size);
-      ASSERT_GT(size.width(), 0);
-      ASSERT_GT(size.height(), 0);
-      int line_stride = size.width() * sizeof(uint32_t);
-      std::vector<unsigned char> pixel_buffer;
-      pixel_buffer.resize(line_stride * size.height());
-      gfx::Size dpi(72, 72);
-      chrome_pdf::RenderOptions options = {
-          /* stretch_to_bounds=*/false,
-          /* keep_aspect_ratio=*/false,
-          /* autorotate=*/false,
-          /* use_color=*/true, chrome_pdf::RenderDeviceType::kDisplay};
-
-      success = chrome_pdf::RenderPDFPageToBitmap(
-          pdf_buffer, page_index, pixel_buffer.data(), size, dpi, options);
-      ASSERT_TRUE(success);
-
-      Image image(size, line_stride, std::move(pixel_buffer));
-      ASSERT_FALSE(image.size().IsEmpty());
-      pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
-    }
-  }
+  ASSERT_TRUE(params->content->metafile_data_region.IsValid());
+  GeneratePageImages(params->content->metafile_data_region.Map());
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 
   Finish();
@@ -153,6 +115,48 @@ int MockPrinter::GetPageCount() const {
 }
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+
+void MockPrinter::GeneratePageImages(
+    const base::ReadOnlySharedMemoryMapping& mapping) {
+  if (!should_generate_page_images_) {
+    return;
+  }
+
+  ASSERT_TRUE(mapping.IsValid());
+  EXPECT_GT(mapping.size(), 0U);
+
+  base::span<const uint8_t> pdf_buffer =
+      mapping.GetMemoryAsSpan<const uint8_t>();
+
+  int page_count;
+  bool success = chrome_pdf::GetPDFDocInfo(pdf_buffer, &page_count, nullptr);
+  ASSERT_TRUE(success);
+  for (int page_index = 0; page_index < page_count; page_index++) {
+    absl::optional<gfx::SizeF> page_size =
+        chrome_pdf::GetPDFPageSizeByIndex(pdf_buffer, page_index);
+    ASSERT_TRUE(page_size);
+    gfx::Size size = gfx::ToCeiledSize(*page_size);
+    ASSERT_GT(size.width(), 0);
+    ASSERT_GT(size.height(), 0);
+    int line_stride = size.width() * sizeof(uint32_t);
+    std::vector<unsigned char> pixel_buffer;
+    pixel_buffer.resize(line_stride * size.height());
+    gfx::Size dpi(72, 72);
+    chrome_pdf::RenderOptions options = {
+        /* stretch_to_bounds=*/false,
+        /* keep_aspect_ratio=*/false,
+        /* autorotate=*/false,
+        /* use_color=*/true, chrome_pdf::RenderDeviceType::kDisplay};
+
+    success = chrome_pdf::RenderPDFPageToBitmap(
+        pdf_buffer, page_index, pixel_buffer.data(), size, dpi, options);
+    ASSERT_TRUE(success);
+
+    Image image(size, line_stride, std::move(pixel_buffer));
+    ASSERT_FALSE(image.size().IsEmpty());
+    pages_.push_back(base::MakeRefCounted<MockPrinterPage>(image));
+  }
+}
 
 const MockPrinterPage* MockPrinter::GetPrinterPage(unsigned int pageno) const {
   EXPECT_TRUE(should_generate_page_images_);

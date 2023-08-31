@@ -25,6 +25,10 @@
 #define MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
 #endif
 
+namespace base {
+class ReadOnlySharedMemoryMapping;
+}  // namespace base
+
 namespace printing {
 
 // A class which represents an output page used in the MockPrinter class.
@@ -96,6 +100,9 @@ class MockPrinter {
   int GetPageCount() const;
 
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
+  // Generate MockPrinterPage objects from the printed metafile.
+  void GeneratePageImages(const base::ReadOnlySharedMemoryMapping& mapping);
+
   // Get a pointer to the printed page, returns NULL if pageno has not been
   // printed.  The pointer is for read only view and should not be deleted.
   const MockPrinterPage* GetPrinterPage(unsigned int pageno) const;
