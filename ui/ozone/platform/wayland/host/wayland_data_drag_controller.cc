@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -85,16 +84,6 @@ uint32_t DragOperationsToDndActions(int operations) {
   return dnd_actions;
 }
 
-const SkBitmap* GetDragImage(const gfx::ImageSkia& image, float scale = 1.0) {
-  const SkBitmap* const icon_bitmap =
-      &image.GetRepresentation(scale).GetBitmap();
-  return icon_bitmap && !icon_bitmap->empty() ? icon_bitmap : nullptr;
-}
-
-const SkBitmap* GetDragImage(const OSExchangeData& data, float scale = 1.0) {
-  return GetDragImage(data.provider().GetDragImage(), scale);
-}
-
 }  // namespace
 
 WaylandDataDragController::WaylandDataDragController(
@@ -149,9 +138,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 
   // Create drag icon surface (if any) and store the data to be exchanged.
-  icon_bitmap_ =
-      GetDragImage(data, origin_window->applied_state().window_scale);
-  if (icon_bitmap_) {
+  icon_image_ = data.provider().GetDragImage();
+  if (!icon_image_.isNull()) {
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
       // Corresponds to actual scale factor of the origin surface. Use the
@@ -194,7 +182,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
 void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
                                                 const gfx::Vector2d& offset) {
-  icon_bitmap_ = GetDragImage(image, window_->applied_state().window_scale);
+  icon_image_ = image;
 
   if (icon_surface_ && window_) {
     icon_surface_buffer_scale_ = window_->applied_state().window_scale;
@@ -242,7 +230,7 @@ bool WaylandDataDragController::IsDragSource() const {
 }
 
 void WaylandDataDragController::DrawIcon() {
-  if (!icon_surface_ || !icon_bitmap_) {
+  if (!icon_surface_ || icon_image_.isNull()) {
     return;
   }
 
@@ -271,25 +259,30 @@ void WaylandDataDragController::OnDragSurfaceFrame(void* data,
   self->connection_->Flush();
 }
 
+SkBitmap WaylandDataDragController::GetIconBitmap() {
+  return icon_image_.GetRepresentation(icon_surface_buffer_scale_).GetBitmap();
+}
+
 void WaylandDataDragController::DrawIconInternal() {
   // If there was a drag icon before but now there isn't, attach a null buffer
   // to the icon surface to hide it.
-  if (icon_surface_ && !icon_bitmap_) {
+  if (icon_surface_ && icon_image_.isNull()) {
     auto* const surface = icon_surface_->surface();
     wl_surface_attach(surface, nullptr, 0, 0);
     wl_surface_commit(surface);
   }
 
-  if (!icon_surface_ || !icon_bitmap_) {
+  if (!icon_surface_ || icon_image_.isNull()) {
     return;
   }
 
-  DCHECK(!icon_bitmap_->empty());
+  auto icon_bitmap = GetIconBitmap();
+  CHECK(!icon_bitmap.drawsNothing());
   // The protocol expects the attached buffer to have a pixel size that is a
   // multiple of the surface's scale factor. Some compositors (eg. Wlroots) will
   // refuse to attach the buffer if this condition is not met.
   const gfx::Size size_dip =
-      gfx::ScaleToCeiledSize({icon_bitmap_->width(), icon_bitmap_->height()},
+      gfx::ScaleToCeiledSize({icon_bitmap.width(), icon_bitmap.height()},
                              1.0f / icon_surface_buffer_scale_);
   const gfx::Size size_px =
       gfx::ScaleToCeiledSize(size_dip, icon_surface_buffer_scale_);
@@ -302,7 +295,7 @@ void WaylandDataDragController::DrawIconInternal() {
   }
 
   DVLOG(3) << "Drawing drag icon. size_px=" << size_px.ToString();
-  wl::DrawBitmap(*icon_bitmap_, icon_buffer_.get());
+  wl::DrawBitmap(icon_bitmap, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
   if (wl::get_version_of_object(surface) < WL_SURFACE_OFFSET_SINCE_VERSION) {
     wl_surface_attach(surface, icon_buffer_->get(),
@@ -459,7 +452,7 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   icon_buffer_.reset();
   icon_surface_.reset();
   icon_surface_buffer_scale_ = 1.0f;
-  icon_bitmap_ = nullptr;
+  icon_image_ = gfx::ImageSkia();
   icon_frame_callback_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();

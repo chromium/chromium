@@ -18,6 +18,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -182,6 +183,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   bool CanDispatchEvent(const PlatformEvent& event) override;
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
+  SkBitmap GetIconBitmap();
   void DrawIconInternal();
   static void OnDragSurfaceFrame(void* data,
                                  struct wl_callback* callback,
@@ -235,7 +237,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<WaylandSurface> icon_surface_;
   float icon_surface_buffer_scale_ = 1.0f;
   std::unique_ptr<WaylandShmBuffer> icon_buffer_;
-  raw_ptr<const SkBitmap> icon_bitmap_ = nullptr;
+  gfx::ImageSkia icon_image_;
   // pending_icon_offset_ is the offset from the image to the cursor to be
   // applied on the next DrawIconInternal().
   // current_icon_offset_ holds the actual current offset from the drag image
