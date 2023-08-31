@@ -19,7 +19,7 @@ DlpFilesControllerLacros::~DlpFilesControllerLacros() = default;
 
 // TODO(b/283764626): Add OneDrive component
 absl::optional<data_controls::Component>
-DlpFilesControllerLacros::MapFilePathtoPolicyComponent(
+DlpFilesControllerLacros::MapFilePathToPolicyComponent(
     Profile* profile,
     const base::FilePath& file_path) {
   base::FilePath reference;

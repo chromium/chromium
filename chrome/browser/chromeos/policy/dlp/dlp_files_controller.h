@@ -69,7 +69,7 @@ class DlpFilesController {
  protected:
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
 
-  virtual absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
+  virtual absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) = 0;
 

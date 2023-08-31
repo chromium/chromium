@@ -48,7 +48,7 @@ class MockController : public DlpFilesController {
               (override));
 
   MOCK_METHOD(absl::optional<data_controls::Component>,
-              MapFilePathtoPolicyComponent,
+              MapFilePathToPolicyComponent,
               (Profile * profile, const base::FilePath& file_path),
               (override));
 };

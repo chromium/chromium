@@ -28,7 +28,7 @@ class MockDlpFilesController : public DlpFilesController {
   explicit MockDlpFilesController(const DlpRulesManager& rules_manager)
       : DlpFilesController(rules_manager) {}
   MOCK_METHOD(absl::optional<data_controls::Component>,
-              MapFilePathtoPolicyComponent,
+              MapFilePathToPolicyComponent,
               (Profile * profile, const base::FilePath& file_path),
               (override));
 };
@@ -134,7 +134,7 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>>
       file_access_future;
   ASSERT_TRUE(files_controller_);
-  EXPECT_CALL(*files_controller_, MapFilePathtoPolicyComponent)
+  EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(absl::nullopt))
       .WillOnce(testing::Return(absl::nullopt));
   files_controller_->RequestCopyAccess(source, destination,
@@ -245,7 +245,7 @@ TEST_F(DlpFilesControllerTest, FileCopyFromExternalTest) {
 
   EXPECT_CALL(request_file_access_call, Run).Times(0);
 
-  EXPECT_CALL(*files_controller_, MapFilePathtoPolicyComponent)
+  EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(absl::nullopt))
       .WillOnce(testing::Return(data_controls::Component::kDrive));
 
@@ -279,7 +279,7 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
       .WillOnce(
           base::test::RunOnceCallback<1>(access_response, base::ScopedFD()));
 
-  EXPECT_CALL(*files_controller_, MapFilePathtoPolicyComponent)
+  EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(data_controls::Component::kDrive))
       .WillOnce(testing::Return(absl::nullopt));
 
@@ -321,7 +321,7 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
       .WillOnce(
           base::test::RunOnceCallback<1>(access_response, base::ScopedFD()));
 
-  EXPECT_CALL(*files_controller_, MapFilePathtoPolicyComponent)
+  EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
       .WillOnce(testing::Return(data_controls::Component::kDrive))
       .WillOnce(testing::Return(absl::nullopt));
 

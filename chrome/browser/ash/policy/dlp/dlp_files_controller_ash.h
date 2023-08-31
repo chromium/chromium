@@ -201,13 +201,13 @@ class DlpFilesControllerAsh : public DlpFilesController,
 
  protected:
   // Maps |file_path| to data_controls::Component if possible.
-  absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
+  absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
 
   // TODO(b/284122497): Cleanup friend for testing.
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerAshComponentsTest,
-                           MapFilePathtoPolicyComponentTest);
+                           MapFilePathToPolicyComponentTest);
 
  private:
   // Called back from warning dialog. Passes blocked files sources along

@@ -20,12 +20,12 @@ class DlpFilesControllerLacros : public DlpFilesController {
 
  protected:
   // DlpFilesController:
-  absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
+  absl::optional<data_controls::Component> MapFilePathToPolicyComponent(
       Profile* profile,
       const base::FilePath& file_path) override;
 
   FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerLacrosTest,
-                           MapFilePathtoPolicyComponentTest);
+                           MapFilePathToPolicyComponentTest);
 };
 }  // namespace policy
 

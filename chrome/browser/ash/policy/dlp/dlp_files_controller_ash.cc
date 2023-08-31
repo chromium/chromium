@@ -547,7 +547,7 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
   DCHECK(profile);
 
   auto dst_component =
-      MapFilePathtoPolicyComponent(profile, base::FilePath(file_path));
+      MapFilePathToPolicyComponent(profile, base::FilePath(file_path));
   if (!dst_component.has_value()) {
     // We may block downloads only if saved to external component, otherwise
     // downloads should be allowed.
@@ -566,7 +566,7 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
                            /*referrer_url=*/"");
 
   absl::optional<data_controls::Component> component =
-      MapFilePathtoPolicyComponent(profile, file_path);
+      MapFilePathToPolicyComponent(profile, file_path);
   DlpFileDestination dlp_destination =
       component ? DlpFileDestination(*component) : DlpFileDestination();
   IsFilesTransferRestricted(
@@ -604,7 +604,7 @@ bool DlpFilesControllerAsh::ShouldPromptBeforeDownload(
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
   auto dst_component =
-      MapFilePathtoPolicyComponent(profile, base::FilePath(file_path));
+      MapFilePathToPolicyComponent(profile, base::FilePath(file_path));
   if (!dst_component.has_value()) {
     // We may block downloads only if saved to external component, otherwise
     // downloads should be allowed.
@@ -939,7 +939,7 @@ void DlpFilesControllerAsh::SetFileSystemContextForTesting(
 }
 
 absl::optional<data_controls::Component>
-DlpFilesControllerAsh::MapFilePathtoPolicyComponent(
+DlpFilesControllerAsh::MapFilePathToPolicyComponent(
     Profile* profile,
     const base::FilePath& file_path) {
   if (base::FilePath(file_manager::util::GetAndroidFilesPath())
@@ -1238,7 +1238,7 @@ void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   absl::optional<data_controls::Component> component =
-      MapFilePathtoPolicyComponent(profile, destination.path());
+      MapFilePathToPolicyComponent(profile, destination.path());
   ::dlp::DlpComponent proto;
   if (component) {
     proto = dlp::MapPolicyComponentToProto(*component);

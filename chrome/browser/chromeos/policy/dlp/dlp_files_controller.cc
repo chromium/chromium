@@ -145,9 +145,9 @@ void DlpFilesController::RequestCopyAccess(
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
   absl::optional<data_controls::Component> dst_component =
-      MapFilePathtoPolicyComponent(profile, destination.path());
+      MapFilePathToPolicyComponent(profile, destination.path());
   absl::optional<data_controls::Component> src_component =
-      MapFilePathtoPolicyComponent(profile, source_file.path());
+      MapFilePathToPolicyComponent(profile, source_file.path());
 
   // Copy from external is not limited by DLP.
   if (src_component.has_value()) {

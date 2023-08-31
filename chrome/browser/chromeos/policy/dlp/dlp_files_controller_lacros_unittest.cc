@@ -81,9 +81,9 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_tuple("/drive/path/filename",
                                       data_controls::Component::kDrive),
                       std::make_tuple("/Downloads", absl::nullopt)));
-TEST_P(DlpFilesControllerLacrosTest, MapFilePathtoPolicyComponentTest) {
+TEST_P(DlpFilesControllerLacrosTest, MapFilePathToPolicyComponentTest) {
   auto [path, expected_component] = GetParam();
-  EXPECT_EQ(files_controller_->MapFilePathtoPolicyComponent(
+  EXPECT_EQ(files_controller_->MapFilePathToPolicyComponent(
                 profile_, base::FilePath(my_files_dir_.value() + path)),
             expected_component);
 }

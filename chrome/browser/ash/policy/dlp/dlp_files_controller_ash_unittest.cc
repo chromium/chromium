@@ -2398,11 +2398,11 @@ INSTANTIATE_TEST_SUITE_P(
                         data_controls::Component::kDrive),
         std::make_tuple("", "/Downloads", absl::nullopt)));
 
-TEST_P(DlpFilesControllerAshComponentsTest, MapFilePathtoPolicyComponentTest) {
+TEST_P(DlpFilesControllerAshComponentsTest, MapFilePathToPolicyComponentTest) {
   auto [mount_name, path, expected_component] = GetParam();
   auto url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
-  EXPECT_EQ(files_controller_->MapFilePathtoPolicyComponent(profile_.get(),
+  EXPECT_EQ(files_controller_->MapFilePathToPolicyComponent(profile_.get(),
                                                             url.path()),
             expected_component);
 }
