@@ -93,7 +93,7 @@ public class CreatorMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final String mUrl = JUnitTestGURLs.EXAMPLE_URL;
+    private final String mUrl = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private final byte[] mWebFeedId = "webFeedId".getBytes();
     private CreatorCoordinator mCreatorCoordinator;
     private CreatorMediator mCreatorMediator;
@@ -111,7 +111,7 @@ public class CreatorMediatorTest {
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
 
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
-                .thenReturn(JUnitTestGURLs.URL_1);
+                .thenReturn(JUnitTestGURLs.URL_1.getSpec());
 
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
 

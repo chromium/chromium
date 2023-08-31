@@ -121,7 +121,7 @@ public class ClipboardTest {
         ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
         ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
-        String url = JUnitTestGURLs.SEARCH_URL;
+        String url = JUnitTestGURLs.SEARCH_URL.getSpec();
         clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
@@ -137,7 +137,7 @@ public class ClipboardTest {
         ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
         doThrow(SecurityException.class).when(clipboardManager).setPrimaryClip(any(ClipData.class));
-        String url = JUnitTestGURLs.SEARCH_URL;
+        String url = JUnitTestGURLs.SEARCH_URL.getSpec();
         clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);

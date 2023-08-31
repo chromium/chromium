@@ -74,7 +74,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
                 ChromeOptionShareCallback chromeOptionShareCallback,
                 Callback<Runnable> installCallback) {
             super(context, propertyModel, deleteRunnable, saveRunnable, windowAndroid,
-                    JUnitTestGURLs.EXAMPLE_URL, chromeOptionShareCallback, installCallback);
+                    JUnitTestGURLs.EXAMPLE_URL.getSpec(), chromeOptionShareCallback,
+                    installCallback);
         }
         @Override
         protected void generateTemporaryUriFromBitmap(

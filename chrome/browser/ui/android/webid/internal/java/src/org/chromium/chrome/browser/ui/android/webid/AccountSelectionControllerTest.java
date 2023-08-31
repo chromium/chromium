@@ -84,9 +84,9 @@ import java.util.Collections;
 public class AccountSelectionControllerTest {
     // Note that these are not actual ETLD+1 values, but this is irrelevant for the purposes of this
     // test.
-    private static final String TEST_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String TEST_ETLD_PLUS_ONE_1 = JUnitTestGURLs.URL_1;
-    private static final String TEST_ETLD_PLUS_ONE_2 = JUnitTestGURLs.URL_2;
+    private static final String TEST_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+    private static final String TEST_ETLD_PLUS_ONE_1 = JUnitTestGURLs.URL_1.getSpec();
+    private static final String TEST_ETLD_PLUS_ONE_2 = JUnitTestGURLs.URL_2.getSpec();
     private static final GURL TEST_PROFILE_PIC =
             JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
     private static final GURL TEST_URL_TERMS_OF_SERVICE =

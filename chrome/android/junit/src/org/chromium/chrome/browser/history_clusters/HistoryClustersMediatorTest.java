@@ -563,12 +563,12 @@ public class HistoryClustersMediatorTest {
     @Test
     public void testRelatedSearchesClick() {
         doReturn(true).when(mTemplateUrlService).isLoaded();
-        doReturn(JUnitTestGURLs.GOOGLE_URL_DOGS)
+        doReturn(JUnitTestGURLs.GOOGLE_URL_DOGS.getSpec())
                 .when(mTemplateUrlService)
                 .getUrlForSearchQuery("dogs");
         mMediator.onRelatedSearchesChipClicked("dogs", 2);
         verify(mMetricsLogger).recordRelatedSearchesClick(2);
-        verify(mTab).loadUrl(argThat(hasSameUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)));
+        verify(mTab).loadUrl(argThat(hasSameUrl(JUnitTestGURLs.GOOGLE_URL_DOGS.getSpec())));
     }
 
     @Test

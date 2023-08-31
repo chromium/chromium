@@ -180,7 +180,7 @@ public class MostVisitedMediatorUnitTest {
 
         // When there is mv tile and the default search engine doesn't have logo, the placeholder
         // should be hidden and the mv tiles layout should be shown.
-        mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL);
+        mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL.getSpec());
 
         mMediator.onTileCountChanged();
 
@@ -204,7 +204,7 @@ public class MostVisitedMediatorUnitTest {
         Assert.assertFalse(mModel.get(IS_CONTAINER_VISIBLE));
 
         // When there is mv tile, the mv tiles container should be shown.
-        mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL);
+        mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL.getSpec());
         mMediator.onTileCountChanged();
         Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
     }

@@ -124,7 +124,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Config(sdk = 30)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PostR() {
         mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL);
+        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL.getSpec());
         assertEquals("The intent flags should match.",
                 Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
                 intent.getFlags());
@@ -134,8 +134,8 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 intent.getCategories().contains(Intent.CATEGORY_BROWSABLE));
         assertTrue("preferNew extra should be true.",
                 intent.getBooleanExtra(IntentHandler.EXTRA_PREFER_NEW, false));
-        assertEquals("The intent should contain Uri data.", Uri.parse(JUnitTestGURLs.EXAMPLE_URL),
-                intent.getData());
+        assertEquals("The intent should contain Uri data.",
+                Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()), intent.getData());
         assertFalse("The intent should not contain the trusted application extra.",
                 intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
     }
@@ -143,7 +143,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     @Test
     @Config(sdk = 29)
     public void testDragAndDropBrowserDelegate_createLinkIntent_PreR() {
-        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL);
+        Intent intent = mDelegate.createLinkIntent(JUnitTestGURLs.EXAMPLE_URL.getSpec());
         assertNull("The intent should be null on R- versions.", intent);
     }
 }

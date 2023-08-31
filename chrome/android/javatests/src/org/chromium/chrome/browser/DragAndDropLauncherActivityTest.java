@@ -62,7 +62,7 @@ public class DragAndDropLauncherActivityTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
-        mLinkUrl = JUnitTestGURLs.HTTP_URL;
+        mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
     }
 
     /**
@@ -121,7 +121,7 @@ public class DragAndDropLauncherActivityTest {
         // are open. Do this by setting the EXTRA_WINDOW_ID extra on the intent that is reflective
         // of this state.
         Intent newIntent =
-                createLinkDragDropIntent(JUnitTestGURLs.MAPS_URL, lastAccessedInstanceId);
+                createLinkDragDropIntent(JUnitTestGURLs.MAPS_URL.getSpec(), lastAccessedInstanceId);
         mContext.startActivity(newIntent);
         mTabAddedCallback.waitForCallback(0);
 

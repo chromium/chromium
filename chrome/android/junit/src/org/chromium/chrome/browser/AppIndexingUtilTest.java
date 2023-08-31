@@ -59,7 +59,7 @@ public class AppIndexingUtilTest {
             DocumentMetadata.GetEntities_Response callback =
                     (DocumentMetadata.GetEntities_Response) invocation.getArguments()[0];
             WebPage webpage = new WebPage();
-            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL);
+            webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL.getSpec());
             webpage.title = "My neat website";
             callback.call(webpage);
             return null;
@@ -137,7 +137,8 @@ public class AppIndexingUtilTest {
     @Test
     public void testReportPageView() {
         mUtil.reportPageView(mTab);
-        verify(mReporter).reportWebPageView(eq(JUnitTestGURLs.EXAMPLE_URL), eq("My neat website"));
+        verify(mReporter).reportWebPageView(
+                eq(JUnitTestGURLs.EXAMPLE_URL.getSpec()), eq("My neat website"));
     }
 
     private Url createUrl(String s) {

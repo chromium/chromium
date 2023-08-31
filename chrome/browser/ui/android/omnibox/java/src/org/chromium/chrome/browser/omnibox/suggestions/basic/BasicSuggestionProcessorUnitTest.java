@@ -421,8 +421,7 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.onNativeInitialized();
         // URLs that are rejected by UrlBarData should not be presented to the User.
         ShadowUrlBarData.sShouldShowNextUrl = false;
-        createUrlSuggestion(
-                OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", new GURL(JUnitTestGURLs.URL_1));
+        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "", JUnitTestGURLs.URL_1);
         Assert.assertNull(mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT));
     }
 }

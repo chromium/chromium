@@ -78,8 +78,8 @@ public class LinkToTextCoordinatorTest {
     private boolean mIsRemoteRequestResultSet;
 
     private static final String SELECTED_TEXT = "selection";
-    private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
-    private static final String BLOCKLIST_URL = JUnitTestGURLs.URL_1;
+    private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+    private static final String BLOCKLIST_URL = JUnitTestGURLs.URL_1.getSpec();
     private static final String SELECTED_TEXT_LONG =
             "This textbook has more freedom than most (but see some exceptions).";
     private static final long SHARE_START_TIME = 1L;

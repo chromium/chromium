@@ -77,12 +77,14 @@ public final class EditUrlSuggestionProcessorUnitTest {
     private static final int ACTION_SHARE = 0;
     private static final int ACTION_COPY = 1;
     private static final int ACTION_EDIT = 2;
-    private static final GURL SEARCH_URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
-    private static final GURL SEARCH_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
-    private static final GURL ESCAPED_PATH_URL =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.ESCAPED_PATH_URL_1);
+    private static final GURL SEARCH_URL_1 = JUnitTestGURLs.SEARCH_URL;
+    private static final GURL SEARCH_URL_2 = JUnitTestGURLs.SEARCH_2_URL;
     private static final GURL INVALID_ESCAPED_PATH_URL =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.INVALID_ESCAPED_PATH_URL_1);
+            new GURL("https://pl.wikipedia.org/wiki/G%X");
+
+    public static final String ESCAPED_PATH_URL_STRING = "https://pl.wikipedia.org/wiki/Gżegżółka";
+    public static final GURL ESCAPED_PATH_URL =
+            new GURL("https://pl.wikipedia.org/wiki/G%C5%BCeg%C5%BC%C3%B3%C5%82ka");
 
     /** Used to simulate sad tabs. */
     @Implements(SadTab.class)
@@ -268,7 +270,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
 
         // Expect the decoded content.
-        verify(mUrlBarDelegate).setOmniboxEditingText(JUnitTestGURLs.ESCAPED_PATH_URL_1_STRING);
+        verify(mUrlBarDelegate).setOmniboxEditingText(ESCAPED_PATH_URL_STRING);
         verifyNoMoreInteractions(mSuggestionHost, mUrlBarDelegate);
     }
 
@@ -286,7 +288,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_EDIT).callback.run();
 
         // Expect the original content.
-        verify(mUrlBarDelegate).setOmniboxEditingText(JUnitTestGURLs.INVALID_ESCAPED_PATH_URL_1);
+        verify(mUrlBarDelegate).setOmniboxEditingText(INVALID_ESCAPED_PATH_URL.getSpec());
     }
 
     @Test

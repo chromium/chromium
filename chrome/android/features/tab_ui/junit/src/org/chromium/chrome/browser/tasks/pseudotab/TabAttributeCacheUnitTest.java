@@ -151,7 +151,7 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl_incognito() {
-        String url = JUnitTestGURLs.EXAMPLE_URL;
+        String url = JUnitTestGURLs.EXAMPLE_URL.getSpec();
         doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isIncognito();
 

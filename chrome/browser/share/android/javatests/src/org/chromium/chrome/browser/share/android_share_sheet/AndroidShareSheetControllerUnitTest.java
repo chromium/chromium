@@ -222,10 +222,11 @@ public class AndroidShareSheetControllerUnitTest {
     @Test
     @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
     public void shareWithCustomAction() {
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .setFileContentType("text/plain")
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setFileContentType("text/plain")
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
@@ -265,11 +266,12 @@ public class AndroidShareSheetControllerUnitTest {
             public void onCancel() {}
         };
 
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("text/plain")
-                                     .setCallback(callback)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setCallback(callback)
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
@@ -306,17 +308,19 @@ public class AndroidShareSheetControllerUnitTest {
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent sharingIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertEquals("ImageUri does not match. Page URL should be used.",
-                JUnitTestGURLs.GOOGLE_URL, sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
+                JUnitTestGURLs.GOOGLE_URL.getSpec(),
+                sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
     @Test
     public void shareImageWithLinkUrl() {
         Uri testImageUri = Uri.parse("content://test.image.uri");
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("image/png")
-                                     .setSingleImageUri(testImageUri)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("image/png")
+                        .setSingleImageUri(testImageUri)
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
@@ -328,7 +332,8 @@ public class AndroidShareSheetControllerUnitTest {
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent sharingIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertEquals("ImageUri does not match. Link URL has higher priority over page URL.",
-                JUnitTestGURLs.EXAMPLE_URL, sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
     @Test
@@ -384,7 +389,7 @@ public class AndroidShareSheetControllerUnitTest {
                 data.getDescription().filterMimeTypes("text/*").length > 0);
         Assert.assertEquals(
                 "Image being copied is different.", testImageUri, data.getItemAt(0).getUri());
-        Assert.assertEquals("Link being copied is different.", JUnitTestGURLs.GOOGLE_URL,
+        Assert.assertEquals("Link being copied is different.", JUnitTestGURLs.GOOGLE_URL.getSpec(),
                 data.getItemAt(0).getText());
     }
 
@@ -393,10 +398,11 @@ public class AndroidShareSheetControllerUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
 
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("text/plain")
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -412,10 +418,11 @@ public class AndroidShareSheetControllerUnitTest {
         // Assume favicon is not available for this test.
         setFaviconToFetchForTest(null);
 
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("text/plain")
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -445,11 +452,12 @@ public class AndroidShareSheetControllerUnitTest {
                     ShadowChooserActionHelper.class})
     public void
     shareLinkToHighlightText() throws CanceledException {
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("text/plain")
-                                     .setText("highlight")
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setText("highlight")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
@@ -465,7 +473,7 @@ public class AndroidShareSheetControllerUnitTest {
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertEquals("Text being shared is different.",
-                "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
+                "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL.getSpec(),
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         assertCustomActions(chooserIntent, R.string.sharing_copy_highlight_without_link,
@@ -486,11 +494,12 @@ public class AndroidShareSheetControllerUnitTest {
     shareLinkToHighlightTextFailed() {
         ShadowLinkToTextCoordinator.setForceToFail(true);
 
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setFileContentType("text/plain")
-                                     .setText("highlight")
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setFileContentType("text/plain")
+                        .setText("highlight")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
@@ -539,7 +548,7 @@ public class AndroidShareSheetControllerUnitTest {
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
         Assert.assertEquals("Image source URL should be used for QR Code.",
-                JUnitTestGURLs.GOOGLE_URL_DOGS, ShadowQrCodeDialog.sLastUrl);
+                JUnitTestGURLs.GOOGLE_URL_DOGS.getSpec(), ShadowQrCodeDialog.sLastUrl);
     }
 
     @Test
@@ -571,12 +580,13 @@ public class AndroidShareSheetControllerUnitTest {
     @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
     public void webShareImageLink() throws CanceledException {
         Uri testImageUri = Uri.parse("content://test.image.uri/image.png");
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setText("text")
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .setSingleImageUri(testImageUri)
-                                     .setFileContentType("image/png")
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setText("text")
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setSingleImageUri(testImageUri)
+                        .setFileContentType("image/png")
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.WEB_SHARE)
@@ -588,7 +598,7 @@ public class AndroidShareSheetControllerUnitTest {
                 R.string.qr_code_share_icon_label);
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-        Assert.assertEquals("Sharing text should be the URL.", JUnitTestGURLs.EXAMPLE_URL,
+        Assert.assertEquals("Sharing text should be the URL.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         // Attempt to do the copy image action.
@@ -628,10 +638,11 @@ public class AndroidShareSheetControllerUnitTest {
         ShadowLongScreenshotsCoordinator.sMockInstance =
                 Mockito.mock(LongScreenshotsCoordinator.class);
 
-        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .setFileContentType("text/plain")
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setFileContentType("text/plain")
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
@@ -659,7 +670,7 @@ public class AndroidShareSheetControllerUnitTest {
                                      .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
-                        .setContentUrl(new GURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setContentUrl(JUnitTestGURLs.EXAMPLE_URL)
                         .setDetailedContentType(ChromeShareExtras.DetailedContentType.SCREENSHOT)
                         .build();
 

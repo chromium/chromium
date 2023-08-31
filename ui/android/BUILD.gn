@@ -600,6 +600,7 @@ robolectric_binary("ui_junit_tests") {
     "//url:gurl_junit_test_support",
   ]
   android_manifest = "junit/AndroidManifest.xml"
+  shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
 }
 
 test("ui_android_unittests") {

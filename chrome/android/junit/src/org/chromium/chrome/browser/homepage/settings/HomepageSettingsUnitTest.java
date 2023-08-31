@@ -81,9 +81,9 @@ public class HomepageSettingsUnitTest {
     private static final String ASSERT_HOMEPAGE_LOCATION_TYPE_MISMATCH =
             "HomepageLocationType is different than test settings.";
 
-    private static final String TEST_URL_FOO = JUnitTestGURLs.URL_1;
-    private static final String TEST_URL_BAR = JUnitTestGURLs.URL_2;
-    private static final String CHROME_NTP = JUnitTestGURLs.NTP_URL;
+    private static final String TEST_URL_FOO = JUnitTestGURLs.URL_1.getSpec();
+    private static final String TEST_URL_BAR = JUnitTestGURLs.URL_2.getSpec();
+    private static final String CHROME_NTP = JUnitTestGURLs.NTP_URL.getSpec();
 
     @Implements(UrlFormatter.class)
     static class ShadowUrlFormatter {

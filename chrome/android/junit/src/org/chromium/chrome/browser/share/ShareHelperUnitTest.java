@@ -91,10 +91,11 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareImageWithChooser() throws SendIntentException {
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .setSingleImageUri(mImageUri)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setSingleImageUri(mImageUri)
+                        .build();
         ShareHelper.shareWithSystemShareSheetUi(params, null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
@@ -105,7 +106,7 @@ public class ShareHelperUnitTest {
         // Verify sharing intent has the right image.
         Intent sharingIntent = nextIntent.getParcelableExtra(Intent.EXTRA_INTENT);
         assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, sharingIntent.getAction());
-        assertEquals("Text URL not set correctly.", JUnitTestGURLs.BLUE_1,
+        assertEquals("Text URL not set correctly.", JUnitTestGURLs.BLUE_1.getSpec(),
                 sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
         assertEquals("Image URI not set correctly.", mImageUri,
                 sharingIntent.getParcelableExtra(Intent.EXTRA_STREAM));
@@ -121,10 +122,11 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareImageDirectly() {
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .setSingleImageUri(mImageUri)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.BLUE_1.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .setSingleImageUri(mImageUri)
+                        .build();
         ShareHelper.shareDirectly(params, TEST_COMPONENT_NAME_1, null, false);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
@@ -136,9 +138,10 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareWithChooser() throws SendIntentException {
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ShareHelper.shareWithSystemShareSheetUi(params, null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
@@ -149,7 +152,7 @@ public class ShareHelperUnitTest {
         // Verify the intent has the right Url.
         Intent sharingIntent = nextIntent.getParcelableExtra(Intent.EXTRA_INTENT);
         assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, sharingIntent.getAction());
-        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL,
+        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         // Fire back a chosen intent, the selected target should be recorded.
@@ -159,9 +162,10 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareDirectly() {
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ShareHelper.shareDirectly(params, TEST_COMPONENT_NAME_1, null, false);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
@@ -169,7 +173,7 @@ public class ShareHelperUnitTest {
         assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, nextIntent.getAction());
         assertEquals("Intent component name does not match.", TEST_COMPONENT_NAME_1,
                 nextIntent.getComponent());
-        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL,
+        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 nextIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         assertLastComponentNameRecorded(null);
@@ -179,9 +183,10 @@ public class ShareHelperUnitTest {
     public void shareDirectlyAndSaveLastUsed() {
         // Set a last shared component and verify direct share overwrite such.
         ShareHelper.setLastShareComponentName(null, TEST_COMPONENT_NAME_1);
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ShareHelper.shareDirectly(params, TEST_COMPONENT_NAME_2, null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
@@ -189,7 +194,7 @@ public class ShareHelperUnitTest {
         assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, nextIntent.getAction());
         assertEquals("Intent component name does not match.", TEST_COMPONENT_NAME_2,
                 nextIntent.getComponent());
-        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL,
+        assertEquals("Text URL not set correctly.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 nextIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         assertLastComponentNameRecorded(TEST_COMPONENT_NAME_2);
@@ -261,10 +266,11 @@ public class ShareHelperUnitTest {
 
     @Test
     public void shareWithPreviewUri() {
-        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
-                                     .setPreviewImageUri(mImageUri)
-                                     .setBypassFixingDomDistillerUrl(true)
-                                     .build();
+        ShareParams params =
+                new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .setPreviewImageUri(mImageUri)
+                        .setBypassFixingDomDistillerUrl(true)
+                        .build();
         ShareHelper.shareWithSystemShareSheetUi(params, null, true);
 
         Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();

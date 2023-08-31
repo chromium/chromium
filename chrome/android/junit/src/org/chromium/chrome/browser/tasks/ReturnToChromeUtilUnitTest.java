@@ -816,8 +816,8 @@ public class ReturnToChromeUtilUnitTest {
 
         // Tests the case that a new NTP is created and waits for its tracking last active Tab being
         // restored.
-        ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(
-                mTabCreater, mHomeSurfaceTracker, mTabModelSelector, JUnitTestGURLs.URL_1, null);
+        ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(mTabCreater, mHomeSurfaceTracker,
+                mTabModelSelector, JUnitTestGURLs.URL_1.getSpec(), null);
         verify(mCurrentTabModel).addObserver(mTabModelObserverCaptor.capture());
 
         // Verifies if the added Tab matches the tracking URL, call showHomeSurfaceUi().

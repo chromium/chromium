@@ -194,7 +194,7 @@ public class TabListMediatorUnitTest {
     private static final GURL TAB2_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final GURL TAB3_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
     private static final GURL TAB4_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-    private static final String NEW_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String NEW_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;

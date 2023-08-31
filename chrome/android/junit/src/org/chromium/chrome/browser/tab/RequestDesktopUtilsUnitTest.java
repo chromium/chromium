@@ -216,8 +216,8 @@ public class RequestDesktopUtilsUnitTest {
     private SharedPreferencesManager mSharedPreferencesManager;
 
     private final Map<String, Integer> mContentSettingMap = new HashMap<>();
-    private final GURL mGoogleUrl = new GURL(JUnitTestGURLs.GOOGLE_URL);
-    private final GURL mMapsUrl = new GURL(JUnitTestGURLs.MAPS_URL);
+    private final GURL mGoogleUrl = JUnitTestGURLs.GOOGLE_URL;
+    private final GURL mMapsUrl = JUnitTestGURLs.MAPS_URL;
 
     private Resources mResources;
 

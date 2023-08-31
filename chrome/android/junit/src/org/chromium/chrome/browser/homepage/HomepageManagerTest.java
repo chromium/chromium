@@ -53,7 +53,7 @@ public class HomepageManagerTest {
     static class ShadowUrlUtilities {
         @Implementation
         public static boolean isNTPUrl(String url) {
-            return JUnitTestGURLs.NTP_NATIVE_URL.equals(url);
+            return JUnitTestGURLs.NTP_NATIVE_URL.getSpec().equals(url);
         }
     }
 
@@ -114,14 +114,14 @@ public class HomepageManagerTest {
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(UrlConstants.NTP_URL, HomepageManager.getDefaultHomepageUri());
 
-        final String blueUrl = JUnitTestGURLs.BLUE_1;
+        final String blueUrl = JUnitTestGURLs.BLUE_1.getSpec();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, blueUrl);
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(blueUrl, HomepageManager.getDefaultHomepageUri());
 
-        final String redUrl = JUnitTestGURLs.RED_1;
+        final String redUrl = JUnitTestGURLs.RED_1.getSpec();
         final String serializedRedGurl = JUnitTestGURLs.getGURL(redUrl).serialize();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, null);
@@ -129,8 +129,8 @@ public class HomepageManagerTest {
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, serializedRedGurl);
         Assert.assertEquals(redUrl, HomepageManager.getDefaultHomepageUri());
 
-        final String url1 = JUnitTestGURLs.URL_1;
-        final String url2 = JUnitTestGURLs.URL_2;
+        final String url1 = JUnitTestGURLs.URL_1.getSpec();
+        final String url2 = JUnitTestGURLs.URL_2.getSpec();
         final String serializedGurl2 = JUnitTestGURLs.getGURL(url2).serialize();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, url1);

@@ -86,7 +86,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public AutomotiveContextWrapperTestRule mAutoTestRule = new AutomotiveContextWrapperTestRule();
 
-    private static final String URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
     @Mock
     private UserPrefs.Natives mUserPrefsNatives;

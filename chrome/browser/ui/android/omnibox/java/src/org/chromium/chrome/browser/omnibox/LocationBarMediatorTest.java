@@ -357,7 +357,7 @@ public class LocationBarMediatorTest {
         mMediator.onSuggestionsChanged("textWithAutocomplete", true);
         verify(mPrerenderJni)
                 .prerenderMaybe(123L, omniboxPrerenderCaptor.getValue(), "text",
-                        JUnitTestGURLs.RED_1, 456L, profile, mTab);
+                        JUnitTestGURLs.RED_1.getSpec(), 456L, profile, mTab);
         verify(mUrlCoordinator).setAutocompleteText("text", "textWithAutocomplete");
     }
 
@@ -702,7 +702,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_setColorScheme() {
-        String url = JUnitTestGURLs.BLUE_1;
+        String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
         doReturn(JUnitTestGURLs.getGURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
@@ -720,7 +720,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testSetUrl() {
-        String url = JUnitTestGURLs.BLUE_1;
+        String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
 

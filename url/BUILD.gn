@@ -335,7 +335,6 @@ if (is_android && !is_cronet_build) {
     testonly = true
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTest.java",
-      "android/javatests/src/org/chromium/url/JUnitTestGURLsTest.java",
       "android/javatests/src/org/chromium/url/OriginJavaTest.java",
     ]
     deps = [

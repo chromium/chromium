@@ -111,7 +111,7 @@ public final class ToolbarSecurityIconTest {
         mocker.mock(org.chromium.chrome.browser.toolbar.LocationBarModelJni.TEST_HOOKS,
                 mLocationBarModelJni);
 
-        String exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
+        String exampleUrl = JUnitTestGURLs.EXAMPLE_URL.getSpec();
         GURL exampleGurl = JUnitTestGURLs.getGURL(exampleUrl);
         doReturn(exampleGurl)
                 .when(mLocationBarModelJni)

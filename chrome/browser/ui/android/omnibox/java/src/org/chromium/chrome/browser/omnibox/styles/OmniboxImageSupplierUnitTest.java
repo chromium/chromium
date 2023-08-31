@@ -253,7 +253,7 @@ public final class OmniboxImageSupplierUnitTest {
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1, paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.
@@ -282,7 +282,7 @@ public final class OmniboxImageSupplierUnitTest {
         verifyNoMoreInteractions(mImageFetcher);
 
         // Confirm the URL and no callbacks emitted to registered callbacks.
-        assertEquals(JUnitTestGURLs.RED_1, paramCaptor.getValue().url);
+        assertEquals(JUnitTestGURLs.RED_1.getSpec(), paramCaptor.getValue().url);
         verifyNoMoreInteractions(mCallback1, mCallback2);
 
         // Emit reply.

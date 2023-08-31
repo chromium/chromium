@@ -90,7 +90,11 @@ import java.util.function.BooleanSupplier;
 @LooperMode(Mode.PAUSED)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 public class CustomTabToolbarUnitTest {
-    private static final String TEST_URL = JUnitTestGURLs.INITIAL_URL;
+    private static final GURL TEST_URL = JUnitTestGURLs.INITIAL_URL;
+    private static final GURL AMP_URL =
+            new GURL("https://www.google.com/amp/www.nyt.com/ampthml/blogs.html");
+    private static final GURL AMP_CACHE_URL =
+            new GURL("https://www.google.com/amp/s/www.nyt.com/ampthml/blogs.html");
 
     @Rule
     public MockitoRule mRule = MockitoJUnit.rule();
@@ -168,13 +172,9 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testParsesPublisherFromAmp() {
-        assertEquals("www.nyt.com",
-                CustomTabToolbar.parsePublisherNameFromUrl(
-                        JUnitTestGURLs.getGURL(JUnitTestGURLs.AMP_URL)));
-        assertEquals("www.nyt.com",
-                CustomTabToolbar.parsePublisherNameFromUrl(
-                        JUnitTestGURLs.getGURL(JUnitTestGURLs.AMP_CACHE_URL)));
-        assertEquals(JUnitTestGURLs.EXAMPLE_URL,
+        assertEquals("www.nyt.com", CustomTabToolbar.parsePublisherNameFromUrl(AMP_URL));
+        assertEquals("www.nyt.com", CustomTabToolbar.parsePublisherNameFromUrl(AMP_CACHE_URL));
+        assertEquals(JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 CustomTabToolbar.parsePublisherNameFromUrl(
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
     }
@@ -195,7 +195,8 @@ public class CustomTabToolbarUnitTest {
         verify(mLocationBarModel).notifyTitleChanged();
         verify(mLocationBarModel).notifySecurityStateChanged();
         verifyBrowserControlVisibleForRequiredDuration();
-        assertUrlBarShowingText(TEST_URL);
+        // URL bar truncates trailing /.
+        assertUrlBarShowingText(TEST_URL.getSpec().replaceAll("/$", ""));
     }
 
     @Test
@@ -262,7 +263,7 @@ public class CustomTabToolbarUnitTest {
         when(mToolbarDataProvider.getTab()).thenReturn(mTab);
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1));
-        UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.RED_1);
+        UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.RED_1.getSpec());
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
         mLocationBar.onUrlChanged();
         result = mToolbar.isReadyForTextureCapture();
@@ -436,14 +437,13 @@ public class CustomTabToolbarUnitTest {
     }
 
     private void setUpForAboutBlank() {
-        UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.ABOUT_BLANK);
+        UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.ABOUT_BLANK.getSpec());
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
     }
 
-    private void setUpForUrl(String url) {
-        GURL currentGurl = new GURL(url);
-        Mockito.doReturn(currentGurl).when(mTab).getUrl();
-        Mockito.doReturn(UrlBarData.forUrl(url)).when(mLocationBarModel).getUrlBarData();
+    private void setUpForUrl(GURL url) {
+        Mockito.doReturn(url).when(mTab).getUrl();
+        Mockito.doReturn(UrlBarData.forUrl(url.getSpec())).when(mLocationBarModel).getUrlBarData();
     }
 }

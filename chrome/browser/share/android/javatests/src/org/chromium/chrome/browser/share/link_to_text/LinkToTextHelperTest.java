@@ -23,7 +23,7 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LinkToTextHelperTest {
-    private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private Activity mActivity;
 
     @Before

@@ -109,14 +109,14 @@ public class ScreenshotCoordinatorTest {
                 .thenReturn(mImageEditorDialogCoordinatorMock);
         doNothing()
                 .when(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
-                        mChromeOptionShareCallback);
+                .launchEditor(mActivity, mBitmap, mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 
         // Instantiate the object under test.
         mScreenshotCoordinator = new ScreenshotCoordinator(mActivity, mWindowAndroid,
-                JUnitTestGURLs.EXAMPLE_URL, new FakeEditorScreenshotTask(),
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(), new FakeEditorScreenshotTask(),
                 mScreenshotShareSheetDialogMock, mChromeOptionShareCallback,
                 mBottomSheetControllerMock, mImageEditorModuleProviderMock);
     }
@@ -135,8 +135,8 @@ public class ScreenshotCoordinatorTest {
 
         // Ensure the editor launches.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
-                        mChromeOptionShareCallback);
+                .launchEditor(mActivity, mBitmap, mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
     }
 
     @Test
@@ -166,8 +166,8 @@ public class ScreenshotCoordinatorTest {
         mScreenshotCoordinator.captureScreenshot();
         // The editor should launch without requiring a discrete user action.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid, JUnitTestGURLs.EXAMPLE_URL,
-                        mChromeOptionShareCallback);
+                .launchEditor(mActivity, mBitmap, mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
     }
 
     @Test

@@ -69,9 +69,9 @@ import org.chromium.url.JUnitTestGURLs;
  * to the content layer of Custom Tabs code.
  */
 public class CustomTabActivityContentTestEnvironment extends TestWatcher {
-    public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL;
-    public static final String SPECULATED_URL = JUnitTestGURLs.SPECULATED_URL;
-    public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL;
+    public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL.getSpec();
+    public static final String SPECULATED_URL = "https://speculated.com";
+    public static final String OTHER_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
     public final Intent mIntent = new Intent();
 

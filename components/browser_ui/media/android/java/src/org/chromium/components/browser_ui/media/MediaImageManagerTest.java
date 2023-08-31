@@ -44,8 +44,8 @@ public class MediaImageManagerTest {
     private static final int IDEAL_IMAGE_SIZE_PX = 200;
     private static final int REQUEST_ID_1 = 1;
     private static final int REQUEST_ID_2 = 2;
-    private static final String IMAGE_URL_SPEC_1 = JUnitTestGURLs.URL_1;
-    private static final String IMAGE_URL_SPEC_2 = JUnitTestGURLs.URL_2;
+    private static final String IMAGE_URL_SPEC_1 = JUnitTestGURLs.URL_1.getSpec();
+    private static final String IMAGE_URL_SPEC_2 = JUnitTestGURLs.URL_2.getSpec();
     private static final GURL IMAGE_URL_1 = JUnitTestGURLs.getGURL(IMAGE_URL_SPEC_1);
     private static final GURL IMAGE_URL_2 = JUnitTestGURLs.getGURL(IMAGE_URL_SPEC_2);
 

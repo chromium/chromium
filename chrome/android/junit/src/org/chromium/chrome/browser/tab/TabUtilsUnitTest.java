@@ -275,7 +275,7 @@ public class TabUtilsUnitTest {
 
     @Test
     public void testReadRequestDesktopSiteContentSettings() {
-        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
 
         // Site level setting is Mobile.
         mRdsException = ContentSettingValues.BLOCK;
@@ -294,7 +294,7 @@ public class TabUtilsUnitTest {
 
     @Test
     public void testIsRequestDesktopSiteContentSettingsGlobal() {
-        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
 
         // Content setting is global setting.
         mIsGlobal = true;

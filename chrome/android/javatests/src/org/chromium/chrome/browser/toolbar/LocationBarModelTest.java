@@ -97,12 +97,12 @@ public class LocationBarModelTest {
             model.setVisibleGurl(UrlConstants.ntpGurl());
             assertDisplayAndEditText(model, "", null);
 
-            model.setVisibleGurl(new GURL(JUnitTestGURLs.CHROME_ABOUT));
-            model.setDisplayUrl(JUnitTestGURLs.CHROME_ABOUT);
-            model.setFullUrl(JUnitTestGURLs.CHROME_ABOUT);
+            model.setVisibleGurl(JUnitTestGURLs.CHROME_ABOUT);
+            model.setDisplayUrl("chrome://about");
+            model.setFullUrl("chrome://about");
             assertDisplayAndEditText(model, "chrome://about", "chrome://about");
 
-            model.setVisibleGurl(new GURL(JUnitTestGURLs.URL_1));
+            model.setVisibleGurl(JUnitTestGURLs.URL_1);
             model.setDisplayUrl("https://one.com");
             model.setFullUrl("https://one.com");
             assertDisplayAndEditText(model, "https://one.com", "https://one.com");

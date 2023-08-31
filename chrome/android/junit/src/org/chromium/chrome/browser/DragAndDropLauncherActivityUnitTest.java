@@ -59,7 +59,7 @@ public class DragAndDropLauncherActivityUnitTest {
         when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
         ContextUtils.initApplicationContextForTests(mContext);
         mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
-        mLinkUrl = JUnitTestGURLs.HTTP_URL;
+        mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
     }
 
     @Test

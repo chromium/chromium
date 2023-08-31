@@ -367,7 +367,7 @@ public class DragAndDropDelegateImplUnitTest {
                 "", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
 
         String text = DragAndDropDelegateImpl.getTextForLinkData(dropData);
-        Assert.assertEquals("Text should match.", JUnitTestGURLs.EXAMPLE_URL, text);
+        Assert.assertEquals("Text should match.", JUnitTestGURLs.EXAMPLE_URL.getSpec(), text);
     }
 
     @Test
@@ -377,8 +377,8 @@ public class DragAndDropDelegateImplUnitTest {
                 linkTitle, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null, null);
 
         String text = DragAndDropDelegateImpl.getTextForLinkData(dropData);
-        Assert.assertEquals(
-                "Text should match.", linkTitle + "\n" + JUnitTestGURLs.EXAMPLE_URL, text);
+        Assert.assertEquals("Text should match.",
+                linkTitle + "\n" + JUnitTestGURLs.EXAMPLE_URL.getSpec(), text);
     }
 
     @Test
@@ -391,7 +391,7 @@ public class DragAndDropDelegateImplUnitTest {
         ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
         Assert.assertEquals(
                 "Image ClipData should include image and URL info.", 2, clipData.getItemCount());
-        Assert.assertEquals("Image URL info should match.", JUnitTestGURLs.EXAMPLE_URL,
+        Assert.assertEquals("Image URL info should match.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 clipData.getItemAt(1).getText());
     }
 
@@ -418,7 +418,7 @@ public class DragAndDropDelegateImplUnitTest {
                 clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
         Assert.assertTrue("Link ClipData should include intent MIME type.",
                 clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
-        Assert.assertEquals("Dragged link text should match.", JUnitTestGURLs.EXAMPLE_URL,
+        Assert.assertEquals("Dragged link text should match.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 clipData.getItemAt(0).getText());
         Assert.assertNotNull(
                 "ClipData intent should not be null.", clipData.getItemAt(0).getIntent());
@@ -435,7 +435,7 @@ public class DragAndDropDelegateImplUnitTest {
                 clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
         Assert.assertFalse("Link ClipData should not include intent MIME type.",
                 clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
-        Assert.assertEquals("Dragged link text should match.", JUnitTestGURLs.EXAMPLE_URL,
+        Assert.assertEquals("Dragged link text should match.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 clipData.getItemAt(0).getText());
     }
 

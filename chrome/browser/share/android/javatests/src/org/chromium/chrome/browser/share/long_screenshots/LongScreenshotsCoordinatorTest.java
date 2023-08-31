@@ -58,8 +58,8 @@ public class LongScreenshotsCoordinatorTest {
 
         // Instantiate the object under test.
         mCoordinator = LongScreenshotsCoordinator.createForTests(mActivity, mTab,
-                JUnitTestGURLs.EXAMPLE_URL, mChromeOptionShareCallback, mBottomSheetControllerMock,
-                mImageEditorModuleProviderMock, mManager, mMediator);
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback,
+                mBottomSheetControllerMock, mImageEditorModuleProviderMock, mManager, mMediator);
     }
 
     @Test

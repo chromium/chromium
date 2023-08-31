@@ -42,7 +42,7 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
 public class CachedImageFetcherTest {
     private static final String UMA_CLIENT_NAME = "TestUmaClient";
-    private static final String URL = JUnitTestGURLs.RED_1;
+    private static final String URL = JUnitTestGURLs.RED_1.getSpec();
     private static final String PATH = "test/path/cache/test.png";
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;

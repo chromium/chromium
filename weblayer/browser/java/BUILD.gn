@@ -437,6 +437,7 @@ robolectric_binary("weblayer_junit_tests") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+  shared_libraries = [ "//url:libgurl_robolectric($robolectric_toolchain)" ]
 }
 
 generate_jni("test_jni") {

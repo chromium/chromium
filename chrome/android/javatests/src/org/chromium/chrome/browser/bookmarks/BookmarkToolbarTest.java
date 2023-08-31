@@ -136,14 +136,14 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
             when(mBookmarkModel.getBookmarkById(BOOKMARK_ID_ROOT)).thenReturn(rootBookmarkItem);
 
             mockBookmarkItem(BOOKMARK_ID_FOLDER, "folder", null, true, BOOKMARK_ID_ROOT, true);
-            mockBookmarkItem(
-                    BOOKMARK_ID_ONE, "one", JUnitTestGURLs.URL_1, false, BOOKMARK_ID_FOLDER, true);
-            mockBookmarkItem(
-                    BOOKMARK_ID_TWO, "two", JUnitTestGURLs.URL_2, false, BOOKMARK_ID_FOLDER, true);
-            mockBookmarkItem(BOOKMARK_ID_PARTNER, "partner", JUnitTestGURLs.RED_1, false,
-                    BOOKMARK_ID_FOLDER, false);
-            mockBookmarkItem(BOOKMARK_ID_READING_LIST, "reading list", JUnitTestGURLs.BLUE_1, false,
+            mockBookmarkItem(BOOKMARK_ID_ONE, "one", JUnitTestGURLs.URL_1.getSpec(), false,
                     BOOKMARK_ID_FOLDER, true);
+            mockBookmarkItem(BOOKMARK_ID_TWO, "two", JUnitTestGURLs.URL_2.getSpec(), false,
+                    BOOKMARK_ID_FOLDER, true);
+            mockBookmarkItem(BOOKMARK_ID_PARTNER, "partner", JUnitTestGURLs.RED_1.getSpec(), false,
+                    BOOKMARK_ID_FOLDER, false);
+            mockBookmarkItem(BOOKMARK_ID_READING_LIST, "reading list",
+                    JUnitTestGURLs.BLUE_1.getSpec(), false, BOOKMARK_ID_FOLDER, true);
         });
     }
 

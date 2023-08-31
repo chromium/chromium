@@ -378,8 +378,8 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void fetchAnswerImage_withSupplier() {
-        var suggHelper =
-                createAnswerSuggestion(AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1);
+        var suggHelper = createAnswerSuggestion(
+                AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
 
         ArgumentCaptor<Callback<Bitmap>> cb = ArgumentCaptor.forClass(Callback.class);
         verify(mImageSupplier, times(1))
@@ -402,8 +402,8 @@ public class AnswerSuggestionProcessorUnitTest {
         mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlStateProvider, /* imageSupplier=*/null);
 
-        var suggHelper =
-                createAnswerSuggestion(AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1);
+        var suggHelper = createAnswerSuggestion(
+                AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
 
         var sds1 = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(sds1);

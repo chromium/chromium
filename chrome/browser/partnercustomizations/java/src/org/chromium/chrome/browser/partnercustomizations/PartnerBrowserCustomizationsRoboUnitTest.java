@@ -53,7 +53,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
     @Before
     public void setup() {
-        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.EXAMPLE_URL;
+        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.EXAMPLE_URL.getSpec();
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             final Handler mHandler = new Handler(Looper.getMainLooper());
             @Override
@@ -82,7 +82,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
         // Assuming homepage is changed during 1st #initializeAsync, and another #initializeAsync is
         // triggered. The 2nd #initializeAsync is ignored since there's one already in the process.
-        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.GOOGLE_URL;
+        ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.GOOGLE_URL.getSpec();
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 ContextUtils.getApplicationContext());
         assertFalse("#initializeAsync should be in progress.",
@@ -91,7 +91,8 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         ShadowLooper.idleMainLooper();
         assertTrue("#initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
-        assertEquals("Homepage should be set via 1st initializeAsync.", JUnitTestGURLs.EXAMPLE_URL,
+        assertEquals("Homepage should be set via 1st initializeAsync.",
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec());
 
         PartnerBrowserCustomizations.getInstance().initializeAsync(
@@ -103,7 +104,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         assertTrue("3rd #initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
         assertEquals("Homepage should refreshed by 3rd #initializeAsync.",
-                JUnitTestGURLs.GOOGLE_URL,
+                JUnitTestGURLs.GOOGLE_URL.getSpec(),
                 PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec());
     }
 
@@ -158,9 +159,9 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
         // Simulate CTA#createInitialTab: Create an NTP when the delegate says Partner Homepage.
         // TODO(donnd): call this as an async callback through setOnInitializeAsyncFinished.
-        PartnerBrowserCustomizations.getInstance().onCreateInitialTab(JUnitTestGURLs.NTP_NATIVE_URL,
-                50, true /* OverviewOrStart */, mActivityLifecycleDispatcherMock,
-                HomepageCharacterizationHelperStub::ntpHelper);
+        PartnerBrowserCustomizations.getInstance().onCreateInitialTab(
+                JUnitTestGURLs.NTP_NATIVE_URL.getSpec(), 50, true /* OverviewOrStart */,
+                mActivityLifecycleDispatcherMock, HomepageCharacterizationHelperStub::ntpHelper);
 
         // Trigger Async completion.
         ShadowLooper.idleMainLooper();

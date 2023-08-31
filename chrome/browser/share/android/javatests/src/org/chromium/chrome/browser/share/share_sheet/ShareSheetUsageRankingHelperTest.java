@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @LooperMode(LooperMode.Mode.LEGACY)
 
 public class ShareSheetUsageRankingHelperTest {
-    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();

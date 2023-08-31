@@ -65,8 +65,8 @@ public class InstalledWebappGeolocationBridgeTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(InstalledWebappGeolocationBridgeJni.TEST_HOOKS, mNativeMock);
 
-        mScope = new GURL(JUnitTestGURLs.URL_1);
-        mOtherScope = new GURL(JUnitTestGURLs.URL_2);
+        mScope = JUnitTestGURLs.URL_1;
+        mOtherScope = JUnitTestGURLs.URL_2;
 
         mGeolocation = new InstalledWebappGeolocationBridge(
                 NATIVE_POINTER, mScope, mTrustedWebActivityClient);

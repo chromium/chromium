@@ -12,8 +12,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.url.JUnitTestGURLs.URL_1;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,7 +101,7 @@ public class EngagementSignalsInitialScrollObserverUnitTest {
         gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
         assertTrue(mInitialScrollObserver.hasCurrentPageHadScrollDown());
 
-        var details = new LoadCommittedDetails(0, JUnitTestGURLs.getGURL(URL_1), false,
+        var details = new LoadCommittedDetails(0, JUnitTestGURLs.URL_1, false,
                 /*isSameDocument=*/false, /*isMainFrame=*/true, 200);
         webContentsObserver.navigationEntryCommitted(details);
         assertFalse(mInitialScrollObserver.hasCurrentPageHadScrollDown());

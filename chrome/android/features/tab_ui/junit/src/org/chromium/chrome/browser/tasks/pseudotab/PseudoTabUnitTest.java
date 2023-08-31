@@ -259,11 +259,10 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_cache() {
-        String url = JUnitTestGURLs.URL_1;
-        TabAttributeCache.setUrlForTesting(TAB1_ID, JUnitTestGURLs.getGURL(url));
+        TabAttributeCache.setUrlForTesting(TAB1_ID, JUnitTestGURLs.URL_1);
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(url, tab.getUrl().getSpec());
+        Assert.assertEquals(JUnitTestGURLs.URL_1.getSpec(), tab.getUrl().getSpec());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);

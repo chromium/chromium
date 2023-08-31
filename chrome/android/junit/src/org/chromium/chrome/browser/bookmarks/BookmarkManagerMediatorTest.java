@@ -241,9 +241,10 @@ public class BookmarkManagerMediatorTest {
             false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
             "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
-    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
-            JUnitTestGURLs.EXAMPLE_URL, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
-            mReadingListFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mReadingListItem =
+            new BookmarkItem(mReadingListId, JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                    JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId,
+                    true, false, 0, false, 0);
     private final BookmarkItem mPriceTrackedBookmarkItem = new BookmarkItem(mPriceTrackedBookmarkId,
             "Price tracked bookmark", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
             mMobileFolderId, true, false, 0, false, 0);

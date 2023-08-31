@@ -75,7 +75,7 @@ import java.util.Set;
 @LooperMode(LooperMode.Mode.LEGACY)
 @Config(shadows = ShadowPropertyModelBuilder.class)
 public final class ShareSheetCoordinatorTest {
-    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();

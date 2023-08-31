@@ -467,7 +467,8 @@ public final class StatusMediatorUnitTest {
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(
+                mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
     }
 
@@ -481,7 +482,8 @@ public final class StatusMediatorUnitTest {
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(
+                mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
@@ -495,7 +497,8 @@ public final class StatusMediatorUnitTest {
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Show store icon again.
-        mMediator.showStoreIcon(mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, true);
+        mMediator.showStoreIcon(
+                mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
 
         // Simulate that we need to switch back to the default icon.
@@ -514,7 +517,7 @@ public final class StatusMediatorUnitTest {
 
         // Try to show the store icon.
         mMediator.showStoreIcon(
-                mWindowAndroid, JUnitTestGURLs.BLUE_1, mStoreIconDrawable, 0, false);
+                mWindowAndroid, JUnitTestGURLs.BLUE_1.getSpec(), mStoreIconDrawable, 0, false);
         Assert.assertTrue(mMediator.isStoreIconShowing());
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());

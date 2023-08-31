@@ -58,7 +58,8 @@ public class SendTabToSelfCoordinatorTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         CriteriaHelper.pollUiThread(() -> {
             return SendTabToSelfAndroidBridge
-                    .getEntryPointDisplayReason(Profile.getLastUsedRegularProfile(), HTTP_URL)
+                    .getEntryPointDisplayReason(
+                            Profile.getLastUsedRegularProfile(), HTTP_URL.getSpec())
                     .equals(Optional.of(EntryPointDisplayReason.OFFER_FEATURE));
         });
 
@@ -128,8 +129,8 @@ public class SendTabToSelfCoordinatorTest {
         WindowAndroid windowAndroid = activity.getWindowAndroid();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SendTabToSelfCoordinator coordinator =
-                    new SendTabToSelfCoordinator(activity, windowAndroid, HTTP_URL, "Page",
-                            BottomSheetControllerProvider.from(windowAndroid),
+                    new SendTabToSelfCoordinator(activity, windowAndroid, HTTP_URL.getSpec(),
+                            "Page", BottomSheetControllerProvider.from(windowAndroid),
                             Profile.getLastUsedRegularProfile(), null);
             coordinator.show();
         });

@@ -76,8 +76,8 @@ public class StaticLayoutUnitTest {
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
-    private static final String TAB1_URL = JUnitTestGURLs.URL_1;
-    private static final String TAB2_URL = JUnitTestGURLs.URL_2;
+    private static final String TAB1_URL = JUnitTestGURLs.URL_1.getSpec();
+    private static final String TAB2_URL = JUnitTestGURLs.URL_2.getSpec();
 
     private static final int BACKGROUND_COLOR = Color.WHITE;
     private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;

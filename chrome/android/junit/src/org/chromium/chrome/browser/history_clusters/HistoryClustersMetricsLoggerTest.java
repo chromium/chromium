@@ -43,8 +43,8 @@ public class HistoryClustersMetricsLoggerTest {
 
     @Before
     public void setUp() {
-        mSrpGurl = new GURL(JUnitTestGURLs.GOOGLE_URL_CAT);
-        mNonSrpGurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
+        mSrpGurl = JUnitTestGURLs.GOOGLE_URL_CAT;
+        mNonSrpGurl = JUnitTestGURLs.EXAMPLE_URL;
         mSrpVisit = new ClusterVisit(1.0F, mSrpGurl, "Title 4", "url3.com/foo", new ArrayList<>(),
                 new ArrayList<>(), mSrpGurl, 123L, new ArrayList<>());
         mSrpVisit.setIndexInParent(0);

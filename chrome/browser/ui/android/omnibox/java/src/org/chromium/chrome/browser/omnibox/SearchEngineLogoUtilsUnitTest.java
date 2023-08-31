@@ -60,7 +60,7 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SearchEngineLogoUtilsUnitTest {
-    private static final String LOGO_URL = JUnitTestGURLs.URL_1;
+    private static final String LOGO_URL = JUnitTestGURLs.URL_1.getSpec();
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";
 
     @Rule

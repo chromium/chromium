@@ -214,7 +214,7 @@ public class ToolbarDragDropCoordinatorUnitTest {
     public void testTargetViewDragEvents_ChromeLink() {
         HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
                 "Android.DragDrop.ToOmnibox.DropType", DropType.CHROME_LINK);
-        Intent intent = new Intent().setData(Uri.parse(JUnitTestGURLs.EXAMPLE_URL));
+        Intent intent = new Intent().setData(Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         ClipData chromeLink =
                 new ClipData(null, new String[] {"text/plain", "chrome/link"}, new Item(intent));
         DragEvent eventDragChromeLink = mockDragEvent(DragEvent.ACTION_DROP, chromeLink);
@@ -223,7 +223,7 @@ public class ToolbarDragDropCoordinatorUnitTest {
         assertTrue("DragEvent eventDragMultipleMimeTypes should be consumed by target view",
                 resultDragMultipleMimeTypes);
         verify(mAutocompleteDelegate)
-                .loadUrl(eq(JUnitTestGURLs.EXAMPLE_URL), eq(PageTransition.TYPED),
+                .loadUrl(eq(JUnitTestGURLs.EXAMPLE_URL.getSpec()), eq(PageTransition.TYPED),
                         ArgumentMatchers.anyLong(), eq(false));
         histogramExpectation.assertExpected();
     }
@@ -232,7 +232,7 @@ public class ToolbarDragDropCoordinatorUnitTest {
     public void testTargetViewDragEvents_ValidImage() {
         HistogramWatcher histogramExpectation = HistogramWatcher.newSingleRecordWatcher(
                 "Android.DragDrop.ToOmnibox.DropType", DropType.CHROME_IMAGE);
-        Intent intent = new Intent().setData(Uri.parse(JUnitTestGURLs.EXAMPLE_URL));
+        Intent intent = new Intent().setData(Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         ClipData imageMimeType =
                 new ClipData(null, new String[] {"image/jpeg", "text/plain"}, new Item(intent));
         DragEvent eventDragImage = mockDragEvent(DragEvent.ACTION_DROP, imageMimeType);

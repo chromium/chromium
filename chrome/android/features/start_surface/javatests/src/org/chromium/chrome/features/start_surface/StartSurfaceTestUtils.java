@@ -43,7 +43,6 @@ import org.junit.Assert;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.ParameterProvider;
@@ -86,7 +85,6 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -285,9 +283,6 @@ public class StartSurfaceTestUtils {
 
     public static void startAndWaitNativeInitialization(
             ChromeTabbedActivityTestRule activityTestRule) {
-        Assert.assertTrue(NativeLibraryLoadedStatus.getProviderForTesting() == null
-                || !NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
-
         CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> activityTestRule.getActivity().startDelayedNativeInitializationForTests());
@@ -660,7 +655,7 @@ public class StartSurfaceTestUtils {
      */
     public static List<SiteSuggestion> createFakeSiteSuggestions() {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
-        String urlTemplate = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_NUMERAL).serialize();
+        String urlTemplate = new GURL("https://www.1.com/").serialize();
         for (int i = 0; i < 8; i++) {
             siteSuggestions.add(new SiteSuggestion(String.valueOf(i),
                     // Use pre-serialized GURL to avoid loading native.

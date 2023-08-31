@@ -87,7 +87,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
         mBookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
         doReturn(TITLE).when(mBookmarkItem).getTitle();
         doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mBookmarkItem).getUrl();
-        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mBookmarkItem).getUrlForDisplay();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL.getSpec()).when(mBookmarkItem).getUrlForDisplay();
         doReturn(mBookmarkItem).when(mModel).getBookmarkById(mBookmarkId);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -115,7 +115,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
         TextView title = mBookmarkItemRow.findViewById(R.id.title);
         TextView desc = mBookmarkItemRow.findViewById(R.id.description);
         Assert.assertEquals(title.getText(), TITLE);
-        Assert.assertEquals(desc.getText(), JUnitTestGURLs.EXAMPLE_URL);
+        Assert.assertEquals(desc.getText(), JUnitTestGURLs.EXAMPLE_URL.getSpec());
 
         mBookmarkItemRow.onClick();
         verify(mDelegate).openBookmark(mBookmarkId);

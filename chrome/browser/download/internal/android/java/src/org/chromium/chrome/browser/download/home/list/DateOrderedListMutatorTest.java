@@ -1058,7 +1058,8 @@ public class DateOrderedListMutatorTest {
 
         Assert.assertEquals(10, mModel.size());
         assertDivider(mModel.get(0), ListItem.CardDividerListItem.Position.TOP);
-        assertCardHeader(mModel.get(1), buildCalendar(2018, 1, 4, 0), JUnitTestGURLs.EXAMPLE_URL);
+        assertCardHeader(
+                mModel.get(1), buildCalendar(2018, 1, 4, 0), JUnitTestGURLs.EXAMPLE_URL.getSpec());
         assertOfflineItem(mModel.get(2), buildCalendar(2018, 1, 4, 4), item4);
         assertDivider(mModel.get(3), ListItem.CardDividerListItem.Position.MIDDLE);
         assertOfflineItem(mModel.get(4), buildCalendar(2018, 1, 4, 3), item3);

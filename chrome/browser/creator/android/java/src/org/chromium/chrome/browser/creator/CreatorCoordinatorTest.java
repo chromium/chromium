@@ -104,8 +104,8 @@ public class CreatorCoordinatorTest {
 
     private final byte[] mWebFeedIdDefault = "webFeedId".getBytes();
     private final boolean mFollowingDefault = false;
-    private final String mUrlDefault = JUnitTestGURLs.EXAMPLE_URL;
-    private final String mTestUrl = JUnitTestGURLs.URL_1;
+    private final String mUrlDefault = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+    private final String mTestUrl = JUnitTestGURLs.URL_1.getSpec();
     private final int mEntryPointDefault = SingleWebFeedEntryPoint.OTHER;
     private TestActivity mActivity;
 
@@ -120,7 +120,7 @@ public class CreatorCoordinatorTest {
 
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(any()))
-                .thenReturn(JUnitTestGURLs.URL_1);
+                .thenReturn(JUnitTestGURLs.URL_1.getSpec());
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
     }

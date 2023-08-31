@@ -81,9 +81,9 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 new TargetDeviceInfo("My Computer", "guid2", FormFactor.DESKTOP,
                         todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            DevicePickerBottomSheetContent sheetContent =
-                    new DevicePickerBottomSheetContent(getActivity(), JUnitTestGURLs.HTTP_URL,
-                            "Title", mBottomSheetController, devices, mProfile);
+            DevicePickerBottomSheetContent sheetContent = new DevicePickerBottomSheetContent(
+                    getActivity(), JUnitTestGURLs.HTTP_URL.getSpec(), "Title",
+                    mBottomSheetController, devices, mProfile);
             getActivity().setContentView(sheetContent.getContentView());
             return sheetContent.getContentView();
         });
@@ -102,9 +102,9 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
                 new TargetDeviceInfo("My Computer", "guid2", FormFactor.DESKTOP,
                         todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DevicePickerBottomSheetContent sheetContent =
-                    new DevicePickerBottomSheetContent(getActivity(), JUnitTestGURLs.HTTP_URL,
-                            "Title", mBottomSheetController, devices, mProfile);
+            DevicePickerBottomSheetContent sheetContent = new DevicePickerBottomSheetContent(
+                    getActivity(), JUnitTestGURLs.HTTP_URL.getSpec(), "Title",
+                    mBottomSheetController, devices, mProfile);
             getActivity().setContentView(sheetContent.getContentView());
         });
         onView(withText(account.getEmail())).check(doesNotExist());

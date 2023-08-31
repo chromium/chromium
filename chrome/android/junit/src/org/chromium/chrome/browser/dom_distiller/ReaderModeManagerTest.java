@@ -60,8 +60,7 @@ import java.util.concurrent.TimeoutException;
 @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
         ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
 public class ReaderModeManagerTest {
-    private static final GURL MOCK_DISTILLER_URL =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.DOM_DISILLER_URL);
+    private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT);
 
     @Rule

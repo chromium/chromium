@@ -40,11 +40,11 @@ public class SharedBookmarkModelMocks {
     static final BookmarkId URL_BOOKMARK_ID_G = new BookmarkId(sId++, BookmarkType.NORMAL);
     static final BookmarkId URL_BOOKMARK_ID_H = new BookmarkId(sId++, BookmarkType.NORMAL);
 
-    static final GURL URL_A = new GURL(JUnitTestGURLs.RED_1);
-    static final GURL URL_B = new GURL(JUnitTestGURLs.RED_2);
-    static final GURL URL_C = new GURL(JUnitTestGURLs.RED_3);
-    static final GURL URL_D = new GURL(JUnitTestGURLs.BLUE_1);
-    static final GURL URL_E = new GURL(JUnitTestGURLs.BLUE_2);
+    static final GURL URL_A = JUnitTestGURLs.RED_1;
+    static final GURL URL_B = JUnitTestGURLs.RED_2;
+    static final GURL URL_C = JUnitTestGURLs.RED_3;
+    static final GURL URL_D = JUnitTestGURLs.BLUE_1;
+    static final GURL URL_E = JUnitTestGURLs.BLUE_2;
 
     static final BookmarkItem DESKTOP_BOOKMARK_ITEM =
             makeFolderItem(DESKTOP_BOOKMARK_ID, "Bookmarks bar", ROOT_BOOKMARK_ID);
