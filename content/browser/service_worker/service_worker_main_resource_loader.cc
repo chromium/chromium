@@ -392,6 +392,13 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
     return false;
   }
 
+  bool use_allowlist = base::GetFieldTrialParamByFeatureAsBool(
+      kServiceWorkerAutoPreload, "use_allowlist",
+      /*default_value=*/false);
+  if (use_allowlist && !HasRaceNetworkRequestEligibleScript(version)) {
+    return false;
+  }
+
   bool result = StartRaceNetworkRequest(context, version);
   if (result) {
     SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
