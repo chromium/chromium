@@ -656,6 +656,12 @@ class ASH_EXPORT WallpaperControllerImpl
   // `Wallpapertype::kOneShot`.
   bool IsOneShotWallpaper() const;
 
+  // Called when the policy wallpaper has been decoded.
+  void OnPolicyWallpaperDecoded(const AccountId& account_id,
+                                user_manager::UserType user_type,
+                                bool show_image,
+                                const gfx::ImageSkia& image);
+
   // Returns true if device wallpaper policy is in effect and we are at the
   // login screen right now.
   bool ShouldSetDevicePolicyWallpaper() const;

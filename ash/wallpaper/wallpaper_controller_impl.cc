@@ -82,6 +82,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_util.h"
 #include "url/gurl.h"
+#include "wallpaper_metrics_manager.h"
 
 using color_utils::ColorProfile;
 
@@ -977,6 +978,8 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
     bool show_wallpaper,
     SetWallpaperCallback callback) {
   if (!CanSetUserWallpaper(account_id)) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDefault, SetWallpaperResult::kPermissionDenied);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -993,6 +996,8 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
     SetDefaultWallpaperImpl(GetUserType(account_id), /*show_wallpaper=*/true,
                             std::move(callback));
   } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDefault, SetWallpaperResult::kSuccess);
     std::move(callback).Run(/*success=*/true);
   }
 }
@@ -1068,18 +1073,35 @@ void WallpaperControllerImpl::SetPolicyWallpaper(
 
   // Updates the screen only when the user with this account_id has logged in.
   const bool show_wallpaper = IsActiveUser(account_id);
-  image_util::DecodeImageCallback callback = base::BindOnce(
-      &WallpaperControllerImpl::SaveAndSetWallpaper, weak_factory_.GetWeakPtr(),
-      account_id, user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-      kPolicyWallpaperFile, /*file_path=*/"", WallpaperType::kPolicy,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper);
 
   if (bypass_decode_for_testing_) {
-    std::move(callback).Run(CreateSolidColorWallpaper(kDefaultWallpaperColor));
+    OnPolicyWallpaperDecoded(account_id, user_type, show_wallpaper,
+                             CreateSolidColorWallpaper(kDefaultWallpaperColor));
     return;
   }
-  image_util::DecodeImageData(std::move(callback),
-                              data_decoder::mojom::ImageCodec::kDefault, data);
+  image_util::DecodeImageData(
+      base::BindOnce(&WallpaperControllerImpl::OnPolicyWallpaperDecoded,
+                     weak_factory_.GetWeakPtr(), account_id, user_type,
+                     show_wallpaper),
+      data_decoder::mojom::ImageCodec::kDefault, data);
+}
+
+void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
+    const AccountId& account_id,
+    user_manager::UserType user_type,
+    bool show_wallpaper,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kPolicy, SetWallpaperResult::kDecodingError);
+    return;
+  }
+  wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kPolicy,
+                                                 SetWallpaperResult::kSuccess);
+  SaveAndSetWallpaper(
+      account_id, user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+      kPolicyWallpaperFile, /*file_path=*/"", WallpaperType::kPolicy,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
@@ -1108,7 +1130,15 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
   bool allowed_to_set_wallpaper = CanSetUserWallpaper(account_id);
   bool allowed_to_show_wallpaper = IsActiveUser(account_id);
 
+  if (image.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kThirdParty, SetWallpaperResult::kFileNotFound);
+    return false;
+  }
+
   if (allowed_to_set_wallpaper) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kThirdParty, SetWallpaperResult::kSuccess);
     SaveAndSetWallpaperWithCompletion(
         account_id, IsEphemeralUser(account_id), file_name,
         /*file_path=*/"", WallpaperType::kCustomized, layout,
@@ -1116,6 +1146,9 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
         base::BindOnce(
             &WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo,
             weak_factory_.GetWeakPtr(), account_id));
+  } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kThirdParty, SetWallpaperResult::kPermissionDenied);
   }
   return allowed_to_set_wallpaper && allowed_to_show_wallpaper;
 }
@@ -2092,10 +2125,14 @@ void WallpaperControllerImpl::OnOobeWallpaperDecoded(
   // removed from ShowOobeWallpaper
   if (image.isNull()) {
     LOG(ERROR) << "Failed to decode OOBE wallpaper.";
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOobe, SetWallpaperResult::kDecodingError);
     cached_oobe_wallpaper_.image =
         CreateSolidColorWallpaper(kOobeWallpaperColor);
     cached_oobe_wallpaper_.file_path.clear();
   } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kOobe, SetWallpaperResult::kSuccess);
     cached_oobe_wallpaper_.image = image;
     cached_oobe_wallpaper_.file_path = path;
   }
@@ -2356,11 +2393,15 @@ void WallpaperControllerImpl::OnDefaultWallpaperDecoded(
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   if (image.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDefault, SetWallpaperResult::kDecodingError);
     // Create a solid color wallpaper if the default wallpaper decoding fails.
     cached_default_wallpaper_.image =
         CreateSolidColorWallpaper(kDefaultWallpaperColor);
     cached_default_wallpaper_.file_path.clear();
   } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDefault, SetWallpaperResult::kSuccess);
     cached_default_wallpaper_.image = image;
     cached_default_wallpaper_.file_path = path;
   }
@@ -2640,10 +2681,15 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
     const gfx::ImageSkia& image) {
   // It might be possible that the device policy controlled wallpaper finishes
   // decoding after the user logs in. In this case do nothing.
-  if (!ShouldSetDevicePolicyWallpaper())
+  if (!ShouldSetDevicePolicyWallpaper()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDevice, SetWallpaperResult::kPermissionDenied);
     return;
+  }
 
   if (image.isNull()) {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDevice, SetWallpaperResult::kDecodingError);
     // If device policy wallpaper failed decoding, fall back to the default
     // wallpaper.
     // TODO(crbug.com/1329567): Decide if the regular default is correct.  But
@@ -2651,6 +2697,8 @@ void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
     SetDefaultWallpaperImpl(user_manager::USER_TYPE_REGULAR,
                             /*show_wallpaper=*/true, base::DoNothing());
   } else {
+    wallpaper_metrics_manager_->LogWallpaperResult(
+        WallpaperType::kDevice, SetWallpaperResult::kSuccess);
     WallpaperInfo info = {device_policy_wallpaper_path_.value(),
                           WALLPAPER_LAYOUT_CENTER_CROPPED,
                           WallpaperType::kDevice, base::Time::Now()};

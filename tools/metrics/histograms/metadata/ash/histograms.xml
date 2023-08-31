@@ -7351,8 +7351,13 @@ chromium-metrics-reviews@google.com.
     <variant name="Customized"/>
     <variant name="Daily"/>
     <variant name="DailyGooglePhotos"/>
+    <variant name="Default"/>
+    <variant name="Device"/>
     <variant name="OnceGooglePhotos"/>
     <variant name="Online"/>
+    <variant name="Oobe"/>
+    <variant name="Policy"/>
+    <variant name="ThirdParty"/>
   </token>
 </histogram>
 
