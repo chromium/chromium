@@ -179,11 +179,12 @@ class ImportNotifier:
                 continue
             test_type = manifest.get_test_type(
                 self.finder.strip_wpt_path(test_path))
-            # TODO(crbug.com/1474702): After the switch to wptrunner, change the
-            # condition to just `if not test_type` to check for failures in
-            # metadata for other test types. Then, remove the other `examine_*`
-            # methods.
-            if test_type != 'wdspec':
+            if not test_type:
+                continue
+            # TODO(crbug.com/1474702): After the switch to wptrunner, remove
+            # this condition.
+            if (test_type != 'wdspec'
+                    and not self.host.project_config.switched_to_wptrunner):
                 continue
             failing_tests = set()
             for config in self._configs:
