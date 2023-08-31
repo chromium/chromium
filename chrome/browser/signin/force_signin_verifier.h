@@ -9,8 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -31,7 +33,8 @@ struct AccessTokenInfo;
 // into memory by the first time via gaia server. It will retry on any transient
 // error.
 class ForceSigninVerifier
-    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver,
+      public signin::IdentityManager::Observer {
  public:
   explicit ForceSigninVerifier(Profile* profile,
                                signin::IdentityManager* identity_manager);
@@ -52,6 +55,10 @@ class ForceSigninVerifier
 
   // Return the value of |has_token_verified_|.
   bool HasTokenBeenVerified();
+
+  // signin::IdentityManager::Observer:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  protected:
   // Send the token verification request. The request will be sent only if
@@ -88,6 +95,15 @@ class ForceSigninVerifier
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // We need this observer in order to reset the value of the reference
+  // to the `identity_manager_`.
+  // `ForceSigninVerifier` instance lives in `ChromeSigninClient`, for which
+  // `IdentityManager` already has a dependency. Therefore we cannot add a
+  // regular KeyedService factory as it would create a circular dependency.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observer{this};
 
   base::WeakPtrFactory<ForceSigninVerifier> weak_factory_{this};
 };
