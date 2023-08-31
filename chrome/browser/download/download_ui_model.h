@@ -619,6 +619,10 @@ class DownloadUIModel {
   // download is in progress.
   virtual std::u16string GetInProgressAccessibleAlertText() const;
 
+  // Determines whether the file is an encrypted archive. This is used to
+  // specialize certain strings.
+  virtual bool IsEncryptedArchive() const;
+
  protected:
   // Returns the MIME type of the download.
   virtual std::string GetMimeType() const;

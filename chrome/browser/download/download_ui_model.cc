@@ -1399,17 +1399,18 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                                      kColorDownloadItemIconWarning)
                     .AddSecondaryTextColor(kColorDownloadItemTextWarning);
       if (base::FeatureList::IsEnabled(safe_browsing::kDeepScanningUpdatedUX)) {
-        ui_info
-            .AddSubpageSummary(l10n_util::GetStringFUTF16(
-                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED,
-                u"\n\n"))
+        std::u16string subpage_text = l10n_util::GetStringFUTF16(
+            IsEncryptedArchive()
+                ? IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_ENCRYPTED_ARCHIVE
+                : IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED,
+            u"\n\n");
+        ui_info.AddSubpageSummary(subpage_text)
             .AddPrimarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN_UPDATED),
                 DownloadCommands::Command::DEEP_SCAN)
             .AddSecondarySubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_UPDATED),
-                DownloadCommands::Command::BYPASS_DEEP_SCANNING,
-                kColorDownloadItemTextWarning);
+                DownloadCommands::Command::BYPASS_DEEP_SCANNING);
       } else {
         ui_info.AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
             .AddSubpageSummary(l10n_util::GetStringUTF16(
@@ -2200,4 +2201,8 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
       IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT,
       ui::FormatBytes(GetTotalBytes()),
       GetFileNameToReportUser().LossyDisplayName());
+}
+
+bool DownloadUIModel::IsEncryptedArchive() const {
+  return false;
 }
