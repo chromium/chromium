@@ -60,8 +60,11 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 // Dangerous command line flags for which to display a warning that "stability
 // and security will suffer".
-static const char* kBadFlags[] = {
-    network::switches::kIgnoreCertificateErrorsSPKIList,
+const char* const kBadFlags[] = {
+    // These flags allow redirecting user traffic.
+    network::switches::kHostResolverRules,
+    switches::kHostRules,
+
     // These flags disable sandbox-related security.
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
@@ -80,6 +83,7 @@ static const char* kBadFlags[] = {
     // These flags undermine HTTPS / connection security.
     switches::kDisableWebRtcEncryption,
     switches::kIgnoreCertificateErrors,
+    network::switches::kIgnoreCertificateErrorsSPKIList,
 
     // This flag could prevent QuotaChange events from firing or cause the event
     // to fire too often, potentially impacting web application behavior.
