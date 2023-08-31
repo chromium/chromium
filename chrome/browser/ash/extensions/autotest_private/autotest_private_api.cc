@@ -14,6 +14,7 @@
 #include "ash/app_list/app_list_public_test_util.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/mojom/system_ui.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -6789,6 +6790,46 @@ AutotestPrivateGetCurrentInputMethodDescriptorFunction::Run() {
   base::Value::Dict dict;
   dict.Set("keyboardLayout", descriptor.keyboard_layout());
   return RespondNow(WithArguments(std::move(dict)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSetArcInteractiveStateFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateSetArcInteractiveStateFunction::
+    AutotestPrivateSetArcInteractiveStateFunction() = default;
+
+AutotestPrivateSetArcInteractiveStateFunction::
+    ~AutotestPrivateSetArcInteractiveStateFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateSetArcInteractiveStateFunction::Run() {
+  absl::optional<api::autotest_private::SetArcInteractiveState::Params> params =
+      api::autotest_private::SetArcInteractiveState::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    return RespondNow(Error("ARC service manager is not available"));
+  }
+
+  arc::ArcBridgeService* arc_bridge_service =
+      arc_service_manager->arc_bridge_service();
+
+  if (!arc_bridge_service) {
+    return RespondNow(Error("ARC bridge service is not available"));
+  }
+
+  arc::mojom::PowerInstance* power_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetInteractive);
+
+  if (!power_instance) {
+    return RespondNow(Error("ARC power service is not available"));
+  }
+
+  power_instance->SetInteractive(params->enabled);
+
+  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

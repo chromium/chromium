@@ -1831,6 +1831,17 @@ class AutotestPrivateGetCurrentInputMethodDescriptorFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateSetArcInteractiveStateFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateSetArcInteractiveStateFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.setArcInteractiveState",
+                             AUTOTESTPRIVATE_SETARCINTERACTIVESTATE)
+
+ private:
+  ~AutotestPrivateSetArcInteractiveStateFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

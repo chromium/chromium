@@ -1593,6 +1593,12 @@ namespace autotestPrivate {
     // Returns keyboard layout used for current input method.
     [supportsPromises] static void getCurrentInputMethodDescriptor(
         GetCurrentInputMethodDescriptorCallback callback);
+
+    // ARC set interactive enable/disable state.
+    // |enabled|: Enable ARC interactive.
+    // |callback|: Called when the operation sent to ARC by mojo.
+    [supportsPromises] static void setArcInteractiveState(
+      boolean enabled, VoidCallback callback);
   };
 
   interface Events {
