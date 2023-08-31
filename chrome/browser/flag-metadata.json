@@ -3291,7 +3291,7 @@
   {
     "name": "enable-peripheral-customization",
     "owners": ["dpad", "zentaro", "cros-peripherals@google.com"],
-    "expiry_milestone": 126
+    "expiry_milestone": 130
   },
   {
     "name": "enable-phone-hub-call-notification",
