@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -142,6 +144,8 @@ public class MultiInstanceManagerApi31UnitTest {
     ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     @Mock
     TabModelOrchestrator mTabModelOrchestrator;
+    @Mock
+    ActivityManager mActivityManager;
     @Mock
     ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock
@@ -294,6 +298,25 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mActivityTask61.getTaskId()).thenReturn(TASK_ID_61);
         when(mTabbedActivityTask62.getTaskId()).thenReturn(TASK_ID_62);
         when(mTabbedActivityTask63.getTaskId()).thenReturn(TASK_ID_63);
+
+        when(mActivityTask56.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mActivityTask57.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mActivityTask58.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mActivityTask58.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mActivityTask60.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mActivityTask61.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mTabbedActivityTask62.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+        when(mTabbedActivityTask63.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mActivityManager);
+
+        when(mActivityManager.getAppTasks()).thenReturn(new ArrayList());
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
 
         mActivityPool = new Activity[] {

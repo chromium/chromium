@@ -266,6 +266,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public static final Set<String> TABBED_MODE_COMPONENT_NAMES = Set.of(
             ChromeTabbedActivity.class.getName(), MultiInstanceChromeTabbedActivity.class.getName(),
             ChromeTabbedActivity2.class.getName(), MAIN_LAUNCHER_ACTIVITY_NAME);
+    private static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
     /**
      * Identifies a histogram to use in {@link #maybeDispatchExplicitMainViewIntent(Intent, int)}.
@@ -452,12 +453,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // available.
         // clang-format off
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(getLifecycleDispatcher(),
-                () -> findViewById(android.R.id.content),
-                this::getIntent, this::shouldIgnoreIntent, this::isTablet,
-                this::shouldShowOverviewPageOnStart, this::isInstantStartEnabled,
-                mTabModelProfileSupplier,
-                new IncognitoRestoreAppLaunchDrawBlockerFactory(this::getSavedInstanceState,
-                        getTabModelSelectorSupplier()));
+            () -> findViewById(android.R.id.content),
+            this::getIntent, this::shouldIgnoreIntent, this::isTablet,
+            this::shouldShowOverviewPageOnStart, this::isInstantStartEnabled,
+            mTabModelProfileSupplier,
+            new IncognitoRestoreAppLaunchDrawBlockerFactory(this::getSavedInstanceState,
+                getTabModelSelectorSupplier()));
         // clang-format on
     }
 
@@ -658,8 +659,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
-                    mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
-                    getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider);
+                mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
+                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider);
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
@@ -2139,12 +2140,21 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean preferNew = getExtraPreferNewFromIntent(intent);
             mWindowId = mMultiInstanceManager.allocInstanceId(
                     windowId, ApplicationStatus.getTaskId(this), preferNew);
+            Log.i(TAG_MULTI_INSTANCE,
+                    "Intent info -  has FLAG_ACTIVITY_MULTIPLE_TASK: "
+                            + ((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0)
+                            + " , is from self: " + IntentUtils.isTrustedIntentFromSelf(intent)
+                            + " , has launcher category: "
+                            + intent.hasCategory(Intent.CATEGORY_LAUNCHER)
+                            + " , has activity referrer: " + getReferrer());
         }
         if (mWindowId == INVALID_WINDOW_ID) {
             Log.i(TAG, "Window ID not allocated. Finishing the activity");
             Toast.makeText(this, R.string.max_number_of_windows, Toast.LENGTH_LONG).show();
             recordMaxWindowLimitExceededHistogram(/*limitExceeded=*/true);
             return false;
+        } else {
+            Log.i(TAG_MULTI_INSTANCE, "Window ID allocated: " + mWindowId);
         }
 
         if (mMultiInstanceManager != null
