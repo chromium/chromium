@@ -1814,6 +1814,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpAuthCount" enum="HttpAuthCount"
+    expires_after="2024-02-29">
+  <owner>mpdenton@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Per-authentication-scheme counts of HTTP authentication attempts and
+    rejections.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpAuthNtlmV2Usage" enum="HttpAuthNtlmV2Usage"
     expires_after="M79">
   <owner>mmenke@chromium.org</owner>
@@ -1832,6 +1842,19 @@ chromium-metrics-reviews@google.com.
   <owner>meacer@chromium.org</owner>
   <owner>src/chrome/browser/ui/login/OWNERS</owner>
   <summary>Type of the HTTP auth prompt displayed.</summary>
+</histogram>
+
+<histogram name="Net.HttpAuthTarget" enum="HttpAuthTarget"
+    expires_after="2024-02-29">
+  <owner>mpdenton@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Per-authentication-scheme counts of HTTP authentication targets, such as
+    secure servers or proxies.
+
+    Emitted at the same time as Net.HttpAuthCount, on every HTTP authentication
+    attempt or rejection.
+  </summary>
 </histogram>
 
 <histogram name="Net.HttpContentFreshnessLifetime" units="seconds"
