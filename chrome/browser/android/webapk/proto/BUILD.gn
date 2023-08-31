@@ -7,4 +7,5 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "webapk_database.proto" ]
+  link_deps = [ "//components/sync/protocol" ]
 }
