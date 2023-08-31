@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "ash/shell.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -24,7 +23,6 @@
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wm_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/wayland/color_manager_util.h"
@@ -36,7 +34,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/triangle_f.h"
-#include "wayland-server-protocol.h"
 
 namespace exo {
 namespace wayland {

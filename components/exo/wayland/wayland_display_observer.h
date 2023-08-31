@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_WAYLAND_WAYLAND_DISPLAY_OBSERVER_H_
 
 #include <stdint.h>
-#include <wayland-server-protocol-core.h>
 
 #include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"

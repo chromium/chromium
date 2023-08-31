@@ -4,13 +4,12 @@
 
 #include "components/exo/wayland/wayland_display_observer.h"
 
+#include <chrome-color-management-server-protocol.h>
 #include <wayland-server-core.h>
+#include <wayland-server-protocol-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 
-#include <string>
-
 #include "ash/shell.h"
-#include "chrome-color-management-server-protocol.h"
 #include "components/exo/wayland/output_metrics.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
@@ -18,7 +17,6 @@
 #include "components/exo/wayland/zcr_color_manager.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
-#include "wayland-server-protocol-core.h"
 
 namespace exo {
 namespace wayland {
