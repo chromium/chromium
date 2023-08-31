@@ -107,6 +107,8 @@ class CookieManager {
   void SetMojoCookieManager(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote);
 
+  base::android::ScopedJavaLocalRef<jobject> GetJavaCookieManager();
+
   // Configure whether or not this CookieManager should workaround cookies
   // specified for insecure URLs with the 'Secure' directive. See
   // |workaround_http_secure_cookies_| for the default behavior. This should not
@@ -258,6 +260,9 @@ class CookieManager {
   AwBrowserContext* GetContext() const;
   // Get the storage path for the profile this CookieManager is associated with.
   base::FilePath GetContextPath() const;
+
+  // Java object reference.
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   // If this is the CookieManager for the default profile this will be null,
   // otherwise it will point to the non-default AwBrowserContext which owns the

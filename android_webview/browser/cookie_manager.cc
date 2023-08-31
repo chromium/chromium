@@ -20,6 +20,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_util.h"
@@ -407,6 +408,16 @@ void CookieManager::SwapMojoCookieManagerAsync(
                      base::Unretained(this)));
   std::move(complete).Run();  // unblock content initialization
   RunPendingCookieTasks();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+CookieManager::GetJavaCookieManager() {
+  if (!java_obj_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    java_obj_ =
+        Java_AwCookieManager_create(env, reinterpret_cast<intptr_t>(this));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
 void CookieManager::SetWorkaroundHttpSecureCookiesForTesting(

@@ -458,7 +458,8 @@ public class WebViewChromiumAwInit {
     public CookieManager getDefaultCookieManager() {
         synchronized (mLock) {
             if (mDefaultCookieManager == null) {
-                mDefaultCookieManager = new CookieManagerAdapter(new AwCookieManager());
+                mDefaultCookieManager =
+                        new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
             }
         }
         return mDefaultCookieManager;

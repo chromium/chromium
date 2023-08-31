@@ -650,7 +650,7 @@ AwBrowserContext::GetJavaBrowserContext() {
         env, reinterpret_cast<intptr_t>(this),
         base::android::ConvertUTF8ToJavaString(env, name_),
         base::android::ConvertUTF8ToJavaString(env, relative_path_.value()),
-        IsDefaultBrowserContext());
+        GetCookieManager()->GetJavaCookieManager(), IsDefaultBrowserContext());
   }
   return base::android::ScopedJavaLocalRef<jobject>(obj_);
 }

@@ -48,20 +48,25 @@ public class AwBrowserContext implements BrowserContextHandle {
     private final String mName;
     @NonNull
     private final String mRelativePath;
+    @NonNull
+    private final AwCookieManager mCookieManager;
     private final boolean mIsDefault;
     @NonNull
     private final SharedPreferences mSharedPreferences;
 
     public AwBrowserContext(long nativeAwBrowserContext) {
         this(nativeAwBrowserContext, AwBrowserContextJni.get().getDefaultContextName(),
-                AwBrowserContextJni.get().getDefaultContextRelativePath(), true);
+                AwBrowserContextJni.get().getDefaultContextRelativePath(),
+                AwCookieManager.getDefaultCookieManager(), true);
     }
 
     public AwBrowserContext(long nativeAwBrowserContext, @NonNull String name,
-            @NonNull String relativePath, boolean isDefault) {
+            @NonNull String relativePath, @NonNull AwCookieManager cookieManager,
+            boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
         mName = name;
         mRelativePath = relativePath;
+        mCookieManager = cookieManager;
         mIsDefault = isDefault;
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -118,6 +123,10 @@ public class AwBrowserContext implements BrowserContextHandle {
         } else {
             return BASE_PREFERENCES + relativePath + "_" + dataDirSuffix;
         }
+    }
+
+    public AwCookieManager getCookieManager() {
+        return mCookieManager;
     }
 
     public AwGeolocationPermissions getGeolocationPermissions() {
@@ -265,9 +274,10 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    public static AwBrowserContext create(
-            long nativeAwBrowserContext, String name, String relativePath, boolean isDefault) {
-        return new AwBrowserContext(nativeAwBrowserContext, name, relativePath, isDefault);
+    public static AwBrowserContext create(long nativeAwBrowserContext, String name,
+            String relativePath, AwCookieManager cookieManager, boolean isDefault) {
+        return new AwBrowserContext(
+                nativeAwBrowserContext, name, relativePath, cookieManager, isDefault);
     }
 
     @NativeMethods

@@ -8,8 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -21,11 +23,29 @@ import java.util.List;
  * AwCookieManager manages cookies according to RFC2109 spec.
  *
  * Methods in this class are thread safe.
+ *
+ * The default profile's cookie manager has a singleton lifetime, whereas a non-default
+ * profile has a cookie manager that is lifetime scoped to the profile.
  */
 @JNINamespace("android_webview")
 public final class AwCookieManager {
-    private long mNativeCookieManager;
+    private final long mNativeCookieManager;
 
+    /**
+     * The class loader will take care of synchronization as each class
+     * is only loaded once at the time it is needed. Meaning that the first time
+     * {@link AwCookieManager#getDefaultCookieManager()} is called, the static instance
+     * of the default cookie manager will be initialized within the holder class.
+     */
+    private static final class DefaultCookieManagerHolder {
+        private static final AwCookieManager sDefaultCookieManager = new AwCookieManager();
+    }
+
+    public static AwCookieManager getDefaultCookieManager() {
+        return DefaultCookieManagerHolder.sDefaultCookieManager;
+    }
+
+    @VisibleForTesting
     public AwCookieManager() {
         this(AwCookieManagerJni.get().getDefaultCookieManager());
     }
@@ -33,6 +53,11 @@ public final class AwCookieManager {
     public AwCookieManager(long nativeCookieManager) {
         LibraryLoader.getInstance().ensureInitialized();
         mNativeCookieManager = nativeCookieManager;
+    }
+
+    @CalledByNative
+    private static AwCookieManager create(long nativeCookieManager) {
+        return new AwCookieManager(nativeCookieManager);
     }
 
     /**
