@@ -219,7 +219,10 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
                           "webapps_integration/standalone/foo/basic.html");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
+// This test is disabled as SubApps is now a IWA API.
+// TODO(crbug.com/1470730): Re-enabled the test after IWAs are integrated with
+// the testing framework.
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, DISABLED_CheckSubAppInstallation) {
   helper_.InstallMenuOption(InstallableSite::kHasSubApps);
   helper_.CheckNoSubApps(Site::kHasSubApps);
   helper_.InstallSubApp(Site::kHasSubApps, Site::kSubApp1,

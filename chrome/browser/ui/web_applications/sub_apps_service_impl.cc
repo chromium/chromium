@@ -127,6 +127,31 @@ blink::mojom::SubAppsServiceResultCode InstallResultCodeToMojo(
              : blink::mojom::SubAppsServiceResultCode::kFailure;
 }
 
+bool IsFrameIsolated(content::RenderFrameHost& render_frame_host) {
+  return render_frame_host.GetWebExposedIsolationLevel() >=
+         content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+}
+
+bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
+  auto* app_id = GetAppId(render_frame_host);
+  if (!app_id) {
+    return false;
+  }
+
+  auto* provider = GetWebAppProvider(render_frame_host);
+  auto* web_app = provider->registrar_unsafe().GetAppById(*app_id);
+  return (web_app && !web_app->IsSubAppInstalledApp());
+}
+
+// Verify that the calling app is an installed IWA that is not a sub app
+// itself. This check is called from `CreateIfAllowed` and from each of the APIs
+// to avoid a potential race between the parent app calling an API while being
+// uninstalled.
+bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
+  return IsFrameIsolated(render_frame_host) &&
+         IsInstalledNonChildApp(render_frame_host);
+}
+
 }  // namespace
 
 SubAppsServiceImpl::SubAppsServiceImpl(
@@ -147,6 +172,7 @@ void SubAppsServiceImpl::CreateIfAllowed(
 
   // This class is created only on the primary main frame.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
+    receiver.reset();
     return;
   }
 
@@ -154,6 +180,14 @@ void SubAppsServiceImpl::CreateIfAllowed(
   if (!AreWebAppsEnabled(Profile::FromBrowserContext(
           content::WebContents::FromRenderFrameHost(render_frame_host)
               ->GetBrowserContext()))) {
+    receiver.reset();
+    return;
+  }
+
+  // Bail if the calling app is not an Isolated Web App or is not installed or
+  // is a sub-app itself.
+  if (!CanAccessSubAppsApi(*render_frame_host)) {
+    receiver.reset();
     return;
   }
 
@@ -174,25 +208,18 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
-  const AppId* parent_app_id = GetAppId(render_frame_host());
-  // Verify that the calling app is installed itself and is not a sub app
-  // itself. This check is done here and not in `CreateIfAllowed` because of a
-  // potential race between doing the check there and then running the current
-  // function, and the parent app being installed/uninstalled.
-  if (!parent_app_id || provider->registrar_unsafe()
-                            .GetAppById(*parent_app_id)
-                            ->IsSubAppInstalledApp()) {
+  if (!CanAccessSubAppsApi(render_frame_host())) {
     std::vector<SubAppsServiceAddResultPtr> result;
     for (const auto& sub_app : sub_apps_to_add) {
       result.emplace_back(SubAppsServiceAddResult::New(
           sub_app->manifest_id_path, SubAppsServiceResultCode::kFailure));
     }
-    std::move(result_callback).Run(/*mojom_results=*/std::move(result));
+    std::move(result_callback).Run(std::move(result));
     return;
   }
 
   if (sub_apps_to_add.empty()) {
-    std::move(result_callback).Run(/*mojom_results=*/{});
+    std::move(result_callback).Run({});
     return;
   }
 
@@ -375,19 +402,17 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
     return;
   }
 
-  // Verify that the calling app is installed itself (cf. `Add`).
-  const AppId* parent_app_id = GetAppId(render_frame_host());
-  if (!parent_app_id) {
+  if (!CanAccessSubAppsApi(render_frame_host())) {
     return std::move(result_callback)
         .Run(SubAppsServiceListResult::New(
             SubAppsServiceResultCode::kFailure,
             std::vector<SubAppsServiceListResultEntryPtr>()));
   }
 
-  WebAppRegistrar& registrar = provider->registrar_unsafe();
-
+  const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
-  for (const AppId& sub_app_id : registrar.GetAllSubAppIds(*parent_app_id)) {
+  for (const AppId& sub_app_id :
+       registrar.GetAllSubAppIds(*GetAppId(render_frame_host()))) {
     const WebApp* sub_app = registrar.GetAppById(sub_app_id);
     ManifestId manifest_id = sub_app->manifest_id();
     sub_apps_list.push_back(SubAppsServiceListResultEntry::New(
@@ -412,9 +437,7 @@ void SubAppsServiceImpl::Remove(
     return;
   }
 
-  // Verify that the calling app is installed itself (cf. `Add`).
-  const AppId* calling_app_id = GetAppId(render_frame_host());
-  if (!calling_app_id) {
+  if (!CanAccessSubAppsApi(render_frame_host())) {
     std::vector<SubAppsServiceRemoveResultPtr> result;
     for (const std::string& manifest_id_path : manifest_id_paths) {
       result.emplace_back(SubAppsServiceRemoveResult::New(
@@ -432,7 +455,8 @@ void SubAppsServiceImpl::Remove(
                          std::move(result_callback)));
 
   for (const std::string& manifest_id_path : manifest_id_paths) {
-    RemoveSubApp(manifest_id_path, remove_barrier_callback, calling_app_id);
+    RemoveSubApp(manifest_id_path, remove_barrier_callback,
+                 GetAppId(render_frame_host()));
   }
 }
 
