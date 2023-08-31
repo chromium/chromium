@@ -10,6 +10,7 @@
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view_delegate.h"
@@ -29,6 +30,8 @@ const CGFloat kFaviconBackgroundSize = 30.0;
 const CGFloat kFavIconBackgroundCornerRadius = 7.0;
 const CGFloat kFaviconContainerSize = 56.0;
 const CGFloat kFavIconContainerCornerRadius = 12.0;
+const CGSize kFavIconContainerShadowOffset = {.width = 0, .height = 4};
+const CGFloat kFavIconContainerShadowOpacity = 0.12;
 
 // Stacks constants.
 const CGFloat kContainerStackSpacing = 14.0;
@@ -133,6 +136,8 @@ const CGFloat kLabelStackSpacing = 6.0;
   UIView* faviconBackgroundView = [[UIView alloc] init];
   faviconBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   faviconBackgroundView.layer.cornerRadius = kFavIconBackgroundCornerRadius;
+  faviconBackgroundView.layer.shadowOffset = kFavIconContainerShadowOffset;
+  faviconBackgroundView.layer.shadowOpacity = kFavIconContainerShadowOpacity;
   faviconBackgroundView.backgroundColor = UIColor.whiteColor;
   [faviconContainerView addSubview:faviconBackgroundView];
 
@@ -179,7 +184,7 @@ const CGFloat kLabelStackSpacing = 6.0;
 
   UILabel* label = [[UILabel alloc] init];
   label.text = sessionString.uppercaseString;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
   label.numberOfLines = 1;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.adjustsFontForContentSizeCategory = YES;
@@ -192,7 +197,8 @@ const CGFloat kLabelStackSpacing = 6.0;
 - (UILabel*)configuredTabTitleLabel {
   UILabel* label = [[UILabel alloc] init];
   label.text = _item.tabTitle;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  label.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
   label.numberOfLines = 1;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.adjustsFontForContentSizeCategory = YES;
