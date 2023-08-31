@@ -40,16 +40,6 @@ const base::FilePath::CharType kSessionFileName[] =
     FILE_PATH_LITERAL("session.plist");
 }
 
-@implementation NSKeyedUnarchiver (CrLegacySessionCompatibility)
-
-// When adding a new compatibility alias here, create a new crbug to track its
-// removal and mark it with a release at least one year after the introduction
-// of the alias.
-- (void)cr_registerCompatibilityAliases {
-}
-
-@end
-
 @implementation SessionServiceIOS {
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
@@ -144,9 +134,6 @@ const base::FilePath::CharType kSessionFileName[] =
     }
 
     unarchiver.requiresSecureCoding = NO;
-
-    // Register compatibility aliases to support legacy saved sessions.
-    [unarchiver cr_registerCompatibilityAliases];
     rootObject = [unarchiver decodeObjectForKey:kRootObjectKey];
   } @catch (NSException* exception) {
     NOTREACHED() << "Error loading session file: "
