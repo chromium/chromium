@@ -458,6 +458,9 @@ interface BidderWorklet {
   // be loaded first, if needed.
   //
   // Arguments:
+  //  `is_for_additional_bid` If true, this will call reportContextualWin()
+  //  rather than reportWin().
+  //
   // `reporting_id_field` Describes which kind of ad campaign identification
   //  signal has been provided to ReportWin(), corresponding to either the
   //  interest group name or a field on the registered ad itself.
@@ -559,10 +562,6 @@ interface BidderWorklet {
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
   //
-  // `has_bidding_signals_data_version` True to indicate Data-Version header
-  //  was present in the HTTP response for the trusted bidding signals.
-  //  TODO(https://crbug.com/657632): Update when optional integers supported.
-  //
   // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
   //  to use with tracing calls.
   //
@@ -588,6 +587,7 @@ interface BidderWorklet {
   //  provided, and there may be no errors when there's no `report_url`.
   //  Includes errors from failing to load the worklet script.
   ReportWin(
+      bool is_for_additional_bid,
       ReportingIdField reporting_id_field,
       string reporting_id,
       string? auction_signals_json,
@@ -611,8 +611,7 @@ interface BidderWorklet {
       uint8 browser_signal_recency,
       url.mojom.Origin browser_signal_seller_origin,
       url.mojom.Origin? browser_signal_top_level_seller_origin,
-      uint32 bidding_signals_data_version,
-      bool has_bidding_signals_data_version,
+      uint32? bidding_signals_data_version,
       uint64 trace_id) => (
           url.mojom.Url? report_url,
           map<string, url.mojom.Url> ad_beacon_map,

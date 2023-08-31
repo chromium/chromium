@@ -299,6 +299,7 @@ class BidderWorkletTest : public testing::Test {
   // test.
   void SetDefaultParameters() {
     interest_group_name_ = "Fred";
+    is_for_additional_bid_ = false;
     reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
     reporting_id_ = interest_group_name_;
     interest_group_enable_bidding_signals_prioritization_ = false;
@@ -536,8 +537,9 @@ class BidderWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
-        reporting_id_field_, reporting_id_, auction_signals_,
-        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
+        is_for_additional_bid_, reporting_id_field_, reporting_id_,
+        auction_signals_, per_buyer_signals_,
+        direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -548,8 +550,7 @@ class BidderWorkletTest : public testing::Test {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-        data_version_.has_value(),
+        browser_signal_top_level_seller_origin_, data_version_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<GURL>& expected_report_url,
@@ -930,6 +931,7 @@ class BidderWorkletTest : public testing::Test {
   uint8_t browser_signal_recency_report_win_;
 
   // Used for reportWin();
+  bool is_for_additional_bid_ = false;
   auction_worklet::mojom::ReportingIdField reporting_id_field_ =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
   std::string reporting_id_;
@@ -3768,8 +3770,9 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
 
   base::RunLoop run_loop;
   bidder_worklet->ReportWin(
-      reporting_id_field_, reporting_id_, /*auction_signals_json=*/"0",
-      per_buyer_signals_, direct_from_seller_per_buyer_signals_,
+      is_for_additional_bid_, reporting_id_field_, reporting_id_,
+      /*auction_signals_json=*/"0", per_buyer_signals_,
+      direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -3780,8 +3783,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-      data_version_.has_value(),
+      browser_signal_top_level_seller_origin_, data_version_,
       /*trace_id=*/1,
       base::BindLambdaForTesting(
           [&run_loop](
@@ -5166,7 +5168,8 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   bidder_worklet->ReportWin(
-      reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
+      is_for_additional_bid_, reporting_id_field_, reporting_id_,
+      auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -5178,8 +5181,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-      data_version_.has_value(),
+      browser_signal_top_level_seller_origin_, data_version_,
       /*trace_id=*/1,
       base::BindOnce(
           [](const absl::optional<GURL>& report_url,
@@ -5220,7 +5222,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
     size_t num_report_win_calls = 0;
     for (size_t i = 0; i < kNumReportWinCalls; ++i) {
       bidder_worklet->ReportWin(
-          reporting_id_field_, reporting_id_,
+          is_for_additional_bid_, reporting_id_field_, reporting_id_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_per_buyer_signals_header_ad_slot_,
@@ -5234,8 +5236,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           browser_signal_ad_cost_, browser_signal_modeling_signals_,
           browser_signal_join_count_, browser_signal_recency_report_win_,
           browser_signal_seller_origin_,
-          browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-          data_version_.has_value(),
+          browser_signal_top_level_seller_origin_, data_version_,
           /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
@@ -5276,7 +5277,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
 
   for (size_t i = 0; i < 10; ++i) {
     bidder_worklet->ReportWin(
-        reporting_id_field_, reporting_id_,
+        is_for_additional_bid_, reporting_id_field_, reporting_id_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
@@ -5289,8 +5290,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-        data_version_.has_value(),
+        browser_signal_top_level_seller_origin_, data_version_,
         /*trace_id=*/1,
         base::BindOnce(
             [](const absl::optional<GURL>& report_url,
@@ -5320,6 +5320,26 @@ TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught ReferenceError: Date is not defined."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
+  const char kScript[] = R"(
+    function reportWin() {
+      sendReportTo("https://report-win.test/");
+    }
+
+    function reportContextualWin() {
+      sendReportTo("https://report-contextual-win.test/");
+    }
+  )";
+
+  is_for_additional_bid_ = false;
+  RunReportWinWithJavascriptExpectingResult(kScript,
+                                            GURL("https://report-win.test/"));
+
+  is_for_additional_bid_ = true;
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-contextual-win.test/"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinReportingId) {
@@ -5735,8 +5755,9 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   for (int i = 0; i < 3; ++i) {
     base::RunLoop run_loop;
     bidder_worklet->ReportWin(
-        reporting_id_field_, reporting_id_, auction_signals_,
-        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
+        is_for_additional_bid_, reporting_id_field_, reporting_id_,
+        auction_signals_, per_buyer_signals_,
+        direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -5747,8 +5768,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
         browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
         browser_signal_modeling_signals_, browser_signal_join_count_,
         browser_signal_recency_report_win_, browser_signal_seller_origin_,
-        browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-        data_version_.has_value(),
+        browser_signal_top_level_seller_origin_, data_version_,
         /*trace_id=*/1,
         base::BindLambdaForTesting(
             [&run_loop](
@@ -6502,7 +6522,8 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
 
   GenerateBid(bidder_worklet.get());
   bidder_worklet->ReportWin(
-      reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
+      is_for_additional_bid_, reporting_id_field_, reporting_id_,
+      auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -6514,8 +6535,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       browser_signal_made_highest_scoring_other_bid_, browser_signal_ad_cost_,
       browser_signal_modeling_signals_, browser_signal_join_count_,
       browser_signal_recency_report_win_, browser_signal_seller_origin_,
-      browser_signal_top_level_seller_origin_, data_version_.value_or(0),
-      data_version_.has_value(),
+      browser_signal_top_level_seller_origin_, data_version_,
       /*trace_id=*/1,
       base::BindOnce(
           [](const absl::optional<GURL>& report_url,

@@ -201,6 +201,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
   }
 
   void ReportWin(
+      bool is_for_additional_bid,
       auction_worklet::mojom::ReportingIdField reporting_id_field,
       const std::string& reporting_id,
       const absl::optional<std::string>& auction_signals_json,
@@ -227,8 +228,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       uint8_t browser_signal_recency,
       const url::Origin& browser_signal_seller_origin,
       const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
-      uint32_t browser_signal_data_version,
-      bool browser_signal_has_data_version,
+      absl::optional<uint32_t> browser_signal_data_version,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
     NOTREACHED();

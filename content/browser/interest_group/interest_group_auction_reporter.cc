@@ -671,11 +671,15 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
         auction_worklet::mojom::ReportingIdField::kBuyerReportingId;
     reporting_id = *chosen_ad.buyer_reporting_id;
   }
-  // if k-anonymity enforcement is on we can only reveal the winning reporting
+  // If k-anonymity enforcement is on we can only reveal the winning reporting
   // id in reportWin if the winning ad's reporting_ads_kanon entry is
   // k-anonymous. Otherwise we simply provide the empty string, as well as hide
   // the field name.
-  if (!IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
+  //
+  // An exception to this is contextual bids, which have access to page
+  // information anyway.
+  if (!winning_bid_info_.provided_as_additional_bid &&
+      !IsKAnonForReporting(*winning_bid_info_.storage_interest_group,
                            chosen_ad)) {
     reporting_id = "";
     reporting_id_field =
@@ -718,8 +722,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           : winning_bid_info_.bid;
 
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
-      reporting_id_field, reporting_id,
-      auction_config->non_shared_params.auction_signals.value(),
+      winning_bid_info_.provided_as_additional_bid, reporting_id_field,
+      reporting_id, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
       InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
           seller_info.subresource_url_builder.get(),
@@ -755,8 +759,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
       component_seller_winning_bid_info_
           ? top_level_seller_winning_bid_info_.auction_config->seller
           : absl::optional<url::Origin>(),
-      winning_bid_info_.bidding_signals_data_version.value_or(0),
-      winning_bid_info_.bidding_signals_data_version.has_value(),
+      winning_bid_info_.bidding_signals_data_version,
       top_level_seller_winning_bid_info_.trace_id,
       base::BindOnce(&InterestGroupAuctionReporter::OnBidderReportWinComplete,
                      weak_ptr_factory_.GetWeakPtr(),

@@ -495,6 +495,8 @@ std::string MakeBidScript(const url::Origin& seller,
       privateAggregation.contributeToHistogramOnEvent(
           'click', {bucket: 30n, value: 40 + bid});
     }
+
+    reportContextualWin = reportWin;
   )";
   return base::StringPrintf(
       kBidScript, seller.Serialize().c_str(), bid.c_str(), render_url.c_str(),
@@ -19946,6 +19948,97 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
       }
     }
   }
+}
+
+TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
+  base::test::ScopedFeatureList additional_bids_on;
+  additional_bids_on.InitAndEnableFeature(
+      blink::features::kFledgeNegativeTargeting);
+
+  ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+
+  const char kAdditionalBidUrl[] =
+      "https://adplatform.com/offers-contextual.js";
+
+  const char kReportWin[] = R"(
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://example.org/?" +
+                   browserSignals.interestGroupName);
+    }
+
+    function reportContextualWin(auctionSignals, perBuyerSignals, sellerSignals,
+                       browserSignals) {
+      sendReportTo("https://contextual.test/?" +
+                   browserSignals.interestGroupName);
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeConstBidScript(1, "https://regular.test") + kReportWin);
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_,
+                                         GURL(kAdditionalBidUrl), kReportWin);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      std::string(kMinimumDecisionScript) + kBasicReportResult);
+
+  // We don't authorize anything for reporting k-anon, but do authorize the
+  // regular ad to participate.
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://regular.test")));
+
+  AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
+                   "https://regular.test/", bidders[0]);
+
+  auction_nonce_ =
+      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  pass_promise_for_additional_bids_ = true;
+  StartAuction(kSellerUrl, bidders);
+
+  const char kBidJsonTemplate[] = R"({
+    "interestGroup": {
+      "name": "additionalPseudoIG",
+      "biddingLogicURL": "%s",
+      "owner": "%s"
+    },
+    "bid": {
+      "bid": 40,
+      "render": "https://additional.test"
+    },
+    "auctionNonce": "%s",
+    "seller": "%s"
+  })";
+
+  std::string bid_json = base::StringPrintf(
+      kBidJsonTemplate, kAdditionalBidUrl, kBidder1.Serialize().c_str(),
+      auction_nonce_->AsLowercaseString().c_str(), kSeller.Serialize().c_str());
+
+  std::map<std::string, std::vector<std::string>> additional_bids_for_nonce;
+  additional_bids_for_nonce[auction_nonce_->AsLowercaseString()].push_back(
+      GenerateSignedAdditionalBidHeaderPayloadPortion(
+          SignedAdditionalBidFault::kNone, bid_json,
+          {kPrivateKey1, kPrivateKey2},
+          {kBase64PublicKey1, kBase64PublicKey2}));
+  ad_auction_page_data_->AddAuctionAdditionalBidsWitnessForOrigin(
+      kSeller, additional_bids_for_nonce);
+
+  abortable_ad_auction_->ResolvedAdditionalBids(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
+
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_THAT(result_.report_urls,
+              testing::UnorderedElementsAre(
+                  "https://reporting.example.com/40",
+                  "https://contextual.test/?additionalPseudoIG"));
+
+  // Clear this before the page expires to avoid the dangling ptr error.
+  ad_auction_page_data_ = nullptr;
 }
 
 INSTANTIATE_TEST_SUITE_P(

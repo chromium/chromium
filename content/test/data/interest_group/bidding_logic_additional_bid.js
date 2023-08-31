@@ -5,5 +5,11 @@
 function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
                    browserSignals) {
   sendReportTo(browserSignals.interestGroupOwner +
+      '/echoall?report_bidder_regular');
+}
+
+function reportContextualWin(auctionSignals, perBuyerSignals, sellerSignals,
+                             browserSignals) {
+  sendReportTo(browserSignals.interestGroupOwner +
       '/echoall?report_bidder_additional');
 }

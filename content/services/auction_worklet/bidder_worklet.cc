@@ -463,6 +463,7 @@ void BidderWorklet::SendPendingSignalsRequests() {
 }
 
 void BidderWorklet::ReportWin(
+    bool is_for_additional_bid,
     mojom::ReportingIdField reporting_id_field,
     const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
@@ -489,8 +490,7 @@ void BidderWorklet::ReportWin(
     uint8_t browser_signal_recency,
     const url::Origin& browser_signal_seller_origin,
     const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
-    uint32_t bidding_signals_data_version,
-    bool has_bidding_signals_data_version,
+    absl::optional<uint32_t> bidding_signals_data_version,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -501,6 +501,7 @@ void BidderWorklet::ReportWin(
 
   report_win_tasks_.emplace_front();
   auto report_win_task = report_win_tasks_.begin();
+  report_win_task->is_for_additional_bid = is_for_additional_bid;
   report_win_task->reporting_id_field = reporting_id_field,
   report_win_task->reporting_id = reporting_id;
   report_win_task->auction_signals_json = auction_signals_json;
@@ -525,10 +526,7 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->browser_signal_top_level_seller_origin =
       browser_signal_top_level_seller_origin;
-  if (has_bidding_signals_data_version) {
-    report_win_task->bidding_signals_data_version =
-        bidding_signals_data_version;
-  }
+  report_win_task->bidding_signals_data_version = bidding_signals_data_version;
   report_win_task->callback = std::move(report_win_callback);
   report_win_task->trace_id = trace_id;
 
@@ -700,6 +698,7 @@ BidderWorklet::V8State::SingleGenerateBidResult::operator=(
     SingleGenerateBidResult&&) = default;
 
 void BidderWorklet::V8State::ReportWin(
+    bool is_for_additional_bid,
     mojom::ReportingIdField reporting_id_field,
     const std::string& reporting_id,
     const absl::optional<std::string>& auction_signals_json,
@@ -918,9 +917,11 @@ void BidderWorklet::V8State::ReportWin(
   }
   script_failed =
       v8_helper_
-          ->CallFunction(context, debug_id_.get(),
-                         v8_helper_->FormatScriptName(unbound_worklet_script),
-                         "reportWin", args, total_timeout.get(), errors_out)
+          ->CallFunction(
+              context, debug_id_.get(),
+              v8_helper_->FormatScriptName(unbound_worklet_script),
+              is_for_additional_bid ? "reportContextualWin" : "reportWin", args,
+              total_timeout.get(), errors_out)
           .IsEmpty();
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
 
@@ -1988,6 +1989,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
       v8_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BidderWorklet::V8State::ReportWin, base::Unretained(v8_state_.get()),
+          std::move(task->is_for_additional_bid),
           std::move(task->reporting_id_field), std::move(task->reporting_id),
           std::move(task->auction_signals_json),
           std::move(task->per_buyer_signals_json),
