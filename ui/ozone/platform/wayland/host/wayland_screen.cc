@@ -233,8 +233,12 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
       connection_->wayland_output_manager()->GetOutput(metrics.output_id);
   auto* color_management_output =
       wayland_output ? wayland_output->color_management_output() : nullptr;
-
-  if (color_management_output && color_management_output->gfx_color_space() &&
+  // (b/298432994): Temporarily disable HDR content until we are able to handle
+  // RGBA_F16 buffers. Currently F16 images break pages and apps and make them
+  // blank.
+  bool enable_hdr = false;
+  if (enable_hdr && color_management_output &&
+      color_management_output->gfx_color_space() &&
       color_management_output->gfx_color_space()->IsHDR()) {
     // Only use display color space to determine if HDR is supported.
     // LaCrOS will use generic color spaces for blending and compositing.
