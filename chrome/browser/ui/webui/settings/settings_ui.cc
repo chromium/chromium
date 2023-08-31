@@ -338,6 +338,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                                      features::kPrivacyGuide3));
 
   html_source->AddBoolean(
+      "enablePrivacyGuidePreload",
+      base::FeatureList::IsEnabled(features::kPrivacyGuidePreload) &&
+          base::FeatureList::IsEnabled(features::kPrivacyGuide3));
+
+  html_source->AddBoolean(
       "enableExtendedSettingsDescriptions",
       base::FeatureList::IsEnabled(features::kExtendedSettingsDescriptions));
 

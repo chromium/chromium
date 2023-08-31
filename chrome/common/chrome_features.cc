@@ -465,6 +465,13 @@ BASE_FEATURE(kPrivacyGuide3,
              "PrivacyGuide3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Privacy Guide preload card update of the Privacy
+// Guide feature in Chrome Settings. Also, this requires the PrivacyGuide3
+// feature to be enabled as well.
+BASE_FEATURE(kPrivacyGuidePreload,
+             "PrivacyGuidePreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacyGuideAndroid3,
              "PrivacyGuideAndroid3",
