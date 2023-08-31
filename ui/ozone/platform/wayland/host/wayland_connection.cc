@@ -188,11 +188,6 @@ bool WaylandConnection::Initialize() {
   RegisterGlobalObjectFactory(ZwpPrimarySelectionDeviceManager::kInterfaceName,
                               &ZwpPrimarySelectionDeviceManager::Instantiate);
 
-  static constexpr wl_registry_listener registry_listener = {
-      &Global,
-      &GlobalRemove,
-  };
-
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {
     PLOG(ERROR) << "Failed to connect to Wayland display";
@@ -222,7 +217,12 @@ bool WaylandConnection::Initialize() {
   // zwp_linux_dmabuf objects are able to be stored.
   buffer_factory_ = std::make_unique<WaylandBufferFactory>();
 
-  wl_registry_add_listener(registry_.get(), &registry_listener, this);
+  static constexpr wl_registry_listener kRegistryListener = {
+      .global = &OnGlobal,
+      .global_remove = &OnGlobalRemove,
+  };
+  wl_registry_add_listener(registry_.get(), &kRegistryListener, this);
+
   while (!output_manager_ || !output_manager_->IsOutputReady()) {
     RoundTripQueue();
   }
@@ -397,20 +397,12 @@ void WaylandConnection::CreateDataObjectsIfReady() {
 }
 
 // static
-void WaylandConnection::Global(void* data,
-                               wl_registry* registry,
-                               uint32_t name,
-                               const char* interface,
-                               uint32_t version) {
-  static constexpr xdg_wm_base_listener shell_listener = {
-      &Ping,
-  };
-  static constexpr wp_presentation_listener presentation_listener = {
-      &ClockId,
-  };
-
+void WaylandConnection::OnGlobal(void* data,
+                                 wl_registry* registry,
+                                 uint32_t name,
+                                 const char* interface,
+                                 uint32_t version) {
   auto* connection = static_cast<WaylandConnection*>(data);
-
   auto factory_it = connection->global_object_factories_.find(interface);
   if (factory_it != connection->global_object_factories_.end()) {
     (*factory_it->second)(connection, registry, name, interface, version);
@@ -437,7 +429,11 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind to xdg_wm_base global";
       return;
     }
-    xdg_wm_base_add_listener(connection->shell_.get(), &shell_listener,
+
+    static constexpr xdg_wm_base_listener kShellBaseListener = {
+        .ping = &OnPing,
+    };
+    xdg_wm_base_add_listener(connection->shell_.get(), &kShellBaseListener,
                              connection);
     ReportShellUMA(UMALinuxWaylandShell::kXdgWmBase);
   } else if (!connection->alpha_compositing_ &&
@@ -474,8 +470,11 @@ void WaylandConnection::Global(void* data,
       LOG(ERROR) << "Failed to bind wp_presentation";
       return;
     }
+    static constexpr wp_presentation_listener kPresentationListener = {
+        .clock_id = &OnClockId,
+    };
     wp_presentation_add_listener(connection->presentation_.get(),
-                                 &presentation_listener, connection);
+                                 &kPresentationListener, connection);
   } else if (!connection->viewporter_ &&
              (strcmp(interface, "wp_viewporter") == 0)) {
     connection->viewporter_ = wl::Bind<wp_viewporter>(
@@ -522,9 +521,8 @@ void WaylandConnection::Global(void* data,
             registry, name, std::min(version, kMaxTextInputExtensionVersion));
   } else if (!connection->xdg_decoration_manager_ &&
              strcmp(interface, "zxdg_decoration_manager_v1") == 0) {
-    connection->xdg_decoration_manager_ =
-        wl::Bind<struct zxdg_decoration_manager_v1>(
-            registry, name, std::min(version, kMaxXdgDecorationVersion));
+    connection->xdg_decoration_manager_ = wl::Bind<zxdg_decoration_manager_v1>(
+        registry, name, std::min(version, kMaxXdgDecorationVersion));
     if (!connection->xdg_decoration_manager_) {
       LOG(ERROR) << "Failed to bind zxdg_decoration_manager_v1";
       return;
@@ -546,7 +544,7 @@ void WaylandConnection::Global(void* data,
       LOG(WARNING) << "Skipping bind to zxdg_output_manager_v1";
       return;
     }
-    connection->xdg_output_manager_ = wl::Bind<struct zxdg_output_manager_v1>(
+    connection->xdg_output_manager_ = wl::Bind<zxdg_output_manager_v1>(
         registry, name, std::min(version, kMaxXdgOutputManagerVersion));
     if (!connection->xdg_output_manager_) {
       LOG(ERROR) << "Failed to bind zxdg_output_manager_v1";
@@ -664,9 +662,9 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
 }
 
 // static
-void WaylandConnection::GlobalRemove(void* data,
-                                     wl_registry* registry,
-                                     uint32_t name) {
+void WaylandConnection::OnGlobalRemove(void* data,
+                                       wl_registry* registry,
+                                       uint32_t name) {
   auto* connection = static_cast<WaylandConnection*>(data);
   // The Wayland protocol distinguishes global objects by unique numeric names,
   // which the WaylandOutputManager uses as unique output ids. But, it is only
@@ -680,16 +678,18 @@ void WaylandConnection::GlobalRemove(void* data,
 }
 
 // static
-void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
+void WaylandConnection::OnPing(void* data,
+                               xdg_wm_base* shell,
+                               uint32_t serial) {
   auto* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
   connection->Flush();
 }
 
 // static
-void WaylandConnection::ClockId(void* data,
-                                wp_presentation* presentation,
-                                uint32_t clk_id) {
+void WaylandConnection::OnClockId(void* data,
+                                  wp_presentation* presentation,
+                                  uint32_t clk_id) {
   DCHECK_EQ(base::TimeTicks::GetClock(),
             base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
   auto* connection = static_cast<WaylandConnection*>(data);

@@ -41,9 +41,7 @@ class WaylandBufferHandle {
 
   uint32_t id() const { return backing_->id(); }
   gfx::Size size() const { return backing_->size(); }
-  struct wl_buffer* wl_buffer() const {
-    return wl_buffer_.get();
-  }
+  struct wl_buffer* wl_buffer() const { return wl_buffer_.get(); }
 
   // The existence of |released_callback_| is an indicator of whether the
   // wl_buffer is released, when deciding whether wl_surface should explicitly
@@ -68,7 +66,7 @@ class WaylandBufferHandle {
   void OnWlBufferRelease(struct wl_buffer* wl_buffer);
 
   // wl_buffer_listener:
-  static void BufferRelease(void* data, struct wl_buffer* wl_buffer);
+  static void OnRelease(void* data, struct wl_buffer* wl_buffer);
 
   raw_ptr<const WaylandBufferBacking> backing_;
 

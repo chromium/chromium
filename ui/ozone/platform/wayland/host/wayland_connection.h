@@ -406,21 +406,21 @@ class WaylandConnection {
   // in place, i.e: wl_seat and wl_data_device_manager.
   void CreateDataObjectsIfReady();
 
-  // wl_registry_listener
-  static void Global(void* data,
-                     wl_registry* registry,
-                     uint32_t name,
-                     const char* interface,
-                     uint32_t version);
-  static void GlobalRemove(void* data, wl_registry* registry, uint32_t name);
+  // wl_registry_listener callbacks:
+  static void OnGlobal(void* data,
+                       wl_registry* registry,
+                       uint32_t name,
+                       const char* interface,
+                       uint32_t version);
+  static void OnGlobalRemove(void* data, wl_registry* registry, uint32_t name);
 
-  // xdg_wm_base_listener
-  static void Ping(void* data, xdg_wm_base* shell, uint32_t serial);
+  // xdg_wm_base_listener callbacks:
+  static void OnPing(void* data, xdg_wm_base* shell, uint32_t serial);
 
-  // xdg_wm_base_listener
-  static void ClockId(void* data,
-                      wp_presentation* presentation,
-                      uint32_t clk_id);
+  // wp_presentation_listener callbacks:
+  static void OnClockId(void* data,
+                        wp_presentation* presentation,
+                        uint32_t clk_id);
 
   base::flat_map<std::string, wl::GlobalObjectFactory> global_object_factories_;
 

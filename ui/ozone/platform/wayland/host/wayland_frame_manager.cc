@@ -340,13 +340,6 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     return;
   }
 
-  static const wl_callback_listener frame_listener = {
-      &WaylandFrameManager::FrameCallbackDone};
-  static const wp_presentation_feedback_listener feedback_listener = {
-      &WaylandFrameManager::FeedbackSyncOutput,
-      &WaylandFrameManager::FeedbackPresented,
-      &WaylandFrameManager::FeedbackDiscarded};
-
   surface->set_buffer_transform(
       absl::holds_alternative<gfx::OverlayTransform>(config.transform)
           ? absl::get<gfx::OverlayTransform>(config.transform)
@@ -433,9 +426,11 @@ void WaylandFrameManager::ApplySurfaceConfigure(
     // new wl_buffer, which leads to graphics freeze. So only setup
     // frame_callback when we're attaching a different buffer.
     if (!frame->wl_frame_callback) {
+      static constexpr wl_callback_listener kFrameCallbackListener = {
+          .done = &OnFrameDone};
       frame->wl_frame_callback.reset(wl_surface_frame(surface->surface()));
-      wl_callback_add_listener(frame->wl_frame_callback.get(), &frame_listener,
-                               this);
+      wl_callback_add_listener(frame->wl_frame_callback.get(),
+                               &kFrameCallbackListener, this);
     }
 
     if (!is_solid_color_buffer) {
@@ -452,10 +447,14 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   }
 
   if (connection_->presentation() && !frame->pending_feedback) {
+    static constexpr wp_presentation_feedback_listener
+        kPresentationFeedbackListener = {.sync_output = &OnSyncOutput,
+                                         .presented = &OnPresented,
+                                         .discarded = &OnDiscarded};
     frame->pending_feedback.reset(wp_presentation_feedback(
         connection_->presentation(), surface->surface()));
     wp_presentation_feedback_add_listener(frame->pending_feedback.get(),
-                                          &feedback_listener, this);
+                                          &kPresentationFeedbackListener, this);
   }
 
   if (!is_solid_color_buffer) {
@@ -480,30 +479,30 @@ void WaylandFrameManager::ApplySurfaceConfigure(
 }
 
 // static
-void WaylandFrameManager::FrameCallbackDone(void* data,
-                                            struct wl_callback* callback,
-                                            uint32_t time) {
+void WaylandFrameManager::OnFrameDone(void* data,
+                                      wl_callback* callback,
+                                      uint32_t time) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnFrameCallback(callback);
+  self->HandleFrameCallback(callback);
 }
 
-void WaylandFrameManager::OnFrameCallback(struct wl_callback* callback) {
+void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
   DCHECK(submitted_frames_.back()->wl_frame_callback.get() == callback);
   submitted_frames_.back()->wl_frame_callback.reset();
   MaybeProcessPendingFrame();
 }
 
 // static
-void WaylandFrameManager::FeedbackSyncOutput(
+void WaylandFrameManager::OnSyncOutput(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback,
-    struct wl_output* output) {}
+    struct wp_presentation_feedback* presentation_feedback,
+    wl_output* output) {}
 
 // static
-void WaylandFrameManager::FeedbackPresented(
+void WaylandFrameManager::OnPresented(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback,
+    struct wp_presentation_feedback* presentation_feedback,
     uint32_t tv_sec_hi,
     uint32_t tv_sec_lo,
     uint32_t tv_nsec,
@@ -513,8 +512,8 @@ void WaylandFrameManager::FeedbackPresented(
     uint32_t flags) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnPresentation(
-      wp_presentation_feedback,
+  self->HandlePresentationFeedback(
+      presentation_feedback,
       gfx::PresentationFeedback(self->connection_->ConvertPresentationTime(
                                     tv_sec_hi, tv_sec_lo, tv_nsec),
                                 base::Nanoseconds(refresh),
@@ -522,22 +521,22 @@ void WaylandFrameManager::FeedbackPresented(
 }
 
 // static
-void WaylandFrameManager::FeedbackDiscarded(
+void WaylandFrameManager::OnDiscarded(
     void* data,
-    struct wp_presentation_feedback* wp_presentation_feedback) {
+    struct wp_presentation_feedback* presentation_feedback) {
   auto* self = static_cast<WaylandFrameManager*>(data);
   DCHECK(self);
-  self->OnPresentation(wp_presentation_feedback,
-                       gfx::PresentationFeedback::Failure(),
-                       true /* discarded */);
+  self->HandlePresentationFeedback(presentation_feedback,
+                                   gfx::PresentationFeedback::Failure(),
+                                   true /* discarded */);
 }
 
-void WaylandFrameManager::OnPresentation(
-    struct wp_presentation_feedback* wp_presentation_feedback,
+void WaylandFrameManager::HandlePresentationFeedback(
+    struct wp_presentation_feedback* presentation_feedback,
     const gfx::PresentationFeedback& feedback,
     bool discarded) {
   for (auto& frame : submitted_frames_) {
-    if (frame->pending_feedback.get() == wp_presentation_feedback) {
+    if (frame->pending_feedback.get() == presentation_feedback) {
       frame->feedback = feedback;
       break;
     } else if (!frame->feedback.has_value() && !discarded) {
@@ -624,16 +623,16 @@ bool WaylandFrameManager::EnsureWlBuffersExist(WaylandFrame& frame) {
 }
 
 void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
-                                                  struct wl_buffer* wl_buffer,
+                                                  wl_buffer* buffer,
                                                   base::ScopedFD fence) {
-  DCHECK(wl_buffer);
+  DCHECK(buffer);
 
   // Releases may not necessarily come in order, so search the submitted
   // buffers.
   for (const auto& frame : submitted_frames_) {
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
-        result->second->wl_buffer() == wl_buffer) {
+        result->second->wl_buffer() == buffer) {
       // Explicitly make this buffer released when
       // linux_explicit_synchronization is used.
       result->second->OnExplicitRelease(surface);
@@ -659,15 +658,15 @@ void WaylandFrameManager::OnExplicitBufferRelease(WaylandSurface* surface,
 }
 
 void WaylandFrameManager::OnWlBufferRelease(WaylandSurface* surface,
-                                            struct wl_buffer* wl_buffer) {
-  DCHECK(wl_buffer);
+                                            wl_buffer* buffer) {
+  DCHECK(buffer);
 
   // Releases may not necessarily come in order, so search the submitted
   // buffers.
   for (const auto& frame : submitted_frames_) {
     auto result = frame->submitted_buffers.find(surface);
     if (result != frame->submitted_buffers.end() &&
-        result->second->wl_buffer() == wl_buffer) {
+        result->second->wl_buffer() == buffer) {
       if (connection_->UseImplicitSyncInterop()) {
         base::ScopedFD fence =
             connection_->buffer_manager_host()->ExtractReleaseFence(

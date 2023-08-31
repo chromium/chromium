@@ -413,31 +413,24 @@ class WaylandSurface {
   // we ask its parent.
   std::vector<uint32_t> entered_outputs_;
 
-  void ExplicitRelease(struct zwp_linux_buffer_release_v1* linux_buffer_release,
+  void ExplicitRelease(zwp_linux_buffer_release_v1* linux_buffer_release,
                        base::ScopedFD fence);
 
-  // wl_surface_listener
-  static void Enter(void* data,
-                    struct wl_surface* wl_surface,
-                    struct wl_output* output);
-  static void Leave(void* data,
-                    struct wl_surface* wl_surface,
-                    struct wl_output* output);
+  // wl_surface_listener callbacks:
+  static void OnEnter(void* data, wl_surface* surface, wl_output* output);
+  static void OnLeave(void* data, wl_surface* surface, wl_output* output);
 
-  // wp_fractional_scale_v1_listener
-  static void PreferredScale(
-      void* data,
-      struct wp_fractional_scale_v1* wp_fractional_scale_v1,
-      uint32_t scale);
+  // wp_fractional_scale_v1_listener callbacks:
+  static void OnPreferredScale(void* data,
+                               wp_fractional_scale_v1* fractional_scale,
+                               uint32_t scale);
 
-  // zwp_linux_buffer_release_v1_listener
-  static void FencedRelease(
-      void* data,
-      struct zwp_linux_buffer_release_v1* linux_buffer_release,
-      int32_t fence);
-  static void ImmediateRelease(
-      void* data,
-      struct zwp_linux_buffer_release_v1* linux_buffer_release);
+  // zwp_linux_buffer_release_v1_listener callbacks:
+  static void OnFencedRelease(void* data,
+                              zwp_linux_buffer_release_v1* buffer_release,
+                              int32_t fence);
+  static void OnImmediateRelease(void* data,
+                                 zwp_linux_buffer_release_v1* buffer_release);
 };
 
 }  // namespace ui

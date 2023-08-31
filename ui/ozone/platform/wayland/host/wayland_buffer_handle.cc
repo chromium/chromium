@@ -23,11 +23,12 @@ void WaylandBufferHandle::OnWlBufferCreated(
   wl_buffer_ = std::move(wl_buffer);
 
   // Setup buffer release listener callbacks.
-  static struct wl_buffer_listener buffer_listener = {
-      &WaylandBufferHandle::BufferRelease,
+  static constexpr wl_buffer_listener kBufferListener = {
+      .release = &OnRelease,
   };
-  if (!backing_->UseExplicitSyncRelease())
-    wl_buffer_add_listener(wl_buffer_.get(), &buffer_listener, this);
+  if (!backing_->UseExplicitSyncRelease()) {
+    wl_buffer_add_listener(wl_buffer_.get(), &kBufferListener, this);
+  }
 
   if (!created_callback_.is_null())
     std::move(created_callback_).Run();
@@ -54,11 +55,10 @@ base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {
 }
 
 // static
-void WaylandBufferHandle::BufferRelease(void* data,
-                                        struct wl_buffer* wl_buffer) {
+void WaylandBufferHandle::OnRelease(void* data, struct wl_buffer* buffer) {
   auto* self = static_cast<WaylandBufferHandle*>(data);
   DCHECK(self);
-  self->OnWlBufferRelease(wl_buffer);
+  self->OnWlBufferRelease(buffer);
 }
 
 }  // namespace ui

@@ -104,7 +104,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   ~WaylandOutput();
 
   void Initialize(Delegate* delegate);
-  void InitializeXdgOutput(struct zxdg_output_manager_v1* manager);
+  void InitializeXdgOutput(zxdg_output_manager_v1* manager);
   void InitializeZAuraOutput(zaura_shell* aura_shell);
   void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
   float GetUIScaleFactor() const;
@@ -153,35 +153,29 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // to date and triggering delegate notifications.
   bool IsUsingZAuraOutputManager() const;
 
-  // Callback functions used for setting geometric properties of the output
-  // and available modes.
-  static void OutputHandleGeometry(void* data,
-                                   wl_output* output,
-                                   int32_t x,
-                                   int32_t y,
-                                   int32_t physical_width,
-                                   int32_t physical_height,
-                                   int32_t subpixel,
-                                   const char* make,
-                                   const char* model,
-                                   int32_t output_transform);
-
-  static void OutputHandleMode(void* data,
-                               wl_output* wl_output,
-                               uint32_t flags,
-                               int32_t width,
-                               int32_t height,
-                               int32_t refresh);
-  static void OutputHandleDone(void* data, struct wl_output* wl_output);
-  static void OutputHandleScale(void* data,
-                                struct wl_output* wl_output,
-                                int32_t factor);
-  static void OutputHandleName(void* data,
-                               struct wl_output* wl_output,
-                               const char* name);
-  static void OutputHandleDescription(void* data,
-                                      struct wl_output* wl_output,
-                                      const char* description);
+  // wl_output_listener callbacks:
+  static void OnGeometry(void* data,
+                         wl_output* output,
+                         int32_t x,
+                         int32_t y,
+                         int32_t physical_width,
+                         int32_t physical_height,
+                         int32_t subpixel,
+                         const char* make,
+                         const char* model,
+                         int32_t output_transform);
+  static void OnMode(void* data,
+                     wl_output* output,
+                     uint32_t flags,
+                     int32_t width,
+                     int32_t height,
+                     int32_t refresh);
+  static void OnDone(void* data, wl_output* output);
+  static void OnScale(void* data, wl_output* output, int32_t factor);
+  static void OnName(void* data, wl_output* output, const char* name);
+  static void OnDescription(void* data,
+                            wl_output* output,
+                            const char* description);
 
   // Tracks whether this wl_output is considered "ready". I.e. it has received
   // all of its relevant state from the server followed by a wl_output.done

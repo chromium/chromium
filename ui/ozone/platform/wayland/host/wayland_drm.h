@@ -79,18 +79,16 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
   void Authenticate(const char* drm_device_path);
 
   // Completes the drm device authentication.
-  void DrmDeviceAuthenticated(struct wl_drm* wl_drm);
+  void DrmDeviceAuthenticated(wl_drm* wl_drm);
 
   // Checks the capabilities of the drm device.
   void HandleCapabilities(uint32_t value);
 
-  // wl_drm_listener:
-  static void Device(void* data,
-                     struct wl_drm* wl_drm,
-                     const char* drm_device_path);
-  static void Format(void* data, struct wl_drm* wl_drm, uint32_t format);
-  static void Authenticated(void* data, struct wl_drm* wl_drm);
-  static void Capabilities(void* data, struct wl_drm* wl_drm, uint32_t value);
+  // wl_drm_listener callbacks:
+  static void OnDevice(void* data, wl_drm* drm, const char* drm_device_path);
+  static void OnFormat(void* data, wl_drm* drm, uint32_t format);
+  static void OnAuthenticated(void* data, wl_drm* drm);
+  static void OnCapabilities(void* data, wl_drm* drm, uint32_t value);
 
   // Holds pointer to the wl_drm Wayland factory.
   wl::Object<wl_drm> wl_drm_;

@@ -18,7 +18,7 @@ namespace ui {
 namespace {
 constexpr uint32_t kMinVersion = 1;
 constexpr uint32_t kMaxVersion = 3;
-}
+}  // namespace
 
 // static
 constexpr char WaylandZwpLinuxDmabuf::kInterfaceName[];
@@ -51,11 +51,11 @@ WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
     zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
     WaylandConnection* connection)
     : zwp_linux_dmabuf_(zwp_linux_dmabuf), connection_(connection) {
-  static constexpr zwp_linux_dmabuf_v1_listener dmabuf_listener = {
-      &Format,
-      &Modifiers,
+  static constexpr zwp_linux_dmabuf_v1_listener kDmabufListener = {
+      .format = &OnFormat,
+      .modifier = &OnModifiers,
   };
-  zwp_linux_dmabuf_v1_add_listener(zwp_linux_dmabuf_.get(), &dmabuf_listener,
+  zwp_linux_dmabuf_v1_add_listener(zwp_linux_dmabuf_.get(), &kDmabufListener,
                                    this);
 
   // A roundtrip after binding guarantees that the client has received all
@@ -73,9 +73,6 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
                                          uint32_t format,
                                          uint32_t planes_count,
                                          wl::OnRequestBufferCallback callback) {
-  static constexpr zwp_linux_buffer_params_v1_listener params_listener = {
-      &CreateSucceeded, &CreateFailed};
-
   // Params will be destroyed immediately if create_immed is available.
   // Otherwise, they will be destroyed after Wayland notifies a new buffer is
   // created or failed to be created.
@@ -95,8 +92,11 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
         params.get(), size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));
   } else {
-    zwp_linux_buffer_params_v1_add_listener(params.get(), &params_listener,
-                                            this);
+    static constexpr zwp_linux_buffer_params_v1_listener
+        kLinuxBufferParamsListener = {.created = &OnCreated,
+                                      .failed = &OnFailed};
+    zwp_linux_buffer_params_v1_add_listener(params.get(),
+                                            &kLinuxBufferParamsListener, this);
     zwp_linux_buffer_params_v1_create(params.get(), size.width(), size.height(),
                                       format, 0);
 
@@ -139,27 +139,23 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
 }
 
 void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
-    struct zwp_linux_buffer_params_v1* params,
-    struct wl_buffer* new_buffer) {
+    zwp_linux_buffer_params_v1* params,
+    wl_buffer* new_buffer) {
   auto it = base::ranges::find(pending_params_, params, [](const auto& item) {
     return item.first.get();
   });
   DCHECK(it != pending_params_.end());
-
-  std::move(it->second).Run(wl::Object<struct wl_buffer>(new_buffer));
-
+  std::move(it->second).Run(wl::Object<wl_buffer>(new_buffer));
   pending_params_.erase(it);
-
   connection_->Flush();
 }
 
 // static
-void WaylandZwpLinuxDmabuf::Modifiers(
-    void* data,
-    struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
-    uint32_t format,
-    uint32_t modifier_hi,
-    uint32_t modifier_lo) {
+void WaylandZwpLinuxDmabuf::OnModifiers(void* data,
+                                        zwp_linux_dmabuf_v1* linux_dmabuf,
+                                        uint32_t format,
+                                        uint32_t modifier_hi,
+                                        uint32_t modifier_lo) {
   if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     uint64_t modifier = static_cast<uint64_t>(modifier_hi) << 32 | modifier_lo;
     self->AddSupportedFourCCFormatAndModifier(format, {modifier});
@@ -167,28 +163,29 @@ void WaylandZwpLinuxDmabuf::Modifiers(
 }
 
 // static
-void WaylandZwpLinuxDmabuf::Format(void* data,
-                                   struct zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
-                                   uint32_t format) {
-  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
+void WaylandZwpLinuxDmabuf::OnFormat(void* data,
+                                     zwp_linux_dmabuf_v1* linux_dmabuf,
+                                     uint32_t format) {
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     self->AddSupportedFourCCFormatAndModifier(format, absl::nullopt);
+  }
 }
 
 // static
-void WaylandZwpLinuxDmabuf::CreateSucceeded(
-    void* data,
-    struct zwp_linux_buffer_params_v1* params,
-    struct wl_buffer* new_buffer) {
-  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
+void WaylandZwpLinuxDmabuf::OnCreated(void* data,
+                                      zwp_linux_buffer_params_v1* params,
+                                      wl_buffer* new_buffer) {
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     self->NotifyRequestCreateBufferDone(params, new_buffer);
+  }
 }
 
 // static
-void WaylandZwpLinuxDmabuf::CreateFailed(
-    void* data,
-    struct zwp_linux_buffer_params_v1* params) {
-  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data))
+void WaylandZwpLinuxDmabuf::OnFailed(void* data,
+                                     zwp_linux_buffer_params_v1* params) {
+  if (auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data)) {
     self->NotifyRequestCreateBufferDone(params, nullptr);
+  }
 }
 
 }  // namespace ui

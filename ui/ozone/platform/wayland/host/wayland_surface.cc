@@ -136,22 +136,21 @@ bool WaylandSurface::Initialize() {
   if (!surface_)
     return false;
 
-  static struct wl_surface_listener surface_listener = {
-      &WaylandSurface::Enter,
-      &WaylandSurface::Leave,
+  static constexpr wl_surface_listener kSurfaceListener = {
+      .enter = &OnEnter,
+      .leave = &OnLeave,
   };
-  wl_surface_add_listener(surface_.get(), &surface_listener, this);
+  wl_surface_add_listener(surface_.get(), &kSurfaceListener, this);
 
-  if (auto* fractional_scale_manager =
-          connection_->fractional_scale_manager_v1()) {
-    static struct wp_fractional_scale_v1_listener fractional_scale_listener {
-      &WaylandSurface::PreferredScale,
-    };
-    fractional_scale_ =
-        wl::Object(wp_fractional_scale_manager_v1_get_fractional_scale(
-            fractional_scale_manager, surface_.get()));
+  if (connection_->fractional_scale_manager_v1()) {
+    static constexpr wp_fractional_scale_v1_listener kFractionalScaleListener =
+        {
+            .preferred_scale = &OnPreferredScale,
+        };
+    fractional_scale_.reset(wp_fractional_scale_manager_v1_get_fractional_scale(
+        connection_->fractional_scale_manager_v1(), surface_.get()));
     wp_fractional_scale_v1_add_listener(fractional_scale_.get(),
-                                        &fractional_scale_listener, this);
+                                        &kFractionalScaleListener, this);
   }
 
   if (connection_->viewporter()) {
@@ -479,13 +478,13 @@ void WaylandSurface::ApplyPendingState() {
           LOG_IF(FATAL, !linux_buffer_release)
               << "Unable to get an explicit release object.";
 
-          static struct zwp_linux_buffer_release_v1_listener release_listener =
-              {
-                  &WaylandSurface::FencedRelease,
-                  &WaylandSurface::ImmediateRelease,
+          static constexpr zwp_linux_buffer_release_v1_listener
+              kBufferReleaseListener = {
+                  .fenced_release = &OnFencedRelease,
+                  .immediate_release = &OnImmediateRelease,
               };
-          zwp_linux_buffer_release_v1_add_listener(linux_buffer_release,
-                                                   &release_listener, this);
+          zwp_linux_buffer_release_v1_add_listener(
+              linux_buffer_release, &kBufferReleaseListener, this);
 
           linux_buffer_releases_.emplace(
               linux_buffer_release,
@@ -880,7 +879,7 @@ void WaylandSurface::EnableTrustedDamageIfPossible() {
 }
 
 void WaylandSurface::ExplicitRelease(
-    struct zwp_linux_buffer_release_v1* linux_buffer_release,
+    zwp_linux_buffer_release_v1* linux_buffer_release,
     base::ScopedFD fence) {
   auto iter = linux_buffer_releases_.find(linux_buffer_release);
   DCHECK(iter != linux_buffer_releases_.end());
@@ -918,14 +917,13 @@ WaylandSurface::State& WaylandSurface::State::operator=(
 }
 
 // static
-void WaylandSurface::Enter(void* data,
-                           struct wl_surface* wl_surface,
-                           struct wl_output* output) {
-  auto* const surface = static_cast<WaylandSurface*>(data);
-  DCHECK(surface);
+void WaylandSurface::OnEnter(void* data,
+                             wl_surface* surface,
+                             wl_output* output) {
+  auto* self = static_cast<WaylandSurface*>(data);
+  DCHECK(self);
 
-  // The compositor can send a null output.
-  // crbug.com/1332540
+  // The compositor can send a null output. See https://crbug.com/1332540.
   if (!output) {
     LOG(ERROR) << "NULL output received, cannot enter it!";
     return;
@@ -934,29 +932,29 @@ void WaylandSurface::Enter(void* data,
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
 
-  DCHECK_NE(surface->connection_->wayland_output_manager()->GetOutput(
+  DCHECK_NE(self->connection_->wayland_output_manager()->GetOutput(
                 wayland_output->output_id()),
             nullptr);
 
-  if (auto it = base::ranges::find(surface->entered_outputs_,
+  if (auto it = base::ranges::find(self->entered_outputs_,
                                    wayland_output->output_id());
-      it == surface->entered_outputs_.end()) {
-    surface->entered_outputs_.emplace_back(wayland_output->output_id());
+      it == self->entered_outputs_.end()) {
+    self->entered_outputs_.emplace_back(wayland_output->output_id());
   }
 
-  if (surface->root_window_)
-    surface->root_window_->OnEnteredOutput();
+  if (self->root_window_) {
+    self->root_window_->OnEnteredOutput();
+  }
 }
 
 // static
-void WaylandSurface::Leave(void* data,
-                           struct wl_surface* wl_surface,
-                           struct wl_output* output) {
-  auto* const surface = static_cast<WaylandSurface*>(data);
-  DCHECK(surface);
+void WaylandSurface::OnLeave(void* data,
+                             wl_surface* surface,
+                             wl_output* output) {
+  auto* self = static_cast<WaylandSurface*>(data);
+  DCHECK(self);
 
-  // The compositor can send a null output.
-  // crbug.com/1332540
+  // The compositor can send a null output. See https://crbug.com/1332540.
   if (!output) {
     LOG(ERROR) << "NULL output received, cannot leave it!";
     return;
@@ -964,14 +962,13 @@ void WaylandSurface::Leave(void* data,
 
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
-  surface->RemoveEnteredOutput(wayland_output->output_id());
+  self->RemoveEnteredOutput(wayland_output->output_id());
 }
 
 // static
-void WaylandSurface::PreferredScale(
-    void* data,
-    struct wp_fractional_scale_v1* wp_fractional_scale_v1,
-    uint32_t scale) {}
+void WaylandSurface::OnPreferredScale(void* data,
+                                      wp_fractional_scale_v1* fractional_scale,
+                                      uint32_t scale) {}
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
   auto it = base::ranges::find(entered_outputs_, output_id);
@@ -1010,21 +1007,21 @@ void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
 }
 
 // static
-void WaylandSurface::FencedRelease(
+void WaylandSurface::OnFencedRelease(
     void* data,
-    struct zwp_linux_buffer_release_v1* linux_buffer_release,
+    zwp_linux_buffer_release_v1* buffer_release,
     int32_t fence) {
+  auto* self = static_cast<WaylandSurface*>(data);
   auto fd = base::ScopedFD(fence);
-  static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
-                                                      std::move(fd));
+  self->ExplicitRelease(buffer_release, std::move(fd));
 }
 
 // static
-void WaylandSurface::ImmediateRelease(
+void WaylandSurface::OnImmediateRelease(
     void* data,
-    struct zwp_linux_buffer_release_v1* linux_buffer_release) {
-  static_cast<WaylandSurface*>(data)->ExplicitRelease(linux_buffer_release,
-                                                      base::ScopedFD());
+    zwp_linux_buffer_release_v1* buffer_release) {
+  auto* self = static_cast<WaylandSurface*>(data);
+  self->ExplicitRelease(buffer_release, base::ScopedFD());
 }
 
 }  // namespace ui
