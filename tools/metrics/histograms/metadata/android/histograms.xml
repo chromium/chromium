@@ -3696,6 +3696,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.SelectFileDialogUploadMethods"
+    enum="SelectFileDialogUploadMethods" expires_after="2024-01-07">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records the method of upload for files uploaded from Chrome via the
+    SelectFileDialog, focusing mostly on image and video types. Recorded when
+    user uploads files to a website (once per item uploaded).
+  </summary>
+</histogram>
+
 <histogram name="Android.ShowSelectionMenuSourceType" enum="MenuSourceType"
     expires_after="2024-01-14">
   <owner>mvanouwerkerk@chromium.org</owner>
