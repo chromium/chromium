@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -25,6 +27,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -59,6 +62,9 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
             initWithAppState:app_state_
                 browserState:browser_state_.get()]),
         agent_([[StartSurfaceSceneAgent alloc] init]) {
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+        -1);
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     agent_.sceneState = scene_state_;
@@ -66,16 +72,19 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
     histogram_tester_.reset(new base::HistogramTester());
+    TestingApplicationContext::GetGlobal()->SetLocalState(&pref_service_);
   }
 
   void TearDown() override {
     agent_ = nil;
     scene_state_ = nil;
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     PlatformTest::TearDown();
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   FakeStartupInformation* startup_information_;
   FakeAppStateInitStage* app_state_;

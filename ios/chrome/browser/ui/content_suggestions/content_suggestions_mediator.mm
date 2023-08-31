@@ -1045,6 +1045,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       segmentation_platform::kSafetyCheckFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           safety_check_freshness_impression_count));
+  int tab_resumption_freshness_impression_count = _localState->GetInteger(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kTabResumptionFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          tab_resumption_freshness_impression_count));
   __weak ContentSuggestionsMediator* weakSelf = self;
   segmentation_platform::PredictionOptions options;
   options.on_demand_execution = true;

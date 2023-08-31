@@ -43,6 +43,16 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
           base::UserMetricsAction("IOSMagicStackSafetyCheckFreshSignal"));
       break;
     }
+    case ContentSuggestionsModuleType::kTabResumption: {
+      PrefService* local_state = GetApplicationContext()->GetLocalState();
+      local_state->SetInteger(
+          prefs::
+              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+          0);
+      base::RecordAction(
+          base::UserMetricsAction("IOSMagicStackTabResumptionFreshSignal"));
+      break;
+    }
     default:
       break;
   }

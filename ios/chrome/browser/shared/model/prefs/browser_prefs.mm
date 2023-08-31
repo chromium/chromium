@@ -287,6 +287,11 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
       -1);
+  // Pref used to store the number of impressions of the tab resumption module
+  // in the Home Surface since a tab resumption freshness signal.
+  registry->RegisterIntegerPref(
+      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+      -1);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(

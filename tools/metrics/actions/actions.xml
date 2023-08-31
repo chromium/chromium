@@ -12854,6 +12854,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMagicStackTabResumptionFreshSignal" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Recorded when the Tab Resumption module has a new relevant tab.
+  </description>
+</action>
+
 <action name="IOSMobileReloadCrashedRenderer" not_user_triggered="true">
   <owner>thegreenfrog@google.com</owner>
   <owner>ajuma@google.com</owner>

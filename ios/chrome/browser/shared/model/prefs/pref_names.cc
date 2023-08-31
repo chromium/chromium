@@ -185,6 +185,9 @@ const char kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[] =
 const char kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[] =
     "ios.magic_stack_segmentation.safety_check_freshness";
 
+const char kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.tab_resumption_freshness";
+
 // Boolean to represent if the parcel tracking opt-in prompt has been displayed
 // for the user.
 const char kIosParcelTrackingOptInPromptDisplayed[] =

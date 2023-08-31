@@ -86,12 +86,25 @@
       }
       break;
     }
+    case ContentSuggestionsModuleType::kTabResumption: {
+      if (_localState) {
+        // Increment freshness pref since it is an impression of
+        // the latest Tab Resumption results as the top module.
+        int freshness_impression_count = _localState->GetInteger(
+            prefs::
+                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+        _localState->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
+      break;
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
-    case ContentSuggestionsModuleType::kTabResumption:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, type);
