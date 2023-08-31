@@ -28,6 +28,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_ad.pb.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -71,6 +72,8 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 10 - 2022/08 - crrev.com/c/3818142
 // Version 13 - 2023/01 - crrev.com/c/4167800
 // Version 14 - 2023/08 - crrev.com/c/4739632
+// Version 15 - 2023/08 - crrev.com/c/4808727
+// Version 16 - 2023/08 - crrev.com/c/4822944
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -87,11 +90,13 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 13 adds ad size-related fields (ad_sizes & size_groups).
 // Version 14 adds auction server request flags.
 // Version 15 adds an additional bid key field.
-const int kCurrentVersionNumber = 15;
+// Version 16 changes the ads and ad component columns of the interest group
+// table to protobuf format.
+const int kCurrentVersionNumber = 16;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
-const int kCompatibleVersionNumber = 15;
+const int kCompatibleVersionNumber = 16;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -132,36 +137,6 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
     return absl::nullopt;
   }
   return result;
-}
-
-base::Value ToValue(const blink::InterestGroup::Ad& ad) {
-  base::Value value(base::Value::Type::DICT);
-  base::Value::Dict& dict = value.GetDict();
-  dict.Set("url", ad.render_url.spec());
-  if (ad.size_group) {
-    dict.Set("size_group", ad.size_group.value());
-  }
-  if (ad.buyer_reporting_id) {
-    dict.Set("buyer_reporting_id", ad.buyer_reporting_id.value());
-  }
-  if (ad.buyer_and_seller_reporting_id) {
-    dict.Set("buyer_and_seller_reporting_id",
-             ad.buyer_and_seller_reporting_id.value());
-  }
-  if (ad.metadata) {
-    dict.Set("metadata", ad.metadata.value());
-  }
-  if (ad.ad_render_id) {
-    dict.Set("ad_render_id", ad.ad_render_id.value());
-  }
-  if (ad.allowed_reporting_origins) {
-    base::Value::List allowed_reporting_origins;
-    for (const auto& origin : ad.allowed_reporting_origins.value()) {
-      allowed_reporting_origins.Append(Serialize(origin));
-    }
-    dict.Set("allowed_reporting_origins", std::move(allowed_reporting_origins));
-  }
-  return value;
 }
 
 blink::InterestGroup::Ad FromInterestGroupAdValue(const base::Value::Dict& dict,
@@ -244,20 +219,50 @@ absl::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
   return base::flat_map<std::string, double>(std::move(pairs));
 }
 
+AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
+  AdProtos ad_protos;
+  for (blink::InterestGroup::Ad ad : ads) {
+    AdProtos_AdProto* ad_proto = ad_protos.add_ads();
+    ad_proto->set_render_url(ad.render_url.spec());
+    if (ad.size_group.has_value()) {
+      ad_proto->set_size_group(*ad.size_group);
+    }
+    if (ad.metadata.has_value()) {
+      ad_proto->set_metadata(*ad.metadata);
+    }
+    if (ad.buyer_reporting_id.has_value()) {
+      ad_proto->set_buyer_reporting_id(*ad.buyer_reporting_id);
+    }
+    if (ad.buyer_and_seller_reporting_id.has_value()) {
+      ad_proto->set_buyer_and_seller_reporting_id(
+          *ad.buyer_and_seller_reporting_id);
+    }
+    if (ad.ad_render_id.has_value()) {
+      ad_proto->set_ad_render_id(*ad.ad_render_id);
+    }
+    if (ad.allowed_reporting_origins.has_value()) {
+      for (auto allowed_reporting_origin : *ad.allowed_reporting_origins) {
+        ad_proto->add_allowed_reporting_origins(
+            allowed_reporting_origin.Serialize());
+      }
+    }
+  }
+  return ad_protos;
+}
+
 std::string Serialize(
     const absl::optional<std::vector<blink::InterestGroup::Ad>>& ads) {
-  if (!ads) {
-    return std::string();
-  }
-  base::Value::List list;
-  for (const auto& ad : ads.value()) {
-    list.Append(ToValue(ad));
-  }
-  return Serialize(list);
+  std::string serialized_ads;
+  AdProtos ad_protos =
+      ads.has_value() ? GetAdProtosFromAds(ads.value()) : AdProtos();
+
+  ad_protos.SerializeToString(&serialized_ads);
+  return serialized_ads;
 }
+
 absl::optional<std::vector<blink::InterestGroup::Ad>>
-DeserializeInterestGroupAdVector(const std::string& serialized_ads,
-                                 bool for_components) {
+DeserializeInterestGroupAdVectorJson(const std::string& serialized_ads,
+                                     bool for_components) {
   std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list()) {
     return absl::nullopt;
@@ -270,6 +275,50 @@ DeserializeInterestGroupAdVector(const std::string& serialized_ads,
     }
   }
   return result;
+}
+
+absl::optional<std::vector<blink::InterestGroup::Ad>>
+DeserializeInterestGroupAdVectorProto(const std::string& serialized_ads) {
+  AdProtos ad_protos;
+
+  bool success = ad_protos.ParseFromString(serialized_ads);
+
+  if (not success || ad_protos.ads().empty()) {
+    return absl::nullopt;
+  }
+  std::vector<blink::InterestGroup::Ad> out;
+  for (const auto& ad_proto : ad_protos.ads()) {
+    blink::InterestGroup::Ad ad;
+    ad.render_url = GURL(ad_proto.render_url());
+    if (ad_proto.has_size_group()) {
+      ad.size_group = ad_proto.size_group();
+    }
+    if (ad_proto.has_metadata()) {
+      ad.metadata = ad_proto.metadata();
+    }
+    if (ad_proto.has_buyer_reporting_id()) {
+      ad.buyer_reporting_id = ad_proto.buyer_reporting_id();
+    }
+    if (ad_proto.has_buyer_and_seller_reporting_id()) {
+      ad.buyer_and_seller_reporting_id =
+          ad_proto.buyer_and_seller_reporting_id();
+    }
+    if (ad_proto.has_ad_render_id()) {
+      ad.ad_render_id = ad_proto.ad_render_id();
+    }
+    if (!ad_proto.allowed_reporting_origins().empty()) {
+      std::vector<url::Origin> allowed_reporting_origins_vector;
+      for (std::string allowed_reporting_origin :
+           ad_proto.allowed_reporting_origins()) {
+        allowed_reporting_origins_vector.emplace_back(
+            DeserializeOrigin(allowed_reporting_origin));
+      }
+      ad.allowed_reporting_origins =
+          std::move(allowed_reporting_origins_vector);
+    }
+    out.push_back(ad);
+  }
+  return out;
 }
 
 std::string Serialize(
@@ -547,7 +596,7 @@ bool CreateInterestGroupIndices(sql::Database& db) {
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV15Schema(sql::Database& db) {
+bool CreateV16Schema(sql::Database& db) {
   // IMPORTANT: If you add or remove fields, you need to update
   // `ClearExcessiveStorage()` to consider the size of added/removed fields for
   // storage usage calculations.
@@ -580,8 +629,8 @@ bool CreateV15Schema(sql::Database& db) {
         "trusted_bidding_signals_url TEXT NOT NULL,"
         "trusted_bidding_signals_keys TEXT NOT NULL,"
         "user_bidding_signals TEXT,"
-        "ads TEXT NOT NULL,"
-        "ad_components TEXT NOT NULL,"
+        "ads_pb BLOB NOT NULL,"
+        "ad_components_pb BLOB NOT NULL,"
         "ad_sizes TEXT NOT NULL,"
         "size_groups TEXT NOT NULL,"
         "auction_server_request_flags INTEGER NOT NULL,"
@@ -679,6 +728,134 @@ bool CreateV15Schema(sql::Database& db) {
   }
 
   return true;
+}
+
+bool UpgradeV15SchemaToV16(sql::Database& db, sql::MetaTable& meta_table) {
+  static const char kInterestGroupTableSql[] =
+      // clang-format off
+      "CREATE TABLE new_interest_groups("
+        "expiration INTEGER NOT NULL,"
+        "last_updated INTEGER NOT NULL,"
+        "next_update_after INTEGER NOT NULL,"
+        "owner TEXT NOT NULL,"
+        "joining_origin TEXT NOT NULL,"
+        "exact_join_time INTEGER NOT NULL,"
+        "name TEXT NOT NULL,"
+        "priority DOUBLE NOT NULL,"
+        "enable_bidding_signals_prioritization INTEGER NOT NULL,"
+        "priority_vector TEXT NOT NULL,"
+        "priority_signals_overrides TEXT NOT NULL,"
+        "seller_capabilities TEXT NOT NULL,"
+        "all_sellers_capabilities INTEGER NOT NULL,"
+        "execution_mode INTEGER NOT NULL,"
+        "joining_url TEXT NOT NULL,"
+        "bidding_url TEXT NOT NULL,"
+        "bidding_wasm_helper_url TEXT NOT NULL,"
+        "update_url TEXT NOT NULL,"
+        "trusted_bidding_signals_url TEXT NOT NULL,"
+        "trusted_bidding_signals_keys TEXT NOT NULL,"
+        "user_bidding_signals TEXT,"
+        "ads_pb BLOB NOT NULL,"
+        "ad_components_pb BLOB NOT NULL,"
+        "ad_sizes TEXT NOT NULL,"
+        "size_groups TEXT NOT NULL,"
+        "auction_server_request_flags INTEGER NOT NULL,"
+        "additional_bid_key BLOB NOT NULL,"
+      "PRIMARY KEY(owner,name))";
+  // clang-format on
+  if (!db.Execute(kInterestGroupTableSql)) {
+    return false;
+  }
+
+  // clang-format off
+  sql::Statement kCopyInterestGroupTableWithEmptyAdPBsSql(
+      db.GetCachedStatement(SQL_FROM_HERE,
+      "INSERT INTO new_interest_groups "
+      "SELECT expiration,"
+             "last_updated,"
+             "next_update_after,"
+             "owner,"
+             "joining_origin,"
+             "exact_join_time,"
+             "name,"
+             "priority,"
+             "enable_bidding_signals_prioritization,"
+             "priority_vector,"
+             "priority_signals_overrides,"
+             "seller_capabilities,"
+             "all_sellers_capabilities,"
+             "execution_mode,"
+             "joining_url,"
+             "bidding_url,"
+             "bidding_wasm_helper_url,"
+             "update_url,"
+             "trusted_bidding_signals_url,"
+             "trusted_bidding_signals_keys,"
+             "user_bidding_signals,"
+             "?," // ads_pb
+             "?," // ad_components_pb
+             "ad_sizes,"
+             "size_groups,"
+             "auction_server_request_flags,"
+             "additional_bid_key "
+      "FROM interest_groups"));
+  // clang-format on
+  std::string empty_ad_proto_value;
+  AdProtos().SerializeToString(&empty_ad_proto_value);
+  kCopyInterestGroupTableWithEmptyAdPBsSql.BindBlob(0, empty_ad_proto_value);
+  kCopyInterestGroupTableWithEmptyAdPBsSql.BindBlob(1, empty_ad_proto_value);
+
+  if (!kCopyInterestGroupTableWithEmptyAdPBsSql.Run()) {
+    return false;
+  }
+
+  sql::Statement kSelectIGsWithAds(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT owner, name, ads, ad_components from interest_groups"));
+
+  while (kSelectIGsWithAds.Step()) {
+    std::string owner = kSelectIGsWithAds.ColumnString(0);
+    std::string name = kSelectIGsWithAds.ColumnString(1);
+    absl::optional<std::vector<blink::InterestGroup::Ad>> ads =
+        DeserializeInterestGroupAdVectorJson(kSelectIGsWithAds.ColumnString(2),
+                                             /*for_components=*/false);
+    absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
+        DeserializeInterestGroupAdVectorJson(kSelectIGsWithAds.ColumnString(3),
+                                             /*for_components=*/true);
+
+    std::string serialized_ads = Serialize(ads);
+    std::string serialized_ad_components = Serialize(ad_components);
+
+    sql::Statement insert_value_into_IG(db.GetCachedStatement(
+        SQL_FROM_HERE,
+        "UPDATE new_interest_groups SET ads_pb = ?, ad_components_pb = ? "
+        "WHERE owner = ? AND name = ?"));
+
+    insert_value_into_IG.BindBlob(0, serialized_ads);
+    insert_value_into_IG.BindBlob(1, serialized_ad_components);
+    insert_value_into_IG.BindString(2, owner);
+    insert_value_into_IG.BindString(3, name);
+
+    if (!insert_value_into_IG.Run()) {
+      return false;
+    }
+  }
+
+  static const char kDropInterestGroupTableSql[] = "DROP TABLE interest_groups";
+  if (!db.Execute(kDropInterestGroupTableSql)) {
+    return false;
+  }
+
+  static const char kRenameInterestGroupTableSql[] =
+      // clang-format off
+      "ALTER TABLE new_interest_groups "
+      "RENAME TO interest_groups";
+  // clang-format on
+  if (!db.Execute(kRenameInterestGroupTableSql)) {
+    return false;
+  }
+
+  return CreateInterestGroupIndices(db);
 }
 
 bool UpgradeV14SchemaToV15(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1453,8 +1630,8 @@ bool DoLoadInterestGroup(sql::Database& db,
           "trusted_bidding_signals_url,"
           "trusted_bidding_signals_keys,"
           "user_bidding_signals,"  // opaque data
-          "ads,"
-          "ad_components,"
+          "ads_pb,"
+          "ad_components_pb,"
           "ad_sizes,"
           "size_groups,"
           "auction_server_request_flags,"
@@ -1507,10 +1684,9 @@ bool DoLoadInterestGroup(sql::Database& db,
   if (load.GetColumnType(16) != sql::ColumnType::kNull) {
     group.user_bidding_signals = load.ColumnString(16);
   }
-  group.ads = DeserializeInterestGroupAdVector(load.ColumnString(17),
-                                               /*for_components=*/false);
-  group.ad_components = DeserializeInterestGroupAdVector(
-      load.ColumnString(18), /*for_components=*/true);
+  group.ads = DeserializeInterestGroupAdVectorProto(load.ColumnString(17));
+  group.ad_components =
+      DeserializeInterestGroupAdVectorProto(load.ColumnString(18));
   group.ad_sizes = DeserializeStringSizeMap(load.ColumnString(19));
   group.size_groups = DeserializeStringStringVectorMap(load.ColumnString(20));
   group.auction_server_request_flags =
@@ -1637,8 +1813,8 @@ bool DoJoinInterestGroup(sql::Database& db,
             "trusted_bidding_signals_url,"
             "trusted_bidding_signals_keys,"
             "user_bidding_signals,"  // opaque data
-            "ads,"
-            "ad_components,"
+            "ads_pb,"
+            "ad_components_pb,"
             "ad_sizes,"
             "size_groups,"
             "auction_server_request_flags,"
@@ -1675,8 +1851,8 @@ bool DoJoinInterestGroup(sql::Database& db,
   } else {
     join_group.BindNull(20);
   }
-  join_group.BindString(21, Serialize(data.ads));
-  join_group.BindString(22, Serialize(data.ad_components));
+  join_group.BindBlob(21, Serialize(data.ads));
+  join_group.BindBlob(22, Serialize(data.ad_components));
   join_group.BindString(23, Serialize(data.ad_sizes));
   join_group.BindString(24, Serialize(data.size_groups));
   join_group.BindInt64(25, Serialize(data.auction_server_request_flags));
@@ -1714,8 +1890,8 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
             "update_url=?,"
             "trusted_bidding_signals_url=?,"
             "trusted_bidding_signals_keys=?,"
-            "ads=?,"
-            "ad_components=?,"
+            "ads_pb=?,"
+            "ad_components_pb=?,"
             "ad_sizes=?,"
             "size_groups=?,"
             "auction_server_request_flags=?, "
@@ -1743,8 +1919,8 @@ bool DoStoreInterestGroupUpdate(sql::Database& db,
   store_group.BindString(11, Serialize(group.update_url));
   store_group.BindString(12, Serialize(group.trusted_bidding_signals_url));
   store_group.BindString(13, Serialize(group.trusted_bidding_signals_keys));
-  store_group.BindString(14, Serialize(group.ads));
-  store_group.BindString(15, Serialize(group.ad_components));
+  store_group.BindBlob(14, Serialize(group.ads));
+  store_group.BindBlob(15, Serialize(group.ad_components));
   store_group.BindString(16, Serialize(group.ad_sizes));
   store_group.BindString(17, Serialize(group.size_groups));
   store_group.BindInt64(18, Serialize(group.auction_server_request_flags));
@@ -2758,8 +2934,8 @@ bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
               "LENGTH(interest_groups.trusted_bidding_signals_url)+"
               "LENGTH(interest_groups.trusted_bidding_signals_keys)+"
               "LENGTH(interest_groups.user_bidding_signals)+"
-              "LENGTH(interest_groups.ads)+"
-              "LENGTH(interest_groups.ad_components)+"
+              "LENGTH(interest_groups.ads_pb)+"
+              "LENGTH(interest_groups.ad_components_pb)+"
               "LENGTH(interest_groups.ad_sizes)+"
               "LENGTH(interest_groups.size_groups)+"
               "LENGTH(interest_groups.additional_bid_key)+"
@@ -2980,7 +3156,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV15Schema(*db_);
+    return CreateV16Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -3046,6 +3222,11 @@ bool InterestGroupStorage::InitializeSchema() {
         if (!UpgradeV14SchemaToV15(*db_, meta_table)) {
           return false;
         }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 15:
+        if (!UpgradeV15SchemaToV16(*db_, meta_table)) {
+          return false;
+        }
 
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
@@ -3054,7 +3235,8 @@ bool InterestGroupStorage::InitializeSchema() {
     return transaction.Commit();
   }
 
-  NOTREACHED();  // Only V6 through V12 should have passed RazeIfIncompatible.
+  NOTREACHED();  // Only versions 6 up to the current version should have passed
+                 // RazeIfIncompatible.
   return false;
 }
 

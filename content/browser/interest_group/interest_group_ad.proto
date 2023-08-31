@@ -1,0 +1,22 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package content;
+
+message AdProtos {
+  message AdProto {
+    string render_url = 1;
+    optional string size_group = 2;
+    optional string metadata = 3;
+    optional string buyer_reporting_id = 4;
+    optional string buyer_and_seller_reporting_id = 5;
+    optional string ad_render_id = 6;
+    repeated string allowed_reporting_origins = 7;
+  }
+  repeated AdProto ads = 1;
+}

@@ -135,6 +135,7 @@ source_set("browser") {
     "//content/browser/download:proto",
     "//content/browser/file_system_access:proto",
     "//content/browser/indexed_db:mojo_bindings",
+    "//content/browser/interest_group:interest_group_proto",
     "//content/browser/notifications:notification_proto",
     "//content/browser/payments:payment_app_proto",
     "//content/browser/private_aggregation/proto:private_aggregation_budgets_proto",
