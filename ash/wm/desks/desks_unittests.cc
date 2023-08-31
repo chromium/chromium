@@ -11022,7 +11022,7 @@ TEST_P(DeskButtonTest, DeskButtonTextWorksWithEmojis) {
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
   EXPECT_EQ(
-      GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"#1",
+      GetParam().alignment == ShelfAlignment::kBottom ? u"😃emoji" : u"😃",
       desk_button->GetTextForTest());
 }
 
@@ -11048,11 +11048,11 @@ TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
   const bool bottom_at_start = GetParam().alignment == ShelfAlignment::kBottom;
   auto* desk_button = GetDeskButton();
   ASSERT_TRUE(desk_button);
-  ASSERT_EQ(bottom_at_start ? u"school" : u"S", desk_button->GetTextForTest());
+  ASSERT_EQ(bottom_at_start ? u"school" : u"s", desk_button->GetTextForTest());
 
   GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
                                                   : ShelfAlignment::kBottom);
-  EXPECT_EQ(bottom_at_start ? u"S" : u"school", desk_button->GetTextForTest());
+  EXPECT_EQ(bottom_at_start ? u"s" : u"school", desk_button->GetTextForTest());
 }
 
 // Tests that when the desk button is activated, shelf auto-hide should be

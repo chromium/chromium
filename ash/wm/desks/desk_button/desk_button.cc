@@ -19,7 +19,7 @@
 #include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/i18n/case_conversion.h"
+#include "base/i18n/break_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -434,11 +434,20 @@ void DeskButton::CalculateDisplayNames(const Desk* desk) {
   }
 
   desk_name_ = desk->name();
+  base::i18n::BreakIterator iter(desk_name_,
+                                 base::i18n::BreakIterator::BREAK_CHARACTER);
 
-  if (desk->is_name_set_by_user() &&
-      ((desk_name_[0] >= u'a' && desk_name_[0] <= u'z') ||
-       (desk_name_[0] >= u'A' && desk_name_[0] <= u'Z'))) {
-    abbreviated_desk_name_ = base::i18n::ToUpper(desk_name_.substr(0, 1));
+  if (!iter.Init()) {
+    return;
+  }
+
+  if (desk->is_name_set_by_user()) {
+    // For the customized desk name, it shows the first unicode for the
+    // `abbreviated_desk_name_`.
+    if (!iter.Advance()) {
+      return;
+    }
+    abbreviated_desk_name_ = iter.GetString();
   } else {
     abbreviated_desk_name_ =
         u"#" + base::NumberToString16(
