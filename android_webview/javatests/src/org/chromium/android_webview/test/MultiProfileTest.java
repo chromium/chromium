@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserContext;
+import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -116,5 +117,36 @@ public class MultiProfileTest {
         Assert.assertEquals("Default", defaultProfile.getRelativePathForTesting());
         Assert.assertEquals("Profile 1", myCoolProfile.getRelativePathForTesting());
         Assert.assertEquals("Profile 2", myOtherCoolProfile.getRelativePathForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSharedPrefsNamesAreCorrectAndUnique() throws Throwable {
+        final String dataDirSuffix = "MyDataDirSuffix";
+
+        AwBrowserProcess.setProcessDataDirSuffixForTesting(dataDirSuffix);
+        final AwBrowserContext defaultProfile = AwBrowserContext.getDefault();
+        final AwBrowserContext myCoolProfile = getContextSync("MyCoolProfile", true);
+        final AwBrowserContext myOtherCoolProfile = getContextSync("MyOtherCoolProfile", true);
+        final AwBrowserContext myCoolProfileCopy = getContextSync("MyCoolProfile", true);
+        Assert.assertEquals("WebViewProfilePrefsDefault_MyDataDirSuffix",
+                defaultProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals("WebViewProfilePrefsProfile 1_MyDataDirSuffix",
+                myCoolProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals("WebViewProfilePrefsProfile 2_MyDataDirSuffix",
+                myOtherCoolProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+                myCoolProfileCopy.getSharedPrefsNameForTesting());
+
+        AwBrowserProcess.setProcessDataDirSuffixForTesting(null);
+        Assert.assertEquals(
+                "WebViewProfilePrefsDefault", defaultProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals(
+                "WebViewProfilePrefsProfile 1", myCoolProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals(
+                "WebViewProfilePrefsProfile 2", myOtherCoolProfile.getSharedPrefsNameForTesting());
+        Assert.assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+                myCoolProfileCopy.getSharedPrefsNameForTesting());
     }
 }

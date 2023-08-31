@@ -35,11 +35,8 @@ import java.util.Set;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
-
     private static final String TAG = "AwBrowserContext";
-    private static final String CHROMIUM_PREFS_NAME = "WebViewProfilePrefsDefault";
-
-    private final SharedPreferences mSharedPreferences;
+    private static final String BASE_PREFERENCES = "WebViewProfilePrefs";
 
     private AwGeolocationPermissions mGeolocationPermissions;
     private AwServiceWorkerController mServiceWorkerController;
@@ -52,23 +49,30 @@ public class AwBrowserContext implements BrowserContextHandle {
     @NonNull
     private final String mRelativePath;
     private final boolean mIsDefault;
+    @NonNull
+    private final SharedPreferences mSharedPreferences;
 
-    public AwBrowserContext(SharedPreferences sharedPreferences, long nativeAwBrowserContext) {
-        this(sharedPreferences, nativeAwBrowserContext,
-                AwBrowserContextJni.get().getDefaultContextName(),
+    public AwBrowserContext(long nativeAwBrowserContext) {
+        this(nativeAwBrowserContext, AwBrowserContextJni.get().getDefaultContextName(),
                 AwBrowserContextJni.get().getDefaultContextRelativePath(), true);
     }
 
-    public AwBrowserContext(SharedPreferences sharedPreferences, long nativeAwBrowserContext,
-            @NonNull String name, @NonNull String relativePath, boolean isDefault) {
+    public AwBrowserContext(long nativeAwBrowserContext, @NonNull String name,
+            @NonNull String relativePath, boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
         mName = name;
         mRelativePath = relativePath;
-        mSharedPreferences = sharedPreferences;
-
         mIsDefault = isDefault;
-        if (isDefaultAwBrowserContext()) {
-            migrateGeolocationPreferences();
+
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+            // Prefs dir will be created if it doesn't exist, so must allow writes.
+            mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
+                    getSharedPrefsFilename(relativePath), Context.MODE_PRIVATE);
+
+            if (isDefaultAwBrowserContext()) {
+                // Migration requires disk writes.
+                migrateGeolocationPreferences();
+            }
         }
 
         // Register MemoryPressureMonitor callbacks and make sure it polls only if there is at
@@ -101,6 +105,21 @@ public class AwBrowserContext implements BrowserContextHandle {
         return mRelativePath;
     }
 
+    @NonNull
+    public String getSharedPrefsNameForTesting() {
+        return getSharedPrefsFilename(mRelativePath);
+    }
+
+    @NonNull
+    private static String getSharedPrefsFilename(@NonNull final String relativePath) {
+        final String dataDirSuffix = AwBrowserProcess.getProcessDataDirSuffix();
+        if (dataDirSuffix == null || dataDirSuffix.isEmpty()) {
+            return BASE_PREFERENCES + relativePath;
+        } else {
+            return BASE_PREFERENCES + relativePath + "_" + dataDirSuffix;
+        }
+    }
+
     public AwGeolocationPermissions getGeolocationPermissions() {
         if (mGeolocationPermissions == null) {
             mGeolocationPermissions = new AwGeolocationPermissions(mSharedPreferences);
@@ -125,17 +144,14 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     private void migrateGeolocationPreferences() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            // Prefs dir will be created if it doesn't exist, so must allow writes
-            // for this and so that the actual prefs can be written to the new
-            // location if needed.
-            final String oldGlobalPrefsName = "WebViewChromiumPrefs";
-            SharedPreferences oldGlobalPrefs =
-                    ContextUtils.getApplicationContext().getSharedPreferences(
-                            oldGlobalPrefsName, Context.MODE_PRIVATE);
-            AwGeolocationPermissions.migrateGeolocationPreferences(
-                    oldGlobalPrefs, mSharedPreferences);
-        }
+        // Prefs dir will be created if it doesn't exist, so must allow writes
+        // for this and so that the actual prefs can be written to the new
+        // location if needed.
+        final String oldGlobalPrefsName = "WebViewChromiumPrefs";
+        SharedPreferences oldGlobalPrefs =
+                ContextUtils.getApplicationContext().getSharedPreferences(
+                        oldGlobalPrefsName, Context.MODE_PRIVATE);
+        AwGeolocationPermissions.migrateGeolocationPreferences(oldGlobalPrefs, mSharedPreferences);
     }
 
     /**
@@ -251,15 +267,7 @@ public class AwBrowserContext implements BrowserContextHandle {
     @CalledByNative
     public static AwBrowserContext create(
             long nativeAwBrowserContext, String name, String relativePath, boolean isDefault) {
-        SharedPreferences sharedPreferences;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            // Prefs dir will be created if it doesn't exist, so must allow writes.
-            sharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                    CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
-        }
-
-        return new AwBrowserContext(
-                sharedPreferences, nativeAwBrowserContext, name, relativePath, isDefault);
+        return new AwBrowserContext(nativeAwBrowserContext, name, relativePath, isDefault);
     }
 
     @NativeMethods

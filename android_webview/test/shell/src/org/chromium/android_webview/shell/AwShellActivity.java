@@ -9,7 +9,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -57,7 +56,6 @@ import java.util.Arrays;
  */
 public class AwShellActivity extends Activity {
     private static final String TAG = "AwShellActivity";
-    private static final String PREFERENCES_NAME = "AwShellPrefs";
     private static final String INITIAL_URL = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
     private AwBrowserContext mBrowserContext;
     private AwDevToolsServer mDevToolsServer;
@@ -227,10 +225,8 @@ public class AwShellActivity extends Activity {
             }
         };
 
-        SharedPreferences sharedPreferences =
-                getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         if (mBrowserContext == null) {
-            mBrowserContext = new AwBrowserContext(sharedPreferences,
+            mBrowserContext = new AwBrowserContext(
                     AwBrowserContext.getDefault().getNativeBrowserContextPointer());
         }
         final AwSettings awSettings =

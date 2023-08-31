@@ -210,6 +210,10 @@ public final class AwBrowserProcess {
         return sWebViewPackageName;
     }
 
+    public static void setProcessDataDirSuffixForTesting(@Nullable String processDataDirSuffix) {
+        sProcessDataDirSuffix = processDataDirSuffix;
+    }
+
     @Nullable
     public static String getProcessDataDirSuffix() {
         return sProcessDataDirSuffix;
