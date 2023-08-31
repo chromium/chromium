@@ -518,6 +518,16 @@ void FederatedAuthRequestImpl::RequestToken(
     mojo::ReportBadMessage("idp_get_params_ptrs is empty.");
     return;
   }
+  // This could only happen with a compromised renderer process. We ensure that
+  // the provider list size is > 0 on the renderer side at the beginning of
+  // parsing |IdentityCredentialRequestOptions|.
+  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
+    if (idp_get_params_ptr->providers.size() == 0) {
+      mojo::ReportBadMessage("The provider list should not be empty.");
+      return;
+    }
+  }
+
   if (!render_frame_host().GetPage().IsPrimary()) {
     mojo::ReportBadMessage(
         "FedCM should not be allowed in nested frame trees.");
@@ -578,14 +588,6 @@ void FederatedAuthRequestImpl::RequestToken(
     // federated identities, so that they can be presented to the user in an
     // unified manner.
     return;
-  }
-
-  // Check that providers are non-empty.
-  for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
-    if (idp_get_params_ptr->providers.size() == 0) {
-      std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
-      return;
-    }
   }
 
   if (!fedcm_metrics_) {
