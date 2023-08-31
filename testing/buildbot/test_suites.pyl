@@ -272,8 +272,7 @@
     },
 
     'android_webview_gpu_telemetry_tests': {
-      'pixel_skia': {
-        'name': 'android_webview_pixel_skia_gold_test',
+      'android_webview_pixel_skia_gold_test': {
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -2641,7 +2640,8 @@
     },
 
     'gpu_common_and_optional_telemetry_tests': {
-      'info_collection': {
+      'info_collection_tests': {
+        'telemetry_test_name': 'info_collection',
         'args': [
           '--expected-vendor-id',
           '${gpu_vendor_id}',
@@ -2832,7 +2832,7 @@
     },
 
     'gpu_dawn_web_platform_webgpu_cts_force_swiftshader': {
-      'webgpu_swiftshader_web_platform_cts': {
+      'webgpu_swiftshader_web_platform_cts_tests': {
         'args': [
           '--use-webgpu-adapter=swiftshader',
           '--test-filter=*web_platform*',
@@ -2846,7 +2846,7 @@
         },
         'telemetry_test_name': 'webgpu_cts',
       },
-      'webgpu_swiftshader_web_platform_cts_with_validation': {
+      'webgpu_swiftshader_web_platform_cts_with_validation_tests': {
         'args': [
           '--use-webgpu-adapter=swiftshader',
           '--test-filter=*web_platform*',
@@ -2865,7 +2865,6 @@
 
     'gpu_dawn_webgpu_blink_web_tests': {
       'webgpu_blink_web_tests': {
-        'name': 'webgpu_blink_web_tests',
         'isolate_name': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu',
@@ -2877,7 +2876,6 @@
         ],
       },
       'webgpu_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_blink_web_tests_with_backend_validation',
         'isolate_name': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-with-backend-validation',
@@ -2892,7 +2890,6 @@
 
     'gpu_dawn_webgpu_blink_web_tests_force_swiftshader': {
       'webgpu_swiftshader_blink_web_tests': {
-        'name': 'webgpu_swiftshader_blink_web_tests',
         'isolate_name': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-swiftshader',
@@ -2902,7 +2899,6 @@
         ],
       },
       'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
-        'name': 'webgpu_swiftshader_blink_web_tests_with_backend_validation',
         'isolate_name': 'webgpu_blink_web_tests',
         'args': [
           '--flag-specific=webgpu-swiftshader-with-backend-validation',
@@ -2916,7 +2912,8 @@
     },
 
     'gpu_dawn_webgpu_cts': {
-      'webgpu_cts': {
+      'webgpu_cts_tests': {
+        'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
@@ -2928,7 +2925,7 @@
           'shards': 36,
         },
       },
-      'webgpu_cts_with_validation': {
+      'webgpu_cts_with_validation_tests': {
         'args': [
           '--enable-dawn-backend-validation',
         ],
@@ -2947,7 +2944,8 @@
     },
 
     'gpu_dawn_webgpu_cts_asan': {
-      'webgpu_cts': {
+      'webgpu_cts_tests': {
+        'telemetry_test_name': 'webgpu_cts',
         'mixins': [
           'has_native_resultdb_integration',
           'webgpu_telemetry_cts',
@@ -3069,7 +3067,8 @@
     },
 
     'gpu_info_collection_telemetry_tests': {
-      'info_collection': {
+      'info_collection_tests': {
+        'telemetry_test_name': 'info_collection',
         'args': [
           '--expected-vendor-id',
           '${gpu_vendor_id}',
@@ -3087,8 +3086,7 @@
     },
 
     'gpu_mediapipe_passthrough_telemetry_tests': {
-      'mediapipe_passthrough': {
-        'name': 'mediapipe_passthrough_tests',
+      'mediapipe_passthrough_tests': {
         'telemetry_test_name': 'mediapipe',
         'args': [
           '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle',
@@ -3113,8 +3111,7 @@
     },
 
     'gpu_mediapipe_validating_telemetry_tests': {
-      'mediapipe_validating': {
-        'name': 'mediapipe_validating_tests',
+      'mediapipe_validating_tests': {
         'telemetry_test_name': 'mediapipe',
         'args': [
           '--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating',
@@ -3145,7 +3142,8 @@
       # of the bots, and if so to mirror their configurations. We prefer
       # to keep this new script simpler and to just configure this by
       # hand in waterfalls.pyl.
-      'noop_sleep': {
+      'noop_sleep_tests': {
+        'telemetry_test_name': 'noop_sleep',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3156,8 +3154,7 @@
     },
 
     'gpu_passthrough_telemetry_tests': {
-      'context_lost_passthrough': {
-        'name': 'context_lost_passthrough_tests',
+      'context_lost_passthrough_tests': {
         'telemetry_test_name': 'context_lost',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
@@ -3179,8 +3176,8 @@
           'has_native_resultdb_integration',
         ],
       },
-      'gpu_process': {
-        'name': 'gpu_process_launch_tests',
+      'gpu_process_launch_tests': {
+        'telemetry_test_name': 'gpu_process',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3198,7 +3195,8 @@
           'has_native_resultdb_integration',
         ],
       },
-      'hardware_accelerated_feature': {
+      'hardware_accelerated_feature_tests': {
+        'telemetry_test_name': 'hardware_accelerated_feature',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3216,8 +3214,7 @@
           'has_native_resultdb_integration',
         ],
       },
-      'maps_passthrough': {
-        'name': 'maps_pixel_passthrough_test',
+      'maps_pixel_passthrough_test': {
         'telemetry_test_name': 'maps',
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3245,8 +3242,7 @@
           'has_native_resultdb_integration',
         ],
       },
-      'pixel_skia_passthrough': {
-        'name': 'pixel_skia_gold_passthrough_test',
+      'pixel_skia_gold_passthrough_test': {
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -3274,8 +3270,7 @@
         ],
         'telemetry_test_name': 'pixel',
       },
-      'screenshot_sync_passthrough': {
-        'name': 'screenshot_sync_passthrough_tests',
+      'screenshot_sync_passthrough_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3303,8 +3298,7 @@
     },
 
     'gpu_pixel_passthrough_telemetry_tests': {
-      'maps_passthrough': {
-        'name': 'maps_pixel_passthrough_test',
+      'maps_pixel_passthrough_test': {
         'telemetry_test_name': 'maps',
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3320,8 +3314,7 @@
           'has_native_resultdb_integration',
         ],
       },
-      'pixel_skia_passthrough': {
-        'name': 'pixel_skia_gold_passthrough_test',
+      'pixel_skia_gold_passthrough_test': {
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -3340,8 +3333,7 @@
     },
 
     'gpu_skia_renderer_vulkan_passthrough_telemetry_tests': {
-      'vulkan_pixel_skia': {
-        'name': 'vulkan_pixel_skia_gold_test',
+      'vulkan_pixel_skia_gold_test': {
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -3362,8 +3354,7 @@
     },
 
     'gpu_validating_telemetry_tests': {
-      'context_lost_validating': {
-        'name': 'context_lost_validating_tests',
+      'context_lost_validating_tests': {
         'telemetry_test_name': 'context_lost',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
@@ -3385,8 +3376,8 @@
           'has_native_resultdb_integration',
         ],
       },
-      'gpu_process': {
-        'name': 'gpu_process_launch_tests',
+      'gpu_process_launch_tests': {
+        'telemetry_test_name': 'gpu_process',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3404,7 +3395,8 @@
           'has_native_resultdb_integration',
         ],
       },
-      'hardware_accelerated_feature': {
+      'hardware_accelerated_feature_tests': {
+        'telemetry_test_name': 'hardware_accelerated_feature',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3422,8 +3414,7 @@
           'has_native_resultdb_integration',
         ],
       },
-      'maps_validating': {
-        'name': 'maps_pixel_validating_test',
+      'maps_pixel_validating_test': {
         'telemetry_test_name': 'maps',
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3451,8 +3442,7 @@
           'has_native_resultdb_integration',
         ],
       },
-      'pixel_skia_validating': {
-        'name': 'pixel_skia_gold_validating_test',
+      'pixel_skia_gold_validating_test': {
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
@@ -3480,8 +3470,7 @@
         ],
         'telemetry_test_name': 'pixel',
       },
-      'screenshot_sync_validating': {
-        'name': 'screenshot_sync_validating_tests',
+      'screenshot_sync_validating_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3518,7 +3507,8 @@
     },
 
     'gpu_webcodecs_telemetry_test': {
-      'webcodecs': {
+      'webcodecs_tests': {
+        'telemetry_test_name': 'webcodecs',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
@@ -3540,7 +3530,8 @@
     },
 
     'gpu_webcodecs_validating_telemetry_test': {
-      'webcodecs': {
+      'webcodecs_tests': {
+        'telemetry_test_name': 'webcodecs',
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
@@ -3700,7 +3691,7 @@
     },
 
     'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests': {
-      'webgl_conformance_d3d11_passthrough': {
+      'webgl_conformance_d3d11_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3718,7 +3709,7 @@
     },
 
     'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests': {
-      'webgl_conformance_d3d9_passthrough': {
+      'webgl_conformance_d3d9_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3736,7 +3727,7 @@
     },
 
     'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
-      'webgl_conformance_gl_passthrough': {
+      'webgl_conformance_gl_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3767,7 +3758,7 @@
     },
 
     'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
-      'webgl_conformance_gles_passthrough': {
+      'webgl_conformance_gles_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3798,7 +3789,7 @@
     },
 
     'gpu_webgl_conformance_metal_passthrough_telemetry_tests': {
-      'webgl_conformance_metal_passthrough': {
+      'webgl_conformance_metal_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3816,7 +3807,7 @@
     },
 
     'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests': {
-      'webgl_conformance_swangle_passthrough': {
+      'webgl_conformance_swangle_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -3836,7 +3827,7 @@
     },
 
     'gpu_webgl_conformance_swangle_passthrough_telemetry_tests': {
-      'webgl_conformance_swangle_passthrough': {
+      'webgl_conformance_swangle_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough',
@@ -3853,7 +3844,7 @@
     },
 
     'gpu_webgl_conformance_telemetry_tests': {
-      'webgl_conformance': {
+      'webgl_conformance_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
@@ -3883,7 +3874,7 @@
     },
 
     'gpu_webgl_conformance_validating_telemetry_tests': {
-      'webgl_conformance_validating': {
+      'webgl_conformance_validating_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
@@ -3917,7 +3908,7 @@
     },
 
     'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
-      'webgl_conformance_vulkan_passthrough': {
+      'webgl_conformance_vulkan_passthrough_tests': {
         'telemetry_test_name': 'webgl1_conformance',
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
@@ -4240,7 +4231,6 @@
 
     'linux_chromeos_browser_tests_require_lacros': {
       'browser_tests_require_lacros': {
-        'name': 'browser_tests_require_lacros',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter',
           '--lacros-chrome-path=lacros_clang_x64',
@@ -4261,7 +4251,6 @@
       # TODO(crbug.com/1071693): Merge this suite back in to the main
       # browser_tests when the tests no longer fail on MSAN.
       'oobe_only_browser_tests': {
-        'name': 'oobe_only_browser_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter',
         ],
@@ -4313,15 +4302,13 @@
     },
 
     'linux_lacros_chrome_browsertests_non_version_skew': {
-      'lacros_chrome_browsertests on ToT ash': {
-        'name': 'lacros_chrome_browsertests',
+      'lacros_chrome_browsertests': {
         'test': 'lacros_chrome_browsertests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
         ],
       },
-      'lacros_chrome_browsertests_run_in_series on ToT ash': {
-        'name': 'lacros_chrome_browsertests_run_in_series',
+      'lacros_chrome_browsertests_run_in_series': {
         'test': 'lacros_chrome_browsertests_run_in_series',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter',
@@ -4349,8 +4336,7 @@
     },
 
     'linux_lacros_chrome_interactive_ui_tests_version_skew': {
-      'interactive_ui_tests version skew': {
-        'name': 'interactive_ui_tests',
+      'interactive_ui_tests': {
         'test': 'interactive_ui_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
@@ -4362,8 +4348,7 @@
     },
 
     'linux_lacros_chrome_interactive_ui_tests_version_skew_beta': {
-      'interactive_ui_tests version skew beta': {
-        'name': 'interactive_ui_tests',
+      'interactive_ui_tests': {
         'test': 'interactive_ui_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter',
@@ -4375,8 +4360,7 @@
     },
 
     'linux_lacros_chrome_interactive_ui_tests_version_skew_dev': {
-      'interactive_ui_tests version skew dev': {
-        'name': 'interactive_ui_tests',
+      'interactive_ui_tests': {
         'test': 'interactive_ui_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter',
@@ -4388,8 +4372,7 @@
     },
 
     'linux_lacros_chrome_interactive_ui_tests_version_skew_stable': {
-      'interactive_ui_tests version skew stable': {
-        'name': 'interactive_ui_tests',
+      'interactive_ui_tests': {
         'test': 'interactive_ui_tests',
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter',
@@ -4773,7 +4756,6 @@
 
     'pixel_browser_tests_gtests': {
       'pixel_browser_tests': {
-        'name': 'pixel_browser_tests',
         'args': [
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
@@ -4789,7 +4771,6 @@
         ],
       },
       'pixel_interactive_ui_tests': {
-        'name': 'pixel_interactive_ui_tests',
         'args': [
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
@@ -4804,7 +4785,6 @@
 
     'pixel_experimental_browser_tests_gtests': {
       'pixel_experimental_browser_tests': {
-        'name': 'pixel_experimental_browser_tests',
         'args': [
           '--browser-ui-tests-verify-pixels',
           '--enable-pixel-output-in-tests',
@@ -5651,7 +5631,6 @@
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
-        'name': 'xr.webxr.static',
         # Experimental until we're sure these are stable.
         'experiment_percentage': 100,
       }
