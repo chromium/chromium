@@ -4,7 +4,17 @@
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
     height: 100%;
+    min-width: 0;
     width: 100%;
+  }
+
+  .hover-layer {
+    display: none;
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    border-radius: var(--ntp-module-item-border-radius);
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
   }
 
   a:link,
@@ -14,14 +24,12 @@
     text-decoration: none;
   }
 
-  a:hover {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    border-radius: var(--ntp-module-item-border-radius);
+  a:hover .hover-layer {
+    display: block;
   }
 
-  a:active {
-    background-color: var(--color-new-tab-page-active-background);
-    border-radius: var(--ntp-module-item-border-radius);
+  a:active .hover-layer {
+    background: var(--color-new-tab-page-active-background);
   }
 
   :host-context(.focus-outline-visible) a:focus,
@@ -33,6 +41,7 @@
 
   #content {
     flex: 1;
+    min-width: 0;
     position: relative;
   }
 
@@ -177,6 +186,7 @@
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
    aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
+  <div class="hover-layer"></div>
   <div id="label-container">
     <page-favicon id="icon" url="[[visit.normalizedUrl]]"
                   is-known-to-sync="[[visit.isKnownToSync]]">
