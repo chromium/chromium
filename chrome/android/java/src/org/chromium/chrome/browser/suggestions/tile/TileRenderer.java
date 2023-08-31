@@ -24,7 +24,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -237,9 +236,6 @@ public class TileRenderer {
 
     /** @return True, if the tile represents a Search query. */
     private boolean isSearchTile(Tile tile) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES)) {
-            return false;
-        }
         TemplateUrlService searchService =
                 TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         return searchService != null

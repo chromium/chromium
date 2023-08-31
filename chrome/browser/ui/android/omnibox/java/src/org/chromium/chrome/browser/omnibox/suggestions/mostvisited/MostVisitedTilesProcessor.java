@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -44,7 +44,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final int mMinCarouselItemViewHeight;
-    private boolean mEnableOrganicRepeatableQueries;
 
     /**
      * Constructor.
@@ -86,14 +85,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public void onNativeInitialized() {
-        super.onNativeInitialized();
-
-        mEnableOrganicRepeatableQueries =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_ORGANIC_REPEATABLE_QUERIES);
-    }
-
-    @Override
     public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
         super.populateModel(match, model, matchIndex);
 
@@ -115,17 +106,16 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
 
         for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
-            final SuggestTile tile = tiles.get(elementIndex);
+            SuggestTile tile = tiles.get(elementIndex);
+            int index = elementIndex;
             // Use website host text when the website title is empty (for example: gmail.com).
             String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
-            GURL url = tile.url;
-            boolean isSearch = tile.isSearch && mEnableOrganicRepeatableQueries;
-            final int index = elementIndex;
+
             // clang-format off
-            PropertyModel tileModel = createTile(title, url, isSearch,
+            PropertyModel tileModel = createTile(title, tile.url, tile.isSearch,
                     v -> {
-                        OmniboxMetrics.recordSuggestTileTypeUsed(index, isSearch);
-                        mSuggestionHost.onSuggestionClicked(match, matchIndex, url);
+                        OmniboxMetrics.recordSuggestTileTypeUsed(index, tile.isSearch);
+                        mSuggestionHost.onSuggestionClicked(match, matchIndex, tile.url);
                     },
                     v -> {
                         mSuggestionHost.onDeleteMatchElement(match, title, index);
@@ -140,50 +130,53 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     private PropertyModel createTile(String title, GURL url, boolean isSearch,
             View.OnClickListener onClick, View.OnLongClickListener onLongClick) {
-        final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
+        String contentDescription;
+        Drawable decoration;
 
-        tileModel.set(TileViewProperties.TITLE, title);
-        tileModel.set(TileViewProperties.TITLE_LINES, 1);
-        tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
-                () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
-        tileModel.set(TileViewProperties.ON_CLICK, onClick);
-        tileModel.set(TileViewProperties.ON_LONG_CLICK, onLongClick);
-
-        tileModel.set(TileViewProperties.ICON_TINT,
-                ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
         if (isSearch) {
-            tileModel.set(TileViewProperties.ICON,
-                    OmniboxResourceProvider.getDrawable(
-                            mContext, R.drawable.ic_suggestion_magnifier));
-            tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                    OmniboxResourceProvider.getString(mContext,
-                            R.string.accessibility_omnibox_most_visited_tile_search, title));
+            decoration = OmniboxResourceProvider.getDrawable(
+                    mContext, R.drawable.ic_suggestion_magnifier);
+            contentDescription = OmniboxResourceProvider.getString(
+                    mContext, R.string.accessibility_omnibox_most_visited_tile_search, title);
         } else {
-            tileModel.set(TileViewProperties.ICON,
-                    OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp));
-            tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
-                    OmniboxResourceProvider.getString(mContext,
-                            R.string.accessibility_omnibox_most_visited_tile_navigate, title,
-                            url.getHost()));
-
-            tileModel.set(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
-                    mContext.getResources().getDimensionPixelSize(
-                            R.dimen.omnibox_small_icon_rounding_radius));
-            if (mImageSupplier != null) {
-                mImageSupplier.fetchFavicon(url, icon -> {
-                    if (icon == null) {
-                        mImageSupplier.generateFavicon(url, fallback -> {
-                            tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallback));
-                            tileModel.set(TileViewProperties.ICON_TINT, null);
-                        });
-                        return;
-                    }
-                    tileModel.set(TileViewProperties.ICON, new BitmapDrawable(icon));
-                    tileModel.set(TileViewProperties.ICON_TINT, null);
-                });
-            }
+            decoration = OmniboxResourceProvider.getDrawable(mContext, R.drawable.ic_globe_24dp);
+            contentDescription = OmniboxResourceProvider.getString(mContext,
+                    R.string.accessibility_omnibox_most_visited_tile_navigate, title,
+                    url.getHost());
         }
 
-        return tileModel;
+        var model = new PropertyModel.Builder(TileViewProperties.ALL_KEYS)
+                            .with(TileViewProperties.TITLE, title)
+                            .with(TileViewProperties.TITLE_LINES, 1)
+                            .with(TileViewProperties.ON_FOCUS_VIA_SELECTION,
+                                    () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()))
+                            .with(TileViewProperties.ON_CLICK, onClick)
+                            .with(TileViewProperties.ON_LONG_CLICK, onLongClick)
+                            .with(TileViewProperties.ICON_TINT,
+                                    ChromeColors.getSecondaryIconTint(
+                                            mContext, /* isIncognito= */ false))
+                            .with(TileViewProperties.CONTENT_DESCRIPTION, contentDescription)
+                            .with(TileViewProperties.ICON, decoration)
+                            .with(TileViewProperties.SMALL_ICON_ROUNDING_RADIUS,
+                                    mContext.getResources().getDimensionPixelSize(
+                                            R.dimen.omnibox_small_icon_rounding_radius))
+                            .build();
+
+        // Fetch site favicon for MV tiles.
+        if (!isSearch && mImageSupplier != null) {
+            mImageSupplier.fetchFavicon(url, icon -> {
+                if (icon == null) {
+                    mImageSupplier.generateFavicon(url, fallback -> {
+                        model.set(TileViewProperties.ICON, new BitmapDrawable(fallback));
+                        model.set(TileViewProperties.ICON_TINT, null);
+                    });
+                    return;
+                }
+                model.set(TileViewProperties.ICON, new BitmapDrawable(icon));
+                model.set(TileViewProperties.ICON_TINT, null);
+            });
+        }
+
+        return model;
     }
 }
