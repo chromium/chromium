@@ -68,6 +68,8 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
       : DlpRulesManagerImpl(local_state) {}
+
+  ~MockDlpRulesManager() override { Shutdown(); }
 };
 
 }  // namespace

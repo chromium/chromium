@@ -423,8 +423,9 @@ DlpFilesControllerAsh::~DlpFilesControllerAsh() {
     // FilesController before VolumeManager, otherwise we would have been
     // notified in `OnShutdownStart`.
     auto* volume_manager = GetVolumeManager();
-    CHECK(volume_manager);
-    volume_manager->RemoveObserver(this);
+    if (volume_manager) {
+      volume_manager->RemoveObserver(this);
+    }
   }
 }
 

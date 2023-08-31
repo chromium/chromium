@@ -648,6 +648,14 @@ void DlpRulesManagerImpl::DlpDaemonRestarted() {
   OnPolicyUpdate();
 }
 
+void DlpRulesManagerImpl::Shutdown() {
+  // There are FilesController implementations such as DlpFilesControllerAsh
+  // that are using the Profile to do some cleanup (e.g., stop observing the
+  // VolumeManager). This cleanup must be done when the KeyedService::Shutdown
+  // method is called.
+  files_controller_.reset();
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();
