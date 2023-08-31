@@ -83,6 +83,9 @@ extern uint32_t GetDataPipeDefaultAllocationSize(
     DataPipeAllocationSize = DataPipeAllocationSize::kDefaultSizeOnly);
 
 COMPONENT_EXPORT(NETWORK_CPP)
+extern uint32_t GetNetAdapterMaxBufSize();
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)

@@ -5,12 +5,9 @@
 #include "services/network/public/cpp/net_adapters.h"
 
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
-
-namespace {
-const uint32_t kMaxBufSize = 64 * 1024;
-}
 
 NetToMojoPendingBuffer::NetToMojoPendingBuffer(
     mojo::ScopedDataPipeProducerHandle handle,
@@ -27,6 +24,7 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     scoped_refptr<NetToMojoPendingBuffer>* pending,
     uint32_t* num_bytes) {
   void* buf = nullptr;
+  const uint32_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
   *num_bytes = kMaxBufSize;
   MojoResult result =
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
