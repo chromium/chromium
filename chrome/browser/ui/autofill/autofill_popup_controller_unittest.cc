@@ -74,6 +74,7 @@ using base::ASCIIToUTF16;
 using base::WeakPtr;
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -266,8 +267,15 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     std::vector<Suggestion> suggestions;
     suggestions.reserve(popup_item_ids.size());
     for (PopupItemId popup_item_id : popup_item_ids) {
-      suggestions.emplace_back("", "", "", popup_item_id);
+      suggestions.emplace_back(u"", popup_item_id);
     }
+    popup_controller().Show(std::move(suggestions), trigger_source);
+  }
+
+  void ShowSuggestions(
+      std::vector<Suggestion> suggestions,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
     popup_controller().Show(std::move(suggestions), trigger_source);
   }
 
@@ -354,6 +362,17 @@ TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
   // Remove the next entry. The popup should then be hidden since there are
   // no Autofill entries left.
   EXPECT_CALL(popup_controller(), Hide(PopupHidingReason::kNoSuggestions));
+  EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
+}
+
+TEST_F(AutofillPopupControllerUnitTest,
+       RemoveAutocompleteSuggestion_AnnounceText) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions({Suggestion(u"main text", PopupItemId::kAutocompleteEntry)});
+  test::GenerateTestAutofillPopup(external_delegate_.get());
+
+  EXPECT_CALL(*autofill_popup_view(),
+              AxAnnounce(Eq(u"Entry main text has been deleted")));
   EXPECT_TRUE(popup_controller().RemoveSuggestion(0));
 }
 

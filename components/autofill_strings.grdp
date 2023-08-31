@@ -60,6 +60,9 @@
   <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP" desc="Tooltip shown when hovering over a small button with a trash-can logo next to an Autocomplete entry in the Autofill popup.">
     Delete entry
   </message>
+  <message name="IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT" desc="Voice over text that is read out when the delete button next to an Autocomplete entry is selected.">
+    Entry <ph name="ENTRY_VOICEOVER">$1<ex>Jane Doe</ex></ph> has been deleted
+  </message>
   <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT" desc="Voice over text that is read out when the delete button next to an Autocomplete entry is selected.">
     Delete entry <ph name="ENTRY_VOICEOVER">$1<ex>Jane Doe</ex></ph>
   </message>

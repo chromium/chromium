@@ -90,7 +90,7 @@ class PopupAutocompleteCellView : public autofill::PopupCellView,
 
   void CreateDeleteButton();
   void OnButtonPropertyChanged();
-  void DeleteAutocomplete();
+  void DeleteAutocompleteEntry();
   void UpdateSelectedAndRunCallback(bool selected);
   void HandleKeyPressEventFocusOnButton();
   void HandleKeyPressEventFocusOnContent();

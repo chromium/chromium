@@ -212,7 +212,7 @@ bool PopupAutocompleteCellView::HandleKeyPressEvent(
     case ui::VKEY_RETURN:
       CHECK(button_);
       if (button_focused_) {
-        DeleteAutocomplete();
+        DeleteAutocompleteEntry();
         return true;
       }
       break;
@@ -265,8 +265,9 @@ views::ImageButton* PopupAutocompleteCellView::GetDeleteButton() {
 void PopupAutocompleteCellView::CreateDeleteButton() {
   std::unique_ptr<views::ImageButton> button =
       views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(&PopupAutocompleteCellView::DeleteAutocomplete,
-                              base::Unretained(this)),
+          base::BindRepeating(
+              &PopupAutocompleteCellView::DeleteAutocompleteEntry,
+              base::Unretained(this)),
           views::kIcCloseIcon, kCloseIconSize);
 
   CHECK(GetLayoutManager());
@@ -304,8 +305,13 @@ void PopupAutocompleteCellView::CreateDeleteButton() {
           button_.get())));
 }
 
-void PopupAutocompleteCellView::DeleteAutocomplete() {
+void PopupAutocompleteCellView::DeleteAutocompleteEntry() {
   if (controller_ && controller_->RemoveSuggestion(line_number_)) {
+    // Do not access any member variable from here on. Remove suggestions
+    // leads to this class being destroyed and it would therefore lead to
+    // a possible UAF. The following metric is ok because it is a static method.
+    // TODO(crbug.com/1417187): Post the remove call as a task to avoid the UAF
+    // risk.
     AutofillMetrics::OnAutocompleteSuggestionDeleted(
         AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
             kDeleteButtonClicked);

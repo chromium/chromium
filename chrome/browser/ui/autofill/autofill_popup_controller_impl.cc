@@ -39,6 +39,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_utils.h"
@@ -521,6 +522,12 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
           suggestions_[list_index].popup_item_id,
           suggestions_[list_index].GetPayload<Suggestion::BackendId>())) {
     return false;
+  }
+  if (suggestion_type == PopupItemId::kAutocompleteEntry) {
+    const std::u16string announcement = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
+        suggestions_[list_index].main_text.value);
+    std::ignore = view_.Call(&AutofillPopupView::AxAnnounce, announcement);
   }
 
   // Remove the deleted element.
