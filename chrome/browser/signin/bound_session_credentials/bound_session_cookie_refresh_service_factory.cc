@@ -22,6 +22,10 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/network_service_instance.h"
 
+BASE_FEATURE(kEnableBoundSessionCredentialsOnDiceProfiles,
+             "EnableBoundSessionCredentialsOnDiceProfiles",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 BoundSessionCookieRefreshServiceFactory*
 BoundSessionCookieRefreshServiceFactory::GetInstance() {
@@ -67,9 +71,6 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  static BASE_FEATURE(kEnableBoundSessionCredentialsOnDiceProfiles,
-                      "EnableBoundSessionCredentialsOnDiceProfiles",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
   signin::AccountConsistencyMethod account_consistency_method =
       AccountConsistencyModeManager::GetMethodForProfile(profile);
   bool should_create_service =

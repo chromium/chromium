@@ -14,6 +14,8 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsOnDiceProfiles);
+
 class BoundSessionCookieRefreshServiceFactory
     : public ProfileKeyedServiceFactory {
  public:

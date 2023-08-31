@@ -6999,6 +6999,7 @@ test("unit_tests") {
     sources += [
       "../browser/signin/bound_session_credentials/bound_session_cookie_controller_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_cookie_observer_unittest.cc",
+      "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_params_storage_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_params_util_unittest.cc",
