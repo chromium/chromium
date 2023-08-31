@@ -2972,7 +2972,8 @@ bool IsArcFuseBoxFileSharingEnabled() {
 }
 
 bool IsArcInputOverlayBetaEnabled() {
-  return base::FeatureList::IsEnabled(kArcInputOverlayBeta);
+  return base::FeatureList::IsEnabled(kArcInputOverlayBeta) ||
+         base::FeatureList::IsEnabled(kDropdownPanel);
 }
 
 bool IsArcInputOverlayAlphaV2Enabled() {
