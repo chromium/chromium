@@ -13,6 +13,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "ui/views/view.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 typedef base::ScopedObservation<PictureInPictureWindowManager,
@@ -155,5 +160,22 @@ TEST_F(PictureInPictureWindowManagerTest, OnEnterDocumentPictureInPicture) {
 
   picture_in_picture_window_manager->EnterDocumentPictureInPicture(
       web_contents(), child_web_contents());
+}
+
+TEST_F(PictureInPictureWindowManagerTest, DontShowAutoPipSettingUiWithoutPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  // There's no pip open, so expect no setting UI.
+  EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView());
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       DontShowAutoPipSettingUiForNonAutoPip) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  picture_in_picture_window_manager->EnterDocumentPictureInPicture(
+      web_contents(), child_web_contents());
+  // This isn't auto-pip, so expect no overlay view.
+  EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView());
 }
 #endif

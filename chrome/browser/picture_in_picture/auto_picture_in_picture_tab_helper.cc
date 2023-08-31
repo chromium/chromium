@@ -228,4 +228,8 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
       url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
 }
 
+bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
+  return is_in_auto_picture_in_picture_;
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);

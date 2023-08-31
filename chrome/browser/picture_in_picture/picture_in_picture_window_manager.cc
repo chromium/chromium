@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/size.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
@@ -310,17 +311,25 @@ std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
     return nullptr;
   }
 
-  // This should only happen if this is an auto-pip window, and also if the
-  // content setting is 'ask'.  For now, do it any time the auto-pip flag is
-  // enabled, which should only happen during internal development.
-  // TODO(crbug.com/1464066): Do this at the right time.
+  // This is redundant with the check for `auto_pip_tab_helper`, below.
+  // However, for safety, early-out here when the flag is off.
   if (!base::FeatureList::IsEnabled(
           blink::features::kMediaSessionEnterPictureInPicture)) {
     return nullptr;
   }
 
+  auto* const web_contents = pip_window_controller_->GetWebContents();
+
+  auto* auto_pip_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  if (!auto_pip_tab_helper ||
+      !auto_pip_tab_helper->IsInAutoPictureInPicture()) {
+    // This isn't auto-pip, so the content setting doesn't matter.
+    return nullptr;
+  }
+
   auto auto_pip_setting_helper = AutoPipSettingHelper::CreateForWebContents(
-      pip_window_controller_->GetWebContents(),
+      web_contents,
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
 
   auto overlay_view = auto_pip_setting_helper->CreateOverlayViewIfNeeded();

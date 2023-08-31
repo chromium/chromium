@@ -75,6 +75,8 @@ class AutoPictureInPictureTabHelper
   void MediaSessionPositionChanged(
       const absl::optional<media_session::MediaPosition>& position) override {}
 
+  bool IsInAutoPictureInPicture() const;
+
  private:
   explicit AutoPictureInPictureTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<AutoPictureInPictureTabHelper>;
