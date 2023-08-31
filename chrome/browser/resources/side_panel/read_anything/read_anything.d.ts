@@ -138,6 +138,9 @@ declare namespace chrome {
     function onSelectionChange(
         anchorNodeId: number, anchorOffset: number, focusNodeId: number,
         focusOffset: number): void;
+    // Called when a user collapses the selection. This is usually accomplished
+    // by clicking.
+    function onCollapseSelection(): void;
 
     // Set the content. Used by tests only.
     // SnapshotLite is a data structure which resembles an AXTreeUpdate. E.g.:

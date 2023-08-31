@@ -74,6 +74,7 @@ class ReadAnythingUntrustedPageHandler
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
                          int focus_offset) override;
+  void OnCollapseSelection() override;
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(

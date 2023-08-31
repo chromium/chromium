@@ -189,6 +189,10 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
   handler->PerformAction(action_data);
 }
 
+void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
+  web_contents()->CollapseSelection();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingModel::Observer:
 ///////////////////////////////////////////////////////////////////////////////

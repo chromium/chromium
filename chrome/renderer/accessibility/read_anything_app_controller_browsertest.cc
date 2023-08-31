@@ -44,6 +44,7 @@ class MockReadAnythingUntrustedPageHandler
                ui::AXNodeID focus_node_id,
                int focus_offset),
               (override));
+  MOCK_METHOD(void, OnCollapseSelection, (), (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
               OnLineSpaceChange,
@@ -254,6 +255,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
                                    focus_offset);
   }
+
+  void OnCollapseSelection() { controller_->OnCollapseSelection(); }
 
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) {
     return controller_->model_.IsNodeIgnoredForReadAnything(ax_node_id);
@@ -1234,6 +1237,22 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+TEST_F(ReadAnythingAppControllerTest, OnCollapseSelection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  update.nodes[2].role = ax::mojom::Role::kStaticText;
+  AccessibilityEventReceived({update});
+  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  OnCollapseSelection();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXTreeUpdate update;
@@ -1285,10 +1304,7 @@ TEST_F(ReadAnythingAppControllerTest,
   int anchor_offset = 5;
   ui::AXNodeID focus_node_id = 3;
   int focus_offset = 5;
-  EXPECT_CALL(page_handler_,
-              OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
-                                focus_node_id, focus_offset))
-      .Times(1);
+  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);

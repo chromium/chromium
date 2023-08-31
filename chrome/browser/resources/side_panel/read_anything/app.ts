@@ -191,6 +191,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       assert(selection);
       const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
       if (!anchorNode || !focusNode) {
+        // The selection was collapsed by clicking inside the selection.
+        chrome.readingMode.onCollapseSelection();
         return;
       }
       const anchorNodeId = this.domNodeToAxNodeIdMap_.get(anchorNode);

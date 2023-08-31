@@ -119,6 +119,9 @@ interface UntrustedPageHandler {
     int32 anchor_offset,
     int32 focus_node_id,
     int32 focus_offset);
+
+  // Informs the browser to collapse the selection made in the WebUI.
+  OnCollapseSelection();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.

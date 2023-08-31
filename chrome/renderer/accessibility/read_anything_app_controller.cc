@@ -666,6 +666,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetLetterSpacingValue)
       .SetMethod("onSelectionChange",
                  &ReadAnythingAppController::OnSelectionChange)
+      .SetMethod("onCollapseSelection",
+                 &ReadAnythingAppController::OnCollapseSelection)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setThemeForTesting",
@@ -1016,8 +1018,10 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // Ignore the new selection if it's collapsed, which is created by a simple
   // click, unless there was a previous selection, in which case the click
   // clears the selection, so we should tell the main page to clear too.
-  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id) &&
-      !model_.has_selection()) {
+  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
+    if (model_.has_selection()) {
+      OnCollapseSelection();
+    }
     return;
   }
 
@@ -1052,6 +1056,10 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
   page_handler_->OnSelectionChange(model_.active_tree_id(), anchor_node_id,
                                    anchor_offset, focus_node_id, focus_offset);
+}
+
+void ReadAnythingAppController::OnCollapseSelection() const {
+  page_handler_->OnCollapseSelection();
 }
 
 // TODO(crbug.com/1266555): Change line_spacing and letter_spacing types from

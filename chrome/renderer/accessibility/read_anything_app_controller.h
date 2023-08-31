@@ -143,6 +143,7 @@ class ReadAnythingAppController
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
+  void OnCollapseSelection() const;
   bool IsSelectable() const;
   bool IsWebUIToolbarEnabled() const;
   bool isReadAloudEnabled() const;
