@@ -18668,6 +18668,21 @@
             ]
         }
     ],
+    "WebXrEnableCardboard": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Cardboard"
+                    ]
+                }
+            ]
+        }
+    ],
     "Win10UnattendedDefault": [
         {
             "platforms": [

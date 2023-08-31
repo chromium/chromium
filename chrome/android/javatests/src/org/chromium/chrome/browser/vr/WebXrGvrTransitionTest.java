@@ -48,8 +48,8 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=gvr"})
 public class WebXrGvrTransitionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
