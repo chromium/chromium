@@ -717,21 +717,19 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
      "ReplaceSyncPromosWithSignInPromos,"
+     "ConsistencyNewAccountInterface,"
      "FeedBottomSyncStringRemoval"},
     {"Base only", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
+     "ConsistencyNewAccountInterface,"
      "FeedBottomSyncStringRemoval"},
     {"Everything (bookmarks, reading list, etc)", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
+     "ConsistencyNewAccountInterface,"
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "EnableBookmarksAccountStorage,"
-     "EnablePreferencesAccountStorage,"
-     "ReadingListEnableDualReadingListModel,"
-     "ReadingListEnableSyncTransportModeUponSignIn,"
-     "ConsistencyNewAccountInterface,"
-     "AutofillAccountProfileStorage"},
+     "EnablePreferencesAccountStorage"},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {
@@ -1427,10 +1425,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSpotlightReadingListSourceName,
      flag_descriptions::kSpotlightReadingListSourceDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSpotlightReadingListSource)},
-    {"consistency-new-account-interface",
-     flag_descriptions::kConsistencyNewAccountInterfaceName,
-     flag_descriptions::kConsistencyNewAccountInterfaceDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kConsistencyNewAccountInterface)},
     {"policy-logs-page-ios", flag_descriptions::kPolicyLogsPageIOSName,
      flag_descriptions::kPolicyLogsPageIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(policy::features::kPolicyLogsPageIOS)},
