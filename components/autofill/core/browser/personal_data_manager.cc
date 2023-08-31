@@ -1640,9 +1640,19 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   };
   if (base::ranges::count_if(field_types, is_field_type_profile_related) > 1) {
     for (auto& suggestion : unique_suggestions) {
-      suggestion.icon = "accountIcon";
+      // TODO(crbug.com/1459990): Remove this hardcoding once the last filling
+      // granularity is available to this method. Filling granularies different
+      // than full form will not have an icon.
+      const bool fill_full_form = true;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillGranularFillingAvailable)) {
+        suggestion.icon = fill_full_form ? "locationIcon" : "";
+      } else {
+        suggestion.icon = "accountIcon";
+      }
     }
   }
+
   return unique_suggestions;
 }
 

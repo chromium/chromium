@@ -147,6 +147,10 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
   }
 
+  if (icon_str == "locationIcon") {
+    return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
+  }
+
   if (icon_str == "deleteIcon") {
     return ImageViewFromVectorIcon(kTrashCanLightIcon, kIconSize);
   }

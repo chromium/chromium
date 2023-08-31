@@ -54,6 +54,52 @@ std::u16string GetInfoInOneLine(const AutofillProfile* profile,
   return profile->GetInfo(type, app_locale);
 }
 
+// // Sets the `popup_item_id` for `suggestion` depending on
+// `last_filling_granularity`. If the `last_filling_granularity` for a certain
+// form was group filling, also add labels to give users feedback about the next
+// filling behaviour.
+// TODO(crbug.com/1466116): Possibly update the filling granularity check once
+// https://chromium-review.googlesource.com/c/chromium/src/+/4778661 has been
+// submitted.
+// TODO(crbug.com/1466116): Add tests when this is actually used.
+// TODO(crbug.com/1466116): Add labels when `last_filling_granularity` is group
+// filling.
+void AddSuggestionDetailsForCurrentFillingGranularity(
+    FillingGranularity last_filling_granularity,
+    const AutofillType& triggering_field_type,
+    Suggestion& suggestion) {
+  switch (last_filling_granularity) {
+    case FillingGranularity::kGroupFilling: {
+      switch (triggering_field_type.group()) {
+        case FieldTypeGroup::kName:
+          suggestion.popup_item_id = PopupItemId::kFillFullName;
+          return;
+        case FieldTypeGroup::kAddress:
+          suggestion.popup_item_id = PopupItemId::kFillFullAddress;
+          return;
+        case FieldTypeGroup::kPhone:
+          suggestion.popup_item_id = PopupItemId::kFillFullPhoneNumber;
+          return;
+        default:
+          // If the `current_granularity` is group filling, BUT the current
+          // focused field is not one for which group we offer group filling
+          // (kName, kAddress and kPhone), we default back to fill full form
+          // behaviour/pre-granular filling popup id.
+          suggestion.popup_item_id = PopupItemId::kAddressEntry;
+          return;
+      }
+    }
+    case FillingGranularity::kFieldByFieldFilling:
+      suggestion.popup_item_id = PopupItemId::kFieldByFieldFilling;
+      return;
+    case FillingGranularity::kFillForm:
+      suggestion.popup_item_id = PopupItemId::kAddressEntry;
+      return;
+    default:
+      NOTREACHED();
+  }
+}
+
 Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
@@ -399,6 +445,13 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
               features::kAutofillGranularFillingAvailable)) {
         AddGranularFillingChildSuggestions(type, *profile, app_locale,
                                            suggestions.back());
+
+        // TODO(crbug.com/1466116): Make this hard coded value a param to
+        // GetPrefixMatchedSuggestions.
+        const FillingGranularity kLastFillingGranularity =
+            FillingGranularity::kGroupFilling;
+        AddSuggestionDetailsForCurrentFillingGranularity(
+            kLastFillingGranularity, type, suggestions.back());
       }
     }
   }
