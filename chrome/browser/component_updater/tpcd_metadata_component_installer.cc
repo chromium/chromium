@@ -4,19 +4,15 @@
 
 #include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/tpcd/metadata/parser.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
@@ -36,7 +32,7 @@ const uint8_t kTpcdMetadataPublicKeySHA256[32] = {
     0x2e, 0xa6, 0xce, 0x00, 0x25, 0x7b, 0x6c, 0xc4, 0x4e, 0x39};
 
 const base::FilePath::CharType kComponentFileName[] =
-    FILE_PATH_LITERAL("metadata.pb");
+    FILE_PATH_LITERAL("tpcd_metadata.pb");
 
 const base::FilePath::CharType kRelInstallDirName[] =
     FILE_PATH_LITERAL("TpcdMetadata");
@@ -92,20 +88,18 @@ void TpcdMetadataComponentInstaller::ComponentReady(
   VLOG(1) << "TPCD Metadata Component ready, version " << version.GetString()
           << " in " << install_dir.value();
 
-  if (base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
-    // Given `BEST_EFFORT` since we don't need to be USER_BLOCKING.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&ReadComponentFromDisk, GetComponentPath(install_dir)),
-        base::BindOnce(
-            [](OnTpcdMetadataComponentReadyCallback on_component_ready_callback,
-               const absl::optional<std::string>& maybe_contents) {
-              if (maybe_contents.has_value()) {
-                on_component_ready_callback.Run(maybe_contents.value());
-              }
-            },
-            on_component_ready_callback_));
-  }
+  // Given `BEST_EFFORT` since we don't need to be USER_BLOCKING.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ReadComponentFromDisk, GetComponentPath(install_dir)),
+      base::BindOnce(
+          [](OnTpcdMetadataComponentReadyCallback on_component_ready_callback,
+             const absl::optional<std::string>& maybe_contents) {
+            if (maybe_contents.has_value()) {
+              on_component_ready_callback.Run(maybe_contents.value());
+            }
+          },
+          on_component_ready_callback_));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -121,10 +115,7 @@ bool TpcdMetadataComponentInstaller::VerifyInstallation(
     return false;
   }
 
-  tpcd::metadata::Metadata metadata;
-  if (!metadata.ParseFromString(contents)) {
-    return false;
-  }
+  // TODO(http://b/290039145): Perform more validation of the proto file.
 
   return true;
 }
@@ -150,16 +141,10 @@ TpcdMetadataComponentInstaller::GetInstallerAttributes() const {
 
 void RegisterTpcdMetadataComponent(ComponentUpdateService* cus) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   VLOG(1) << "Third Party Cookie Deprecation Metadata component.";
-
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       // TODO(http://b/290039145): Integrate the component with CookieSettings.
-      std::make_unique<TpcdMetadataComponentInstaller>(
-          base::BindRepeating([](std::string raw_metadata) {
-            tpcd::metadata::Parser::GetInstance()->ParseMetadata(raw_metadata);
-          })));
-
+      std::make_unique<TpcdMetadataComponentInstaller>(base::DoNothing()));
   installer->Register(cus, base::OnceClosure());
 }
 

@@ -1,5 +1,0 @@
-include_rules = [
-  "+net",
-  "+testing",
-  "+third_party/zlib/google",
-]

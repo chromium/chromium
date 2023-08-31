@@ -255,7 +255,6 @@ test("components_unittests") {
     "//components/sync_user_events:unit_tests",
     "//components/system_media_controls:unit_tests",
     "//components/test:run_all_unittests",
-    "//components/tpcd/metadata:unit_tests",
     "//components/translate/core/browser:unit_tests",
     "//components/translate/core/common:unit_tests",
     "//components/translate/core/language_detection:unit_tests",
