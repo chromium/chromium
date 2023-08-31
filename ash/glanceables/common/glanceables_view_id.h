@@ -19,6 +19,7 @@ enum class GlanceablesViewId {
   kProgressBar,
 
   // `ClassroomBubbleBaseView`.
+  kClassroomBubbleHeaderIcon,
   kClassroomBubbleComboBox,
   kClassroomBubbleListContainer,
   kClassroomBubbleEmptyListLabel,

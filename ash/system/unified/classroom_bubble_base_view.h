@@ -71,6 +71,12 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   // reader, using `combo_box_view_` view accessibility helper.
   void AnnounceListStateOnComboBoxAccessibility();
 
+  // Called when an item view is pressed/clicked on.
+  void OnItemViewPressed(bool initial_list_selected, const GURL& url);
+
+  // Called when the header icon is pressed/clicked on.
+  void OnHeaderIconPressed();
+
   // Total number of assignments in the selected assignment list.
   size_t total_assignments_ = 0u;
 

@@ -21,6 +21,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,12 +70,14 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
 
   auto* const header_icon =
       header_view_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
-                              base::Unretained(this), GURL(kClassroomHomePage)),
+          base::BindRepeating(&ClassroomBubbleBaseView::OnHeaderIconPressed,
+                              base::Unretained(this)),
           IconButton::Type::kMedium, &kGlanceablesClassroomIcon,
           IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME));
   header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
+  header_icon->SetID(
+      base::to_underlying(GlanceablesViewId::kClassroomBubbleHeaderIcon));
 
   combo_box_view_ = header_view_->AddChildView(
       std::make_unique<Combobox>(std::move(combobox_model)));
@@ -153,8 +156,9 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     list_container_view_->AddChildView(
         std::make_unique<GlanceablesClassroomItemView>(
             assignments[i].get(),
-            base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
-                                base::Unretained(this), assignments[i]->link),
+            base::BindRepeating(&ClassroomBubbleBaseView::OnItemViewPressed,
+                                base::Unretained(this), initial_update,
+                                assignments[i]->link),
             /*item_index=*/i, /*last_item_index=*/num_assignments - 1));
   }
   const size_t shown_assignments = list_container_view_->children().size();
@@ -221,6 +225,23 @@ void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {
     combo_box_view_->GetViewAccessibility().AnnounceText(
         list_footer_view_->items_count_label()->GetText());
   }
+}
+
+void ClassroomBubbleBaseView::OnItemViewPressed(bool initial_list_selected,
+                                                const GURL& url) {
+  if (initial_list_selected) {
+    base::RecordAction(base::UserMetricsAction(
+        "Glanceables_Classroom_AssignmentPressed_DefaultList"));
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_AssignmentPressed"));
+  OpenUrl(url);
+}
+
+void ClassroomBubbleBaseView::OnHeaderIconPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_HeaderIconPressed"));
+  OpenUrl(GURL(kClassroomHomePage));
 }
 
 BEGIN_METADATA(ClassroomBubbleBaseView, views::View)

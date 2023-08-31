@@ -18,6 +18,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -132,6 +133,8 @@ void ClassroomBubbleStudentView::RegisterUserProfilePrefs(
 }
 
 void ClassroomBubbleStudentView::OnSeeAllPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));
   CHECK(combo_box_view_->GetSelectedIndex());
   const auto selected_index = combo_box_view_->GetSelectedIndex().value();
   CHECK(selected_index >= 0 ||
@@ -150,6 +153,10 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
 
 void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
     bool initial_update) {
+  if (!initial_update) {
+    base::RecordAction(
+        base::UserMetricsAction("Glanceables_Classroom_SelectedListChanged"));
+  }
   auto* const client =
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
   if (!client) {

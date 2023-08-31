@@ -10225,6 +10225,53 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Glanceables_Classroom_AssignmentPressed">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on an assignment in the classroom glanceable.
+  </description>
+</action>
+
+<action name="Glanceables_Classroom_AssignmentPressed_DefaultList">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on an assignment in the classroom glanceable, while the default
+    assignment list is shown.
+  </description>
+</action>
+
+<action name="Glanceables_Classroom_HeaderIconPressed">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the header icon button in the classroom glanceable.
+  </description>
+</action>
+
+<action name="Glanceables_Classroom_SeeAllPressed">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User clicked on the see all button in the footer of the classroom
+    glanceable.
+  </description>
+</action>
+
+<action name="Glanceables_Classroom_SelectedListChanged">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User changed the selected assignment list in the classroom glanceable.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
