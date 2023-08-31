@@ -9,7 +9,7 @@
 
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -20,7 +20,7 @@ GWP_ASAN_EXPORT void InstallPartitionAllocHooks(
     size_t total_pages,
     size_t sampling_frequency,
     GuardedPageAllocator::OutOfMemoryCallback callback,
-    LightweightDetector::State lightweight_detector_state,
+    LightweightDetectorMode lightweight_detector_mode,
     size_t num_lightweight_detector_metadata);
 
 }  // namespace internal

@@ -13,7 +13,6 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -80,21 +79,23 @@ void InstallPartitionAllocHooks(
     size_t total_pages,
     size_t sampling_frequency,
     GuardedPageAllocator::OutOfMemoryCallback callback,
-    LightweightDetector::State lightweight_detector_state,
+    LightweightDetectorMode lightweight_detector_mode,
     size_t num_lightweight_detector_metadata) {
   static crash_reporter::CrashKeyString<24> pa_crash_key(
       kPartitionAllocCrashKey);
+  static crash_reporter::CrashKeyString<24> lightweight_detector_crash_key(
+      kLightweightDetectorCrashKey);
   gpa = new GuardedPageAllocator();
   gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            true, lightweight_detector_state,
-            num_lightweight_detector_metadata);
+            true, lightweight_detector_mode, num_lightweight_detector_metadata);
   pa_crash_key.Set(gpa->GetCrashKey());
+  lightweight_detector_crash_key.Set(gpa->GetLightweightDetectorCrashKey());
   sampling_state.Init(sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
   partition_alloc::PartitionAllocHooks::SetOverrideHooks(
       &AllocationHook, &FreeHook, &ReallocHook);
-  if (lightweight_detector_state == LightweightDetector::State::kEnabled) {
+  if (lightweight_detector_mode == LightweightDetectorMode::kBrpQuarantine) {
     partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(
         &QuarantineHook);
   }

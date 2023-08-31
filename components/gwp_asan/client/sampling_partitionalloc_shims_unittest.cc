@@ -23,7 +23,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -66,7 +66,7 @@ class SamplingPartitionAllocShimsTest : public base::MultiProcessTest {
     InstallPartitionAllocHooks(
         AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
         AllocatorState::kMaxRequestedSlots, kSamplingFrequency,
-        base::DoNothing(), LightweightDetector::State::kDisabled, 0);
+        base::DoNothing(), LightweightDetectorMode::kOff, 0);
   }
 
  protected:

@@ -23,7 +23,7 @@
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -109,24 +109,32 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     return kSuccess;
   }
 
-  LightweightDetector::State lightweight_detector_state =
-      LightweightDetector::State::kDisabled;
+  LightweightDetectorMode lightweight_detector_mode =
+      LightweightDetectorMode::kOff;
   size_t num_lightweight_detector_metadata = 0;
   if (cmd_line->HasSwitch("enable-lightweight-detector")) {
-    lightweight_detector_state = LightweightDetector::State::kEnabled;
+    lightweight_detector_mode = LightweightDetectorMode::kBrpQuarantine;
     num_lightweight_detector_metadata = 1;
   }
 
   base::NoDestructor<GuardedPageAllocator> gpa;
   gpa->Init(AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
             kTotalPages, base::DoNothing(), allocator == "partitionalloc",
-            lightweight_detector_state, num_lightweight_detector_metadata);
+            lightweight_detector_mode, num_lightweight_detector_metadata);
 
   std::string gpa_addr = gpa->GetCrashKey();
   static crashpad::Annotation gpa_annotation(
       crashpad::Annotation::Type::kString, annotation_name,
       const_cast<char*>(gpa_addr.c_str()));
   gpa_annotation.SetSize(gpa_addr.size());
+
+  std::string lightweight_detector_state_addr =
+      gpa->GetLightweightDetectorCrashKey();
+  static crashpad::Annotation lightweight_detector_annotation(
+      crashpad::Annotation::Type::kString, kLightweightDetectorCrashKey,
+      const_cast<char*>(lightweight_detector_state_addr.c_str()));
+  lightweight_detector_annotation.SetSize(
+      lightweight_detector_state_addr.size());
 
   base::FilePath metrics_dir(FILE_PATH_LITERAL(""));
   std::map<std::string, std::string> annotations;

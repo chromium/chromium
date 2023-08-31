@@ -19,7 +19,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,7 +88,6 @@ constexpr const char* kMallocHistogramName =
     "Security.GwpAsan.CrashAnalysisResult.Malloc";
 constexpr const char* kPartitionAllocHistogramName =
     "Security.GwpAsan.CrashAnalysisResult.PartitionAlloc";
-
 }  // namespace
 
 class BaseCrashAnalyzerTest : public testing::Test {
@@ -96,26 +95,29 @@ class BaseCrashAnalyzerTest : public testing::Test {
   using testing::Test::SetUp;
 
   void SetUp(bool is_partition_alloc,
-             LightweightDetector::State lightweight_detector_state,
+             LightweightDetectorMode lightweight_detector_mode,
              size_t num_lightweight_detector_metadata) {
     is_partition_alloc_ = is_partition_alloc;
     gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc,
-              lightweight_detector_state, num_lightweight_detector_metadata);
+              lightweight_detector_mode, num_lightweight_detector_metadata);
   }
 
   // Initializes the ProcessSnapshot so that it appears the given allocator was
   // used for backing either malloc or PartitionAlloc, depending on
   // `is_partition_alloc_`.
   void InitializeSnapshot(crashpad::VMAddress exception_address) {
-    std::string crash_key_value = gpa_.GetCrashKey();
-    std::vector<uint8_t> crash_key_vector(crash_key_value.begin(),
-                                          crash_key_value.end());
-
     std::vector<crashpad::AnnotationSnapshot> annotations;
-    annotations.emplace_back(
+    auto append_annotation = [&](const char* key, const std::string& value) {
+      std::vector<uint8_t> buffer(value.begin(), value.end());
+      annotations.emplace_back(
+          key, static_cast<uint16_t>(crashpad::Annotation::Type::kString),
+          buffer);
+    };
+    append_annotation(
         is_partition_alloc_ ? kPartitionAllocCrashKey : kMallocCrashKey,
-        static_cast<uint16_t>(crashpad::Annotation::Type::kString),
-        crash_key_vector);
+        gpa_.GetCrashKey());
+    append_annotation(kLightweightDetectorCrashKey,
+                      gpa_.GetLightweightDetectorCrashKey());
 
     auto module = std::make_unique<crashpad::test::TestModuleSnapshot>();
     module->SetAnnotationObjects(annotations);
@@ -157,7 +159,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
 class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
   void SetUp() final {
     BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ false,
-                                 LightweightDetector::State::kDisabled, 0);
+                                 LightweightDetectorMode::kOff, 0);
     InitializeSnapshot(0);
   }
 };
@@ -251,7 +253,7 @@ TEST_F(CrashAnalyzerTest, InternalError) {
 class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
   void SetUp() final {
     BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ true,
-                                 LightweightDetector::State::kEnabled, 1);
+                                 LightweightDetectorMode::kBrpQuarantine, 1);
   }
 };
 
@@ -285,7 +287,7 @@ TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   InitializeSnapshot(alloc);
 
   // Corrupt the metadata ID.
-  ++gpa_.lightweight_detector_metadata_[0].lightweight_id;
+  ++gpa_.lightweight_detector_metadata_[0].id;
 
   base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;

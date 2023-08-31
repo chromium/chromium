@@ -177,14 +177,14 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
       static_cast<int>(AllocatorState::kMaxRequestedSlots);
 
   static_assert(AllocatorState::kMaxMetadata <= std::numeric_limits<int>::max(),
-                "kMaxMetadata out of range");
+                "AllocatorState::kMaxMetadata out of range");
   constexpr int kMaxMetadata = static_cast<int>(AllocatorState::kMaxMetadata);
 
-  static_assert(AllocatorState::kMaxLightweightMetadata <=
-                    std::numeric_limits<int>::max(),
-                "kMaxMetadata out of range");
+  static_assert(
+      LightweightDetectorState::kMaxMetadata <= std::numeric_limits<int>::max(),
+      "LightweightDetectorState::kMaxMetadata out of range");
   constexpr int kMaxLightweightMetadata =
-      static_cast<int>(AllocatorState::kMaxLightweightMetadata);
+      static_cast<int>(LightweightDetectorState::kMaxMetadata);
 
   int total_pages = GetFieldTrialParamByFeatureAsInt(feature, "TotalPages",
                                                      kDefaultTotalPages);
@@ -209,7 +209,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
     return absl::nullopt;
   }
 
-  LightweightDetector::State lightweight_detector_state =
+  LightweightDetectorMode lightweight_detector_mode =
 // The detector is not used on 32-bit systems because pointers there aren't big
 // enough to safely store metadata IDs.
 #if defined(ARCH_CPU_64_BITS)
@@ -219,13 +219,13 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
            .enable_brp &&
        GetFieldTrialParamByFeatureAsBool(feature, "EnableLightweightDetector",
                                          kDefaultEnableLightweightDetector))
-          ? LightweightDetector::State::kEnabled
+          ? LightweightDetectorMode::kBrpQuarantine
           :
 #endif  // defined(ARCH_CPU_64_BITS)
-          LightweightDetector::State::kDisabled;
+          LightweightDetectorMode::kOff;
 
   int max_lightweight_metadata = 0;
-  if (lightweight_detector_state == LightweightDetector::State::kEnabled) {
+  if (lightweight_detector_mode != LightweightDetectorMode::kOff) {
     max_lightweight_metadata = GetFieldTrialParamByFeatureAsInt(
         feature, "MaxLightweightMetadata", kDefaultMaxLightweightMetadata);
     if (max_lightweight_metadata < 1 ||
@@ -247,7 +247,7 @@ GWP_ASAN_EXPORT absl::optional<AllocatorSettings> GetAllocatorSettings(
                            static_cast<size_t>(max_metadata),
                            static_cast<size_t>(total_pages),
                            alloc_sampling_freq,
-                           lightweight_detector_state,
+                           lightweight_detector_mode,
                            static_cast<size_t>(max_lightweight_metadata)};
 }
 
@@ -284,7 +284,7 @@ void EnableForPartitionAlloc(bool boost_sampling, const char* process_type) {
     internal::InstallPartitionAllocHooks(
         settings->max_allocated_pages, settings->num_metadata,
         settings->total_pages, settings->sampling_frequency, base::DoNothing(),
-        settings->lightweight_detector_state,
+        settings->lightweight_detector_mode,
         settings->num_lightweight_metadata);
     return true;
   }();

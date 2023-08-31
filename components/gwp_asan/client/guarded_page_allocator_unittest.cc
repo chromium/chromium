@@ -19,7 +19,7 @@
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
-#include "components/gwp_asan/common/lightweight_detector.h"
+#include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,13 +35,13 @@ class BaseGpaTest : public testing::Test {
               size_t max_metadata,
               size_t max_slots,
               bool is_partition_alloc,
-              LightweightDetector::State lightweight_detector_state =
-                  LightweightDetector::State::kDisabled,
+              LightweightDetectorMode lightweight_detector_mode =
+                  LightweightDetectorMode::kOff,
               size_t max_lightweight_detector_metadata = 0) {
     gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
                   [&](size_t allocations) { allocator_oom_ = true; }),
-              is_partition_alloc, lightweight_detector_state,
+              is_partition_alloc, lightweight_detector_mode,
               max_lightweight_detector_metadata);
   }
 
@@ -402,7 +402,7 @@ class LightweightDetectorAllocatorTest : public BaseGpaTest {
                     kMaxMetadata,
                     kMaxSlots,
                     /* is_partition_alloc = */ true,
-                    LightweightDetector::State::kEnabled,
+                    LightweightDetectorMode::kBrpQuarantine,
                     kMaxLightweightDetectorMetadata) {}
 };
 
@@ -410,10 +410,10 @@ TEST_F(LightweightDetectorAllocatorTest, PoisonAlloc) {
   uint64_t alloc;
 
   gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
-  auto metadata_id = LightweightDetector::ExtractMetadataId(alloc);
+  auto metadata_id = LightweightDetectorState::ExtractMetadataId(alloc);
   EXPECT_TRUE(metadata_id.has_value());
 
-  auto& metadata = gpa_.state_.GetLightweightSlotMetadataById(
+  auto& metadata = gpa_.lightweight_detector_state_.GetSlotMetadataById(
       *metadata_id, gpa_.lightweight_detector_metadata_.get());
   EXPECT_EQ(metadata.alloc_ptr, reinterpret_cast<uintptr_t>(&alloc));
   EXPECT_EQ(metadata.alloc_size, sizeof(alloc));
@@ -430,10 +430,10 @@ TEST_F(LightweightDetectorAllocatorTest, PoisonAllocUnaligned) {
   gpa_.RecordLightweightDeallocation(&alloc2, sizeof(alloc2));
 
   for (auto byte : alloc1) {
-    EXPECT_EQ(byte, LightweightDetector::kMetadataRemainder);
+    EXPECT_EQ(byte, LightweightDetectorState::kMetadataRemainder);
   }
   EXPECT_EQ(alloc2[sizeof(alloc2) - 1],
-            LightweightDetector::kMetadataRemainder);
+            LightweightDetectorState::kMetadataRemainder);
 }
 
 TEST_F(LightweightDetectorAllocatorTest, SlotReuse) {
@@ -441,20 +441,20 @@ TEST_F(LightweightDetectorAllocatorTest, SlotReuse) {
   uint64_t alloc2;
 
   gpa_.RecordLightweightDeallocation(&alloc1, sizeof(alloc1));
-  auto alloc1_metadata_id = LightweightDetector::ExtractMetadataId(alloc1);
+  auto alloc1_metadata_id = LightweightDetectorState::ExtractMetadataId(alloc1);
   EXPECT_TRUE(alloc1_metadata_id.has_value());
-  auto& metadata_alloc1 = gpa_.state_.GetLightweightSlotMetadataById(
+  auto& metadata_alloc1 = gpa_.lightweight_detector_state_.GetSlotMetadataById(
       *alloc1_metadata_id, gpa_.lightweight_detector_metadata_.get());
 
   gpa_.RecordLightweightDeallocation(&alloc2, sizeof(alloc2));
-  auto alloc2_metadata_id = LightweightDetector::ExtractMetadataId(alloc2);
-  auto& metadata_alloc2 = gpa_.state_.GetLightweightSlotMetadataById(
+  auto alloc2_metadata_id = LightweightDetectorState::ExtractMetadataId(alloc2);
+  auto& metadata_alloc2 = gpa_.lightweight_detector_state_.GetSlotMetadataById(
       *alloc2_metadata_id, gpa_.lightweight_detector_metadata_.get());
 
   // Since there's only one slot, it should be reused.
   EXPECT_EQ(&metadata_alloc1, &metadata_alloc2);
-  EXPECT_NE(metadata_alloc1.lightweight_id, alloc1_metadata_id);
-  EXPECT_EQ(metadata_alloc2.lightweight_id, alloc2_metadata_id);
+  EXPECT_NE(metadata_alloc1.id, alloc1_metadata_id);
+  EXPECT_EQ(metadata_alloc2.id, alloc2_metadata_id);
 }
 
 }  // namespace internal
