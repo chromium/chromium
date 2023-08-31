@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">Chromiumରେ PDFଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="5614091477838198795">ଚାଲୁ ଥିବା ସମୟରେ, ଆପଣ Chromiumରୁ ମଧ୍ୟ ସାଇନ ଆଉଟ ହୋଇଯିବେ</translation>
 <translation id="5623402015214259806">{0,plural, =0{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}=1{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ ଏକ Chromium ଅପ୍‌ଡେଟ୍‌ ଉପଲବ୍ଧ ଅଛି}}</translation>
+<translation id="5643865575100044307">ଆପଣ Chromiumକୁ ବନ୍ଦ କରିବା ସମୟରେ ସର୍ବଦା ଆପଣଙ୍କ ଡିଭାଇସରୁ ସାଇଟ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="5653831366781983928">ଦୟାକରି ବର୍ତ୍ତମାନ Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
 <translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>
+<translation id="5889361821821684993">ଆପଣଙ୍କ ବ୍ରାଉଜରର ସବୁଠାରୁ ସୁରକ୍ଷିତ ସେଟିଂସ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Chromium ନିୟମିତ ଭାବେ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ବିଷୟ ପାଇଁ ଆପଣଙ୍କ ସମୀକ୍ଷାର ଆବଶ୍ୟକତା ହୁଏ, ତେବେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ।</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍</translation>
 <translation id="5924017743176219022">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରୁଛି...</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">ଆପଣଙ୍କ ଅନୁଭୂତିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ, ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ଆପଣଙ୍କ ରୁଚି ଥିବା ଜିନିଷଗୁଡ଼ିକୁ ମନେ ରଖେ। ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକ ବିଷୟରେ Chromium ସହ ସୂଚନା ଷ୍ଟୋର କରିପାରିବ।</translation>
 <translation id="6003112304606738118">ଡାଉନଲୋଡ ହେଉଛି… <ph name="HOURS" /> ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
+<translation id="6055611795418209449">Chromium କିଛି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରେ</translation>
 <translation id="6055895534982063517">Chromiumର ଏକ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି, ଏବଂ ଏହା ସବୁଠୁ ଦ୍ରୁତ ଅଟେ।</translation>
 <translation id="6063093106622310249">&amp;Chromiumରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromiumରେ ଯୋଗ କରାଯାଇଛି</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">Chromium ଶୀଘ୍ର ବନ୍ଦ ହୋଇ ଡାଟା ଡିଲିଟ କରିବ</translation>
 <translation id="6134968993075716475">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ ଅଛି। Chromium ଏହାକୁ ଚାଲୁ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="6145820983052037069">ଏଠାରେ ଆପଣ Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରିପାରିବେ</translation>
+<translation id="6175304430031192654">ଆପଣଙ୍କ ସେଟିଂସ ଉପରେ ନିର୍ଭର କରି, Chromium କୁକୀ ଏବଂ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର URL ମଧ୍ୟ ପଠାଇପାରେ</translation>
 <translation id="6183079672144801177">ଆପଣ ଆପଣଙ୍କ <ph name="TARGET_DEVICE_NAME" />ରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରିଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ପଠାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6212496753309875659">ଏହି କମ୍ପ୍ୟୁଟର୍‌ରେ ପୂର୍ବରୁ Chromiumର ସବୁଠାରୁ ନିକଟତମ ସଂସ୍କରଣ ଅଛି। ଯଦି ସଫ୍ଟୱେର୍‌ଟି କାମ କରୁନାହିଁ, ତେବେ Chromiumକୁ ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6219195342503754812">{0,plural, =0{ବର୍ତ୍ତମାନ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}=1{1 ସେକେଣ୍ଡରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}other{# ସେକେଣ୍ଡରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ Chromium ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍‌ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="6375219077595103062">Password Managerରେ ଏକ ସର୍ଟକଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />ଆମେ ଏହି ଡାଟାକୁ କିପରି ବ୍ୟବହାର କରୁ:<ph name="END_BOLD" /> Chromium ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଆକଳନ କରିପାରିବ। ପରେ, ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଆପଣ ଦେଖୁଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ, Chromiumକୁ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ କହିପାରିବ।</translation>
+<translation id="6400112897226594999">କମ୍ପ୍ୟୁଟର ସ୍କ୍ରିନରେ Chromium ଲୋଗୋ।</translation>
 <translation id="6403826409255603130">Chromium ଗୋଟିଏ ୱେବ୍ ବ୍ରାଉଜର୍ ଅଟେ ଯାହା ଦ୍ରୁତତର ବେଗରେ ୱେ୍ବ୍‌ପୃଷ୍ଠା ଏବଂ ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକ ଚଲାଏ। ଏହା ଦ୍ରୁତ, ସ୍ଥିର ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ ସହଜ ଅଟେ। Chromiumରେ ନିର୍ମିତ ମାଲ୍‌ୱାର୍ ଏବଂ ଫିସିଂ ସୁରକ୍ଷା ସହ ୱେବ୍‌କୁ ଅଧିକ ସୁରକ୍ଷିତ ଢଙ୍ଗରେ ବ୍ରାଉଜ୍ କରନ୍ତୁ।</translation>
 <translation id="6442900851116057561">ChromiumOSକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6455857529632101747">Chromium ପ୍ରୋଫାଇଲକୁ ସ୍ୱାଗତ</translation>
@@ -305,6 +310,7 @@
 <translation id="718435575166326686">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="7196312274710523067">Chromium ଲଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7197677400338048821">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। 24 ଘଣ୍ଟା ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="7213407614656404070">ଆପଣ ମେସେଜ, ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କଗୁଡ଼ିକରେ କ୍ଲିକ କରି ଯେ କୌଣସି ସମୟରେ Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="7223968959479464213">ଟାସ୍କ ପରିଚାଳକ - Chromium</translation>
 <translation id="7246575524853130370">Chromiumର ଆକଳନ ଅନୁସାରେ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକ</translation>
 <translation id="7309928523159922338">ବିଜ୍ଞାପନର ପରିମାପ ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ Chromiumରୁ ସୂଚନା ପାଇଁ ଅନୁରୋଧ କରିବାକୁ ଅନୁମତି ଦିଏ, ଯାହା ସାଇଟକୁ ତାହାର ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସାହାଯ୍ୟ କରେ। ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ଯଥା ସମ୍ଭବ କମ୍ ସୂଚନା ଟ୍ରାନ୍ସଫର କରି ବିଜ୍ଞାପନର ପରିମାପ କ୍ରସ-ସାଇଟ ଟ୍ରାକିଂକୁ ପ୍ରତିବନ୍ଧିତ କରେ।</translation>

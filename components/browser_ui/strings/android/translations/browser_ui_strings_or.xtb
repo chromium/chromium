@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">ଅନ୍‌ଲାଇନ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="1036348656032585052">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1044891598689252897">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣ ଭାବେ କାମ କରିବ</translation>
+<translation id="1073417869336441572">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଆପଣ କାହିଁକି ଅନୁମତି ଦେଇଛନ୍ତି ତାହା କହି Chromeକୁ ଉନ୍ନତ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରନ୍ତୁ। <ph name="BEGIN_LINK" />ମତାମତ ପଠାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ ସାଇଟ୍ କିମ୍ବା ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="DATASIZE" /> ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଏହା ଖାଲି କରିଦେବ।</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">ତୃତୀୟ-ପକ୍ଷ ଛାଡ଼ି ଅନ୍ୟ ସବୁଗୁଡ଼ିକରେ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1989112275319619282">ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
 <translation id="1994173015038366702">ସାଇଟ୍ URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{1 ଦିନରେ ମିଆଦ ଶେଷ ହେବ}other{# ଦିନରେ ମିଆଦ ଶେଷ ହେବ}}</translation>
 <translation id="2004697686368036666">କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ କାମ କରିନପାରେ</translation>
 <translation id="2025115093177348061">ଅଗମେଣ୍ଟେଡ୍ ରିଆଲିଟୀ</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" />କୁ ଫେରିବା ପାଇଁ ଟାପ୍ କରନ୍ତୁ</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">ସାଇଟ୍‍ଗୁଡ଼ିକ ଆପଣଙ୍କର ଲୋକେସନ୍‌ ଜାଣିବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍‌ କରାଯାଇଛି)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome କାଲି ପୁଣି କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରିବ}other{Chrome # ଦିନରେ ପୁଣି କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରିବ}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> ଅଧୀନରେ ଥିବା ସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="3538390592868664640">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="3544058026430919413">ଏକ କମ୍ପାନୀ ସାଇଟଗୁଡ଼ିକର ଏକ ଗୋଷ୍ଠୀକୁ ପରିଭାଷିତ କରିପାରିବ ଯାହା ଗୋଷ୍ଠୀରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ସେୟାର କରିବା ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ। ଏହା ଇନକଗ୍ନିଟୋରେ ବନ୍ଦ ଅଛି।</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">ଫୋନ୍ ନମ୍ଵରଗୁଡ଼ିକ</translation>
 <translation id="3826050100957962900">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ</translation>
 <translation id="3835233591525155343">ଆପଣଙ୍କ ଡିଭାଇସର ବ୍ୟବହାର</translation>
+<translation id="3843916486309149084">Chrome ଆଜି ପୁଣି କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରିବ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3859306556332390985">ଆଗକୁ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="3895926599014793903">ଜୁମ୍ ସକ୍ଷମ କରିବା ପାଇଁ ବାଧ୍ୟ କରନ୍ତୁ</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ ପାଇଁ ତୃତୀୟ ପକ୍ଷ ସାଇନ-ଇନକୁ ବ୍ଲକ କରନ୍ତୁ।</translation>
 <translation id="6388207532828177975">ଖାଲି ଏବଂ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6398765197997659313">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରନ୍ତୁ</translation>
+<translation id="640163077447496506">ଆଜି ମିଆଦ ଶେଷ ହେବ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6447842834002726250">କୁକୀଗୁଡିକ</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8154912474061769055">ଅନେକ ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ କାମ କରିନପାରେ</translation>
 <translation id="8168435359814927499">ବିଷୟବସ୍ତୁ</translation>
+<translation id="8186479265534291036">ସାଇଟ କାମ କରୁନାହିଁ? ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="8197286292360124385">ଅନୁମତି ଦିଆଯାଇଛି (<ph name="PERMISSION_1" />)</translation>
 <translation id="8200772114523450471">ସାରାଶଂ</translation>
 <translation id="8206354486702514201">ଏହି ସେଟିଂସ୍ ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି।</translation>

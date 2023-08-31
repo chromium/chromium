@@ -1663,7 +1663,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <ph name="LIST_ITEM" />włączyć uruchomienie z dysku USB wraz z możliwością zainstalowania z niego obrazu systemu operacyjnego;
 <ph name="LIST_ITEM" />ustawić własne hasła użytkowników dev i root, aby móc ręcznie zalogować się przez SSH na urządzeniu.
 <ph name="END_LIST" /><ph name="BR" />Po włączeniu większość funkcji debugowania pozostanie włączona nawet po wykonaniu procedury Powerwash lub wyczyszczeniu danych na urządzeniu zarządzanym przez firmę. Aby całkowicie wyłączyć wszystkie funkcje debugowania, przejdź proces odzyskiwania Chrome OS (https://support.google.com/chromebook/answer/1080595).<ph name="BR" /><ph name="BR" />Więcej informacji o funkcjach debugowania:<ph name="BR" />https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features<ph name="BR" /><ph name="BR" /><ph name="BEGIN_BOLD" />Uwaga:<ph name="END_BOLD" /> podczas tego procesu system uruchomi się ponownie.</translation>
-<translation id="23030561267973084">Rozszerzenie „<ph name="EXTENSION_NAME" />” prosi o dodatkowe uprawnienia.</translation>
+<translation id="23030561267973084">„<ph name="EXTENSION_NAME" />” prosi o dodatkowe uprawnienia.</translation>
 <translation id="2306794767168143227">Zapisz w usłudze <ph name="BRAND" /> na tym urządzeniu</translation>
 <translation id="2307462900900812319">Skonfiguruj sieć</translation>
 <translation id="2307553512430195144">Jeśli wyrazisz zgodę, Asystent Google będzie czekać w trybie gotowości na wykrycie „OK Google” i za pomocą funkcji Voice Match rozpozna, że mówi <ph name="SUPERVISED_USER_NAME" />.
