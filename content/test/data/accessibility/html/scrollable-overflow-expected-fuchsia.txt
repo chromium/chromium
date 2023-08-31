@@ -25,15 +25,15 @@ UNKNOWN focusable has_input_focus
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=hidden'
 ++++++++++++++UNKNOWN label='x=hidden'
-++++++++UNKNOWN label='x=hidden'
+++++++++UNKNOWN focusable label='x=hidden'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=hidden'
 ++++++++++++++UNKNOWN label='x=hidden'
-++++++++UNKNOWN label='x=auto'
+++++++++UNKNOWN focusable label='x=auto'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=auto'
 ++++++++++++++UNKNOWN label='x=auto'
-++++++++UNKNOWN label='x=scroll'
+++++++++UNKNOWN focusable label='x=scroll'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='x=scroll'
 ++++++++++++++UNKNOWN label='x=scroll'
@@ -46,15 +46,15 @@ UNKNOWN focusable has_input_focus
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=hidden'
 ++++++++++++++UNKNOWN label='y=hidden'
-++++++++UNKNOWN label='y=hidden'
+++++++++UNKNOWN focusable label='y=hidden'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=hidden'
 ++++++++++++++UNKNOWN label='y=hidden'
-++++++++UNKNOWN label='y=auto'
+++++++++UNKNOWN focusable label='y=auto'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=auto'
 ++++++++++++++UNKNOWN label='y=auto'
-++++++++UNKNOWN label='y=scroll'
+++++++++UNKNOWN focusable label='y=scroll'
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='y=scroll'
 ++++++++++++++UNKNOWN label='y=scroll'

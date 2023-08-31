@@ -1,7 +1,7 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN label='Example Paragraph 1 Example Paragraph 2'
+++++++UNKNOWN focusable label='Example Paragraph 1 Example Paragraph 2'
 ++++++++PARAGRAPH
 ++++++++++STATIC_TEXT label='Example Paragraph 1'
 ++++++++++++UNKNOWN label='Example Paragraph 1'

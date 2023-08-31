@@ -1,7 +1,5 @@
 android.webkit.WebView focusable focused has_character_locations scrollable
-++android.view.View has_character_locations scrollable name='Example Paragraph 1 Example Paragraph 2' action_scroll_forward action_scroll_down
-++++android.widget.TextView has_character_locations interesting name='Example Paragraph 1'
-++++android.widget.TextView has_character_locations interesting name='Example Paragraph 2'
+++android.view.View focusable has_character_locations scrollable interesting name='Example Paragraph 1 Example Paragraph 2' action_scroll_forward action_scroll_down
 ++android.view.View has_character_locations
 ++++android.widget.TextView has_character_locations interesting name='Example Paragraph 1'
 ++++android.widget.TextView has_character_locations interesting name='Example Paragraph 2'
