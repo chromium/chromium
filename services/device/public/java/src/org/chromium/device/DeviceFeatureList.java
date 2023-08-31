@@ -16,6 +16,8 @@ import org.chromium.base.annotations.JNINamespace;
 public abstract class DeviceFeatureList {
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
     public static final String WEBAUTHN_ANDROID_CRED_MAN = "WebAuthenticationAndroidCredMan";
+    public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID =
+            "WebAuthenticationAndroidCredManForHybrid";
     public static final String WEBAUTHN_ANDROID_HYBRID_CLIENT_UI =
             "WebAuthenticationAndroidHybridClientUi";
     public static final String WEBAUTHN_CABLE_VIA_CREDMAN = "WebAuthenticationCableViaCredMan";

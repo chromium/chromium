@@ -19,6 +19,7 @@ namespace {
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &device::kWebAuthnAndroidCredMan,
+    &device::kWebAuthnAndroidCredManForHybrid,
     &device::kWebAuthnAndroidHybridClientUi,
     &device::kWebAuthnCableViaCredMan,
     &device::kWebAuthnDontPrelinkInProfiles,

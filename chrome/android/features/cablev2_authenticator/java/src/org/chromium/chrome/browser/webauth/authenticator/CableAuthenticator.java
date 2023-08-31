@@ -25,6 +25,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -136,6 +137,7 @@ class CableAuthenticator {
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_CABLE_VIA_CREDMAN)) {
             final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+            request.setIsHybridRequest(true);
             final Origin origin = Origin.create(new GURL("https://" + params.relyingParty.id));
             request.handleMakeCredentialRequest(mContext, params, null, params.challenge, origin,
                     (status, response)
@@ -152,12 +154,20 @@ class CableAuthenticator {
                         mUi.onAuthenticatorResult(Result.REGISTER_OK);
                     },
                     (status) -> {
-                        mTaskRunner.postTask(()
-                                                     -> CableAuthenticatorJni.get()
-                                                                .onAuthenticatorAttestationResponse(
-                                                                        CTAP2_ERR_OPERATION_DENIED,
-                                                                        null, null, false));
-                        mUi.onAuthenticatorResult(Result.REGISTER_ERROR);
+                        final boolean isInvalidStateError =
+                                status == AuthenticatorStatus.CREDENTIAL_EXCLUDED;
+
+                        mTaskRunner.postTask(
+                                ()
+                                        -> CableAuthenticatorJni.get()
+                                                   .onAuthenticatorAttestationResponse(
+                                                           isInvalidStateError
+                                                                   ? CTAP2_ERR_CREDENTIAL_EXCLUDED
+                                                                   : CTAP2_ERR_OPERATION_DENIED,
+                                                           null, null, false));
+
+                        mUi.onAuthenticatorResult(
+                                isInvalidStateError ? Result.REGISTER_OK : Result.REGISTER_ERROR);
                     });
             return;
         }
@@ -191,6 +201,7 @@ class CableAuthenticator {
 
         if (DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_CABLE_VIA_CREDMAN)) {
             final Fido2CredentialRequest request = new Fido2CredentialRequest(mUi);
+            request.setIsHybridRequest(true);
             final Origin origin = Origin.create(new GURL("https://" + params.relyingPartyId));
             request.handleGetAssertionRequest(mContext, params, /*frameHost=*/null,
                     /*maybeClientDataHash=*/params.challenge, origin, origin,

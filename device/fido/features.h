@@ -45,6 +45,10 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 
+// Use the Android 14 Credential Manager API for hybrid requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManForHybrid);
+
 // Use the Android 14 Credential Manager API alongside GMSCore.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManAndGmsCore);

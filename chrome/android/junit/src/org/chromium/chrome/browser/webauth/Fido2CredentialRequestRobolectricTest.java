@@ -117,6 +117,9 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
+        // Reset any cached evaluation of whether CredMan should be supported.
+        Fido2CredentialRequest.sCredManSupport = 0;
+
         mRequest = new Fido2CredentialRequest(
                 /*intentSender=*/null);
 
@@ -147,6 +150,51 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, mFrameHost,
                 /*maybeClientDataHash=*/null, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        verify(mCredManHelperMock, times(1))
+                .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_credManDisabled_notUsed() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        FeatureList.setTestValues(testValues);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3};
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        verify(mCredManHelperMock, times(0))
+                .startMakeRequest(any(), any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_credManDisabled_stillUsedForHybrid() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        testValues.addFeatureFlagOverride(
+                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID, true);
+        FeatureList.setTestValues(testValues);
+
+        final byte[] clientDataHash = new byte[] {1, 2, 3};
+        mRequest.setIsHybridRequest(true);
+        mRequest.handleMakeCredentialRequest(mActivity, mCreationOptions, /*frameHost=*/null,
+                clientDataHash, mOrigin,
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
@@ -225,6 +273,52 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mCredManHelperMock)
                 .startGetRequest(eq(mActivity), eq(mFrameHost), eq(mRequestOptions),
                         eq(originString),
+                        /*isCrossOrigin=*/eq(false), /*maybeClientDataHash=*/eq(null),
+                        /*getCallback=*/any(),
+                        /*errorCallback=*/any());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_credManDisabled_notUsed() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        FeatureList.setTestValues(testValues);
+
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        verifyNoInteractions(mCredManHelperMock);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_credManDisabled_stillUsedForHybrid() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, false);
+        testValues.addFeatureFlagOverride(
+                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN_FOR_HYBRID, true);
+        FeatureList.setTestValues(testValues);
+
+        mRequest.setIsHybridRequest(true);
+        mRequest.handleGetAssertionRequest(mActivity, mRequestOptions, mFrameHost,
+                /*maybeClientDataHash=*/null, mOrigin, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+
+        verify(mCredManHelperMock)
+                .startGetRequest(eq(mActivity), eq(mFrameHost), eq(mRequestOptions),
+                        /*originString=*/any(),
                         /*isCrossOrigin=*/eq(false), /*maybeClientDataHash=*/eq(null),
                         /*getCallback=*/any(),
                         /*errorCallback=*/any());
