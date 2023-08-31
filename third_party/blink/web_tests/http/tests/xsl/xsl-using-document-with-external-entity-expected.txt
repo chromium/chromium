@@ -1,0 +1,5 @@
+CONSOLE ERROR: Unsafe attempt to load URL xsl-using-document-with-external-entity.xml. Domains, protocols and ports must match.
+
+CONSOLE ERROR: Unsafe attempt to load URL http://example.com/ from frame with URL http://127.0.0.1:8000/xsl/xsl-using-document-with-external-entity.xml. Domains, protocols and ports must match.
+
+Test that loading external entities from an XML document created by the XSL document() function are denied. On success, there will be two console errors that the load attempt was denied.
