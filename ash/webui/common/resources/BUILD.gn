@@ -144,8 +144,6 @@ non_web_component_files = [
   "post_message_api/post_message_api_request_handler.js",
   "post_message_api/post_message_api_server.js",
   "smb_shares/smb_browser_proxy.js",
-  "store/store.js",
-  "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
   "util.js",
   "web_ui_listener_behavior.js",
@@ -419,8 +417,6 @@ generate_definitions_js_files = [
   "quick_unlock/setup_pin_keyboard.html.js",
   "quick_unlock/fingerprint_progress.html.js",
   "quick_unlock/fingerprint_progress_icons.html.js",
-  "store/store.js",
-  "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
   "util.js",
 ]
@@ -533,7 +529,6 @@ group("closure_compile") {
     "network_health:closure_compile_module",
     "post_message_api:closure_compile",
     "smb_shares:closure_compile_module",
-    "store:closure_compile_module",
     "traffic_counters:closure_compile_module",
   ]
 }

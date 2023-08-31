@@ -8,10 +8,11 @@
  * the store.
  */
 
-import {Action, Store} from 'chrome://resources/ash/common/store/store.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
+import {Store} from 'chrome://resources/js/store_ts.js';
 
+import {AppManagementActions} from './actions.js';
 import {reduceAction} from './reducers.js';
 
 export type AppMap = Record<string, App>;
@@ -26,7 +27,8 @@ export interface AppManagementPageState {
 
 let instance: AppManagementStore|null = null;
 
-export class AppManagementStore extends Store<AppManagementPageState> {
+export class AppManagementStore extends
+    Store<AppManagementPageState, AppManagementActions> {
   static getInstance(): AppManagementStore {
     return instance || (instance = new AppManagementStore());
   }
@@ -36,9 +38,6 @@ export class AppManagementStore extends Store<AppManagementPageState> {
   }
 
   constructor() {
-    super(
-        createEmptyState(),
-        reduceAction as (state: AppManagementPageState, action: Action) =>
-            AppManagementPageState);
+    super(createEmptyState(), reduceAction);
   }
 }

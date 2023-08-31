@@ -5,9 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementMainViewElement} from 'chrome://os-settings/lazy_load.js';
-import {Router} from 'chrome://os-settings/os_settings.js';
+import {AppManagementActions, AppManagementPageState, Router} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestStore} from 'chrome://webui-test/chromeos/test_store.js';
+import {TestStore} from 'chrome://webui-test/test_store_ts.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
@@ -15,7 +15,7 @@ import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/
 suite('<app-management-main-view>', () => {
   let mainView: AppManagementMainViewElement;
   let fakeHandler: FakePageHandler;
-  let store: TestStore;
+  let store: TestStore<AppManagementPageState, AppManagementActions>;
 
   function getAppItems() {
     const element = mainView.shadowRoot!.querySelector('#appList');

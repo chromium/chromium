@@ -77,7 +77,6 @@ ts_library("build_ts") {
     "mock_controller.m.js",
     "set_time_dialog_test.js",
     "test_browser_proxy.js",
-    "test_store.js",
     "test_util.js",
   ]
 
