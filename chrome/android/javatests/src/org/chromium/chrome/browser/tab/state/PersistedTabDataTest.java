@@ -64,6 +64,7 @@ public class PersistedTabDataTest {
     @Test
     public void testCacheCallbacks()
             throws InterruptedException, TimeoutException, ExecutionException {
+        PersistedTabDataConfiguration.setUseTestConfig(true);
         Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> {
             Tab t = MockTab.createAndInitialize(1, false);
             t.setIsTabSaveEnabled(true);
@@ -103,6 +104,7 @@ public class PersistedTabDataTest {
             });
         });
         helper.waitForCallback(0, 2);
+        PersistedTabDataConfiguration.setUseTestConfig(false);
     }
 
     @SmallTest

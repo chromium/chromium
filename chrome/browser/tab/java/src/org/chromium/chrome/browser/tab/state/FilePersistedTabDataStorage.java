@@ -74,7 +74,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
     private SequencedTaskRunner mSequencedTaskRunner;
     private boolean mFirstOperationRecorded;
-    private boolean mDeferredStartupComplete;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected LinkedList<StorageRequest> mQueue = new LinkedList<>();
@@ -98,11 +97,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
     public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer,
             Callback<Integer> callback) {
         // TODO(crbug.com/1059637) we should introduce a retry mechanisms
-        if (isDelaySavesUntilDeferredStartup() && !mDeferredStartupComplete) {
-            addSaveRequestToDelayedSaveQueue(
-                    new FileSaveRequest(tabId, dataId, serializer, callback));
-            return;
-        }
         addSaveRequest(new FileSaveRequest(tabId, dataId, serializer, callback));
         processNextItemOnQueue();
     }
@@ -113,13 +107,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         // by new FileSaveRequest so remove if it exists in the queue.
         mQueue.remove(fileSaveRequest);
         mQueue.add(fileSaveRequest);
-    }
-
-    private void addSaveRequestToDelayedSaveQueue(FileSaveRequest fileSaveRequest) {
-        // FileSaveRequest for the same tabid/data id will get overwritten
-        // by new FileSaveRequest so remove if it exists in the queue.
-        mDelayedSaveRequests.remove(fileSaveRequest);
-        mDelayedSaveRequests.add(fileSaveRequest);
     }
 
     @MainThread
@@ -676,28 +663,6 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         for (File file : getOrCreateBaseStorageDirectory().listFiles()) {
             file.delete();
         }
-    }
-
-    private static boolean isDelaySavesUntilDeferredStartup() {
-        return ChromeFeatureList.sCriticalPersistedTabData.isEnabled()
-                && DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM.getValue();
-    }
-
-    /**
-     * Signal to {@link FilePersistedTabDataStorage} that deferred startup
-     * is complete.
-     */
-    protected void onDeferredStartup() {
-        mDeferredStartupComplete = true;
-        for (FileSaveRequest saveRequest : mDelayedSaveRequests) {
-            addSaveRequest(saveRequest);
-            processNextItemOnQueue();
-        }
-        mDelayedSaveRequests.clear();
-    }
-
-    public LinkedList<FileSaveRequest> getDelayedSaveRequestsForTesting() {
-        return mDelayedSaveRequests;
     }
 
     /**

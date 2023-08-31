@@ -991,8 +991,9 @@ public class TabImpl implements Tab {
                 mIsTabSaveEnabledSupplier);
     }
 
+    // TODO(b/298056319) deprecate usages of CriticalPersistedTabData in TabImpl.
     private boolean useCriticalPersistedTabData() {
-        return ChromeFeatureList.sCriticalPersistedTabData.isEnabled();
+        return false;
     }
 
     @Nullable

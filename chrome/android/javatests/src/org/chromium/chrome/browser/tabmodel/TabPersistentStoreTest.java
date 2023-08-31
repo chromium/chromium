@@ -26,14 +26,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -45,7 +40,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -58,9 +52,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
-import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -71,27 +63,24 @@ import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabStateInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for the TabPersistentStore. */
 
 // TODO(crbug.com/1174662) reintroduce batching - batching was removed because introducing
 // parameterized tests caused cross-talk between tests.
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class TabPersistentStoreTest {
@@ -251,18 +240,6 @@ public class TabPersistentStoreTest {
             };
     private static TabWindowManagerImpl sTabWindowManager;
 
-    /**
-     * Parameterizes whether CriticalPersistedTabData flag should be turned on
-     * or off
-     */
-    public static class StoreParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(false).name("TabState"),
-                    new ParameterSet().value(true).name("CriticalPersistedTabData"));
-        }
-    }
-
     /** Class for mocking out the directory containing all of the TabState files. */
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
@@ -296,7 +273,6 @@ public class TabPersistentStoreTest {
 
     @Before
     public void setUp() {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mChromeActivity = new ChromeActivity() {
                 @Override
@@ -386,10 +362,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
-    public void testBasic(boolean isCriticalPersistedTabDataEnabled) throws Exception {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
-                isCriticalPersistedTabDataEnabled);
+    public void testBasic() throws Exception {
         TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
         int numExpectedTabs = info.contents.length;
 
@@ -443,78 +416,8 @@ public class TabPersistentStoreTest {
 
     @Test
     @SmallTest
-    @Feature("TabPersistentStore")
-    @DisableFeatures({ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA + "<Study"})
-    public void testCleanup() throws TimeoutException, ExecutionException {
-        MockTabModelSelector mockSelector = TestThreadUtils.runOnUiThreadBlocking(
-                () -> { return new MockTabModelSelector(1, 1, null); });
-        Tab regularTab = mockSelector.getModel(false).getTabAt(0);
-        Tab incognitoTab = mockSelector.getModel(true).getTabAt(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            enableTabSaving(regularTab);
-            enableTabSaving(incognitoTab);
-            CriticalPersistedTabData.from(regularTab).save();
-            CriticalPersistedTabData.from(incognitoTab).save();
-        });
-        verifyIfTabIsSaved(regularTab.getId(), regularTab.isIncognito(), false);
-        verifyIfTabIsSaved(incognitoTab.getId(), incognitoTab.isIncognito(), false);
-
-        MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
-        TabPersistencePolicy persistencePolicy =
-                createTabPersistencePolicy(/* selectorIndex = */ 0, false, true);
-        final TabPersistentStore store =
-                buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
-        verifyIfTabIsSaved(regularTab.getId(), regularTab.isIncognito(), true);
-        verifyIfTabIsSaved(incognitoTab.getId(), incognitoTab.isIncognito(), true);
-    }
-
-    public void verifyIfTabIsSaved(int tabId, boolean isIncognito, boolean isNull)
-            throws TimeoutException {
-        CPTDCallbackHelper callbackHelper = new CPTDCallbackHelper();
-        int chCount = callbackHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData.restore(
-                    tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
-        });
-        callbackHelper.waitForCallback(chCount);
-        Assert.assertEquals(isNull, callbackHelper.getRes() == null);
-    }
-
-    private static class CPTDCallbackHelper extends CallbackHelper {
-        private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
-
-        /**
-         * Called when {@link SerializedCriticalPersistedTabData} is acquired
-         * @param res {@link SerializedCriticalPersistedTabData} acquired
-         */
-        public void notifyCalled(
-                SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
-            mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
-            notifyCalled();
-        }
-
-        /**
-         * @return ByteBuffer acquired during callback
-         */
-        public SerializedCriticalPersistedTabData getRes() {
-            return mSerializedCriticalPersistedTabData;
-        }
-    }
-
-    private void enableTabSaving(Tab tab) {
-        tab.setIsTabSaveEnabled(true);
-        ((TabImpl) tab).registerTabSaving();
-        CriticalPersistedTabData.from(tab).setShouldSaveForTesting(true);
-    }
-
-    @Test
-    @SmallTest
     @Feature({"TabPersistentStore"})
-    @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
-    public void testInterruptedButStillRestoresAllTabs(boolean isCriticalPersistedTabDataEnabled)
-            throws Exception {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
-                isCriticalPersistedTabDataEnabled);
+    public void testInterruptedButStillRestoresAllTabs() throws Exception {
         TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
         int numExpectedTabs = info.contents.length;
 
@@ -691,7 +594,6 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     public void testFallbackTabStateEmptyByteBufferCriticalPersistedTabData() throws Exception {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Always return Empty Byte buffer (ByteBuffer with limit = 0 from storage)
             PersistedTabDataConfiguration.setUseEmptyByteBufferTestConfig(true);
@@ -794,10 +696,7 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature({"TabPersistentStore"})
-    @ParameterAnnotations.UseMethodParameter(StoreParamProvider.class)
-    public void testPrefetchActiveTab(boolean isCriticalPersistedTabDataEnabled) throws Exception {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(
-                isCriticalPersistedTabDataEnabled);
+    public void testPrefetchActiveTab() throws Exception {
         final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
         mMockDirectory.writeTabModelFiles(info, true);
 
@@ -815,12 +714,7 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> store.addObserver(mockObserver));
         store.waitForMigrationToFinish();
 
-        if (isCriticalPersistedTabDataEnabled) {
-            Assert.assertNotNull(
-                    store.getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting());
-        } else {
-            Assert.assertNotNull(store.getPrefetchTabStateActiveTabTaskForTesting());
-        }
+        Assert.assertNotNull(store.getPrefetchTabStateActiveTabTaskForTesting());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             store.loadState(false /* ignoreIncognitoFiles */);
@@ -830,14 +724,8 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Confirm that the pre-fetched active tab state was used, must be done here on the
             // UI thread as the message to finish the task is posted here.
-            if (isCriticalPersistedTabDataEnabled) {
-                Assert.assertEquals(AsyncTask.Status.FINISHED,
-                        store.getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting()
-                                .getStatus());
-            } else {
                 Assert.assertEquals(AsyncTask.Status.FINISHED,
                         store.getPrefetchTabStateActiveTabTaskForTesting().getStatus());
-            }
 
             // Confirm that the correct active tab ID is updated when saving state.
             mPreferences.writeInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, -1);
@@ -935,80 +823,6 @@ public class TabPersistentStoreTest {
         Assert.assertEquals(3, TabRestoreMethod.FAILED_TO_RESTORE);
         Assert.assertEquals(4, TabRestoreMethod.SKIPPED_NTP);
         Assert.assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
-    }
-
-    @Test
-    @SmallTest
-    @Feature("TabPersistentStore")
-    public void testMigrateStaleTabsToCriticalPersistedTabData() throws Exception {
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
-        Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
-        TabPersistentStore store = res.first;
-        Tab[] restoredTabs = res.second;
-
-        // Save the TabState for 2 Tabs. There are info.numRegularTabs (7) Tabs
-        // to migrate and we migrate MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_DEFAULT_BATCH_SIZE (5)
-        // Tabs for every TabState save, so we need to save 2 Tabs to migrate all
-        // Tabs.
-        addTabsToSaveQueue(store, new Tab[] {restoredTabs[0], restoredTabs[1]});
-        // Verify all Tabs except the first are migrated. The first Tab has an empty
-        // URL so it won't be saved (this is by design).
-        for (int i = 1; i < restoredTabs.length; i++) {
-            Tab tab = restoredTabs[i];
-            CriteriaHelper.pollUiThread(
-                    () -> FilePersistedTabDataStorage.exists(tab.getId(), false));
-        }
-    }
-
-    @Test
-    @SmallTest
-    @Feature("TabPersistentStore")
-    public void testDontMigrateDestroyedTab() throws Exception {
-        // Variation on testMigrateStaleTabsToCriticalPersistedTabData. See comments in
-        // testMigrateStaleTabsToCriticalPersistedTabData.
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
-        Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
-        TabPersistentStore store = res.first;
-        Tab[] restoredTabs = res.second;
-
-        TestThreadUtils.runOnUiThreadBlocking(restoredTabs[2] ::destroy);
-        addTabsToSaveQueue(store, new Tab[] {restoredTabs[0], restoredTabs[1]});
-
-        for (int i = 1; i < restoredTabs.length; i++) {
-            // restoredTabs[2] shouldn't have been migrated because it was destroyed.
-            if (i == 2) continue;
-            Tab tab = restoredTabs[i];
-            CriteriaHelper.pollUiThread(
-                    () -> FilePersistedTabDataStorage.exists(tab.getId(), false));
-        }
-        // Check we didn't migrate restoredTabs[2].
-        Assert.assertFalse(FilePersistedTabDataStorage.exists(restoredTabs[2].getId(), false));
-    }
-
-    @Test
-    @SmallTest
-    @Feature("TabPersistentStore")
-    public void testDontMigrateClosedTab() throws Exception {
-        // Variation on testMigrateStaleTabsToCriticalPersistedTabData. See comments in
-        // testMigrateStaleTabsToCriticalPersistedTabData
-        ChromeFeatureList.sCriticalPersistedTabData.setForTesting(true);
-        Pair<TabPersistentStore, Tab[]> res = restoreTabsFromTabStateAndPrepareForSaving();
-        TabPersistentStore store = res.first;
-        Tab[] restoredTabs = res.second;
-
-        addTabsToSaveQueue(store, new Tab[] {restoredTabs[0], restoredTabs[1]});
-        store.removeTabFromQueues(restoredTabs[2]);
-
-        for (int i = 1; i < restoredTabs.length; i++) {
-            // restoredTabs[2] should not have been migrated because it was removed from the
-            // save queue.
-            if (i == 2) continue;
-            Tab tab = restoredTabs[i];
-            CriteriaHelper.pollUiThread(
-                    () -> FilePersistedTabDataStorage.exists(tab.getId(), false));
-        }
-        // Check we didn't migrate Tab 2.
-        Assert.assertFalse(FilePersistedTabDataStorage.exists(restoredTabs[2].getId(), false));
     }
 
     private Pair<TabPersistentStore, Tab[]> restoreTabsFromTabStateAndPrepareForSaving()

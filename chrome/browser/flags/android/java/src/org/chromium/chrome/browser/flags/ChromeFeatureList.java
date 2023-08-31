@@ -546,8 +546,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
                     ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
-    public static final CachedFlag sCriticalPersistedTabData =
-            new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDelayTempStripRemoval =
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
     public static final CachedFlag sDragDropIntoOmnibox =
@@ -647,7 +645,6 @@ public abstract class ChromeFeatureList {
         sCloseTabSuggestions,
         sCloseTabSaveTabList,
         sCommandLineOnNonRooted,
-        sCriticalPersistedTabData,
         sDelayTempStripRemoval,
         sDragDropIntoOmnibox,
         sEarlyLibraryLoad,

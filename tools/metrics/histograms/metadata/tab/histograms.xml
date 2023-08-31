@@ -1633,27 +1633,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.SavedTabLoadTime.{SavedTabMethod}.{SavedTabLoadResult}"
-    units="ms" expires_after="2024-05-22">
-  <owner>davidjm@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>yusufo@chromium.org</owner>
-  <summary>
-    Records load time of a Tab using {SavedTabMethod} storage and whether the
-    {SavedTabLoadResult}
-  </summary>
-  <token key="SavedTabMethod">
-    <variant name="CriticalPersistedTabData"
-        summary="CriticalPersistedTabData"/>
-    <variant name="TabState" summary="TabState"/>
-  </token>
-  <token key="SavedTabLoadResult">
-    <variant name="Exists" summary="Tab storage file was found."/>
-    <variant name="Null" summary="Tab storage file was not found."/>
-  </token>
-</histogram>
-
 <histogram name="Tabs.ScrubbedInInterval.KeyPress" units="tabs"
     expires_after="2023-05-07">
   <owner>corising@chromium.org</owner>

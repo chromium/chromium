@@ -58,6 +58,7 @@ public abstract class TabCreator {
      * @param id       The id to give the new tab.
      * @param isIncognito if the {@link Tab} is incognito or not
      * @param index    The index for where to place the tab.
+     * TODO(b/298071394) remove CriticalPersistedTabData from TabCreator
      */
     public abstract Tab createFrozenTab(TabState state,
             SerializedCriticalPersistedTabData serializedCriticalPersistedTabData, int id,
