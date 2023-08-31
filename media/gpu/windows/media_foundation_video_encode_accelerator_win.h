@@ -101,7 +101,17 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   class EncodeOutput;
 
   // Pending encode input.
-  using PendingInput = VideoEncoder::PendingEncode;
+  struct PendingInput : public VideoEncoder::PendingEncode {
+    // If true, output bits should be discarded and the rate control object
+    // shouldn't be let known about the encode.
+    bool discard_output = false;
+  };
+
+  // Metadata whose meaning should be carried over from input to output.
+  struct OutOfBandMetadata {
+    gfx::ColorSpace color_space;
+    bool discard_output = false;
+  };
 
   // Encoder state.
   enum State {
@@ -116,6 +126,13 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     kFlushing,
     kError,
   };
+
+  PendingInput MakeInput(scoped_refptr<media::VideoFrame> frame,
+                         const VideoEncoder::EncodeOptions& options,
+                         bool discard_output);
+  void EncodeInternal(scoped_refptr<VideoFrame> frame,
+                      const EncodeOptions& options,
+                      bool discard_output);
 
   // Get supported profiles for specific codec.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
@@ -208,6 +225,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ = kUninitialized;
 
+  // True if keyframe was requested for the last frame.
+  bool last_frame_was_keyframe_request_ = false;
+
   // This parser is used to assign temporalId.
   H264Parser h264_parser_;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
@@ -290,9 +310,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
 
-  // Color space of the first frame sent to Encode(). Every input gets an entry
-  // in `output_color_spaces_`, new outputs take the color space from the front.
-  base::circular_deque<gfx::ColorSpace> output_color_spaces_;
+  // Queue of metadata whose meaning should be carried over from input to
+  // output. Every input pushes back a new entry, and outputs consumes entries
+  // from the front.
+  base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
+  gpu::GpuDriverBugWorkarounds workarounds_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
