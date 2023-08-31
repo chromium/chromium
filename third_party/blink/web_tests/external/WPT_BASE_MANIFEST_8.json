@@ -4145,6 +4145,13 @@
        null,
        {}
       ]
+     ],
+     "whitespace-in-fallback-crash.html": [
+      "7e150e8453e4d7875ad4bce08aa3af4385d4ffa4",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "css-view-transitions": {
@@ -166927,6 +166934,19 @@
        {}
       ]
      ],
+     "first-letter-with-preceding-new-line.html": [
+      "5243b042882328443daf07e6f05f1cac68cede84",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/first-letter-with-preceding-new-line-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-letter-with-quote.html": [
       "9a8e0426bd8d52fcc91ab5472f052812daa92abb",
       [
@@ -199700,6 +199720,19 @@
        [
         [
          "/css/css-text-decor/reference/text-decoration-thickness-green-rect-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-thickness-non-inherit.html": [
+      "c0aabdfde2dd4ab333d92c1c25c0d97076ccf1ac",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-thickness-non-inherit-ref.html",
          "=="
         ]
        ],
@@ -253344,6 +253377,19 @@
         [
          [
           "/css/selectors/invalidation/nth-last-child-when-sibling-changes-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "part-pseudo.html": [
+       "a409271762fb41a3c4d4243e1759aa5f8cd3c54b",
+       [
+        null,
+        [
+         [
+          "/css/selectors/invalidation/part-pseudo-ref.html",
           "=="
          ]
         ],
@@ -337325,6 +337371,10 @@
        "4eef817d7062a58066cf952c0c7f830f0fc87d37",
        []
       ],
+      "first-letter-with-preceding-new-line-ref.html": [
+       "e3d6b0aa2853612afa764ec0441a85a0f93c4c1a",
+       []
+      ],
       "first-line-with-inline-block-ref.html": [
        "31717d4171bad4c98b272e4ce70ee6578780b10b",
        []
@@ -348729,6 +348779,10 @@
       ],
       "text-decoration-thickness-length-rounding-ref.tentative.html": [
        "0a6dbd448f4b037b840377c1b19d28c93a3a9efa",
+       []
+      ],
+      "text-decoration-thickness-non-inherit-ref.html": [
+       "ae383f9e514dc402f60e8d055c2ada37d2057dd4",
        []
       ],
       "text-decoration-thickness-percent-001-ref.html": [
@@ -366293,6 +366347,10 @@
       ],
       "nth-last-child-when-sibling-changes-ref.html": [
        "627ebc074bf4306cd2d40e5462e35ee1fc036dd7",
+       []
+      ],
+      "part-pseudo-ref.html": [
+       "aeb724778a78e17b7144c4b7618d49d17ee1e54b",
        []
       ],
       "sheet-going-away-002-ref.html": [
@@ -402831,10 +402889,6 @@
      "fd5420f16a09673c0cb52294682f3728d996d042",
      []
     ],
-    "sub-apps.tentative.idl": [
-     "39dcd97a500a7829696e070c1afe46722184516a",
-     []
-    ],
     "svg-animations.idl": [
      "b57e1b9eb512919b501b7f96e260751aa5f108d3",
      []
@@ -420135,6 +420189,10 @@
     }
    },
    "subapps": {
+    "__dir__.ini": [
+     "ba76498534ee1de7e086db2204d1b39a96017bf7",
+     []
+    ],
     "add-error.tentative.https.html.ini": [
      "75c2cbbac61e37998ce6edac767e73a1a245a0df",
      []
@@ -501659,7 +501717,7 @@
       ]
      ],
      "getComputedStyle-calc-mixed-units-001.html": [
-      "c6fea70aae9b01c141e230a876f269c94900038e",
+      "4b8ec04188d13f6129222dfd0cf09453df16165e",
       [
        null,
        {}
@@ -532140,7 +532198,7 @@
      ]
     ],
     "navigator-subapp.https.html": [
-     "c5b980537b3d334eef9d76c4d9e5af745e245e73",
+     "843d25655436276e2bf0f38d7363ce421140b4d0",
      [
       null,
       {}
@@ -719668,7 +719726,7 @@
          ]
         ],
         "reload.py": [
-         "b6e957e8a8c5cb0b6e89b7bd6ab73b0b4fac56ef",
+         "aed8314ba549a99f30685a2b30625ee1f6af6514",
          [
           null,
           {}
