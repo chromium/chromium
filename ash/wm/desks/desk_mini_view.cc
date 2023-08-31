@@ -221,6 +221,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             kDeskBarSearchIcon, cros_tokens::kIconColorPrimary,
             kShortcutViewIconSize)));
+    desk_shortcut_view_->AddChildView(std::make_unique<views::Label>(u"+"));
     desk_shortcut_label_ =
         desk_shortcut_view_->AddChildView(std::make_unique<views::Label>());
 
@@ -289,8 +290,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
     const int desk_index = controller->GetDeskIndex(desk_);
     desk_shortcut_view_->SetVisible(visible &&
                                     desk_index < kDeskBarMaxDeskShortcut);
-    desk_shortcut_label_->SetText(u"+ " +
-                                  base::NumberToString16(desk_index + 1));
+    desk_shortcut_label_->SetText(base::NumberToString16(desk_index + 1));
   }
 }
 
