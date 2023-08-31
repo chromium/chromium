@@ -7,9 +7,11 @@ package org.chromium.components.policy;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.content.Context;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +46,11 @@ public class PolicyCacheProviderTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    @After
+    public void tearDown() {
+        PolicyCache.resetForTesting();
+    }
+
     @Test
     public void testPolicyRefresh() {
         ContextUtils.getApplicationContext()
@@ -66,5 +73,13 @@ public class PolicyCacheProviderTest {
                     && STRING_POLICY.equals(bundle.getString(POLICY_NAME_3))
                     && DICT_POLICY.equals(bundle.getString(POLICY_NAME_4));
         }));
+    }
+
+    @Test
+    public void testEmpty() {
+        PolicyCacheProvider provider = new PolicyCacheProvider();
+        provider.setManagerAndSource(mCombinedPolicyProvider, SOURCE);
+        provider.refresh();
+        verifyNoInteractions(mCombinedPolicyProvider);
     }
 }
