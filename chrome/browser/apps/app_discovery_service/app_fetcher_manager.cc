@@ -33,7 +33,7 @@ AppFetcher* AppFetcherManager::g_test_fetcher_ = nullptr;
 AppFetcherManager::AppFetcherManager(Profile* profile)
     : profile_(profile),
       recommended_arc_app_fetcher_(
-          std::make_unique<RecommendedArcAppFetcher>()),
+          std::make_unique<RecommendedArcAppFetcher>(profile_)),
       game_fetcher_(std::make_unique<GameFetcher>(profile_)) {}
 
 AppFetcherManager::~AppFetcherManager() = default;

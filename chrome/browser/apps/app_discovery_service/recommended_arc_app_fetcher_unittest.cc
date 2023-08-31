@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,13 +19,14 @@ class RecommendedArcAppFetcherTest : public testing::Test {
   RecommendedArcAppFetcherTest() = default;
 
   void SetUp() override {
-    arc_app_fetcher_ = std::make_unique<RecommendedArcAppFetcher>();
+    arc_app_fetcher_ = std::make_unique<RecommendedArcAppFetcher>(&profile_);
   }
 
   RecommendedArcAppFetcher* arc_app_fetcher() { return arc_app_fetcher_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   std::unique_ptr<RecommendedArcAppFetcher> arc_app_fetcher_;
 };
 

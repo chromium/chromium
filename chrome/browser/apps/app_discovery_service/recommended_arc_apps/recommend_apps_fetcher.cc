@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/fake_recommend_apps_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"  // nogncheck https://crbug.com/1475504
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,6 +30,7 @@ RecommendAppsFetcher::FactoryCallback* g_factory_callback = nullptr;
 
 // static
 std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
+    Profile* profile,
     RecommendAppsFetcherDelegate* delegate) {
   if (g_factory_callback) {
     return g_factory_callback->Run(delegate);
@@ -54,12 +54,9 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
       display_config;
   ash::BindCrosDisplayConfigController(
       display_config.InitWithNewPipeAndPassReceiver());
-  // TODO(crbug.com/1475504): Remove dependency on ProfileManager, by passing a
-  // Profile* into this method.
   return std::make_unique<RecommendAppsFetcherImpl>(
       delegate, std::move(display_config),
-      ProfileManager::GetActiveUserProfile()
-          ->GetDefaultStoragePartition()
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
 }

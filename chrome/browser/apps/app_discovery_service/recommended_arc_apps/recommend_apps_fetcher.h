@@ -9,12 +9,15 @@
 
 #include "base/functional/callback_forward.h"
 
+class Profile;
+
 namespace apps {
 class RecommendAppsFetcherDelegate;
 
 class RecommendAppsFetcher {
  public:
   static std::unique_ptr<RecommendAppsFetcher> Create(
+      Profile* profile,
       RecommendAppsFetcherDelegate* delegate);
 
   using FactoryCallback =
