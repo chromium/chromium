@@ -843,13 +843,10 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
       parsed_submitted_form.submission_event);
   metrics_recorder_->SetSubmissionIndicatorEvent(
       parsed_submitted_form.submission_event);
-// It's not possible to edit username in a save/update prompt on Android.
-// TODO(crbug.com/959776): Get rid of this method, by passing
-// |pending_credentials_| directly to MaybeSendSingleUsernameVote.
-#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/959776): Get rid of this method, by passing
+  // |pending_credentials_| directly to MaybeSendSingleUsernameVote.
   votes_uploader_->CalculateUsernamePromptEditState(
       /*saved_username=*/pending_credentials_.username_value);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (IsNewLogin()) {
     metrics_util::LogNewlySavedPasswordMetrics(

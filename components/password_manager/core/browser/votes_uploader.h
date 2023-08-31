@@ -157,14 +157,10 @@ class VotesUploader {
   // method.
   void MaybeSendSingleUsernameVote();
 
-// Not calculated on Android, because it's not possible to edit credentials in
-// prompts on Android.
-#if !BUILDFLAG(IS_ANDROID)
   // Calculate whether the username value was edited in a prompt based on
   // suggested and saved username values and whether it confirms or
-  // contradicts |single_username_vote_data_|.
+  // contradicts the data about potential single username.
   void CalculateUsernamePromptEditState(const std::u16string& saved_username);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Cache the vote data for a form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the

@@ -621,6 +621,12 @@ void VotesUploader::SetInitialHashValueOfUsernameField(
 }
 
 void VotesUploader::MaybeSendSingleUsernameVote() {
+// UFF votes are not sent on Android, since it wasn't possible to edit the
+// username in prompt before UFF was launched. Later, password edit dialog
+// was added, but Android votes were never evaluated.
+// TODO(crbug/1475295): Verify if the votes are produced as expected on Android
+// and enable UFF voting.
+#if !BUILDFLAG(IS_ANDROID)
   if (!single_username_vote_data_)
     return;
 
@@ -666,9 +672,9 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
           single_username_vote_data_->password_form_had_username_field);
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void VotesUploader::CalculateUsernamePromptEditState(
     const std::u16string& saved_username) {
   if (single_username_vote_data_ &&
@@ -676,8 +682,11 @@ void VotesUploader::CalculateUsernamePromptEditState(
     single_username_vote_data_->prompt_edit = CalculateUsernamePromptEdit(
         saved_username, single_username_vote_data_->username_candidate_value);
   }
+  for (auto& [field_id, vote_data] : forgot_password_vote_data_) {
+    vote_data.prompt_edit = CalculateUsernamePromptEdit(
+        saved_username, vote_data.username_candidate_value);
+  }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void VotesUploader::AddForgotPasswordVoteData(
     const SingleUsernameVoteData& vote_data) {
@@ -892,9 +901,6 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     type = autofill::NOT_USERNAME;
     vote_type = AutofillUploadContents::Field::STRONG;
   } else {
-// It's not possible to edit username in the save prompt on Android, thus it's
-// not possible to rely on this heuristic.
-#if !BUILDFLAG(IS_ANDROID)
     const auto& prompt_edit = single_username_vote_data_->prompt_edit;
     // There is no meaningful data on prompt edit, the vote should not be sent.
     if (prompt_edit == AutofillUploadContents::EDIT_UNSPECIFIED)
@@ -907,9 +913,6 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
                  prompt_edit == AutofillUploadContents::EDITED_NEGATIVE)
                     ? AutofillUploadContents::Field::STRONG
                     : AutofillUploadContents::Field::WEAK;
-#else
-    return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
   available_field_types->insert(type);
   field->set_possible_types({type});

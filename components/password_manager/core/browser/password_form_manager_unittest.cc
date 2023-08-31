@@ -2560,15 +2560,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
         is_password_update
             ? autofill::AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN
             : autofill::AutofillUploadContents::USERNAME_LIKE);
-// As Android does not allow username editing, |NO_INFORMATION| about prompt
-// edits is uploaded.
-#if !BUILDFLAG(IS_ANDROID)
     expected_single_username_data.set_prompt_edit(
         autofill::AutofillUploadContents::EDITED_POSITIVE);
-#else
-    expected_single_username_data.set_prompt_edit(
-        autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-#endif  // !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(
         mock_autofill_download_manager_,
         StartUploadRequest(
@@ -2644,15 +2637,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
       kSingleUsernameFieldSignature.value());
   expected_single_username_data.set_value_type(
       autofill::AutofillUploadContents::VALUE_WITH_NO_WHITESPACE);
-// As Android does not allow username editing, |NO_INFORMATION| about prompt
-// edits is uploaded.
-#if !BUILDFLAG(IS_ANDROID)
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
-#else
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       mock_autofill_download_manager_,
       StartUploadRequest(
@@ -2746,15 +2732,8 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       kUsernameFieldSignature.value());
   expected_single_username_data.set_value_type(
       autofill::AutofillUploadContents::USERNAME_LIKE);
-// As Android does not allow username editing, |NO_INFORMATION| about prompt
-// edits is uploaded.
-#if !BUILDFLAG(IS_ANDROID)
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::EDITED_NEGATIVE);
-#else
-  expected_single_username_data.set_prompt_edit(
-      autofill::AutofillUploadContents::EDIT_UNSPECIFIED);
-#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(
       mock_autofill_download_manager_,
       StartUploadRequest(
