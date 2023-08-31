@@ -66,23 +66,6 @@ class VirtualCardEnrollBubbleControllerImpl
 
   bool IsIconVisible() const override;
 
-#if defined(UNIT_TEST)
-  void SetBubbleShownClosureForTesting(
-      base::RepeatingClosure bubble_shown_closure_for_testing) {
-    bubble_shown_closure_for_testing_ = bubble_shown_closure_for_testing;
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  bool DidShowBottomSheetForTesting() const {
-    return !!autofill_vcn_enroll_bottom_sheet_bridge_;
-  }
-
-  void SetFieldsForTesting(const VirtualCardEnrollmentFields& fields) {
-    virtual_card_enrollment_fields_ = fields;
-  }
-#endif  // IS_ANDROID
-#endif  // UNIT_TEST
-
  protected:
   explicit VirtualCardEnrollBubbleControllerImpl(
       content::WebContents* web_contents);
@@ -93,6 +76,8 @@ class VirtualCardEnrollBubbleControllerImpl
   void DoShowBubble() override;
 
  private:
+  friend class VirtualCardEnrollBubbleControllerImplTestApi;
+
   // Gets the correct virtual card enrollment source metric to log.
   VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource();
 

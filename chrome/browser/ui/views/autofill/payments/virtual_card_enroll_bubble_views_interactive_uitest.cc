@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
@@ -90,8 +91,8 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     base::RunLoop run_loop;
     base::RepeatingClosure bubble_shown_closure_for_testing_ =
         run_loop.QuitClosure();
-    GetController()->SetBubbleShownClosureForTesting(
-        bubble_shown_closure_for_testing_);
+    test_api(GetController())
+        .SetBubbleShownClosure(bubble_shown_closure_for_testing_);
 
     GetController()->ShowBubble(
         virtual_card_enrollment_fields,
@@ -115,8 +116,9 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 
   VirtualCardEnrollBubbleViews* GetBubbleViews() {
     VirtualCardEnrollBubbleControllerImpl* controller = GetController();
-    if (!controller)
+    if (!controller) {
       return nullptr;
+    }
 
     return static_cast<VirtualCardEnrollBubbleViews*>(
         controller->GetVirtualCardEnrollBubbleView());

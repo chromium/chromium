@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
@@ -71,7 +72,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest, ShowBubble) {
       /*accept_virtual_card_callback=*/base::DoNothing(),
       /*decline_virtual_card_callback=*/base::DoNothing());
 
-  EXPECT_TRUE(test_support.controller()->DidShowBottomSheetForTesting());
+  EXPECT_TRUE(test_api(test_support.controller()).DidShowBottomSheet());
 }
 
 class VirtualCardEnrollBubbleControllerImplInfoBarTest
@@ -95,7 +96,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplInfoBarTest, ShowBubble) {
       /*accept_virtual_card_callback=*/base::DoNothing(),
       /*decline_virtual_card_callback=*/base::DoNothing());
 
-  EXPECT_FALSE(test_support.controller()->DidShowBottomSheetForTesting());
+  EXPECT_FALSE(test_api(test_support.controller()).DidShowBottomSheet());
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h"
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
@@ -39,7 +40,7 @@ class AutofillVCNEnrollBottomSheetBridgeTest
         TestLegalMessageLine("issuer_test_legal_message")};
     virtual_card_enrollment_fields.virtual_card_enrollment_source =
         VirtualCardEnrollmentSource::kUpstream;
-    controller->SetFieldsForTesting(virtual_card_enrollment_fields);
+    test_api(controller).SetFields(virtual_card_enrollment_fields);
     return controller;
   }
 
