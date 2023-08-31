@@ -529,7 +529,14 @@ String InputType::ReversedRangeOutOfRangeText(const Decimal&,
 }
 
 String InputType::RangeInvalidText(const Decimal&, const Decimal&) const {
-  NOTREACHED();
+  static auto* input_type = base::debug::AllocateCrashKeyString(
+      "input-type", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(input_type,
+                                 FormControlType().GetString().Utf8().c_str());
+  NOTREACHED() << "This should not get called. Check if input type '"
+               << FormControlType()
+               << "' should have a RangeInvalidText implementation."
+               << "See crbug.com/1474270";
   return String();
 }
 

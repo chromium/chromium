@@ -14,6 +14,8 @@ Range underflow
 PASS testIt("10", "50", "100") is ""
 Step mismatch
 PASS testIt("55", "0", "100", "10") is ""
+Range invalid
+PASS testIt("10", "100", "50") is ""
 PASS successfullyParsed is true
 
 TEST COMPLETE

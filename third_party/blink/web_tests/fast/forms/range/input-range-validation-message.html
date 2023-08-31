@@ -40,6 +40,9 @@ shouldBeEqualToString('testIt("10", "50", "100")', '');
 debug('Step mismatch')
 shouldBeEqualToString('testIt("55", "0", "100", "10")', '');
 
+debug('Range invalid');
+shouldBeEqualToString('testIt("10", "100", "50")', '');
+
 </script>
 </body>
 </html>

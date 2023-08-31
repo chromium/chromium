@@ -75,6 +75,8 @@ class NumberInputType final : public TextFieldInputType {
   String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maxmum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
+  String RangeInvalidText(const Decimal& minimum,
+                          const Decimal& maximum) const override;
   bool SupportsPlaceholder() const override;
   void MinOrMaxAttributeChanged() override;
   void StepAttributeChanged() override;

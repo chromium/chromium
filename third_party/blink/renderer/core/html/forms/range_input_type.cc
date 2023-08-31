@@ -326,6 +326,13 @@ String RangeInputType::RangeUnderflowText(const Decimal& minimum) const {
                                  LocalizeValue(Serialize(minimum)));
 }
 
+String RangeInputType::RangeInvalidText(const Decimal& minimum,
+                                        const Decimal& maximum) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_REVERSED,
+                                 LocalizeValue(Serialize(minimum)),
+                                 LocalizeValue(Serialize(maximum)));
+}
+
 void RangeInputType::DisabledAttributeChanged() {
   if (!HasCreatedShadowSubtree()) {
     return;

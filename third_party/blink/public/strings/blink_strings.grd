@@ -655,6 +655,9 @@ below:
       <message name="IDS_FORM_VALIDATION_REVERSED_RANGE_OUT_OF_RANGE_TIME" desc="Heading or short sentence shown when a form control value in a webpage needs to be within the minimum and maximum time range which crosses midnight, but a user specified a value that is greater than the maximum and less than the minimum.">
         Value must be between <ph name="MINIMUM_TIME">$1<ex>11:00 PM</ex></ph> and <ph name="MAXIMUM_TIME">$2<ex>1:00 AM</ex></ph>.
       </message>
+      <message name="IDS_FORM_VALIDATION_RANGE_REVERSED" desc="Heading or short sentence shown when a page author has specified minimum and maximum values for a form control, but the maximum is less than the minimum.">
+        Minimum value (<ph name="MINIMUM">$1<ex>100</ex></ph>) must be less than the maximum value (<ph name="MAXIMUM">$2<ex>0</ex></ph>).
+      </message>
       <message name="IDS_FORM_VALIDATION_RANGE_INVALID_DATETIME" desc="Heading or short sentence shown when a page author has specified minimum and maximum date/time values for a form control, but the maximum comes before the minimum.">
         Minimum date (<ph name="MIN_DATE_OR_TIME">$1<ex>01/04/2013</ex></ph>) must come before Maximum date (<ph name="MAX_DATE_OR_TIME">$2<ex>02/04/2013</ex></ph>).
       </message>

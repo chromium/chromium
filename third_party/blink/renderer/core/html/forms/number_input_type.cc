@@ -345,6 +345,13 @@ String NumberInputType::RangeUnderflowText(const Decimal& minimum) const {
                                  LocalizeValue(Serialize(minimum)));
 }
 
+String NumberInputType::RangeInvalidText(const Decimal& minimum,
+                                         const Decimal& maximum) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_RANGE_REVERSED,
+                                 LocalizeValue(Serialize(minimum)),
+                                 LocalizeValue(Serialize(maximum)));
+}
+
 bool NumberInputType::SupportsPlaceholder() const {
   return true;
 }
