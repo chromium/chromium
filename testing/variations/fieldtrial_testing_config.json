@@ -13172,8 +13172,8 @@
                     "name": "RedInterstitialDontProceed_20230706",
                     "params": {
                         "RedWarningSurveyDidProceedFilter": "FALSE",
-                        "probability": "0.5",
-                        "trigger_id": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W"
+                        "RedWarningSurveyTriggerId": "tk2kQP2nR0ugnJ3q1cK0RSntPR9W",
+                        "probability": "0.5"
                     },
                     "enable_features": [
                         "RedWarningSurvey"
@@ -13183,8 +13183,8 @@
                     "name": "RedInterstitialProceed_20230706",
                     "params": {
                         "RedWarningSurveyDidProceedFilter": "TRUE",
-                        "probability": "0.5",
-                        "trigger_id": "tFp5yLM9T0ugnJ3q1cK0QsMCryMd"
+                        "RedWarningSurveyTriggerId": "tFp5yLM9T0ugnJ3q1cK0QsMCryMd",
+                        "probability": "0.5"
                     },
                     "enable_features": [
                         "RedWarningSurvey"
