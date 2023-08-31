@@ -13738,6 +13738,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="9" label="INTERACTION_COMPLETE"/>
 </enum>
 
+<enum name="BoundSessionCredentialsCookieRotationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Connection error"/>
+  <int value="2" label="Server transient error"/>
+  <int value="3" label="Server persistent error"/>
+  <int value="4" label="Server unexpected response, expected cookies not set"/>
+  <int value="5" label="Challenge unexpected format"/>
+  <int value="6" label="Challenge requests limit exceeded"/>
+  <int value="7" label="Sign challenge failed"/>
+</enum>
+
 <enum name="BreakageIndicatorType">
   <int value="0" label="User Reload"/>
 </enum>

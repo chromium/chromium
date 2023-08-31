@@ -375,6 +375,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.BoundSessionCredentials.CookieRotationResult"
+    enum="BoundSessionCredentialsCookieRotationResult"
+    expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the result of the cookie rotation request triggered by the bound
+    session credentials feature. Recorded every time a cookie rotation request
+    is performed. Cookie rotation is triggered if there is a bound session on
+    startup, bound cookies soon to expire/expired and/or requests to the bound
+    site are blocked on bound cookies.
+  </summary>
+</histogram>
+
 <histogram name="Signin.BoundSessionCredentials.DeferredRequestDelay"
     units="ms" expires_after="2024-01-14">
   <owner>alexilin@chromium.org</owner>
