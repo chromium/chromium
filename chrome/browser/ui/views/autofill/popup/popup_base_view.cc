@@ -178,10 +178,16 @@ bool PopupBaseView::DoShow() {
   if (!enough_height) {
     return false;
   }
-  GetWidget()->Show();
 
-  custom_cursor_blocker_ = GetWebContents()->CreateDisallowCustomCursorScope(
-      /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+  if (content::WebContents* web_contents = GetWebContents()) {
+    custom_cursor_blocker_ = web_contents->CreateDisallowCustomCursorScope(
+        /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
+  } else {
+    // `delegate_` is already gone and `WebContents` is destroying itself.
+    return false;
+  }
+
+  GetWidget()->Show();
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
