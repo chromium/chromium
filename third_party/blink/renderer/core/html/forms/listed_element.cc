@@ -269,6 +269,8 @@ void ListedElement::FormOwnerSetNeedsValidityCheck() {
   if (HTMLFormElement* form = Form()) {
     form->PseudoStateChanged(CSSSelector::kPseudoValid);
     form->PseudoStateChanged(CSSSelector::kPseudoInvalid);
+    form->PseudoStateChanged(CSSSelector::kPseudoUserValid);
+    form->PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
   }
 }
 
@@ -283,6 +285,8 @@ void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(Node* node) {
        field_set = Traversal<HTMLFieldSetElement>::FirstAncestor(*field_set)) {
     field_set->PseudoStateChanged(CSSSelector::kPseudoValid);
     field_set->PseudoStateChanged(CSSSelector::kPseudoInvalid);
+    field_set->PseudoStateChanged(CSSSelector::kPseudoUserValid);
+    field_set->PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
   }
 }
 
@@ -564,6 +568,8 @@ void ListedElement::SetNeedsValidityCheck() {
     FieldSetAncestorsSetNeedsValidityCheck(element.parentNode());
     element.PseudoStateChanged(CSSSelector::kPseudoValid);
     element.PseudoStateChanged(CSSSelector::kPseudoInvalid);
+    element.PseudoStateChanged(CSSSelector::kPseudoUserValid);
+    element.PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
   }
 
   // Updates only if this control already has a validation message.
