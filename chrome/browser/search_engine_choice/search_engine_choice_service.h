@@ -47,15 +47,20 @@ class SearchEngineChoiceService : public KeyedService {
   // `browser`.
   bool IsShowingDialog(Browser* browser);
 
+  // Returns whether the Search Engine Choice dialog can be shown or not.
+  // This will return false if the dialog is currently showing.
+  bool CanShowDialog(Browser& browser);
+
+  // Returns whether the Search Engine Choice dialog is either shown or
+  // pending to be shown.
+  bool HasPendingDialog(Browser& browser);
+
   // Returns the list of search engines.
   // Virtual to be able to mock in tests.
   virtual std::vector<std::unique_ptr<TemplateURLData>> GetSearchEngines();
 
-  // Returns whether the Search Engine Choice dialog should be displayed or not.
-  static bool ShouldDisplayDialog(Browser& browser);
-
   // Disables the display of the Search Engine Choice dialog for testing. When
-  // `dialog_disabled` is true, `ShouldDisplayDialog` will return false.
+  // `dialog_disabled` is true, `CanShowDialog` will return false.
   // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
   // dialog for those tests. If you set this outside of that context, you should
   // ensure it is reset at the end of your test.

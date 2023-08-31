@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -46,12 +47,16 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  Browser* browser =
-      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
-  if (!SearchEngineChoiceService::ShouldDisplayDialog(CHECK_DEREF(browser))) {
+  Browser& browser = CHECK_DEREF(
+      chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents()));
+
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
+  if (!search_engine_choice_service ||
+      !search_engine_choice_service->CanShowDialog(browser)) {
     return;
   }
-  ShowSearchEngineChoiceDialog(*browser);
+  ShowSearchEngineChoiceDialog(browser);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineChoiceTabHelper);

@@ -6,16 +6,19 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -85,9 +88,14 @@ bool BrowserFeaturePromoController::CanShowPromo(
   // Turn off IPH while a required search engine choice dialog is visible or
   // pending.
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
-  if (SearchEngineChoiceService::ShouldDisplayDialog(
-          (*browser_view_->browser()))) {
-    return false;
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
+    Browser& browser = *browser_view_->browser();
+    SearchEngineChoiceService* search_engine_choice_service =
+        SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
+    if (search_engine_choice_service &&
+        search_engine_choice_service->HasPendingDialog(browser)) {
+      return false;
+    }
   }
 #endif
 

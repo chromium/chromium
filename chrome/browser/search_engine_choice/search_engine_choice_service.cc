@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,7 +14,6 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/util.h"
-#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 bool g_dialog_disabled_for_testing = false;
@@ -98,22 +96,16 @@ SearchEngineChoiceService::GetSearchEngines() {
       pref_service);
 }
 
-bool SearchEngineChoiceService::ShouldDisplayDialog(Browser& browser) {
-  if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {
-    return false;
-  }
+bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
+  PrefService* prefs = browser.profile()->GetPrefs();
 
-  // Dialog should not be shown if the pref was already set.
-  Profile* profile = browser.profile();
-  PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetInt64(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    return false;
-  }
+  // Dialog should not be shown if it is currently displayed or if the pref was
+  // already set.
+  return !prefs->GetInt64(
+             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) &&
+         !IsShowingDialog(&browser) && !g_dialog_disabled_for_testing;
+}
 
-  auto* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
-  return search_engine_choice_service &&
-         !search_engine_choice_service->IsShowingDialog(&browser) &&
-         !g_dialog_disabled_for_testing;
+bool SearchEngineChoiceService::HasPendingDialog(Browser& browser) {
+  return IsShowingDialog(&browser) || CanShowDialog(browser);
 }
