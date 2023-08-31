@@ -41,6 +41,7 @@
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/test/event_generator_delegate_aura.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -339,6 +340,16 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
 };
 
 class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
+ public:
+  void SetUp() override {
+    // Set animation duration to zero so the nudge dismisses immediately when
+    // cancelled or timed out.
+    ui::ScopedAnimationDurationScaleMode duration_scale(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    ScalableIphBrowserTest::SetUp();
+  }
+
  protected:
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;

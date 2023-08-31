@@ -17,6 +17,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
+namespace ui {
+class ImplicitAnimationObserver;
+}  // namespace ui
+
 namespace views {
 class LabelButton;
 class View;
@@ -41,10 +45,9 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   void Cancel(const std::string& id) override;
   void MaybeRecordNudgeAction(NudgeCatalogName catalog_name) override;
   std::unique_ptr<ScopedNudgePause> CreateScopedPause() override;
+  // TODO(b/296948349): Replace this with a new `GetNudge(id)` function as this
+  // does not accurately reflect is a nudge is shown or not.
   bool IsNudgeShown(const std::string& id) override;
-
-  // Closes all `shown_nudges_`.
-  void CloseAllNudges();
 
   // Removes all cached objects (e.g. observers, timers) related to a nudge when
   // its widget is destroying.
@@ -81,9 +84,6 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Resets the registry map that records the time a nudge was last shown.
   void ResetNudgeRegistryForTesting();
 
-  // Records button pressed metrics.
-  void RecordButtonPressed(NudgeCatalogName catalog_name, bool first_button);
-
  private:
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
@@ -98,6 +98,13 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Records the nudge `ShownCount` metric, and stores the time the nudge was
   // shown in the nudge registry.
   void RecordNudgeShown(NudgeCatalogName catalog_name);
+
+  // Records button pressed metrics.
+  void RecordButtonPressed(NudgeCatalogName catalog_name, bool first_button);
+
+  // Closes all `shown_nudges_` immediately. Used for shutdown, when a scoped
+  // nudge pause is activated, or when the session state changes.
+  void CloseAllNudges();
 
   // Chains the provided `callback` to a `Cancel()` call to dismiss a nudge with
   // `id`, and returns this chained callback. If the provided `callback` is
@@ -130,6 +137,11 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // widget is destroying.
   std::map<std::string, std::unique_ptr<NudgeWidgetObserver>>
       nudge_widget_observers_;
+
+  // Maps an `AnchoredNudge` `id` to an observation of the nudge's hide
+  // animation. Used to destroy the nudge widget on animation completed.
+  std::map<std::string, std::unique_ptr<ui::ImplicitAnimationObserver>>
+      hide_animation_observers_;
 
   // Maps an `AnchoredNudge` `id` to a timer that's used to dismiss the nudge
   // after its duration has passed. Hovering over the nudge pauses the timer.

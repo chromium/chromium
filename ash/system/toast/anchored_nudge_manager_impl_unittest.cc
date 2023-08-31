@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -47,6 +48,8 @@ constexpr char kNudgeTimeToActionWithin1h[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
 constexpr char kNudgeTimeToActionWithinSession[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
+
+constexpr base::TimeDelta kAnimationSettleDownDuration = base::Seconds(5);
 
 void SetLockedState(bool locked) {
   SessionInfo info;
@@ -853,6 +856,116 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnSessionStateChanged) {
 
   // Unlock screen, nudge should have closed.
   SetLockedState(false);
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+// Tests that the nudge widget closes after its hide animation is completed.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnHideAnimationComplete) {
+  // Set animations to last a non-zero, faster than normal duration, since the
+  // regular duration may last longer in tests and cause flakiness.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Cancel will trigger the hide animation, the nudge should still exist.
+  anchored_nudge_manager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Attempt cancelling the nudge while hide animation is in progress, these
+  // calls should be ignored.
+  anchored_nudge_manager()->Cancel(id);
+  anchored_nudge_manager()->Cancel(id);
+
+  // Fast forward to complete hide animation, the nudge should have closed.
+  task_environment()->FastForwardBy(kAnimationSettleDownDuration);
+  ASSERT_FALSE(GetShownNudges()[id]);
+}
+
+TEST_F(AnchoredNudgeManagerImplTest, NudgeHideAnimationInterrupted_OnShutdown) {
+  // Set animations to last their normal duration.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Cancel will trigger the hide animation, the nudge should still exist.
+  anchored_nudge_manager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Nudge animation is interrupted on shutdown, no crash.
+}
+
+TEST_F(AnchoredNudgeManagerImplTest,
+       NudgeHideAnimationInterrupted_OnNudgeReplaced) {
+  // Set animations to last their normal duration.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Cancel will trigger the hide animation, the nudge should still exist.
+  anchored_nudge_manager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Attempt showing the same nudge again immediately. The hide animation should
+  // be interrupted, and the nudge will be replaced.
+  anchored_nudge_manager()->Show(nudge_data);
+  task_environment()->FastForwardBy(kAnimationSettleDownDuration);
+  EXPECT_TRUE(GetShownNudges()[id]);
+}
+
+TEST_F(AnchoredNudgeManagerImplTest,
+       NudgeHideAnimationInterrupted_OnScopedPauseAdded) {
+  // Set animations to last their normal duration.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Show a nudge.
+  anchored_nudge_manager()->Show(nudge_data);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Cancel will trigger the hide animation, the nudge should still exist.
+  anchored_nudge_manager()->Cancel(id);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Create a scoped nudge pause right after, which will close the nudge
+  // immediately interrupting its hide animation.
+  anchored_nudge_manager()->CreateScopedPause();
   EXPECT_FALSE(GetShownNudges()[id]);
 }
 
