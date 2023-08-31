@@ -17627,6 +17627,21 @@
             ]
         }
     ],
+    "WebGPUUseDXC": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseDXC"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebOtpBackendAuto": [
         {
             "platforms": [
