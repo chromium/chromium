@@ -29,7 +29,11 @@ PrefService* GetLastActiveUserPrefService() {
 void RecordInteraction(Interaction interaction) {
   CHECK(features::IsWelcomeTourEnabled());
 
+  // Some interactions, like `kQuickSettings`, can occur before user activation.
   auto* prefs = GetLastActiveUserPrefService();
+  if (!prefs) {
+    return;
+  }
 
   auto completed_time = welcome_tour_prefs::GetTimeOfFirstTourCompletion(prefs);
   auto prevented_time = welcome_tour_prefs::GetTimeOfFirstTourPrevention(prefs);

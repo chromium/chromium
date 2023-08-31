@@ -175,6 +175,15 @@ TEST_P(WelcomeTourInteractionMetricsTest, RecordInteraction) {
   }
 }
 
+// Verifies that attempting to record an interaction before login doesn't crash.
+TEST_P(WelcomeTourInteractionMetricsTest, RecordInteractionBeforeLogin) {
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService());
+  for (auto interaction : kAllInteractionsSet) {
+    RecordInteraction(interaction);
+  }
+}
+
 // WelcomeTourMetricsEnumTest --------------------------------------------------
 
 // Base class of tests that verify all valid enum values and no other are
