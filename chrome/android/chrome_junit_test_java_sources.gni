@@ -291,6 +291,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/tab/TabAttributesTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelperTest.java",
+  "junit/src/org/chromium/chrome/browser/tab/TabStateBrowserControlsVisibilityDelegateTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabUnitTest.java",
   "junit/src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",
