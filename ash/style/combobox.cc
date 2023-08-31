@@ -447,11 +447,47 @@ void Combobox::SelectMenuItemForTest(size_t row) {
 
 gfx::Rect Combobox::GetExpectedMenuBounds() const {
   CHECK(menu_view_);
-  gfx::Rect preferred_bounds(GetBoundsInScreen().bottom_left() + kMenuOffset,
-                             menu_view_->GetPreferredSize());
   WorkAreaInsets* work_area =
       WorkAreaInsets::ForWindow(GetWidget()->GetNativeWindow());
-  preferred_bounds.Intersect(work_area->user_work_area_bounds());
+  const gfx::Rect available_bounds = work_area->user_work_area_bounds();
+
+  const gfx::Size preferred_size = menu_view_->GetPreferredSize();
+  const gfx::Rect combobox_bounds = GetBoundsInScreen();
+
+  // Decide whether to show the combobox menu below (default) or above the
+  // combobox:
+  // if the combobox menu fits below the combobox, show it below.
+  const int height_below =
+      available_bounds.bottom() - combobox_bounds.bottom() - kMenuOffset.y();
+  bool show_below_combobox = height_below >= preferred_size.height();
+  // If the combobox menu does not fit below combobox, show it above the
+  // combobox of there is more space available above.
+  if (!show_below_combobox) {
+    const int height_above =
+        combobox_bounds.y() - available_bounds.y() - kMenuOffset.y();
+    show_below_combobox = height_below >= height_above;
+  }
+
+  gfx::Rect preferred_bounds =
+      show_below_combobox
+          ? gfx::Rect(combobox_bounds.bottom_left() + kMenuOffset,
+                      preferred_size)
+          : gfx::Rect(
+                combobox_bounds.origin() +
+                    gfx::Vector2d(kMenuOffset.x(),
+                                  -preferred_size.height() - kMenuOffset.y()),
+                preferred_size);
+
+  // If the combobox view is offscreen, translate the preferred combobox bounds
+  // to fit available bounds.
+  if (show_below_combobox && combobox_bounds.bottom() < available_bounds.y()) {
+    preferred_bounds.Offset(0, available_bounds.y() - combobox_bounds.bottom());
+  } else if (!show_below_combobox &&
+             combobox_bounds.y() > available_bounds.bottom()) {
+    preferred_bounds.Offset(0, available_bounds.bottom() - combobox_bounds.y());
+  }
+
+  preferred_bounds.Intersect(available_bounds);
   return preferred_bounds;
 }
 
