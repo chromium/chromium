@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager.settings;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -67,6 +69,10 @@ public class PasswordSettingsTest {
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mPasswordSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PasswordSettings.class);
+
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
 
     @Mock
     private PasswordCheck mPasswordCheck;
@@ -257,6 +263,7 @@ public class PasswordSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testAutoSignInCheckbox() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, true); });
 
@@ -292,6 +299,29 @@ public class PasswordSettingsTest {
                     (ChromeSwitchPreference) passwordPrefs.findPreference(
                             PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
             assertFalse(onOffSwitch.isChecked());
+        });
+    }
+
+    /**
+     * Ensure that the "Auto Sign-in" switch in "Save Passwords" settings is not present on
+     * automotive.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAutoSignInCheckboxIsNotPresentOnAutomotive() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+
+        final SettingsActivity settingsActivity = mTestHelper.startPasswordSettingsFromMainSettings(
+                mPasswordSettingsActivityTestRule);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PasswordSettings passwordPrefs = mPasswordSettingsActivityTestRule.getFragment();
+            ChromeSwitchPreference onOffSwitch =
+                    (ChromeSwitchPreference) passwordPrefs.findPreference(
+                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
+            assertNull("There should be no autosignin switch.", onOffSwitch);
+            settingsActivity.finish();
         });
     }
 

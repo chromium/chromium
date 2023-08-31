@@ -28,6 +28,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
@@ -305,7 +306,9 @@ public class PasswordSettings extends PreferenceFragmentCompat
         }
 
         createSavePasswordsSwitch();
-        createAutoSignInCheckbox();
+        if (shouldShowAutoSigninOption()) {
+            createAutoSignInCheckbox();
+        }
         if (mPasswordCheck != null) {
             createCheckPasswords();
         }
@@ -320,6 +323,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
         PasswordManagerHandlerProvider.getInstance()
                 .getPasswordManagerHandler()
                 .updatePasswordLists();
+    }
+
+    private boolean shouldShowAutoSigninOption() {
+        return !BuildInfo.getInstance().isAutomotive;
     }
 
     /**
