@@ -193,15 +193,21 @@ function updateSelectionReducer(
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.entries);
 
+  const updatingToEmpty =
+      (payload.entries.length === 0 && payload.selectedKeys.length === 0);
   if (!currentState.currentDirectory) {
-    console.warn('Missing `currentDirectory`');
-    console.debug('Dropping action:', payload);
+    if (!updatingToEmpty) {
+      console.warn('Missing `currentDirectory`');
+      console.debug('Dropping action:', payload);
+    }
     return currentState;
   }
 
   if (!currentState.currentDirectory.content) {
-    console.warn('Missing `currentDirectory.content`');
-    console.debug('Dropping action:', payload);
+    if (!updatingToEmpty) {
+      console.warn('Missing `currentDirectory.content`');
+      console.debug('Dropping action:', payload);
+    }
     return currentState;
   }
 

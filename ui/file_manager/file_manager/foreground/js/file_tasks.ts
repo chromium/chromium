@@ -518,7 +518,8 @@ export class FileTasks {
           break;
       }
     } catch (error) {
-      console.warn(`Failed to execute task ${task.descriptor}: ${error}`);
+      console.warn(`Failed to execute task ${
+          JSON.stringify(task.descriptor)}: ${error}`);
     }
   }
 

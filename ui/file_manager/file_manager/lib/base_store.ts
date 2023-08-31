@@ -178,7 +178,7 @@ export class BaseStore<StateType, ActionType extends BaseAction> {
           return;
         }
       } catch (error) {
-        if (error instanceof ConcurrentActionInvalidatedError) {
+        if (isInvalidationError(error)) {
           // This error is expected when the actionsProducer has been
           // invalidated.
           return;
@@ -236,4 +236,24 @@ export function addReducer<StateType, ActionType extends BaseAction>(
 
   return (payload: ActionType['payload']): ActionType =>
              ({type, payload} as ActionType);
+}
+
+
+/** Returns true when the error is a ConcurrentActionInvalidatedError. */
+function isInvalidationError(error: unknown): boolean {
+  if (!error) {
+    return false;
+  }
+
+  if (error instanceof ConcurrentActionInvalidatedError) {
+    return true;
+  }
+
+  // Rollup sometimes duplicate the definition of error class so the
+  // `instanceof` above fail in this condition.
+  if (error.constructor?.name === 'ConcurrentActionInvalidatedError') {
+    return true;
+  }
+
+  return false;
 }
