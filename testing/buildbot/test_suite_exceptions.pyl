@@ -177,6 +177,11 @@
           'shards': 3,
         },
       },
+      'android-code-coverage-native': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       # If you change this, make similar changes in android-x86-code-coverage below
       'android-nougat-x86-rel': {
         'ci_only': True,
