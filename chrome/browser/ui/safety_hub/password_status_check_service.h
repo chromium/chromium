@@ -10,12 +10,11 @@
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStatusCheckService
     : public KeyedService,
-      public password_manager::InsecureCredentialsManager::Observer,
+      public password_manager::SavedPasswordsPresenter::Observer,
       public password_manager::BulkLeakCheckServiceInterface::Observer {
  public:
   explicit PasswordStatusCheckService(Profile* profile);
@@ -56,8 +55,8 @@ class PasswordStatusCheckService
   void UpdateInsecureCredentialCountAsync();
 
   // Testing functions.
-  bool IsObservingInsecureCredentialsManagerForTesting() const {
-    return insecure_credentials_manager_observation_.IsObserving();
+  bool IsObservingSavedPasswordsPresenterForTesting() const {
+    return saved_passwords_presenter_observation_.IsObserving();
   }
 
   bool IsObservingBulkLeakCheckForTesting() const {
@@ -82,10 +81,10 @@ class PasswordStatusCheckService
   // issues.
   void RunPasswordCheckAsync();
 
-  // InsecureCredentialsManager::Observer implementation.
-  // Getting notified about this indicates that the presenter is initialized and
-  // that weak and reuse checks have concluded.
-  void OnInsecureCredentialsChanged() override;
+  // SavedPasswordsPresenter::Observer implementation.
+  // Getting notified about this indicates that the presenter is initialized.
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override;
 
   // BulkLeakCheckService::Observer implementation.
   // This is observed to get notified of the progress of the password check.
@@ -93,6 +92,10 @@ class PasswordStatusCheckService
       password_manager::BulkLeakCheckService::State state) override;
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
+
+  // This is called when weak and reuse checks are complete and
+  // `InsecureCredentialsManager` is ready to be queried for credential issues.
+  void OnWeakAndReuseChecksDone();
 
   // Initializes |saved_passwords_presenter_| and |password_check_delegate_|.
   void InitializePasswordCheckInfrastructure();
@@ -129,13 +132,12 @@ class PasswordStatusCheckService
   // initialized when needed.
   std::unique_ptr<extensions::PasswordCheckDelegate> password_check_delegate_;
 
-  // A scoped observer for `InsecureCredentialsManager`. This is used for
-  // detecting when password issues are available through
-  // `OnInsecureCredentialsChanged`.
-  base::ScopedObservation<
-      password_manager::InsecureCredentialsManager,
-      password_manager::InsecureCredentialsManager::Observer>
-      insecure_credentials_manager_observation_{this};
+  // A scoped observer for `saved_passwords_presenter_`. This is used for
+  // detecting when `saved_passwords_presenter_` is initialized through
+  // `OnSavedPasswordsChanged`.
+  base::ScopedObservation<password_manager::SavedPasswordsPresenter,
+                          password_manager::SavedPasswordsPresenter::Observer>
+      saved_passwords_presenter_observation_{this};
 
   // A scoped observer for `BulkLeakCheckService` which is used by
   // `PasswordCheckDelegate`. This is used for detecting when password check is
@@ -157,6 +159,8 @@ class PasswordStatusCheckService
 
   // Timer to schedule the run of the password check after some time has passed.
   base::OneShotTimer password_check_timer_;
+
+  base::WeakPtrFactory<PasswordStatusCheckService> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_PASSWORD_STATUS_CHECK_SERVICE_H_

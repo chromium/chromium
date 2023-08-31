@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 
+#include "base/barrier_closure.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -61,7 +62,7 @@ PasswordStatusCheckService::~PasswordStatusCheckService() = default;
 
 void PasswordStatusCheckService::Shutdown() {
   password_check_timer_.Stop();
-  insecure_credentials_manager_observation_.Reset();
+  saved_passwords_presenter_observation_.Reset();
   bulk_leak_check_observation_.Reset();
   password_check_delegate_.reset();
   saved_passwords_presenter_.reset();
@@ -104,16 +105,12 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
 
   is_update_credential_count_pending_ = true;
 
-  // `InsecureCredentialsManager::OnSavedPasswordsChanged` will run weak and
-  // reuse checks on initialization. When both are concluded, observers are
-  // notified (`OnInsecureCredentialsChanged`). Information whether a credential
-  // is leaked is stored in the password manager and does not have to be re-run.
   InitializePasswordCheckInfrastructure();
 
-  CHECK(password_check_delegate_);
-  if (!insecure_credentials_manager_observation_.IsObserving()) {
-    insecure_credentials_manager_observation_.Observe(
-        password_check_delegate_->GetInsecureCredentialsManager());
+  CHECK(saved_passwords_presenter_);
+  if (!saved_passwords_presenter_observation_.IsObserving()) {
+    saved_passwords_presenter_observation_.Observe(
+        saved_passwords_presenter_.get());
   }
 }
 
@@ -137,10 +134,26 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
   password_check_delegate_->StartPasswordCheck();
 }
 
-void PasswordStatusCheckService::OnInsecureCredentialsChanged() {
+void PasswordStatusCheckService::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(IsInfrastructureReady());
 
+  base::RepeatingClosure on_done = base::BarrierClosure(
+      /*num_closures=*/2,
+      base::BindOnce(&PasswordStatusCheckService::OnWeakAndReuseChecksDone,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // `InsecureCredentialManager` already has information on leaked credentials,
+  // check for weak and reused passwords.
+  password_check_delegate_->GetInsecureCredentialsManager()->StartReuseCheck(
+      on_done);
+
+  password_check_delegate_->GetInsecureCredentialsManager()->StartWeakCheck(
+      on_done);
+}
+
+void PasswordStatusCheckService::OnWeakAndReuseChecksDone() {
   is_update_credential_count_pending_ = false;
   UpdateInsecureCredentialCount();
   MaybeResetInfrastructureAsync();
@@ -234,7 +247,7 @@ void PasswordStatusCheckService::MaybeResetInfrastructureAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!is_update_credential_count_pending_ && !is_password_check_running_) {
-    insecure_credentials_manager_observation_.Reset();
+    saved_passwords_presenter_observation_.Reset();
     bulk_leak_check_observation_.Reset();
 
     // The reset is done as a task rather than directly because when observers

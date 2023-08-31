@@ -165,7 +165,7 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
   void ExpectInfrastructureUninitialized() {
     EXPECT_FALSE(service()->GetSavedPasswordsPresenterForTesting());
     EXPECT_FALSE(service()->GetPasswordCheckDelegateForTesting());
-    EXPECT_FALSE(service()->IsObservingInsecureCredentialsManagerForTesting());
+    EXPECT_FALSE(service()->IsObservingSavedPasswordsPresenterForTesting());
     EXPECT_FALSE(service()->IsObservingBulkLeakCheckForTesting());
     EXPECT_FALSE(service()->is_password_check_running());
     EXPECT_FALSE(service()->is_update_credential_count_pending());
