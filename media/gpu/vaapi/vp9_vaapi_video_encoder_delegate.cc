@@ -476,6 +476,8 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
   DCHECK(ref_frames_used);
 
   *picture->frame_hdr = GetDefaultFrameHeader(keyframe);
+  picture->frame_hdr->refresh_frame_context =
+      !current_params_.error_resilident_mode;
   if (svc_layers_) {
     // Reference frame settings for k-SVC stream.
     svc_layers_->FillUsedRefFramesAndMetadata(picture, ref_frames_used);
@@ -484,6 +486,15 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
     if (keyframe) {
       picture->frame_hdr->refresh_frame_flags = 0xff;
       ref_frame_index_ = 0;
+
+      // TODO(b/297226972): Remove the workaround once the iHD driver is fixed.
+      // Consecutive key frames must not refresh the frame context in iHD-VP9 to
+      // avoid corruption.
+      if (VaapiWrapper::GetImplementationType() ==
+              VAImplementation::kIntelIHD &&
+          is_last_encoded_key_frame_) {
+        picture->frame_hdr->refresh_frame_context = false;
+      }
     } else {
       picture->frame_hdr->ref_frame_idx[0] = ref_frame_index_;
       picture->frame_hdr->ref_frame_idx[1] =
@@ -520,6 +531,8 @@ void VP9VaapiVideoEncoderDelegate::SetFrameHeader(
                        ", temporal_id=" +
                        base::NumberToString(frame_params.temporal_layer_id))
                     : "");
+
+  is_last_encoded_key_frame_ = keyframe;
 }
 
 void VP9VaapiVideoEncoderDelegate::UpdateReferenceFrames(
@@ -605,7 +618,7 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.pic_flags.bits.reset_frame_context =
       frame_header->reset_frame_context;
   pic_param.pic_flags.bits.refresh_frame_context =
-      !encode_params.error_resilident_mode;
+      frame_header->refresh_frame_context;
   pic_param.pic_flags.bits.frame_context_idx = frame_header->frame_context_idx;
 
   pic_param.refresh_frame_flags = frame_header->refresh_frame_flags;

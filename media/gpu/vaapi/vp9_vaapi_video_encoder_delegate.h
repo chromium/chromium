@@ -135,6 +135,9 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       pending_update_rates_;
 
   std::unique_ptr<VP9RateControlWrapper> rate_ctrl_;
+
+  // TODO(b/297226972): Remove the workaround once the iHD driver is fixed.
+  bool is_last_encoded_key_frame_ = false;
 };
 }  // namespace media
 
