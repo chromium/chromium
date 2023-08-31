@@ -505,6 +505,8 @@ try_.builder(
     mirrors = [
         "ci/android-oreo-x86-rel",
     ],
+    coverage_test_types = ["unit", "overall"],
+    use_java_coverage = True,
 )
 
 try_.builder(
