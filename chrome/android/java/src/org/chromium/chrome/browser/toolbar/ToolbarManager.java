@@ -1027,6 +1027,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 if (ToolbarFeatures.shouldDelayTransitionsForAnimation()) {
                     mToolbar.onTransitionEnd();
                 }
+                if (layoutType == LayoutType.BROWSING) {
+                    maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
+                }
             }
 
             @Override
@@ -1487,6 +1490,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mInitializedWithNative = true;
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
         refreshSelectedTab(mActivityTabProvider.get());
+        maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
         if (mTabModelSelector.isTabStateInitialized()) mTabRestoreCompleted = true;
         handleTabRestoreCompleted();
         mTabCountProvider.setTabModelSelector(mTabModelSelector);
@@ -2224,12 +2228,23 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
         // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
         // clear such focus if it exists.
-        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) {
             if (onNtp) {
                 mLocationBar.showUrlBarCursorWithoutFocusAnimations();
             } else {
                 mLocationBar.clearUrlBarCursorWithoutFocusAnimations();
             }
+        }
+    }
+
+    private void maybeShowUrlBarCursorIfHardwareKeyboardAvailable() {
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
+        if (!UrlUtilities.isNTPUrl(mLocationBarModel.getCurrentGurl())) return;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) return;
+
+        if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
+            mLocationBar.showUrlBarCursorWithoutFocusAnimations();
         }
     }
 
