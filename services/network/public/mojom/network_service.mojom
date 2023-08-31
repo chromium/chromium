@@ -90,7 +90,7 @@ struct HttpAuthDynamicParams {
   string android_negotiate_account_type;
 
   // Indicates whether the GSSAPI library should be loaded. Only supported on
-  // Chrome OS.
+  // Chrome OS and Linux.
   bool allow_gssapi_library_load = true;
 
   // True if Basic authentication challenges should be allowed for non-secure

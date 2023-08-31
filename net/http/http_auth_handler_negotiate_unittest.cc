@@ -472,8 +472,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
 }
 #endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
 
-// AllowGssapiLibraryLoad() is only supported on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// AllowGssapiLibraryLoad() is only supported on ChromeOS and Linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   // Disabling allow_gssapi_library_load should prevent handler creation.
   SetupMocks(AuthLibrary());
@@ -489,7 +489,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   EXPECT_EQ(OK, rv);
   EXPECT_TRUE(auth_handler);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #endif  // BUILDFLAG(IS_POSIX)
 
