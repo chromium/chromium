@@ -18,6 +18,8 @@ void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
       "trusted-types parse-html-subset sanitize-inner-html static-types "
       // Add TrustedTypes policies for cr-lottie.
       "lottie-worker-script-loader "
+      // Add TrustedTypes policy for <cros-lottie-renderer>.
+      "cros-lottie-worker-script-loader "
       // Add TrustedTypes policy for lit.
       "lit-html "
       // Add TrustedTypes policies used during tests.
