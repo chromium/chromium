@@ -145,7 +145,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
                               .CopyAddressTo(&name_view_)
                               .SetController(this)
                               .SetText(saved_desk_name)
-                              .SetAccessibleName(saved_desk_name)
+                              .SetAccessibleName(l10n_util::GetStringUTF16(
+                                  IDS_ASH_DESKS_DESK_NAME))
                               .SetReadOnly(!saved_desk_->IsModifiable())
                               // Use the focus behavior specified by the
                               // subclass of `SavedDeskNameView` unless the
@@ -385,7 +386,6 @@ void SavedDeskItemView::UpdateSavedDesk(
   auto new_name = saved_desk_->template_name();
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  name_view_->SetAccessibleName(new_name);
   SetAccessibleName(new_name);
 
   // This will trigger `name_view_` to compute its new preferred bounds and
@@ -703,8 +703,8 @@ void SavedDeskItemView::OnDeleteButtonPressed() {
     return;
 
   controller->ShowDeleteDialog(
-      GetWidget()->GetNativeWindow()->GetRootWindow(),
-      name_view_->GetAccessibleName(), saved_desk_->type(),
+      GetWidget()->GetNativeWindow()->GetRootWindow(), name_view_->GetText(),
+      saved_desk_->type(),
       base::BindOnce(&SavedDeskItemView::OnDeleteSavedDesk,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -732,7 +732,6 @@ void SavedDeskItemView::OnSavedDeskNameChanged(const std::u16string& new_name) {
 
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  name_view_->SetAccessibleName(new_name);
   name_view_->ResetTemporaryName();
   SetAccessibleName(new_name);
 

@@ -6065,15 +6065,12 @@ TEST_P(DesksTest, NameNudges) {
 
   // Click on the new desk button until the max number of desks is created. Each
   // time a new desk is created the new desk's name view should have focus, be
-  // empty and have its accessible name set to the default desk name. Also, the
-  // previous desk should be left with a default name.
+  // empty. Also, the previous desk should be left with a default name.
   for (size_t i = 1; i < desks_util::GetMaxNumberOfDesks(); ++i) {
     ClickOnView(new_desk_button, event_generator);
     auto* desk_name_view = desks_bar_view->mini_views()[i]->desk_name_view();
     EXPECT_TRUE(desk_name_view->HasFocus());
     EXPECT_EQ(std::u16string(), controller->GetDeskAtIndex(i)->name());
-    EXPECT_EQ(DesksController::GetDeskDefaultName(i),
-              desk_name_view->GetAccessibleName());
     EXPECT_EQ(DesksController::GetDeskDefaultName(i - 1),
               controller->GetDeskAtIndex(i - 1)->name());
     ClickOnView(scroll_right_button, event_generator);

@@ -105,8 +105,8 @@ void SavedDeskGridView::SortEntries(const base::Uuid& order_first_uuid) {
       rest, grid_items_.end(),
       [&collator](const SavedDeskItemView* a, const SavedDeskItemView* b) {
         return base::i18n::CompareString16WithCollator(
-                   *collator, a->name_view()->GetAccessibleName(),
-                   b->name_view()->GetAccessibleName()) < 0;
+                   *collator, a->name_view()->GetText(),
+                   b->name_view()->GetText()) < 0;
       });
 
   // A11y traverses views based on the order of the children, so we need to

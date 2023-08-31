@@ -119,9 +119,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   // accessible name.
   auto* desks_controller = DesksController::Get();
   desk_name_view->SetAccessibleName(
-      desk_->name().empty() ? DesksController::GetDeskDefaultName(
-                                  desks_controller->GetDeskIndex(desk_))
-                            : desk_->name());
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -551,7 +549,6 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
     return;
 
   desk_name_view_->SetText(new_name);
-  desk_name_view_->SetAccessibleName(new_name);
   desk_preview_->SetAccessibleName(new_name);
 
   Layout();
