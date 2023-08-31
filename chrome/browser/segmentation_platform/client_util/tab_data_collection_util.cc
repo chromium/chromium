@@ -55,7 +55,6 @@ class TabDataCollectionUtil::LocalTabModelListObserver
   void ResetObservers() {
     observing_models_.clear();
     for (TabModel* model : TabModelList::models()) {
-      model->AddObserver(tab_observer_.get());
       observing_models_.emplace_back(
           std::make_unique<TabModelObservation>(tab_observer_.get()));
       observing_models_.back()->Observe(model);

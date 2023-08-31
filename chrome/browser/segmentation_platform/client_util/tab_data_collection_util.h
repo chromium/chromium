@@ -32,6 +32,7 @@ class TabDataCollectionUtil : public base::SupportsUserData::Data {
 
   // Represents the real output with action taken on the tab.
   enum TabAction : int {
+    kUnknown,
     kTabSelected,
     kTabClose,
   };

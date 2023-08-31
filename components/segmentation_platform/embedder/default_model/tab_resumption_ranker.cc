@@ -20,43 +20,119 @@ namespace {
 using proto::SegmentId;
 
 constexpr SegmentId kSegmentId = SegmentId::TAB_RESUMPTION_CLASSIFIER;
-constexpr uint64_t kTabResumptionRankerVersion = 1;
+constexpr uint64_t kTabResumptionRankerVersion = 2;
 
-// kPaintTiming_NavigationToFirstPaintNameHash.
-constexpr const char kLoadCountSql[] =
+#define DECL_SQL_FEATURE_SINGLE_UKM_METRIC(name, query, event_name,        \
+                                           metric_name)                    \
+  constexpr std::array<UkmMetricHash, 1> k##name##_##metric_name##Metrics{ \
+      UkmMetricHash::FromUnsafeValue(                                      \
+          ukm::builders::event_name::k##metric_name##NameHash),            \
+  };                                                                       \
+  constexpr std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1>     \
+      k##name##_k##metric_name##SqlEvent{                                  \
+          MetadataWriter::SqlFeature::EventAndMetrics{                     \
+              .event_hash = UkmEventHash::FromUnsafeValue(                 \
+                  ukm::builders::event_name::kEntryNameHash),              \
+              .metrics = k##name##_##metric_name##Metrics.data(),          \
+              .metrics_size = k##name##_##metric_name##Metrics.size()},    \
+      };                                                                   \
+  constexpr MetadataWriter::SqlFeature name {                              \
+    .sql = query, .events = k##name##_k##metric_name##SqlEvent.data(),     \
+    .events_size = k##name##_k##metric_name##SqlEvent.size()               \
+  }
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kLoadCount,
     "SELECT COUNT(metrics.id) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
-    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='64BD7CCE5A95BF00';";
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='64BD7CCE5A95BF00';",
+    PageLoad,
+    PaintTiming_NavigationToFirstContentfulPaint);
 
-// kPageTiming_TotalForegroundDurationNameHash.
-constexpr const char kUsageDurationSql[] =
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kForegroundCount,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='D7DB428ED4C5956A';",
+    PageLoad,
+    PageTiming_TotalForegroundDuration);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kUsageDuration,
     "SELECT SUM(metrics.metric_value) "
     "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
-    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='D7DB428ED4C5956A';";
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='D7DB428ED4C5956A';",
+    PageLoad,
+    PageTiming_TotalForegroundDuration);
 
-constexpr std::array<UkmMetricHash, 2> kUkmMetrics{
-    UkmMetricHash::FromUnsafeValue(
-        ukm::builders::PageLoad::
-            kPaintTiming_NavigationToFirstContentfulPaintNameHash),
-    UkmMetricHash::FromUnsafeValue(
-        ukm::builders::PageLoad::kPageTiming_TotalForegroundDurationNameHash),
-};
-constexpr std::array<MetadataWriter::SqlFeature::EventAndMetrics, 1> kSqlEvent{
-    MetadataWriter::SqlFeature::EventAndMetrics{
-        .event_hash = UkmEventHash::FromUnsafeValue(
-            ukm::builders::PageLoad::kEntryNameHash),
-        .metrics = kUkmMetrics.data(),
-        .metrics_size = kUkmMetrics.size()},
-};
-constexpr MetadataWriter::SqlFeature kLoadCount{
-    .sql = kLoadCountSql,
-    .events = kSqlEvent.data(),
-    .events_size = kSqlEvent.size()};
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kIsBookmarked,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='356B53FF0A1F60AF';",
+    PageLoad,
+    IsExistingBookmark);
 
-constexpr MetadataWriter::SqlFeature kUsageDuration{
-    .sql = kUsageDurationSql,
-    .events = kSqlEvent.data(),
-    .events_size = kSqlEvent.size()};
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kIsPartOfTabGroup,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='599EC2B0BC1914C1';",
+    PageLoad,
+    IsExistingPartOfTabGroup);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kUrlCopied,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='8E3F83DF276E39D1';",
+    PageLoad,
+    OmniboxUrlCopied);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kOmniboxShared,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.event_hash='395CEF9417255448';",
+    Omnibox_EditUrlSuggestion_Share,
+    HasOccurred);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kMenuShare,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.event_hash='E6D36C300DE14E7A';",
+    MobileMenu_Share,
+    HasOccurred);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kTouchScroll,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.metric_hash='A523BF8A1E4EC1C3';",
+    Graphics_Smoothness_Latency,
+    TouchScroll);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kTextFieldEdit,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.event_hash='743E2FC8D16C7103';",
+    Autofill_TextFieldDidChange,
+    FieldTypeGroup);
+
+DECL_SQL_FEATURE_SINGLE_UKM_METRIC(
+    kFormEvent,
+    "SELECT COUNT(metrics.metric_value) "
+    "FROM metrics JOIN urls ON metrics.url_id=urls.url_id "
+    "WHERE instr(urls.url,?)>0 AND metrics.event_hash='E6CF82D1CE5CB735';",
+    Autofill_FormEvent,
+    AutofillFormEvent);
+
+constexpr std::array<MetadataWriter::SqlFeature, 11> kSqlFeatures = {
+    kLoadCount,        kForegroundCount, kUsageDuration, kIsBookmarked,
+    kIsPartOfTabGroup, kUrlCopied,       kOmniboxShared, kMenuShare,
+    kTouchScroll,      kTextFieldEdit,   kFormEvent};
 
 constexpr std::array<MetadataWriter::CustomInput::Arg, 1> kBindValueArg{
     std::make_pair("name", "origin")};
@@ -94,20 +170,19 @@ TabResumptionRanker::GetModelConfig() {
   proto::SegmentationModelMetadata metadata;
   MetadataWriter writer(&metadata);
   writer.SetDefaultSegmentationMetadataConfig(
-      /*min_signal_collection_length_days=*/0,
-      /*signal_storage_length_days=*/0);
+      /*min_signal_collection_length_days=*/7,
+      /*signal_storage_length_days=*/28);
 
   // Set features.
   writer.AddCustomInput(MetadataWriter::CustomInput{
       .tensor_length = processing::TabSessionSource::kNumInputs,
       .fill_policy = proto::CustomInput::FILL_TAB_METRICS,
       .name = "tab"});
-  writer.AddSqlFeature(
-      kLoadCount,
-      {std::make_pair(proto::SqlFeature_BindValue::STRING, kBindValue)});
-  writer.AddSqlFeature(
-      kUsageDuration,
-      {std::make_pair(proto::SqlFeature_BindValue::STRING, kBindValue)});
+  for (const MetadataWriter::SqlFeature& sql_feature : kSqlFeatures) {
+    writer.AddSqlFeature(
+        sql_feature,
+        {std::make_pair(proto::SqlFeature_BindValue::STRING, kBindValue)});
+  }
 
   metadata.mutable_output_config()
       ->mutable_predictor()
@@ -127,8 +202,9 @@ TabResumptionRanker::GetModelConfig() {
 void TabResumptionRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
-  // Tab source inputs and 2 SQL features.
-  if (inputs.size() != processing::TabSessionSource::kNumInputs + 2) {
+  // Invalid inputs.
+  if (inputs.size() !=
+      processing::TabSessionSource::kNumInputs + kSqlFeatures.size()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
     return;
