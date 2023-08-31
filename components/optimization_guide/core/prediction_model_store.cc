@@ -312,6 +312,14 @@ void PredictionModelStore::UpdateModel(
            ? base::Seconds(model_info.valid_duration().seconds())
            : features::StoredModelsValidDuration()));
   metadata.SetKeepBeyondValidDuration(model_info.keep_beyond_valid_duration());
+
+  auto old_model_dir = metadata.GetModelBaseDir();
+  if (old_model_dir) {
+    RecordPredictionModelStoreModelRemovalVersionHistogram(
+        optimization_target,
+        PredictionModelStoreModelRemovalReason::kNewModelUpdate);
+    ScheduleModelDirRemoval(*old_model_dir);
+  }
   metadata.SetModelBaseDir(
       ConvertToRelativePath(base_store_dir_, base_model_dir));
 
@@ -377,22 +385,28 @@ void PredictionModelStore::RemoveModel(
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();
   if (base_model_dir) {
-    // Backward compatibility: Model dirs were absolute in the earlier versions,
-    // and it was only in experiment. The latest versions use relative paths.
-    // Convert to absolute paths to save in the pref, since absolute dirs could
-    // become non-existent if IOS Chrome upgrade changes the sandbox dirs.
-    DCHECK(!base_model_dir->IsAbsolute() ||
-           base_store_dir_.IsParent(*base_model_dir));
-    base::FilePath relative_model_dir =
-        base_model_dir->IsAbsolute()
-            ? ConvertToRelativePath(base_store_dir_, *base_model_dir)
-            : *base_model_dir;
-    ScopedDictPrefUpdate pref_update(
-        local_state_, prefs::localstate::kStoreFilePathsToDelete);
-    pref_update->Set(FilePathToString(relative_model_dir), true);
+    ScheduleModelDirRemoval(*base_model_dir);
   }
   // Continue removing the metadata even if the model dirs does not exist.
   metadata.ClearMetadata();
+}
+
+void PredictionModelStore::ScheduleModelDirRemoval(
+    const base::FilePath& base_model_dir) {
+  // Backward compatibility: Model dirs were absolute in the earlier versions,
+  // and it was only in experiment. The latest versions use relative paths.
+  // Convert to absolute paths to save in the pref, since absolute dirs could
+  // become non-existent if IOS Chrome upgrade changes the sandbox dirs.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base_model_dir.IsAbsolute() ||
+         base_store_dir_.IsParent(base_model_dir));
+  base::FilePath relative_model_dir =
+      base_model_dir.IsAbsolute()
+          ? ConvertToRelativePath(base_store_dir_, base_model_dir)
+          : base_model_dir;
+  ScopedDictPrefUpdate pref_update(local_state_,
+                                   prefs::localstate::kStoreFilePathsToDelete);
+  pref_update->Set(FilePathToString(relative_model_dir), true);
 }
 
 void PredictionModelStore::PurgeInactiveModels() {
@@ -449,6 +463,11 @@ void PredictionModelStore::OnFilePathDeleted(const std::string& path_to_delete,
   ScopedDictPrefUpdate pref_update(local_state_,
                                    prefs::localstate::kStoreFilePathsToDelete);
   pref_update->Remove(path_to_delete);
+}
+
+base::FilePath PredictionModelStore::GetBaseStoreDirForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base_store_dir_;
 }
 
 void PredictionModelStore::ResetForTesting() {

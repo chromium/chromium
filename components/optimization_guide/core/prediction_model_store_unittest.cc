@@ -399,7 +399,7 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
       PredictionModelStoreModelRemovalReason::kModelExpiredOnLoadModel, 1);
-  // The model dirs will still not be removed, but will be queued to be detected
+  // The model dirs will still not be removed, but will be queued to be deleted
   // at next startup.
   EXPECT_TRUE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_TRUE(base::PathExists(
@@ -421,6 +421,56 @@ TEST_F(PredictionModelStoreTest, ExpiredModelRemovedOnLoadModel) {
   EXPECT_FALSE(base::DirectoryExists(model_detail.base_model_dir));
   EXPECT_FALSE(base::PathExists(
       model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+  EXPECT_TRUE(
+      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+          .empty());
+}
+
+TEST_F(PredictionModelStoreTest, OldModelRemovedOnNewModelUpdate) {
+  base::HistogramTester histogram_tester;
+
+  auto model_cache_key = CreateModelCacheKey(kTestLocaleFoo);
+  auto model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, model_detail.model_info,
+      model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+
+  // Update the model.
+  auto new_model_detail =
+      CreateTestModelFiles(kTestOptimizationTargetFoo, model_cache_key, {});
+  prediction_model_store_->UpdateModel(
+      kTestOptimizationTargetFoo, model_cache_key, new_model_detail.model_info,
+      new_model_detail.base_model_dir, base::DoNothing());
+  RunUntilIdle();
+  EXPECT_TRUE(base::PathExists(
+      new_model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+
+  // The old model dirs will still not be removed, but will be queued to be
+  // deleted at next startup.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionModelStore.ModelRemovalReason",
+      PredictionModelStoreModelRemovalReason::kNewModelUpdate, 1);
+  EXPECT_TRUE(base::PathExists(
+      model_detail.base_model_dir.Append(GetBaseFileNameForModels())));
+  EXPECT_EQ(1U, local_state_prefs_
+                    ->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+                    .size());
+  EXPECT_TRUE(
+      local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
+          .FindBool(FilePathToString(ConvertToRelativePath(
+              temp_models_dir_.GetPath(), model_detail.base_model_dir))));
+
+  // Recreate the store and it will remove the old model slated for deletion.
+  prediction_model_store_ =
+      PredictionModelStore::CreatePredictionModelStoreForTesting(
+          local_state_prefs_.get(), temp_models_dir_.GetPath());
+  RunUntilIdle();
+  EXPECT_TRUE(prediction_model_store_->HasModel(kTestOptimizationTargetFoo,
+                                                model_cache_key));
   EXPECT_TRUE(
       local_state_prefs_->GetDict(prefs::localstate::kStoreFilePathsToDelete)
           .empty());
