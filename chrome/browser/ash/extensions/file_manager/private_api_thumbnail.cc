@@ -372,9 +372,13 @@ void FileManagerPrivateInternalGetArcDocumentsProviderThumbnailFunction::
     return;
   }
 
-  const auto& url = urls[0];
   auto* runner = arc::ArcFileSystemOperationRunner::GetForBrowserContext(
       browser_context());
+  if (!runner) {
+    Respond(Error("ArcFileSystemOperationRunner is unavailable"));
+    return;
+  }
+  const auto& url = urls[0];
   runner->OpenThumbnail(
       url, size_hint,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
