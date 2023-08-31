@@ -68,6 +68,7 @@ NSString* const kSiriOpenTabGrid = @"OpenTabGridIntent";
 NSString* const kSiriVoiceSearch = @"SearchWithVoiceIntent";
 NSString* const kSiriOpenNewTab = @"OpenNewTabIntent";
 NSString* const kSiriPlayDinoGame = @"PlayDinoGameIntent";
+NSString* const kSiriSetChromeDefaultBrowser = @"SetChromeDefaultBrowserIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -333,6 +334,11 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   } else if ([userActivity.activityType isEqualToString:kSiriPlayDinoGame]) {
     webpageURL =
         [NSURL URLWithString:base::SysUTF8ToNSString(kChromeDinoGameURL)];
+  } else if ([userActivity.activityType
+                 isEqualToString:kSiriSetChromeDefaultBrowser]) {
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       SET_CHROME_DEFAULT_BROWSER]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

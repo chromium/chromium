@@ -17,5 +17,6 @@ intent_definition("intents") {
     "SearchWithVoiceIntent",
     "OpenNewTabIntent",
     "PlayDinoGameIntent",
+    "SetChromeDefaultBrowserIntent",
   ]
 }

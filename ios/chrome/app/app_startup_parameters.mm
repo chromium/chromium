@@ -97,6 +97,9 @@
     case OPEN_TAB_GRID:
       [description appendString:@", should open tab grid"];
       break;
+    case SET_CHROME_DEFAULT_BROWSER:
+      [description appendString:@", should open set chrome default browser"];
+      break;
     default:
       break;
   }

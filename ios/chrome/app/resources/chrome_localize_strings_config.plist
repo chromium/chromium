@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>dNnOX1</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>CvISOS</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>98xOkD</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>uFCGKp</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>UbuQzH</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_PLAY_DINO_GAME_TITLE</string>

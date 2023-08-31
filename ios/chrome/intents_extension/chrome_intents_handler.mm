@@ -16,6 +16,7 @@
 #import "ios/chrome/common/intents/PlayDinoGameIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
+#import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
@@ -26,7 +27,8 @@
                                     OpenTabGridIntentHandling,
                                     SearchWithVoiceIntentHandling,
                                     OpenNewTabIntentHandling,
-                                    PlayDinoGameIntentHandling>
+                                    PlayDinoGameIntentHandling,
+                                    SetChromeDefaultBrowserIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -220,6 +222,25 @@
   PlayDinoGameIntentResponse* response = [[PlayDinoGameIntentResponse alloc]
       initWithCode:PlayDinoGameIntentResponseCodeContinueInApp
       userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - SetChromeDefaultBrowserIntentHandling
+
+- (void)
+    handleSetChromeDefaultBrowser:(SetChromeDefaultBrowserIntent*)intent
+                       completion:
+                           (void (^)(SetChromeDefaultBrowserIntentResponse*))
+                               completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass(
+                               [SetChromeDefaultBrowserIntent class])];
+
+  SetChromeDefaultBrowserIntentResponse* response =
+      [[SetChromeDefaultBrowserIntentResponse alloc]
+          initWithCode:SetChromeDefaultBrowserIntentResponseCodeContinueInApp
+          userActivity:activity];
 
   completion(response);
 }

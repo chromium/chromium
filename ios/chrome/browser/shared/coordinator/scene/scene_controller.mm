@@ -2501,6 +2501,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf.mainCoordinator showTabGrid];
       };
+    case SET_CHROME_DEFAULT_BROWSER:
+      return ^{
+        [weakSelf showDefaultBrowserSettings];
+      };
     default:
       return nil;
   }

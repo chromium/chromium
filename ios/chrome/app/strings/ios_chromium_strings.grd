@@ -758,6 +758,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_PLAY_DINO_GAME_DESCRIPTION" desc="Siri Shortcut description to open dino game in chromium [iOS only]">
         Opens the Chromium Dino Game.
       </message>
+      <message name="IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_TITLE" desc="Siri Shortcut for set Chromium as default browser title [iOS only]">
+        Set Chromium As Default Browser
+      </message>
+      <message name="IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_DESCRIPTION" desc="Siri Shortcut description to set Chromium as default browser [iOS only]">
+        Opens the Chromium Setting to set Chromium as Default Browser.
+      </message>
     </messages>
   </release>
 </grit>

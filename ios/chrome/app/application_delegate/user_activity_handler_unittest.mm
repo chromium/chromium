@@ -45,6 +45,7 @@
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
+#import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -1050,5 +1051,37 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentOpenNewTab) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(NO_ACTION,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to set chrome as default browser intent.
+TEST_F(UserActivityHandlerTest,
+       ContinueUserActivityIntentSetChromeDefaultBrowser) {
+  NSUserActivity* userActivity = [[NSUserActivity alloc]
+      initWithActivityType:@"SetChromeDefaultBrowserIntent"];
+
+  SetChromeDefaultBrowserIntent* intent =
+      [[SetChromeDefaultBrowserIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(SET_CHROME_DEFAULT_BROWSER,
             [connectionInformationMock startupParameters].postOpeningAction);
 }
