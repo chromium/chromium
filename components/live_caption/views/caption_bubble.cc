@@ -884,6 +884,10 @@ void CaptionBubble::CloseButtonPressed() {
   LogSessionEvent(SessionEvent::kCloseButtonClicked);
   if (model_)
     model_->CloseButtonPressed();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+#endif
 }
 
 void CaptionBubble::ExpandOrCollapseButtonPressed() {

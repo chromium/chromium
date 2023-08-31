@@ -353,9 +353,10 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionUiRemoteDriverTest, CloseBubble) {
   // Emulate a navigation (i.e. session end).
   driver_1->OnSessionEnded();
 
-  // Text from a new page should cause the bubble to reappear.
-  EXPECT_TRUE(EmitTranscribedText(&surface_3, "New page text"));
-  EXPECT_TRUE(IsWidgetVisible());
+  // Text from a new page should not cause the bubble to reappear because
+  // closing the bubble disables the feature.
+  EXPECT_FALSE(EmitTranscribedText(&surface_3, "New page text"));
+  EXPECT_FALSE(IsWidgetVisible());
 }
 
 // Test that the back to tab message is delivered.
