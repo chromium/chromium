@@ -873,6 +873,12 @@
       status: "experimental",
     },
     {
+      // Don't allow new line as preceding character for ::first-letter.
+      // See crbug.com/1477217
+      name: "CSSFirstLetterNoNewLineAsPrecedingChar",
+      status: "stable",
+    },
+    {
       name: "CSSFocusVisible",
       status: "stable",
       base_feature: "none",

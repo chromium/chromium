@@ -46,7 +46,8 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
   void Trace(Visitor*) const override;
 
   static LayoutText* FirstLetterTextLayoutObject(const Element&);
-  static unsigned FirstLetterLength(const String&);
+  static unsigned FirstLetterLength(const String&,
+                                    bool preserve_breaks = false);
 
   void ClearRemainingTextLayoutObject();
   LayoutTextFragment* RemainingTextLayoutObject() const {
