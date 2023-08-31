@@ -3438,9 +3438,9 @@ void RenderFrameHostImpl::SetMojomFrameRemote(
 
 namespace {
 
-class DebugHelperForCrbug1425281 : public mojom::DebugHelperForCrbug1425281 {
+class DebugHelperForCrbug1425281v2 : public mojom::DebugHelperForCrbug1425281 {
  public:
-  explicit DebugHelperForCrbug1425281(
+  explicit DebugHelperForCrbug1425281v2(
       const base::debug::StackTrace& create_rfh_stack_trace,
       const absl::optional<base::debug::StackTrace>&
           last_commit_navigation_stack_trace,
@@ -3448,7 +3448,11 @@ class DebugHelperForCrbug1425281 : public mojom::DebugHelperForCrbug1425281 {
       bool page_is_primary,
       bool browser_is_outermost_main_frame,
       bool browser_has_parent,
-      bool browser_is_speculative)
+      bool browser_is_speculative,
+      const std::string& current_site_info,
+      const std::string& speculative_site_info,
+      const std::string& reason,
+      const GURL& url)
       : create_rfh_stack_trace_(create_rfh_stack_trace),
         last_commit_navigation_stack_trace_(last_commit_navigation_stack_trace),
         lifecycle_state_(lifecycle_state),
@@ -3499,6 +3503,14 @@ class DebugHelperForCrbug1425281 : public mojom::DebugHelperForCrbug1425281 {
     base::debug::Alias(&renderer_is_provisional);
     base::debug::Alias(&added_to_frame_tree_stack_trace);
 
+    SCOPED_CRASH_KEY_STRING256("Bug1425281", "current_site_info",
+                               current_site_info_);
+    SCOPED_CRASH_KEY_STRING256("Bug1425281", "speculative_site_info",
+                               speculative_site_info_);
+    SCOPED_CRASH_KEY_STRING256("Bug1425281", "reason", reason_);
+    SCOPED_CRASH_KEY_STRING256("Bug1425281", "url",
+                               url_.possibly_invalid_spec());
+
     base::debug::DumpWithoutCrashing();
   }
 
@@ -3512,6 +3524,10 @@ class DebugHelperForCrbug1425281 : public mojom::DebugHelperForCrbug1425281 {
   const bool browser_has_parent_;
   const bool browser_is_speculative_;
   const base::debug::StackTrace delete_render_frame_stack_trace_;
+  const std::string current_site_info_;
+  const std::string speculative_site_info_;
+  const std::string reason_;
+  const GURL url_;
 };
 
 }  // namespace
@@ -3530,12 +3546,14 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     if (intent == mojom::FrameDeleteIntention::
                       kSpeculativeMainFrameForNavigationCancelled) {
       mojo::MakeSelfOwnedReceiver(
-          std::make_unique<DebugHelperForCrbug1425281>(
+          std::make_unique<DebugHelperForCrbug1425281v2>(
               create_rfh_stack_trace_, last_commit_navigation_stack_trace_,
               lifecycle_state_, GetPage().IsPrimary(), IsOutermostMainFrame(),
               !!GetParent(),
               frame_tree_node()->render_manager()->speculative_frame_host() ==
-                  this),
+                  this,
+              current_site_info_, speculative_site_info_,
+              get_frame_host_reason_, initial_url_),
           helper_remote.InitWithNewPipeAndPassReceiver());
     }
     GetMojomFrameInRenderer()->Delete(intent, std::move(helper_remote));

@@ -1340,8 +1340,21 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
   } else {
     BrowsingContextGroupSwap ignored_bcg_swap_info =
         BrowsingContextGroupSwap::CreateDefault();
-    auto result = GetFrameHostForNavigation(request, &ignored_bcg_swap_info);
+    std::string reason;
+    auto result =
+        GetFrameHostForNavigation(request, &ignored_bcg_swap_info, &reason);
     if (result.has_value()) {
+      if (frame_tree_node_->frame_tree().is_prerendering() &&
+          result.value() == speculative_render_frame_host_.get()) {
+        (*result)->SetCreationInfoForBug1425281(
+            render_frame_host_->GetSiteInstance()
+                ->GetSiteInfo()
+                .GetDebugString(),
+            speculative_render_frame_host_->GetSiteInstance()
+                ->GetSiteInfo()
+                .GetDebugString(),
+            reason, request->GetURL());
+      }
       DCHECK(result.value());
     } else if (result.error() ==
                GetFrameHostForNavigationFailed::kBlockedByPendingCommit) {
