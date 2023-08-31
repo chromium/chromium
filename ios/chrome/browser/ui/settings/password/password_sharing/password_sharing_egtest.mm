@@ -19,31 +19,47 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::SavePasswordForm;
 
+void SignInAndEnableSync() {
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+}
+
+}  // namespace
+
 // Test case for the Password Sharing flow.
 @interface PasswordSharingTestCase : ChromeTestCase
 
-- (GREYElementInteraction*)interactionForSinglePasswordEntryWithDomain:
-    (NSString*)domain;
+- (GREYElementInteraction*)saveExamplePasswordAndOpenDetails;
 
 @end
 
 @implementation PasswordSharingTestCase
 
-- (GREYElementInteraction*)interactionForSinglePasswordEntryWithDomain:
-    (NSString*)domain {
-  return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(domain),
+- (GREYElementInteraction*)saveExamplePasswordAndOpenDetails {
+  // Mock successful reauth for opening the Password Manager.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  SavePasswordForm();
+  OpenPasswordManager();
+
+  return [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"example.com"),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitButton),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)];
+      onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+      performAction:grey_tap()];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -66,30 +82,14 @@ using password_manager_test_utils::SavePasswordForm;
   return config;
 }
 
-- (void)setUp {
-  [super setUp];
-
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-
-  // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-}
-
 - (void)tearDown {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
   [super tearDown];
 }
 
 - (void)testShareButtonVisibilityWithSharingDisabled {
-  SavePasswordForm();
-
-  OpenPasswordManager();
-
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
@@ -97,12 +97,8 @@ using password_manager_test_utils::SavePasswordForm;
 }
 
 - (void)testShareButtonVisibilityWithSharingEnabled {
-  SavePasswordForm();
-
-  OpenPasswordManager();
-
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
@@ -110,10 +106,8 @@ using password_manager_test_utils::SavePasswordForm;
 }
 
 - (void)testFamilyPickerCancelFlow {
-  SavePasswordForm();
-  OpenPasswordManager();
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
@@ -133,27 +127,15 @@ using password_manager_test_utils::SavePasswordForm;
       assertWithMatcher:grey_notNil()];
 }
 
-// TODO(crbug.com/1475783): Test crashes in multiple builders.
-- (void)DISABLED_testFetchingRecipientsNoFamilyStatus {
+- (void)testFetchingRecipientsNoFamilyStatus {
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=3");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-
-  // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  SavePasswordForm();
-  OpenPasswordManager();
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
@@ -180,21 +162,10 @@ using password_manager_test_utils::SavePasswordForm;
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=0");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-
-  // Mock successful reauth for opening the Password Manager.
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
-
-  SavePasswordForm();
-  OpenPasswordManager();
-  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
-      performAction:grey_tap()];
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
