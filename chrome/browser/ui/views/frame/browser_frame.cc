@@ -177,7 +177,12 @@ void BrowserFrame::InitBrowserFrame() {
   }
 
   params.native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+
+  Init(std::move(params));
+
 #if BUILDFLAG(IS_LINUX)
+  // Because getting `linux_ui_theme` requires `native_widget_` to be
+  // initialized, this needs to happen after Init().
   const auto* linux_ui_theme =
       ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
   // Ignore the system theme for web apps with window-controls-overlay as the
@@ -188,11 +193,9 @@ void BrowserFrame::InitBrowserFrame() {
   // of system theme (gtk, qt etc).
   if (!IsIncognitoBrowser() && linux_ui_theme &&
       !browser_view_->AppUsesWindowControlsOverlay()) {
-    params.native_theme = linux_ui_theme->GetNativeTheme();
+    SetNativeTheme(linux_ui_theme->GetNativeTheme());
   }
 #endif
-
-  Init(std::move(params));
 
   if (!native_browser_frame_->UsesNativeSystemMenu()) {
     DCHECK(non_client_view());
