@@ -171,6 +171,8 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GOOGLE_DRIVE_NOT_SIGNED_IN_SUBLABEL},
       {"googleDriveFileSyncOnSublabel",
        IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_ON_SUBLABEL},
+      {"googleDriveEnabledOnMeteredNetworkLabel",
+       IDS_SETTINGS_GOOGLE_DRIVE_ENABLED_ON_METERED_NETWORK_LABEL},
       {"filesPageTitle", IDS_OS_SETTINGS_FILES},
       {"smbSharesTitle", IDS_SETTINGS_DOWNLOADS_SMB_SHARES},
       {"smbSharesLearnMoreLabel",

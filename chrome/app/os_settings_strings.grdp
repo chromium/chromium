@@ -1059,6 +1059,9 @@
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_NOT_SIGNED_IN_SUBLABEL" desc="Label indicating that Google Drive is not signed in (i.e. disabled) for the current user in Settings: Files">
     Not signed in
   </message>
+  <message name="IDS_SETTINGS_GOOGLE_DRIVE_ENABLED_ON_METERED_NETWORK_LABEL" desc="Label that shows for the settings to enable using mobile data for syncing operations in Settings: Files: Google Drive">
+    Use metered network for syncing
+  </message>
   <message name="IDS_SETTINGS_GOOGLE_DRIVE_FILE_SYNC_ON_SUBLABEL" desc="Sub label for the row indicating that Google Drive is enabled and file sync is on in Settings: Files">
     File sync on
   </message>

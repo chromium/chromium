@@ -51,6 +51,7 @@ suite('<settings-google-drive-subpage>', function() {
   let bulkPinningToggle: SettingsToggleButtonElement;
   let offlineStorageSubtitle: HTMLDivElement;
   let clearOfflineStorageButton: CrButtonElement;
+  let driveDisabledOverCellularToggle: SettingsToggleButtonElement;
 
   /**
    * Helper to ensure a confirmation dialog is showing, retrieve a button in the
@@ -106,6 +107,10 @@ suite('<settings-google-drive-subpage>', function() {
 
     clearOfflineStorageButton = page.shadowRoot!.querySelector<CrButtonElement>(
         '#drive-offline-storage-row cr-button')!;
+
+    driveDisabledOverCellularToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#driveEnableDriveOnMeteredNetworkToggle')!;
   });
 
   teardown(function() {
@@ -230,6 +235,20 @@ suite('<settings-google-drive-subpage>', function() {
           'getContentCacheSize', {size: '0 B'});
       page.onNavigated();
       await assertAsync(() => clearOfflineStorageButton.disabled);
+    });
+
+    test('disabling drive over cellular toggles pref', async () => {
+      page.setPrefValue('gdata.cellular.disabled', false);
+      flush();
+
+      // Click the connect disconnect button.
+      driveDisabledOverCellularToggle.click();
+      await assertAsync(
+          () => page.getPref('gdata.cellular.disabled').value, 5000);
+
+      driveDisabledOverCellularToggle.click();
+      await assertAsync(
+          () => !page.getPref('gdata.cellular.disabled').value, 5000);
     });
   });
 
