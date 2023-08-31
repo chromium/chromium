@@ -1686,6 +1686,9 @@ if (!is_android) {
       "//components/segmentation_platform/internal",
       "//components/segmentation_platform/internal:test_support",
       "//components/segmentation_platform/public",
+      "//components/tpcd/metadata",
+      "//components/tpcd/metadata:metadata_proto",
+      "//components/tpcd/metadata:test_support",
 
       # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
       "//components/segmentation_platform/public:test_support",
@@ -6655,6 +6658,9 @@ test("unit_tests") {
     "//components/sync_sessions:test_support",
     "//components/sync_user_events:test_support",
     "//components/tab_groups",
+    "//components/tpcd/metadata",
+    "//components/tpcd/metadata:metadata_proto",
+    "//components/tpcd/metadata:test_support",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:startup_tracing",
     "//components/translate/core/browser:test_support",
