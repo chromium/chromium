@@ -189,8 +189,17 @@ void RuntimeApplicationServiceImpl::Load(
           task_runner_,
           base::BindRepeating(&RuntimeApplicationServiceImpl::HandlePostMessage,
                               weak_factory_.GetWeakPtr())));
-  grpc_server_->Start(
+
+  auto status = grpc_server_->Start(
       request.runtime_application_service_info().grpc_endpoint());
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to start runtime application server: status="
+               << status.error_message();
+    std::move(callback).Run(cast_receiver::Status(
+        cast_receiver::StatusCode::kInternal, status.error_message()));
+    return;
+  }
+
   LOG(INFO) << "Runtime application server started: endpoint="
             << request.runtime_application_service_info().grpc_endpoint();
 

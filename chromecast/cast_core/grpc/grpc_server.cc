@@ -63,7 +63,7 @@ GrpcServer::~GrpcServer() {
   DCHECK(!server_) << "gRPC server must be explicitly stopped";
 }
 
-void GrpcServer::Start(const std::string& endpoint) {
+grpc::Status GrpcServer::Start(const std::string& endpoint) {
   DCHECK(!server_) << "Server is already running";
   DCHECK(server_reactor_tracker_) << "Server was alreadys shutdown";
 
@@ -71,8 +71,11 @@ void GrpcServer::Start(const std::string& endpoint) {
                 .AddListeningPort(endpoint, grpc::InsecureServerCredentials())
                 .RegisterCallbackGenericService(this)
                 .BuildAndStart();
-
-  CHECK(server_) << "Failed to start server at " << endpoint;
+  if (!server_) {
+    return grpc::Status(grpc::StatusCode::INTERNAL,
+                        "can't start gRPC server on " + endpoint);
+  }
+  return grpc::Status::OK;
 }
 
 void GrpcServer::Stop() {

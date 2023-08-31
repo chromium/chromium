@@ -268,7 +268,11 @@ void FakeDMServer::StartGrpcServer() {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::BindRepeating(&FakeDMServer::HandleWaitRemoteCommandResult,
                               weak_ptr_factory_.GetWeakPtr())));
-  grpc_server_->Start(grpc_unix_socket_uri_);
+  auto status = grpc_server_->Start(grpc_unix_socket_uri_);
+  // Browser runtime must crash if the runtime service failed to start to avoid
+  // the process to dangle without any proper connection to the Cast Core.
+  CHECK(status.ok()) << "Failed to start DM gRPC server: status="
+                     << status.error_message();
 }
 
 void FakeDMServer::HandleSendRemoteCommand(
