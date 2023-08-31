@@ -2097,6 +2097,3 @@ crbug.com/1449469 [ Linux ] wpt_internal/css/css-fonts/default-monospace-family-
 crbug.com/1449469 [ Win ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
 crbug.com/1449469 [ Fuchsia ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
 crbug.com/1449469 [ Android ] wpt_internal/css/css-fonts/default-monospace-family-mac.html [ Skip ]
-
-# Subapps are part of IWA and WPT does not support IWAs
-crbug.com/1476305 external/wpt/subapps/* [ Skip ]
