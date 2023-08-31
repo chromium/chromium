@@ -930,6 +930,52 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldClearDataWhenSyncDisabled) {
   EXPECT_FALSE(cryptographer()->CanEncrypt());
 }
 
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldClearCrossUserSharingKeysWhenSyncDisabled) {
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+  CrossUserSharingKeys cross_user_sharing_keys =
+      CrossUserSharingKeys::CreateEmpty();
+  CrossUserSharingPublicPrivateKeyPair key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  const auto raw_public_key = key_pair.GetRawPublicKey();
+  const uint32_t kKeyVersion = 0;
+  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+          /*keybag_keys_params=*/{kKeystoreKeyParams},
+          /*keystore_decryptor_params=*/kKeystoreKeyParams,
+          /*keystore_key_params=*/kKeystoreKeyParams,
+          /*cross_user_sharing_keys=*/cross_user_sharing_keys,
+          /*cross_user_sharing_public_key=*/
+          CrossUserSharingPublicKey::CreateByImport(raw_public_key).value(),
+          /*cross_user_sharing_public_key_version*/ kKeyVersion);
+
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(absl::nullopt));
+  ASSERT_TRUE(cryptographer()->CanEncrypt());
+  // Encryption should succeed since a default key exists.
+  CrossUserSharingPublicPrivateKeyPair peer_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  ASSERT_TRUE(cryptographer()
+                  ->AuthEncryptForCrossUserSharing(
+                      base::as_bytes(base::make_span("hello world")),
+                      peer_key_pair.GetRawPublicKey())
+                  .has_value());
+
+  EXPECT_CALL(*storage(), ClearData);
+  bridge()->ApplyDisableSyncChanges();
+  EXPECT_FALSE(cryptographer()->CanEncrypt());
+  EXPECT_FALSE(cryptographer()
+                   ->AuthEncryptForCrossUserSharing(
+                       base::as_bytes(base::make_span("hello world")),
+                       peer_key_pair.GetRawPublicKey())
+                   .has_value());
+}
+
 // Tests decryption logic for explicit passphrase. In order to check that we're
 // able to decrypt the data encrypted with old key (i.e. keystore keys or old
 // GAIA passphrase) we add one extra key to the encryption keybag.

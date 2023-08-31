@@ -112,6 +112,8 @@ void CryptographerImpl::ClearDefaultEncryptionKey() {
 void CryptographerImpl::ClearAllKeys() {
   default_encryption_key_name_.clear();
   key_bag_ = NigoriKeyBag::CreateEmpty();
+  default_cross_user_sharing_key_version_ = absl::nullopt;
+  cross_user_sharing_keys_ = CrossUserSharingKeys::CreateEmpty();
 }
 
 bool CryptographerImpl::HasKey(const std::string& key_name) const {

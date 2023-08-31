@@ -322,6 +322,23 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
   EXPECT_THAT(decrypted_message.value(), testing::ElementsAreArray(plaintext));
 }
 
+TEST(CryptographerImplTest, ShouldClearCrossUserSharingKeys) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+
+  ASSERT_THAT(cryptographer, NotNull());
+
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+
+  cryptographer->ClearAllKeys();
+
+  EXPECT_FALSE(cryptographer->HasKeyPair(0));
+  EXPECT_FALSE(cryptographer->HasKeyPair(1));
+}
+
 TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();

@@ -916,6 +916,8 @@ void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
   state_.last_default_trusted_vault_key_name = absl::nullopt;
   state_.trusted_vault_debug_info =
       sync_pb::NigoriSpecifics::TrustedVaultDebugInfo();
+  state_.cross_user_sharing_public_key = absl::nullopt;
+  state_.cross_user_sharing_key_pair_version = absl::nullopt;
 
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(),
