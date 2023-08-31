@@ -45,7 +45,7 @@ import java.io.IOException;
  *
  * @see HttpFlagsInterceptor
  */
-final class HttpFlagsLoader {
+public final class HttpFlagsLoader {
     private HttpFlagsLoader() {}
 
     @VisibleForTesting

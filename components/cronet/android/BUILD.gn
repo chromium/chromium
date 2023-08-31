@@ -1067,6 +1067,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/ExperimentalOptionsTranslationTest.java",
     "test/javatests/src/org/chromium/net/FileUtils.java",
     "test/javatests/src/org/chromium/net/GetStatusTest.java",
+    "test/javatests/src/org/chromium/net/LogcatCapture.java",
     "test/javatests/src/org/chromium/net/MetricsTestUtil.java",
     "test/javatests/src/org/chromium/net/MockCertVerifierTest.java",
     "test/javatests/src/org/chromium/net/NQETest.java",

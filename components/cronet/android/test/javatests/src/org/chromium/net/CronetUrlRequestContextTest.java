@@ -16,6 +16,7 @@ import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 import android.content.Context;
 import android.net.Network;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -40,7 +42,11 @@ import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
+import org.chromium.net.httpflags.FlagValue;
+import org.chromium.net.httpflags.Flags;
 import org.chromium.net.impl.CronetLibraryLoader;
+import org.chromium.net.impl.CronetManifest;
+import org.chromium.net.impl.CronetManifestInterceptor;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.NativeCronetEngineBuilderImpl;
 import org.chromium.net.impl.NetworkExceptionImpl;
@@ -51,6 +57,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
@@ -65,6 +73,7 @@ public class CronetUrlRequestContextTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
+    private static final String TAG = "CronetUrlReqCtxTest";
     // URLs used for tests.
     private static final String MOCK_CRONET_TEST_FAILED_URL =
             "http://mock.failed.request/-2";
@@ -151,6 +160,84 @@ public class CronetUrlRequestContextTest {
         void blockForCallbackToComplete() {
             mCallbackCompletionBlock.block();
         }
+    }
+
+    private void setReadHttpFlagsInManifest(boolean value) {
+        Bundle metaData = new Bundle();
+        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
+        mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
+    }
+
+    private void setLogFlag(String marker) {
+        mTestRule.getTestFramework().setHttpFlags(
+                Flags.newBuilder()
+                        .putFlags(CronetLibraryLoader.LOG_FLAG_NAME,
+                                FlagValue.newBuilder()
+                                        .addConstrainedValues((
+                                                FlagValue.ConstrainedValue.newBuilder()
+                                                        .setStringValue(
+                                                                "Test log flag value " + marker))
+                                                                      .build())
+                                        .build())
+                        .build());
+    }
+
+    private void runOneRequest() {
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        UrlRequest.Builder urlRequestBuilder =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
+        urlRequestBuilder.build().start();
+        callback.blockForDone();
+    }
+
+    private void runRequestWhileExpectingLog(String marker, boolean shouldBeLogged)
+            throws Exception {
+        try (LogcatCapture logcatSink = new LogcatCapture(
+                     Arrays.asList(Log.normalizeTag(CronetLibraryLoader.TAG + ":I"),
+                             Log.normalizeTag(TAG + ":I")))) {
+            // Use the engine at least once to ensure we do not race against Cronet initialization.
+            runOneRequest();
+
+            String stopMarker = UUID.randomUUID().toString();
+            Log.i(TAG, "%s --- ENGINE STARTED ---", stopMarker);
+
+            if (shouldBeLogged) {
+                while (true) {
+                    String line = logcatSink.readLine();
+                    assertThat(line).doesNotContain(stopMarker);
+                    if (line.contains(marker)) break;
+                }
+                while (!logcatSink.readLine().contains(stopMarker)) {
+                }
+            } else {
+                while (true) {
+                    String line = logcatSink.readLine();
+                    assertThat(line).doesNotContain(marker);
+                    if (line.contains(stopMarker)) break;
+                }
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet // HTTP flags are only supported on native Cronet for now
+    public void testHttpFlagsAreLoaded() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(marker);
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/true);
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet // HTTP flags are only supported on native Cronet for now
+    public void testHttpFlagsAreNotLoadedIfDisabledInManifest() throws Exception {
+        setReadHttpFlagsInManifest(false);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(marker);
+        runRequestWhileExpectingLog(marker, /*shouldBeLogged=*/false);
     }
 
     @Test
@@ -1671,6 +1758,13 @@ public class CronetUrlRequestContextTest {
         assertThrows(
                 "Native library should not be loaded", UnsatisfiedLinkError.class, builder::build);
         assertThat(loader.wasCalled()).isTrue();
+
+        // The init thread is started *before* the library is loaded, so the init thread is running
+        // despite the library loading failure. Init thread initialization can race against test
+        // cleanup (e.g. Context access). We work around the issue by ensuring test cleanup will
+        // call shutdown() on a real engine, which will block until the init thread initialization
+        // is done.
+        mTestRule.getTestFramework().startEngine();
     }
 
     @Test
@@ -1684,6 +1778,7 @@ public class CronetUrlRequestContextTest {
         CronetEngine engine = builder.build();
         assertThat(engine).isNotNull();
         assertThat(loader.wasCalled()).isFalse();
+        engine.shutdown();
     }
 
     // Creates a CronetEngine on another thread and then one on the main thread.  This shouldn't

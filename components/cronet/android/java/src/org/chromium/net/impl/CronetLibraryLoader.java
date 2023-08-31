@@ -19,6 +19,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.net.httpflags.Flags;
+import org.chromium.net.httpflags.HttpFlagsLoader;
+import org.chromium.net.httpflags.ResolvedFlags;
 
 /**
  * CronetLibraryLoader loads and initializes native library on init thread.
@@ -29,7 +32,8 @@ public class CronetLibraryLoader {
     // Synchronize initialization.
     private static final Object sLoadLock = new Object();
     private static final String LIBRARY_NAME = "cronet." + ImplVersion.getCronetVersion();
-    private static final String TAG = CronetLibraryLoader.class.getSimpleName();
+    @VisibleForTesting
+    public static final String TAG = CronetLibraryLoader.class.getSimpleName();
     // Thread used for initialization work and processing callbacks for
     // long-lived global singletons. This thread lives forever as things like
     // the global singleton NetworkChangeNotifier live on it and are never killed.
@@ -41,6 +45,9 @@ public class CronetLibraryLoader {
     // Block calling native methods until this ConditionVariable opens to indicate loadLibrary()
     // is completed and native methods have been registered.
     private static final ConditionVariable sWaitForLibLoad = new ConditionVariable();
+
+    @VisibleForTesting
+    public static final String LOG_FLAG_NAME = "Cronet_log_me";
 
     /**
      * Ensure that native library is loaded and initialized. Can be called from
@@ -90,14 +97,28 @@ public class CronetLibraryLoader {
 
     /**
      * Ensure that the init thread initialization has completed. Can only be called from
-     * the init thread. Ensures that the NetworkChangeNotifier is initialzied and the
-     * init thread native MessageLoop is initialized.
+     * the init thread. Ensures that HTTP flags are loaded, the NetworkChangeNotifier is initialzied
+     * and the init thread native MessageLoop is initialized.
      */
     static void ensureInitializedOnInitThread() {
         assert onInitThread();
         if (sInitThreadInitDone) {
             return;
         }
+
+        // Load HTTP flags. This is a potentially expensive call, so we do this in parallel with
+        // library loading in the hope of minimizing impact on Cronet initialization latency.
+        Context applicationContext = ContextUtils.getApplicationContext();
+        Flags flags = HttpFlagsLoader.load(applicationContext);
+        if (flags != null) {
+            ResolvedFlags resolvedFlags =
+                    ResolvedFlags.resolve(flags, applicationContext.getPackageName());
+            ResolvedFlags.Value logMe = resolvedFlags.flags().get(LOG_FLAG_NAME);
+            if (logMe != null) {
+                Log.i(TAG, "HTTP flags log line: %s", logMe.getStringValue());
+            }
+        }
+
         NetworkChangeNotifier.init();
         // Registers to always receive network notifications. Note
         // that this call is fine for Cronet because Cronet
@@ -108,6 +129,11 @@ public class CronetLibraryLoader {
         // Wait for loadLibrary() to complete so JNI is registered.
         sWaitForLibLoad.block();
         assert sLibraryLoaded;
+
+        // TODO: override native base::Feature flags based on `resolvedFlags`. Note that this might
+        // be tricky because we can only set up base::Feature overrides after the .so is loaded, but
+        // we have to do it before any native code runs and tries to use any base::Feature flag.
+
         // registerToReceiveNotificationsAlways() is called before the native
         // NetworkChangeNotifierAndroid is created, so as to avoid receiving
         // the undesired initial network change observer notification, which
