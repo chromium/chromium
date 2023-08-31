@@ -240,6 +240,9 @@
   <message name="IDS_SAFEBROWSING_OVERRIDABLE_SAFETY_BUTTON" desc="The text for the button that takes the user back to the previous page.">
     Back to safety
   </message>
+  <message name="IDS_HEADING_NEW" desc="The large heading at the top of the interstitial.">
+    Dangerous site
+  </message>
 
   <!-- Malware interstitial -->
   <if expr="is_android">
@@ -277,11 +280,26 @@
   <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     If you understand the risks to your security, you may <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> before the dangerous programs have been removed.
   </message>
+  <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW" desc="Mac: The primary explanatory paragraph for the malware interstitial.">
+    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
+  </message>
+  <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site you're trying to visit.
+  </message>
+  <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+    Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
+  </message>
   <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE" desc="SafeBrowsing Scout label next to checkbox">
     Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK">&lt;a id="privacy-link" href="#"&gt;</ph>Privacy policy<ph name="END_PRIVACY_PAGE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE" desc="SafeBrowsing enhanced protection promo message">
     To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW" desc="SafeBrowsing enhanced protection promo message">
+    <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>Turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph> to get Chrome's highest level of security
   </message>
 
   <!-- Harmful download interstitial -->
@@ -320,6 +338,22 @@
     </message>
   </if>
 
+  <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW" desc="The primary explanatory paragraph for the unwanted software interstitial.">
+    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+
+  <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse —  like Google Safe Browsing, which recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
+  </message>
+
+  <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site if you're trying to visit.
+  </message>
+
+  <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+    Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
+  </message>
+
   <!-- Phishing interstitial -->
   <message name="IDS_PHISHING_V4_HEADING" desc="The large heading at the top of the phishing interstitial.">
     Deceptive site ahead
@@ -332,6 +366,18 @@
   </message>
   <message name="IDS_PHISHING_V4_PROCEED_AND_REPORT_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     You can <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>report a detection problem<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> or, if you understand the risks to your security, <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW" desc="The primary explanatory paragraph for the phishing interstitial.">
+    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found phishing<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
+  </message>
+  <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found phishing on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site you're trying to visit.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
+  </message>
+  <message name="IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+    Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
   </message>
 
   <!-- WebView Safe Browsing quiet interstitials medium sized -->
