@@ -287,7 +287,6 @@ crbug.com/1353952 [ chromeos cros-chrome chromeos-board-kevin ] Pixel_WebGLConte
 
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
-
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
 
@@ -296,7 +295,6 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 # should have made this test flaky instead of always failing. Need to
 # investigate later. Filed a bug to track the debug.
 crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
-
 
 # Failing on Lacros x64 Release Intel
 crbug.com/1458976 [ linux angle-opengles display-server-wayland intel passthrough release renderer-skia-gl no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
@@ -315,8 +313,6 @@ crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no
 # Failing likely due to protected memory, but cause TBD.
 crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
 crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
-
-
 
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
@@ -347,8 +343,6 @@ crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerate
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
-
-
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
 
 # Fails / flaky on Linux AMD RX 5500 XT with RADV 20.0.8
@@ -363,7 +357,6 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_MP4 [ Skip
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_Video_Context_Loss_VP9 [ Skip ]
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLContextRestored [ Skip ]
 crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
-
 
 # Pixel 4 shifted images
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
@@ -400,8 +393,8 @@ crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnacceler
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
-
 crbug.com/1476029 [ mac asan graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
