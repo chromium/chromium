@@ -11,6 +11,9 @@ namespace gwp_asan::internal {
 
 // Information saved for allocations and deallocations.
 struct AllocationInfo {
+  static size_t GetStackTrace(void** trace, size_t count);
+  static uint64_t GetCurrentTid();
+
   // (De)allocation thread id or base::kInvalidThreadId if no (de)allocation
   // occurred.
   uint64_t tid = base::kInvalidThreadId;

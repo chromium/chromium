@@ -13,6 +13,8 @@ component("client") {
     "guarded_page_allocator.h",
     "gwp_asan.cc",
     "gwp_asan.h",
+    "lightweight_detector.cc",
+    "lightweight_detector.h",
     "sampling_state.h",
   ]
 
@@ -58,6 +60,7 @@ source_set("unit_tests") {
   sources = [
     "guarded_page_allocator_unittest.cc",
     "gwp_asan_unittest.cc",
+    "lightweight_detector_unittest.cc",
   ]
 
   if (use_allocator_shim) {

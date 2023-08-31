@@ -22,6 +22,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/lightweight_detector.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
@@ -109,32 +110,21 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     return kSuccess;
   }
 
-  LightweightDetectorMode lightweight_detector_mode =
-      LightweightDetectorMode::kOff;
-  size_t num_lightweight_detector_metadata = 0;
-  if (cmd_line->HasSwitch("enable-lightweight-detector")) {
-    lightweight_detector_mode = LightweightDetectorMode::kBrpQuarantine;
-    num_lightweight_detector_metadata = 1;
-  }
-
   base::NoDestructor<GuardedPageAllocator> gpa;
   gpa->Init(AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
-            kTotalPages, base::DoNothing(), allocator == "partitionalloc",
-            lightweight_detector_mode, num_lightweight_detector_metadata);
+            kTotalPages, base::DoNothing(), allocator == "partitionalloc");
 
-  std::string gpa_addr = gpa->GetCrashKey();
-  static crashpad::Annotation gpa_annotation(
-      crashpad::Annotation::Type::kString, annotation_name,
-      const_cast<char*>(gpa_addr.c_str()));
-  gpa_annotation.SetSize(gpa_addr.size());
+  static crashpad::StringAnnotation<24> gpa_annotation(annotation_name);
+  gpa_annotation.Set(gpa->GetCrashKey());
 
-  std::string lightweight_detector_state_addr =
-      gpa->GetLightweightDetectorCrashKey();
-  static crashpad::Annotation lightweight_detector_annotation(
-      crashpad::Annotation::Type::kString, kLightweightDetectorCrashKey,
-      const_cast<char*>(lightweight_detector_state_addr.c_str()));
-  lightweight_detector_annotation.SetSize(
-      lightweight_detector_state_addr.size());
+  std::unique_ptr<LightweightDetector> lightweight_detector;
+  if (cmd_line->HasSwitch("enable-lightweight-detector")) {
+    lightweight_detector = std::make_unique<LightweightDetector>(
+        LightweightDetectorMode::kBrpQuarantine, 1);
+    static crashpad::StringAnnotation<24> lightweight_detector_annotation(
+        kLightweightDetectorCrashKey);
+    lightweight_detector_annotation.Set(lightweight_detector->GetCrashKey());
+  }
 
   base::FilePath metrics_dir(FILE_PATH_LITERAL(""));
   std::map<std::string, std::string> annotations;
@@ -145,6 +135,12 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
   if (cmd_line->HasSwitch("sanitize")) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
+    if (lightweight_detector) {
+      auto detector_memory_ranges =
+          lightweight_detector->GetInternalMemoryRegions();
+      memory_ranges.insert(memory_ranges.end(), detector_memory_ranges.begin(),
+                           detector_memory_ranges.end());
+    }
     auto* range_array =
         new crashpad::SanitizationAllowedMemoryRanges::Range[memory_ranges
                                                                  .size()];
@@ -254,8 +250,10 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     // associated with it.
     *(uint8_t*)(ptrs[0]) = 0;
   } else if (test_name == "LightweightDetectorUseAfterFree") {
+    CHECK(lightweight_detector);
     uint8_t fake_alloc[kAllocationSize];
-    gpa->RecordLightweightDeallocation(&fake_alloc, sizeof(fake_alloc));
+    lightweight_detector->RecordLightweightDeallocation(&fake_alloc,
+                                                        sizeof(fake_alloc));
     **(int**)fake_alloc = 0;
   } else {
     LOG(ERROR) << "Unknown test name " << test_name;
@@ -543,13 +541,18 @@ TEST_P(LightweightDetectorCrashHandlerTest, LightweightDetectorUseAfterFree) {
              HasDeallocation::kYes);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    SingleValueSuite,
-    LightweightDetectorCrashHandlerTest,
-    testing::Values(TestParams("partitionalloc",
-                               ShouldSanitize::kNo,
-                               EnableLightweightDetector::kYes)));
+INSTANTIATE_TEST_SUITE_P(VarySanitization,
+                         LightweightDetectorCrashHandlerTest,
+                         testing::Values(
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+                             TestParams("partitionalloc",
+                                        ShouldSanitize::kYes,
+                                        EnableLightweightDetector::kYes),
 #endif
+                             TestParams("partitionalloc",
+                                        ShouldSanitize::kNo,
+                                        EnableLightweightDetector::kYes)));
+#endif  // !defined(ADDRESS_SANITIZER) && defined(ARCH_CPU_64_BITS)
 
 }  // namespace
 

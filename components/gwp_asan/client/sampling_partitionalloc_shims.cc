@@ -11,6 +11,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/gwp_asan/client/export.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/lightweight_detector.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 
@@ -25,6 +26,9 @@ SamplingState<PARTITIONALLOC> sampling_state;
 // pointer instead of a function-local static to avoid initialization checks
 // for every access.
 GuardedPageAllocator* gpa = nullptr;
+
+// Same as `gpa` above, but for Lightweight UAF Detector.
+LightweightDetector* lightweight_detector = nullptr;
 
 bool AllocationHook(void** out,
                     unsigned int flags,
@@ -70,7 +74,7 @@ GWP_ASAN_EXPORT GuardedPageAllocator& GetPartitionAllocGpaForTesting() {
 }
 
 void QuarantineHook(void* address, size_t size) {
-  gpa->RecordLightweightDeallocation(address, size);
+  lightweight_detector->RecordLightweightDeallocation(address, size);
 }
 
 void InstallPartitionAllocHooks(
@@ -83,21 +87,27 @@ void InstallPartitionAllocHooks(
     size_t num_lightweight_detector_metadata) {
   static crash_reporter::CrashKeyString<24> pa_crash_key(
       kPartitionAllocCrashKey);
-  static crash_reporter::CrashKeyString<24> lightweight_detector_crash_key(
-      kLightweightDetectorCrashKey);
   gpa = new GuardedPageAllocator();
   gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            true, lightweight_detector_mode, num_lightweight_detector_metadata);
+            true);
   pa_crash_key.Set(gpa->GetCrashKey());
-  lightweight_detector_crash_key.Set(gpa->GetLightweightDetectorCrashKey());
   sampling_state.Init(sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook
   // PDFium's PartitionAlloc fork.
   partition_alloc::PartitionAllocHooks::SetOverrideHooks(
       &AllocationHook, &FreeHook, &ReallocHook);
-  if (lightweight_detector_mode == LightweightDetectorMode::kBrpQuarantine) {
-    partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(
-        &QuarantineHook);
+
+  if (lightweight_detector_mode != LightweightDetectorMode::kOff) {
+    lightweight_detector = new LightweightDetector(
+        lightweight_detector_mode, num_lightweight_detector_metadata);
+    static crash_reporter::CrashKeyString<24> lightweight_detector_crash_key(
+        kLightweightDetectorCrashKey);
+    lightweight_detector_crash_key.Set(lightweight_detector->GetCrashKey());
+
+    if (lightweight_detector_mode == LightweightDetectorMode::kBrpQuarantine) {
+      partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(
+          &QuarantineHook);
+    }
   }
 }
 

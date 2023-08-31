@@ -97,6 +97,7 @@ class LightweightDetectorState {
   // the ID that's used to access the slot.
   bool HasMetadataForId(MetadataId, SlotMetadata* metadata_arr);
 
+  LightweightDetectorMode mode = LightweightDetectorMode::kOff;
   // Number of entries in |metadata_addr|.
   size_t num_metadata = 0;
   // Pointer to an array of metadata about every allocation, including its size,

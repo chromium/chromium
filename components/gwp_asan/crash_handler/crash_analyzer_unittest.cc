@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/lightweight_detector.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
@@ -92,14 +93,15 @@ constexpr const char* kPartitionAllocHistogramName =
 
 class BaseCrashAnalyzerTest : public testing::Test {
  protected:
-  using testing::Test::SetUp;
-
-  void SetUp(bool is_partition_alloc,
-             LightweightDetectorMode lightweight_detector_mode,
-             size_t num_lightweight_detector_metadata) {
+  BaseCrashAnalyzerTest(bool is_partition_alloc,
+                        LightweightDetectorMode lightweight_detector_mode) {
     is_partition_alloc_ = is_partition_alloc;
-    gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc,
-              lightweight_detector_mode, num_lightweight_detector_metadata);
+    gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc);
+
+    if (lightweight_detector_mode != LightweightDetectorMode::kOff) {
+      lightweight_detector_ =
+          std::make_unique<LightweightDetector>(lightweight_detector_mode, 1);
+    }
   }
 
   // Initializes the ProcessSnapshot so that it appears the given allocator was
@@ -116,8 +118,10 @@ class BaseCrashAnalyzerTest : public testing::Test {
     append_annotation(
         is_partition_alloc_ ? kPartitionAllocCrashKey : kMallocCrashKey,
         gpa_.GetCrashKey());
-    append_annotation(kLightweightDetectorCrashKey,
-                      gpa_.GetLightweightDetectorCrashKey());
+    if (lightweight_detector_) {
+      append_annotation(kLightweightDetectorCrashKey,
+                        lightweight_detector_->GetCrashKey());
+    }
 
     auto module = std::make_unique<crashpad::test::TestModuleSnapshot>();
     module->SetAnnotationObjects(annotations);
@@ -154,12 +158,15 @@ class BaseCrashAnalyzerTest : public testing::Test {
 #endif
 
   bool is_partition_alloc_ = false;
+
+  std::unique_ptr<LightweightDetector> lightweight_detector_;
 };
 
 class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
-  void SetUp() final {
-    BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ false,
-                                 LightweightDetectorMode::kOff, 0);
+ protected:
+  CrashAnalyzerTest()
+      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ false,
+                              LightweightDetectorMode::kOff) {
     InitializeSnapshot(0);
   }
 };
@@ -251,15 +258,16 @@ TEST_F(CrashAnalyzerTest, InternalError) {
 // enough to safely store metadata IDs.
 #if defined(ARCH_CPU_64_BITS)
 class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
-  void SetUp() final {
-    BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ true,
-                                 LightweightDetectorMode::kBrpQuarantine, 1);
-  }
+ protected:
+  LightweightDetectorAnalyzerTest()
+      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ true,
+                              LightweightDetectorMode::kBrpQuarantine) {}
 };
 
 TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
   uint64_t alloc;
-  gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  ASSERT_TRUE(lightweight_detector_);
+  lightweight_detector_->RecordLightweightDeallocation(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   base::HistogramTester histogram_tester;
@@ -283,11 +291,12 @@ TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
 
 TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   uint64_t alloc;
-  gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  ASSERT_TRUE(lightweight_detector_);
+  lightweight_detector_->RecordLightweightDeallocation(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   // Corrupt the metadata ID.
-  ++gpa_.lightweight_detector_metadata_[0].id;
+  ++lightweight_detector_->metadata_[0].id;
 
   base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;
