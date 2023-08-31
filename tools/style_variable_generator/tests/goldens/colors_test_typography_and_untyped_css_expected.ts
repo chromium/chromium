@@ -218,9 +218,9 @@ export const ELEVATION_1_SHADOW = css`var(--cros-elevation-1-shadow)`;
 export const ELEVATION_2_SHADOW = css`var(--cros-elevation-2-shadow)`;
 export const ELEVATION_3_SHADOW = css`var(--cros-elevation-3-shadow)`;
 
-export const FONT_FAMILY_TEST = css`var(--cros-font-family-test-font)`;
-export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other-font)`;
-export const HEADLINE_1_FONT = css`var(--cros-headline-1-font)`;
+export const FONT_FAMILY_TEST = css`var(--cros-font-family-test)`;
+export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other)`;
+export const HEADLINE_1_FONT = css`var(--cros-headline-1)`;
 export const HEADLINE_1_FONT_FAMILY = css`var(--cros-headline-1-font-family)`;
 export const HEADLINE_1_FONT_SIZE = css`var(--cros-headline-1-font-size)`;
 export const HEADLINE_1_FONT_WEIGHT = css`var(--cros-headline-1-font-weight)`;
