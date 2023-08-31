@@ -301,7 +301,7 @@ class CrostiniManager::CrostiniRestarter
   base::TimeTicks stage_start_;
 
   // TODO(crbug/1153210): Better numbers for timeouts once we have data.
-  std::map<mojom::InstallerState, base::TimeDelta> stage_timeouts_ = {
+  const std::map<mojom::InstallerState, base::TimeDelta> stage_timeouts_ = {
       {mojom::InstallerState::kStart, base::Minutes(2)},
       {mojom::InstallerState::kInstallImageLoader,
        base::Hours(6)},  // May need to download DLC or component
@@ -320,6 +320,15 @@ class CrostiniManager::CrostiniRestarter
       // playbooks are gigantic (e.g. Chromium playbook).
       {mojom::InstallerState::kConfigureContainer, base::Hours(2)},
   };
+
+  // Use shorter timeouts for some states if Crostini is already installed.
+  const std::map<mojom::InstallerState, base::TimeDelta>
+      stage_timeouts_already_installed_ = {
+          {mojom::InstallerState::kInstallImageLoader, base::Minutes(5)},
+          // The configure step should only be reached during multi-container
+          // installation.
+          {mojom::InstallerState::kConfigureContainer, base::Seconds(5)},
+      };
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   // This isn't accessed after the CrostiniManager is destroyed and we need a
@@ -583,8 +592,17 @@ void CrostiniManager::CrostiniRestarter::StartStage(
   }
   this->stage_ = stage;
   stage_start_ = base::TimeTicks::Now();
+
   DCHECK(stage_timeouts_.find(stage) != stage_timeouts_.end());
-  auto delay = stage_timeouts_[stage];
+  auto delay = stage_timeouts_.at(stage);
+
+  if (requests_[0].options.restart_source != RestartSource::kInstaller) {
+    auto already_installed_it = stage_timeouts_already_installed_.find(stage);
+    if (already_installed_it != stage_timeouts_already_installed_.end()) {
+      delay = already_installed_it->second;
+    }
+  }
+
   stage_timeout_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(&CrostiniRestarter::Timeout,

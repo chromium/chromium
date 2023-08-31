@@ -783,9 +783,14 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
     run_loop.Run();
   }
 
-  void ExpectRestarterUmaCount(int count) {
+  void ExpectRestarterUmaCount(int count, bool is_install = false) {
     histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", count);
-    histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
+    if (is_install) {
+      histogram_tester_.ExpectTotalCount("Crostini.RestarterResult.Installer",
+                                         count);
+    } else {
+      histogram_tester_.ExpectTotalCount("Crostini.RestarterResult", count);
+    }
     histogram_tester_.ExpectTotalCount("Crostini.Installer.Started", 0);
   }
 
@@ -992,12 +997,42 @@ TEST_F(CrostiniManagerRestartTest, CancelDuringStartContainer) {
   EXPECT_FALSE(fake_cicerone_client_->configure_for_arc_sideload_called());
 }
 
-TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoaded) {
+TEST_F(CrostiniManagerRestartTest, TimeoutDuringComponentLoadedFirstInstall) {
+  crostini_manager()->SetInstallTerminaNeverCompletesForTesting(true);
+
+  TestFuture<CrostiniResult> result_future;
+  CrostiniManager::RestartOptions options;
+  options.restart_source = RestartSource::kInstaller;
+  RestartCrostiniWithOptions(container_id(), std::move(options),
+                             result_future.GetCallback());
+  EXPECT_FALSE(result_future.IsReady());
+  task_environment_.FastForwardBy(base::Minutes(30));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(result_future.IsReady());
+  task_environment_.FastForwardBy(kLongTime);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(result_future.Get(),
+            CrostiniResult::INSTALL_IMAGE_LOADER_TIMED_OUT);
+
+  EXPECT_EQ(fake_concierge_client_->create_disk_image_call_count(), 0);
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled));
+  ExpectRestarterUmaCount(1, /*is_install=*/true);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.InstallImageLoader", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Crostini.RestarterTimeInState2.CreateDiskImage", 0);
+}
+
+TEST_F(CrostiniManagerRestartTest,
+       TimeoutDuringComponentLoadedAlreadyInstalled) {
   crostini_manager()->SetInstallTerminaNeverCompletesForTesting(true);
 
   TestFuture<CrostiniResult> result_future;
   RestartCrostini(container_id(), result_future.GetCallback(), this);
-  task_environment_.FastForwardBy(kLongTime);
+  task_environment_.FastForwardBy(base::Minutes(30));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(result_future.Get(),
