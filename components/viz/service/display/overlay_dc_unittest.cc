@@ -17,6 +17,7 @@
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -347,6 +348,74 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
       ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+  }
+}
+
+// Check that we don't accidentally end up in a case where we try to read back a
+// DComp surface, which can happen if one issues a copy request while we're in
+// the hysteresis when switching from a DComp surface back to a swap chain.
+TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
+  InitializeOverlayProcessor();
+
+  // Start in the DComp surface mode, e.g. from a previous frame that had a
+  // video overlay.
+  overlay_processor_->set_using_dc_layers_for_testing(true);
+
+  // Frame with no overlays, but we expect to still be in DComp surface mode,
+  // due to one-sided hysteresis intended to prevent allocation churn.
+  {
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(CreateRenderPass());
+
+    damage_rect_ = pass_list.back()->output_rect;
+
+    if (!IsUsingDCompPresenter()) {
+      // We expect no change, so no call.
+      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
+    }
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
+        &damage_rect_, &content_bounds_);
+
+    if (IsUsingDCompPresenter()) {
+      EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
+    }
+  }
+
+  // Frame with a copy request. Even though we're still in the hysteresis, we
+  // expect to forcibly switch to swap chain mode so that the copy request
+  // succeeds.
+  {
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(CreateRenderPass());
+
+    pass_list.back()->copy_requests.push_back(
+        CopyOutputRequest::CreateStubForTesting());
+
+    damage_rect_ = pass_list.back()->output_rect;
+
+    if (!IsUsingDCompPresenter()) {
+      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(false)).Times(1);
+    }
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
+        &damage_rect_, &content_bounds_);
+
+    if (IsUsingDCompPresenter()) {
+      EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
+    }
   }
 }
 

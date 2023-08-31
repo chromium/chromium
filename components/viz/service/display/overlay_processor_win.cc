@@ -84,12 +84,25 @@ void OverlayProcessorWin::ProcessForOverlays(
       damage_rect, std::move(surface_damage_rect_list), candidates,
       is_video_capture_enabled_, is_page_fullscreen_mode_);
 
+  // Force a swap chain when there is a copy request, since read back is
+  // impossible with a DComp surface.
+  //
+  // Normally, |DCLayerOverlayProcessor::Process| prevents
+  // overlays (and thus forces a swap chain) when there is a copy request, but
+  // |frames_since_using_dc_layers_| implements a one-sided hysteresis that
+  // keeps us on DComp surfaces a little after we stop having overlays. If a
+  // client issues a copy request while we're in this timeout, we end up asking
+  // read back from a DComp surface, which fails later in
+  // |SkiaOutputSurfaceImplOnGpu::CopyOutput|.
+  const bool force_swap_chain_due_to_copy_request =
+      is_video_capture_enabled_ || !root_render_pass->copy_requests.empty();
   bool was_using_dc_layers = using_dc_layers_;
   if (!candidates->empty()) {
     using_dc_layers_ = true;
     frames_since_using_dc_layers_ = 0;
   } else if (++frames_since_using_dc_layers_ >=
-             kNumberOfFramesBeforeDisablingDCLayers) {
+                 kNumberOfFramesBeforeDisablingDCLayers ||
+             force_swap_chain_due_to_copy_request) {
     using_dc_layers_ = false;
   }
 
@@ -105,7 +118,7 @@ void OverlayProcessorWin::ProcessForOverlays(
       // A DComp surface is not readable by viz.
       // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
       // there are e.g. copy output requests present.
-      DCHECK(!using_dc_layers_);
+      CHECK(!using_dc_layers_);
     }
 
     // We have overlays, so our root surface requires a backing that
