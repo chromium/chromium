@@ -803,12 +803,16 @@ by a child template that "extends" this file.
             android:process=":browser_restart_process">
         </activity>
 
-        <!-- This activity is used to show an error dialog without attempting to start up Chrome. -->
+        <!-- This activity is used to show an error dialog when Chrome fails to load the native
+             library. It must be in a separate process as when the native library fails to load an
+             exception is thrown and may crash the main process immediately. Being in a separate
+             process allows the dialog to remain visible to the user. -->
         <activity android:name="org.chromium.chrome.browser.init.LaunchFailedActivity"
             android:launchMode="singleInstance"
             android:exported="false"
             android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:process=":launch_failed">
         </activity>
 
         <!-- Components for Trusted Web Activities -->

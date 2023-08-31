@@ -38,6 +38,10 @@ public class NativeLibraries {{
     public static {MAYBE_FINAL}String[] LIBRARIES = {{{LIBRARIES}}};
 
     public static {MAYBE_FINAL}int sCpuFamily = {CPU_FAMILY};
+
+    public static {MAYBE_FINAL}boolean sSupport32Bit{SUPPORT_32_BIT};
+
+    public static {MAYBE_FINAL}boolean sSupport64Bit{SUPPORT_64_BIT};
 }}
 """
 
@@ -76,6 +80,12 @@ def main():
 
   parser.add_argument(
       '--output', required=True, help='Path to the generated srcjar file.')
+  parser.add_argument('--native-lib-32-bit',
+                      action='store_true',
+                      help='32-bit binaries.')
+  parser.add_argument('--native-lib-64-bit',
+                      action='store_true',
+                      help='64-bit binaries.')
 
   options = parser.parse_args(build_utils.ExpandFileArgs(sys.argv[1:]))
 
@@ -105,6 +115,8 @@ def main():
       'USE_LINKER': bool_str(options.enable_chromium_linker),
       'LIBRARIES': ','.join(_FormatLibraryName(n) for n in native_libraries),
       'CPU_FAMILY': options.cpu_family,
+      'SUPPORT_32_BIT': bool_str(options.native_lib_32_bit),
+      'SUPPORT_64_BIT': bool_str(options.native_lib_64_bit),
   }
   with action_helpers.atomic_output(options.output) as f:
     with zipfile.ZipFile(f.name, 'w') as srcjar_file:

@@ -291,6 +291,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:launchMode="singleInstance"
+        android:process=":launch_failed"
         android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
     </activity>  # DIFF-ANCHOR: 060360d2
     <activity  # DIFF-ANCHOR: ecd48344

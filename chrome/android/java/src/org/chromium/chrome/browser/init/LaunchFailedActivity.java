@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.init;
 import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 
-public class LaunchFailedActivity extends ChromeBaseAppCompatActivity {
+public class LaunchFailedActivity extends AppCompatActivity {
     /**
      * Tracks whether an exception has been reported.
      *
