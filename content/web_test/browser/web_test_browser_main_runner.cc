@@ -287,6 +287,9 @@ void WebTestBrowserMainRunner::Initialize() {
   // interference. This GPU process is launched 120 seconds after chrome starts.
   command_line.AppendSwitch(switches::kDisableGpuProcessForDX12InfoCollection);
 
+  // Disable the backgrounding of renderers to make running tests faster.
+  command_line.AppendSwitch(switches::kDisableRendererBackgrounding);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   content::WebTestBrowserPlatformInitialize();
