@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -15,6 +16,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -243,6 +246,11 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+void ShowSystemAppInternal(Profile* profile,
+                           const ash::SystemWebAppType type,
+                           const ash::SystemAppLaunchParams& params) {
+  ash::LaunchSystemWebAppAsync(profile, type, params);
+}
 void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
   ash::SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kUnknown;
@@ -637,6 +645,25 @@ void ShowShortcutCustomizationApp(Profile* profile) {
   ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   ShowSystemAppInternal(profile, GURL(kOsUIShortcutCustomizationAppURL));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void ShowShortcutCustomizationApp(Profile* profile,
+                                  const std::string& action,
+                                  const std::string& category) {
+  const std::string query_string =
+      base::StrCat({"action=", action, "&category=", category});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::SystemAppLaunchParams params;
+  params.launch_source = apps::LaunchSource::kUnknown;
+  params.url = GURL(base::StrCat(
+      {ash::kChromeUIShortcutCustomizationAppURL, "?", query_string}));
+  ShowSystemAppInternal(profile, ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
+                        params);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const GURL os_shortcuts_app_url{
+      base::StrCat({kOsUIShortcutCustomizationAppURL, "?", query_string})};
+  ShowSystemAppInternal(profile, os_shortcuts_app_url);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

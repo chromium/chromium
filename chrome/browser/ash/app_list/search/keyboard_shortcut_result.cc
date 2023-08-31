@@ -630,11 +630,14 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     Profile* profile,
     const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
     : profile_(profile) {
-  // The ID needs to be unique among all results. The action is an ID uniquely
-  // mapped to an accelerator action.
-  set_id(base::StrCat(
-      {kKeyboardShortcutScheme,
-       base::NumberToString(search_result->accelerator_layout_info->action)}));
+  accelerator_action_ =
+      base::NumberToString(search_result->accelerator_layout_info->action);
+  accelerator_category_ = base::NumberToString(
+      static_cast<int>(search_result->accelerator_layout_info->category));
+  // The ID needs to be unique among all results. The combination of action and
+  // its category uniquely identifies a shortcut.
+  set_id(base::StrCat({kKeyboardShortcutScheme, accelerator_action_, "/",
+                       accelerator_category_}));
   set_relevance(search_result->relevance_score);
   SetTitle(search_result->accelerator_layout_info->description);
   SetResultType(ResultType::kKeyboardShortcut);
@@ -681,7 +684,14 @@ KeyboardShortcutResult::~KeyboardShortcutResult() = default;
 
 void KeyboardShortcutResult::Open(int event_flags) {
   if (ash::features::ShouldOnlyShowNewShortcutApp()) {
-    chrome::ShowShortcutCustomizationApp(profile_);
+    // Pass the action and category of the selected shortcuts to the app so that
+    // the same shortcuts will be displayed in the app.
+    if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
+      chrome::ShowShortcutCustomizationApp(profile_, accelerator_action_,
+                                           accelerator_category_);
+    } else {
+      chrome::ShowShortcutCustomizationApp(profile_);
+    }
     return;
   }
   apps::AppServiceProxy* proxy =

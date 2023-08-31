@@ -104,6 +104,11 @@ class KeyboardShortcutResult : public ChromeSearchResult {
 
   void UpdateIcon();
 
+  // The following info will be passed to the shortcuts app when a result is
+  // clicked so that the selected shortcuts will be displayed in the app.
+  std::string accelerator_action_;
+  std::string accelerator_category_;
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
   friend class test::KeyboardShortcutResultTest;
 };

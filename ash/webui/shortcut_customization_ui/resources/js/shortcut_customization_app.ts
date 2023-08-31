@@ -182,6 +182,10 @@ export class ShortcutCustomizationAppElement extends
         new AcceleratorsUpdatedObserverReceiver(this);
     this.shortcutProvider.addObserver(
         this.acceleratorsUpdatedReceiver.$.bindNewPipeAndPassRemote());
+    // Navigate to the selected shortcuts if one was set from the launcher
+    // search. If the url does not contain action or category info, the
+    // onRouteChanged does not do anything.
+    this.onRouteChanged(new URL(window.location.href));
   }
 
   // AcceleratorsUpdatedObserverInterface:

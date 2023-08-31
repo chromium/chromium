@@ -106,6 +106,15 @@ class KeyboardShortcutResultTest : public ChromeAshTestBase {
     }
     return accelerator_info_list;
   }
+
+  std::string GetCategory(
+      const std::unique_ptr<KeyboardShortcutResult>& result) {
+    return result->accelerator_category_;
+  }
+
+  std::string GetAction(const std::unique_ptr<KeyboardShortcutResult>& result) {
+    return result->accelerator_action_;
+  }
 };
 
 TEST_F(KeyboardShortcutResultTest, CalculateRelevance) {
@@ -230,10 +239,12 @@ TEST_F(KeyboardShortcutResultTest, StandardAcceleratorToResult) {
   auto result = std::make_unique<KeyboardShortcutResult>(
       /* profile= */ nullptr, search_result_ptr);
 
-  EXPECT_TRUE(search_result_ptr->accelerator_infos.at(0)
+  EXPECT_TRUE(search_result_ptr->accelerator_infos[0]
                   ->layout_properties->is_standard_accelerator());
-
-  EXPECT_EQ("keyboard_shortcut://1", result->id());
+  EXPECT_EQ("1", GetAction(result));
+  EXPECT_EQ("6", GetCategory(result));
+  // 1: kActionId1=1;  6: Category = kDebug.
+  EXPECT_EQ("keyboard_shortcut://1/6", result->id());
   EXPECT_EQ(0.5, result->relevance());
   EXPECT_EQ(u"first result", result->title());
   EXPECT_EQ(KeyboardShortcutResult::ResultType::kKeyboardShortcut,
