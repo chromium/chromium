@@ -425,8 +425,8 @@ bool SlowMatchWithNoResultFlags(
   return match;
 }
 
-template <bool perf_trace_enabled>
-void ElementRuleCollector::CollectMatchingRulesForListInternal(
+template <bool stop_at_first_match, bool perf_trace_enabled>
+bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     base::span<const RuleData> rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
@@ -450,10 +450,11 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   bool is_initial = !style_recalc_context_.is_ensuring_style &&
                     !style_recalc_context_.old_style;
 
-  CascadeLayerSeeker layer_seeker(
-      context.scope, context.vtt_originating_element, matching_ua_rules_,
-      matching_rules_from_no_style_sheet_, &context.element->GetDocument(),
-      rule_set);
+  CascadeLayerSeeker layer_seeker(stop_at_first_match ? nullptr : context.scope,
+                                  context.vtt_originating_element,
+                                  matching_ua_rules_,
+                                  matching_rules_from_no_style_sheet_,
+                                  &context.element->GetDocument(), rule_set);
   Seeker<ContainerQuery> container_query_seeker(
       rule_set->ContainerQueryIntervals());
   Seeker<StyleScope> scope_seeker(rule_set->ScopeIntervals());
@@ -592,6 +593,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         }
       }
     }
+    if (stop_at_first_match) {
+      return true;
+    }
 
     matched++;
     if (perf_trace_enabled) {
@@ -613,7 +617,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   StyleEngine& style_engine =
       context_.GetElement().GetDocument().GetStyleEngine();
   if (!style_engine.Stats()) {
-    return;
+    return false;
   }
 
   size_t rejected = rules.size() - fast_rejected - matched;
@@ -621,9 +625,11 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_fast_rejected,
                                 fast_rejected);
   INCREMENT_STYLE_STATS_COUNTER(style_engine, rules_matched, matched);
+  return false;
 }
 
-void ElementRuleCollector::CollectMatchingRulesForList(
+template <bool stop_at_first_match>
+bool ElementRuleCollector::CollectMatchingRulesForList(
     base::span<const RuleData> rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
@@ -635,20 +641,20 @@ void ElementRuleCollector::CollectMatchingRulesForList(
   // inlined into the caller (which saves on stack setup and call overhead
   // in that common case).
   if (rules.empty()) {
-    return;
+    return false;
   }
 
   // To reduce branching overhead for the common case, we use a template
   // parameter to eliminate branching in CollectMatchingRulesForListInternal
   // when tracing is not enabled.
   if (!*g_selector_stats_tracing_enabled) {
-    CollectMatchingRulesForListInternal<false>(rules, match_request, rule_set,
-                                               style_sheet_index, checker,
-                                               part_request);
+    return CollectMatchingRulesForListInternal<stop_at_first_match, false>(
+        rules, match_request, rule_set, style_sheet_index, checker,
+        part_request);
   } else {
-    CollectMatchingRulesForListInternal<true>(rules, match_request, rule_set,
-                                              style_sheet_index, checker,
-                                              part_request);
+    return CollectMatchingRulesForListInternal<stop_at_first_match, true>(
+        rules, match_request, rule_set, style_sheet_index, checker,
+        part_request);
   }
 }
 
@@ -668,8 +674,20 @@ base::span<const Attribute> GetAttributes(const Element& element,
 
 }  // namespace
 
-DISABLE_CFI_PERF
 void ElementRuleCollector::CollectMatchingRules(
+    const MatchRequest& match_request) {
+  CollectMatchingRulesInternal</*stop_at_first_match=*/false>(match_request);
+}
+
+DISABLE_CFI_PERF
+bool ElementRuleCollector::CheckIfAnyRuleMatches(
+    const MatchRequest& match_request) {
+  return CollectMatchingRulesInternal</*stop_at_first_match=*/true>(
+      match_request);
+}
+
+template <bool stop_at_first_match>
+DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
     const MatchRequest& match_request) {
   DCHECK(!match_request.IsEmpty());
 
@@ -681,17 +699,24 @@ void ElementRuleCollector::CollectMatchingRules(
   if (!pseudo_id.empty()) {
     DCHECK(element.IsStyledElement());
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(
-          bundle.rule_set->UAShadowPseudoElementRules(pseudo_id), match_request,
-          bundle.rule_set, bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->UAShadowPseudoElementRules(pseudo_id),
+              match_request, bundle.rule_set, bundle.style_sheet_index,
+              checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
 
   if (element.IsVTTElement()) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->CuePseudoRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->CuePseudoRules(), match_request, bundle.rule_set,
+              bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   // Check whether other types of rules are applicable in the current tree
@@ -702,24 +727,32 @@ void ElementRuleCollector::CollectMatchingRules(
   // c) is checked in rulesApplicableInCurrentTreeScope.
   if (!matching_ua_rules_ &&
       !RulesApplicableInCurrentTreeScope(&element, match_request.Scope())) {
-    return;
+    return false;
   }
 
   // We need to collect the rules for id, class, tag, and everything else into a
   // buffer and then sort the buffer.
   if (element.HasID()) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(
-          bundle.rule_set->IdRules(element.IdForStyleResolution()),
-          match_request, bundle.rule_set, bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->IdRules(element.IdForStyleResolution()),
+              match_request, bundle.rule_set, bundle.style_sheet_index,
+              checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (element.IsStyledElement() && element.HasClass()) {
     for (wtf_size_t i = 0; i < element.ClassNames().size(); ++i) {
       for (const auto bundle : match_request.AllRuleSets()) {
-        CollectMatchingRulesForList(
-            bundle.rule_set->ClassRules(element.ClassNames()[i]), match_request,
-            bundle.rule_set, bundle.style_sheet_index, checker);
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->ClassRules(element.ClassNames()[i]),
+                match_request, bundle.rule_set, bundle.style_sheet_index,
+                checker) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
     }
   }
@@ -791,9 +824,12 @@ void ElementRuleCollector::CollectMatchingRules(
                 list, lower_name, attributes[attr_idx].Value())) {
           continue;
         }
-        CollectMatchingRulesForList(bundle.rule_set->AttrRules(lower_name),
-                                    match_request, bundle.rule_set,
-                                    bundle.style_sheet_index, checker);
+        if (CollectMatchingRulesForList<stop_at_first_match>(
+                bundle.rule_set->AttrRules(lower_name), match_request,
+                bundle.rule_set, bundle.style_sheet_index, checker) &&
+            stop_at_first_match) {
+          return true;
+        }
       }
 
       const AttributeCollection collection = element.AttributesWithoutUpdate();
@@ -803,59 +839,85 @@ void ElementRuleCollector::CollectMatchingRules(
 
   if (element.IsLink()) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->LinkPseudoClassRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->LinkPseudoClassRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (SelectorChecker::MatchesFocusPseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->FocusPseudoClassRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->FocusPseudoClassRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(
-          bundle.rule_set->SelectorFragmentAnchorRules(), match_request,
-          bundle.rule_set, bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->SelectorFragmentAnchorRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (SelectorChecker::MatchesFocusVisiblePseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(
-          bundle.rule_set->FocusVisiblePseudoClassRules(), match_request,
-          bundle.rule_set, bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->FocusVisiblePseudoClassRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(element)) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(
-          bundle.rule_set->SpatialNavigationInterestPseudoClassRules(),
-          match_request, bundle.rule_set, bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->SpatialNavigationInterestPseudoClassRules(),
+              match_request, bundle.rule_set, bundle.style_sheet_index,
+              checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   if (element.GetDocument().documentElement() == element) {
     for (const auto bundle : match_request.AllRuleSets()) {
-      CollectMatchingRulesForList(bundle.rule_set->RootElementRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet_index, checker);
+      if (CollectMatchingRulesForList<stop_at_first_match>(
+              bundle.rule_set->RootElementRules(), match_request,
+              bundle.rule_set, bundle.style_sheet_index, checker) &&
+          stop_at_first_match) {
+        return true;
+      }
     }
   }
   AtomicString element_name = matching_ua_rules_
                                   ? element.localName()
                                   : element.LocalNameForSelectorMatching();
   for (const auto bundle : match_request.AllRuleSets()) {
-    CollectMatchingRulesForList(bundle.rule_set->TagRules(element_name),
-                                match_request, bundle.rule_set,
-                                bundle.style_sheet_index, checker);
+    if (CollectMatchingRulesForList<stop_at_first_match>(
+            bundle.rule_set->TagRules(element_name), match_request,
+            bundle.rule_set, bundle.style_sheet_index, checker) &&
+        stop_at_first_match) {
+      return true;
+    }
   }
   for (const auto bundle : match_request.AllRuleSets()) {
-    CollectMatchingRulesForList(bundle.rule_set->UniversalRules(),
-                                match_request, bundle.rule_set,
-                                bundle.style_sheet_index, checker);
+    if (CollectMatchingRulesForList<stop_at_first_match>(
+            bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
+            bundle.style_sheet_index, checker) &&
+        stop_at_first_match) {
+      return true;
+    }
   }
+  return false;
 }
 
 void ElementRuleCollector::CollectMatchingShadowHostRules(
@@ -864,15 +926,37 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
                           matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
-    CollectMatchingRulesForList(bundle.rule_set->ShadowHostRules(),
-                                match_request, bundle.rule_set,
-                                bundle.style_sheet_index, checker);
+    CollectMatchingRulesForList</*stop_at_first_match=*/false>(
+        bundle.rule_set->ShadowHostRules(), match_request, bundle.rule_set,
+        bundle.style_sheet_index, checker);
     if (bundle.rule_set->MayHaveScopeInUniversalBucket()) {
-      CollectMatchingRulesForList(bundle.rule_set->UniversalRules(),
-                                  match_request, bundle.rule_set,
-                                  bundle.style_sheet_index, checker);
+      CollectMatchingRulesForList</*stop_at_first_match=*/false>(
+          bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
+          bundle.style_sheet_index, checker);
     }
   }
+}
+
+bool ElementRuleCollector::CheckIfAnyShadowHostRuleMatches(
+    const MatchRequest& match_request) {
+  SelectorChecker checker(nullptr, pseudo_style_request_, mode_,
+                          matching_ua_rules_);
+
+  for (const auto bundle : match_request.AllRuleSets()) {
+    if (CollectMatchingRulesForList</*stop_at_first_match=*/true>(
+            bundle.rule_set->ShadowHostRules(), match_request, bundle.rule_set,
+            bundle.style_sheet_index, checker)) {
+      return true;
+    }
+    if (bundle.rule_set->MayHaveScopeInUniversalBucket()) {
+      if (CollectMatchingRulesForList</*stop_at_first_match=*/true>(
+              bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
+              bundle.style_sheet_index, checker)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void ElementRuleCollector::CollectMatchingSlottedRules(
@@ -881,9 +965,9 @@ void ElementRuleCollector::CollectMatchingSlottedRules(
                           matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
-    CollectMatchingRulesForList(bundle.rule_set->SlottedPseudoElementRules(),
-                                match_request, bundle.rule_set,
-                                bundle.style_sheet_index, checker);
+    CollectMatchingRulesForList</*stop_at_first_match=*/false>(
+        bundle.rule_set->SlottedPseudoElementRules(), match_request,
+        bundle.rule_set, bundle.style_sheet_index, checker);
   }
 }
 
@@ -896,9 +980,9 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
                           matching_ua_rules_);
 
   for (const auto bundle : match_request.AllRuleSets()) {
-    CollectMatchingRulesForList(bundle.rule_set->PartPseudoRules(),
-                                match_request, bundle.rule_set,
-                                bundle.style_sheet_index, checker, &request);
+    CollectMatchingRulesForList</*stop_at_first_match=*/false>(
+        bundle.rule_set->PartPseudoRules(), match_request, bundle.rule_set,
+        bundle.style_sheet_index, checker, &request);
   }
 }
 

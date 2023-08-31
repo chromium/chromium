@@ -1853,70 +1853,75 @@ void StyleEngine::ScheduleNthPseudoInvalidations(ContainerNode& nth_parent) {
                                                          nth_parent);
 }
 
-void StyleEngine::ScheduleRuleSetInvalidationsForElement(
-    Element& element,
-    const HeapHashSet<Member<RuleSet>>& rule_sets) {
-  AtomicString id;
-  const SpaceSplitString* class_names = nullptr;
-
-  if (element.HasID()) {
-    id = element.IdForStyleResolution();
-  }
-  if (element.HasClass()) {
-    class_names = &element.ClassNames();
-  }
-
-  InvalidationLists invalidation_lists;
-  for (const auto& rule_set : rule_sets) {
-    if (!id.IsNull()) {
-      rule_set->Features().CollectInvalidationSetsForId(invalidation_lists,
-                                                        element, id);
-    }
-    if (class_names) {
-      wtf_size_t class_name_count = class_names->size();
-      for (wtf_size_t i = 0; i < class_name_count; i++) {
-        rule_set->Features().CollectInvalidationSetsForClass(
-            invalidation_lists, element, (*class_names)[i]);
-      }
-    }
-    for (const Attribute& attribute : element.Attributes()) {
-      rule_set->Features().CollectInvalidationSetsForAttribute(
-          invalidation_lists, element, attribute.GetName());
-    }
-  }
-  pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
-                                                         element);
+// Inserting/changing some types of rules cause invalidation even if they don't
+// match, because the very act of evaluating them has side effects for the
+// ComputedStyle. For instance, evaluating a rule with :hover will set the
+// AffectedByHover() flag on ComputedStyle even if it matches (for
+// invalidation). So we need to test for that here, and invalidate the element
+// so that such rules are properly evaluated.
+//
+// We don't need to care specifically about @starting-style, but all other flags
+// should probably be covered here.
+static bool FlagsCauseInvalidation(const MatchResult& result) {
+  return result.HasFlag(MatchFlag::kAffectedByDrag) ||
+         result.HasFlag(MatchFlag::kAffectedByFocusWithin) ||
+         result.HasFlag(MatchFlag::kAffectedByHover) ||
+         result.HasFlag(MatchFlag::kAffectedByActive);
 }
 
-void StyleEngine::ScheduleTypeRuleSetInvalidations(
-    ContainerNode& node,
-    const HeapHashSet<Member<RuleSet>>& rule_sets) {
-  InvalidationLists invalidation_lists;
-  for (const auto& rule_set : rule_sets) {
-    rule_set->Features().CollectTypeRuleInvalidationSet(invalidation_lists,
-                                                        node);
+static bool AnyRuleCausesInvalidation(const MatchRequest& match_request,
+                                      ElementRuleCollector& collector,
+                                      bool is_shadow_host) {
+  if (collector.CheckIfAnyRuleMatches(match_request) ||
+      FlagsCauseInvalidation(collector.MatchedResult())) {
+    return true;
   }
-  DCHECK(invalidation_lists.siblings.empty());
-  pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
-                                                         node);
-
-  auto* shadow_root = DynamicTo<ShadowRoot>(node);
-  if (!shadow_root) {
-    return;
-  }
-
-  Element& host = shadow_root->host();
-  if (host.NeedsStyleRecalc()) {
-    return;
-  }
-
-  for (auto& invalidation_set : invalidation_lists.descendants) {
-    if (invalidation_set->InvalidatesTagName(host)) {
-      host.SetNeedsStyleRecalc(kLocalStyleChange,
-                               StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kStyleSheetChange));
-      return;
+  if (is_shadow_host) {
+    if (collector.CheckIfAnyShadowHostRuleMatches(match_request) ||
+        FlagsCauseInvalidation(collector.MatchedResult())) {
+      return true;
     }
+  }
+  return false;
+}
+
+// See if a given element needs to be recalculated after RuleSet changes
+// (see ApplyRuleSetInvalidation()).
+void StyleEngine::ApplyRuleSetInvalidationForElement(
+    const TreeScope& tree_scope,
+    Element& element,
+    SelectorFilter& selector_filter,
+    const HeapHashSet<Member<RuleSet>>& rule_sets,
+    bool is_shadow_host) {
+  ElementResolveContext element_resolve_context(element);
+  MatchResult match_result;
+  EInsideLink inside_link =
+      EInsideLink::kNotInsideLink;  // Only used for MatchedProperties, so does
+                                    // not matter for us.
+  ElementRuleCollector collector(element_resolve_context,
+                                 StyleRecalcContext::FromAncestors(element),
+                                 selector_filter, match_result, inside_link);
+
+  MatchRequest match_request{&tree_scope.RootNode()};
+  bool matched_any = false;
+  for (const Member<RuleSet>& rule_set : rule_sets) {
+    match_request.AddRuleset(rule_set.Get());
+    if (match_request.IsFull()) {
+      if (AnyRuleCausesInvalidation(match_request, collector, is_shadow_host)) {
+        matched_any = true;
+        break;
+      }
+      match_request.ClearAfterMatching();
+    }
+  }
+  if (!match_request.IsEmpty() && !matched_any) {
+    matched_any =
+        AnyRuleCausesInvalidation(match_request, collector, is_shadow_host);
+  }
+  if (matched_any) {
+    element.SetNeedsStyleRecalc(kLocalStyleChange,
+                                StyleChangeReasonForTracing::Create(
+                                    style_change_reason::kStyleInvalidator));
   }
 }
 
@@ -2118,8 +2123,32 @@ bool StyleEngine::HasViewportDependentPropertyRegistrations() {
   return registry && registry->GetViewportUnitFlags();
 }
 
-void StyleEngine::ScheduleInvalidationsForRuleSets(
+// Given a list of RuleSets that have changed (both old and new), see what
+// elements in the given TreeScope that could be affected by them and need
+// style recalculation.
+//
+// This generally works by our regular selector matching; if any selector
+// in any of the given RuleSets match, it means we need to mark the element
+// for style recalc. This could either be because the element is affected
+// by a rule where it wasn't before, or because the element used to be
+// affected by some rule and isn't anymore, or even that the rule itself
+// changed. (It could also be a false positive, e.g. because someone added
+// a single new rule to a style sheet, causing a new RuleSet to be created
+// that also contains all the old rules, and the element matches one of them.)
+//
+// There are some twists to this; e.g., for a rule like a:hover, we will need
+// to invalidate all <a> elements whether they are currently matching :hover
+// or not (see FlagsCauseInvalidation()).
+//
+// In general, we check all elements in this TreeScope and nothing else.
+// There are some exceptions (in both directions); in particular, if an element
+// is already marked for subtree recalc, we don't need to go below it. Also,
+// if invalidation_scope says so, or if we have rules pertaining to UA shadows,
+// we may need to descend into child TreeScopes.
+void StyleEngine::ApplyRuleSetInvalidation(
     TreeScope& tree_scope,
+    ContainerNode& node,
+    SelectorFilter& selector_filter,
     const HeapHashSet<Member<RuleSet>>& rule_sets,
     InvalidationScope invalidation_scope) {
 #if DCHECK_IS_ON()
@@ -2133,12 +2162,12 @@ void StyleEngine::ScheduleInvalidationsForRuleSets(
   TRACE_EVENT0("blink,blink_style",
                "StyleEngine::scheduleInvalidationsForRuleSets");
 
-  ScheduleTypeRuleSetInvalidations(tree_scope.RootNode(), rule_sets);
-
   bool invalidate_slotted = false;
-  if (auto* shadow_root = DynamicTo<ShadowRoot>(&tree_scope.RootNode())) {
+  bool invalidate_part = false;
+  if (auto* shadow_root = DynamicTo<ShadowRoot>(&node)) {
     Element& host = shadow_root->host();
-    ScheduleRuleSetInvalidationsForElement(host, rule_sets);
+    ApplyRuleSetInvalidationForElement(tree_scope, host, selector_filter,
+                                       rule_sets, /*is_shadow_host=*/true);
     if (host.GetStyleChangeType() == kSubtreeStyleChange) {
       return;
     }
@@ -2147,13 +2176,43 @@ void StyleEngine::ScheduleInvalidationsForRuleSets(
         invalidate_slotted = true;
         break;
       }
+      if (rule_set->HasPartPseudoRules()) {
+        invalidate_part = true;
+        break;
+      }
     }
   }
 
-  Node* stay_within = &tree_scope.RootNode();
+  // If there are any rules that cover UA pseudos, we need to descend into
+  // UA shadows so that we can invalidate them. This is pretty crude
+  // (it descends into all shadows), but such rules are fairly rare anyway.
+  //
+  // We do a similar thing for :part(), descending into all shadows.
+  if (invalidation_scope != kInvalidateAllScopes) {
+    for (auto rule_set : rule_sets) {
+      if (rule_set->HasUAShadowPseudoElementRules() ||
+          rule_set->HasPartPseudoRules()) {
+        invalidation_scope = kInvalidateAllScopes;
+        break;
+      }
+    }
+  }
+
+  Node* stay_within = &node;
   Element* element = ElementTraversal::FirstChild(*stay_within);
   while (element) {
-    ScheduleRuleSetInvalidationsForElement(*element, rule_sets);
+    if (invalidate_part && element->hasAttribute(html_names::kPartAttr)) {
+      // It's too complicated to try to handle ::part() precisely.
+      // If we have any ::part() rules, and the element has a [part]
+      // attribute, just invalidate it.
+      element->SetNeedsStyleRecalc(kLocalStyleChange,
+                                   StyleChangeReasonForTracing::Create(
+                                       style_change_reason::kStyleInvalidator));
+    } else {
+      ApplyRuleSetInvalidationForElement(tree_scope, *element, selector_filter,
+                                         rule_sets,
+                                         /*is_shadow_host=*/false);
+    }
     auto* html_slot_element = DynamicTo<HTMLSlotElement>(element);
     if (html_slot_element && invalidate_slotted) {
       InvalidateSlottedElements(*html_slot_element);
@@ -2161,16 +2220,37 @@ void StyleEngine::ScheduleInvalidationsForRuleSets(
 
     if (invalidation_scope == kInvalidateAllScopes) {
       if (ShadowRoot* shadow_root = element->GetShadowRoot()) {
-        ScheduleInvalidationsForRuleSets(*shadow_root, rule_sets,
-                                         kInvalidateAllScopes);
+        ApplyRuleSetInvalidation(tree_scope, shadow_root->RootNode(),
+                                 selector_filter, rule_sets,
+                                 kInvalidateAllScopes);
       }
     }
 
-    if (element->GetStyleChangeType() < kSubtreeStyleChange &&
-        element->GetComputedStyle()) {
-      element = ElementTraversal::Next(*element, stay_within);
+    // Find the next element in preorder traversal, skipping subtrees if we
+    // are going to update the entire subtree anyway. This is similar to
+    // ElementTraversal::Next() or ...::NextSkippingChildren(),
+    // except that it also updates SelectorFilter.
+    const bool traverse_children =
+        (element->GetStyleChangeType() < kSubtreeStyleChange &&
+         element->GetComputedStyle());
+
+    Element* first_child =
+        traverse_children ? ElementTraversal::FirstChild(*element) : nullptr;
+    if (first_child) {
+      selector_filter.PushParent(*element);
+      element = first_child;
     } else {
-      element = ElementTraversal::NextSkippingChildren(*element, stay_within);
+      // Traverse upwards if needed, until we find something
+      // with siblings (or the root node where we started).
+      while (element != stay_within &&
+             ElementTraversal::NextSibling(*element) == nullptr) {
+        element = ElementTraversal::FirstAncestor(*element);
+        if (element == nullptr) {
+          return;
+        }
+        selector_filter.PopParent(*element);
+      }
+      element = ElementTraversal::NextSibling(*element);
     }
   }
 }
@@ -2327,8 +2407,10 @@ void StyleEngine::InvalidateForRuleSetChanges(
     return;
   }
 
-  ScheduleInvalidationsForRuleSets(tree_scope, changed_rule_sets,
-                                   invalidation_scope);
+  SelectorFilter selector_filter;
+  selector_filter.PushAllParentsOf(tree_scope);
+  ApplyRuleSetInvalidation(tree_scope, tree_scope.RootNode(), selector_filter,
+                           changed_rule_sets, invalidation_scope);
 }
 
 void StyleEngine::InvalidateInitialData() {
