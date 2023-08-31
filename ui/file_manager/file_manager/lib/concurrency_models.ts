@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {ActionsProducer, ActionsProducerGen, ConcurrentActionInvalidatedError} from './actions_producer.js';
-import {BaseAction} from './base_store.js';
 
 /**
  * Wraps the Actions Producer and enforces the Keep Last concurrency model.
@@ -19,12 +18,12 @@ import {BaseAction} from './base_store.js';
  *
  * @param actionsProducer This will be the `foo` above.
  */
-export function keepLatest<T extends BaseAction, Args extends any[]>(
-    actionsProducer: ActionsProducer<T, Args>): ActionsProducer<T, Args> {
+export function keepLatest<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>): ActionsProducer<Args> {
   // Scope #1: Initial setup.
   let counter = 0;
 
-  async function* wrap(...args: Args): ActionsProducerGen<T> {
+  async function* wrap(...args: Args): ActionsProducerGen {
     // Scope #2: Per-call to the ActionsProducer.
     const actionId = ++counter;
 
@@ -54,14 +53,14 @@ export function keepLatest<T extends BaseAction, Args extends any[]>(
  *
  * If there is no other running AP, then it just starts a new one.
  */
-export function keyedKeepFirst<T extends BaseAction, Args extends any[]>(
-    actionsProducer: ActionsProducer<T, Args>,
-    generateKey: (...args: Args) => string): ActionsProducer<T, Args> {
+export function keyedKeepFirst<Args extends any[]>(
+    actionsProducer: ActionsProducer<Args>,
+    generateKey: (...args: Args) => string): ActionsProducer<Args> {
   // Scope #1: Initial setup.
   // Key for the current AP.
   let inFlightKey: string|null = null;
 
-  async function* wrap(...args: Args): ActionsProducerGen<T> {
+  async function* wrap(...args: Args): ActionsProducerGen {
     // Scope #2: Per-call to the ActionsProducer.
     const key = generateKey(...args);
     // One already exists, just leave that finish.

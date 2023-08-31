@@ -115,9 +115,8 @@ export async function testClearStaleEntries(done: () => void) {
       ['filesystem:downloads/dir-2', 'filesystem:downloads/dir-2/sub-dir']);
 
   // Running the clear multiple times should not change:
-  // TODO(b/296792757)
-  store.dispatch(clearCachedEntries({}));
-  store.dispatch(clearCachedEntries({}));
+  store.dispatch(clearCachedEntries());
+  store.dispatch(clearCachedEntries());
   assertEquals(
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/sub-dir should be cached');

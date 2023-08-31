@@ -253,8 +253,7 @@ export function testChangeDirectoryContent() {
   ]);
 
   // Clear cached entries: only dir2 and file should be kept.
-  // TODO(b/296792757)
-  store.dispatch(clearCachedEntries({}));
+  store.dispatch(clearCachedEntries());
   assertEquals(
       2, allEntriesSize(store.getState()),
       'only dir-2 and dir-2/file should still be cached');

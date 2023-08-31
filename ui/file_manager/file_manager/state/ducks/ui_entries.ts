@@ -7,13 +7,13 @@ import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileKey, State} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
 import {cacheEntries, getMyFiles} from '../ducks/all_entries.js';
 import {getEntry, getFileData} from '../store.js';
 
 /**
- * Actions and reducers for UI entries.
+ * @fileoverview UI entries slice of the store.
+ * @suppress {checkTypes}
  *
  * UI entries represents entries shown on UI only (aka FakeEntry, e.g.
  * Recents/Trash/Google Drive wrapper), they don't have a real entry backup in
@@ -21,8 +21,8 @@ import {getEntry, getFileData} from '../store.js';
  */
 
 
-/** Map of actions to reducers for the UI entries slice. */
-export const uiEntriesReducersMap: ReducersMap<State, Action> = new Map();
+const slice = new Slice<State>('uiEntries');
+export {slice as uiEntriesSlice};
 
 const uiEntryRootTypesInMyFiles = new Set([
   VolumeManagerCommon.RootType.ANDROID_FILES,
@@ -31,16 +31,12 @@ const uiEntryRootTypesInMyFiles = new Set([
 ]);
 
 
-/** Action add single UI entry into the store. */
-export interface AddUiEntryAction extends BaseAction {
-  type: ActionType.ADD_UI_ENTRY;
-  payload: {
-    entry: FakeEntryImpl,
-  };
-}
+/** Create action to add an UI entry to the store. */
+export const addUiEntry = slice.addReducer('add', addUiEntryReducer);
 
-export function addUiEntryReducer(
-    currentState: State, payload: AddUiEntryAction['payload']): State {
+export function addUiEntryReducer(currentState: State, payload: {
+  entry: FakeEntryImpl,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, [payload.entry]);
 
@@ -94,21 +90,13 @@ export function addUiEntryReducer(
   };
 }
 
-/** Action factory to add single UI entry into the store. */
-export const addUiEntry = addReducer(
-    ActionType.ADD_UI_ENTRY, addUiEntryReducer as Reducer<State, Action>,
-    uiEntriesReducersMap);
+/** Create action to remove an UI entry from the store. */
+export const removeUiEntry =
+    slice.addReducer('remove', removeUiEntryReducer);
 
-/** Action remove single UI entry from the store. */
-export interface RemoveUiEntryAction extends BaseAction {
-  type: ActionType.REMOVE_UI_ENTRY;
-  payload: {
-    key: FileKey,
-  };
-}
-
-export function removeUiEntryReducer(
-    currentState: State, payload: RemoveUiEntryAction['payload']): State {
+export function removeUiEntryReducer(currentState: State, payload: {
+  key: FileKey,
+}): State {
   const {key} = payload;
   const entry = getEntry(currentState, key) as FakeEntryImpl | null;
   if (currentState.uiEntries.find(k => k === key)) {
@@ -139,8 +127,3 @@ export function removeUiEntryReducer(
     ...currentState,
   };
 }
-
-/** Action factory to remove single UI entry from the store. */
-export const removeUiEntry = addReducer(
-    ActionType.REMOVE_UI_ENTRY, removeUiEntryReducer as Reducer<State, Action>,
-    uiEntriesReducersMap);

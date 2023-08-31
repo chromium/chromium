@@ -9,13 +9,17 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
 import {cacheEntries, getMyFiles, volumeNestingEntries} from '../ducks/all_entries.js';
 import {getEntry} from '../store.js';
 
-/** Map of actions to reducers for the volumes slice. */
-export const volumesReducersMap: ReducersMap<State, Action> = new Map();
+/**
+ * @fileoverview Volumes slice of the store.
+ * @suppress {checkTypes}
+ */
+
+const slice = new Slice<State>('volumes');
+export {slice as volumesSlice};
 
 const VolumeType = VolumeManagerCommon.VolumeType;
 export const myFilesEntryListKey =
@@ -105,17 +109,13 @@ export function updateVolume(
   };
 }
 
-/** Action to add single volume into the store. */
-export interface AddVolumeAction extends BaseAction {
-  type: ActionType.ADD_VOLUME;
-  payload: {
-    volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata,
-    volumeInfo: VolumeInfo,
-  };
-}
+/** Create action to add a volume. */
+export const addVolume = slice.addReducer('add', addVolumeReducer);
 
-function addVolumeReducer(
-    currentState: State, payload: AddVolumeAction['payload']): State {
+function addVolumeReducer(currentState: State, payload: {
+  volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata,
+  volumeInfo: VolumeInfo,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, [new VolumeEntry(payload.volumeInfo)]);
   volumeNestingEntries(
@@ -195,21 +195,12 @@ function addVolumeReducer(
   };
 }
 
-export const addVolume = addReducer(
-    ActionType.ADD_VOLUME, addVolumeReducer as Reducer<State, Action>,
-    volumesReducersMap);
+/** Create action to remove a volume. */
+export const removeVolume = slice.addReducer('remove', removeVolumeReducer);
 
-
-/** Action to remove single volume from the store. */
-export interface RemoveVolumeAction extends BaseAction {
-  type: ActionType.REMOVE_VOLUME;
-  payload: {
-    volumeId: VolumeId,
-  };
-}
-
-function removeVolumeReducer(
-    currentState: State, payload: RemoveVolumeAction['payload']): State {
+function removeVolumeReducer(currentState: State, payload: {
+  volumeId: VolumeId,
+}): State {
   delete currentState.volumes[payload.volumeId];
   const volumes = {
     ...currentState.volumes,
@@ -221,23 +212,14 @@ function removeVolumeReducer(
   };
 }
 
-export const removeVolume = addReducer(
-    ActionType.REMOVE_VOLUME, removeVolumeReducer as Reducer<State, Action>,
-    volumesReducersMap);
+/** Create action to update isInteractive for a volume. */
+export const updateIsInteractiveVolume =
+    slice.addReducer('set-is-interactive', updateIsInteractiveVolumeReducer);
 
-
-/** Action to update isInteractive for a volume in the store. */
-export interface UpdateIsInteractiveVolumeAction extends BaseAction {
-  type: ActionType.UPDATE_IS_INTERACTIVE_VOLUME;
-  payload: {
-    volumeId: VolumeId,
-    isInteractive: boolean,
-  };
-}
-
-function updateIsInteractiveVolumeReducer(
-    currentState: State,
-    payload: UpdateIsInteractiveVolumeAction['payload']): State {
+function updateIsInteractiveVolumeReducer(currentState: State, payload: {
+  volumeId: VolumeId,
+  isInteractive: boolean,
+}): State {
   const volumes = {
     ...currentState.volumes,
   };
@@ -255,8 +237,3 @@ function updateIsInteractiveVolumeReducer(
     },
   };
 }
-
-export const updateIsInteractiveVolume = addReducer(
-    ActionType.UPDATE_IS_INTERACTIVE_VOLUME,
-    updateIsInteractiveVolumeReducer as Reducer<State, Action>,
-    volumesReducersMap);

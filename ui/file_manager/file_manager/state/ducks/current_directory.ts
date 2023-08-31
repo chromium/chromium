@@ -13,17 +13,19 @@ import {CurrentDirectory, DirectoryContent, FileData, FileKey, FileTasks, PropSt
 import {constants} from '../../foreground/js/constants.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
+import {Slice} from '../../lib/base_store.js';
 import {keyedKeepFirst} from '../../lib/concurrency_models.js';
-import {Action, ActionType} from '../actions.js';
 import {getStore} from '../store.js';
 
 import {cacheEntries} from './all_entries.js';
 
 /**
- * @fileoverview
+ * @fileoverview Current directory slice of the store.
  * @suppress {checkTypes}
  */
+
+const slice = new Slice<State>('currentDirectory');
+export {slice as currentDirectorySlice};
 
 function getEmptySelection(keys: FileKey[] = []): Selection {
   return {
@@ -65,27 +67,13 @@ export function hasDlpDisabledFiles(currentState: State): boolean {
   return false;
 }
 
+/** Create action to change the Current Directory. */
+export const changeDirectory = slice.addReducer('set', changeDirectoryReducer);
 
-/** Map of actions to reducers for the search slice. */
-export const currentDirectoryReducersMap: ReducersMap<State, Action> =
-    new Map();
-
-
-/** Action to request to change the Current Directory. */
-export interface ChangeDirectoryAction extends BaseAction {
-  type: ActionType.CHANGE_DIRECTORY;
-  payload: {
-    to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
-    status?: PropStatus,
-  };
-}
-
-/**
- * Reducer that updates the currentDirectory property of the state and returns
- * the modified state.
- */
-function changeDirectoryReducer(
-    currentState: State, payload: ChangeDirectoryAction['payload']): State {
+function changeDirectoryReducer(currentState: State, payload: {
+  to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
+  status?: PropStatus,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   if (payload.to) {
     cacheEntries(currentState, [payload.to]);
@@ -169,27 +157,14 @@ function changeDirectoryReducer(
   };
 }
 
-/** Factory for the ChangeDirectoryAction. */
-export const changeDirectory = addReducer(
-    ActionType.CHANGE_DIRECTORY,
-    changeDirectoryReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update currently selected files/folders. */
+export const updateSelection =
+    slice.addReducer('set-selection', updateSelectionReducer);
 
-
-/** Action to update the currently selected files/folders. */
-export interface ChangeSelectionAction extends BaseAction {
-  type: ActionType.CHANGE_SELECTION;
-  payload: {
-    selectedKeys: FileKey[],
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
-
-/**
- * Updates the `currentDirectory.selection` state.
- */
-function updateSelectionReducer(
-    currentState: State, payload: ChangeSelectionAction['payload']): State {
+function updateSelectionReducer(currentState: State, payload: {
+  selectedKeys: FileKey[],
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.entries);
 
@@ -271,22 +246,12 @@ function updateSelectionReducer(
   };
 }
 
-/** Factory for the ChangeSelectionAction. */
-export const updateSelection = addReducer(
-    ActionType.CHANGE_SELECTION,
-    updateSelectionReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update FileTasks for the current selection. */
+export const updateFileTasks =
+    slice.addReducer('set-file-tasks', updateFileTasksReducer);
 
-
-/** Action to update the FileTasks in the selection. */
-export interface ChangeFileTasksAction extends BaseAction {
-  type: ActionType.CHANGE_FILE_TASKS;
-  payload: FileTasks;
-}
-
-/** Updates the FileTasks in the selection for the current directory. */
 function updateFileTasksReducer(
-    currentState: State, payload: ChangeFileTasksAction['payload']): State {
+    currentState: State, payload: FileTasks): State {
   const initialSelection =
       currentState.currentDirectory?.selection ?? getEmptySelection();
 
@@ -312,27 +277,13 @@ function updateFileTasksReducer(
   };
 }
 
-/** Factory for the ChangeFileTasksAction. */
-export const updateFileTasks = addReducer(
-    ActionType.CHANGE_FILE_TASKS,
-    updateFileTasksReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
+/** Create action to update the current directory's content. */
+export const updateDirectoryContent =
+    slice.addReducer('update-content', updateDirectoryContentReducer);
 
-
-/** Action to update the current directory's content. */
-export interface UpdateDirectoryContentAction extends BaseAction {
-  type: ActionType.UPDATE_DIRECTORY_CONTENT;
-  payload: {
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
-
-/**
- * Updates the content in for the current directory.
- */
-function updateDirectoryContentReducer(
-    currentState: State,
-    payload: UpdateDirectoryContentAction['payload']): State {
+function updateDirectoryContentReducer(currentState: State, payload: {
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.entries);
 
@@ -368,13 +319,6 @@ function updateDirectoryContentReducer(
   };
 }
 
-/** Factory for the UpdateDirectoryContentAction. */
-export const updateDirectoryContent = addReducer(
-    ActionType.UPDATE_DIRECTORY_CONTENT,
-    updateDirectoryContentReducer as Reducer<State, Action>,
-    currentDirectoryReducersMap);
-
-
 /**
  * Linux package installation is currently only supported for a single file
  * which is inside the Linux container, or in a shareable volume.
@@ -397,21 +341,16 @@ function allowCrostiniTask(filesData: FileData[]) {
       /*persiste=*/ false);
 }
 
-function emptyAction(status: PropStatus): ChangeFileTasksAction {
-  return {
-    type: ActionType.CHANGE_FILE_TASKS,
-    payload: {
-      tasks: [],
-      policyDefaultHandlerStatus: undefined,
-      defaultTask: undefined,
-      status,
-    },
-  };
-}
+const emptyAction = (status: PropStatus) => updateFileTasks({
+  tasks: [],
+  policyDefaultHandlerStatus: undefined,
+  defaultTask: undefined,
+  status,
+});
 
 export async function*
     fetchFileTasksInternal(filesData: FileData[]):
-        ActionsProducerGen<ChangeFileTasksAction> {
+        ActionsProducerGen {
   // Filters out the non-native entries.
   filesData = filesData.filter(getNativeEntry);
   const state = getStore().getState();
@@ -456,15 +395,12 @@ export async function*
         getDefaultTask(
             tasks, resultingTasks.policyDefaultHandlerStatus, taskHistory) ??
         undefined;
-    yield {
-      type: ActionType.CHANGE_FILE_TASKS,
-      payload: {
-        tasks,
-        policyDefaultHandlerStatus: resultingTasks.policyDefaultHandlerStatus,
-        defaultTask: defaultTask,
-        status: PropStatus.SUCCESS,
-      },
-    };
+    yield updateFileTasks({
+      tasks,
+      policyDefaultHandlerStatus: resultingTasks.policyDefaultHandlerStatus,
+      defaultTask: defaultTask,
+      status: PropStatus.SUCCESS,
+    });
   } catch (error) {
     yield emptyAction(PropStatus.ERROR);
   }

@@ -16,36 +16,27 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
 import {hasDlpDisabledFiles} from '../ducks/current_directory.js';
 import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from '../ducks/volumes.js';
 import {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore} from '../store.js';
 
 /**
- * @fileoverview Actions, reducers, and action producers related to entries.
+ * @fileoverview Entries slice of the store.
  * @suppress {checkTypes} TS already checks this file.
  */
 
-
-/** Map of actions to reducers for the search slice. */
-export const allEntriesReducersMap: ReducersMap<State, Action> = new Map();
-
-/**
- * Processes the allEntries and removes any entry that isn't in use any more.
- */
-export interface ClearStaleCachedEntriesAction extends BaseAction {
-  type: ActionType.CLEAR_STALE_CACHED_ENTRIES;
-  payload?: undefined;
-}
+const slice = new Slice<State>('allEntries');
+export {slice as allEntriesSlice};
 
 /**
- * Scans the current state for entries still in use to be able to remove the
- * stale entries from the `allEntries`.
+ * Create action to scan `allEntries` and remove its stale entries.
  */
-function clearCachedEntriesReducer(
-    state: State, _payload: ClearStaleCachedEntriesAction['payload']): State {
+export const clearCachedEntries =
+    slice.addReducer<void>('clear-stale-cache', clearCachedEntriesReducer);
+
+function clearCachedEntriesReducer(state: State): State {
   const entries = state.allEntries;
   const currentDirectoryKey = state.currentDirectory?.key;
   const entriesToKeep = new Set<string>();
@@ -126,11 +117,6 @@ function clearCachedEntriesReducer(
   return state;
 }
 
-/** Create action for clearing stale entries in the cached. */
-export const clearCachedEntries = addReducer(
-    ActionType.CLEAR_STALE_CACHED_ENTRIES,
-    clearCachedEntriesReducer as Reducer<State, Action>, allEntriesReducersMap);
-
 /**
  * Schedules the routine to remove stale entries from `allEntries`.
  */
@@ -146,8 +132,7 @@ let clearCachedEntriesRequestId = 0;
 /** Starts the action CLEAR_STALE_CACHED_ENTRIES.  */
 function startClearCache() {
   const store = getStore();
-  // TODO(b/296792757)
-  store.dispatch(clearCachedEntries({}));
+  store.dispatch(clearCachedEntries());
   clearCachedEntriesRequestId = 0;
 }
 
@@ -393,21 +378,13 @@ export interface EntryMetadata {
   metadata: MetadataItem;
 }
 
-/**
- * Action to update the allEntries metadata.
- */
-export interface UpdateMetadataAction extends BaseAction {
-  type: ActionType.UPDATE_METADATA;
-  payload: {
-    metadata: EntryMetadata[],
-  };
-}
+/** Create action to update entries metadata. */
+export const updateMetadata =
+    slice.addReducer('update-metadata', updateMetadataReducer);
 
-/**
- * Reducer that updates the metadata of the entries and returns the new state.
- */
-function updateMetadataReducer(
-    currentState: State, payload: UpdateMetadataAction['payload']): State {
+function updateMetadataReducer(currentState: State, payload: {
+  metadata: EntryMetadata[],
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.metadata.map(m => m.entry));
 
@@ -434,12 +411,6 @@ function updateMetadataReducer(
     currentDirectory,
   };
 }
-
-/** Create action to update metadata. */
-export const updateMetadata = addReducer(
-    ActionType.UPDATE_METADATA, updateMetadataReducer as Reducer<State, Action>,
-    allEntriesReducersMap);
-
 
 function findVolumeByType(
     volumes: VolumeMap, volumeType: VolumeManagerCommon.VolumeType): Volume|
@@ -687,20 +658,15 @@ export function volumeNestingEntries(
        volumeInfo.volumeType === VolumeManagerCommon.VolumeType.SMB);
 }
 
-/** Action to add child entries to a given parent entry. */
-export interface AddChildEntriesAction extends BaseAction {
-  type: ActionType.ADD_CHILD_ENTRIES;
-  payload: {
-    parentKey: FileKey,
-    entries: Array<Entry|FilesAppEntry>,
-  };
-}
 
-/**
- * Reducer for adding child entries to a parent entry.
- */
-function addChildEntriesReducer(
-    currentState: State, payload: AddChildEntriesAction['payload']): State {
+/**  Create action to add child entries to a parent entry. */
+export const addChildEntries =
+    slice.addReducer('add-children', addChildEntriesReducer);
+
+function addChildEntriesReducer(currentState: State, payload: {
+  parentKey: FileKey,
+  entries: Array<Entry|FilesAppEntry>,
+}): State {
   // Cache entries, so the reducers can use any entry from `allEntries`.
   cacheEntries(currentState, payload.entries);
 
@@ -737,12 +703,6 @@ function addChildEntriesReducer(
   };
 }
 
-/** Action factory to add child entries to a given parent entry. */
-export const addChildEntries = addReducer(
-    ActionType.ADD_CHILD_ENTRIES,
-    addChildEntriesReducer as Reducer<State, Action>, allEntriesReducersMap);
-
-
 /**
  * Read sub directories for a given entry.
  * TODO(b/271485133): Remove successCallback/errorCallback.
@@ -750,8 +710,7 @@ export const addChildEntries = addReducer(
 export async function*
     readSubDirectories(
         entry: Entry|FilesAppEntry|null, recursive: boolean = false,
-        metricNameForTracking: string = ''):
-        ActionsProducerGen<AddChildEntriesAction> {
+        metricNameForTracking: string = ''): ActionsProducerGen {
   if (!entry || !entry.isDirectory || ('disabled' in entry && entry.disabled)) {
     return;
   }
@@ -778,10 +737,7 @@ export async function*
     // Only dispatch directories.
     const subDirectories =
         childEntries.filter(childEntry => childEntry.isDirectory);
-    // TODO(b/296792757)
-    yield addChildEntries(
-        {parentKey: entry.toURL(), entries: subDirectories}) as
-        AddChildEntriesAction;
+    yield addChildEntries({parentKey: entry.toURL(), entries: subDirectories});
     childEntriesToReadDeeper.push(...subDirectories);
   }
 
@@ -819,7 +775,7 @@ export async function*
  */
 async function*
     readSubDirectoriesForDriveRootEntryList(entry: EntryList):
-        ActionsProducerGen<AddChildEntriesAction> {
+        ActionsProducerGen {
   const metricNameMap = {
     [VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH]: 'TeamDrivesCount',
     [VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH]: 'ComputerCount',
@@ -859,10 +815,7 @@ async function*
       filteredChildren.push(childEntry);
     }
   }
-  // TODO(b/296792757)
-  yield addChildEntries(
-      {parentKey: entry.toURL(), entries: filteredChildren}) as
-      AddChildEntriesAction;
+  yield addChildEntries({parentKey: entry.toURL(), entries: filteredChildren});
 }
 
 /**

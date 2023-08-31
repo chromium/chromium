@@ -5,27 +5,26 @@
 import {VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {State, Volume} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
 import {updateFileData} from '../ducks/all_entries.js';
 import {getEntry} from '../store.js';
 
 import {updateVolume} from './volumes.js';
 
-/** Map of actions to reducers for the device slice. */
-export const deviceReducersMap: ReducersMap<State, Action> = new Map();
+/**
+ * @fileoverview Device slice of the store.
+ * @suppress {checkTypes}
+ */
 
-/** Action to update the device connection state in the store. */
-export interface UpdateDeviceConnectionStateAction extends BaseAction {
-  type: ActionType.UPDATE_DEVICE_CONNECTION_STATE;
-  payload: {
-    connection: chrome.fileManagerPrivate.DeviceConnectionState,
-  };
-}
+const slice = new Slice<State>('device');
+export {slice as deviceSlice};
 
-function updateDeviceConnectionStateReducer(
-    currentState: State,
-    payload: UpdateDeviceConnectionStateAction['payload']): State {
+export const updateDeviceConnectionState = slice.addReducer(
+    'set-connection-state', updateDeviceConnectionStateReducer);
+
+function updateDeviceConnectionStateReducer(currentState: State, payload: {
+  connection: chrome.fileManagerPrivate.DeviceConnectionState,
+}): State {
   let device: State['device']|undefined;
   let volumes: State['volumes']|undefined;
 
@@ -85,8 +84,3 @@ function updateDeviceConnectionStateReducer(
 
   return newState;
 }
-
-export const updateDeviceConnectionState = addReducer(
-    ActionType.UPDATE_DEVICE_CONNECTION_STATE,
-    updateDeviceConnectionStateReducer as Reducer<State, Action>,
-    deviceReducersMap);

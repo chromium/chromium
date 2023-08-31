@@ -251,12 +251,6 @@ ts_files = [
   "file_manager/state/file_key.ts",
   "file_manager/state/store.ts",
 
-  # Actions.
-  "file_manager/state/actions.ts",
-
-  # Reducers.
-  "file_manager/state/reducers/root.ts",
-
   # Ducks.
   "file_manager/state/ducks/all_entries.ts",
   "file_manager/state/ducks/android_apps.ts",

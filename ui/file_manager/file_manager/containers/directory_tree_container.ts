@@ -145,8 +145,7 @@ export class DirectoryTreeContainer {
 
   onStateChanged(state: State) {
     if (this.shouldRefreshNavigationRoots_(state)) {
-      // TODO(b/296792757)
-      this.store_.dispatch(refreshNavigationRoots({}));
+      this.store_.dispatch(refreshNavigationRoots());
       // Skip this render, and the refreshNavigationRoots() action will trigger
       // another call of `onStateChanged`, which will run the re-render logic
       // below.

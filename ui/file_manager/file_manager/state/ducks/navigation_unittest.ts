@@ -209,8 +209,7 @@ export async function testNavigationRoots(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect navigation roots being built in the store:
   //  1.  fake-entry://recent
@@ -378,8 +377,7 @@ export async function testNavigationRootsWithoutRecents(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -420,8 +418,7 @@ export async function testNavigationRootsWithFakeMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -489,8 +486,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect 6 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -584,8 +580,7 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect only the parent entry and MyFiles being added to the navigation
   // roots.
@@ -637,8 +632,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  // TODO(b/296792757)
-  store.dispatch(refreshNavigationRoots({}));
+  store.dispatch(refreshNavigationRoots());
 
   // Expect only volume1 and MyFiles in the navigation roots.
   const want: State['navigation']['roots'] = [

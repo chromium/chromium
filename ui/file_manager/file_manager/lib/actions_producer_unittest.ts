@@ -6,8 +6,9 @@ import {assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/ch
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
 import {ConcurrentActionInvalidatedError} from './actions_producer.js';
+import {Action} from './base_store.js';
 import {keepLatest, keyedKeepFirst} from './concurrency_models.js';
-import {actionsProducerSuccess, TestAction} from './for_tests.js';
+import {setupTestStore} from './for_tests.js';
 
 /**
  * Helper to accumulate all produced actions from the ActionsProducer.
@@ -29,11 +30,13 @@ async function consumeGenerator(gen: AsyncGenerator, producedResults: any[]) {
  * overtakes any previous call.
  */
 export async function testKeepLatest(done: () => void) {
+  const {actionsProducerSuccess} = setupTestStore();
+
   // keepLatest() wraps any ActionsGenerator.
   const action = keepLatest(actionsProducerSuccess);
 
   // Array to collect all the generated actions.
-  const results: TestAction[] = [];
+  const results: Action[] = [];
 
   // `first` here is a generator,  an ActionsProducer, wrapped in the
   // concurrency model `keepLatest`.
@@ -41,15 +44,15 @@ export async function testKeepLatest(done: () => void) {
 
   // Starts consuming the generated actions and can start another one in
   // parallel.
-  const {value} = await first.next();
-  assertEquals(value!.type, 'step#0');
-  assertEquals(value!.payload, 'first-action');
+  const {value} = (await first.next());
+  assertEquals(value!.type, '[test] step');
+  assertEquals(value!.payload, '0 first-action');
 
   // A new call to the `action` will cause the previous `first` to be cancelled.
   const second = action('second-action');
   const secondValue = await second.next();
-  assertEquals(secondValue.value!.type, 'step#0');
-  assertEquals(secondValue.value!.payload, 'second-action');
+  assertEquals(secondValue.value!.type, '[test] step');
+  assertEquals(secondValue.value!.payload, '0 second-action');
   results.push(secondValue.value!);
 
   // At this point `first` should be cancelled by the keepLatest().
@@ -71,7 +74,8 @@ export async function testKeepLatest(done: () => void) {
   // The second action generates 4 results: 1 at start, 2 from the args [2, 2]
   // and 1 for the final action.
   await waitUntil(
-      () => results.filter(r => r.payload === 'second-action').length === 4);
+      () => results.filter(r => r.payload.includes('second-action')).length ===
+          4);
 
   done();
 }
@@ -82,6 +86,8 @@ export async function testKeepLatest(done: () => void) {
  * the previous APs and starts a new AP.
  */
 export async function testKeyedKeepFirst(done: () => void) {
+  const {actionsProducerSuccess} = setupTestStore();
+
   const action = keyedKeepFirst(actionsProducerSuccess, (payload: string) => {
     return `key-${payload}`;
   });
@@ -93,8 +99,8 @@ export async function testKeyedKeepFirst(done: () => void) {
   // Starts consuming the generated actions and can start another one in
   // parallel.
   const {value} = await first.next();
-  assertEquals(value!.type, 'step#0');
-  assertEquals(value!.payload, 'file-key-1');
+  assertEquals(value!.type, '[test] step');
+  assertEquals(value!.payload, '0 file-key-1');
 
   // Make a second call with the same key, which finishes in the first iteration
   // without generating any action.
@@ -105,11 +111,11 @@ export async function testKeyedKeepFirst(done: () => void) {
 
   // Start a new call with different key.
   // Array to collect all the generated actions.
-  const results: TestAction[] = [];
+  const results: Action[] = [];
   const third = action('another-key-2');
   const thirdValue = await third.next();
-  assertEquals(thirdValue!.value!.type, 'step#0');
-  assertEquals(thirdValue!.value!.payload, 'another-key-2');
+  assertEquals(thirdValue!.value!.type, '[test] step');
+  assertEquals(thirdValue!.value!.payload, '0 another-key-2');
   results.push(thirdValue.value!);
 
   // At this point `first` should be cancelled by the keyedKeepFirst().
@@ -130,7 +136,8 @@ export async function testKeyedKeepFirst(done: () => void) {
   // The third action generates 4 results: 1 at start, 2 from the args [2,
   // 2] / and 1 for the final action.
   await waitUntil(
-      () => results.filter(r => r.payload === 'another-key-2').length === 4);
+      () => results.filter(r => r.payload.includes('another-key-2')).length ===
+          4);
 
   done();
 }

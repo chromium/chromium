@@ -3,29 +3,19 @@
 // found in the LICENSE file.
 
 import {State} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
-import {Action, ActionType} from '../actions.js';
+import {Slice} from '../../lib/base_store.js';
 
 /**
- * @fileoverview Actions and reducer for Chrome preferences.
+ * @fileoverview Chrome preferences slice of the store.
+ * @suppress {checkTypes}
  *
  * Chrome preferences store user data that is persisted to disk OR across
  * profiles, this takes care of initially populating these values then keeping
  * them updated on dynamic changes.
- *
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
  */
 
-/** Map of actions to reducers for the preferences slice. */
-export const preferencesReducersMap: ReducersMap<State, Action> = new Map();
-
-/** Action to update the chrome preferences to the store. */
-export interface UpdatePreferencesAction extends BaseAction {
-  type: ActionType.UPDATE_PREFERENCES;
-  payload: chrome.fileManagerPrivate.PreferencesChange|
-      chrome.fileManagerPrivate.Preferences;
-}
+const slice = new Slice<State>('preferences');
+export {slice as preferencesSlice};
 
 /**
  * Type alises to avoid writing the `chrome.fileManagerPrivate` prefix.
@@ -72,8 +62,14 @@ function updateIfDefined(
   return true;
 }
 
+/** Create action to update user preferences. */
+export const updatePreferences =
+    slice.addReducer('set', updatePreferencesReducer);
+
 function updatePreferencesReducer(
-    currentState: State, payload: UpdatePreferencesAction['payload']): State {
+    currentState: State,
+    payload: chrome.fileManagerPrivate.PreferencesChange|
+    chrome.fileManagerPrivate.Preferences): State {
   const preferences = payload;
 
   // This action takes two potential payloads:
@@ -115,8 +111,3 @@ function updatePreferencesReducer(
     preferences: updatedPreferences,
   };
 }
-
-/** Action factory to update the user preferences to the store. */
-export const updatePreferences = addReducer(
-    ActionType.UPDATE_PREFERENCES,
-    updatePreferencesReducer as Reducer<State, Action>, preferencesReducersMap);

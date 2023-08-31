@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {ActionsProducerGen} from './actions_producer.js';
-import {BaseAction, BaseStore} from './base_store.js';
+import {Action, BaseStore, Slice} from './base_store.js';
 
-export type TestStore = BaseStore<TestState, any>;
+export type TestStore = BaseStore<TestState>;
 
 /** Async function to emulate async API calls. */
 export async function sleep(time: number) {
@@ -24,36 +24,82 @@ export interface TestState {
   latestPayload?: string;
 }
 
-/** Test action used across all unittests in this file. */
-export interface TestAction extends BaseAction {
-  payload?: string;
+/** Counts how many times `onStateChanged()` was called. */
+export class TestSubscriber {
+  calledCounter: number = 0;
+
+  onStateChanged(_state: TestState) {
+    this.calledCounter += 1;
+  }
 }
 
 /**
- * This is an Actions Producer implemented.
- *
- * This produces 4 actions.
- *
- * The return type says this is an Async Generator for TestAction, so each yield
- * returns a TestAction.
- *
- * Imagine that each sleep() is an API call.
- * @param payload: A string to identify the call to foo.
+ * Creates new Store, subscriber and dispatchedActions.
+ * These can be called multiple times for each test, which create new
+ * independent instances of those.
  */
-export async function*
-    actionsProducerSuccess(payload: string): ActionsProducerGen<TestAction> {
-  // Produce an action before any async code.
-  yield {type: 'step#0', payload};
+export function setupTestStore() {
+  // All actions dispatched via the store and processed by the reducer.
+  const dispatchedActions = Array<Action>(0);
+  const testSlice = new Slice<TestState>('test');
+  const createTestAction = testSlice.addReducer(
+      'test', (state: TestState, payload: string|void): TestState => {
+        dispatchedActions.push({type: 'test', payload});
 
-  let counter = 0;
-  for (const waitingTime of [2, 2]) {
-    counter++;
-    // Emulate an async API call.
-    await sleep(waitingTime);
+        return {
+          numVisitors: (state.numVisitors || 0) + 1,
+          latestPayload: payload || undefined,
+        };
+      });
+  const createStepAction = testSlice.addReducer(
+      'step', (state: TestState, payload: string): TestState => {
+        dispatchedActions.push({type: 'step', payload});
+        return state;
+      });
 
-    yield {type: `step#${counter}`, payload};
+  /**
+   * This is an Actions Producer implemented.
+   *
+   * This produces 4 actions.
+   *
+   * Imagine that each sleep() is an API call.
+   * @param payload: A string to identify the call to foo.
+   */
+  async function* actionsProducerSuccess(payload: string): ActionsProducerGen {
+    // Produce an action before any async code.
+    yield createStepAction(`0 ${payload}`);
+
+    let counter = 0;
+    for (const waitingTime of [2, 2]) {
+      counter++;
+      // Emulate an async API call.
+      await sleep(waitingTime);
+
+      yield createStepAction(`${counter} ${payload}`);
+    }
+
+    // Yield the final action to the store.
+    yield createStepAction(`final ${payload}`);
   }
 
-  // Yield the final action to the store.
-  yield {type: 'final-step', payload};
+  /** ActionsProducer that yields an empty/undefined action. */
+  async function* producesEmpty(payload: string): ActionsProducerGen {
+    yield createStepAction(`0 ${payload}`);
+
+    yield;
+
+    yield createStepAction(`final ${payload}`);
+  }
+
+  const store = new BaseStore({}, [testSlice]);
+  const subscriber = new TestSubscriber();
+
+  return {
+    store,
+    subscriber,
+    dispatchedActions,
+    createTestAction,
+    producesEmpty,
+    actionsProducerSuccess,
+  };
 }
