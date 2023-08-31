@@ -322,7 +322,7 @@ void NotificationCenterView::AnimationEnded(const gfx::Animation* animation) {
   animation_->SetCurrentValue(1.0);
   PreferredSizeChanged();
 
-  animation_state_ = NotificationCenterAnimationState::IDLE;
+  animation_state_ = NotificationCenterAnimationState::kIdle;
   notification_bar_->SetAnimationState(animation_state_);
   UpdateVisibility();
 }
@@ -351,7 +351,7 @@ void NotificationCenterView::OnContentsScrolled() {
 
 void NotificationCenterView::StartHideStackingBarAnimation() {
   animation_->End();
-  animation_state_ = NotificationCenterAnimationState::HIDE_STACKING_BAR;
+  animation_state_ = NotificationCenterAnimationState::kHideStackingBar;
   notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kHideStackingBarAnimationDuration);
   animation_->Start();
@@ -359,7 +359,7 @@ void NotificationCenterView::StartHideStackingBarAnimation() {
 
 void NotificationCenterView::StartCollapseAnimation() {
   animation_->End();
-  animation_state_ = NotificationCenterAnimationState::COLLAPSE;
+  animation_state_ = NotificationCenterAnimationState::kCollapse;
   notification_bar_->SetAnimationState(animation_state_);
   animation_->SetDuration(kCollapseAnimationDuration);
   animation_->Start();
@@ -382,7 +382,7 @@ void NotificationCenterView::UpdateVisibility() {
       Shell::Get()->session_controller();
 
   SetVisible(available_height_ >= kUnifiedNotificationMinimumHeight &&
-             (animation_state_ == NotificationCenterAnimationState::COLLAPSE ||
+             (animation_state_ == NotificationCenterAnimationState::kCollapse ||
               notification_list_view_->GetPreferredSize().height() > 0) &&
              session_controller->ShouldShowNotificationTray() &&
              (!session_controller->IsScreenLocked() ||

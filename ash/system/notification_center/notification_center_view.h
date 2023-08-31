@@ -48,15 +48,15 @@ class UnifiedSystemTrayView;
 // tracked separately.
 enum class NotificationCenterAnimationState {
   // No animation is running.
-  IDLE,
+  kIdle,
 
   // Animating hiding the stacking bar. Runs when the user dismisses the
   // second to last notification and during the clear all animation.
-  HIDE_STACKING_BAR,
+  kHideStackingBar,
 
   // Animating collapsing the entire message center. Runs after the user
   // dismisses the last notification and during the clear all animation.
-  COLLAPSE,
+  kCollapse,
 };
 
 // Manages scrolling of notification list.
@@ -222,7 +222,7 @@ class ASH_EXPORT NotificationCenterView
 
   // Tracks the current animation state.
   NotificationCenterAnimationState animation_state_ =
-      NotificationCenterAnimationState::IDLE;
+      NotificationCenterAnimationState::kIdle;
   const std::unique_ptr<gfx::LinearAnimation> animation_;
 
   const std::unique_ptr<views::FocusSearch> focus_search_;

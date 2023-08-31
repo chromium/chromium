@@ -99,7 +99,7 @@ class StackedNotificationBar : public views::View,
   int stacked_notification_count_ = 0;
 
   NotificationCenterAnimationState animation_state_ =
-      NotificationCenterAnimationState::IDLE;
+      NotificationCenterAnimationState::kIdle;
 
   const raw_ptr<NotificationCenterView, ExperimentalAsh>
       notification_center_view_;
