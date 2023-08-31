@@ -2275,7 +2275,7 @@
     'fuchsia_accessibility_content_browsertests': {
       'accessibility_content_browsertests': {
         'args': [
-          '--gtest_filter=All/DumpAccessibility*/fuchsia',
+          '--gtest_filter=*All/DumpAccessibility*/fuchsia*',
           '--test-arg=--disable-gpu',
           '--test-arg=--headless',
           '--test-arg=--ozone-platform=headless',
