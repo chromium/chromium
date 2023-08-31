@@ -13,6 +13,7 @@
 
 #include <iterator>
 #include <memory>
+#include <utility>
 
 #include "base/apple/mach_logging.h"
 #include "base/feature_list.h"
@@ -29,17 +30,8 @@ BASE_FEATURE(kMacSetDefaultTaskRole,
              "MacSetDefaultTaskRole",
              FEATURE_DISABLED_BY_DEFAULT);
 
-// Returns the `task_role_t` of the process whose process ID is `pid`.
-absl::optional<task_role_t> GetTaskCategoryPolicyRole(
-    PortProvider* port_provider,
-    ProcessId pid) {
-  DCHECK(port_provider);
-
-  mach_port_t task_port = port_provider->TaskForPid(pid);
-  if (task_port == TASK_NULL) {
-    return absl::nullopt;
-  }
-
+// Returns the `task_role_t` of the process whose task port is `task_port`.
+absl::optional<task_role_t> GetTaskCategoryPolicyRole(mach_port_t task_port) {
   task_category_policy_data_t category_policy;
   mach_msg_type_number_t task_info_count = TASK_CATEGORY_POLICY_COUNT;
   boolean_t get_default = FALSE;
@@ -52,8 +44,101 @@ absl::optional<task_role_t> GetTaskCategoryPolicyRole(
     MACH_LOG(ERROR, result) << "task_policy_get TASK_CATEGORY_POLICY";
     return absl::nullopt;
   }
-  DCHECK(!get_default);
+  CHECK(!get_default);
   return category_policy.role;
+}
+
+// Sets the task role for `task_port`.
+bool SetTaskCategoryPolicy(mach_port_t task_port, task_role_t task_role) {
+  task_category_policy task_category_policy{.role = task_role};
+  kern_return_t result =
+      task_policy_set(task_port, TASK_CATEGORY_POLICY,
+                      reinterpret_cast<task_policy_t>(&task_category_policy),
+                      TASK_CATEGORY_POLICY_COUNT);
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "task_policy_set TASK_CATEGORY_POLICY";
+    return false;
+  }
+  return true;
+}
+
+// Taken from task_policy_private.h.
+struct task_suppression_policy {
+  integer_t active;
+  integer_t lowpri_cpu;
+  integer_t timer_throttle;
+  integer_t disk_throttle;
+  integer_t cpu_limit;
+  integer_t suspend;
+  integer_t throughput_qos;
+  integer_t suppressed_cpu;
+  integer_t background_sockets;
+  integer_t reserved[7];
+};
+
+// Taken from task_policy_private.h.
+#define TASK_SUPPRESSION_POLICY_COUNT                                \
+  ((mach_msg_type_number_t)(sizeof(struct task_suppression_policy) / \
+                            sizeof(integer_t)))
+
+// Activates or deactivates the suppression policy to match the effect of App
+// Nap.
+bool SetTaskSuppressionPolicy(mach_port_t task_port, bool activate) {
+  task_suppression_policy suppression_policy = {
+      .active = activate,
+      .lowpri_cpu = activate,
+      .timer_throttle =
+          activate ? LATENCY_QOS_TIER_5 : LATENCY_QOS_TIER_UNSPECIFIED,
+      .disk_throttle = activate,
+      .cpu_limit = 0,                                    /* unused */
+      .suspend = false,                                  /* unused */
+      .throughput_qos = THROUGHPUT_QOS_TIER_UNSPECIFIED, /* unused */
+      .suppressed_cpu = activate,
+      .background_sockets = activate,
+  };
+  kern_return_t result =
+      task_policy_set(task_port, TASK_SUPPRESSION_POLICY,
+                      reinterpret_cast<task_policy_t>(&suppression_policy),
+                      TASK_SUPPRESSION_POLICY_COUNT);
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "task_policy_set TASK_SUPPRESSION_POLICY";
+    return false;
+  }
+  return true;
+}
+
+// Returns true if the task suppression policy is active for `task_port`.
+bool IsTaskSuppressionPolicyActive(mach_port_t task_port) {
+  task_suppression_policy suppression_policy = {
+      .active = false,
+  };
+
+  mach_msg_type_number_t task_info_count = TASK_SUPPRESSION_POLICY_COUNT;
+  boolean_t get_default = FALSE;
+
+  kern_return_t result =
+      task_policy_get(task_port, TASK_SUPPRESSION_POLICY,
+                      reinterpret_cast<task_policy_t>(&suppression_policy),
+                      &task_info_count, &get_default);
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "task_policy_get TASK_SUPPRESSION_POLICY";
+    return false;
+  }
+  CHECK(!get_default);
+
+  // Only check the `active` property as it is sufficient to discern the state,
+  // even though other properties could be used.
+  return suppression_policy.active;
+}
+
+// Sets the task role and the suppression policy for `task_port`.
+bool SetPriorityImpl(mach_port_t task_port,
+                     task_role_t task_role,
+                     bool activate_suppression_policy) {
+  // Do both operations, even if the first one fails.
+  bool succeeded = SetTaskCategoryPolicy(task_port, task_role);
+  succeeded &= SetTaskSuppressionPolicy(task_port, activate_suppression_policy);
+  return succeeded;
 }
 
 }  // namespace
@@ -76,58 +161,70 @@ bool Process::CanSetPriority() {
 }
 
 Process::Priority Process::GetPriority(PortProvider* port_provider) const {
-  DCHECK(IsValid());
-  DCHECK(port_provider);
+  CHECK(IsValid());
+  CHECK(port_provider);
 
-  // A process is backgrounded if the role is explicitly
-  // TASK_BACKGROUND_APPLICATION (as opposed to not being
-  // TASK_FOREGROUND_APPLICATION).
-  absl::optional<task_role_t> task_role =
-      GetTaskCategoryPolicyRole(port_provider, Pid());
-  if (task_role && *task_role == TASK_BACKGROUND_APPLICATION) {
-    return Priority::kBestEffort;
+  mach_port_t task_port = port_provider->TaskForPid(Pid());
+  if (task_port == TASK_NULL) {
+    // Upon failure, return the default value.
+    return Priority::kUserBlocking;
   }
+
+  absl::optional<task_role_t> task_role = GetTaskCategoryPolicyRole(task_port);
+  if (!task_role) {
+    // Upon failure, return the default value.
+    return Priority::kUserBlocking;
+  }
+  bool is_suppression_policy_active = IsTaskSuppressionPolicyActive(task_port);
+  if (*task_role == TASK_BACKGROUND_APPLICATION &&
+      is_suppression_policy_active) {
+    return Priority::kBestEffort;
+  } else if (*task_role == TASK_BACKGROUND_APPLICATION &&
+             !is_suppression_policy_active) {
+    return Priority::kUserVisible;
+  } else if (*task_role == TASK_FOREGROUND_APPLICATION &&
+             !is_suppression_policy_active) {
+    return Priority::kUserBlocking;
+  }
+
+  // It is possible to get a different state very early in the process lifetime,
+  // before SetCurrentTaskDefaultRole() has been invoked. Assume highest
+  // priority then.
   return Priority::kUserBlocking;
 }
 
 bool Process::SetPriority(PortProvider* port_provider, Priority priority) {
-  DCHECK(IsValid());
-  DCHECK(port_provider);
+  CHECK(IsValid());
+  CHECK(port_provider);
 
   if (!CanSetPriority()) {
     return false;
   }
 
   mach_port_t task_port = port_provider->TaskForPid(Pid());
-  if (task_port == TASK_NULL)
-    return false;
-
-  absl::optional<task_role_t> current_role =
-      GetTaskCategoryPolicyRole(port_provider, Pid());
-  if (!current_role) {
+  if (task_port == TASK_NULL) {
     return false;
   }
 
-  const bool background = priority == base::Process::Priority::kBestEffort;
-  if ((background && *current_role == TASK_BACKGROUND_APPLICATION) ||
-      (!background && *current_role == TASK_FOREGROUND_APPLICATION)) {
-    return true;
+  switch (priority) {
+    case Priority::kBestEffort:
+      // Activate the suppression policy.
+      // Note:
+      // App Nap keeps the task role to TASK_FOREGROUND_APPLICATION when it
+      // activates the suppression policy. Here TASK_BACKGROUND_APPLICATION is
+      // used instead to keep the kBestEffort role consistent with the value for
+      // kUserVisible (so that its is not greater than kUserVisible). This
+      // difference is unlikely to matter.
+      return SetPriorityImpl(task_port, TASK_BACKGROUND_APPLICATION, true);
+    case Priority::kUserVisible:
+      // Set a task role with a lower priority than kUserBlocking, but do not
+      // activate the suppression policy.
+      return SetPriorityImpl(task_port, TASK_BACKGROUND_APPLICATION, false);
+    case Priority::kUserBlocking:
+    default:
+      // Set the highest priority with the suppression policy inactive.
+      return SetPriorityImpl(task_port, TASK_FOREGROUND_APPLICATION, false);
   }
-
-  task_category_policy category_policy;
-  category_policy.role =
-      background ? TASK_BACKGROUND_APPLICATION : TASK_FOREGROUND_APPLICATION;
-  kern_return_t result =
-      task_policy_set(task_port, TASK_CATEGORY_POLICY,
-                      reinterpret_cast<task_policy_t>(&category_policy),
-                      TASK_CATEGORY_POLICY_COUNT);
-
-  if (result != KERN_SUCCESS) {
-    MACH_LOG(ERROR, result) << "task_policy_set TASK_CATEGORY_POLICY";
-    return false;
-  }
-
-  return true;
 }
 
 // static
@@ -136,11 +233,17 @@ void Process::SetCurrentTaskDefaultRole() {
     return;
   }
 
-  task_category_policy category_policy;
-  category_policy.role = TASK_DEFAULT_APPLICATION;
-  task_policy_set(mach_task_self(), TASK_CATEGORY_POLICY,
-                  reinterpret_cast<task_policy_t>(&category_policy),
-                  TASK_CATEGORY_POLICY_COUNT);
+  SetTaskCategoryPolicy(mach_task_self(), TASK_FOREGROUND_APPLICATION);
+
+  // Set the QoS settings to tier 0, to match the default value given to App Nap
+  // enabled applications.
+  task_qos_policy task_qos_policy = {
+      .task_latency_qos_tier = LATENCY_QOS_TIER_0,
+      .task_throughput_qos_tier = THROUGHPUT_QOS_TIER_0,
+  };
+  task_policy_set(mach_task_self(), TASK_BASE_QOS_POLICY,
+                  reinterpret_cast<task_policy_t>(&task_qos_policy),
+                  TASK_QOS_POLICY_COUNT);
 }
 
 }  // namespace base
