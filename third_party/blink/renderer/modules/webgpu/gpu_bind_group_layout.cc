@@ -8,11 +8,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_binding_layout.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_storage_texture_binding_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_binding_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -56,8 +58,24 @@ WGPUBindGroupLayoutEntry AsDawnType(
       return {};
     }
 
+    // Throw an exception for unsupported enums for GPUStorageTextureAccess
+    // to pretend Blink doesn't know of them.
     dawn_binding.storageTexture.access =
         AsDawnEnum(webgpu_binding->storageTexture()->access());
+    const V8GPUFeatureName::Enum kRWStorage =
+        V8GPUFeatureName::Enum::kChromiumExperimentalReadWriteStorageTexture;
+    if (dawn_binding.storageTexture.access !=
+            WGPUStorageTextureAccess_WriteOnly &&
+        !device->features()->has(kRWStorage)) {
+      exception_state.ThrowTypeError(String::Format(
+          "Use of the '%s' access mode requires the '%s' feature "
+          "to be enabled on %s.",
+          webgpu_binding->storageTexture()->access().AsCStr(),
+          V8GPUFeatureName(kRWStorage).AsCStr(),
+          device->formattedLabel().c_str()));
+      return {};
+    }
+
     dawn_binding.storageTexture.format =
         AsDawnEnum(webgpu_binding->storageTexture()->format());
     dawn_binding.storageTexture.viewDimension =

@@ -80,6 +80,10 @@ WGPUStorageTextureAccess AsDawnEnum(
   switch (webgpu_enum.AsEnum()) {
     case V8GPUStorageTextureAccess::Enum::kWriteOnly:
       return WGPUStorageTextureAccess_WriteOnly;
+    case V8GPUStorageTextureAccess::Enum::kReadOnly:
+      return WGPUStorageTextureAccess_ReadOnly;
+    case V8GPUStorageTextureAccess::Enum::kReadWrite:
+      return WGPUStorageTextureAccess_ReadWrite;
   }
 }
 
