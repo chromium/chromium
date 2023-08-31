@@ -34,72 +34,49 @@ copy("test_installer") {
   outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
 }
 
-action("test_app1_installer") {
+template("test_app_installer") {
   testonly = true
+  app_name = "test_" + target_name
+  setup_name = "Test" + target_name + "Setup"
   script = "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
 
-  inputs = [
-    script,
-    "test_app1_setup.py",
-  ]
-
-  output_installer = "$root_build_dir/test_installer/TestApp1Setup.exe"
+  output_installer = "$root_build_dir/test_installer/" + setup_name + ".exe"
   outputs = [ output_installer ]
 
-  args = [
-    "--installer",
-    rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
-                root_build_dir),
-    "--output",
-    rebase_path(output_installer, root_build_dir),
-    "--script",
-    rebase_path("test_app1_setup.py"),
-  ]
-  deps = [ ":test_installer" ]
+  action(app_name + "_installer") {
+    inputs = [
+      script,
+      invoker.setup_script,
+    ]
+
+    args = [
+      "--installer",
+      rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
+                  root_build_dir),
+      "--output",
+      rebase_path(output_installer, root_build_dir),
+      "--script",
+      rebase_path(invoker.setup_script),
+    ]
+    deps = [ ":test_installer" ]
+  }
+
+  crx3(app_name + "_installer_crx") {
+    base_dir = "$root_build_dir/test_installer"
+    key = "//chrome/updater/test/data/selfupdate_test_key.der"
+    output = "$root_build_dir/test_installer/" + setup_name + ".crx3"
+
+    inputs = [ output_installer ]
+    deps = [ ":" + app_name + "_installer" ]
+  }
 }
 
-crx3("test_app1_installer_crx") {
-  base_dir = "$root_build_dir/test_installer"
-  key = "//chrome/updater/test/data/selfupdate_test_key.der"
-  output = "$root_build_dir/test_installer/TestApp1Setup.crx3"
-  testonly = true
-
-  inputs = [ "$root_build_dir/test_installer/TestApp1Setup.exe" ]
-  deps = [ ":test_app1_installer" ]
+test_app_installer("app1") {
+  setup_script = "test_app1_setup.py"
 }
 
-action("test_app2_installer") {
-  testonly = true
-  script = "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
-
-  inputs = [
-    script,
-    "test_app2_setup.cmd",
-  ]
-
-  output_installer = "$root_build_dir/test_installer/TestApp2Setup.exe"
-  outputs = [ output_installer ]
-
-  args = [
-    "--installer",
-    rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
-                root_build_dir),
-    "--output",
-    rebase_path(output_installer, root_build_dir),
-    "--script",
-    rebase_path("test_app2_setup.cmd"),
-  ]
-  deps = [ ":test_installer" ]
-}
-
-crx3("test_app2_installer_crx") {
-  base_dir = "$root_build_dir/test_installer"
-  key = "//chrome/updater/test/data/selfupdate_test_key.der"
-  output = "$root_build_dir/test_installer/TestApp2Setup.crx3"
-  testonly = true
-
-  inputs = [ "$root_build_dir/test_installer/TestApp2Setup.exe" ]
-  deps = [ ":test_app2_installer" ]
+test_app_installer("app2") {
+  setup_script = "test_app2_setup.cmd"
 }
 
 template("test_msi_installer") {
