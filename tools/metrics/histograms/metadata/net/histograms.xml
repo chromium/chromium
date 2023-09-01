@@ -225,9 +225,41 @@ chromium-metrics-reviews@google.com.
     unexportable_keys::UnexportableKeyService and completing the operation
     (either successfully or not).
 
+    This time includes both the time spent waiting in a task queue and the
+    execution time. These sub-intervals are covered by
+    Crypto.UnexportableKeys.BackgroundTaskQueueWaitDuration and
+    Crypto.UnexportableKeys.BackgroundTaskRunDuration histograms
+    correspondingly.
+
     Includes operations that were scheduled with {Priority}.
 
     Recorded right after a TPM operation completes.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="all priorities"/>
+    <variant name=".BestEffort" summary="the BestEffort priority"/>
+    <variant name=".UserBlocking" summary="the UserBlocking priority"/>
+    <variant name=".UserVisible" summary="the UserVisible priority"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Crypto.UnexportableKeys.BackgroundTaskQueueWaitDuration{Priority}"
+    units="ms" expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <summary>
+    Records the time spent waiting in a task queue for the subset of TPM
+    operations that are asynchronously scheduled through
+    unexportable_keys::UnexportableKeyService.
+
+    This duration is a sub-interval of
+    Crypto.UnexportableKeys.BackgroundTaskDuration.
+
+    Includes operations that were scheduled with {Priority}.
+
+    Recorded right before a TPM operation is sent to the background thread for
+    execution.
   </summary>
   <token key="Priority">
     <variant name="" summary="all priorities"/>
@@ -255,6 +287,37 @@ chromium-metrics-reviews@google.com.
     <variant name=".GenerateKey"
         summary="operations to generate a new signing key"/>
     <variant name=".Sign" summary="signing operations"/>
+  </token>
+</histogram>
+
+<histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
+    units="ms" expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <summary>
+    Records the time that passed between starting executing a TPM operation on a
+    background thread and completing the operation (either successfully or not).
+    Includes only a subset of TPM operations that are scheduled asynchronously
+    through unexportable_keys::UnexportableKeyService.
+
+    This duration is a sub-interval of
+    Crypto.UnexportableKeys.BackgroundTaskDuration. Unlike
+    Crypto.UnexportableKeys.BackgroundTaskDuration, this histogram is split by a
+    task type instead of a task priority because the priority doesn't matter
+    once a task starts executing. Only one task can be executed at the time due
+    to TPM limitations.
+
+    Includes {TaskType}.
+
+    Recorded right after a TPM operation completes.
+  </summary>
+  <token key="TaskType">
+    <variant name="" summary="all operation types"/>
+    <variant name=".FromWrappedKey"
+        summary="only operations to create a signing key from a wrapped key"/>
+    <variant name=".GenerateKey"
+        summary="only operations to generate a new signing key"/>
+    <variant name=".Sign" summary="only signing operations"/>
   </token>
 </histogram>
 

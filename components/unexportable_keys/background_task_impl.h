@@ -13,6 +13,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/unexportable_keys/background_task.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/background_task_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace unexportable_keys::internal {
 
@@ -30,8 +32,12 @@ class BackgroundTaskImpl : public BackgroundTask {
   // `task`.
   BackgroundTaskImpl(base::OnceCallback<ReturnType()> task,
                      base::OnceCallback<void(ReturnType)> reply,
-                     BackgroundTaskPriority priority)
-      : task_(std::move(task)), reply_(std::move(reply)), priority_(priority) {
+                     BackgroundTaskPriority priority,
+                     BackgroundTaskType type)
+      : task_(std::move(task)),
+        reply_(std::move(reply)),
+        priority_(priority),
+        type_(type) {
     DCHECK(task_);
     DCHECK(reply_);
   }
@@ -41,6 +47,7 @@ class BackgroundTaskImpl : public BackgroundTask {
   void Run(scoped_refptr<base::SequencedTaskRunner> background_task_runner,
            base::OnceCallback<void(BackgroundTask* task)> on_complete_callback)
       override {
+    run_timer_ = base::ElapsedTimer();
     background_task_runner->PostTaskAndReplyWithResult(
         FROM_HERE, std::move(task_),
         std::move(reply_).Then(
@@ -59,8 +66,17 @@ class BackgroundTaskImpl : public BackgroundTask {
 
   BackgroundTaskPriority GetPriority() const override { return priority_; }
 
+  BackgroundTaskType GetType() const override { return type_; }
+
   base::TimeDelta GetElapsedTimeSinceCreation() const override {
-    return timer_.Elapsed();
+    return creation_timer_.Elapsed();
+  }
+
+  absl::optional<base::TimeDelta> GetElapsedTimeSinceRun() const override {
+    if (run_timer_.has_value()) {
+      return run_timer_->Elapsed();
+    }
+    return absl::nullopt;
   }
 
  private:
@@ -68,7 +84,9 @@ class BackgroundTaskImpl : public BackgroundTask {
   base::OnceCallback<void(ReturnType)> reply_;
 
   const BackgroundTaskPriority priority_;
-  const base::ElapsedTimer timer_;
+  const BackgroundTaskType type_;
+  const base::ElapsedTimer creation_timer_;
+  absl::optional<base::ElapsedTimer> run_timer_;
 };
 
 }  // namespace unexportable_keys::internal

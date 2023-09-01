@@ -5,6 +5,7 @@
 #include "components/unexportable_keys/unexportable_key_tasks.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "components/unexportable_keys/background_task_type.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
@@ -37,7 +38,8 @@ GenerateKeyTask::GenerateKeyTask(
                   acceptable_algorithms.begin(),
                   acceptable_algorithms.end())),
           std::move(callback),
-          priority) {}
+          priority,
+          BackgroundTaskType::kGenerateKey) {}
 
 FromWrappedKeyTask::FromWrappedKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
@@ -50,7 +52,8 @@ FromWrappedKeyTask::FromWrappedKeyTask(
               std::move(key_provider),
               std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end())),
           std::move(callback),
-          priority) {}
+          priority,
+          BackgroundTaskType::kFromWrappedKey) {}
 
 SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
                    base::span<const uint8_t> data,
@@ -61,6 +64,7 @@ SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
                          std::move(signing_key),
                          std::vector<uint8_t>(data.begin(), data.end())),
           std::move(callback),
-          priority) {}
+          priority,
+          BackgroundTaskType::kSign) {}
 
 }  // namespace unexportable_keys
