@@ -17,6 +17,7 @@
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
+#import "ios/chrome/common/intents/ViewHistoryIntent.h"
 
 @interface ChromeIntentsHandler () <OpenInChromeIncognitoIntentHandling,
                                     OpenInChromeIntentHandling,
@@ -28,7 +29,8 @@
                                     SearchWithVoiceIntentHandling,
                                     OpenNewTabIntentHandling,
                                     PlayDinoGameIntentHandling,
-                                    SetChromeDefaultBrowserIntentHandling>
+                                    SetChromeDefaultBrowserIntentHandling,
+                                    ViewHistoryIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -241,6 +243,20 @@
       [[SetChromeDefaultBrowserIntentResponse alloc]
           initWithCode:SetChromeDefaultBrowserIntentResponseCodeContinueInApp
           userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - ViewHistoryIntentHandling
+
+- (void)handleViewHistory:(ViewHistoryIntent*)intent
+               completion:(void (^)(ViewHistoryIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([ViewHistoryIntent class])];
+
+  ViewHistoryIntentResponse* response = [[ViewHistoryIntentResponse alloc]
+      initWithCode:ViewHistoryIntentResponseCodeContinueInApp
+      userActivity:activity];
 
   completion(response);
 }

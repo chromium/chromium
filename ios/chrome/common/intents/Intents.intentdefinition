@@ -9,7 +9,7 @@
 	<key>INIntentDefinitionNamespace</key>
 	<string>Oi5136</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>22G74</string>
+	<string>22G90</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
 	<string>14E222b</string>
 	<key>INIntentDefinitionToolsVersion</key>
@@ -812,6 +812,68 @@
 			<string>Set Chrome As Default Browser</string>
 			<key>INIntentTitleID</key>
 			<string>uFCGKp</string>
+			<key>INIntentType</key>
+			<string>Custom</string>
+			<key>INIntentVerb</key>
+			<string>Open</string>
+		</dict>
+		<dict>
+			<key>INIntentCategory</key>
+			<string>information</string>
+			<key>INIntentConfigurable</key>
+			<true/>
+			<key>INIntentDescriptionID</key>
+			<string>STHQ9v</string>
+			<key>INIntentManagedParameterCombinations</key>
+			<dict>
+				<key></key>
+				<dict>
+					<key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+					<true/>
+					<key>INIntentParameterCombinationTitle</key>
+					<string>View Your Chrome History</string>
+					<key>INIntentParameterCombinationTitleID</key>
+					<string>GDSnft</string>
+					<key>INIntentParameterCombinationUpdatesLinked</key>
+					<true/>
+				</dict>
+			</dict>
+			<key>INIntentName</key>
+			<string>ViewHistory</string>
+			<key>INIntentParameterCombinations</key>
+			<dict>
+				<key></key>
+				<dict>
+					<key>INIntentParameterCombinationIsPrimary</key>
+					<true/>
+					<key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+					<true/>
+					<key>INIntentParameterCombinationTitle</key>
+					<string>View Your Chrome History</string>
+					<key>INIntentParameterCombinationTitleID</key>
+					<string>h7hQub</string>
+				</dict>
+			</dict>
+			<key>INIntentResponse</key>
+			<dict>
+				<key>INIntentResponseCodes</key>
+				<array>
+					<dict>
+						<key>INIntentResponseCodeName</key>
+						<string>success</string>
+						<key>INIntentResponseCodeSuccess</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>INIntentResponseCodeName</key>
+						<string>failure</string>
+					</dict>
+				</array>
+			</dict>
+			<key>INIntentTitle</key>
+			<string>View Your Chrome History</string>
+			<key>INIntentTitleID</key>
+			<string>Ro4KQd</string>
 			<key>INIntentType</key>
 			<string>Custom</string>
 			<key>INIntentVerb</key>

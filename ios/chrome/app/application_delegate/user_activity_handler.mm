@@ -69,6 +69,7 @@ NSString* const kSiriVoiceSearch = @"SearchWithVoiceIntent";
 NSString* const kSiriOpenNewTab = @"OpenNewTabIntent";
 NSString* const kSiriPlayDinoGame = @"PlayDinoGameIntent";
 NSString* const kSiriSetChromeDefaultBrowser = @"SetChromeDefaultBrowserIntent";
+NSString* const kSiriViewHistory = @"ViewHistoryIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -339,6 +340,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
                                        SET_CHROME_DEFAULT_BROWSER]];
+  } else if ([userActivity.activityType isEqualToString:kSiriViewHistory]) {
+    [connectionInformation
+        setStartupParameters:
+            [self startupParametersForOpeningNewTabWithAction:VIEW_HISTORY]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

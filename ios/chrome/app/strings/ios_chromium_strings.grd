@@ -764,6 +764,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_DESCRIPTION" desc="Siri Shortcut description to set Chromium as default browser [iOS only]">
         Opens the Chromium Setting to set Chromium as Default Browser.
       </message>
+      <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE" desc="Siri Shortcut for view chromium history title [iOS only]">
+        View Your Chromium History
+      </message>
+      <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_DESCRIPTION" desc="Siri Shortcut description to view Chromium history [iOS only]">
+        Opens your Chromium History Page.
+      </message>
     </messages>
   </release>
 </grit>

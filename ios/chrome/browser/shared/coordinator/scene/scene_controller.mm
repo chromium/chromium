@@ -2505,6 +2505,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf showDefaultBrowserSettings];
       };
+    case VIEW_HISTORY:
+      return ^{
+        [weakSelf showHistory];
+      };
     default:
       return nil;
   }

@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>GDSnft</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>h7hQub</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>STHQ9v</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>Ro4KQd</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>dNnOX1</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_TITLE</string>

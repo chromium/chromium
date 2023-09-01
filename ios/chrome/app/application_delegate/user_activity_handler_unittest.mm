@@ -46,6 +46,7 @@
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
+#import "ios/chrome/common/intents/ViewHistoryIntent.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/mac/url_conversions.h"
@@ -1083,5 +1084,35 @@ TEST_F(UserActivityHandlerTest,
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(SET_CHROME_DEFAULT_BROWSER,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to view chrome history intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentViewChromeHistory) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"ViewHistoryIntent"];
+
+  ViewHistoryIntent* intent = [[ViewHistoryIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(VIEW_HISTORY,
             [connectionInformationMock startupParameters].postOpeningAction);
 }

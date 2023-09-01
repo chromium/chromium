@@ -770,6 +770,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_SET_CHROME_DEFAULT_BROWSER_DESCRIPTION" desc="Siri Shortcut description to set chrome as default browser [iOS only]">
         Opens the Chrome Setting to set Chrome as Default Browser.
       </message>
+      <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE" desc="Siri Shortcut for view chrome history title [iOS only]">
+        View Your Chrome History
+      </message>
+      <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_DESCRIPTION" desc="Siri Shortcut description to view Chrome history [iOS only]">
+        Opens your Chrome History Page.
+      </message>
     </messages>
   </release>
 </grit>

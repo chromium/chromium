@@ -100,6 +100,9 @@
     case SET_CHROME_DEFAULT_BROWSER:
       [description appendString:@", should open set chrome default browser"];
       break;
+    case VIEW_HISTORY:
+      [description appendString:@", should open history"];
+      break;
     default:
       break;
   }
