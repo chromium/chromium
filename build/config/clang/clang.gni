@@ -35,3 +35,7 @@ declare_args() {
   # creating a Chromium MLGO corpus in the ThinLTO case.
   lld_emit_indexes_and_imports = false
 }
+
+# We don't really need to collect a corpus for the host tools, just for the target.
+lld_emit_indexes_and_imports =
+    lld_emit_indexes_and_imports && is_a_target_toolchain
