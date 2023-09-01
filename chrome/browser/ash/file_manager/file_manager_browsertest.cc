@@ -332,6 +332,10 @@ struct TestCase {
       full_name += "_TabletMode";
     }
 
+    if (options.offline) {
+      full_name += "_Offline";
+    }
+
     if (options.files_experimental) {
       full_name += "_FilesExperimental";
     }
@@ -1627,6 +1631,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("encryptedHasDefaultTask"),
                       TestCase("hostedOpenDrive"),
                       TestCase("encryptedHostedOpenDrive"),
+                      TestCase("encryptedNonHostedOpenDrive").Offline(),
                       TestCase("encryptedNonHostedOpenDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
