@@ -12,6 +12,8 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -20,6 +22,15 @@ using blink::mojom::PresentationConnectionCloseReason;
 using blink::mojom::PresentationConnectionMessagePtr;
 
 namespace media_router {
+
+namespace {
+
+bool IsMediaStatusMessage(const cast_channel::InternalMessage& message) {
+  return message.message_namespace == cast_channel::kMediaNamespace &&
+         message.type == cast_channel::CastMessageType::kMediaStatus;
+}
+
+}  // namespace
 
 AppActivity::AppActivity(const MediaRoute& route,
                          const std::string& app_id,
@@ -146,7 +157,20 @@ void AppActivity::OnAppMessage(const cast::channel::CastMessage& message) {
 }
 
 void AppActivity::OnInternalMessage(
-    const cast_channel::InternalMessage& message) {}
+    const cast_channel::InternalMessage& message) {
+  // Forward messages in the media namespace other than media statuses to the
+  // client. Media status messages are handled by SendMediaStatusToClients().
+  if (message.message_namespace == cast_channel::kMediaNamespace &&
+      !IsMediaStatusMessage(message)) {
+    absl::optional<int> request_id =
+        cast_channel::GetRequestIdFromResponse(message.message);
+    auto client_it = connected_clients_.find(message.destination_id);
+    // Okay to drop messages for clients that have gone away.
+    if (client_it != connected_clients_.end()) {
+      client_it->second->SendMediaMessageToClient(message.message, request_id);
+    }
+  }
+}
 
 bool AppActivity::CanJoinSession(const CastMediaSource& cast_source,
                                  bool off_the_record) const {

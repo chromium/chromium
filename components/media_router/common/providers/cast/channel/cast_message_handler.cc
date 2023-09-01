@@ -51,8 +51,8 @@ LaunchSessionCallbackWrapper::LaunchSessionCallbackWrapper() = default;
 LaunchSessionCallbackWrapper::~LaunchSessionCallbackWrapper() = default;
 
 VirtualConnection::VirtualConnection(int channel_id,
-                                     const std::string& source_id,
-                                     const std::string& destination_id)
+                                     std::string_view source_id,
+                                     std::string_view destination_id)
     : channel_id(channel_id),
       source_id(source_id),
       destination_id(destination_id) {}
@@ -64,18 +64,22 @@ bool VirtualConnection::operator<(const VirtualConnection& other) const {
 }
 
 InternalMessage::InternalMessage(CastMessageType type,
-                                 const std::string& message_namespace,
+                                 std::string_view source_id,
+                                 std::string_view destination_id,
+                                 std::string_view message_namespace,
                                  base::Value::Dict message)
     : type(type),
+      source_id(source_id),
+      destination_id(destination_id),
       message_namespace(message_namespace),
       message(std::move(message)) {}
 InternalMessage::~InternalMessage() = default;
 
 CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        ParseJsonCallback parse_json,
-                                       const std::string& user_agent,
-                                       const std::string& browser_version,
-                                       const std::string& locale)
+                                       std::string_view user_agent,
+                                       std::string_view browser_version,
+                                       std::string_view locale)
     : source_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
       parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
@@ -441,7 +445,8 @@ void CastMessageHandler::HandleCastInternalMessage(
     return;
   }
 
-  InternalMessage internal_message(type, namespace_, std::move(*payload));
+  InternalMessage internal_message(type, source_id, destination_id, namespace_,
+                                   std::move(*payload));
   for (auto& observer : observers_)
     observer.OnInternalMessage(channel_id, internal_message);
 }

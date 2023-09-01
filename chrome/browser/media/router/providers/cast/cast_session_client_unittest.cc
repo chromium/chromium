@@ -244,7 +244,7 @@ TEST_F(CastSessionClientImplTest, OnMediaStatusUpdatedWithPendingRequest) {
     "timeoutMillis": 0,
     "type": "v2_message"
   })")));
-  client_->SendMediaStatusToClient(ParseJsonDict(R"({"foo": "bar"})"), 123);
+  client_->SendMediaMessageToClient(ParseJsonDict(R"({"foo": "bar"})"), 123);
 }
 
 TEST_F(CastSessionClientImplTest, SendSetVolumeCommandToReceiver) {

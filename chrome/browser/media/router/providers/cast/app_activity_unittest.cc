@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_test_util.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -349,6 +350,46 @@ TEST_F(AppActivityTest, CloseConnectionOnReceiver) {
   EXPECT_CALL(message_handler_, CloseConnection(kChannelId, "theClientId1",
                                                 session_->destination_id()));
   activity_->CloseConnectionOnReceiver("theClientId1");
+}
+
+TEST_F(AppActivityTest, ForwardInternalMediaMessage) {
+  const std::string client_id = "theClientId";
+  base::Value::Dict payload = ParseJsonDict(R"({
+    "type": "v2_message",
+    "clientId": "theClientId",
+    "message": {
+      "type": "INVALID_REQUEST",
+      "sessionId": "theSessionId",
+    },
+  })");
+  SetUpSession();
+  MockCastSessionClient* client = AddMockClient(client_id);
+
+  EXPECT_CALL(*client, SendMediaMessageToClient);
+  activity_->OnInternalMessage(cast_channel::InternalMessage(
+      cast_channel::CastMessageType::kInvalidRequest, "theSourceId", client_id,
+      cast_channel::kMediaNamespace, std::move(payload)));
+}
+
+TEST_F(AppActivityTest, IgnoreInternalMediaStatusMessage) {
+  const std::string client_id = "theClientId";
+  base::Value::Dict media_status_payload = ParseJsonDict(R"({
+    "type": "v2_message",
+    "clientId": "theClientId",
+    "message": {
+      "type": "MEDIA_STATUS",
+      "sessionId": "theSessionId",
+    },
+  })");
+  SetUpSession();
+  MockCastSessionClient* client = AddMockClient(client_id);
+
+  // OnInternalMessage() should ignore `kMediaStatus` messages because they're
+  // handled elsewhere.
+  EXPECT_CALL(*client, SendMediaMessageToClient).Times(0);
+  activity_->OnInternalMessage(cast_channel::InternalMessage(
+      cast_channel::CastMessageType::kMediaStatus, "theSourceId", client_id,
+      cast_channel::kMediaNamespace, std::move(media_status_payload)));
 }
 
 }  // namespace media_router

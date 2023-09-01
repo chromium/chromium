@@ -44,11 +44,11 @@ class CastSessionClient {
   virtual void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) = 0;
 
-  // Sends a media status message to the client.  If |request_id| is given, it
+  // Sends a media message to the client.  If |request_id| is given, it
   // is used to look up the sequence number of a previous request, which is
   // included in the outgoing message.
-  virtual void SendMediaStatusToClient(const base::Value::Dict& media_status,
-                                       absl::optional<int> request_id) = 0;
+  virtual void SendMediaMessageToClient(const base::Value::Dict& payload,
+                                        absl::optional<int> request_id) = 0;
 
   // Changes the PresentationConnection state to CLOSED/TERMINATED and resets
   // PresentationConnection message pipes.

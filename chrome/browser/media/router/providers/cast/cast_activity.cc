@@ -110,7 +110,7 @@ void CastActivity::SendMediaStatusToClients(
     const base::Value::Dict& media_status,
     absl::optional<int> request_id) {
   for (auto& client : connected_clients_)
-    client.second->SendMediaStatusToClient(media_status, request_id);
+    client.second->SendMediaMessageToClient(media_status, request_id);
 }
 
 void CastActivity::ClosePresentationConnections(

@@ -29,6 +29,9 @@ namespace media_router {
 
 namespace {
 
+constexpr char kDestinationId[] = "destination_id";
+constexpr char kSourceId[] = "source_id";
+
 constexpr char kReceiverStatus[] = R"({
     "status": {
         "applications": [{
@@ -104,7 +107,8 @@ class CastSessionTrackerTest : public testing::Test {
     session_tracker_.OnInternalMessage(
         sink_.cast_data().cast_channel_id,
         cast_channel::InternalMessage(
-            cast_channel::CastMessageType::kReceiverStatus, kReceiverNamespace,
+            cast_channel::CastMessageType::kReceiverStatus, kSourceId,
+            kDestinationId, kReceiverNamespace,
             ParseJsonDict(kReceiverStatus)));
 
     session_ = session_tracker_.GetSessions().begin()->second.get();
@@ -150,7 +154,8 @@ TEST_F(CastSessionTrackerTest, RemoveSession) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(
-          cast_channel::CastMessageType::kReceiverStatus, kReceiverNamespace,
+          cast_channel::CastMessageType::kReceiverStatus, kSourceId,
+          kDestinationId, kReceiverNamespace,
           ParseJsonDict(kIdleReceiverStatus)));
 }
 
@@ -198,7 +203,8 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "status": [{
         "playerState": "anything but IDLE",
         "supportedMediaCommands": 0,
@@ -259,7 +265,8 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageFancy) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "requestId": 12345,
     "status": [{
         "playerState": "anything but IDLE",
@@ -294,7 +301,8 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "status": [{
         "media": "theMedia",
         "mediaSessionId": 345,
@@ -340,7 +348,8 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "status": [{
         "mediaSessionId": 345,
         "playerState": "anything but IDLE",
@@ -369,7 +378,8 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "status": [{
         "media": "oldMedia",
         "mediaSessionId": 345,
@@ -385,7 +395,8 @@ TEST_F(CastSessionTrackerTest, DoNotCopySavedMediaFieldsWhenFieldPresent) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
-                                    kMediaNamespace, ParseJsonDict(R"({
+                                    kSourceId, kDestinationId, kMediaNamespace,
+                                    ParseJsonDict(R"({
     "status": [{
         "media": "newMedia",
         "mediaSessionId": 345,

@@ -45,8 +45,11 @@ constexpr int kFrameTreeNodeId = 123;
 constexpr int kTabId = 234;
 constexpr char kDescription[] = "";
 constexpr char kDesktopMediaId[] = "theDesktopMediaId";
-constexpr char kPresentationId[] = "thePresentationId";
 constexpr char kDestinationId[] = "theTransportId";
+constexpr char kMessageDestinationId[] = "theMessageDestinationId";
+constexpr char kMessageSourceId[] = "theMessageSourceId";
+constexpr char kNamespace[] = "the_namespace";
+constexpr char kPresentationId[] = "thePresentationId";
 
 // Metrics constants.
 constexpr char kHistogramSessionLength[] =
@@ -342,7 +345,7 @@ TEST_F(MirroringActivityTest, SendWebRtc) {
           }));
 
   activity_->OnMessage(
-      mirroring::mojom::CastMessage::New("the_namespace", kPayload));
+      mirroring::mojom::CastMessage::New(kNamespace, kPayload));
   RunUntilIdle();
 }
 
@@ -357,7 +360,7 @@ TEST_F(MirroringActivityTest, SendRemoting) {
       }));
 
   activity_->OnMessage(
-      mirroring::mojom::CastMessage::New("the_namespace", kPayload));
+      mirroring::mojom::CastMessage::New(kNamespace, kPayload));
   RunUntilIdle();
 }
 
@@ -427,16 +430,15 @@ TEST_F(MirroringActivityTest, OnInternalMessageNonlocal) {
   route_is_local_ = false;
   MakeActivity();
   ASSERT_FALSE(channel_to_service_);
-  activity_->OnInternalMessage(
-      cast_channel::InternalMessage(cast_channel::CastMessageType::kPing,
-                                    "the_namespace", base::Value::Dict()));
+  activity_->OnInternalMessage(cast_channel::InternalMessage(
+      cast_channel::CastMessageType::kPing, kMessageSourceId,
+      kMessageDestinationId, kNamespace, base::Value::Dict()));
 }
 
 TEST_F(MirroringActivityTest, OnInternalMessage) {
   MakeActivity();
 
   static constexpr char kPayload[] = R"({"foo": "bar"})";
-  static constexpr char kNamespace[] = "the_namespace";
 
   EXPECT_CALL(*channel_to_service_, OnMessage)
       .WillOnce([](mirroring::mojom::CastMessagePtr message) {
@@ -445,8 +447,8 @@ TEST_F(MirroringActivityTest, OnInternalMessage) {
       });
 
   activity_->OnInternalMessage(cast_channel::InternalMessage(
-      cast_channel::CastMessageType::kPing, kNamespace,
-      base::test::ParseJsonDict(kPayload)));
+      cast_channel::CastMessageType::kPing, kMessageSourceId,
+      kMessageDestinationId, kNamespace, base::test::ParseJsonDict(kPayload)));
 }
 
 TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {

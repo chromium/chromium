@@ -77,8 +77,8 @@ void CastSessionClientImpl::SendMessageToClient(
   connection_remote_->OnMessage(std::move(message));
 }
 
-void CastSessionClientImpl::SendMediaStatusToClient(
-    const base::Value::Dict& media_status,
+void CastSessionClientImpl::SendMediaMessageToClient(
+    const base::Value::Dict& payload,
     absl::optional<int> request_id) {
   // Look up if there is a pending request from this client associated with this
   // message. If so, send the media status message as a response by setting the
@@ -93,9 +93,7 @@ void CastSessionClientImpl::SendMediaStatusToClient(
       pending_media_requests_.erase(it);
     }
   }
-
-  SendMessageToClient(
-      CreateV2Message(client_id(), media_status, sequence_number));
+  SendMessageToClient(CreateV2Message(client_id(), payload, sequence_number));
 }
 
 bool CastSessionClientImpl::MatchesAutoJoinPolicy(

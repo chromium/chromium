@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_MESSAGE_HANDLER_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_MESSAGE_HANDLER_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -105,8 +107,8 @@ using SetVolumeRequest = PendingRequest<ResultCallback>;
 // messages can be sent. Virtual connections are managed by CastMessageHandler.
 struct VirtualConnection {
   VirtualConnection(int channel_id,
-                    const std::string& source_id,
-                    const std::string& destination_id);
+                    std::string_view source_id,
+                    std::string_view destination_id);
   ~VirtualConnection();
 
   bool operator<(const VirtualConnection& other) const;
@@ -123,11 +125,20 @@ struct VirtualConnection {
 
 struct InternalMessage {
   InternalMessage(CastMessageType type,
-                  const std::string& message_namespace,
+                  std::string_view source_id,
+                  std::string_view destination_id,
+                  std::string_view message_namespace,
                   base::Value::Dict message);
   ~InternalMessage();
 
   CastMessageType type;
+  // `source_id` and `destination_id` are from the CastMessage that this
+  // InternalMessage was created from. If this message is from the receiver to
+  // the sender, `source_id` and `destination_id` represent those two
+  // respectively, and may not match a VirtualConnection's `source_id` (sender)
+  // and `destination_id` (receiver).
+  std::string source_id;
+  std::string destination_id;
   // This field is only needed to communicate the namespace
   // information from CastMessageHandler::OnMessage to
   // MirroringActivityRecord::OnInternalMessage.  Maybe there's a better way?
@@ -163,9 +174,9 @@ class CastMessageHandler : public CastSocket::Observer {
       data_decoder::DataDecoder::ValueParseCallback callback)>;
   CastMessageHandler(CastSocketService* socket_service,
                      ParseJsonCallback parse_json,
-                     const std::string& user_agent,
-                     const std::string& browser_version,
-                     const std::string& locale);
+                     std::string_view user_agent,
+                     std::string_view browser_version,
+                     std::string_view locale);
 
   CastMessageHandler(const CastMessageHandler&) = delete;
   CastMessageHandler& operator=(const CastMessageHandler&) = delete;

@@ -37,8 +37,8 @@ class MockCastSessionClient : public CastSessionClient {
   MOCK_METHOD0(Init, mojom::RoutePresentationConnectionPtr());
   MOCK_METHOD1(SendMessageToClient,
                void(blink::mojom::PresentationConnectionMessagePtr message));
-  MOCK_METHOD2(SendMediaStatusToClient,
-               void(const base::Value::Dict& media_status,
+  MOCK_METHOD2(SendMediaMessageToClient,
+               void(const base::Value::Dict& payload,
                     absl::optional<int> request_id));
   MOCK_METHOD1(
       CloseConnection,
