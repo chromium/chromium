@@ -245,7 +245,7 @@ class Expectations(object):
     # revision (author date time timezone lineno)line_content
     # (Note the lack of space between the ) and the content).
     cmd = ['git', 'blame', '-c', expectation_file_path]
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
       blame_output = subprocess.check_output(cmd,
                                              stderr=devnull).decode('utf-8')
     for line in blame_output.splitlines(True):
@@ -295,7 +295,7 @@ class Expectations(object):
       expectations.
     """
 
-    with open(expectation_file) as f:
+    with open(expectation_file, encoding='utf-8') as f:
       input_contents = f.read()
 
     group_to_expectations, expectation_to_group = (
@@ -364,7 +364,7 @@ class Expectations(object):
     output_contents = _RemoveStaleComments(output_contents, removed_lines,
                                            header_length)
 
-    with open(expectation_file, 'w') as f:
+    with open(expectation_file, 'w', newline='', encoding='utf-8') as f:
       f.write(output_contents)
 
     return removed_urls
@@ -559,7 +559,7 @@ class Expectations(object):
     # so there may be room to share code between the two.
 
     if expectation_file not in self._cached_tag_groups:
-      with open(expectation_file) as infile:
+      with open(expectation_file, encoding='utf-8') as infile:
         contents = infile.read()
       tag_groups = []
       for match in TAG_GROUP_REGEX.findall(contents):
@@ -629,7 +629,7 @@ class Expectations(object):
         stale_expectation_map.IterBuilderStepMaps()):
       # Check if the current annotation has scope narrowing disabled.
       if expectation_file not in cached_disable_annotated_expectations:
-        with open(expectation_file) as infile:
+        with open(expectation_file, encoding='utf-8') as infile:
           disable_annotated_expectations = (
               self._GetDisableAnnotatedExpectationsFromFile(
                   expectation_file, infile.read()))
@@ -737,7 +737,7 @@ class Expectations(object):
       }
 
       # Replace the existing expectation with our new ones.
-      with open(expectation_file) as infile:
+      with open(expectation_file, encoding='utf-8') as infile:
         file_contents = infile.read()
       line, _ = self._GetExpectationLine(e, file_contents, expectation_file)
       modified_urls |= set(e.bug.split())
@@ -749,7 +749,7 @@ class Expectations(object):
       expectation_strs.sort()
       replacement_lines = '\n'.join(expectation_strs)
       file_contents = file_contents.replace(line, replacement_lines)
-      with open(expectation_file, 'w') as outfile:
+      with open(expectation_file, 'w', newline='', encoding='utf-8') as outfile:
         outfile.write(file_contents)
 
     return modified_urls
@@ -806,7 +806,7 @@ class Expectations(object):
     expectation_files = self.GetExpectationFilepaths()
 
     for ef in expectation_files:
-      with open(ef) as infile:
+      with open(ef, encoding='utf-8') as infile:
         contents = infile.read()
       for url in affected_urls:
         if url in seen_bugs:

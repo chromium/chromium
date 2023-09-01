@@ -189,7 +189,7 @@ class BigQueryQuerier(object):
     query = self._GetActiveBuilderQuery(
         builder_type, include_internal_builders).encode('utf-8')
     cmd = GenerateBigQueryCommand(self._project, {}, batch=False)
-    with open(os.devnull, 'w') as devnull:
+    with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
       p = subprocess.Popen(cmd,
                            stdout=subprocess.PIPE,
                            stderr=devnull,
@@ -408,7 +408,7 @@ class BigQueryQuerier(object):
     def run_cmd_in_thread(inputs: Tuple[List[str], str]) -> str:
       cmd, query = inputs
       query = query.encode('utf-8')
-      with open(os.devnull, 'w') as devnull:
+      with open(os.devnull, 'w', newline='', encoding='utf-8') as devnull:
         with processes_lock:
           # Starting many queries at once causes us to hit rate limits much more
           # frequently, so stagger query starts to help avoid that.
