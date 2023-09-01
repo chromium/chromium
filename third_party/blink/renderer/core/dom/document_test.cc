@@ -2138,4 +2138,14 @@ TEST_F(DocumentTest, ActiveModalDialog) {
   EXPECT_EQ(GetDocument().ActiveModalDialog(), modal);
 }
 
+TEST_F(DocumentTest, LifecycleState_DirtyStyle_NoBody) {
+  GetDocument().body()->remove();
+  UpdateAllLifecyclePhasesForTest();
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("color:pink"));
+  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_EQ(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kVisualUpdatePending);
+}
+
 }  // namespace blink

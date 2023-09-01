@@ -1994,8 +1994,6 @@ bool Document::ShouldScheduleLayoutTreeUpdate() const {
     return false;
   if (lifecycle_.GetState() == DocumentLifecycle::kInPerformLayout)
     return false;
-  if (!ShouldScheduleLayout())
-    return false;
   return true;
 }
 
@@ -2004,8 +2002,9 @@ void Document::ScheduleLayoutTreeUpdate() {
   DCHECK(ShouldScheduleLayoutTreeUpdate());
   DCHECK(NeedsLayoutTreeUpdate());
 
-  if (!View()->CanThrottleRendering())
+  if (!View()->CanThrottleRendering() && ShouldScheduleLayout()) {
     GetPage()->Animator().ScheduleVisualUpdate(GetFrame());
+  }
 
   // FrameSelection caches visual selection information, which must be
   // invalidated on dirty layout tree.
@@ -2630,6 +2629,12 @@ void Document::MarkHasFindInPageBeforematchExpandedHiddenMatchable() {
 
 void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   DCHECK(IsMainThread());
+  // TODO(paint-dev): LifecyclePostponed() and
+  // LocalFrameView::IsUpdatingLifecycle() overlap in functionality, but with
+  // slight differences. We should combine them.
+  if (Lifecycle().LifecyclePostponed()) {
+    return;
+  }
   LocalFrameView* frame_view = View();
 
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
@@ -4235,16 +4240,20 @@ bool Document::ShouldScheduleLayout() const {
   // needed. This enforces a couple extra rules.
   //
   //    (a) Only schedule a layout once the stylesheets are loaded.
-  //    (b) Only schedule layout once we have a body element.
-  if (!IsActive())
+  //    (b) Only schedule layout once we have a body element, or parsing has
+  //        finished and we don't have a body element (if e.g. a script has
+  //        removed the body element, but the root element, and maybe even the
+  //        head elements are styled to render, we should allow layout of those
+  //        elements).
+  if (!IsActive()) {
     return false;
-
-  if (HaveRenderBlockingResourcesLoaded() && body())
+  }
+  if (HaveRenderBlockingResourcesLoaded() && (body() || HasFinishedParsing())) {
     return true;
-
-  if (documentElement() && !IsA<HTMLHtmlElement>(documentElement()))
+  }
+  if (documentElement() && !IsA<HTMLHtmlElement>(documentElement())) {
     return true;
-
+  }
   return false;
 }
 
