@@ -7,6 +7,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller.h"
 
 @interface PasswordPickerCoordinator () {
@@ -19,6 +20,9 @@
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordPickerViewController* viewController;
+
+// Main mediator for this coordinator.
+@property(nonatomic, strong) PasswordPickerMediator* mediator;
 
 @end
 
@@ -42,6 +46,9 @@
 
   self.viewController = [[PasswordPickerViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  self.mediator =
+      [[PasswordPickerMediator alloc] initWithCredentials:_credentials];
+  self.mediator.consumer = self.viewController;
   self.navigationController =
       [[TableViewNavigationController alloc] initWithTable:self.viewController];
   [self.navigationController
@@ -68,6 +75,7 @@
                          completion:nil];
   self.navigationController = nil;
   self.viewController = nil;
+  self.mediator = nil;
 }
 
 @end
