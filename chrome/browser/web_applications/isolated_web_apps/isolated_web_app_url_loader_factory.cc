@@ -422,9 +422,23 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
       };
 
   if (frame_tree_node_id_.has_value()) {
+    auto* web_contents =
+        content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_);
+    if (web_contents == nullptr) {
+      // `web_contents` can be `nullptr` in certain edge cases, such as when the
+      // browser window closes concurrently with an ongoing request (see
+      // crbug.com/1477761). Return an error if that is the case, instead of
+      // silently not querying `IsolatedWebAppPendingInstallInfo`. Should we
+      // ever find a case where we _do_ want to continue request processing even
+      // though the `WebContents` no longer exists, we can change the below code
+      // to skip checking `IsolatedWebAppPendingInstallInfo` instead of
+      // returning an error.
+      LogErrorAndFail("Unable to find WebContents based on frame tree node id.",
+                      std::move(loader_client));
+      return;
+    }
     absl::optional<IsolatedWebAppLocation> pending_install_app_location =
-        IsolatedWebAppPendingInstallInfo::FromWebContents(
-            *content::WebContents::FromFrameTreeNodeId(*frame_tree_node_id_))
+        IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
             .location();
 
     if (pending_install_app_location.has_value()) {
