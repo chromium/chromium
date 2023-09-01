@@ -23,6 +23,11 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray, bool from_keyboard)
   init_params.transparent = true;
   init_params.has_shadow = false;
   init_params.translucent = false;
+  // Adjust default bubble insets for the default margin added to insividual
+  // glanceable bubble views.
+  if (init_params.insets) {
+    *init_params.insets -= gfx::Insets::VH(8, 0);
+  }
 
   auto bubble_view =
       std::make_unique<GlanceableTrayBubbleView>(init_params, tray_->shelf());
