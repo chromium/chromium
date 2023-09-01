@@ -3086,9 +3086,6 @@ if (!is_android) {
     }
     if (include_js2gtest_tests) {
       deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
-      if (is_chromeos_ash || !is_chromeos_lacros) {
-        deps += [ "//chrome/test/data/webui:browser_tests_js_mojo_webui" ]
-      }
       if (is_chromeos_ash) {
         deps += [
           "//ash/webui/color_internals:browser_tests_js",
@@ -3098,6 +3095,7 @@ if (!is_android) {
           "//ash/webui/system_apps:browser_tests",
           "//ash/webui/system_extensions_internals_ui:browser_tests_js",
           "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
+          "//chrome/test/data/webui:browser_tests_js_mojo_webui",
           "//chromeos/ash/components/human_presence:browser_tests_js",
         ]
 

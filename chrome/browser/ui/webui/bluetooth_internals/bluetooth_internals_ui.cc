@@ -14,7 +14,6 @@
 #include "chrome/grit/bluetooth_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/resources/grit/webui_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
@@ -30,8 +29,6 @@ BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
   webui::EnableTrustedTypesCSP(html_source);
-  html_source->AddResourcePath("test_loader_util.js",
-                               IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
   // Add required resources.
   html_source->AddResourcePaths(base::make_span(
