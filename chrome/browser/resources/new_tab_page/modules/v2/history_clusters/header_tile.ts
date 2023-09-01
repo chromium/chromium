@@ -106,7 +106,7 @@ private eventTracker_:
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesJourneyDisable'),
+              '', 'modulesDisableButtonTextV2', 'modulesThisTypeOfCardText'),
         },
         {
           action: 'show-all',

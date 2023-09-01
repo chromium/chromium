@@ -152,7 +152,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           'Show all',
           headerElement.querySelector('#showAllButton')!.innerHTML.trim());
       assertModuleHeaderTitle(
-          headerElement, `Resume your journey for ${sampleClusterLabel}`);
+          headerElement, `Resume browsing for ${sampleClusterLabel}`);
     });
 
     test('Header info button click opens info dialog', async () => {
