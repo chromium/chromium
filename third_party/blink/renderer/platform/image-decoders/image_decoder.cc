@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -195,6 +194,27 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
 #endif
 
   return String();
+}
+
+// Checks to see if a mime type is an image type with lossy compression, whose
+// size will be restricted via the 'lossy-images-max-bpp' document
+// policy. (JPEG)
+bool IsLossyImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
+         EqualIgnoringASCIICase(mime_type, "image/jpg") ||
+         EqualIgnoringASCIICase(mime_type, "image/pjpeg");
+}
+
+// Checks to see if a mime type is an image type with lossless (or no)
+// compression, whose size may be restricted via the
+// 'lossless-images-max-bpp' document policy. (BMP, GIF, PNG, WEBP)
+bool IsLosslessImageMIMEType(const String& mime_type) {
+  return EqualIgnoringASCIICase(mime_type, "image/bmp") ||
+         EqualIgnoringASCIICase(mime_type, "image/gif") ||
+         EqualIgnoringASCIICase(mime_type, "image/png") ||
+         EqualIgnoringASCIICase(mime_type, "image/webp") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
+         EqualIgnoringASCIICase(mime_type, "image/x-png");
 }
 
 }  // namespace
@@ -405,10 +425,10 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   }
 #endif
 
-  if (MIMETypeRegistry::IsLossyImageMIMEType(mime_type)) {
+  if (IsLossyImageMIMEType(mime_type)) {
     return kLossyFormat;
   }
-  if (MIMETypeRegistry::IsLosslessImageMIMEType(mime_type)) {
+  if (IsLosslessImageMIMEType(mime_type)) {
     return kLosslessFormat;
   }
 

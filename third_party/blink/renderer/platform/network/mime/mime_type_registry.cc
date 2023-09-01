@@ -179,21 +179,6 @@ bool MIMETypeRegistry::IsSupportedTextTrackMIMEType(const String& mime_type) {
   return EqualIgnoringASCIICase(mime_type, "text/vtt");
 }
 
-bool MIMETypeRegistry::IsLossyImageMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
-         EqualIgnoringASCIICase(mime_type, "image/jpg") ||
-         EqualIgnoringASCIICase(mime_type, "image/pjpeg");
-}
-
-bool MIMETypeRegistry::IsLosslessImageMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "image/bmp") ||
-         EqualIgnoringASCIICase(mime_type, "image/gif") ||
-         EqualIgnoringASCIICase(mime_type, "image/png") ||
-         EqualIgnoringASCIICase(mime_type, "image/webp") ||
-         EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
-         EqualIgnoringASCIICase(mime_type, "image/x-png");
-}
-
 bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
   if (EqualIgnoringASCIICase(mime_type, "text/xml") ||
       EqualIgnoringASCIICase(mime_type, "application/xml")) {
