@@ -8158,6 +8158,10 @@ bool AXPlatformNodeWin::IsHyperlink() {
   return false;
 }
 
+void AXPlatformNodeWin::ResetComputedHypertext() {
+  hypertext_ = AXLegacyHypertext();
+}
+
 double AXPlatformNodeWin::GetHorizontalScrollPercent() {
   if (!IsHorizontallyScrollable())
     return UIA_ScrollPatternNoScroll;

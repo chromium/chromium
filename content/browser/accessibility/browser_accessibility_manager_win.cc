@@ -85,7 +85,24 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
   Initialize(initial_tree);
 }
 
-BrowserAccessibilityManagerWin::~BrowserAccessibilityManagerWin() = default;
+BrowserAccessibilityManagerWin::~BrowserAccessibilityManagerWin() {
+  // In some cases, an iframe's HWND is destroyed before the hypertext
+  // on the parent child tree owner is destroyed. In this case, we reset
+  // the parent's hypertext to avoid API calls involving stale hypertext.
+  BrowserAccessibility* parent =
+      GetParentNodeFromParentTreeAsBrowserAccessibility();
+  if (!parent) {
+    return;
+  }
+
+  ui::AXPlatformNode* parent_ax_platform_node = parent->GetAXPlatformNode();
+  if (!parent_ax_platform_node) {
+    return;
+  }
+
+  static_cast<ui::AXPlatformNodeWin*>(parent_ax_platform_node)
+      ->ResetComputedHypertext();
+}
 
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {

@@ -1183,6 +1183,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // depth-first pre-order traversal.
   AXPlatformNodeWin* GetFirstTextOnlyDescendant();
 
+  // Clear the computed hypertext.
+  void ResetComputedHypertext();
+
   // Convert a mojo event to an MSAA event. Exposed for testing.
   static absl::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
 
