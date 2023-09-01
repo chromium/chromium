@@ -133,9 +133,6 @@ signin::Tribool IsFirstSessionAfterDeviceRestoreInternal() {
     }
   });
 
-  if (experimental_flags::SimulatePostDeviceRestore()) {
-    return signin::Tribool::kTrue;
-  }
   if (does_backed_up_sentinel_file_exist) {
     return does_not_backed_up_sentinel_file_exist ? signin::Tribool::kFalse
                                                   : signin::Tribool::kTrue;
