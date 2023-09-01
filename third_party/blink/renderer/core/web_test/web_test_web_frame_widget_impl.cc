@@ -157,14 +157,15 @@ bool WebTestWebFrameWidgetImpl::RequestedMainFramePending() {
 }
 
 void WebTestWebFrameWidgetImpl::StartDragging(
+    LocalFrame* source_frame,
     const WebDragData& data,
     DragOperationsMask mask,
     const SkBitmap& drag_image,
     const gfx::Vector2d& cursor_offset,
     const gfx::Rect& drag_obj_rect) {
   if (!GetTestRunner()->AutomaticDragDropEnabled()) {
-    return WebFrameWidgetImpl::StartDragging(data, mask, drag_image,
-                                             cursor_offset, drag_obj_rect);
+    return WebFrameWidgetImpl::StartDragging(
+        source_frame, data, mask, drag_image, cursor_offset, drag_obj_rect);
   }
 
   // When running a test, we need to fake a drag drop operation otherwise

@@ -377,7 +377,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void PrepareForFinalLifecyclUpdateForTesting() override;
 
   // Called when a drag-n-drop operation should begin.
-  virtual void StartDragging(const WebDragData&,
+  virtual void StartDragging(LocalFrame* source_frame,
+                             const WebDragData&,
                              DragOperationsMask,
                              const SkBitmap& drag_image,
                              const gfx::Vector2d& cursor_offset,

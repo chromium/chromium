@@ -184,17 +184,6 @@ interface FrameWidgetHost {
 
   // Sent by a widget to the browser to notify the end of the autoscroll.
   AutoscrollEnd();
-
-  // Used to tell the browser the user started dragging in the content area.
-  // |drag_data| contains contextual information about the pieces of the page
-  // the user dragged. The browser uses this notification to initiate a drag
-  // session at the OS level.
-  StartDragging(DragData drag_data,
-                AllowedDragOperations operations_allowed,
-                skia.mojom.BitmapN32? image,
-                gfx.mojom.Vector2d cursor_offset_in_dip,
-                gfx.mojom.Rect drag_obj_rect_in_dip,
-                DragEventSourceInfo event_info);
 };
 
 // Implemented in Browser, this interface defines popup-widget-specific methods

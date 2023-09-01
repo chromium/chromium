@@ -497,7 +497,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
                                            SkBitmap bitmap) {
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
-  GetWidget()->StartDragging(
+  GetMainRenderFrameHost()->StartDragging(
       DropDataToDragData(
           drop_data, storage_partition->GetFileSystemAccessManager(),
           GetProcess()->GetID(),

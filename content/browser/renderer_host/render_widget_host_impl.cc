@@ -2694,6 +2694,97 @@ void RenderWidgetHostImpl::UpdateBrowserControlsState(
                                                       animate);
 }
 
+void RenderWidgetHostImpl::StartDragging(
+    blink::mojom::DragDataPtr drag_data,
+    DragOperationsMask drag_operations_mask,
+    const SkBitmap& bitmap,
+    const gfx::Vector2d& cursor_offset_in_dip,
+    const gfx::Rect& drag_obj_rect_in_dip,
+    blink::mojom::DragEventSourceInfoPtr event_info) {
+  DropData drop_data = DragDataToDropData(*drag_data);
+  DropData filtered_data(drop_data);
+  RenderProcessHost* process = GetProcess();
+  ChildProcessSecurityPolicyImpl* policy =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Allow drag of Javascript URLs to enable bookmarklet drag to bookmark bar.
+  if (!filtered_data.url.SchemeIs(url::kJavaScriptScheme)) {
+    process->FilterURL(true, &filtered_data.url);
+  }
+  process->FilterURL(false, &filtered_data.html_base_url);
+  // Filter out any paths that the renderer didn't have access to. This prevents
+  // the following attack on a malicious renderer:
+  // 1. StartDragging IPC sent with renderer-specified filesystem paths that it
+  //    doesn't have read permissions for.
+  // 2. We initiate a native DnD operation.
+  // 3. DnD operation immediately ends since mouse is not held down. DnD events
+  //    still fire though, which causes read permissions to be granted to the
+  //    renderer for any file paths in the drop.
+  filtered_data.filenames.clear();
+  for (const auto& file_info : drop_data.filenames) {
+    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path)) {
+      filtered_data.filenames.push_back(file_info);
+    }
+  }
+
+  storage::FileSystemContext* file_system_context =
+      GetProcess()->GetStoragePartition()->GetFileSystemContext();
+  filtered_data.file_system_files.clear();
+
+  for (const auto& file_system_file : drop_data.file_system_files) {
+    storage::FileSystemURL file_system_url =
+        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
+
+    // Sandboxed filesystem files should never be handled via this path, so
+    // skip any that are sent from the renderer. In all other cases, it should
+    // be safe to use the FileSystemURL returned from calling
+    // CrackURLInFirstPartyContext as long as CanReadFileSystemFile only
+    // performs checks on the origin and doesn't use more of the StorageKey.
+    if (file_system_url.type() == storage::kFileSystemTypePersistent ||
+        file_system_url.type() == storage::kFileSystemTypeTemporary) {
+      continue;
+    }
+
+    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url)) {
+      filtered_data.file_system_files.push_back(file_system_file);
+    }
+  }
+
+  if (frame_tree_) {
+    bool intercepted = false;
+    devtools_instrumentation::WillStartDragging(
+        frame_tree_->root(), filtered_data, std::move(drag_data),
+        drag_operations_mask, &intercepted);
+    if (intercepted) {
+      return;
+    }
+  }
+
+  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
+  if (!view || !GetView()) {
+    // Need to clear drag and drop state in blink.
+    DragSourceSystemDragEnded();
+    return;
+  }
+  float scale = GetScaleFactorForView(GetView());
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
+  gfx::Vector2d offset = cursor_offset_in_dip;
+  gfx::Rect rect = drag_obj_rect_in_dip;
+#if BUILDFLAG(IS_WIN)
+  // Scale the offset by device scale factor, otherwise the drag
+  // image location doesn't line up with the drop location (drag destination).
+  // TODO(crbug.com/1354831): this conversion should not be necessary.
+  gfx::Vector2dF scaled_offset = static_cast<gfx::Vector2dF>(offset);
+  scaled_offset.Scale(scale);
+  offset = gfx::ToRoundedVector2d(scaled_offset);
+  gfx::RectF scaled_rect = static_cast<gfx::RectF>(rect);
+  scaled_rect.Scale(scale);
+  rect = gfx::ToRoundedRect(scaled_rect);
+#endif
+  view->StartDragging(filtered_data, drag_operations_mask, image, offset, rect,
+                      *event_info, this);
+}
+
 // static
 bool RenderWidgetHostImpl::DidVisualPropertiesSizeChange(
     const blink::VisualProperties& old_visual_properties,
@@ -2847,97 +2938,6 @@ void RenderWidgetHostImpl::AutoscrollEnd() {
 
   ForwardGestureEventWithLatencyInfo(
       cancel_event, ui::LatencyInfo(ui::SourceEventType::OTHER));
-}
-
-void RenderWidgetHostImpl::StartDragging(
-    blink::mojom::DragDataPtr drag_data,
-    DragOperationsMask drag_operations_mask,
-    const SkBitmap& bitmap,
-    const gfx::Vector2d& cursor_offset_in_dip,
-    const gfx::Rect& drag_obj_rect_in_dip,
-    blink::mojom::DragEventSourceInfoPtr event_info) {
-  DropData drop_data = DragDataToDropData(*drag_data);
-  DropData filtered_data(drop_data);
-  RenderProcessHost* process = GetProcess();
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
-
-  // Allow drag of Javascript URLs to enable bookmarklet drag to bookmark bar.
-  if (!filtered_data.url.SchemeIs(url::kJavaScriptScheme)) {
-    process->FilterURL(true, &filtered_data.url);
-  }
-  process->FilterURL(false, &filtered_data.html_base_url);
-  // Filter out any paths that the renderer didn't have access to. This prevents
-  // the following attack on a malicious renderer:
-  // 1. StartDragging IPC sent with renderer-specified filesystem paths that it
-  //    doesn't have read permissions for.
-  // 2. We initiate a native DnD operation.
-  // 3. DnD operation immediately ends since mouse is not held down. DnD events
-  //    still fire though, which causes read permissions to be granted to the
-  //    renderer for any file paths in the drop.
-  filtered_data.filenames.clear();
-  for (const auto& file_info : drop_data.filenames) {
-    if (policy->CanReadFile(GetProcess()->GetID(), file_info.path)) {
-      filtered_data.filenames.push_back(file_info);
-    }
-  }
-
-  storage::FileSystemContext* file_system_context =
-      GetProcess()->GetStoragePartition()->GetFileSystemContext();
-  filtered_data.file_system_files.clear();
-
-  for (const auto& file_system_file : drop_data.file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURLInFirstPartyContext(file_system_file.url);
-
-    // Sandboxed filesystem files should never be handled via this path, so
-    // skip any that are sent from the renderer. In all other cases, it should
-    // be safe to use the FileSystemURL returned from calling
-    // CrackURLInFirstPartyContext as long as CanReadFileSystemFile only
-    // performs checks on the origin and doesn't use more of the StorageKey.
-    if (file_system_url.type() == storage::kFileSystemTypePersistent ||
-        file_system_url.type() == storage::kFileSystemTypeTemporary) {
-      continue;
-    }
-
-    if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url)) {
-      filtered_data.file_system_files.push_back(file_system_file);
-    }
-  }
-
-  if (frame_tree_) {
-    bool intercepted = false;
-    devtools_instrumentation::WillStartDragging(
-        frame_tree_->root(), filtered_data, std::move(drag_data),
-        drag_operations_mask, &intercepted);
-    if (intercepted) {
-      return;
-    }
-  }
-
-  RenderViewHostDelegateView* view = delegate_->GetDelegateView();
-  if (!view || !GetView()) {
-    // Need to clear drag and drop state in blink.
-    DragSourceSystemDragEnded();
-    return;
-  }
-  float scale = GetScaleFactorForView(GetView());
-  gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
-  gfx::Vector2d offset = cursor_offset_in_dip;
-  gfx::Rect rect = drag_obj_rect_in_dip;
-#if BUILDFLAG(IS_WIN)
-  // Scale the offset by device scale factor, otherwise the drag
-  // image location doesn't line up with the drop location (drag destination).
-  // TODO(crbug.com/1354831): this conversion should not be necessary.
-  gfx::Vector2dF scaled_offset = static_cast<gfx::Vector2dF>(offset);
-  scaled_offset.Scale(scale);
-  offset = gfx::ToRoundedVector2d(scaled_offset);
-  gfx::RectF scaled_rect = static_cast<gfx::RectF>(rect);
-  scaled_rect.Scale(scale);
-  rect = gfx::ToRoundedRect(scaled_rect);
-#endif
-  view->StartDragging(filtered_data, drag_operations_mask, image, offset, rect,
-                      *event_info, this);
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {

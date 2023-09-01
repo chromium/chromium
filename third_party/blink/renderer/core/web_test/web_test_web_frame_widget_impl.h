@@ -65,7 +65,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
  private:
   // WebFrameWidgetImpl overrides.
   void BindLocalRoot(WebLocalFrame&) override;
-  void StartDragging(const WebDragData& drag_data,
+  void StartDragging(LocalFrame* source_frame,
+                     const WebDragData& drag_data,
                      DragOperationsMask operations_allowed,
                      const SkBitmap& drag_image,
                      const gfx::Vector2d& cursor_offset,

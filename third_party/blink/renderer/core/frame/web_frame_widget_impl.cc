@@ -1238,7 +1238,8 @@ void WebFrameWidgetImpl::CancelDrag() {
   current_drag_data_ = nullptr;
 }
 
-void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
+void WebFrameWidgetImpl::StartDragging(LocalFrame* source_frame,
+                                       const WebDragData& drag_data,
                                        DragOperationsMask operations_allowed,
                                        const SkBitmap& drag_image,
                                        const gfx::Vector2d& cursor_offset,
@@ -1255,7 +1256,7 @@ void WebFrameWidgetImpl::StartDragging(const WebDragData& drag_data,
   gfx::Rect drag_obj_rect_in_dips =
       gfx::Rect(widget_base_->BlinkSpaceToFlooredDIPs(drag_obj_rect.origin()),
                 widget_base_->BlinkSpaceToFlooredDIPs(drag_obj_rect.size()));
-  GetAssociatedFrameWidgetHost()->StartDragging(
+  source_frame->GetLocalFrameHostRemote().StartDragging(
       drag_data, operations_allowed, drag_image, offset_in_dips,
       drag_obj_rect_in_dips, possible_drag_event_info_.Clone());
 }

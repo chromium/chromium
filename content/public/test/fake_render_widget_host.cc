@@ -126,14 +126,6 @@ void FakeRenderWidgetHost::AutoscrollFling(const gfx::Vector2dF& position) {}
 
 void FakeRenderWidgetHost::AutoscrollEnd() {}
 
-void FakeRenderWidgetHost::StartDragging(
-    blink::mojom::DragDataPtr drag_data,
-    blink::DragOperationsMask operations_allowed,
-    const SkBitmap& bitmap,
-    const gfx::Vector2d& cursor_offset_in_dip,
-    const gfx::Rect& drag_obj_rect_in_dip,
-    blink::mojom::DragEventSourceInfoPtr event_info) {}
-
 blink::mojom::WidgetInputHandler*
 FakeRenderWidgetHost::GetWidgetInputHandler() {
   if (!widget_input_handler_) {

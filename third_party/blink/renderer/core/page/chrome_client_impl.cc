@@ -269,7 +269,7 @@ void ChromeClientImpl::StartDragging(LocalFrame* frame,
                                      const gfx::Rect& drag_obj_rect) {
   WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(frame);
   web_frame->LocalRootFrameWidget()->StartDragging(
-      drag_data, mask, drag_image, cursor_offset, drag_obj_rect);
+      frame, drag_data, mask, drag_image, cursor_offset, drag_obj_rect);
 }
 
 bool ChromeClientImpl::AcceptsLoadDrops() const {

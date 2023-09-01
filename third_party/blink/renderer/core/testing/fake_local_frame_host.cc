@@ -310,4 +310,12 @@ void FakeLocalFrameHost::CreateFencedFrame(
                   "unit tests, so this path should not be hit";
 }
 
+void FakeLocalFrameHost::StartDragging(
+    const blink::WebDragData& drag_data,
+    blink::DragOperationsMask operations_allowed,
+    const SkBitmap& bitmap,
+    const gfx::Vector2d& cursor_offset_in_dip,
+    const gfx::Rect& drag_obj_rect_in_dip,
+    mojom::blink::DragEventSourceInfoPtr event_info) {}
+
 }  // namespace blink
