@@ -57606,12 +57606,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 <enum name="LacrosMigrationStatus">
   <int value="0" label="Lacros not enabled"/>
   <int value="1" label="Uncompleted"/>
-  <int value="2" label="Completed via copy"/>
-  <int value="3" label="Completed via move"/>
-  <int value="4" label="Skipped for new user">
+  <int value="2" label="Skipped for new user">
     Migration was skipped but marked as completed because new users don't
     require migration.
   </int>
+  <int value="3" label="Completed via copy"/>
+  <int value="4" label="Completed via move"/>
 </enum>
 
 <enum name="LanguageDetectionComparison">
