@@ -31,11 +31,10 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class EnhancedProtectionSettingsFragmentTest {
     // clang-format on
     @Rule
+    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule
     public SettingsActivityTestRule<EnhancedProtectionSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(EnhancedProtectionSettingsFragment.class);
-
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private TextMessagePreference mEnhancedProtectionSubtitle;
     private TextMessagePreference mEnhancedProtectionWhenOn;
@@ -48,6 +47,7 @@ public class EnhancedProtectionSettingsFragmentTest {
     private TextMessagePreference mEnhancedProtectionBulletSix;
     private TextMessagePreference mEnhancedProtectionBulletSeven;
     private TextMessagePreference mEnhancedProtectionBulletEight;
+    private TextMessagePreference mEnhancedProtectionLearnMore;
 
     private static final String PREF_SUBTITLE = "subtitle";
     private static final String PREF_WHENON = "when_on";
@@ -75,7 +75,11 @@ public class EnhancedProtectionSettingsFragmentTest {
         mEnhancedProtectionBulletSix = fragment.findPreference(PREF_BULLETSIX);
         mEnhancedProtectionBulletSeven = fragment.findPreference(PREF_BULLETSEVEN);
         mEnhancedProtectionBulletEight = fragment.findPreference(PREF_BULLETEIGHT);
+        mEnhancedProtectionLearnMore =
+                fragment.findPreference(EnhancedProtectionSettingsFragment.PREF_LEARN_MORE);
     }
+
+    // TODO(crbug.com/1478337): Add a test to check the openUrlInCCT functionality.
 
     @Test
     @SmallTest
@@ -88,6 +92,9 @@ public class EnhancedProtectionSettingsFragmentTest {
         launchSettingsActivity();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Check that the learn more label is shown
+            Assert.assertNotNull(mEnhancedProtectionLearnMore);
+
             EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
             String enhancedProtectionSubtitle = fragment.getContext().getString(
@@ -138,12 +145,13 @@ public class EnhancedProtectionSettingsFragmentTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Check that the extra bullet points and friendlier When On/Things to Consider headings
-            // are gone
+            // and the learn more label are gone.
             Assert.assertNull(mEnhancedProtectionWhenOn);
             Assert.assertNull(mEnhancedProtectionThingsToConsider);
             Assert.assertNull(mEnhancedProtectionBulletSix);
             Assert.assertNull(mEnhancedProtectionBulletSeven);
             Assert.assertNull(mEnhancedProtectionBulletEight);
+            Assert.assertNull(mEnhancedProtectionLearnMore);
 
             EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 

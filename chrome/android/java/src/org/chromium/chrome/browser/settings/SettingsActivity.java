@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragmentBase;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
@@ -513,6 +514,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 SiteSettingsHelper.showCategorySettings(
                         context, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
             });
+        }
+        if (fragment instanceof SafeBrowsingSettingsFragmentBase) {
+            SafeBrowsingSettingsFragmentBase safeBrowsingFragment =
+                    (SafeBrowsingSettingsFragmentBase) fragment;
+            safeBrowsingFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AdMeasurementFragment) {
             // Unlike HistoryManagerUtils, which opens History in a tab on Tablets, this always

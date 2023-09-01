@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.safe_browsing.settings;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -22,6 +27,7 @@ import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 public abstract class SafeBrowsingSettingsFragmentBase
         extends PreferenceFragmentCompat implements FragmentHelpAndFeedbackLauncher {
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    private SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper mCustomTabHelper;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -36,6 +42,30 @@ public abstract class SafeBrowsingSettingsFragmentBase
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    /**
+     * Set the necessary CCT helpers to be able to natively open links. This is needed because the
+     * helpers are not modularized.
+     */
+    public void setCustomTabIntentHelper(
+            SafeBrowsingSettingsFragmentHelper.CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
+    }
+
+    protected void openUrlInCct(String url) {
+        assert (mCustomTabHelper != null)
+            : "CCT helpers must be set on SafeBrowsingSettingsFragmentBase before opening a "
+              + "link.";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
+                getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 
     @Override
