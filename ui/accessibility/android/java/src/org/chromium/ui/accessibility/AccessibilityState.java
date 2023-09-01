@@ -212,6 +212,17 @@ public class AccessibilityState {
     @Deprecated
     private static boolean sAccessibilitySpeakPasswordEnabled;
 
+    /**
+     * The current font weight adjustment set at the Android-OS level. Initialized to be 0, the
+     * default font weight. If a user has the bold text setting enabled, this will be 300.
+     *
+     * This is not included as a part of the {State} object since it is only needed for the web
+     * contents rendering (native widgets have font weight adjusted by the framework).
+     *
+     * This is only available on Android S+, on previous versions of Android this is always 300.
+     */
+    private static int sFontWeightAdjustment;
+
     // The IDs of all running accessibility services.
     private static String[] sServiceIds;
 
@@ -332,6 +343,10 @@ public class AccessibilityState {
     public static boolean isAccessibilitySpeakPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
         return sAccessibilitySpeakPasswordEnabled;
+    }
+
+    public static int getFontWeightAdjustment() {
+        return sFontWeightAdjustment;
     }
 
     /**
@@ -502,6 +517,13 @@ public class AccessibilityState {
         }
 
         Context context = ContextUtils.getApplicationContext();
+
+        // Update the font weight adjustment (e.g. bold text setting).
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            sFontWeightAdjustment = context.getResources().getConfiguration().fontWeightAdjustment;
+        } else {
+            sFontWeightAdjustment = 0;
+        }
 
         // Update the user password show/speak preferences.
         int textShowPasswordSetting = Settings.System.getInt(

@@ -163,6 +163,7 @@ WebPreferences::WebPreferences()
 #else
       text_autosizing_enabled(true),
       font_scale_factor(1.0f),
+      font_weight_adjustment(0),
       device_scale_adjustment(1.0f),
       force_enable_zoom(false),
       support_deprecated_target_density_dpi(false),

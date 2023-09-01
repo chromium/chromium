@@ -373,6 +373,8 @@ void PrefsTabHelper::RegisterProfilePrefs(
                                 pref_defaults.force_enable_zoom);
   registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
                                 pref_defaults.password_echo_enabled);
+  registry->RegisterIntegerPref(prefs::kAccessibilityFontWeightAdjustment, 0);
+
 #endif
 
   bool force_dark_mode_enabled =

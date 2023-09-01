@@ -58,6 +58,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetLCDTextPreference(LCDTextPreference) override;
   void SetAccessibilityPasswordValuesEnabled(bool) override;
   void SetAllowFileAccessFromFileURLs(bool) override;
+  void SetAccessibilityFontWeightAdjustment(int size) override;
   void SetAllowCustomScrollbarInMainFrame(bool) override;
   void SetAllowGeolocationOnInsecureOrigins(bool) override;
   void SetAllowRunningOfInsecureContent(bool) override;

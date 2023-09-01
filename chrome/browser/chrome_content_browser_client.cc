@@ -4123,6 +4123,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       prefs->GetDouble(browser_ui::prefs::kWebKitFontScaleFactor));
   web_prefs->force_enable_zoom =
       prefs->GetBoolean(browser_ui::prefs::kWebKitForceEnableZoom);
+  web_prefs->font_weight_adjustment =
+      prefs->GetInteger(prefs::kAccessibilityFontWeightAdjustment);
 #endif
   web_prefs->force_dark_mode_enabled =
       prefs->GetBoolean(prefs::kWebKitForceDarkModeEnabled);

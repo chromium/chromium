@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.components.browser_ui.accessibility.DeviceAccessibilitySettingsHandler;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -162,6 +163,8 @@ public class ChromeActivitySessionTracker {
             updatePasswordEchoState();
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
+            DeviceAccessibilitySettingsHandler.getInstance(Profile.getLastUsedRegularProfile())
+                    .updateFontWeightAdjustment();
             ChromeLocalizationUtils.recordUiLanguageStatus();
             updateAcceptLanguages();
             mVariationsSession.start();

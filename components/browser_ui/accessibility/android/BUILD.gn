@@ -38,6 +38,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/DeviceAccessibilitySettingsHandler.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinatorDelegate.java",
@@ -58,9 +59,12 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.accessibility"

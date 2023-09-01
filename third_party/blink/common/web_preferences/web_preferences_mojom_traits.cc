@@ -161,6 +161,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->text_autosizing_enabled = data.text_autosizing_enabled();
 #if BUILDFLAG(IS_ANDROID)
   out->font_scale_factor = data.font_scale_factor();
+  out->font_weight_adjustment = data.font_weight_adjustment();
   out->device_scale_adjustment = data.device_scale_adjustment();
   out->force_enable_zoom = data.force_enable_zoom();
   out->support_deprecated_target_density_dpi =

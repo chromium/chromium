@@ -479,6 +479,13 @@
       type: "double",
     },
 
+    // Font weight adjustment for accessibility, set at OS-level.
+    {
+      name: "accessibilityFontWeightAdjustment",
+      initial: "0",
+      type: "int",
+    },
+
     // Only used by web tests and inspector emulation.
     {
       name: "mediaTypeOverride",

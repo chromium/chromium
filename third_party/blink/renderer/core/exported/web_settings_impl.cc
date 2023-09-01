@@ -175,6 +175,10 @@ void WebSettingsImpl::SetInlineTextBoxAccessibilityEnabled(bool enabled) {
   settings_->SetInlineTextBoxAccessibilityEnabled(enabled);
 }
 
+void WebSettingsImpl::SetAccessibilityFontWeightAdjustment(int size) {
+  settings_->SetAccessibilityFontWeightAdjustment(size);
+}
+
 void WebSettingsImpl::SetDeviceScaleAdjustment(float device_scale_adjustment) {
   dev_tools_emulator_->SetDeviceScaleAdjustment(device_scale_adjustment);
 }

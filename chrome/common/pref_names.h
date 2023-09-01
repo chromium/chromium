@@ -1704,6 +1704,11 @@ inline constexpr char kMessageCenterDisabledExtensionIds[] =
 inline constexpr char kFullscreenAllowed[] = "fullscreen.allowed";
 
 #if BUILDFLAG(IS_ANDROID)
+// The user requested font weight adjustment from OS-level settings.
+// Exposed only to mobile Android.
+inline constexpr char kAccessibilityFontWeightAdjustment[] =
+    "settings.a11y.font_weight_adjustment";
+
 // Boolean pref indicating whether notification permissions were migrated to
 // notification channels (on Android O+ we use channels to store notification
 // permission, so any existing permissions must be migrated).

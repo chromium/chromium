@@ -218,6 +218,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
 #if BUILDFLAG(IS_ANDROID)
   float font_scale_factor;
+  int font_weight_adjustment;
   float device_scale_adjustment;
   bool force_enable_zoom;
   GURL default_video_poster_url;

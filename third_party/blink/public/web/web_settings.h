@@ -110,6 +110,7 @@ class WebSettings {
   virtual void SetAllowRunningOfInsecureContent(bool) = 0;
   virtual void SetAllowScriptsToCloseWindows(bool) = 0;
   virtual void SetAllowUniversalAccessFromFileURLs(bool) = 0;
+  virtual void SetAccessibilityFontWeightAdjustment(int) = 0;
   virtual void SetAlwaysShowContextMenuOnTouch(bool) = 0;
   virtual void SetAntialiased2dCanvasEnabled(bool) = 0;
   virtual void SetAntialiasedClips2dCanvasEnabled(bool) = 0;
