@@ -10308,8 +10308,7 @@
                         "OmniboxMostVisitedTilesTitleWrapAround",
                         "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "SearchReadyOmniboxAllowQueryEdit"
+                        "OmniboxUIExperimentMaxAutocompleteMatches"
                     ]
                 }
             ]
@@ -14371,6 +14370,21 @@
                     },
                     "enable_features": [
                         "SearchNavigationPrefetch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SearchReadyOmniboxAllowQueryEdit": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchReadyOmniboxAllowQueryEdit"
                     ]
                 }
             ]
