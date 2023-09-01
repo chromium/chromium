@@ -32,16 +32,6 @@ BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
   return NO;
 }
 
-NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    NSTextCheckingResult* match,
-    NSString* text,
-    CGPoint location,
-    UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler) {
-  return nil;
-}
-
 absl::optional<base::Value> ExtractDataElementsFromText(
     const std::string& text,
     NSTextCheckingType handled_types,

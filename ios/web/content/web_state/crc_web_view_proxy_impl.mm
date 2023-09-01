@@ -118,10 +118,6 @@
 - (void)surfaceSizeChanged {
 }
 
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect {
-}
-
 - (BOOL)isWebPageInFullscreenMode {
   return NO;
 }

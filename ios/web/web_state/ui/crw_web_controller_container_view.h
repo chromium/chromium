@@ -10,7 +10,6 @@
 
 #import "ios/web/common/crw_content_view.h"
 
-@class CRWContextMenuItem;
 @class CRWWebControllerContainerView;
 @class CRWWebViewContentView;
 @class CRWWebViewProxyImpl;
@@ -74,11 +73,6 @@
 // Updates `webViewContentView` with the current fullscreen state
 - (void)updateWebViewContentViewFullscreenState:
     (CrFullscreenState)fullscreenState;
-
-// Shows a custom iOS context menu with the given `items` for options targeted
-// to the data visible in given window `rect`.
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect;
 
 @end
 

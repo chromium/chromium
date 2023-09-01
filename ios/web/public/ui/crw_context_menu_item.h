@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 // Wraps information needed to show a custom context menu.
+// DEPRECATED
 @interface CRWContextMenuItem : NSObject
 
 // ID, unique to the set of items to be shown at one time. ID are turned into

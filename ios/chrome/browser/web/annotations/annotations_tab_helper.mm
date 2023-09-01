@@ -26,7 +26,6 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
@@ -124,17 +123,8 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
   }
 
   NSString* ns_text = base::SysUTF8ToNSString(text);
-  if (!ios::provider::HandleIntentTypesForOneTap(web_state, match, ns_text,
-                                                 base_view_controller_,
-                                                 mini_map_handler_)) {
-    NSArray<CRWContextMenuItem*>* items =
-        ios::provider::GetContextMenuElementsToAdd(
-            web_state, match, ns_text, CGPoint(0, 0), base_view_controller_,
-            mini_map_handler_);
-    if (items.count) {
-      [web_state_->GetWebViewProxy() showMenuWithItems:items rect:rect];
-    }
-  }
+  DCHECK(ios::provider::HandleIntentTypesForOneTap(
+      web_state, match, ns_text, base_view_controller_, mini_map_handler_));
 }
 
 #pragma mark - Private Methods

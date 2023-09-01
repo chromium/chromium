@@ -20,7 +20,6 @@ enum class WKNavigationState;
 
 }  // namespace web
 
-@class CRWContextMenuItem;
 @protocol CRWScrollableContent;
 @class CRWWebViewContentView;
 @protocol CRWFindInteraction;
@@ -220,11 +219,6 @@ class WebStateImpl;
 // Gets a mapping of all permissions and their states. Only works on iOS 15+.
 - (NSDictionary<NSNumber*, NSNumber*>*)
     statesForAllPermissions API_AVAILABLE(ios(15.0));
-
-// Shows a custom iOS context menu with the given `items` for options targeted
-// to the data visible in given window `rect`.
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect;
 
 // Downloads the file from the `request` at `destination` path.
 // `completion_handler` is used to retrieve the created CRWWebViewDownload, so

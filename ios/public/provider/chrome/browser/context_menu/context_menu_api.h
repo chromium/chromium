@@ -10,7 +10,6 @@
 #import "base/files/file_path.h"
 #import "base/values.h"
 #import "ios/web/public/ui/context_menu_params.h"
-#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,16 +59,6 @@ BOOL HandleIntentTypesForOneTap(web::WebState* web_state,
                                 NSString* text,
                                 UIViewController* presenting_view_controller,
                                 id<MiniMapCommands> mini_map_handler);
-
-// Returns `CRWContextMenuItem` items for the given `match`, for the given
-// `web_state`.
-NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
-    web::WebState* web_state,
-    NSTextCheckingResult* match,
-    NSString* text,
-    CGPoint location,
-    UIViewController* presenting_view_controller,
-    id<MiniMapCommands> mini_map_handler);
 
 // Returns a full set of intents of `handled_types`, located inside `text`. The
 // `model_path` for the give web state should be passed in if a detection by

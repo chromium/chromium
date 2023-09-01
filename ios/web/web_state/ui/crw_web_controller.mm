@@ -45,7 +45,6 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/find_in_page/crw_find_interaction.h"
 #import "ios/web/public/permissions/permissions.h"
-#import "ios/web/public/ui/crw_context_menu_item.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
@@ -1063,42 +1062,14 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
             : [self currentURL];
     _userInteractionState.SetLastUserInteraction(
         std::make_unique<web::UserInteractionEvent>(mainDocumentURL));
-    [self hideMenu];
-    [self hideHighlight];
+    [self hideAnnotationsHighlight];
   }
 }
 
 #pragma mark - Context Menu
 
-- (void)showMenuWithItems:(NSArray<CRWContextMenuItem*>*)items
-                     rect:(CGRect)rect {
-  // Add `hideHighlight` to all items' action.
-  NSMutableArray<CRWContextMenuItem*>* wrappedItems =
-      [[NSMutableArray alloc] init];
-  __weak CRWWebController* weakSelf = self;
-  for (CRWContextMenuItem* item in items) {
-    auto strongAction = item.action;
-    [wrappedItems
-        addObject:[CRWContextMenuItem itemWithID:item.ID
-                                           title:item.title
-                                           image:item.image
-                                          action:^{
-                                            [weakSelf hideHighlight];
-                                            if (weakSelf && strongAction) {
-                                              strongAction();
-                                            }
-                                          }]];
-  }
-  [_containerView showMenuWithItems:wrappedItems rect:rect];
-}
-
-// Hides the context menu.
-- (void)hideMenu {
-  [[UIMenuController sharedMenuController] hideMenu];
-}
-
-// Hides highlights triggered by custom context menu.
-- (void)hideHighlight {
+// Hides annotations highlights triggered by context menu.
+- (void)hideAnnotationsHighlight {
   if (web::WebPageAnnotationsEnabled()) {
     web::AnnotationsTextManager* manager =
         web::AnnotationsTextManager::FromWebState(_webStateImpl);
