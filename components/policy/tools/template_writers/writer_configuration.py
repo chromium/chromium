@@ -62,7 +62,7 @@ def GetConfigurationForBuild(defines):
         'linux_policy_path': '/etc/chromium/policies/',
         'bundle_id': 'org.chromium',
     }
-  elif '_google_chrome' in defines:
+  elif '_google_chrome' in defines or '_is_chrome_for_testing_branded' in defines:
     config = {
         'build': 'chrome',
         'app_name': 'Google Chrome',
