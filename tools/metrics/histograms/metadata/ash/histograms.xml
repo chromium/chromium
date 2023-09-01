@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
   <owner>alemate@chromium.org</owner>
   <owner>khmel@chromium.org</owner>
   <owner>arc-performance@google.com</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     For each user after they opted-in into ARC++, records the duration of
     initial apps installation. Duration is measured as an interval between the
@@ -2204,7 +2204,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-14">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Emitted when the virtual desks activation animation begins, to report the
     latency of starting this animation. In a continuous desk animation, this
@@ -2216,7 +2216,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-01-07">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Emitted when the virtual desks removal animation begins, to report the
     latency of starting this animation. In a continuous desk animation, this
@@ -3466,7 +3466,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-31">
   <owner>xiyuan@chromium.org</owner>
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Similar to &quot;Ash.EventLatency.Core.TotalLatency&quot; that tracks total
     latency of 5 core events
@@ -3486,7 +3486,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-31">
   <owner>xiyuan@chromium.org</owner>
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Similar to &quot;Ash.EventLatency.TotalLatency&quot; but tracks total
     latency of 5 core events
@@ -3503,7 +3503,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-31">
   <owner>xiyuan@chromium.org</owner>
   <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Tracks total latency of all types of event for ash UI, from when the user
     input causing the event is generated until the frame caused by the event is
@@ -4175,7 +4175,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Login.TimeUntilGoodADF" units="microseconds"
     expires_after="2024-07-09">
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Time between user logged in (i.e. a successful cryptohome mount) and when
     good ADF (&lt;= 20%) is observed for more than 5 seconds.
@@ -4933,9 +4933,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.AnimationSmoothness.Enter{OverviewAnimationMode}"
     units="%" expires_after="2024-02-07">
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Relative smoothness of animations when entering overview mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
@@ -4946,9 +4945,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Overview.AnimationSmoothness.Exit{OverviewAnimationMode}"
     units="%" expires_after="2024-02-07">
-  <owner>omrilio@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Relative smoothness of animations when exiting overview mode, recorded when
     the animation completes. 100% represents ideally smooth 60 frames per
@@ -5825,7 +5823,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Rotation.AnimationSmoothness" units="%"
     expires_after="2024-04-16">
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Relative smoothness of animations when rotating screen. 100% represents
     ideally smooth 60 frames per second. 50% represents only 30 frames per
@@ -6267,7 +6265,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow2{Stage}"
     units="%" expires_after="2024-01-29">
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Tracks the percent of dropped frames in a 1 second sliding window.
 
@@ -6297,7 +6295,7 @@ chromium-metrics-reviews@google.com.
     deprecated in favor of Ash.Smoothness.PercentDroppedFrames_1sWindow2.
   </obsolete>
   <owner>xiyuan@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>cros-sw-perf@google.com</owner>
   <summary>
     Tracks the percent of dropped frames in a 1 second sliding window.
 
@@ -6489,7 +6487,7 @@ chromium-metrics-reviews@google.com.
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Maximum latency of the presentation time while resizing one or two split
     view windows. {SplitViewResizeModes}
@@ -6502,7 +6500,7 @@ chromium-metrics-reviews@google.com.
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Presentation time while resizing one or two split view windows.
     {SplitViewResizeModes}
@@ -7421,7 +7419,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-07-24">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of minimizing window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -7435,7 +7433,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-05-15">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of snapping window animation. 100% represents ideally
     smooth 60 frames per second. 50% represents when only 30 frames per second
@@ -7450,7 +7448,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-05-15">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Relative smoothness of unminimizing window animation. 100% represents
     ideally smooth 60 frames per second. 50% represents when only 30 frames per
