@@ -139,31 +139,6 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
                  : message_center::NOTIFICATION_TYPE_SIMPLE)
           : message_center::NOTIFICATION_TYPE_CUSTOM;
 
-  rich_data.progress = std::clamp(
-      static_cast<int>(std::round(static_cast<float>(data->progress_current) /
-                                  data->progress_max * 100)),
-      -1, 100);
-
-  // Add buttons to Chrome rendered ARC notifications only, as ARC rendered
-  // notifications already have buttons.
-  if (render_on_chrome && data->buttons) {
-    const auto& buttons = *data->buttons;
-    for (size_t i = 0; i < buttons.size(); ++i) {
-      const auto& button = buttons[i];
-      const auto button_label = button->label;
-      message_center::ButtonInfo rich_data_button;
-      rich_data_button.title = base::UTF8ToUTF16(button_label);
-
-      if (i == static_cast<size_t>(data->reply_button_index)) {
-        rich_data_button.placeholder =
-            button->buttonPlaceholder.has_value()
-                ? base::UTF8ToUTF16(button->buttonPlaceholder.value())
-                : std::u16string();
-      }
-      rich_data.buttons.emplace_back(rich_data_button);
-    }
-  }
-
   auto notification = CreateNotificationFromArcNotificationData(
       notification_type, notification_id_, data.get(), notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
