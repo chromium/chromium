@@ -2460,13 +2460,11 @@
     },
     {
       // TODO(crbug.com/924486): This feature enables the deprecated values
-      // inner-spin-button, media-slider, media-sliderthumb, media-volume-slider
-      // media-volume-sliderthumb, push-button, searchfield-cancel-button,
-      // slider-horizontal, sliderthumb-horizontal, sliderthumb-vertical,
-      // square-button. Disable this feature to stop parsing or allowing these
-      // values.
+      // inner-spin-button, push-button, searchfield-cancel-button,
+      // slider-horizontal, square-button. Disable this feature to stop
+      // parsing or allowing these values.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
-      name: "NonStandardAppearanceValues",
+      name: "NonStandardAppearanceValuesHighUsage",
       status: "stable",
     },
     {
@@ -2475,6 +2473,15 @@
       // values.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "NonStandardAppearanceValueSliderVertical",
+      status: "stable",
+    },
+    {
+      // TODO(crbug.com/924486): This feature enables the deprecated values
+      // media-slider, media-sliderthumb, media-volume-slider
+      // media-volume-sliderthumb, sliderthumb-horizontal, sliderthumb-vertical.
+      // Disable this feature to stop parsing or allowing these values.
+      // https://drafts.csswg.org/css-ui-4/#appearance-switching
+      name: "NonStandardAppearanceValuesLowUsage",
       status: "stable",
     },
     {

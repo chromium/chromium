@@ -3236,18 +3236,14 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
     case CSSPropertyID::kAppearance:
     case CSSPropertyID::kAliasWebkitAppearance: {
       // TODO(crbug.com/924486): Remove warnings after shipping.
-      if (RuntimeEnabledFeatures::NonStandardAppearanceValuesEnabled() &&
-          (value_id == CSSValueID::kInnerSpinButton ||
-           value_id == CSSValueID::kMediaSlider ||
-           value_id == CSSValueID::kMediaSliderthumb ||
-           value_id == CSSValueID::kMediaVolumeSlider ||
-           value_id == CSSValueID::kMediaVolumeSliderthumb ||
-           value_id == CSSValueID::kPushButton ||
-           value_id == CSSValueID::kSquareButton ||
-           value_id == CSSValueID::kSliderHorizontal ||
-           value_id == CSSValueID::kSliderthumbHorizontal ||
-           value_id == CSSValueID::kSliderthumbVertical ||
-           value_id == CSSValueID::kSearchfieldCancelButton)) {
+      if ((RuntimeEnabledFeatures::
+               NonStandardAppearanceValuesHighUsageEnabled() &&
+           CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
+               value_id)) ||
+          (RuntimeEnabledFeatures::
+               NonStandardAppearanceValuesLowUsageEnabled() &&
+           CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
+               value_id))) {
         if (const auto* document = context.GetDocument()) {
           document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kDeprecation,
@@ -3386,18 +3382,14 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
     case CSSPropertyID::kAliasWebkitAppearance: {
       // TODO(crbug.com/924486, crbug.com/1426629): Remove warnings after
       // shipping.
-      if ((!RuntimeEnabledFeatures::NonStandardAppearanceValuesEnabled() &&
-           (value_id == CSSValueID::kInnerSpinButton ||
-            value_id == CSSValueID::kMediaSlider ||
-            value_id == CSSValueID::kMediaSliderthumb ||
-            value_id == CSSValueID::kMediaVolumeSlider ||
-            value_id == CSSValueID::kMediaVolumeSliderthumb ||
-            value_id == CSSValueID::kPushButton ||
-            value_id == CSSValueID::kSquareButton ||
-            value_id == CSSValueID::kSliderHorizontal ||
-            value_id == CSSValueID::kSliderthumbHorizontal ||
-            value_id == CSSValueID::kSliderthumbVertical ||
-            value_id == CSSValueID::kSearchfieldCancelButton)) ||
+      if ((!RuntimeEnabledFeatures::
+               NonStandardAppearanceValuesHighUsageEnabled() &&
+           CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
+               value_id)) ||
+          (!RuntimeEnabledFeatures::
+               NonStandardAppearanceValuesLowUsageEnabled() &&
+           CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
+               value_id)) ||
           (!RuntimeEnabledFeatures::
                NonStandardAppearanceValueSliderVerticalEnabled() &&
            value_id == CSSValueID::kSliderVertical)) {
@@ -3407,8 +3399,9 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
                   mojom::blink::ConsoleMessageSource::kOther,
                   mojom::blink::ConsoleMessageLevel::kWarning,
                   String("The keyword '") + getValueName(value_id) +
-                      "' specified to an 'appearance' property is "
-                      "deprecated. Please consider updating."),
+                      "' used on the 'appearance' property was deprecated and "
+                      "has now been removed. It will no longer have any "
+                      "effect."),
               true);
         }
       }

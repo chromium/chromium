@@ -481,9 +481,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
                     "This flag will allow webView to propagate networking signals to the networking stack. "
                             + "Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are propagated."),
-            Flag.baseFeature(BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES,
-                    "This flag allows non-standard CSS appearance values and "
-                            + "shows a deprecation warning."),
             Flag.baseFeature(BlinkFeatures.WEB_ENVIRONMENT_INTEGRITY,
                     "Enables Web Environment Integrity APIs. "
                             + "See https://chromestatus.com/feature/5796524191121408."),
@@ -521,6 +518,12 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.LOADING_PHASE_BUFFER_TIME_AFTER_FIRST_MEANINGFUL_PAINT,
                     "Enables extending the loading phase by some buffer time after "
                             + "First Meaningful Paint is signaled."),
+            Flag.baseFeature(BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES_HIGH_USAGE,
+                    "This flag allows non-standard CSS appearance values with page load "
+                            + "usage >= 0.001% and shows a deprecation warning."),
+            Flag.baseFeature(BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES_LOW_USAGE,
+                    "This flag allows non-standard CSS appearance values with page load "
+                            + "usage < 0.001% and shows a deprecation warning."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

@@ -1120,6 +1120,25 @@ ParseColorResult CSSParserFastPaths::ParseColor(const String& string,
                            color_id);
 }
 
+bool CSSParserFastPaths::IsNonStandardAppearanceValuesHighUsage(
+    CSSValueID value_id) {
+  return value_id == CSSValueID::kInnerSpinButton ||
+         value_id == CSSValueID::kPushButton ||
+         value_id == CSSValueID::kSquareButton ||
+         value_id == CSSValueID::kSliderHorizontal ||
+         value_id == CSSValueID::kSearchfieldCancelButton;
+}
+
+bool CSSParserFastPaths::IsNonStandardAppearanceValuesLowUsage(
+    CSSValueID value_id) {
+  return value_id == CSSValueID::kMediaSlider ||
+         value_id == CSSValueID::kMediaSliderthumb ||
+         value_id == CSSValueID::kMediaVolumeSlider ||
+         value_id == CSSValueID::kMediaVolumeSliderthumb ||
+         value_id == CSSValueID::kSliderthumbHorizontal ||
+         value_id == CSSValueID::kSliderthumbVertical;
+}
+
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     CSSPropertyID property_id,
     CSSValueID value_id,
@@ -1381,11 +1400,24 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kNoDrag) ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kAppearance:
-      return (value_id >= CSSValueID::kCheckbox &&
-              value_id <= CSSValueID::kTextarea) ||
-             (RuntimeEnabledFeatures::NonStandardAppearanceValuesEnabled() &&
-              value_id >= CSSValueID::kInnerSpinButton &&
-              value_id <= CSSValueID::kSearchfieldCancelButton) ||
+      return (value_id == CSSValueID::kCheckbox ||
+              value_id == CSSValueID::kRadio ||
+              value_id == CSSValueID::kButton ||
+              value_id == CSSValueID::kListbox ||
+              value_id == CSSValueID::kInternalMediaControl ||
+              value_id == CSSValueID::kMenulist ||
+              value_id == CSSValueID::kMenulistButton ||
+              value_id == CSSValueID::kMeter ||
+              value_id == CSSValueID::kProgressBar ||
+              value_id == CSSValueID::kSearchfield ||
+              value_id == CSSValueID::kTextfield ||
+              value_id == CSSValueID::kTextarea) ||
+             (RuntimeEnabledFeatures::
+                  NonStandardAppearanceValuesHighUsageEnabled() &&
+              IsNonStandardAppearanceValuesHighUsage(value_id)) ||
+             (RuntimeEnabledFeatures::
+                  NonStandardAppearanceValuesLowUsageEnabled() &&
+              IsNonStandardAppearanceValuesLowUsage(value_id)) ||
              (RuntimeEnabledFeatures::
                   NonStandardAppearanceValueSliderVerticalEnabled() &&
               value_id == CSSValueID::kSliderVertical) ||

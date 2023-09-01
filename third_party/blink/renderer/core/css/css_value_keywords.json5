@@ -842,19 +842,20 @@
     "searchfield",
     "textfield",
     "textarea",
-    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (part 1).
+    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (high usage).
     "inner-spin-button",
+    "push-button",
+    "square-button",
+    "slider-horizontal",
+    "searchfield-cancel-button",
+    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (low usage).
     "media-slider",
     "media-sliderthumb",
     "media-volume-slider",
     "media-volume-sliderthumb",
-    "push-button",
-    "square-button",
-    "slider-horizontal",
     "sliderthumb-horizontal",
     "sliderthumb-vertical",
-    "searchfield-cancel-button",
-    // TODO(crbug/1426629) All appearance values that should not be accepted by the parser (part 2).
+    // TODO(crbug/1426629) All appearance values that should not be accepted by the parser (special case).
     "slider-vertical",
     //
     // border-image
