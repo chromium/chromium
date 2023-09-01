@@ -296,6 +296,7 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          absl::nullopt,
                          absl::nullopt,
                          absl::nullopt,
+                         absl::nullopt,
                          absl::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
@@ -312,6 +313,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     bool did_replace_entry,
     bool consider_for_ntp_most_visited,
     absl::optional<std::u16string> title,
+    absl::optional<GURL> top_level_url,
     absl::optional<Opener> opener,
     absl::optional<base::Uuid> bookmark_id,
     absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
@@ -328,6 +330,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
       title(title),
+      top_level_url(top_level_url),
       opener(opener),
       bookmark_id(bookmark_id),
       context_annotations(std::move(context_annotations)) {}

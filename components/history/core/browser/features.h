@@ -20,6 +20,10 @@ extern const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays;
 extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
 extern const base::FeatureParam<int> kMaxNumNewTabPageDisplays;
 
+// When enabled, this feature flag begins populating the VisitedLinkDatabase
+// with data.
+BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
+
 // Synced Segments Data
 // NOTE: Use `IsSyncSegmentsDataEnabled()` below to check if `kSyncSegmentsData`
 // is enabled; do not check `kSyncSegmentsData` directly.

@@ -57,6 +57,7 @@
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/url_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -91,6 +92,7 @@ using syncer::ClientTagBasedModelTypeProcessor;
       URLDatabase (stores a list of URLs)
       DownloadDatabase (stores a list of downloads)
       VisitDatabase (stores a list of visits for the URLs)
+      VisitedLinkDatabase (stores a list of triple-key partitioned URLs)
       VisitSegmentDatabase (stores groups of URLs for the most visited view).
 
     ExpireHistoryBackend (manages deleting things older than 3 months)
@@ -284,6 +286,14 @@ bool CanAddForeignVisitToSegments(
 #else
   return false;
 #endif
+}
+
+// Returns whether a page visit has a ui::PageTransition type that allows us
+// to construct a triple partition key for the VisitedLinkDatabase.
+bool IsVisitedLinkTransition(ui::PageTransition transition) {
+  return ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK) ||
+         ui::PageTransitionCoreTypeIs(transition,
+                                      ui::PAGE_TRANSITION_MANUAL_SUBFRAME);
 }
 
 }  // namespace
@@ -1011,6 +1021,17 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                                          request.opener->url);
   }
 
+  // Every url in the redirect chain gets the same top_level_url and frame_url
+  // values.
+  absl::optional<GURL> top_level_url = absl::nullopt;
+  if (request.top_level_url.has_value() && request.top_level_url->is_valid()) {
+    top_level_url = request.top_level_url;
+  }
+  absl::optional<GURL> frame_url = absl::nullopt;
+  if (request.referrer.is_valid()) {
+    frame_url = request.referrer;
+  }
+
   if (!has_redirects) {
     // The single entry is both a chain start and end.
     ui::PageTransition t = ui::PageTransitionFromInt(
@@ -1023,7 +1044,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                      external_referrer_url, t, request.hidden,
                      request.visit_source, IsTypedIncrement(t), opener_visit,
                      request.consider_for_ntp_most_visited,
-                     request.local_navigation_id, request.title)
+                     request.local_navigation_id, request.title, top_level_url,
+                     frame_url)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1151,7 +1173,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
                        should_increment_typed_count,
                        redirect_index == 0 ? opener_visit : 0,
                        request.consider_for_ntp_most_visited,
-                       request.local_navigation_id, request.title)
+                       request.local_navigation_id, request.title,
+                       top_level_url, frame_url)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1353,6 +1376,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     bool consider_for_ntp_most_visited,
     absl::optional<int64_t> local_navigation_id,
     absl::optional<std::u16string> title,
+    absl::optional<GURL> top_level_url,
+    absl::optional<GURL> frame_url,
     absl::optional<base::TimeDelta> visit_duration,
     absl::optional<std::string> originator_cache_guid,
     absl::optional<VisitID> originator_visit_id,
@@ -1395,6 +1420,40 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     url_info.set_id(url_id);
   }
 
+  VisitedLinkRow visited_link_info;
+  if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
+    // We require a top_level_site and a frame_origin to construct a
+    // visited link partition key. So if top_level_url and/or fame_url are NULL
+    // OR the transition type is a context where we know we cannot accurately
+    // construct a triple partition key, then we skip the VisitedLinkDatabase.
+    if (IsVisitedLinkTransition(transition) && top_level_url.has_value() &&
+        frame_url.has_value()) {
+      // Determine if the visited link is already in the database.
+      VisitedLinkID existing_row_id = db_->GetRowForVisitedLink(
+          url_id, *top_level_url, *frame_url, visited_link_info);
+      // If the returned row id is valid, we update this existing row.
+      if (existing_row_id) {
+        if (!db_->UpdateVisitedLinkRowVisitCount(
+                existing_row_id, visited_link_info.visit_count + 1)) {
+          // If the update fails, log an error and return.
+          DLOG(ERROR) << "AddPageVisit: Updating VisitedLink failed: " << url
+                      << " " << *top_level_url << " " << *frame_url;
+          return std::make_pair(0, 0);
+        }
+      } else {  // otherwise, insert this new visited link.
+        VisitedLinkID new_row_id =
+            db_->AddVisitedLink(url_id, *top_level_url, *frame_url, 1);
+        if (!new_row_id) {
+          // If the insert fails, log an error and return.
+          DLOG(ERROR) << "AddPageVisit: Inserting VisitedLink failed: " << url
+                      << " " << *top_level_url << " " << *frame_url;
+          return std::make_pair(0, 0);
+        }
+        db_->GetVisitedLinkRow(new_row_id, visited_link_info);
+      }
+    }
+  }
+
   // Add the visit with the time to the database.
   VisitRow visit_info(url_id, time, referring_visit, transition,
                       /*arg_segment_id=*/0, should_increment_typed_count,
@@ -1410,6 +1469,15 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     visit_info.originator_referring_visit = *originator_referring_visit;
   if (originator_opener_visit.has_value())
     visit_info.originator_opener_visit = *originator_opener_visit;
+  if (visited_link_info.id) {
+    visit_info.visited_link_id = visited_link_info.id;
+  }
+
+  // TODO(crbug.com/1476511): any visit added via sync should not have a
+  // corresponding entry in the VisitedLinkDatabase.
+  if (visit_source == VisitSource::SOURCE_SYNCED) {
+    CHECK(visit_info.visited_link_id == kInvalidVisitedLinkID);
+  }
 
   visit_info.is_known_to_sync = is_known_to_sync;
   visit_info.consider_for_ntp_most_visited = consider_for_ntp_most_visited;
@@ -1429,6 +1497,8 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   return std::make_pair(url_id, visit_info.visit_id);
 }
 
+// TODO(crbug.com/1475714): Determine if we want to record these URLs in the
+// VisitedLinkDatabase, and if so, plumb the correct value for top_level_site.
 void HistoryBackend::AddPagesWithDetails(const URLRows& urls,
                                          VisitSource visit_source) {
   TRACE_EVENT0("browser", "HistoryBackend::AddPagesWithDetails");
@@ -1697,10 +1767,11 @@ VisitID HistoryBackend::AddSyncedVisit(
       visit.transition, hidden, VisitSource::SOURCE_SYNCED,
       IsTypedIncrement(visit.transition), visit.opener_visit,
       visit.consider_for_ntp_most_visited,
-      /*local_navigation_id=*/absl::nullopt, title, visit.visit_duration,
-      visit.originator_cache_guid, visit.originator_visit_id,
-      visit.originator_referring_visit, visit.originator_opener_visit,
-      visit.is_known_to_sync);
+      /*local_navigation_id=*/absl::nullopt, title,
+      /*top_level_url=*/absl::nullopt, /*frame_url=*/absl::nullopt,
+      visit.visit_duration, visit.originator_cache_guid,
+      visit.originator_visit_id, visit.originator_referring_visit,
+      visit.originator_opener_visit, visit.is_known_to_sync);
 
   if (visit_id == kInvalidVisitID) {
     // Adding the page visit failed, do not continue.
@@ -1794,6 +1865,10 @@ VisitID HistoryBackend::UpdateSyncedVisit(
   // existing row. It'll be updated below, if necessary.
   updated_row.segment_id = original_row.segment_id;
 
+  // TODO(crbug.com/1476511): any VisitedLinkID associated with `updated_row`
+  // will be voided to avoid storing stale/incorrect VisitedLinkIDs once
+  // elements of the VisitRow's partition key change (in this case the
+  // referring_visit).
   if (!db_->UpdateVisitRow(updated_row)) {
     return kInvalidVisitID;
   }
@@ -1841,6 +1916,10 @@ bool HistoryBackend::UpdateVisitReferrerOpenerIDs(VisitID visit_id,
   row.referring_visit = referrer_id;
   row.opener_visit = opener_id;
 
+  // TODO(crbug.com/1476511): any VisitedLinkID associated with `row`
+  // will be voided to avoid storing stale/incorrect VisitedLinkIDs once
+  // elements of the VisitRow's partition key change (in this case the
+  // referring_visit).
   bool result = db_->UpdateVisitRow(row);
 
   if (result && can_add_foreign_visits_to_segments_) {

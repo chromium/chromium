@@ -171,11 +171,17 @@ class VisitRow {
   // "originator_from_visit" column in the visit DB.
   VisitID originator_referring_visit = kInvalidVisitID;
   VisitID originator_opener_visit = kInvalidVisitID;
-
   // Set to true for visits known to Chrome Sync, which can be:
   //  1. Remote visits that have been synced to the local machine.
   //  2. Local visits that have been sent to Sync.
   bool is_known_to_sync = false;
+  // If this visit has a transition type of `LINK` or `MANUAL_SUBFRAME`, it will
+  // have a corresponding entry in the VisitedLinkDatabase. That unique row ID
+  // is stored here. If there is no corresponding entry, the
+  // `kInvalidVisitedLinkID` is stored by default. The VisitDatabase has a
+  // many-to-one relationship with the VisitedLinkDatabase. As such, more than
+  // one visit may correspond to the same VisitedLinkID.
+  VisitedLinkID visited_link_id = kInvalidVisitedLinkID;
 
   // We allow the implicit copy constructor and operator=.
 };
@@ -1187,7 +1193,8 @@ struct HistoryAddPageArgs {
   //       GURL(), base::Time(), nullptr, 0, absl::nullopt, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true,
-  //       absl::nullopt, absl::nullopt, absl::nullopt)
+  //       absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt,
+  //       absl::nullopt)
   HistoryAddPageArgs();
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
@@ -1202,6 +1209,7 @@ struct HistoryAddPageArgs {
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
                      absl::optional<std::u16string> title = absl::nullopt,
+                     absl::optional<GURL> top_level_url = absl::nullopt,
                      absl::optional<Opener> opener = absl::nullopt,
                      absl::optional<base::Uuid> bookmark_id = absl::nullopt,
                      absl::optional<VisitContextAnnotations::OnVisitFields>
@@ -1226,6 +1234,9 @@ struct HistoryAddPageArgs {
   // exist (e.g. certain page transition types).
   bool consider_for_ntp_most_visited;
   absl::optional<std::u16string> title;
+  // `top_level_url` is a GURL representing the top-level frame that this
+  // navigation originated from.
+  absl::optional<GURL> top_level_url;
   absl::optional<Opener> opener;
   absl::optional<base::Uuid> bookmark_id;
   absl::optional<VisitContextAnnotations::OnVisitFields> context_annotations;

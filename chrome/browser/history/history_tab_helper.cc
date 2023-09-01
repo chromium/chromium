@@ -272,6 +272,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           ? absl::optional<std::u16string>(
                 navigation_handle->GetWebContents()->GetTitle())
           : absl::nullopt,
+      // Our top-level site is the previous primary main frame.
+      navigation_handle->GetPreviousPrimaryMainFrameURL(),
       // Only compute the opener page if it's the first committed page for this
       // WebContents.
       navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
@@ -403,7 +405,11 @@ void HistoryTabHelper::DidActivatePortal(
       /* redirects */ {}, ui::PAGE_TRANSITION_LINK,
       /* hidden */ false, history::SOURCE_BROWSED, did_replace_entry,
       /* consider_for_ntp_most_visited */ true,
-      last_committed_entry->GetTitle());
+      last_committed_entry->GetTitle(),
+      // TODO(crbug.com/1475670): Investigate portal activation and determine if
+      // we need to populate top_level_url correctly to record this navigation
+      // in the VisitedLinkDatabase.
+      /*top_level_url=*/absl::nullopt);
   // TODO(crbug.com/1347012): Add on-visit ContextAnnotation fields here.
   hs->AddPage(add_page_args);
 }

@@ -76,6 +76,10 @@ const base::FeatureParam<int> kRepeatableQueriesMinVisitCount(
     "RepeatableQueriesMinVisitCount",
     is_android ? 6 : 1);
 
+BASE_FEATURE(kPopulateVisitedLinkDatabase,
+             "PopulateVisitedLinkDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSyncSegmentsData,
              "SyncSegmentsData",
              base::FEATURE_DISABLED_BY_DEFAULT);

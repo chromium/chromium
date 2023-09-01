@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_database.h"
@@ -472,6 +473,25 @@ void ExpireHistoryBackend::DeleteVisitRelatedInfo(const VisitVector& visits,
     // Delete content & context annotations associated with visit.
     if (visit.visit_id)
       main_db_->DeleteAnnotationsForVisit(visit.visit_id);
+
+    // Decrease the visit count of the corresponding VisitedLinkRow if the flag
+    // is enabled.
+    if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
+      VisitedLinkRow visited_link_row;
+      if (visit.visited_link_id &&
+          main_db_->GetVisitedLinkRow(visit.visited_link_id,
+                                      visited_link_row)) {
+        int new_visit_count = visited_link_row.visit_count - 1;
+        // If we deleted the last visit associated with this VisitedLink, then
+        // we delete the VisitedLinkRow.
+        if (new_visit_count > 0) {
+          main_db_->UpdateVisitedLinkRowVisitCount(visited_link_row.id,
+                                                   new_visit_count);
+        } else {
+          main_db_->DeleteVisitedLinkRow(visit.visited_link_id);
+        }
+      }
+    }
 
     notifier_->NotifyVisitDeleted(visit);
   }

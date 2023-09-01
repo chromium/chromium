@@ -190,7 +190,12 @@ bool VisitDatabase::InitVisitTable() {
             // (most common case) doesn't guarantee it's relevant for Most
             // Visited, since other requirements exist (e.g. certain page
             // transition types).
-            "consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL)")) {
+            "consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL,"
+            // VisitedLinkID this visit corresponds to (if any). If this visit
+            // does not has a transition type of `LINK` or `MANUAL_SUBFRAME`, it
+            // will not be stored in the VisitedLinkDatabase and the code will
+            // write its `visited_link_id` as 0 (kInvalidVisitedLinkID).
+            "visited_link_id INTEGER DEFAULT 0 NOT NULL)")) {
       return false;
     }
   }
@@ -263,6 +268,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->originator_opener_visit = statement.ColumnInt64(13);
   visit->is_known_to_sync = statement.ColumnBool(14);
   visit->consider_for_ntp_most_visited = statement.ColumnBool(15);
+  visit->visited_link_id = statement.ColumnInt64(16);
 }
 
 // static
@@ -325,8 +331,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       "segment_id, visit_duration, incremented_omnibox_typed_score,"
       "opener_visit, originator_cache_guid, originator_visit_id, "
       "originator_from_visit, originator_opener_visit, is_known_to_sync, "
-      "consider_for_ntp_most_visited) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      "consider_for_ntp_most_visited, visited_link_id) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
   statement.BindInt64(0, visit->url_id);
@@ -344,6 +350,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(12, visit->originator_opener_visit);
   statement.BindBool(13, visit->is_known_to_sync);
   statement.BindBool(14, visit->consider_for_ntp_most_visited);
+  statement.BindInt64(15, visit->visited_link_id);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -469,7 +476,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       "url=?,visit_time=?,from_visit=?,external_referrer_url=?,transition=?,"
       "segment_id=?,visit_duration=?,incremented_omnibox_typed_score=?,"
       "opener_visit=?,originator_cache_guid=?,originator_visit_id=?,"
-      "is_known_to_sync=?,consider_for_ntp_most_visited=? "
+      "is_known_to_sync=?,consider_for_ntp_most_visited=?,visited_link_id=? "
       "WHERE id=?"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
@@ -486,7 +493,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(10, visit.originator_visit_id);
   statement.BindInt64(11, visit.is_known_to_sync);
   statement.BindInt64(12, visit.consider_for_ntp_most_visited);
-  statement.BindInt64(13, visit.visit_id);
+  statement.BindInt64(13, visit.visited_link_id);
+  statement.BindInt64(14, visit.visit_id);
 
   return statement.Run();
 }
@@ -1396,6 +1404,20 @@ bool VisitDatabase::MigrateVisitsAddExternalReferrerUrlColumn() {
     }
   }
 
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsAddVisitedLinkIdColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+  if (!GetDB().DoesColumnExist("visits", "visited_link_id")) {
+    if (!GetDB().Execute(
+            "ALTER TABLE visits ADD COLUMN visited_link_id INTEGER")) {
+      return false;
+    }
+  }
   return true;
 }
 

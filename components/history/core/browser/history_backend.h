@@ -835,6 +835,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // of the associated URL (whether added or not) is returned. Both values will
   // be 0 on failure.
   //
+  // If the caller wants to add this visit to the VisitedLinkDatabase, it needs
+  // to provide values for the `top_level_url` and `frame_url` parameters.
+  // `top_level_url` is a GURL representing the top-level frame that this
+  // navigation originated from. `frame_url` is GURL representing the immediate
+  // frame that this navigation originated from. For example, if a link to
+  // `c.com` is clicked in an iframe `b.com` that is embedded in `a.com`, the
+  // `top_level_url` is `a.com` and the `frame_url` is `b.com` (and the `url` is
+  // `c.com`).
+  //
   // This does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
   std::pair<URLID, VisitID> AddPageVisit(
@@ -850,6 +859,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool consider_for_ntp_most_visited,
       absl::optional<int64_t> local_navigation_id = absl::nullopt,
       absl::optional<std::u16string> title = absl::nullopt,
+      absl::optional<GURL> top_level_url = absl::nullopt,
+      absl::optional<GURL> frame_url = absl::nullopt,
       absl::optional<base::TimeDelta> visit_duration = absl::nullopt,
       absl::optional<std::string> originator_cache_guid = absl::nullopt,
       absl::optional<VisitID> originator_visit_id = absl::nullopt,
