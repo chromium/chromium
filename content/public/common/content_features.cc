@@ -414,11 +414,6 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              "ExperimentalContentSecurityPolicyFeatures",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Extra CORS safelisted headers. See https://crbug.com/999054.
-BASE_FEATURE(kExtraSafelistedRequestHeadersForOutOfBlinkCors,
-             "ExtraSafelistedRequestHeadersForOutOfBlinkCors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables JavaScript API to intermediate federated identity requests.
 // Note that actual exposure of the FedCM API to web content is controlled
 // by the flag in RuntimeEnabledFeatures on the blink side. See also
@@ -738,14 +733,6 @@ BASE_FEATURE(kMojoDedicatedThread,
 // Enables/disables the video capture service.
 BASE_FEATURE(kMojoVideoCapture,
              "MojoVideoCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A secondary switch used in combination with kMojoVideoCapture.
-// This is intended as a kill switch to allow disabling the service on
-// particular groups of devices even if they forcibly enable kMojoVideoCapture
-// via a command-line argument.
-BASE_FEATURE(kMojoVideoCaptureSecondary,
-             "MojoVideoCaptureSecondary",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
@@ -1534,12 +1521,6 @@ BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Allows the experimental approach of proactively generating an accessibility
-// tree asynchronously off the main thread, before the framework requests it.
-BASE_FEATURE(kAccessibilityAsyncTreeConstruction,
-             "AccessibilityAsyncTreeConstruction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows the use of page zoom in place of accessibility text autosizing, and
 // updated UI to replace existing Chrome Accessibility Settings.
 BASE_FEATURE(kAccessibilityPageZoom,
@@ -1664,19 +1645,24 @@ BASE_FEATURE(kWebRtcPipeWireCapturer,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
 
+namespace {
 enum class VideoCaptureServiceConfiguration {
   kEnabledForOutOfProcess,
   kEnabledForBrowserProcess,
   kDisabled
 };
 
-bool ShouldEnableVideoCaptureService() {
-  return base::FeatureList::IsEnabled(features::kMojoVideoCapture) &&
-         base::FeatureList::IsEnabled(features::kMojoVideoCaptureSecondary);
-}
+// A secondary switch used in combination with kMojoVideoCapture.
+// This is intended as a kill switch to allow disabling the service on
+// particular groups of devices even if they forcibly enable kMojoVideoCapture
+// via a command-line argument.
+BASE_FEATURE(kMojoVideoCaptureSecondary,
+             "MojoVideoCaptureSecondary",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-  if (!ShouldEnableVideoCaptureService()) {
+  if (!base::FeatureList::IsEnabled(features::kMojoVideoCapture) ||
+      !base::FeatureList::IsEnabled(features::kMojoVideoCaptureSecondary)) {
     return VideoCaptureServiceConfiguration::kDisabled;
   }
 
@@ -1692,6 +1678,8 @@ VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
              : VideoCaptureServiceConfiguration::kEnabledForOutOfProcess;
 #endif
 }
+
+}  // namespace
 
 bool IsVideoCaptureServiceEnabledForOutOfProcess() {
   return GetVideoCaptureServiceConfiguration() ==
