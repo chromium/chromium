@@ -68,6 +68,9 @@ class SafeBrowsingTokenFetcher;
 // servers.
 class ExtensionTelemetryService : public KeyedService {
  public:
+  // Convenience method to get the service for a profile.
+  static ExtensionTelemetryService* Get(Profile* profile);
+
   ExtensionTelemetryService(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

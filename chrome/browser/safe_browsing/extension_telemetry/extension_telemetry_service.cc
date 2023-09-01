@@ -29,9 +29,11 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_uploader.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal_processor.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
@@ -214,6 +216,12 @@ extensions::BlocklistState ConvertTelemetryResponseVerdictToBlocklistState(
 
 ExtensionTelemetryService::~ExtensionTelemetryService() = default;
 
+// static
+ExtensionTelemetryService* ExtensionTelemetryService::Get(Profile* profile) {
+  return ExtensionTelemetryServiceFactory::GetInstance()->GetForProfile(
+      profile);
+}
+
 ExtensionTelemetryService::ExtensionTelemetryService(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -261,7 +269,7 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
   enabled_ = enable;
   if (enabled_) {
     // Create signal processors.
-    // Map the processors to the signals they eventually generate.
+    // Map the processors to the signals they output reports for.
     signal_processors_.emplace(ExtensionSignalType::kCookiesGet,
                                std::make_unique<CookiesGetSignalProcessor>());
     signal_processors_.emplace(
@@ -270,6 +278,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     signal_processors_.emplace(
         ExtensionSignalType::kDeclarativeNetRequest,
         std::make_unique<DeclarativeNetRequestSignalProcessor>());
+    signal_processors_.emplace(ExtensionSignalType::kTabsApi,
+                               std::make_unique<TabsApiSignalProcessor>());
     signal_processors_.emplace(
         ExtensionSignalType::kTabsExecuteScript,
         std::make_unique<TabsExecuteScriptSignalProcessor>());
@@ -290,6 +300,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         subscribers_for_declarative_net_request = {
             signal_processors_[ExtensionSignalType::kDeclarativeNetRequest]
                 .get()};
+    std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_api = {
+        signal_processors_[ExtensionSignalType::kTabsApi].get()};
     std::vector<ExtensionSignalProcessor*> subscribers_for_tabs_execute_script =
         {signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
     std::vector<ExtensionSignalProcessor*>
@@ -307,6 +319,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     signal_subscribers_.emplace(
         ExtensionSignalType::kDeclarativeNetRequest,
         std::move(subscribers_for_declarative_net_request));
+    signal_subscribers_.emplace(ExtensionSignalType::kTabsApi,
+                                std::move(subscribers_for_tabs_api));
     signal_subscribers_.emplace(ExtensionSignalType::kTabsExecuteScript,
                                 std::move(subscribers_for_tabs_execute_script));
     signal_subscribers_.emplace(
@@ -713,6 +727,26 @@ void ExtensionTelemetryService::DumpReportForTest(
     const RepeatedPtrField<ExtensionTelemetryReportRequest_SignalInfo>&
         signals = report_pb.signals();
     for (const auto& signal_pb : signals) {
+      // Tabs Api
+      if (signal_pb.has_tabs_api_info()) {
+        const auto& tabs_api_info_pb = signal_pb.tabs_api_info();
+        const RepeatedPtrField<
+            ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo_CallDetails>&
+            call_details = tabs_api_info_pb.call_details();
+        if (!call_details.empty()) {
+          ss << "  Signal: TabsApi\n";
+          for (const auto& entry : call_details) {
+            ss << "    Call Details:\n"
+               << "      API method: "
+               << base::NumberToString(static_cast<int>(entry.method())) << "\n"
+               << "      current URL: " << entry.current_url() << "\n"
+               << "      new URL: " << entry.new_url() << "\n"
+               << "      count: " << entry.count() << "\n";
+          }
+        }
+        continue;
+      }
+
       // Tabs Execute Script
       if (signal_pb.has_tabs_execute_script_info()) {
         const auto& tabs_execute_script_info_pb =
