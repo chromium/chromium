@@ -399,7 +399,10 @@ void GetAssertionTask::MaybeSetPRFParameters(CtapGetAssertionRequest* request,
       maybe_inputs->salt2);
   request->hmac_secret.emplace(hmac_secret_request_->public_key_x962,
                                hmac_secret_request_->encrypted_salts,
-                               hmac_secret_request_->salts_auth);
+                               hmac_secret_request_->salts_auth,
+                               // The correct PIN protocol will be inserted
+                               // automatically when needed.
+                               /*pin_protocol=*/absl::nullopt);
 }
 
 void GetAssertionTask::MaybeRevertU2fFallbackAndInvokeCallback(

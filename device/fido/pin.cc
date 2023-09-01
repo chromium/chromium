@@ -550,6 +550,7 @@ HMACSecretRequest::HMACSecretRequest(
     base::span<const uint8_t, 32> salt1,
     const absl::optional<std::array<uint8_t, 32>>& salt2)
     : protocol_(protocol),
+      have_two_salts_(salt2.has_value()),
       public_key_x962(
           ProtocolVersion(protocol_).Encapsulate(peer_key, &shared_key_)),
       encrypted_salts(
@@ -564,11 +565,15 @@ HMACSecretRequest::HMACSecretRequest(const HMACSecretRequest& other) = default;
 
 absl::optional<std::vector<uint8_t>> HMACSecretRequest::Decrypt(
     base::span<const uint8_t> ciphertext) {
-  if (ciphertext.size() != this->encrypted_salts.size()) {
+  const absl::optional<std::vector<uint8_t>> plaintext =
+      pin::ProtocolVersion(protocol_).Decrypt(shared_key_, ciphertext);
+
+  const unsigned num_salts = have_two_salts_ ? 2 : 1;
+  if (plaintext && plaintext->size() != 32 * num_salts) {
     return absl::nullopt;
   }
 
-  return pin::ProtocolVersion(protocol_).Decrypt(shared_key_, ciphertext);
+  return plaintext;
 }
 
 }  // namespace pin

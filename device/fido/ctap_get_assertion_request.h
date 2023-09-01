@@ -97,7 +97,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   struct HMACSecret {
     HMACSecret(base::span<const uint8_t, kP256X962Length> public_key_x962,
                base::span<const uint8_t> encrypted_salts,
-               base::span<const uint8_t> salts_auth);
+               base::span<const uint8_t> salts_auth,
+               absl::optional<PINUVAuthProtocol> pin_protocol);
     HMACSecret(const HMACSecret&);
     ~HMACSecret();
     HMACSecret& operator=(const HMACSecret&);
@@ -105,6 +106,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
     std::array<uint8_t, kP256X962Length> public_key_x962;
     std::vector<uint8_t> encrypted_salts;
     std::vector<uint8_t> salts_auth;
+    // pin_protocol is ignored during serialisation and the request's PIN
+    // protocol will be used instead.
+    absl::optional<PINUVAuthProtocol> pin_protocol;
   };
 
   // Decodes a CTAP2 authenticatorGetAssertion request message. The request's

@@ -173,6 +173,10 @@ BASE_DECLARE_FEATURE(kWebAuthnRequireUIForComplexDiscoveries);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnFilterGooglePasskeys);
 
+// Send the PIN protocol, if v2, in hmac-secret extensions.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnPINProtocolInHMACSecret);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

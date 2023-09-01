@@ -7,8 +7,10 @@
 #include <limits>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "device/fido/device_response_converter.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
@@ -105,10 +107,12 @@ bool operator<(const PRFInput& a, const PRFInput& b) {
 CtapGetAssertionRequest::HMACSecret::HMACSecret(
     base::span<const uint8_t, kP256X962Length> in_public_key_x962,
     base::span<const uint8_t> in_encrypted_salts,
-    base::span<const uint8_t> in_salts_auth)
+    base::span<const uint8_t> in_salts_auth,
+    absl::optional<PINUVAuthProtocol> in_pin_protocol)
     : public_key_x962(fido_parsing_utils::Materialize(in_public_key_x962)),
       encrypted_salts(fido_parsing_utils::Materialize(in_encrypted_salts)),
-      salts_auth(fido_parsing_utils::Materialize(in_salts_auth)) {}
+      salts_auth(fido_parsing_utils::Materialize(in_salts_auth)),
+      pin_protocol(in_pin_protocol) {}
 
 CtapGetAssertionRequest::HMACSecret::HMACSecret(const HMACSecret&) = default;
 CtapGetAssertionRequest::HMACSecret::~HMACSecret() = default;
@@ -192,6 +196,9 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         }
         const absl::optional<pin::KeyAgreementResponse> key(
             pin::KeyAgreementResponse::ParseFromCOSE(hmac_it->second.GetMap()));
+        if (!key) {
+          return absl::nullopt;
+        }
 
         hmac_it = hmac_extension.find(cbor::Value(2));
         if (hmac_it == hmac_extension.end() ||
@@ -209,13 +216,23 @@ absl::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
         const std::vector<uint8_t>& salts_auth =
             hmac_it->second.GetBytestring();
 
-        if (!key ||
-            (encrypted_salts.size() != 32 && encrypted_salts.size() != 64) ||
-            salts_auth.size() != 16) {
-          return absl::nullopt;
+        absl::optional<PINUVAuthProtocol> pin_protocol;
+        const auto pin_protocol_it = hmac_extension.find(cbor::Value(4));
+        if (pin_protocol_it != hmac_extension.end()) {
+          if (!pin_protocol_it->second.is_unsigned() ||
+              pin_protocol_it->second.GetUnsigned() >
+                  std::numeric_limits<uint8_t>::max()) {
+            return absl::nullopt;
+          }
+          pin_protocol =
+              ToPINUVAuthProtocol(pin_protocol_it->second.GetUnsigned());
+          if (!pin_protocol) {
+            return absl::nullopt;
+          }
         }
 
-        request.hmac_secret.emplace(key->X962(), encrypted_salts, salts_auth);
+        request.hmac_secret.emplace(key->X962(), encrypted_salts, salts_auth,
+                                    pin_protocol);
       } else if (extension_id == kExtensionLargeBlobKey) {
         if (!extension.second.is_bool() || !extension.second.GetBool()) {
           return absl::nullopt;
@@ -426,6 +443,14 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
         1, pin::EncodeCOSEPublicKey(hmac_secret.public_key_x962));
     hmac_extension.emplace(2, hmac_secret.encrypted_salts);
     hmac_extension.emplace(3, hmac_secret.salts_auth);
+    if (request.pin_protocol &&
+        static_cast<unsigned>(*request.pin_protocol) >= 2 &&
+        base::FeatureList::IsEnabled(kWebAuthnPINProtocolInHMACSecret)) {
+      // If the request is using a PIN protocol other than v1, it must be
+      // specified here too:
+      // https://fidoalliance.org/specs/fido-v2.2-rd-20230321/fido-client-to-authenticator-protocol-v2.2-rd-20230321.html#sctn-hmac-secret-extension:~:text=pinuvauthprotocol(0x04)%3A%20(optional)%20as%20selected%20when%20getting%20the%20shared%20secret.%20ctap2.1%20platforms%20must%20include%20this%20parameter%20if%20the%20value%20of%20pinuvauthprotocol%20is%20not%201
+      hmac_extension.emplace(4, static_cast<int64_t>(*request.pin_protocol));
+    }
     extensions.emplace(kExtensionHmacSecret, std::move(hmac_extension));
   }
 

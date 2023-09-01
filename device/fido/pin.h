@@ -304,6 +304,7 @@ class HMACSecretRequest {
 
  private:
   const PINUVAuthProtocol protocol_;
+  const bool have_two_salts_;
   std::vector<uint8_t> shared_key_;
 
  public:

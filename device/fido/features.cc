@@ -217,4 +217,9 @@ BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
              "WebAuthenticationFilterGooglePasskeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M118. Remove in or after M121.
+BASE_FEATURE(kWebAuthnPINProtocolInHMACSecret,
+             "WebAuthenticationPINProtocolInHMACSecret",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
