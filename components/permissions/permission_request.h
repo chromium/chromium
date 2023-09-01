@@ -116,6 +116,10 @@ class PermissionRequest {
   virtual std::u16string GetMessageTextFragment() const;
 #endif
 
+  // Whether the request was initiated by the user clicking on the permission
+  // element.
+  bool IsEmbeddedPermissionElementInitiated() const;
+
   // Returns true if the request has two origins and should use the two origin
   // prompt. Returns false otherwise.
   bool ShouldUseTwoOriginPrompt() const;

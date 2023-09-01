@@ -118,6 +118,10 @@ std::u16string PermissionRequest::GetDialogMessageText() const {
 }
 #endif
 
+bool PermissionRequest::IsEmbeddedPermissionElementInitiated() const {
+  return data_.embedded_permission_element_initiated;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 
 bool PermissionRequest::IsConfirmationChipSupported() {
