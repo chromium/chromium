@@ -135,8 +135,14 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  getDetailsButton() {
+  /** @return The "Details" button. */
+  getDetailsButton(): HTMLElement {
     return this.$.detailsButton;
+  }
+
+  /** @return The "Remove" button, if it exists. */
+  getRemoveButton(): HTMLElement|null {
+    return this.data.mustRemainInstalled ? null : this.$.removeButton;
   }
 
   /** @return The "Errors" button, if it exists. */

@@ -118,6 +118,14 @@ export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
     this.setAttribute('role', 'banner');
   }
 
+  focusSearchInput() {
+    this.$.toolbar.getSearchField().showAndFocus();
+  }
+
+  isSearchFocused(): boolean {
+    return this.$.toolbar.getSearchField().isSearchFocused();
+  }
+
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));

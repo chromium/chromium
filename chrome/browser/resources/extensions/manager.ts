@@ -534,15 +534,33 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     }
   }
 
+  // When an item is removed while on the 'item list' page, move focus to the
+  // next item in the list with `listId` if available. If no items are in that
+  // list, focus to the search bar as a fallback.
+  // This is a fix for crbug.com/1416324 which causes focus to linger on a
+  // deleted element, which is then read by the screen reader.
+  private focusAfterItemRemoved_(listId: string, index: number) {
+    // A timeout is used so elements are focused after the DOM is updated.
+    setTimeout(() => {
+      if (this.get(listId).length) {
+        const focusIndex = Math.min(this.get(listId).length - 1, index);
+        const itemToFocusId = this.get([listId, focusIndex])!.id;
+        this.$['items-list'].focusItemButton(itemToFocusId);
+      } else {
+        this.$.toolbar.focusSearchInput();
+      }
+    }, 0);
+  }
+
   /**
    * @param itemId The id of item to remove.
    */
   private removeItem_(itemId: string) {
-    // Search for the item to be deleted in |extensions_|.
+    // Search for the item to be deleted in `extensions_`.
     let listId = 'extensions_';
     let index = this.getIndexInList_(listId, itemId);
     if (index === -1) {
-      // If not in |extensions_| it must be in |apps_|.
+      // If not in `extensions_` it must be in `apps_`.
       listId = 'apps_';
       index = this.getIndexInList_(listId, itemId);
     }
@@ -550,11 +568,14 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
     // We should never try and remove a non-existent item.
     assert(index >= 0);
     this.splice(listId, index, 1);
-    if ((this.currentPage_!.page === Page.ACTIVITY_LOG ||
+    if (this.currentPage_!.page === Page.LIST) {
+      this.focusAfterItemRemoved_(listId, index);
+    } else if (
+        (this.currentPage_!.page === Page.ACTIVITY_LOG ||
          this.currentPage_!.page === Page.DETAILS ||
          this.currentPage_!.page === Page.ERRORS) &&
         this.currentPage_!.extensionId === itemId) {
-      // Leave the details page (the 'list' page is a fine choice).
+      // Leave the details page (the 'item list' page is a fine choice).
       navigation.replaceWith({page: Page.LIST});
     }
   }

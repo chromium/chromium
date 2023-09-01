@@ -376,6 +376,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, Uninstall) {
   RunTestCase("Uninstall");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest, UninstallFocus) {
+  RunTestCase("UninstallFocus");
+}
+
 // Flaky since r621915: https://crbug.com/922490
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerUnitTest,
                        DISABLED_UninstallFromDetails) {
