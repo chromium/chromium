@@ -523,10 +523,10 @@ void Mp4MuxerDelegate::BuildAudioFragment(base::StringPiece encoded_data) {
   AddDataToMdat(*fragment, *audio_track_index_, encoded_data);
 }
 
-void Mp4MuxerDelegate::Flush() {
+bool Mp4MuxerDelegate::Flush() {
   if (!video_track_index_.has_value() && !audio_track_index_.has_value()) {
     Reset();
-    return;
+    return false;
   }
 
   size_t written_offset = 0;
@@ -598,6 +598,8 @@ void Mp4MuxerDelegate::Flush() {
   }
 
   Reset();
+
+  return true;
 }
 
 void Mp4MuxerDelegate::BuildFileTypeBox(
@@ -620,8 +622,11 @@ void Mp4MuxerDelegate::BuildMovieBox() {
   base::TimeDelta video_track_duration = base::Seconds(0);
   if (video_track_index_.has_value()) {
     CHECK_NE(video_frame_rate_, 0);
-    video_track_duration = std::max(base::Seconds(1 / video_frame_rate_),
-                                    last_video_time_ - start_video_time_);
+    base::TimeTicks last_video_time_include_last_sample =
+        last_video_time_ +
+        base::Milliseconds(kMillisecondsTimeScale / video_frame_rate_);
+    video_track_duration =
+        last_video_time_include_last_sample - start_video_time_;
     CopyCreationTimeAndDuration(moov_->tracks[*video_track_index_],
                                 moov_->header, video_track_duration);
   }
@@ -630,8 +635,13 @@ void Mp4MuxerDelegate::BuildMovieBox() {
   base::TimeDelta audio_track_duration = base::Seconds(0);
   if (audio_track_index_.has_value()) {
     CHECK_NE(audio_sample_rate_, 0);
-    audio_track_duration = std::max(base::Seconds(1 / audio_sample_rate_),
-                                    last_audio_time_ - start_audio_time_);
+
+    int audio_frame_rate = audio_sample_rate_ / kAudioSamplesPerFrame;
+    base::TimeTicks last_audio_time_include_last_sample =
+        last_audio_time_ +
+        base::Milliseconds(kMillisecondsTimeScale / audio_frame_rate);
+    audio_track_duration =
+        last_audio_time_include_last_sample - start_audio_time_;
     CopyCreationTimeAndDuration(moov_->tracks[*audio_track_index_],
                                 moov_->header, audio_track_duration);
   }
@@ -715,6 +725,7 @@ void Mp4MuxerDelegate::Reset() {
   fragments_.clear();
 
   video_track_index_.reset();
+  audio_track_index_.reset();
   next_track_index_ = 0;
   start_video_time_ = base::TimeTicks();
   start_audio_time_ = base::TimeTicks();

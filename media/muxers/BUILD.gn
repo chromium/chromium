@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "mp4_muxer_box_writer_unittest.cc",
     "mp4_muxer_context_unittest.cc",
     "mp4_muxer_delegate_unittest.cc",
+    "mp4_muxer_unittest.cc",
     "mp4_type_conversion_unittest.cc",
     "output_position_tracker_unittest.cc",
     "webm_muxer_unittest.cc",

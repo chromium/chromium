@@ -51,7 +51,7 @@ class MEDIA_EXPORT Mp4MuxerDelegate {
       absl::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp);
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
-  void Flush();
+  bool Flush();
 
   struct Fragment {
     Fragment();
