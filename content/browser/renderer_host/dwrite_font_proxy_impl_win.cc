@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -298,6 +299,8 @@ void DWriteFontProxyImpl::GetFontFileHandles(
   if (!collection_)
     return;
 
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   mswr::ComPtr<IDWriteFontFamily> family;
   HRESULT hr = collection_->GetFontFamily(family_index, &family);
   if (FAILED(hr)) {
@@ -323,9 +326,6 @@ void DWriteFontProxyImpl::GetFontFileHandles(
   std::vector<base::File> file_handles;
   // We pass handles for every path as the sandbox blocks direct access to font
   // files in the renderer.
-  // TODO(jam): if kDWriteFontProxyOnIO is removed also remove the exception
-  // for this class from thread_restrictions.h
-  base::ScopedAllowBlocking allow_io;
   for (const auto& font_path : path_set) {
     // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
     // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
