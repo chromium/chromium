@@ -52,7 +52,9 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     public Tab addTab(int id) {
         Tab tab = mDelegate == null ? new MockTab(id, isIncognito())
                                     : mDelegate.createTab(id, isIncognito());
-        mTabs.add(tab);
+
+        addTab(tab, TabModel.INVALID_TAB_INDEX, TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
         return tab;
     }
 
@@ -61,7 +63,7 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         for (TabModelObserver observer : mObservers) observer.willAddTab(tab, type);
 
-        if (index == -1) {
+        if (index == TabModel.INVALID_TAB_INDEX) {
             mTabs.add(tab);
         } else {
             mTabs.add(index, tab);
@@ -72,7 +74,6 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
         for (TabModelObserver observer : mObservers) {
             observer.didAddTab(tab, type, creationState, false);
-            observer.didSelectTab(tab, type, index == -1 ? -1 : index--);
         }
     }
 
@@ -111,6 +112,11 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
         mIndex = i;
+        if (mIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        for (TabModelObserver observer : mObservers) {
+            observer.didSelectTab(mTabs.get(mIndex), type, mIndex);
+        }
     }
 
     @Override

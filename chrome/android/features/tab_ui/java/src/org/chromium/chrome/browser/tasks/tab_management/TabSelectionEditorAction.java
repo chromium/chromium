@@ -314,10 +314,6 @@ public abstract class TabSelectionEditorAction {
     }
 
     protected List<Tab> getTabsAndRelatedTabsFromSelection() {
-        if (!(mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                            instanceof TabGroupModelFilter)) {
-            return getTabsFromSelection();
-        }
         TabGroupModelFilter filter =
                 (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
                         .getCurrentTabModelFilter();
@@ -331,10 +327,6 @@ public abstract class TabSelectionEditorAction {
 
     public static int getTabCountIncludingRelatedTabs(
             TabModelSelector tabModelSelector, List<Integer> tabIds) {
-        if (!(tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                            instanceof TabGroupModelFilter)) {
-            return tabIds.size();
-        }
         TabGroupModelFilter filter =
                 (TabGroupModelFilter) tabModelSelector.getTabModelFilterProvider()
                         .getCurrentTabModelFilter();

@@ -22,19 +22,15 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -191,7 +187,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                 @Override
                 public void restoreCompleted() {
                     recordTabGroupCount();
-                    recordSessionCount();
                     mTabModelSelector.getModel(false).removeObserver(this);
                 }
             });
@@ -282,72 +277,17 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         if (!mIsWarmOnResumeSupplier.get()) return;
 
         recordTabGroupCount();
-        recordSessionCount();
     }
 
     private void recordTabGroupCount() {
         if (mTabModelSelector == null) return;
+
         TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
-
-        TabModelFilter normalTabModelFilter = provider.getTabModelFilter(false);
-
-        if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
-            String actualType = normalTabModelFilter == null
-                    ? "null"
-                    : normalTabModelFilter.getClass().getName();
-            assert false
-                : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
-                  + actualType;
-
-            return;
-        }
-
         TabGroupModelFilter normalFilter = (TabGroupModelFilter) provider.getTabModelFilter(false);
         TabGroupModelFilter incognitoFilter =
                 (TabGroupModelFilter) provider.getTabModelFilter(true);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();
         RecordHistogram.recordCount1MHistogram("TabGroups.UserGroupCount", groupCount);
-        int namedGroupCount = 0;
-        for (int i = 0; i < normalFilter.getTabGroupCount(); i++) {
-            int rootId = CriticalPersistedTabData.from(normalFilter.getTabAt(i)).getRootId();
-            if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
-                namedGroupCount += 1;
-            }
-        }
-        for (int i = 0; i < incognitoFilter.getTabGroupCount(); i++) {
-            int rootId = CriticalPersistedTabData.from(incognitoFilter.getTabAt(i)).getRootId();
-            if (TabGroupTitleUtils.getTabGroupTitle(rootId) != null) {
-                namedGroupCount += 1;
-            }
-        }
-        RecordHistogram.recordCount1MHistogram("TabGroups.UserNamedGroupCount", namedGroupCount);
-    }
-
-    private void recordSessionCount() {
-        TabModelFilter normalTabModelFilter =
-                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
-
-        if (!(normalTabModelFilter instanceof TabGroupModelFilter)) {
-            String actualType = normalTabModelFilter == null
-                    ? "null"
-                    : normalTabModelFilter.getClass().getName();
-            assert false
-                : "Please file bug, this is unexpected. Expected TabGroupModelFilter, but was "
-                  + actualType;
-
-            return;
-        }
-
-        LayoutStateProvider layoutStateProvider = mLayoutStateProviderSupplier.get();
-        if (layoutStateProvider != null
-                && layoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            return;
-        }
-
-        Tab currentTab = mTabModelSelector.getCurrentTab();
-        if (currentTab == null) return;
-        TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
-        ((TabGroupModelFilter) provider.getCurrentTabModelFilter()).recordSessionsCount(currentTab);
     }
 
     @Override

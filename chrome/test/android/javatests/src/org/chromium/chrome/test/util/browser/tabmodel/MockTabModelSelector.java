@@ -6,12 +6,12 @@ package org.chromium.chrome.test.util.browser.tabmodel;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -26,7 +26,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     public MockTabModelSelector(
             int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
-        super(null, EmptyTabModelFilter::new, false);
+        super(null, TabGroupModelFilter::new, false);
         initialize(new MockTabModel(false, delegate), new MockTabModel(true, delegate));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();

@@ -86,7 +86,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
         TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
                 tabModel.isIncognito());
-        if (!(filter instanceof TabGroupModelFilter)) return;
+        assert filter instanceof TabGroupModelFilter;
 
         TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
         for (int id : tabIds) {

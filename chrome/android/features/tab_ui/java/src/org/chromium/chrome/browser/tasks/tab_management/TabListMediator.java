@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -655,15 +654,6 @@ class TabListMediator {
             }
 
             @Override
-            public void didMoveTab(Tab tab, int newIndex, int curIndex) {
-                if (mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                                instanceof TabGroupModelFilter) {
-                    return;
-                }
-                onTabMoved(mModel.indexOfNthTabCard(newIndex), mModel.indexOfNthTabCard(curIndex));
-            }
-
-            @Override
             public void tabRemoved(Tab tab) {
                 if (mModel.indexFromId(tab.getId()) == TabModel.INVALID_TAB_INDEX) return;
                 mModel.removeAt(mModel.indexFromId(tab.getId()));
@@ -823,246 +813,240 @@ class TabListMediator {
                 mTabModelSelector.getModel(/*isIncognito=*/false).getProfile());
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
 
-        if (mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter) {
-            mTabGroupObserver = new EmptyTabGroupModelFilterObserver() {
-                @Override
-                public void didMoveWithinGroup(
-                        Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                    if (!mVisible || tabModelNewIndex == tabModelOldIndex) return;
+        mTabGroupObserver = new EmptyTabGroupModelFilterObserver() {
+            @Override
+            public void didMoveWithinGroup(
+                    Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                if (!mVisible || tabModelNewIndex == tabModelOldIndex) return;
 
-                    TabModel tabModel = mTabModelSelector.getCurrentModel();
+                TabModel tabModel = mTabModelSelector.getCurrentModel();
 
-                    // For the tab switcher update the tab card correctly.
-                    if (mActionsOnAllRelatedTabs && mThumbnailProvider != null
-                            && !isShowingTabsInMRUOrder()) {
-                        int indexInModel = getIndexForTabWithRelatedTabs(movedTab);
-                        if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
+                // For the tab switcher update the tab card correctly.
+                if (mActionsOnAllRelatedTabs && mThumbnailProvider != null
+                        && !isShowingTabsInMRUOrder()) {
+                    int indexInModel = getIndexForTabWithRelatedTabs(movedTab);
+                    if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 
-                        TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider()
-                                                        .getCurrentTabModelFilter();
-                        Tab lastShownTab = filter.getTabAt(filter.indexOf(movedTab));
-                        mModel.get(indexInModel)
-                                .model.set(TabProperties.THUMBNAIL_FETCHER,
-                                        new ThumbnailFetcher(mThumbnailProvider,
-                                                lastShownTab.getId(), true, false));
-                        return;
-                    }
-
-                    // For the grid dialog maintain order.
-                    int curPosition = mModel.indexFromId(movedTab.getId());
-
-                    if (!isValidMovePosition(curPosition)) return;
-
-                    Tab destinationTab = tabModel.getTabAt(tabModelNewIndex > tabModelOldIndex
-                                    ? tabModelNewIndex - 1
-                                    : tabModelNewIndex + 1);
-
-                    int newPosition = mModel.indexFromId(destinationTab.getId());
-
-                    if (!isValidMovePosition(newPosition)) return;
-                    mModel.move(curPosition, newPosition);
+                    TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider()
+                                                    .getCurrentTabModelFilter();
+                    Tab lastShownTab = filter.getTabAt(filter.indexOf(movedTab));
+                    mModel.get(indexInModel)
+                            .model.set(TabProperties.THUMBNAIL_FETCHER,
+                                    new ThumbnailFetcher(
+                                            mThumbnailProvider, lastShownTab.getId(), true, false));
+                    return;
                 }
 
-                @Override
-                public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                    if (!mVisible) return;
-                    assert !(mActionsOnAllRelatedTabs && mTabGridDialogHandler != null);
-                    TabGroupModelFilter filter =
-                            (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                                    .getCurrentTabModelFilter();
-                    Tab groupTab = filter.getTabAt(prevFilterIndex);
-                    boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
-                    if (mActionsOnAllRelatedTabs) {
-                        if (isUngroupingLastTabInGroup) return;
+                // For the grid dialog maintain order.
+                int curPosition = mModel.indexFromId(movedTab.getId());
 
-                        final int currentSelectedTabId = mTabModelSelector.getCurrentTabId();
-                        if (isShowingTabsInMRUOrder()) {
-                            int groupTabIndex = mModel.indexFromId(groupTab.getId());
-                            if (groupTabIndex == TabModel.INVALID_TAB_INDEX) {
-                                // It is possible that the movedTab is the Tab for its group in the
-                                // model.
-                                groupTabIndex = mModel.indexFromId(movedTab.getId());
-                            }
-                            if (!isValidMovePosition(groupTabIndex)) return;
-                            boolean isSelected = currentSelectedTabId == groupTab.getId();
-                            // We may need to adjust the group's index after removing the movedTab
-                            // from the group.
-                            int newGroupTabIndexMRU =
-                                    mModel.getNewPositionInMruOrderList(groupTab.getId());
+                if (!isValidMovePosition(curPosition)) return;
 
-                            updateTab(groupTabIndex, PseudoTab.fromTab(groupTab), isSelected, true,
-                                    false);
-                            if (groupTabIndex != newGroupTabIndexMRU) {
-                                // The move API will first remove the item at groupTabIndex. Thus,
-                                // we need to decrease newGroupTabIndexMRU if an item has been
-                                // removed before it.
-                                mModel.move(groupTabIndex,
-                                        groupTabIndex < newGroupTabIndexMRU
-                                                ? newGroupTabIndexMRU - 1
-                                                : newGroupTabIndexMRU);
-                            }
+                Tab destinationTab = tabModel.getTabAt(tabModelNewIndex > tabModelOldIndex
+                                ? tabModelNewIndex - 1
+                                : tabModelNewIndex + 1);
 
-                            int modelIndex = mModel.getNewPositionInMruOrderList(movedTab.getId());
-                            addTabInfoToModel(PseudoTab.fromTab(movedTab), modelIndex,
+                int newPosition = mModel.indexFromId(destinationTab.getId());
+
+                if (!isValidMovePosition(newPosition)) return;
+                mModel.move(curPosition, newPosition);
+            }
+
+            @Override
+            public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                if (!mVisible) return;
+                assert !(mActionsOnAllRelatedTabs && mTabGridDialogHandler != null);
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+                Tab groupTab = filter.getTabAt(prevFilterIndex);
+                boolean isUngroupingLastTabInGroup = groupTab.getId() == movedTab.getId();
+                if (mActionsOnAllRelatedTabs) {
+                    if (isUngroupingLastTabInGroup) return;
+
+                    final int currentSelectedTabId = mTabModelSelector.getCurrentTabId();
+                    if (isShowingTabsInMRUOrder()) {
+                        int groupTabIndex = mModel.indexFromId(groupTab.getId());
+                        if (groupTabIndex == TabModel.INVALID_TAB_INDEX) {
+                            // It is possible that the movedTab is the Tab for its group in the
+                            // model.
+                            groupTabIndex = mModel.indexFromId(movedTab.getId());
+                        }
+                        if (!isValidMovePosition(groupTabIndex)) return;
+                        boolean isSelected = currentSelectedTabId == groupTab.getId();
+                        // We may need to adjust the group's index after removing the movedTab
+                        // from the group.
+                        int newGroupTabIndexMRU =
+                                mModel.getNewPositionInMruOrderList(groupTab.getId());
+
+                        updateTab(groupTabIndex, PseudoTab.fromTab(groupTab), isSelected, true,
+                                false);
+                        if (groupTabIndex != newGroupTabIndexMRU) {
+                            // The move API will first remove the item at groupTabIndex. Thus,
+                            // we need to decrease newGroupTabIndexMRU if an item has been
+                            // removed before it.
+                            mModel.move(groupTabIndex,
+                                    groupTabIndex < newGroupTabIndexMRU ? newGroupTabIndexMRU - 1
+                                                                        : newGroupTabIndexMRU);
+                        }
+
+                        int modelIndex = mModel.getNewPositionInMruOrderList(movedTab.getId());
+                        addTabInfoToModel(PseudoTab.fromTab(movedTab), modelIndex,
+                                currentSelectedTabId == movedTab.getId());
+                    } else {
+                        // Only add a tab to the model if it represents a new card (new group or
+                        // new singular tab). However, always update the previous group to clean
+                        // up old state. The addition of the new tab to an existing group is
+                        // handled in didMergeTabToGroup().
+                        if (!filter.hasOtherRelatedTabs(movedTab)) {
+                            int filterIndex = filter.indexOf(movedTab);
+                            addTabInfoToModel(PseudoTab.fromTab(movedTab),
+                                    mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
-                        } else {
-                            // Only add a tab to the model if it represents a new card (new group or
-                            // new singular tab). However, always update the previous group to clean
-                            // up old state. The addition of the new tab to an existing group is
-                            // handled in didMergeTabToGroup().
-                            if (!filter.hasOtherRelatedTabs(movedTab)) {
-                                int filterIndex = filter.indexOf(movedTab);
-                                addTabInfoToModel(PseudoTab.fromTab(movedTab),
-                                        mModel.indexOfNthTabCard(filterIndex),
-                                        currentSelectedTabId == movedTab.getId());
-                            }
-                            boolean isSelected = currentSelectedTabId == groupTab.getId();
-                            updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
-                                    PseudoTab.fromTab(groupTab), isSelected, true, false);
                         }
-                    } else {
-                        int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
-                        if (!isValidMovePosition(curTabListModelIndex)) return;
-                        mModel.removeAt(curTabListModelIndex);
-                        if (mTabGridDialogHandler != null) {
-                            mTabGridDialogHandler.updateDialogContent(isUngroupingLastTabInGroup
-                                            ? Tab.INVALID_TAB_ID
-                                            : filter.getTabAt(prevFilterIndex).getId());
-                        }
+                        boolean isSelected = currentSelectedTabId == groupTab.getId();
+                        updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
+                                PseudoTab.fromTab(groupTab), isSelected, true, false);
+                    }
+                } else {
+                    int curTabListModelIndex = mModel.indexFromId(movedTab.getId());
+                    if (!isValidMovePosition(curTabListModelIndex)) return;
+                    mModel.removeAt(curTabListModelIndex);
+                    if (mTabGridDialogHandler != null) {
+                        mTabGridDialogHandler.updateDialogContent(isUngroupingLastTabInGroup
+                                        ? Tab.INVALID_TAB_ID
+                                        : filter.getTabAt(prevFilterIndex).getId());
                     }
                 }
+            }
 
-                @Override
-                public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
-                    if (!mVisible || !mActionsOnAllRelatedTabs) return;
+            @Override
+            public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
+                if (!mVisible || !mActionsOnAllRelatedTabs) return;
 
-                    // When merging Tab 1 to Tab 2 as a new group, or merging Tab 1 to an existing
-                    // group 1, we can always find the current indexes of 1) Tab 1 and 2) Tab 2 or
-                    // group 1 in the model. The method getIndexesForMergeToGroup() returns these
-                    // two ids by using Tab 1's related Tabs, which have been updated in TabModel.
-                    List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
-                    Pair<Integer, Integer> positions = mModel.getIndexesForMergeToGroup(
-                            mTabModelSelector.getCurrentModel(), relatedTabs);
-                    int srcIndex = positions.second;
-                    int desIndex = positions.first;
+                // When merging Tab 1 to Tab 2 as a new group, or merging Tab 1 to an existing
+                // group 1, we can always find the current indexes of 1) Tab 1 and 2) Tab 2 or
+                // group 1 in the model. The method getIndexesForMergeToGroup() returns these
+                // two ids by using Tab 1's related Tabs, which have been updated in TabModel.
+                List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
+                Pair<Integer, Integer> positions = mModel.getIndexesForMergeToGroup(
+                        mTabModelSelector.getCurrentModel(), relatedTabs);
+                int srcIndex = positions.second;
+                int desIndex = positions.first;
 
-                    // If only the desIndex is valid then the movedTab was already part of another
-                    // group and is not present in the model. This happens only during an undo.
-                    // Refresh just the desIndex tab card in the model. The removal of the movedTab
-                    // from its previous group was already handled by didMoveTabOutOfGroup.
-                    if (desIndex != TabModel.INVALID_TAB_INDEX
-                            && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                        boolean isSelected = false;
-                        for (Tab tab : relatedTabs) {
-                            isSelected |= tab == mTabModelSelector.getCurrentTab();
-                        }
-                        updateTab(desIndex,
-                                PseudoTab.fromTab(mTabModelSelector.getTabById(
-                                        mModel.get(desIndex).model.get(TabProperties.TAB_ID))),
-                                isSelected, false, false);
-                        return;
+                // If only the desIndex is valid then the movedTab was already part of another
+                // group and is not present in the model. This happens only during an undo.
+                // Refresh just the desIndex tab card in the model. The removal of the movedTab
+                // from its previous group was already handled by didMoveTabOutOfGroup.
+                if (desIndex != TabModel.INVALID_TAB_INDEX
+                        && srcIndex == TabModel.INVALID_TAB_INDEX) {
+                    boolean isSelected = false;
+                    for (Tab tab : relatedTabs) {
+                        isSelected |= tab == mTabModelSelector.getCurrentTab();
                     }
-
-                    if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) return;
-
-                    Tab newSelectedTabInMergedGroup = null;
-                    boolean isMRU = isShowingTabsInMRUOrder();
-                    if (isMRU) {
-                        // We need to choose the Tab that represents the new group. It should be the
-                        // last selected tab for the new formed group.
-                        Tab oldSelectedTabInMergedGroup = mTabModelSelector.getTabById(
-                                mModel.get(desIndex).model.get(TabProperties.TAB_ID));
-                        int mergedGroupIndex = mTabModelSelector.getTabModelFilterProvider()
-                                                       .getCurrentTabModelFilter()
-                                                       .indexOf(oldSelectedTabInMergedGroup);
-                        newSelectedTabInMergedGroup = mTabModelSelector.getTabModelFilterProvider()
-                                                              .getCurrentTabModelFilter()
-                                                              .getTabAt(mergedGroupIndex);
-                    }
-                    mModel.removeAt(srcIndex);
-                    if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
-                        // When users use drop-to-merge to create a group.
-                        RecordUserAction.record("TabGroup.Created.DropToMerge");
-                    } else {
-                        RecordUserAction.record("TabGrid.Drag.DropToMerge");
-                    }
-                    desIndex = srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
-                    if (!isMRU) {
-                        newSelectedTabInMergedGroup =
-                                mTabModelSelector.getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
-                                        .getTabAt(mModel.getTabCardCountsBefore(desIndex));
-                    }
-
-                    boolean isSelected =
-                            mTabModelSelector.getCurrentTab() == newSelectedTabInMergedGroup;
-                    updateTab(desIndex, PseudoTab.fromTab(newSelectedTabInMergedGroup), isSelected,
-                            true, false);
-                    if (isSelected && isMRU && desIndex != 0) {
-                        // In MRU order, always moves the new group which contains the current
-                        // selected Tab to the position 0.
-                        mModel.move(desIndex, 0);
-                    }
+                    updateTab(desIndex,
+                            PseudoTab.fromTab(mTabModelSelector.getTabById(
+                                    mModel.get(desIndex).model.get(TabProperties.TAB_ID))),
+                            isSelected, false, false);
+                    return;
                 }
 
-                @Override
-                public void didMoveTabGroup(
-                        Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                    if (!mVisible || !mActionsOnAllRelatedTabs
-                            || tabModelNewIndex == tabModelOldIndex) {
-                        return;
-                    }
-                    TabGroupModelFilter filter =
-                            (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
-                                    .getCurrentTabModelFilter();
-                    List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
-                    Tab currentGroupSelectedTab =
-                            TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, movedTab);
-                    TabModel tabModel = mTabModelSelector.getCurrentModel();
-                    int curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
-                    if (curPosition == TabModel.INVALID_TAB_INDEX) {
-                        // Sync TabListModel with updated TabGroupModelFilter.
-                        int indexToUpdate = mModel.indexOfNthTabCard(
-                                filter.indexOf(tabModel.getTabAt(tabModelOldIndex)));
-                        mModel.updateTabListModelIdForGroup(currentGroupSelectedTab, indexToUpdate);
-                        curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
-                    }
-                    if (!isValidMovePosition(curPosition)) return;
+                if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) return;
 
-                    // Find the tab which was in the destination index before this move. Use that
-                    // tab to figure out the new position.
-                    int destinationTabIndex = tabModelNewIndex > tabModelOldIndex
-                            ? tabModelNewIndex - relatedTabs.size()
-                            : tabModelNewIndex + 1;
-                    Tab destinationTab = tabModel.getTabAt(destinationTabIndex);
-                    Tab destinationGroupSelectedTab = TabGroupUtils.getSelectedTabInGroupForTab(
-                            mTabModelSelector, destinationTab);
-                    int newPosition = mModel.indexFromId(destinationGroupSelectedTab.getId());
-                    if (newPosition == TabModel.INVALID_TAB_INDEX) {
-                        int indexToUpdate = mModel.indexOfNthTabCard(filter.indexOf(destinationTab)
-                                + (tabModelNewIndex > tabModelOldIndex ? 1 : -1));
-                        mModel.updateTabListModelIdForGroup(
-                                destinationGroupSelectedTab, indexToUpdate);
-                        newPosition = mModel.indexFromId(destinationGroupSelectedTab.getId());
-                    }
-                    if (!isValidMovePosition(newPosition)) return;
-
-                    mModel.move(curPosition, newPosition);
+                Tab newSelectedTabInMergedGroup = null;
+                boolean isMRU = isShowingTabsInMRUOrder();
+                if (isMRU) {
+                    // We need to choose the Tab that represents the new group. It should be the
+                    // last selected tab for the new formed group.
+                    Tab oldSelectedTabInMergedGroup = mTabModelSelector.getTabById(
+                            mModel.get(desIndex).model.get(TabProperties.TAB_ID));
+                    int mergedGroupIndex = mTabModelSelector.getTabModelFilterProvider()
+                                                   .getCurrentTabModelFilter()
+                                                   .indexOf(oldSelectedTabInMergedGroup);
+                    newSelectedTabInMergedGroup = mTabModelSelector.getTabModelFilterProvider()
+                                                          .getCurrentTabModelFilter()
+                                                          .getTabAt(mergedGroupIndex);
+                }
+                mModel.removeAt(srcIndex);
+                if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
+                    // When users use drop-to-merge to create a group.
+                    RecordUserAction.record("TabGroup.Created.DropToMerge");
+                } else {
+                    RecordUserAction.record("TabGrid.Drag.DropToMerge");
+                }
+                desIndex = srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
+                if (!isMRU) {
+                    newSelectedTabInMergedGroup =
+                            mTabModelSelector.getTabModelFilterProvider()
+                                    .getCurrentTabModelFilter()
+                                    .getTabAt(mModel.getTabCardCountsBefore(desIndex));
                 }
 
-                @Override
-                public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
-                        List<Integer> tabOriginalRootId, String destinationGroupTitle) {}
-            };
+                boolean isSelected =
+                        mTabModelSelector.getCurrentTab() == newSelectedTabInMergedGroup;
+                updateTab(desIndex, PseudoTab.fromTab(newSelectedTabInMergedGroup), isSelected,
+                        true, false);
+                if (isSelected && isMRU && desIndex != 0) {
+                    // In MRU order, always moves the new group which contains the current
+                    // selected Tab to the position 0.
+                    mModel.move(desIndex, 0);
+                }
+            }
 
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     false))
-                    .addTabGroupObserver(mTabGroupObserver);
-            ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
-                     true))
-                    .addTabGroupObserver(mTabGroupObserver);
-        }
+            @Override
+            public void didMoveTabGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                if (!mVisible || !mActionsOnAllRelatedTabs
+                        || tabModelNewIndex == tabModelOldIndex) {
+                    return;
+                }
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+                List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
+                Tab currentGroupSelectedTab =
+                        TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, movedTab);
+                TabModel tabModel = mTabModelSelector.getCurrentModel();
+                int curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
+                if (curPosition == TabModel.INVALID_TAB_INDEX) {
+                    // Sync TabListModel with updated TabGroupModelFilter.
+                    int indexToUpdate = mModel.indexOfNthTabCard(
+                            filter.indexOf(tabModel.getTabAt(tabModelOldIndex)));
+                    mModel.updateTabListModelIdForGroup(currentGroupSelectedTab, indexToUpdate);
+                    curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
+                }
+                if (!isValidMovePosition(curPosition)) return;
+
+                // Find the tab which was in the destination index before this move. Use that
+                // tab to figure out the new position.
+                int destinationTabIndex = tabModelNewIndex > tabModelOldIndex
+                        ? tabModelNewIndex - relatedTabs.size()
+                        : tabModelNewIndex + 1;
+                Tab destinationTab = tabModel.getTabAt(destinationTabIndex);
+                Tab destinationGroupSelectedTab = TabGroupUtils.getSelectedTabInGroupForTab(
+                        mTabModelSelector, destinationTab);
+                int newPosition = mModel.indexFromId(destinationGroupSelectedTab.getId());
+                if (newPosition == TabModel.INVALID_TAB_INDEX) {
+                    int indexToUpdate = mModel.indexOfNthTabCard(filter.indexOf(destinationTab)
+                            + (tabModelNewIndex > tabModelOldIndex ? 1 : -1));
+                    mModel.updateTabListModelIdForGroup(destinationGroupSelectedTab, indexToUpdate);
+                    newPosition = mModel.indexFromId(destinationGroupSelectedTab.getId());
+                }
+                if (!isValidMovePosition(newPosition)) return;
+
+                mModel.move(curPosition, newPosition);
+            }
+
+            @Override
+            public void didCreateGroup(List<Tab> tabs, List<Integer> tabOriginalIndex,
+                    List<Integer> tabOriginalRootId, String destinationGroupTitle) {}
+        };
+
+        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                 false))
+                .addTabGroupObserver(mTabGroupObserver);
+        ((TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(
+                 true))
+                .addTabGroupObserver(mTabGroupObserver);
 
         mTabGroupTitleEditor = new TabGroupTitleEditor(mContext, mTabModelSelector) {
             @Override
@@ -1155,15 +1139,6 @@ class TabListMediator {
 
         addTabInfoToModel(PseudoTab.fromTab(tab), index, mTabModelSelector.getCurrentTab() == tab);
         return index;
-    }
-
-    private void onTabMoved(int newIndex, int curIndex) {
-        // Handle move without groups enabled.
-        if (mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof EmptyTabModelFilter) {
-            if (!isValidMovePosition(curIndex) || !isValidMovePosition(newIndex)) return;
-            mModel.move(curIndex, newIndex);
-        }
     }
 
     private boolean isValidMovePosition(int position) {

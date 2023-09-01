@@ -90,11 +90,7 @@ public class RecentlyClosedBridgeTest {
         mTabModel = mTabModelSelector.getModel(false);
         TabModelFilter filter =
                 mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
-        if (filter instanceof TabGroupModelFilter) {
-            mTabGroupModelFilter = (TabGroupModelFilter) filter;
-        } else {
-            mTabGroupModelFilter = null;
-        }
+        mTabGroupModelFilter = (TabGroupModelFilter) filter;
         final Tab tab = mActivity.getActivityTab();
         ChromeTabUtils.waitForInteractable(tab);
     }

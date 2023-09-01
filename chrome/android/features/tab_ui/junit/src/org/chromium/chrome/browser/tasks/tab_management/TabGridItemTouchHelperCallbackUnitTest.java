@@ -43,7 +43,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -104,8 +103,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     TabListMediator.TabActionListener mTabClosedListener;
     @Mock
     TabGroupModelFilter mTabGroupModelFilter;
-    @Mock
-    EmptyTabModelFilter mEmptyTabModelFilter;
     @Mock
     TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Mock

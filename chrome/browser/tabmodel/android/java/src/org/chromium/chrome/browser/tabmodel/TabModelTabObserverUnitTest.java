@@ -56,6 +56,7 @@ public class TabModelTabObserverUnitTest {
         assertEquals(mTabModel.getCount(), 1);
 
         mTabModel.addTab(mTab, 1, TabLaunchType.FROM_LINK, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.setIndex(1, TabSelectionType.FROM_USER, false);
         assertEquals(mTabModel.getCount(), 2);
         assertTrue(mTabModel.getTabAt(1).hasObserver(mTabModelTabObserver));
     }

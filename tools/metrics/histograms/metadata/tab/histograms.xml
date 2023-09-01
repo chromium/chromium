@@ -593,18 +593,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.SessionsPerGroup" units="sessions"
-    expires_after="2024-02-25">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    This histogram records the number of sessions of a selected tab group
-    whenever Chrome comes to the foreground, or switch tab in the tab switcher.
-    This number is accumulated until that group id is outdated, meaning all the
-    tabs with that group id has been closed.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
     expires_after="2024-02-25">
   <owner>sophiechang@chromium.org</owner>
@@ -668,9 +656,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCount" units="groups"
-    expires_after="2024-01-14">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+    expires_after="2024-07-14">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
   <summary>
     This histogram records the number of tab groups whenever Chrome comes to the
     foreground.
@@ -684,16 +672,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of tabs groups open in all browsers (counting app-mode windows)
     when a load completes.
-  </summary>
-</histogram>
-
-<histogram name="TabGroups.UserNamedGroupCount" units="groups"
-    expires_after="2024-01-14">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <summary>
-    This histogram records the number of tab groups that have customized group
-    name whenever Chrome comes to the foreground.
   </summary>
 </histogram>
 

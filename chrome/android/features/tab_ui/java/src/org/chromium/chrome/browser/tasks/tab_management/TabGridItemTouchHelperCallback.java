@@ -24,7 +24,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -175,11 +174,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         TabModelFilter filter =
                 mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        if (filter instanceof EmptyTabModelFilter) {
-            tabModel.moveTab(currentTabId,
-                    mModel.getTabCardCountsBefore(mModel.indexFromId(currentTabId)
-                            + (distance > 0 ? distance + 1 : distance)));
-        } else if (!mActionsOnAllRelatedTabs) {
+        if (!mActionsOnAllRelatedTabs) {
             int destinationIndex = tabModel.indexOf(mTabModelSelector.getTabById(destinationTabId));
             tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
         } else {

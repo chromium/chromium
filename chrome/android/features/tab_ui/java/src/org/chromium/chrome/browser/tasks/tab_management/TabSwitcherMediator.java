@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
@@ -380,11 +379,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 }
                 if (mIsSelectingInTabSwitcher) {
                     mIsSelectingInTabSwitcher = false;
-                    TabModelFilter modelFilter = mTabModelSelector.getTabModelFilterProvider()
-                                                         .getCurrentTabModelFilter();
-                    if (modelFilter instanceof TabGroupModelFilter) {
-                        ((TabGroupModelFilter) modelFilter).recordSessionsCount(tab);
-                    }
 
                     // Use TabSelectionType.From_USER to filter the new tab creation case.
                     if (type == TabSelectionType.FROM_USER) recordUserSwitchedTab(tab, lastId);

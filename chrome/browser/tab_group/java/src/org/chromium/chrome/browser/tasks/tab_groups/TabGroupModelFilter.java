@@ -224,24 +224,6 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     /**
-     * This method records the number of sessions of the provided {@link Tab}, only if that
-     * {@link Tab} is in a group that has at least two tab, and it records as
-     * "TabGroups.SessionPerGroup".
-     * @param tab {@link Tab}
-     */
-    public void recordSessionsCount(Tab tab) {
-        int groupId = getRootId(tab);
-        boolean isActualGroup = mGroupIdToGroupMap.get(groupId) != null
-                && mGroupIdToGroupMap.get(groupId).size() > 1;
-        if (!isActualGroup) return;
-
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
-            int sessionsCount = updateAndGetSessionsCount(groupId);
-            RecordHistogram.recordCount1MHistogram("TabGroups.SessionsPerGroup", sessionsCount);
-        });
-    }
-
-    /**
      * This method moves the TabGroup which contains the Tab with TabId {@code id} to
      * {@code newIndex} in TabModel.
      * @param id         The id of the tab whose related tabs are being moved.

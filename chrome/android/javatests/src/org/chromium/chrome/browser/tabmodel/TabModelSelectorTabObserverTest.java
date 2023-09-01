@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -119,7 +120,7 @@ public class TabModelSelectorTabObserverTest {
     @SmallTest
     public void testObserverAddedBeforeInitialize() {
         TabModelSelectorBase selector = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new TabModelSelectorBase(null, EmptyTabModelFilter::new, false) {
+            return new TabModelSelectorBase(null, TabGroupModelFilter::new, false) {
                 @Override
                 public void requestToShowTab(Tab tab, int type) {}
 

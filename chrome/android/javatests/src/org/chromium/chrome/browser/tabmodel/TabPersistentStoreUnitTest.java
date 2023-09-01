@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -113,8 +114,8 @@ public class TabPersistentStoreUnitTest {
         when(mPersistencePolicy.performInitialization(any(TaskRunner.class))).thenReturn(false);
 
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        mNormalTabModelFilter = new EmptyTabModelFilter(mNormalTabModel);
-        mIncognitoTabModelFilter = new EmptyTabModelFilter(mIncognitoTabModel);
+        mNormalTabModelFilter = new TabGroupModelFilter(mNormalTabModel);
+        mIncognitoTabModelFilter = new TabGroupModelFilter(mIncognitoTabModel);
         when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
         when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mIncognitoTabModelFilter);
     }

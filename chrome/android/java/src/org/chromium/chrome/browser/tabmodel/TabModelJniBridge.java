@@ -167,8 +167,10 @@ public abstract class TabModelJniBridge implements TabModel {
 
         final TabModelFilter filter =
                 selector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
-        if (!(filter instanceof TabGroupModelFilter)) return false;
+        // Filter may still be null for CCTs.
+        if (filter == null) return false;
 
+        assert filter instanceof TabGroupModelFilter;
         final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
         return groupingFilter.hasOtherRelatedTabs(tab);
     }

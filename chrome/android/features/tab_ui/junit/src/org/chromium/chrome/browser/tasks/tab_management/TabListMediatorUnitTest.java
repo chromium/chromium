@@ -116,7 +116,6 @@ import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -251,8 +250,6 @@ public class TabListMediatorUnitTest {
     RecyclerView.Adapter mAdapter;
     @Mock
     TabGroupModelFilter mTabGroupModelFilter;
-    @Mock
-    EmptyTabModelFilter mEmptyTabModelFilter;
     @Mock
     TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Mock
@@ -646,16 +643,6 @@ public class TabListMediatorUnitTest {
                 .run(mModel.get(1).model.get(TabProperties.TAB_ID));
 
         verify(mTabModel).closeTab(eq(mTab2), eq(null), eq(false), eq(false), eq(true));
-    }
-
-    @Test
-    public void sendsMoveTabSignalCorrectlyWithoutGroup() {
-        TabGridItemTouchHelperCallback itemTouchHelperCallback = getItemTouchHelperCallback();
-        doReturn(mEmptyTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-
-        itemTouchHelperCallback.onMove(mRecyclerView, mViewHolder1, mViewHolder2);
-
-        verify(mTabModel).moveTab(eq(TAB1_ID), eq(2));
     }
 
     @Test
@@ -1397,40 +1384,6 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
         verify(mTabGridDialogHandler, never()).updateDialogContent(anyInt());
-    }
-
-    @Test
-    public void tabMovementWithoutGroup_Forward() {
-        initAndAssertAllProperties();
-
-        doReturn(mEmptyTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
-        assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
-
-        mMediatorTabModelObserver.didMoveTab(mTab2, POSITION1, POSITION2);
-
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
-        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
-    }
-
-    @Test
-    public void tabMovementWithoutGroup_Backward() {
-        initAndAssertAllProperties();
-
-        doReturn(mEmptyTabModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
-        assertThat(mModel.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
-
-        mMediatorTabModelObserver.didMoveTab(mTab1, POSITION2, POSITION1);
-
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.get(0).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
-        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
     }
 
     @Test

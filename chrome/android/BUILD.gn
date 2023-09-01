@@ -1397,6 +1397,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/screenshot_monitor:java",
       "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabpersistence:java",
       "//chrome/browser/ui/android/omnibox:java",
