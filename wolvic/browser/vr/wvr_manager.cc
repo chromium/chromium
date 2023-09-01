@@ -558,9 +558,6 @@ WvrManager::GetInputSourceState() {
 }
 
 void WvrManager::DrawFrameSubmitNow(device::WebXrFrame* processing_frame) {
-  if (!SubmitFrameInternal(processing_frame->index))
-    return;
-
   // Report rendering completion to the Renderer so that it's permitted to
   // submit a fresh frame. We could do this earlier, as soon as the frame
   // got pulled off the transfer surface, but that results in overstuffed
@@ -624,10 +621,16 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   }
 
   device::mojom::XRFrameDataPtr frame_data = device::mojom::XRFrameData::New();
+
+  frame_data->frame_id = webxr_.StartFrameAnimating();
+
+  // Process all events.
+  if (!SubmitFrameInternal(frame_data->frame_id))
+   return;
+
   mozilla::gfx::VRSystemState system_state = wvr_api_->get_system_state();
   const mozilla::gfx::VRPose* pose = &system_state.sensorState.pose;
 
-  frame_data->frame_id = webxr_.StartFrameAnimating();
   frame_data->views =
       CreateViews(wvr_api_->get_system_state().displayState,
                   pose,
