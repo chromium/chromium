@@ -45,8 +45,6 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   // defer the insertion to when the observers are notified.
   if (!alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap) &&
       is_autofill_profile_cleanup_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&PersonalDataManagerCleaner::
@@ -86,8 +84,6 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
   if (autofill_profile_sync_started && contact_info_sync_started &&
       !alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap) &&
       is_autofill_profile_cleanup_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&PersonalDataManagerCleaner::SyncStarted,

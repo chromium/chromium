@@ -35,12 +35,9 @@ class AutofillAddCreditCardMediatorTest : public PlatformTest {
             chrome_browser_state_.get());
     personal_data_manager_->SetSyncServiceForTest(nullptr);
 
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      personal_data_manager_->personal_data_manager_cleaner_for_testing()
-          ->alternative_state_name_map_updater_for_testing()
-          ->set_local_state_for_testing(local_state_.Get());
-    }
+    personal_data_manager_->personal_data_manager_cleaner_for_testing()
+        ->alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state_.Get());
 
     add_credit_card_mediator_delegate_mock_ =
         OCMProtocolMock(@protocol(AddCreditCardMediatorDelegate));

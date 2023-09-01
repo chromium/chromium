@@ -246,26 +246,26 @@ bool FillStateSelectControl(const std::u16string& value,
   std::vector<std::u16string> abbreviations;
   std::vector<std::u16string> full_names;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    // Fetch the corresponding entry from AlternativeStateNameMap.
-    absl::optional<StateEntry> state_entry =
-        AlternativeStateNameMap::GetInstance()->GetEntry(
-            AlternativeStateNameMap::CountryCode(country_code),
-            AlternativeStateNameMap::StateName(value));
-    if (state_entry) {
-      for (const auto& abbr : state_entry->abbreviations())
-        abbreviations.push_back(base::UTF8ToUTF16(abbr));
-      if (state_entry->has_canonical_name())
-        full_names.push_back(base::UTF8ToUTF16(state_entry->canonical_name()));
-      for (const auto& alternative_name : state_entry->alternative_names())
-        full_names.push_back(base::UTF8ToUTF16(alternative_name));
+  // Fetch the corresponding entry from AlternativeStateNameMap.
+  absl::optional<StateEntry> state_entry =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode(country_code),
+          AlternativeStateNameMap::StateName(value));
+  if (state_entry) {
+    for (const auto& abbr : state_entry->abbreviations()) {
+      abbreviations.push_back(base::UTF8ToUTF16(abbr));
+    }
+    if (state_entry->has_canonical_name()) {
+      full_names.push_back(base::UTF8ToUTF16(state_entry->canonical_name()));
+    }
+    for (const auto& alternative_name : state_entry->alternative_names()) {
+      full_names.push_back(base::UTF8ToUTF16(alternative_name));
+    }
+  } else {
+    if (value.size() > 2) {
+      full_names.push_back(value);
     } else {
-      if (value.size() > 2) {
-        full_names.push_back(value);
-      } else {
-        abbreviations.push_back(value);
-      }
+      abbreviations.push_back(value);
     }
   }
 
@@ -691,11 +691,7 @@ std::u16string GetStreetAddressForInput(
 }
 
 // Returns appropriate state value that matches |field|.
-// First looks if |state_value| fits directly in the field, then looks if the
-// abbreviation of |state_value| fits in case the
-// |features::kAutofillUseAlternativeStateNameMap| is disabled.
-// If the |features::kAutofillUseAlternativeStateNameMap| is enabled, the
-// canonical state is checked if it fits in the field and at last the
+// The canonical state is checked if it fits in the field and at last the
 // abbreviations are tried. Does not return a state if neither |state_value| nor
 // the canonical state name nor its abbreviation fit into the field.
 std::u16string GetStateTextForInput(const std::u16string& state_value,
@@ -706,22 +702,21 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
     // Return the state value directly.
     return state_value;
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    absl::optional<StateEntry> state =
-        AlternativeStateNameMap::GetInstance()->GetEntry(
-            AlternativeStateNameMap::CountryCode(country_code),
-            AlternativeStateNameMap::StateName(state_value));
-    if (state) {
-      // Return the canonical state name if possible.
-      if (state->has_canonical_name() && !state->canonical_name().empty() &&
-          field->max_length >= state->canonical_name().size())
-        return base::UTF8ToUTF16(state->canonical_name());
+  absl::optional<StateEntry> state =
+      AlternativeStateNameMap::GetInstance()->GetEntry(
+          AlternativeStateNameMap::CountryCode(country_code),
+          AlternativeStateNameMap::StateName(state_value));
+  if (state) {
+    // Return the canonical state name if possible.
+    if (state->has_canonical_name() && !state->canonical_name().empty() &&
+        field->max_length >= state->canonical_name().size()) {
+      return base::UTF8ToUTF16(state->canonical_name());
+    }
 
-      // Return the abbreviation if possible.
-      for (const auto& abbr : state->abbreviations()) {
-        if (!abbr.empty() && field->max_length >= abbr.size())
-          return base::i18n::ToUpper(base::UTF8ToUTF16(abbr));
+    // Return the abbreviation if possible.
+    for (const auto& abbr : state->abbreviations()) {
+      if (!abbr.empty() && field->max_length >= abbr.size()) {
+        return base::i18n::ToUpper(base::UTF8ToUTF16(abbr));
       }
     }
   }

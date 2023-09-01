@@ -72,12 +72,9 @@ class AutofillProfileTableViewControllerTest
     autofill::PersonalDataManager* personal_data_manager =
         autofill::PersonalDataManagerFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseAlternativeStateNameMap)) {
-      personal_data_manager->personal_data_manager_cleaner_for_testing()
-          ->alternative_state_name_map_updater_for_testing()
-          ->set_local_state_for_testing(local_state_.Get());
-    }
+    personal_data_manager->personal_data_manager_cleaner_for_testing()
+        ->alternative_state_name_map_updater_for_testing()
+        ->set_local_state_for_testing(local_state_.Get());
     personal_data_manager->SetSyncServiceForTest(nullptr);
     PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 

@@ -298,20 +298,11 @@ StateNode::StateNode(AddressComponent* parent)
           ADDRESS_HOME_STATE,
           parent,
           kPickShorterIfOneContainsTheOther |
-              (base::FeatureList::IsEnabled(
-                   features::kAutofillUseAlternativeStateNameMap)
-                   ? MergeMode::kMergeBasedOnCanonicalizedValues
-                   : 0) |
-              kReplaceEmpty) {}
+              MergeMode::kMergeBasedOnCanonicalizedValues | kReplaceEmpty) {}
 
 StateNode::~StateNode() = default;
 
 absl::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    return absl::nullopt;
-  }
-
   std::string country_code =
       base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
 

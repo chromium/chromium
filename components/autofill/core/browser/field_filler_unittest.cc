@@ -1927,9 +1927,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that the abbreviated state names are selected correctly.
 TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
@@ -1948,9 +1945,6 @@ TEST_F(AutofillFieldFillerTest, FillSelectAbbreviatedState) {
 
 // Tests that the localized state names are selected correctly.
 TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
@@ -1970,9 +1964,6 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedState) {
 // Tests that the state names are selected correctly when the state name exists
 // as a substring in the selection options.
 TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
@@ -1992,9 +1983,6 @@ TEST_F(AutofillFieldFillerTest, FillSelectLocalizedStateSubstring) {
 // Tests that the state abbreviations are filled in the text field when the
 // field length is limited.
 TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
@@ -2016,9 +2004,6 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
 // Tests that the state names are selected correctly even though the state
 // value saved in the address is not recognized by the AlternativeStateNameMap.
 TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
@@ -2039,9 +2024,6 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWithSavedValueInProfile) {
 // state is not in the list of selection options given that the abbreviation is
 // saved in the profile.
 TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting(
       "US", "Colorado",
@@ -2066,9 +2048,6 @@ TEST_F(AutofillFieldFillerTest, FillStateFieldWhenStateIsNotInOptions) {
 // for filling when |AlternativeStateNameMap| is not populated.
 TEST_F(AutofillFieldFillerTest,
        FillStateFieldWhenAlternativeStateNameMapIsNotPopulated) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
 
   AutofillField field = CreateTestSelectAutofillField(
@@ -2087,9 +2066,6 @@ TEST_F(AutofillFieldFillerTest,
 // Tests that Autofill fills upper case abbreviation in the input field when
 // field length is limited.
 TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting("DE", "Bavaria",
                                                   {{.canonical_name = "Bavaria",
@@ -2115,9 +2091,6 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
 // in the profile and none of the options match with the abbreviated state.
 TEST_F(AutofillFieldFillerTest,
        DoNotFillStateFieldWhenAbbrStoredInProfileAndNotInOptionsList) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
 
   AutofillField field = CreateTestSelectAutofillField(

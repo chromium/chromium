@@ -3580,11 +3580,6 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) const {
 void BrowserAutofillManager::PreProcessStateMatchingTypes(
     const std::vector<AutofillProfile>& profiles,
     FormStructure* form_structure) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    return;
-  }
-
   for (const auto& profile : profiles) {
     absl::optional<AlternativeStateNameMap::CanonicalStateName>
         canonical_state_name_from_profile =

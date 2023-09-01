@@ -334,13 +334,10 @@ void AutofillControllerTest::SetUp() {
   autofill_client_ = std::make_unique<TestAutofillClient>(
       browser_state_.get(), web_state(), infobar_manager, autofill_agent_);
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillUseAlternativeStateNameMap)) {
-    autofill_client_->GetPersonalDataManager()
-        ->personal_data_manager_cleaner_for_testing()
-        ->alternative_state_name_map_updater_for_testing()
-        ->set_local_state_for_testing(local_state_.Get());
-  }
+  autofill_client_->GetPersonalDataManager()
+      ->personal_data_manager_cleaner_for_testing()
+      ->alternative_state_name_map_updater_for_testing()
+      ->set_local_state_for_testing(local_state_.Get());
 
   std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(

@@ -3210,9 +3210,6 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
 // Test that we properly match typed values to stored state data.
 TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(features::kAutofillUseAlternativeStateNameMap);
-
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 

@@ -1217,9 +1217,6 @@ TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreetsAndAdmin2) {
 // Checks for various scenarios for determining mergability of profiles w.r.t.
 // the state.
 TEST_F(AutofillProfileComparatorTest, CheckStatesMergability) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      autofill::features::kAutofillUseAlternativeStateNameMap);
   autofill::test::ClearAlternativeStateNameMapForTesting();
   autofill::test::PopulateAlternativeStateNameMapForTesting(
       "DE", "RandomState",
@@ -1461,10 +1458,6 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
 
 // Tests that the profiles are merged when they have common states.
 TEST_F(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      autofill::features::kAutofillUseAlternativeStateNameMap);
-
   autofill::test::ClearAlternativeStateNameMapForTesting();
   autofill::test::PopulateAlternativeStateNameMapForTesting();
   autofill::test::PopulateAlternativeStateNameMapForTesting(

@@ -20,10 +20,7 @@ MockAlternativeStateNameMapUpdater::MockAlternativeStateNameMapUpdater(
       callback_(std::move(callback)) {}
 
 void MockAlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    PopulateAlternativeStateNameMap(std::move(callback_));
-  }
+  PopulateAlternativeStateNameMap(std::move(callback_));
 }
 
 }  // namespace autofill

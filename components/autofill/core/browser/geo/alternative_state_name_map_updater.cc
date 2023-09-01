@@ -78,10 +78,7 @@ bool AlternativeStateNameMapUpdater::ContainsState(
 }
 
 void AlternativeStateNameMapUpdater::OnPersonalDataFinishedProfileTasks() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillUseAlternativeStateNameMap)) {
-    PopulateAlternativeStateNameMap();
-  }
+  PopulateAlternativeStateNameMap();
 }
 
 void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(

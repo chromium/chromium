@@ -842,9 +842,6 @@ class MergeStatesWithCanonicalNamesTest
           MergeStatesWithCanonicalNamesTestCase> {
  private:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillUseAlternativeStateNameMap);
-
     AlternativeStateNameMap::GetInstance()
         ->ClearAlternativeStateNameMapForTesting();
 
@@ -859,8 +856,6 @@ class MergeStatesWithCanonicalNamesTest
           .abbreviations = {"OS"},
           .alternative_names = {""}}});
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that the correct country for merging structured addresses is computed.
