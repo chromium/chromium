@@ -997,7 +997,7 @@ void DeskBarViewBase::NudgeDeskName(int desk_index) {
   }
 
   if (type_ == Type::kOverview) {
-    UpdateOverviewHighlightForFocus(name_view);
+    MoveFocusToView(name_view);
 
     // If we're in tablet mode and there are no external keyboards, open up the
     // virtual keyboard.

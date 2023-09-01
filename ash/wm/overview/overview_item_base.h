@@ -215,15 +215,11 @@ class OverviewItemBase {
   // overview items is the same as when entering overview.
   virtual void Restack() = 0;
 
-  // Sends an accessibility event indicating that this window became selected
-  // so that it is highlighted and announced.
-  virtual void SendAccessibleSelectionEvent() = 0;
-
   // Handles events forwarded from the contents view.
   virtual void HandleMouseEvent(const ui::MouseEvent& event) = 0;
   virtual void HandleGestureEvent(ui::GestureEvent* event) = 0;
-  virtual void OnHighlightedViewActivated() = 0;
-  virtual void OnHighlightedViewClosed() = 0;
+  virtual void OnFocusedViewActivated() = 0;
+  virtual void OnFocusedViewClosed() = 0;
 
   // Checks if this item is currently being dragged.
   virtual bool IsDragItem() const = 0;
@@ -282,7 +278,7 @@ class OverviewItemBase {
   virtual void UpdateWindowDimensionsType() = 0;
 
   // Returns the point the accessibility magnifiers should focus when this is
-  // highlighted.
+  // focused.
   virtual gfx::Point GetMagnifierFocusPointInScreen() const = 0;
 
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {

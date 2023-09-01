@@ -262,12 +262,12 @@ views::View* OverviewItemView::GetView() {
 
 void OverviewItemView::MaybeActivateFocusedView() {
   if (overview_item_)
-    overview_item_->OnHighlightedViewActivated();
+    overview_item_->OnFocusedViewActivated();
 }
 
 void OverviewItemView::MaybeCloseFocusedView(bool primary_action) {
   if (overview_item_ && primary_action)
-    overview_item_->OnHighlightedViewClosed();
+    overview_item_->OnFocusedViewClosed();
 }
 
 void OverviewItemView::MaybeSwapFocusedView(bool right) {}

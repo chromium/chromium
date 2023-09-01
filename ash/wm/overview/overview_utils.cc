@@ -354,7 +354,7 @@ gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {
                    gfx::ToRoundedSize(rect.size()));
 }
 
-void UpdateOverviewHighlightForFocus(OverviewFocusableView* target_view) {
+void MoveFocusToView(OverviewFocusableView* target_view) {
   auto* focus_cycler =
       Shell::Get()->overview_controller()->overview_session()->focus_cycler();
   CHECK(focus_cycler);

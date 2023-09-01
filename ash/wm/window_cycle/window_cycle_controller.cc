@@ -523,7 +523,7 @@ void WindowCycleController::OnAltTabModePrefChanged() {
 
   // After the cycle is reset, imitate the same forward cycling behavior as
   // starting alt-tab with `Step()`, which makes sure the correct window is
-  // selected and highlighted.
+  // selected and focused.
   Step(WindowCyclingDirection::kForward,
        /*starting_alt_tab_or_switching_mode=*/true);
 

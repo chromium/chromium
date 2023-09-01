@@ -68,7 +68,7 @@ CrOSNextDeskButtonBase::~CrOSNextDeskButtonBase() = default;
 
 void CrOSNextDeskButtonBase::OnFocus() {
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
-    UpdateOverviewHighlightForFocus(this);
+    MoveFocusToView(this);
   }
   UpdateFocusState();
   View::OnFocus();

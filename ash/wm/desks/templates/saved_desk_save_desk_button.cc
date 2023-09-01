@@ -70,7 +70,7 @@ void SavedDeskSaveDeskButton::OnFocusableViewBlurred() {
 }
 
 void SavedDeskSaveDeskButton::OnFocus() {
-  UpdateOverviewHighlightForFocus(this);
+  MoveFocusToView(this);
   OnFocusableViewFocused();
   View::OnFocus();
 }

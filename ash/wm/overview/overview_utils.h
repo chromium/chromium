@@ -94,8 +94,7 @@ bool ShouldUseTabletModeGridLayout();
 // returns the same size for SizeF regardless of its origin.
 ASH_EXPORT gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect);
 
-// TODO(b/290377356): Rename this to something that doesn't use highlight.
-void UpdateOverviewHighlightForFocus(OverviewFocusableView* target_view);
+void MoveFocusToView(OverviewFocusableView* target_view);
 
 }  // namespace ash
 

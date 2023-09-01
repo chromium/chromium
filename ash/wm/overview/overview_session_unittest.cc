@@ -616,8 +616,8 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionRecorded) {
   EXPECT_EQ(
       2, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
 
-  // Highlight |window2| using the arrow keys. Activate it (and exit overview)
-  // by pressing the return key.
+  // Focus `window2` using the arrow keys. Activate it (and exit overview) by
+  // pressing the return key.
   wm::ActivateWindow(window1.get());
   ToggleOverview();
   ASSERT_TRUE(FocusOverviewWindow(window2.get()));

@@ -1163,7 +1163,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
   ASSERT_FALSE(save_as_template_button->GetEnabled());
   ASSERT_FALSE(save_for_later_button->GetEnabled());
 
-  // Press `Enter` when `Save desk for later` button is highlighted.
+  // Press `Enter` when `Save desk for later` button is focused.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_for_later_button->is_focused());
   ASSERT_FALSE(save_for_later_button->GetEnabled());
@@ -1173,7 +1173,7 @@ TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
       .MaybeWaitForModel();
   ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 
-  // Press `Enter` when save desk as template button is highlighted.
+  // Press `Enter` when save desk as template button is focused.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_as_template_button->is_focused());
   ASSERT_FALSE(save_as_template_button->GetEnabled());
@@ -2081,7 +2081,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_TRUE(button);
   ASSERT_FALSE(button->GetVisible());
 
-  // Test that we do not highlight the templates button.
+  // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_NE(button, GetFocusedView()->GetView());
 
@@ -2117,7 +2117,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
     ASSERT_FALSE(button->GetVisible());
   }
 
-  // Test that we do not highlight the templates button.
+  // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_NE(button, GetFocusedView()->GetView());
 }
@@ -2634,8 +2634,8 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   EXPECT_EQ(u"abc", name_view->GetText());
 
   // There was a bug where a relayout could cause a revert of the name changes,
-  // and lead to a crash if the name view had highlight focus. This is a
-  // regression test for that. See https://crbug.com/1285113 for more details.
+  // and lead to a crash if the name view had focus. This is a regression test
+  // for that. See https://crbug.com/1285113 for more details.
   GetItemViewFromSavedDeskGrid(0)->SetBoundsRect(gfx::Rect(150, 40));
   EXPECT_EQ(u"abc", GetItemViewFromSavedDeskGrid(0)->name_view()->GetText());
 }
@@ -4234,8 +4234,7 @@ TEST_F(SavedDeskTest, ScrollBarVisibility) {
   }
 }
 
-// Tests that the save desk item view is fully visible with the highlight
-// change.
+// Tests that the save desk item view is fully visible with the focus change.
 TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
   // Add 6 `kTemplate` entries and 6 `kSaveAndRecall` entries.
   for (size_t i = 1; i <= 6; i++) {
@@ -4252,13 +4251,13 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
   for (size_t i = 0; i < 12; i++) {
     SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(i);
 
-    // Verify item view is highlighted and fully visible.
+    // Verify item view is focused and fully visible.
     EXPECT_TRUE(item_view->is_focused());
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
     SendKey(ui::VKEY_TAB);
 
-    // Verify name view is highlighted and fully visible.
+    // Verify name view is focused and fully visible.
     EXPECT_TRUE(item_view->name_view()->is_focused());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());

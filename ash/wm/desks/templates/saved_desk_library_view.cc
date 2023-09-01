@@ -604,8 +604,7 @@ void SavedDeskLibraryView::OnKeyEvent(ui::KeyEvent* event) {
       is_scrolling_event = true;
       break;
     default:
-      // Ignore all other key events as arrow keys are used for moving
-      // highlight.
+      // Ignore all other key events as arrow keys are used for moving focus.
       is_scrolling_event = false;
       break;
   }

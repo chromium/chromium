@@ -45,7 +45,7 @@ void DeskNameView::OnFocus() {
 
 void DeskNameView::OnFocusableViewFocused() {
   if (!HasFocus()) {
-    // When the highlight is the result of tabbing, as opposed to clicking or
+    // When the focus ring is the result of tabbing, as opposed to clicking or
     // chromevoxing, the name view will not have focus, so the user should be
     // told how to focus and edit the field.
     Shell::Get()

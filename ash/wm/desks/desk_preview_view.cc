@@ -622,7 +622,7 @@ void DeskPreviewView::OnThemeChanged() {
 
 void DeskPreviewView::OnFocus() {
   if (mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kOverview) {
-    UpdateOverviewHighlightForFocus(this);
+    MoveFocusToView(this);
   }
 
   mini_view_->UpdateDeskButtonVisibility();

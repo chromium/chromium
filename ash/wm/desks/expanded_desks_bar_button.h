@@ -73,8 +73,8 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
   raw_ptr<InnerExpandedDesksBarButton, ExperimentalAsh> inner_button_;
   raw_ptr<views::Label, ExperimentalAsh> label_;
 
-  // If `active_` is true, then the border of `inner_button_` will be
-  // highlighted if it's not already focused.
+  // If `active_` is true, then the focus ring of `inner_button_` will be shown
+  // if it's not already visible.
   bool active_ = false;
 };
 

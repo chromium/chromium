@@ -89,7 +89,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
 
   void SetButtonState(bool enabled) {
     outer_button_->UpdateLabelColor(enabled);
-    // Notify the overview highlight if we are about to be disabled.
+    // Notify the overview focus cycler if we are about to be disabled.
     if (!enabled && bar_view_->type() == DeskBarViewBase::Type::kOverview) {
       OverviewSession* overview_session =
           Shell::Get()->overview_controller()->overview_session();

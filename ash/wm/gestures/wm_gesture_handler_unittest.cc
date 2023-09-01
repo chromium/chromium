@@ -38,7 +38,7 @@ bool InOverviewSession() {
   return Shell::Get()->overview_controller()->InOverviewSession();
 }
 
-const aura::Window* GetHighlightedWindow() {
+const aura::Window* GetFocusedWindow() {
   return InOverviewSession() ? GetOverviewFocusedWindow() : nullptr;
 }
 
@@ -123,31 +123,29 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
   EnterOverview();
   EXPECT_TRUE(InOverviewSession());
 
-  // Scrolls until a window is highlight, ignoring any desks items (if any).
-  auto scroll_until_window_highlighted = [this](float x_offset,
-                                                float y_offset) {
+  // Scrolls until a window is focused, ignoring any desks items (if any).
+  auto scroll_until_window_focused = [this](float x_offset, float y_offset) {
     do {
-      Scroll(x_offset, GetOffsetY(y_offset), kNumFingersForHighlight);
-    } while (!GetHighlightedWindow());
+      Scroll(x_offset, GetOffsetY(y_offset), kNumFingersForFocus);
+    } while (!GetFocusedWindow());
   };
 
   // Select the first window first.
-  scroll_until_window_highlighted(horizontal_scroll, 0);
+  scroll_until_window_focused(horizontal_scroll, 0);
 
   // Long scroll right moves selection to the fourth window.
-  scroll_until_window_highlighted(horizontal_scroll * 3, 0);
+  scroll_until_window_focused(horizontal_scroll * 3, 0);
   EXPECT_TRUE(InOverviewSession());
 
   // Short scroll left moves selection to the third window.
-  scroll_until_window_highlighted(-horizontal_scroll, 0);
+  scroll_until_window_focused(-horizontal_scroll, 0);
   EXPECT_TRUE(InOverviewSession());
 
   // Short scroll left moves selection to the second window.
-  scroll_until_window_highlighted(-horizontal_scroll, 0);
+  scroll_until_window_focused(-horizontal_scroll, 0);
   EXPECT_TRUE(InOverviewSession());
 
-  // Swiping down (3 fingers) exits and selects the currently-highlighted
-  // window.
+  // Swiping down (3 fingers) exits and selects the currently focused window.
   Scroll(0, -vertical_scroll, 3);
   EXPECT_FALSE(InOverviewSession());
 
@@ -158,10 +156,10 @@ TEST_F(WmGestureHandlerTest, HorizontalScrollInOverview) {
 // Tests that a mostly horizontal scroll does not trigger overview.
 TEST_F(WmGestureHandlerTest, HorizontalScrolls) {
   const float long_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
-  Scroll(long_scroll + 100, long_scroll, kNumFingersForHighlight);
+  Scroll(long_scroll + 100, long_scroll, kNumFingersForFocus);
   EXPECT_FALSE(InOverviewSession());
 
-  Scroll(-long_scroll - 100, long_scroll, kNumFingersForHighlight);
+  Scroll(-long_scroll - 100, long_scroll, kNumFingersForFocus);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -280,9 +278,9 @@ TEST_F(DesksGestureHandlerTest, NoDeskChangesInLockScreen) {
   EXPECT_EQ(desk_controller->desks()[0].get(), desk_controller->active_desk());
 }
 
-// Tests that activate highlighted desk when using 3-finger swipes to exit
+// Tests that we activate focused desk when using 3-finger swipes to exit
 // overview.
-TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
+TEST_F(WmGestureHandlerTest, ActivateFocusedDeskWithVerticalScroll) {
   auto* desks_controller = DesksController::Get();
 
   EnterOverview();
@@ -295,7 +293,7 @@ TEST_F(WmGestureHandlerTest, ActivateHighlightedDeskWithVerticalScroll) {
   // The current active desk is the first desk.
   EXPECT_EQ(0, desks_controller->GetActiveDeskIndex());
 
-  // Move highlight to the second desk.
+  // Move focus to the second desk.
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
   DeskMiniView* mini_view_1 =

@@ -797,11 +797,6 @@ void OverviewItem::CloseWindow() {
   transform_window_.Close();
 }
 
-void OverviewItem::SendAccessibleSelectionEvent() {
-  overview_item_view_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                                true);
-}
-
 void OverviewItem::HandleMouseEvent(const ui::MouseEvent& event) {
   if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false)) {
     return;
@@ -872,11 +867,11 @@ void OverviewItem::HandleGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void OverviewItem::OnHighlightedViewActivated() {
+void OverviewItem::OnFocusedViewActivated() {
   overview_session_->OnFocusedItemActivated(this);
 }
 
-void OverviewItem::OnHighlightedViewClosed() {
+void OverviewItem::OnFocusedViewClosed() {
   overview_session_->OnFocusedItemClosed(this);
 }
 

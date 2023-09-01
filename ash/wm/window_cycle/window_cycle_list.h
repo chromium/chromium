@@ -62,7 +62,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // default position if |starting_alt_tab_or_switching_mode| is true.
   // This moves the focus ring and also scrolls the list.
   // If |starting_alt_tab_or_switching_mode| is true and |direction| is
-  // forward, the highlight moves to the first non-active window in MRU list:
+  // forward, the focus ring moves to the first non-active window in MRU list:
   // the second window by default or the first window if it is not active.
   void Step(WindowCyclingDirection direction,
             bool starting_alt_tab_or_switching_mode);
@@ -204,7 +204,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   std::unique_ptr<aura::ScopedWindowTargeter> window_targeter_;
 
   // Tracks what window was active when starting to cycle and used to determine
-  // if alt-tab should highlight the first or the second window in the list.
+  // if alt-tab should focus the first or the second window in the list.
   raw_ptr<aura::Window, ExperimentalAsh> active_window_before_window_cycle_ =
       nullptr;
 

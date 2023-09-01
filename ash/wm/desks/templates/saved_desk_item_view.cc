@@ -544,7 +544,7 @@ void SavedDeskItemView::OnViewBlurred(views::View* observed_view) {
 }
 
 void SavedDeskItemView::OnFocus() {
-  UpdateOverviewHighlightForFocus(this);
+  MoveFocusToView(this);
   OnFocusableViewFocused();
   View::OnFocus();
 }

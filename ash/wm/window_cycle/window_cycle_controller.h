@@ -135,8 +135,8 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   // Returns true while switching the alt-tab mode and Bento flag is enabled.
   // This helps `Scroll()` and `Step()` distinguish between pressing tabs and
-  // switching mode, so they refresh |current_index_| and the highlighted
-  // window correctly.
+  // switching mode, so they refresh `current_index_` and the focused window
+  // correctly.
   bool IsSwitchingMode() const;
 
   // Returns if the tab slider is currently focused instead of the window cycle
@@ -177,9 +177,9 @@ class ASH_EXPORT WindowCycleController : public SessionObserver,
 
   // Cycles to the next or previous window based on |direction| or to the
   // default position if |starting_alt_tab_or_switching_mode| is true.
-  // This updates the highlight to the window to the right if |direction|
+  // This updates the focus ring to the window to the right if |direction|
   // is forward or left if backward. If |starting_alt_tab_or_switching_mode| is
-  // true and |direction| is forward, the highlight moves to the first
+  // true and |direction| is forward, the focus ring moves to the first
   // non-active window in MRU list: the second window by default or the first
   // window if it is not active.
   void Step(WindowCyclingDirection direction,

@@ -275,8 +275,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     }
   }
 
-  // The insets in the WindowCycleItemView are coming from its border, which
-  // paints the focus ring around the view when it is highlighted. Exclude the
+  // The insets in the `WindowCycleItemView` are coming from its border, which
+  // paints the focus ring around the view when it is focused. Exclude the
   // insets such that the spacing between the contents of the views rather
   // than the views themselves is `kBetweenChildPaddingDp`.
   const gfx::Insets cycle_item_insets =

@@ -89,11 +89,10 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void RevertHideForSavedDeskLibrary(bool animate) override;
   void Restack() override;
   void CloseWindow() override;
-  void SendAccessibleSelectionEvent() override;
   void HandleMouseEvent(const ui::MouseEvent& event) override;
   void HandleGestureEvent(ui::GestureEvent* event) override;
-  void OnHighlightedViewActivated() override;
-  void OnHighlightedViewClosed() override;
+  void OnFocusedViewActivated() override;
+  void OnFocusedViewClosed() override;
   bool IsDragItem() const override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;

@@ -23,7 +23,6 @@ namespace ash {
 
 class DeskMiniView;
 class WallpaperBaseView;
-class WmHighlightItemBorder;
 
 // A view that shows the contents of the corresponding desk in its mini_view.
 // This view has the following layer hierarchy:
@@ -154,10 +153,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // `desk_mirrored_contents_view_` when the `mini_view_`'s
   // `DeskActionContextMenu` is active. Owned by the views hierarchy.
   raw_ptr<views::View, ExperimentalAsh> highlight_overlay_ = nullptr;
-
-  // Owned by this View via `View::border_`. This is just a convenient pointer
-  // to it.
-  raw_ptr<WmHighlightItemBorder, ExperimentalAsh> border_ptr_;
 
   // Owns the layer tree of the desk's contents mirrored layers.
   std::unique_ptr<ui::LayerTreeOwner> desk_mirrored_contents_layer_tree_owner_;

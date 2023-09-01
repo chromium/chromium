@@ -174,8 +174,8 @@ TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
   }
 }
 
-// Tests that when an item is removed while highlighted, the highlight
-// disappears, and when we tab again we pick up where we left off.
+// Tests that when an item is removed while focused, the focus ring disappears,
+// and when we tab again we pick up where we left off.
 TEST_P(OverviewFocusCyclerTest, ItemClosed) {
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
@@ -186,14 +186,14 @@ TEST_P(OverviewFocusCyclerTest, ItemClosed) {
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   EXPECT_EQ(widget2->GetNativeWindow(), GetOverviewFocusedWindow());
 
-  // Remove |widget2| by closing it with ctrl + W. Test that the highlight
-  // becomes invisible (neither widget is highlighted).
+  // Remove `widget2` by closing it with ctrl + W. Test that the focus ring
+  // becomes invisible (neither widget is focused).
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(widget2->IsClosed());
   widget2.reset();
   EXPECT_FALSE(GetOverviewFocusedWindow());
 
-  // Tests that on pressing tab, the highlight becomes visible and we highlight
+  // Tests that on pressing tab, the focus ring becomes visible and we focus
   // the window that comes after the deleted one.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   EXPECT_EQ(widget1->GetNativeWindow(), GetOverviewFocusedWindow());
@@ -300,7 +300,7 @@ TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   ToggleOverview();
 
-  // Pressing the return key on an item that is not highlighted should not do
+  // Pressing the return key on an item that is not focused should not do
   // anything.
   SendKey(ui::VKEY_RETURN);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -334,7 +334,7 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   OverviewItemBase* item = GetOverviewItemForWindow(window3.get());
 
   // Tests that while dragging an item, tabbing does not change which item the
-  // highlight is hovered over, but the highlight is hidden. Drag the item in a
+  // focus ring is shown on, but the focus ring is hidden. Drag the item in a
   // way which does not enter splitview, or close overview.
   const gfx::PointF start_point = item->target_bounds().CenterPoint();
   const gfx::PointF end_point(20.f, 20.f);
@@ -345,14 +345,13 @@ TEST_P(OverviewFocusCyclerTest, FocusLocationWhileDragging) {
   EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
   EXPECT_FALSE(GetFocusCycler()->IsFocusVisible());
 
-  // Tests that on releasing the item, the highlighted window remains the same.
+  // Tests that on releasing the item, the focused window remains the same.
   GetOverviewSession()->Drag(item, start_point);
   GetOverviewSession()->CompleteDrag(item, start_point);
   EXPECT_EQ(window3.get(), GetOverviewFocusedWindow());
   EXPECT_TRUE(GetFocusCycler()->IsFocusVisible());
 
-  // Tests that on tabbing after releasing, the highlighted window is the next
-  // one.
+  // Tests that on tabbing after releasing, the focused window is the next one.
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   EXPECT_EQ(window2.get(), GetOverviewFocusedWindow());
 }
@@ -409,7 +408,7 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
 
 // Tests that we can tab through the desk mini views, new desk button and
 // overview items in the correct order. Overview items will have the overview
-// highlight shown when highlighted, but desks items will not.
+// focus ring shown when focused, but desks items will not.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));
@@ -421,26 +420,26 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   CheckDeskBarViewSize(desk_bar_view, "initial");
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the overview item gets highlighted first.
+  // Tests that the overview item gets focused first.
   SendKey(ui::VKEY_TAB);
   auto* item2 = GetOverviewItemForWindow(window2.get())
                     ->GetLeafItemForWindow(window2.get());
   EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "overview item");
 
-  // Tests that the first highlighted desk item is the first desk preview view.
+  // Tests that the first focused desk item is the first desk preview view.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
 
-  // Test that one more tab highlights the desks name view.
+  // Test that one more tab focuses the desks name view.
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_name_view(),
             GetHighlightedView());
 
-  // Tests that after tabbing through the mini views, we highlight the new desk
+  // Tests that after tabbing through the mini views, we focus the new desk
   // button.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
@@ -454,7 +453,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
             GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
-  // Tests that tabbing past the new desk button, we highlight the save to a new
+  // Tests that tabbing past the new desk button, we focus the save to a new
   // desk template. The templates button is not in the tab traversal since it is
   // hidden when we have no templates.
   if (AreDeskTemplatesEnabled()) {
@@ -486,7 +485,7 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlighted item when reversing is the save desk for
+  // Tests that the first focused item when reversing is the save desk for
   // later button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
@@ -526,15 +525,14 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   EXPECT_EQ(desk_bar_view->mini_views()[0]->desk_preview(),
             GetHighlightedView());
 
-  // Tests that the next highlighted item when reversing is the last overview
-  // item.
+  // Tests that the next focused item when reversing is the last overview item.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   auto* item1 = GetOverviewItemForWindow(window1.get())
                     ->GetLeafItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that the next highlighted item when reversing is the save desk for
-  // later button.
+  // Tests that the next focused item when reversing is the save desk for later
+  // button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
@@ -738,7 +736,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateHighlightOnMiniView) {
   ASSERT_EQ(desk_bar_view->mini_views()[1]->desk_preview(),
             GetHighlightedView());
 
-  // Tests that after hitting the return key on the highlighted preview view
+  // Tests that after hitting the return key on the focused preview view
   // associated with desk 2, we switch to desk 2.
   DeskSwitchAnimationWaiter waiter;
   SendKey(ui::VKEY_RETURN);
@@ -764,8 +762,8 @@ TEST_P(DesksOverviewFocusCyclerTest, CloseHighlightOnMiniView) {
   SendKey(ui::VKEY_TAB);
   ASSERT_EQ(mini_view2->desk_preview(), GetHighlightedView());
 
-  // Tests that after hitting ctrl-w on the highlighted preview view associated
-  // with desk 2, desk 2 is destroyed.
+  // Tests that after hitting ctrl-w on the focused preview view associated with
+  // `desk2`, `desk2` is destroyed.
   SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   EXPECT_EQ(1u, desks_controller->desks().size());
   EXPECT_NE(desk2, desks_controller->GetDeskAtIndex(0));
@@ -789,7 +787,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   auto* desk_name_view_1 = desk_bar_view->mini_views()[0]->desk_name_view();
 
-  // Tab until the desk name view of the first desk is highlighted.
+  // Tab until the desk name view of the first desk is focused.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
@@ -805,7 +803,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
   auto* desk_1 = desks_controller->GetDeskAtIndex(0);
   EXPECT_EQ(desk_1->name(), desk_name_view_1->GetSelectedText());
 
-  // Arrow keys should not change neither the focus nor the highlight.
+  // Arrow keys should not change neither the focus nor the focus ring.
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_RIGHT);
   SendKey(ui::VKEY_RIGHT);
@@ -817,7 +815,7 @@ TEST_P(DesksOverviewFocusCyclerTest, ActivateDeskNameView) {
   SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_BACK);
   // Type "code" and hit Tab, this should commit the changes and move the
-  // highlight to the next item.
+  // focus ring to the next item.
   SendKey(ui::VKEY_C);
   SendKey(ui::VKEY_O);
   SendKey(ui::VKEY_D);
@@ -837,7 +835,7 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   auto* desk_name_view_1 = desk_bar_view->mini_views()[0]->desk_name_view();
 
-  // Tab until the desk name view of the first desk is highlighted.
+  // Tab until the desk name view of the first desk is focused.
   SendKey(ui::VKEY_TAB);
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_name_view_1, GetHighlightedView());
@@ -866,8 +864,8 @@ TEST_P(DesksOverviewFocusCyclerTest, RemoveDeskWhileNameIsHighlighted) {
             GetHighlightedView());
 }
 
-// Tests the overview highlight controller behavior when a user uses the new
-// desk button.
+// Tests the overview focus cycler behavior when a user uses the new desk
+// button.
 TEST_P(DesksOverviewFocusCyclerTest, ActivateCloseHighlightOnNewDeskButton) {
   // Make sure the display is large enough to hold the max number of desks.
   UpdateDisplay("1200x800");

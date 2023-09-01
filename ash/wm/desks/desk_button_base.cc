@@ -72,7 +72,7 @@ DeskButtonBase::~DeskButtonBase() = default;
 
 void DeskButtonBase::OnFocus() {
   if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
-    UpdateOverviewHighlightForFocus(this);
+    MoveFocusToView(this);
   }
 
   UpdateFocusState();

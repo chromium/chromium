@@ -17,7 +17,7 @@ namespace ash {
 
 // This handles the following interactions:
 //   - 3-finger touchpad scroll events to enter/exit overview mode and move the
-//   overview highlight if it is visible.
+//   overview focus ring if it is visible.
 //   - 4-finger horizontal scrolls to switch desks.
 class ASH_EXPORT WmGestureHandler {
  public:
@@ -42,7 +42,7 @@ class ASH_EXPORT WmGestureHandler {
   virtual ~WmGestureHandler();
 
   // Processes a scroll event and may switch desks, start overview or move the
-  // overview highlight. Returns true if the event has been handled and should
+  // overview focus ring. Returns true if the event has been handled and should
   // not be processed further, false otherwise.
   bool ProcessScrollEvent(const ui::ScrollEvent& event);
 

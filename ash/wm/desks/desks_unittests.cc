@@ -7349,7 +7349,7 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
   auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("0", "1", "2"));
 
-  // Highlight the second desk.
+  // Focus the second desk.
   overview_controller->overview_session()->focus_cycler()->MoveFocusToView(
       mini_view_1->desk_preview());
 
@@ -7469,8 +7469,7 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   EXPECT_THAT(GetDeskRestoreNames(prefs), ElementsAre("1", "0", "2"));
   event_generator->ReleaseTouch();
 
-  // Swap the positions of the |desk_0| and the |desk_2| by keyboard.
-  // Highlight the |desk_0|.
+  // Swap the positions of `desk_0` and `desk_2` by keyboard. Focus `desk_0`.
   overview_controller->overview_session()->focus_cycler()->MoveFocusToView(
       mini_view_0->desk_preview());
 
@@ -10515,7 +10514,7 @@ TEST_P(DeskBarTest, CloseActiveDesk) {
   auto* desk_bar_view = GetDeskBarView();
   ASSERT_TRUE(desk_bar_view);
 
-  // Highlight desk #1. For both `kOverview` and `kDeskButton` bars, we will
+  // Focus desk #1. For both `kOverview` and `kDeskButton` bars, we will
   // need the same number of tabs because, while there is an overview item for
   // the overview bar, the desk close button is added to the tab order for the
   // first mini view.

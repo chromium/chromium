@@ -81,7 +81,7 @@ void ShowLibrary(aura::Window* const root_window,
     DCHECK(overview_session);
   }
 
-  // Show the library, this should highlight the newly saved item.
+  // Show the library, this should focus the newly saved item.
   overview_session->ShowSavedDeskLibrary(uuid, saved_desk_name, root_window);
 
   // Remove the current desk, this will be done without animation.

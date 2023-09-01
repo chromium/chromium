@@ -241,8 +241,8 @@ void WindowCycleList::Step(WindowCyclingDirection direction,
   }
 
   int offset = direction == WindowCyclingDirection::kForward ? 1 : -1;
-  // When the window highlight should be reset and the first window in the MRU
-  // cycle list is not the latest active one before entering alt-tab, highlight
+  // When the window focus should be reset and the first window in the MRU
+  // cycle list is not the latest active one before entering alt-tab, focus
   // it instead of the second window. This occurs when the user is in overview
   // mode, all windows are minimized, or all windows are in other desks.
   //
