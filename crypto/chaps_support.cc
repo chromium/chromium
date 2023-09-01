@@ -8,6 +8,8 @@
 #include <secmod.h>
 #include <secmodt.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
@@ -114,8 +116,8 @@ bool IsSlotProvidedByChaps(PK11SlotInfo* slot) {
     return false;
 
   SECMODModule* pk11_module = PK11_GetModule(slot);
-  return pk11_module && base::StringPiece(pk11_module->commonName) ==
-                            base::StringPiece(kChapsModuleName);
+  return pk11_module && std::string_view(pk11_module->commonName) ==
+                            std::string_view(kChapsModuleName);
 }
 
 }  // namespace crypto

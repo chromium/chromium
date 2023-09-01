@@ -41,7 +41,7 @@ void Aead::Init(base::span<const uint8_t> key) {
   key_ = key;
 }
 
-static base::span<const uint8_t> ToSpan(base::StringPiece sp) {
+static base::span<const uint8_t> ToSpan(std::string_view sp) {
   return base::as_bytes(base::make_span(sp));
 }
 
@@ -66,9 +66,9 @@ std::vector<uint8_t> Aead::Seal(
   return ret;
 }
 
-bool Aead::Seal(base::StringPiece plaintext,
-                base::StringPiece nonce,
-                base::StringPiece additional_data,
+bool Aead::Seal(std::string_view plaintext,
+                std::string_view nonce,
+                std::string_view additional_data,
                 std::string* ciphertext) const {
   const size_t max_output_length =
       EVP_AEAD_max_overhead(aead_) + plaintext.size();
@@ -105,9 +105,9 @@ absl::optional<std::vector<uint8_t>> Aead::Open(
   return ret;
 }
 
-bool Aead::Open(base::StringPiece ciphertext,
-                base::StringPiece nonce,
-                base::StringPiece additional_data,
+bool Aead::Open(std::string_view ciphertext,
+                std::string_view nonce,
+                std::string_view additional_data,
                 std::string* plaintext) const {
   const size_t max_output_length = ciphertext.size();
   CHECK(max_output_length + 1 > max_output_length);

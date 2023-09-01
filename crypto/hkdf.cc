@@ -16,9 +16,9 @@
 
 namespace crypto {
 
-std::string HkdfSha256(base::StringPiece secret,
-                       base::StringPiece salt,
-                       base::StringPiece info,
+std::string HkdfSha256(std::string_view secret,
+                       std::string_view salt,
+                       std::string_view info,
                        size_t derived_key_size) {
   std::string key;
   key.resize(derived_key_size);

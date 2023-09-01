@@ -5,7 +5,7 @@
 // Utility class for calculating the HMAC for a given message. We currently only
 // support SHA-1 and SHA-256 for the hash algorithm, but this can be extended
 // easily. Prefer the base::span and std::vector overloads over the
-// base::StringPiece and std::string overloads.
+// std::string_view and std::string overloads.
 
 #ifndef CRYPTO_HMAC_H_
 #define CRYPTO_HMAC_H_
@@ -13,10 +13,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -62,7 +62,7 @@ class CRYPTO_EXPORT HMAC {
 
   // Initializes this instance using |key|. Call Init only once. It returns
   // false on the second or later calls.
-  [[nodiscard]] bool Init(base::StringPiece key) {
+  [[nodiscard]] bool Init(std::string_view key) {
     return Init(base::as_bytes(base::make_span(key)));
   }
 
@@ -77,7 +77,7 @@ class CRYPTO_EXPORT HMAC {
   // returned in |digest|, which has |digest_length| bytes of storage available.
   // If |digest_length| is smaller than DigestLength(), the output will be
   // truncated. If it is larger, this method will fail.
-  [[nodiscard]] bool Sign(base::StringPiece data,
+  [[nodiscard]] bool Sign(std::string_view data,
                           unsigned char* digest,
                           size_t digest_length) const;
   [[nodiscard]] bool Sign(base::span<const uint8_t> data,
@@ -90,15 +90,15 @@ class CRYPTO_EXPORT HMAC {
   // comparisons may result in side-channel disclosures, such as timing, that
   // undermine the cryptographic integrity. |digest| must be exactly
   // |DigestLength()| bytes long.
-  [[nodiscard]] bool Verify(base::StringPiece data,
-                            base::StringPiece digest) const;
+  [[nodiscard]] bool Verify(std::string_view data,
+                            std::string_view digest) const;
   [[nodiscard]] bool Verify(base::span<const uint8_t> data,
                             base::span<const uint8_t> digest) const;
 
   // Verifies a truncated HMAC, behaving identical to Verify(), except
   // that |digest| is allowed to be smaller than |DigestLength()|.
-  [[nodiscard]] bool VerifyTruncated(base::StringPiece data,
-                                     base::StringPiece digest) const;
+  [[nodiscard]] bool VerifyTruncated(std::string_view data,
+                                     std::string_view digest) const;
   [[nodiscard]] bool VerifyTruncated(base::span<const uint8_t> data,
                                      base::span<const uint8_t> digest) const;
 

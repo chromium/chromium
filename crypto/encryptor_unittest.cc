@@ -202,10 +202,10 @@ void TestAESCTREncrypt(
   crypto::Encryptor encryptor;
   EXPECT_TRUE(encryptor.Init(sym_key.get(), crypto::Encryptor::CTR, ""));
 
-  base::StringPiece init_counter_str(
-      reinterpret_cast<const char*>(init_counter), init_counter_size);
-  base::StringPiece plaintext_str(
-      reinterpret_cast<const char*>(plaintext), plaintext_size);
+  std::string_view init_counter_str(reinterpret_cast<const char*>(init_counter),
+                                    init_counter_size);
+  std::string_view plaintext_str(reinterpret_cast<const char*>(plaintext),
+                                 plaintext_size);
 
   EXPECT_TRUE(encryptor.SetCounter(init_counter_str));
   std::string encrypted;
@@ -253,7 +253,7 @@ void TestAESCTRMultipleDecrypt(
   EXPECT_TRUE(encryptor.Init(sym_key.get(), crypto::Encryptor::CTR, ""));
 
   // Counter is set only once.
-  EXPECT_TRUE(encryptor.SetCounter(base::StringPiece(
+  EXPECT_TRUE(encryptor.SetCounter(std::string_view(
       reinterpret_cast<const char*>(init_counter), init_counter_size)));
 
   std::string ciphertext_str(reinterpret_cast<const char*>(ciphertext),
@@ -569,5 +569,5 @@ TEST(EncryptorTest, CipherTextNotMultipleOfBlockSize) {
 
   std::string plaintext;
   EXPECT_FALSE(
-      encryptor.Decrypt(base::StringPiece(ciphertext.get(), 1), &plaintext));
+      encryptor.Decrypt(std::string_view(ciphertext.get(), 1), &plaintext));
 }

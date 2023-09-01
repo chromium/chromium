@@ -7,10 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 
@@ -28,7 +27,7 @@ namespace {
 // error queue and return, otherwise it will continue calling this function
 // until all errors have been removed from the queue.
 int OpenSSLErrorCallback(const char* str, size_t len, void* context) {
-  DVLOG(1) << "\t" << base::StringPiece(str, len);
+  DVLOG(1) << "\t" << std::string_view(str, len);
   return 1;
 }
 

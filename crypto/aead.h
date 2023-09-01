@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -23,7 +23,7 @@ namespace crypto {
 
 // This class exposes the AES-128-CTR-HMAC-SHA256 and AES_256_GCM AEAD. Note
 // that there are two versions of most methods: an historical version based
-// around |StringPiece| and a more modern version that takes |base::span|.
+// around |std::string_view| and a more modern version that takes |base::span|.
 // Prefer the latter in new code.
 class CRYPTO_EXPORT Aead {
  public:
@@ -51,9 +51,9 @@ class CRYPTO_EXPORT Aead {
                             base::span<const uint8_t> nonce,
                             base::span<const uint8_t> additional_data) const;
 
-  bool Seal(base::StringPiece plaintext,
-            base::StringPiece nonce,
-            base::StringPiece additional_data,
+  bool Seal(std::string_view plaintext,
+            std::string_view nonce,
+            std::string_view additional_data,
             std::string* ciphertext) const;
 
   absl::optional<std::vector<uint8_t>> Open(
@@ -61,9 +61,9 @@ class CRYPTO_EXPORT Aead {
       base::span<const uint8_t> nonce,
       base::span<const uint8_t> additional_data) const;
 
-  bool Open(base::StringPiece ciphertext,
-            base::StringPiece nonce,
-            base::StringPiece additional_data,
+  bool Open(std::string_view ciphertext,
+            std::string_view nonce,
+            std::string_view additional_data,
             std::string* plaintext) const;
 
   size_t KeyLength() const;

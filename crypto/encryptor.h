@@ -10,10 +10,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,7 +24,7 @@ class SymmetricKey;
 
 // This class implements encryption without authentication, which is usually
 // unsafe. Prefer crypto::Aead for new code. If using this class, prefer the
-// base::span and std::vector overloads over the base::StringPiece and
+// base::span and std::vector overloads over the std::string_view and
 // std::string overloads.
 class CRYPTO_EXPORT Encryptor {
  public:
@@ -41,12 +41,12 @@ class CRYPTO_EXPORT Encryptor {
   //
   // If |mode| is CBC, |iv| must not be empty; if it is CTR, then |iv| must be
   // empty.
-  bool Init(const SymmetricKey* key, Mode mode, base::StringPiece iv);
+  bool Init(const SymmetricKey* key, Mode mode, std::string_view iv);
   bool Init(const SymmetricKey* key, Mode mode, base::span<const uint8_t> iv);
 
   // Encrypts |plaintext| into |ciphertext|.  |plaintext| may only be empty if
   // the mode is CBC.
-  bool Encrypt(base::StringPiece plaintext, std::string* ciphertext);
+  bool Encrypt(std::string_view plaintext, std::string* ciphertext);
   bool Encrypt(base::span<const uint8_t> plaintext,
                std::vector<uint8_t>* ciphertext);
 
@@ -59,7 +59,7 @@ class CRYPTO_EXPORT Encryptor {
   // must either authenticate the ciphertext before decrypting it, or take
   // care to not report decryption failure. Otherwise it could inadvertently
   // be used as a padding oracle to attack the cryptosystem.
-  bool Decrypt(base::StringPiece ciphertext, std::string* plaintext);
+  bool Decrypt(std::string_view ciphertext, std::string* plaintext);
   bool Decrypt(base::span<const uint8_t> ciphertext,
                std::vector<uint8_t>* plaintext);
 
@@ -67,7 +67,7 @@ class CRYPTO_EXPORT Encryptor {
   // counter value is supported.
   //
   // Returns true only if update was successful.
-  bool SetCounter(base::StringPiece counter);
+  bool SetCounter(std::string_view counter);
   bool SetCounter(base::span<const uint8_t> counter);
 
   // TODO(albertb): Support streaming encryption.
@@ -77,7 +77,7 @@ class CRYPTO_EXPORT Encryptor {
   Mode mode_;
 
   bool CryptString(bool do_encrypt,
-                   base::StringPiece input,
+                   std::string_view input,
                    std::string* output);
   bool CryptBytes(bool do_encrypt,
                   base::span<const uint8_t> input,

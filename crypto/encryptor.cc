@@ -37,7 +37,7 @@ Encryptor::Encryptor() : key_(nullptr), mode_(CBC) {}
 
 Encryptor::~Encryptor() = default;
 
-bool Encryptor::Init(const SymmetricKey* key, Mode mode, base::StringPiece iv) {
+bool Encryptor::Init(const SymmetricKey* key, Mode mode, std::string_view iv) {
   return Init(key, mode, base::as_bytes(base::make_span(iv)));
 }
 
@@ -63,7 +63,7 @@ bool Encryptor::Init(const SymmetricKey* key,
   return true;
 }
 
-bool Encryptor::Encrypt(base::StringPiece plaintext, std::string* ciphertext) {
+bool Encryptor::Encrypt(std::string_view plaintext, std::string* ciphertext) {
   return CryptString(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
@@ -72,7 +72,7 @@ bool Encryptor::Encrypt(base::span<const uint8_t> plaintext,
   return CryptBytes(/*do_encrypt=*/true, plaintext, ciphertext);
 }
 
-bool Encryptor::Decrypt(base::StringPiece ciphertext, std::string* plaintext) {
+bool Encryptor::Decrypt(std::string_view ciphertext, std::string* plaintext) {
   return CryptString(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
@@ -81,7 +81,7 @@ bool Encryptor::Decrypt(base::span<const uint8_t> ciphertext,
   return CryptBytes(/*do_encrypt=*/false, ciphertext, plaintext);
 }
 
-bool Encryptor::SetCounter(base::StringPiece counter) {
+bool Encryptor::SetCounter(std::string_view counter) {
   return SetCounter(base::as_bytes(base::make_span(counter)));
 }
 
@@ -96,7 +96,7 @@ bool Encryptor::SetCounter(base::span<const uint8_t> counter) {
 }
 
 bool Encryptor::CryptString(bool do_encrypt,
-                            base::StringPiece input,
+                            std::string_view input,
                             std::string* output) {
   std::string result(MaxOutput(do_encrypt, input.size()), '\0');
   absl::optional<size_t> len =
