@@ -204,6 +204,10 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskLists) {
       "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount",
       /*sample=*/1,
       /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.TaskListsCount",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTaskListsOnSubsequentCalls) {
@@ -452,6 +456,10 @@ TEST_F(GlanceablesTasksClientImplTest, GetTaskListsFetchesAllPages) {
       "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount",
       /*sample=*/3,
       /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.TaskListsCount",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
@@ -587,6 +595,14 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
       /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.RawTasksCount",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
+      /*sample=*/2,
       /*expected_bucket_count=*/1);
 }
 
@@ -924,6 +940,14 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
       "Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
       /*sample=*/3,
       /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.RawTasksCount",
+      /*sample=*/3,
+      /*expected_bucket_count=*/1);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest,
@@ -1097,6 +1121,10 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   histogram_tester()->ExpectUniqueSample(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", ApiErrorCode::HTTP_SUCCESS,
       /*expected_bucket_count=*/2);
+  histogram_tester()->ExpectUniqueSample(
+      "Ash.Glanceables.Api.Tasks.SimultaneousMarkAsCompletedRequestsCount",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
