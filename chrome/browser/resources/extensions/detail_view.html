@@ -468,6 +468,14 @@
         on-click="onSiteSettingsClick_" external></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
+        <template is="dom-if" if="[[canPinToToolbar_(data.pinnedToToolbar)]]">
+          <extensions-toggle-row id="pin-to-toolbar"
+              checked="[[data.pinnedToToolbar]]"
+              class="hr"
+              on-change="onPinnedToToolbarChange_">
+            <span>$i18n{itemPinToToolbar}</span>
+          </extensions-toggle-row>
+        </template>
         <template is="dom-if"
           if="[[shouldShowIncognitoOption_(
               data.incognitoAccess.isEnabled, incognitoAvailable)]]">

@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -124,6 +126,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(GetExtensionServiceInitParams());
+    extension_action_test_util::CreateToolbarModelForProfile(profile());
   }
 
   // Returns the initialization parameters for the extension service.
@@ -205,6 +208,10 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       const base::FilePath& extension_path,
       mojom::ManifestLocation location) {
     ChromeTestExtensionLoader loader(browser_context());
+
+    // Unit tests are single process and as such, attempting to wait for an
+    // extension renderer process will cause the test to time out.
+    loader.set_wait_for_renderers(false);
     loader.set_location(location);
     loader.set_creation_flags(Extension::REQUIRE_KEY);
     scoped_refptr<const Extension> extension =
@@ -319,6 +326,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   EXPECT_TRUE(info->incognito_access.is_enabled);
   EXPECT_FALSE(info->incognito_access.is_active);
   EXPECT_TRUE(base::StartsWith(info->icon_url, "data:image/png;base64,"));
+  EXPECT_FALSE(*info->pinned_to_toolbar);
 
   // Strip out the kHostReadWrite permission created by the extension requesting
   // host permissions above; runtime host permissions mean these are always
@@ -472,10 +480,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Test Extension2
-  extension_path = data_dir().AppendASCII("good")
-                             .AppendASCII("Extensions")
-                             .AppendASCII("hpiknbiabeeppbpihjehijgoemciehgk")
-                             .AppendASCII("2");
+  extension_path = data_dir()
+                       .AppendASCII("good")
+                       .AppendASCII("Extensions")
+                       .AppendASCII("hpiknbiabeeppbpihjehijgoemciehgk")
+                       .AppendASCII("2");
 
   {
     // It's OK to have duplicate URLs, so long as the IDs are different.
@@ -1041,6 +1050,32 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 
   // Verify that the kite icon error tooltip doesn't appear for regular users.
   EXPECT_FALSE(info->disable_reasons.parent_disabled_permissions);
+}
+
+// Test that the generator returns if the extension can be pinned to the toolbar
+// and if it can, whether or not it's pinned.
+TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
+  // By default, the extension is not pinned to the toolbar but can be.
+  const scoped_refptr<const Extension> extension = CreateExtension(
+      "test1", base::Value::List(), ManifestLocation::kInternal);
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  EXPECT_FALSE(*info->pinned_to_toolbar);
+
+  // Pin the extension to the toolbar and test that this is reflected in the
+  // generated info.
+  ToolbarActionsModel* toolbar_actions_model =
+      ToolbarActionsModel::Get(profile());
+  toolbar_actions_model->SetActionVisibility(extension->id(), true);
+  info = GenerateExtensionInfo(extension->id());
+  EXPECT_TRUE(*info->pinned_to_toolbar);
+
+  // Disable the extension. Since disabled extensions have no action, the
+  // `pinned_to_toolbar` field should not exist.
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+  info = GenerateExtensionInfo(extension->id());
+  EXPECT_FALSE(info->pinned_to_toolbar.has_value());
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

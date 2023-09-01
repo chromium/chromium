@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -789,6 +790,18 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   info->show_access_requests_in_toolbar =
       SitePermissionsHelper(profile).ShowAccessRequestsInToolbar(
           extension.id());
+
+  // Pinned to toolbar.
+  // TODO(crbug.com/1477884): Currently this information is only shown for
+  // enabled extensions as only enabled extensions can have actions. However,
+  // this information can be found in prefs, so disabled extensiosn can be
+  // included as well.
+  ToolbarActionsModel* toolbar_actions_model =
+      ToolbarActionsModel::Get(profile);
+  if (toolbar_actions_model->HasAction(extension.id())) {
+    info->pinned_to_toolbar =
+        toolbar_actions_model->IsActionPinned(extension.id());
+  }
 
   // The icon.
   ExtensionResource icon =

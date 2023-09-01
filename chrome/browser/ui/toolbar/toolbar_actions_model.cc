@@ -229,6 +229,10 @@ const std::u16string ToolbarActionsModel::GetExtensionName(
       extension_registry_->enabled_extensions().GetByID(action_id)->name());
 }
 
+bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
+  return base::Contains(action_ids_, action_id);
+}
+
 bool ToolbarActionsModel::CanShowActionsInToolbar(const Browser& browser) {
   // Pinning extensions is not available in PWAs.
   return !web_app::AppBrowserController::IsWebApp(&browser);
@@ -419,10 +423,6 @@ void ToolbarActionsModel::Populate() {
       continue;
     action_ids_.insert(extension->id());
   }
-}
-
-bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
-  return base::Contains(action_ids_, action_id);
 }
 
 void ToolbarActionsModel::IncognitoPopulate() {

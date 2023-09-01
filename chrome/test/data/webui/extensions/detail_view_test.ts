@@ -606,4 +606,25 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(isVisible(safetyWarningText));
     assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
   });
+
+  test('PinnedToToolbar', function() {
+    assertFalse(
+        isVisible(item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
+            '#pin-to-toolbar')));
+
+    item.set('data.pinnedToToolbar', true);
+    flush();
+    const itemPinnedToggle =
+        item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
+            '#pin-to-toolbar');
+    assertTrue(isVisible(itemPinnedToggle));
+    assertTrue(itemPinnedToggle!.checked);
+
+    mockDelegate.testClickingCalls(
+        itemPinnedToggle!.getLabel(), 'setItemPinnedToToolbar',
+        [extensionData.id, false]);
+    flush();
+    assertTrue(isVisible(itemPinnedToggle));
+    assertFalse(itemPinnedToggle!.checked);
+  });
 });

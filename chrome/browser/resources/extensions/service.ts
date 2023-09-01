@@ -229,6 +229,13 @@ export class Service implements ServiceInterface {
     });
   }
 
+  setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean) {
+    chrome.developerPrivate.updateExtensionConfiguration({
+      extensionId: id,
+      pinnedToToolbar,
+    });
+  }
+
   inspectItemView(id: string, view: chrome.developerPrivate.ExtensionView):
       void {
     chrome.developerPrivate.openDevTools({

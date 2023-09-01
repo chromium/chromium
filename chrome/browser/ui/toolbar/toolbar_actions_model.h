@@ -62,15 +62,15 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // delegate.
   class Observer {
    public:
-    // Signals that |id| has been added to the toolbar. This will
+    // Signals that `id` has been added to the toolbar. This will
     // *only* be called after the toolbar model has been initialized.
     virtual void OnToolbarActionAdded(const ActionId& id) = 0;
 
-    // Signals that the given action with |id| has been removed from the
+    // Signals that the given action with `id` has been removed from the
     // toolbar.
     virtual void OnToolbarActionRemoved(const ActionId& id) = 0;
 
-    // Signals that the browser action with |id| has been updated.
+    // Signals that the browser action with `id` has been updated.
     // This method covers lots of different extension updates and could be split
     // in different methods if needed, such as
     // `OnToolbarActionHostPermissionsUpdated`.
@@ -116,6 +116,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // Returns the extension name corresponding to the `action_id`.
   const std::u16string GetExtensionName(const ActionId& action_id) const;
+
+  // Returns true if `action_id` is in the toolbar model.
+  bool HasAction(const ActionId& action_id) const;
 
   // Returns true if `url` is restricted for all extensions with actions in the
   // toolbar.ß
@@ -180,9 +183,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // Returns true if the given |extension| should be added to the toolbar.
   bool ShouldAddExtension(const extensions::Extension* extension);
-
-  // Returns true if |action_id| is in the toolbar model.
-  bool HasAction(const ActionId& action_id) const;
 
   // Adds |action_id| to the toolbar.  If the action has an existing preference
   // for toolbar position, that will be used to determine its location.

@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
@@ -161,6 +162,8 @@ const char kCannotRepairPolicyExtension[] =
     "Cannot repair a policy-installed extension.";
 const char kCannotChangeHostPermissions[] =
     "Cannot change host permissions for the given extension.";
+const char kCannotSetPinnedWithoutAction[] =
+    "Cannot set pinned action state for an extension with no action.";
 const char kInvalidHost[] = "Invalid host.";
 const char kInvalidLazyBackgroundPageParameter[] =
     "isServiceWorker can not be set for lazy background page based extensions.";
@@ -537,6 +540,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(ExtensionSystemFactory::GetInstance());
   DependsOn(PermissionsManager::GetFactory());
+  DependsOn(ToolbarActionsModelFactory::GetInstance());
 }
 
 // static
@@ -564,6 +568,7 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   extension_allowlist_observer_.Observe(
       ExtensionSystem::Get(profile)->extension_service()->allowlist());
   permissions_manager_observation_.Observe(PermissionsManager::Get(profile));
+  toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
   // callback on destruction.
@@ -747,6 +752,21 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
     PermissionsManager::UpdateReason reason) {
   BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
                             extension.id());
+}
+
+void DeveloperPrivateEventRouter::OnToolbarPinnedActionsChanged() {
+  // Currently, only enabled extensions are considered since they are the only
+  // ones that have extension actions.
+  // TODO(crbug.com/1477884): Since pinned info is stored as a pref, include
+  // disabled extensions in this event as well.
+  const ExtensionSet& extensions =
+      ExtensionRegistry::Get(profile_)->enabled_extensions();
+  for (const auto& extension : extensions) {
+    if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
+      BroadcastItemStateChanged(developer::EVENT_TYPE_PINNED_ACTIONS_CHANGED,
+                                extension->id());
+    }
+  }
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
@@ -1168,6 +1188,20 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
             ->developer_private_event_router();
     if (event_router) {
       event_router->OnExtensionConfigurationChanged(extension->id());
+    }
+  }
+  if (update.pinned_to_toolbar) {
+    ToolbarActionsModel* toolbar_actions_model = ToolbarActionsModel::Get(
+        Profile::FromBrowserContext(browser_context()));
+    if (!toolbar_actions_model->HasAction(extension->id())) {
+      return RespondNow(Error(kCannotSetPinnedWithoutAction));
+    }
+
+    bool is_action_pinned =
+        toolbar_actions_model->IsActionPinned(extension->id());
+    if (is_action_pinned != *update.pinned_to_toolbar) {
+      toolbar_actions_model->SetActionVisibility(extension->id(),
+                                                 !is_action_pinned);
     }
   }
 

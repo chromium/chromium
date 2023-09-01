@@ -63,6 +63,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'setItemCollectsErrors',
       'setItemEnabled',
       'setItemHostAccess',
+      'setItemPinnedToToolbar',
       'setItemSafetyCheckWarningAcknowledged',
       'setProfileInDevMode',
       'setShortcutHandlingSuspended',
@@ -170,6 +171,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setItemHostAccess(id: string, access: chrome.developerPrivate.HostAccess) {
     this.methodCalled('setItemHostAccess', [id, access]);
+  }
+
+  setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean) {
+    this.methodCalled('setItemPinnedToToolbar', [id, pinnedToToolbar]);
   }
 
   setShortcutHandlingSuspended(enable: boolean) {

@@ -277,6 +277,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, SafetyCheckWarning) {
   RunTestCase("SafetyCheckWarning");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
+  RunTestCase("PinnedToToolbar");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

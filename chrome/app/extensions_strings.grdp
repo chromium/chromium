@@ -310,6 +310,9 @@
   <message name="IDS_EXTENSIONS_ITEM_PERMISSIONS_AND_SITE_ACCESS_EMPTY" desc="The text to indicate that an extension does not have any special permissions or any site access.">
     This extension requires no special permissions and has no additional site access
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_PIN_TO_TOOLBAR" desc="The text next to the toggle to pin an extension to the toolbar.">
+    Pin to toolbar
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION" desc="The label on the button to remove an extension.">
     Remove extension
   </message>

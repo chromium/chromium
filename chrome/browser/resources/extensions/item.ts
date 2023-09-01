@@ -54,6 +54,7 @@ export interface ItemDelegate {
   removeRuntimeHostPermission(id: string, host: string): Promise<void>;
   setItemSafetyCheckWarningAcknowledged(id: string): void;
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean): void;
+  setItemPinnedToToolbar(id: string, pinnedToToolbar: boolean): void;
 
   // TODO(tjudkins): This function is not specific to items, so should be pulled
   // out to a more generic place when we need to access it from elsewhere.

@@ -376,6 +376,7 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
       case EventType.PERMISSIONS_CHANGED:
       case EventType.SERVICE_WORKER_STARTED:
       case EventType.SERVICE_WORKER_STOPPED:
+      case EventType.PINNED_ACTIONS_CHANGED:
         // |extensionInfo| can be undefined in the case of an extension
         // being unloaded right before uninstallation. There's nothing to do
         // here.

@@ -22,8 +22,10 @@
 #include "base/test/gtest_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -423,12 +426,6 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
     function->set_source_context_type(Feature::WEBUI_CONTEXT);
     EXPECT_TRUE(RunFunction(function, args)) << key;
     EXPECT_TRUE(has_pref.Run()) << key;
-
-    ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
-    function = base::MakeRefCounted<
-        api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
-    EXPECT_TRUE(RunFunction(function, args)) << key;
-    EXPECT_TRUE(has_pref.Run()) << key;
   }
 
   {
@@ -444,6 +441,21 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
         api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
     EXPECT_TRUE(RunFunction(function, args)) << key;
     EXPECT_FALSE(has_pref.Run()) << key;
+  }
+
+  {
+    base::Value::Dict parameters;
+    parameters.Set("extensionId", extension_id);
+    parameters.Set(key, true);
+
+    base::Value::List args;
+    args.Append(std::move(parameters));
+
+    ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
+    auto function = base::MakeRefCounted<
+        api::DeveloperPrivateUpdateExtensionConfigurationFunction>();
+    EXPECT_TRUE(RunFunction(function, args)) << key;
+    EXPECT_TRUE(has_pref.Run()) << key;
   }
 }
 
@@ -521,6 +533,7 @@ void DeveloperPrivateApiUnitTest::SetUp() {
   ExtensionServiceInitParams init_params;
   init_params.profile_is_supervised = ProfileIsSupervised();
   InitializeExtensionService(init_params);
+  extension_action_test_util::CreateToolbarModelForProfile(profile());
 
   browser_window_ = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
@@ -560,6 +573,19 @@ TEST_F(DeveloperPrivateApiUnitTest,
 
   ScriptingPermissionsModifier(profile(), base::WrapRefCounted(extension))
       .SetWithholdHostPermissions(true);
+
+  // Test pinning to toolbar first as this needs the extension to be enabled.
+  // The other pref settings tested below may disable the extension so it will
+  // not have an action in the toolbar.
+  auto pinned_to_toolbar = [&]() {
+    ToolbarActionsModel* toolbar_actions_model =
+        ToolbarActionsModel::Get(profile());
+    return toolbar_actions_model->HasAction(id) &&
+           toolbar_actions_model->IsActionPinned(id);
+  };
+  TestExtensionPrefSetting(base::BindLambdaForTesting(pinned_to_toolbar),
+                           "pinnedToToolbar", id,
+                           /*expected_default_value=*/false);
 
   TestExtensionPrefSetting(
       base::BindRepeating(&HasPrefsPermission, &util::IsIncognitoEnabled,
@@ -2913,6 +2939,47 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Because there is an enterprise extension in the list, the uninstallation is
   // canceled. The number of extensions remains the same.
   EXPECT_EQ(registry()->enabled_extensions().size(), 2u);
+}
+
+// Test that an event is dispatched when the list of pinned extension actions
+// has changed.
+TEST_F(DeveloperPrivateApiUnitTest,
+       ExtensionUpdatedEventOnPinnedActionsChange) {
+  // We need to call DeveloperPrivateAPI::Get() in order to instantiate the
+  // keyed service, since it's not created by default in unit tests.
+  DeveloperPrivateAPI::Get(profile());
+  EventRouter* event_router = EventRouter::Get(profile());
+
+  // The DeveloperPrivateEventRouter will only dispatch events if there's at
+  // least one listener to dispatch to. Create one.
+  const char* kEventName =
+      api::developer_private::OnItemStateChanged::kEventName;
+  event_router->AddEventListener(kEventName, render_process_host(),
+                                 crx_file::id_util::GenerateId("listener"));
+
+  TestEventRouterObserver test_observer(event_router);
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("test").Build();
+  service()->AddExtension(extension.get());
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
+
+  // The event router fetches icons from a blocking thread when sending the
+  // update event; allow it to finish before verifying the event was dispatched.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(WasItemChangedEventDispatched(
+      test_observer, extension->id(),
+      api::developer_private::EVENT_TYPE_PINNED_ACTIONS_CHANGED));
+
+  ToolbarActionsModel* toolbar_actions_model =
+      ToolbarActionsModel::Get(profile());
+
+  toolbar_actions_model->SetActionVisibility(
+      extension->id(), !toolbar_actions_model->IsActionPinned(extension->id()));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(WasItemChangedEventDispatched(
+      test_observer, extension->id(),
+      api::developer_private::EVENT_TYPE_PINNED_ACTIONS_CHANGED));
 }
 
 class DeveloperPrivateApiAllowlistUnitTest

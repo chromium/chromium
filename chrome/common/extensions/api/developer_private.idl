@@ -270,6 +270,7 @@ namespace developerPrivate {
     boolean showSafeBrowsingAllowlistWarning;
     boolean showAccessRequestsInToolbar;
     boolean acknowledgeSafetyCheckWarning;
+    boolean? pinnedToToolbar;
   };
 
   dictionary ProfileInfo {
@@ -330,6 +331,7 @@ namespace developerPrivate {
     HostAccess? hostAccess;
     boolean? showAccessRequestsInToolbar;
     boolean? acknowledgeSafetyCheckWarning;
+    boolean? pinnedToToolbar;
   };
 
   dictionary ProfileConfigurationUpdate {
@@ -496,7 +498,8 @@ namespace developerPrivate {
     PERMISSIONS_CHANGED,
     SERVICE_WORKER_STARTED,
     SERVICE_WORKER_STOPPED,
-    CONFIGURATION_CHANGED
+    CONFIGURATION_CHANGED,
+    PINNED_ACTIONS_CHANGED
   };
 
   dictionary PackDirectoryResponse {

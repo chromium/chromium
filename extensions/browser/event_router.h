@@ -358,6 +358,8 @@ class EventRouter : public KeyedService,
                            ExtensionUpdatedEventOnPermissionsChange);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
                            OnUserSiteSettingsChanged);
+  FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiUnitTest,
+                           ExtensionUpdatedEventOnPinnedActionsChange);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiAllowlistUnitTest,
                            ExtensionUpdatedEventOnAllowlistWarningChange);
   FRIEND_TEST_ALL_PREFIXES(DeveloperPrivateApiWithPermittedSitesUnitTest,

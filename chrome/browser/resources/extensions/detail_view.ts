@@ -243,8 +243,12 @@ export class ExtensionsDetailViewElement extends
   }
 
   private shouldShowOptionsSection_(): boolean {
-    return this.data.incognitoAccess.isEnabled ||
+    return this.canPinToToolbar_() || this.data.incognitoAccess.isEnabled ||
         this.data.fileAccess.isEnabled || this.data.errorCollection.isEnabled;
+  }
+
+  private canPinToToolbar_(): boolean {
+    return this.data.pinnedToToolbar !== undefined;
   }
 
   private shouldShowIncognitoOption_(): boolean {
@@ -292,6 +296,14 @@ export class ExtensionsDetailViewElement extends
 
   private onLoadPathClick_() {
     this.delegate.showInFolder(this.data.id);
+  }
+
+  private onPinnedToToolbarChange_() {
+    this.delegate.setItemPinnedToToolbar(
+        this.data.id,
+        this.shadowRoot!
+            .querySelector<ExtensionsToggleRowElement>(
+                '#pin-to-toolbar')!.checked);
   }
 
   private onAllowIncognitoChange_() {
