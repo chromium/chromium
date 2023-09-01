@@ -7,11 +7,10 @@
 #include <array>
 #include <initializer_list>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-#include "base/strings/string_piece.h"
 
 namespace zxcvbn {
 
@@ -37,7 +36,7 @@ struct hash<zxcvbn::GraphTag> {
 
 namespace zxcvbn {
 
-using Graph = std::unordered_map<base::StringPiece, std::vector<base::StringPiece>, base::StringPieceHash>;
+using Graph = std::unordered_map<std::string_view, std::vector<std::string_view>>;
 using Graphs = std::unordered_map<GraphTag, Graph>;
 const Graphs & graphs();
 

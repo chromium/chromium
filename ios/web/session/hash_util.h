@@ -8,7 +8,6 @@
 #include <functional>
 #include <tuple>
 
-#include "base/strings/string_piece.h"
 #include "net/base/hash_value.h"
 #include "net/cert/x509_certificate.h"
 
@@ -23,10 +22,6 @@ struct Hasher : std::hash<T> {};
 // Specialisation of Hasher for non-const pointers.
 template <typename T>
 struct Hasher<T*> : Hasher<const T*> {};
-
-// Specialisation of Hasher for StringPiece.
-template <>
-struct Hasher<base::StringPiece> : base::StringPieceHash {};
 
 // Specialisation of Hasher for SHA256HashValue.
 template <>

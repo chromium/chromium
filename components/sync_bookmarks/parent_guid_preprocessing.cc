@@ -130,9 +130,7 @@ class LazySyncIdToGuidMapInUpdates {
 
   const raw_ptr<const syncer::UpdateResponseDataList> updates_;
   bool initialized_ = false;
-  std::
-      unordered_map<base::StringPiece, base::StringPiece, base::StringPieceHash>
-          sync_id_to_guid_map_;
+  std::unordered_map<base::StringPiece, base::StringPiece> sync_id_to_guid_map_;
 };
 
 base::Uuid GetParentGuidForUpdate(

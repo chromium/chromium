@@ -1971,7 +1971,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   // more exact gtest filter, we first split filter into exact filter
   // and wildcards filter, then exact filter can match faster.
   std::vector<StringPiece> positive_wildcards_filter;
-  std::unordered_set<StringPiece, StringPieceHash> positive_exact_filter;
+  std::unordered_set<StringPiece> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
   for (const std::string& filter : positive_test_filter_) {
     if (filter.find('*') != std::string::npos) {
@@ -1982,7 +1982,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   }
 
   std::vector<StringPiece> negative_wildcards_filter;
-  std::unordered_set<StringPiece, StringPieceHash> negative_exact_filter;
+  std::unordered_set<StringPiece> negative_exact_filter;
   negative_exact_filter.reserve(negative_test_filter_.size());
   for (const std::string& filter : negative_test_filter_) {
     if (filter.find('*') != std::string::npos) {

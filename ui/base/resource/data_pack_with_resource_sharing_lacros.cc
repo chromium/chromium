@@ -463,10 +463,10 @@ bool DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
 
   std::vector<Mapping> mapping_table;
   std::map<uint16_t, base::StringPiece> fallback_resources;
-  std::unordered_map<base::StringPiece, uint16_t, base::StringPieceHash>
-      ash_resources;
-  for (const DataPack::ResourceData& resource_data : *ash_data_pack)
+  std::unordered_map<base::StringPiece, uint16_t> ash_resources;
+  for (const DataPack::ResourceData& resource_data : *ash_data_pack) {
     ash_resources.emplace(resource_data.data, resource_data.id);
+  }
 
   // Determine if lacros resource Entry exists in ash resources. Add to
   // `mapping_table` if exists. Add to `fallback_resources` instead if not.

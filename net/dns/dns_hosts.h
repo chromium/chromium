@@ -7,14 +7,12 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -25,7 +23,7 @@ using DnsHostsKey = std::pair<std::string, AddressFamily>;
 
 struct DnsHostsKeyHash {
   std::size_t operator()(const DnsHostsKey& key) const {
-    return base::StringPieceHash()(key.first) + key.second;
+    return std::hash<std::string_view>()(key.first) + key.second;
   }
 };
 

@@ -361,8 +361,7 @@ class BASE_EXPORT StatisticsRecorder {
 
   typedef std::vector<WeakPtr<HistogramProvider>> HistogramProviders;
 
-  typedef std::unordered_map<StringPiece, HistogramBase*, StringPieceHash>
-      HistogramMap;
+  typedef std::unordered_map<StringPiece, HistogramBase*> HistogramMap;
 
   // A map of histogram name to registered observers. If the histogram isn't
   // created yet, the observers will be added after creation.
