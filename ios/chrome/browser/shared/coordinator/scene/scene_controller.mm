@@ -2522,6 +2522,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf showAndStartSafetyCheckInHalfSheet:NO];
       };
+    case MANAGE_PASSWORDS:
+      return ^{
+        [weakSelf showPasswordSearchPage];
+      };
     default:
       return nil;
   }

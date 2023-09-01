@@ -109,6 +109,9 @@
     case RUN_SAFETY_CHECK:
       [description appendString:@", should run safety check"];
       break;
+    case MANAGE_PASSWORDS:
+      [description appendString:@", should open manage passwords setting page"];
+      break;
     default:
       break;
   }

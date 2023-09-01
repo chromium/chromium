@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
@@ -1178,5 +1179,35 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentRunSafetyCheck) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(RUN_SAFETY_CHECK,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to run manage passwords intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentManagePasswords) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"ManagePasswordsIntent"];
+
+  ManagePasswordsIntent* intent = [[ManagePasswordsIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(MANAGE_PASSWORDS,
             [connectionInformationMock startupParameters].postOpeningAction);
 }

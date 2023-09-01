@@ -67,6 +67,30 @@
       <array>
         <dict>
           <key>output</key>
+          <string>t30ghR</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_MANAGE_PASSWORDS_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>m0dBpO</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_MANAGE_PASSWORDS_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>xLH4gk</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_MANAGE_PASSWORDS_DESCRIPTION</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>aATwcS</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_MANAGE_PASSWORDS_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
           <string>tItg79</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_RUN_SAFETY_CHECK_TITLE</string>

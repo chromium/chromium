@@ -22,5 +22,6 @@ intent_definition("intents") {
     "OpenNewIncognitoTabIntent",
     "ManagePaymentMethodsIntent",
     "RunSafetyCheckIntent",
+    "ManagePasswordsIntent",
   ]
 }
