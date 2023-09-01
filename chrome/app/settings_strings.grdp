@@ -1560,6 +1560,12 @@
   <message name="IDS_SETTINGS_PERFORMANCE_PAGE_TITLE" desc="Title of the performance settings page">
     Performance
   </message>
+  <message name="IDS_SETTINGS_MEMORY_PAGE_TITLE" desc="Title of the memory section on the performance settings page.">
+    Memory
+  </message>
+  <message name="IDS_SETTINGS_SPEED_PAGE_TITLE" desc="Title of the speed section on the performance settings page.">
+    Speed
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING" desc="Memory saver mode setting label. This mode allows the browser to save memory from background tabs">
     Memory Saver
   </message>

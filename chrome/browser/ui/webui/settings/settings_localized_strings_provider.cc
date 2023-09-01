@@ -697,6 +697,8 @@ void AddImportDataStrings(content::WebUIDataSource* html_source) {
 void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"performancePageTitle", IDS_SETTINGS_PERFORMANCE_PAGE_TITLE},
+      {"memoryPageTitle", IDS_SETTINGS_MEMORY_PAGE_TITLE},
+      {"speedPageTitle", IDS_SETTINGS_SPEED_PAGE_TITLE},
       {"highEfficiencyModeLabel",
        IDS_SETTINGS_PERFORMANCE_HIGH_EFFICIENCY_MODE_SETTING},
       {"highEfficiencyModeDescription",
