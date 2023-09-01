@@ -10,12 +10,16 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "remoting/base/string_resources.h"
 #include "remoting/host/chromeos/ash_proxy.h"
 #include "remoting/host/file_transfer/file_chooser.h"
 #include "remoting/protocol/file_transfer_helpers.h"
+#include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -45,7 +49,7 @@ class FileChooserChromeOs::Core : public ui::SelectFileDialog::Listener {
  private:
   void RunCallback(const FileChooser::Result& result);
 
-  void CloseDialog();
+  void Cleanup();
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   const raw_ref<AshProxy, LeakedDanglingUntriaged | ExperimentalAsh> ash_;
@@ -79,7 +83,7 @@ FileChooserChromeOs::Core::Core(ResultCallback callback)
       callback_(std::move(callback)) {}
 
 FileChooserChromeOs::Core::~Core() {
-  CloseDialog();
+  select_file_dialog_->ListenerDestroyed();
 }
 
 void FileChooserChromeOs::Core::FileSelected(const base::FilePath& path,
@@ -101,15 +105,7 @@ void FileChooserChromeOs::Core::FileSelectionCanceled(void* params) {
 }
 
 void FileChooserChromeOs::Core::RunCallback(const FileChooser::Result& result) {
-  CloseDialog();
   std::move(callback_).Run(result);
-}
-
-void FileChooserChromeOs::Core::CloseDialog() {
-  if (select_file_dialog_) {
-    select_file_dialog_->ListenerDestroyed();
-    select_file_dialog_.reset();
-  }
 }
 
 void FileChooserChromeOs::Core::Show() {
