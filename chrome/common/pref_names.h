@@ -2391,6 +2391,12 @@ inline constexpr char kNetworkServiceSandboxEnabled[] =
     "net.network_service_sandbox";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_LINUX)
+// Records whether the user has seen an HTTP auth "negotiate" header.
+inline constexpr char kReceivedHttpAuthNegotiateHeader[] =
+    "net.received_http_auth_negotiate_headers";
+#endif  // BUILDFLAG(IS_LINUX)
+
 // The last used printer and its settings.
 inline constexpr char kPrintPreviewStickySettings[] =
     "printing.print_preview_sticky_settings";

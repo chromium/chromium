@@ -233,6 +233,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
   void SetFirstPartySets(net::GlobalFirstPartySets sets) override;
   void SetExplicitlyAllowedPorts(const std::vector<uint16_t>& ports) override;
+#if BUILDFLAG(IS_LINUX)
+  void SetGssapiLibraryLoadObserver(
+      mojo::PendingRemote<mojom::GssapiLibraryLoadObserver>
+          gssapi_library_load_observer) override;
+#endif  // BUILDFLAG(IS_LINUX)
 
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
@@ -258,6 +263,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
   std::unique_ptr<net::HttpAuthHandlerFactory> CreateHttpAuthHandlerFactory(
       NetworkContext* network_context);
+
+#if BUILDFLAG(IS_LINUX)
+  // This is called just before a GSSAPI library may be loaded.
+  void OnBeforeGssapiLibraryLoad();
+#endif  // BUILDFLAG(IS_LINUX)
 
   bool quic_disabled() const { return quic_disabled_; }
   bool HasRawHeadersAccess(int32_t process_id, const GURL& resource_url) const;
@@ -487,6 +497,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // This is used only in tests. It avoids leaky SystemDnsConfigChangeNotifiers
   // leaking stale listeners between tests.
   std::unique_ptr<net::NetworkChangeNotifier> mock_network_change_notifier_;
+
+#if BUILDFLAG(IS_LINUX)
+  mojo::Remote<mojom::GssapiLibraryLoadObserver> gssapi_library_load_observer_;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 }  // namespace network

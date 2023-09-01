@@ -457,6 +457,28 @@ void SystemNetworkContextManager::DeleteInstance() {
   g_system_network_context_manager = nullptr;
 }
 
+#if BUILDFLAG(IS_LINUX)
+SystemNetworkContextManager::GssapiLibraryLoadObserver::
+    GssapiLibraryLoadObserver(SystemNetworkContextManager* owner)
+    : owner_(owner) {}
+
+SystemNetworkContextManager::GssapiLibraryLoadObserver::
+    ~GssapiLibraryLoadObserver() = default;
+
+void SystemNetworkContextManager::GssapiLibraryLoadObserver::Install(
+    network::mojom::NetworkService* network_service) {
+  gssapi_library_loader_observer_receiver_.reset();
+  network_service->SetGssapiLibraryLoadObserver(
+      gssapi_library_loader_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void SystemNetworkContextManager::GssapiLibraryLoadObserver::
+    OnBeforeGssapiLibraryLoad() {
+  owner_->local_state_->SetBoolean(prefs::kReceivedHttpAuthNegotiateHeader,
+                                   true);
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 SystemNetworkContextManager::SystemNetworkContextManager(
     PrefService* local_state)
     : local_state_(local_state),
@@ -630,6 +652,10 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(prefs::kNetworkServiceSandboxEnabled, true);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_LINUX)
+  registry->RegisterBooleanPref(prefs::kReceivedHttpAuthNegotiateHeader, false);
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 // static
@@ -675,6 +701,10 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   auto http_auth_dynamic_params = CreateHttpAuthDynamicParams(local_state_);
   OnNewHttpAuthDynamicParams(http_auth_dynamic_params);
   network_service->ConfigureHttpAuthPrefs(std::move(http_auth_dynamic_params));
+
+#if BUILDFLAG(IS_LINUX)
+  gssapi_library_loader_observer_.Install(network_service);
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Configure the Certificate Transparency logs.
   if (IsCertificateTransparencyEnabled()) {

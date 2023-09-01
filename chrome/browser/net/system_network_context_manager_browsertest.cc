@@ -344,6 +344,73 @@ IN_PROC_BROWSER_TEST_F(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX)
+class SystemNetworkContextManagerHttpNegotiateHeader
+    : public SystemNetworkContextManagerBrowsertest {
+ public:
+  static constexpr char kHttpsNegotiateAuthPath[] = "/http_negotiate_auth";
+
+  SystemNetworkContextManagerHttpNegotiateHeader()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
+
+    https_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&SystemNetworkContextManagerHttpNegotiateHeader::
+                                SendBackHttpNegotiateHeader,
+                            base::Unretained(this)));
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> SendBackHttpNegotiateHeader(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kHttpsNegotiateAuthPath) {
+      return nullptr;
+    }
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_UNAUTHORIZED);
+    http_response->AddCustomHeader("WWW-Authenticate", "Negotiate");
+    return http_response;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerHttpNegotiateHeader,
+                       SetsPrefOnHttpNegotiateHeader) {
+  PrefService* local_state = g_browser_process->local_state();
+
+  // Ensure the pref starts false.
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kReceivedHttpAuthNegotiateHeader));
+
+  PrefChangeRegistrar pref_change_registrar;
+  pref_change_registrar.Init(local_state);
+
+  base::RunLoop wait_for_set_pref_loop;
+  pref_change_registrar.Add(prefs::kReceivedHttpAuthNegotiateHeader,
+                            wait_for_set_pref_loop.QuitClosure());
+
+  // Navigate to a URL that requests negotiate authentication.
+  EXPECT_FALSE(NavigateToURL(web_contents(),
+                             https_server_.GetURL(kHttpsNegotiateAuthPath)));
+  wait_for_set_pref_loop.Run();
+
+  // Ensure the pref is now true.
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kReceivedHttpAuthNegotiateHeader));
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     : public SystemNetworkContextManagerBrowsertest {
  public:

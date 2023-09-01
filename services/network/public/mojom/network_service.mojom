@@ -161,6 +161,14 @@ struct SCTAuditingConfiguration {
   MutableNetworkTrafficAnnotationTag hashdance_traffic_annotation;
 };
 
+// GssapiLibraryLoadObserver will be notified once when GSSAPI libraries
+// are about to be loaded, on a "WWW_Authenticate: negotiate" header.
+[EnableIf=is_linux]
+interface GssapiLibraryLoadObserver {
+  // Called only once per network service.
+  OnBeforeGssapiLibraryLoad();
+};
+
 // Implemented by the network service. The browser process sends messages to
 // the network service over this interface.
 //
@@ -392,6 +400,14 @@ interface NetworkService {
   // URLLoaderNetworkServiceObserver::OnDataUseUpdate. By default it's not
   // enabled.
   EnableDataUseUpdates(bool enable);
+
+  // Set the GssapiLibraryLoadObserver for this network service.
+  // Will only be notified once unless the observer is set again.
+  // TODO(crbug.com/1474362): remove this observer once GSSAPI is brokered
+  // out of the network service.
+  [EnableIf=is_linux]
+  SetGssapiLibraryLoadObserver(
+    pending_remote<GssapiLibraryLoadObserver> gssapi_library_load_observer);
 };
 
 // Service that tests new process overhead on Android.

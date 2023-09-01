@@ -22,7 +22,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom-forward.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -185,6 +185,28 @@ class SystemNetworkContextManager {
   class URLLoaderFactoryForSystem;
   class NetworkProcessLaunchWatcher;
 
+#if BUILDFLAG(IS_LINUX)
+  class GssapiLibraryLoadObserver
+      : public network::mojom::GssapiLibraryLoadObserver {
+   public:
+    explicit GssapiLibraryLoadObserver(SystemNetworkContextManager* owner);
+    GssapiLibraryLoadObserver(const GssapiLibraryLoadObserver&) = delete;
+    GssapiLibraryLoadObserver& operator=(const GssapiLibraryLoadObserver&) =
+        delete;
+    ~GssapiLibraryLoadObserver() override;
+
+    void Install(network::mojom::NetworkService* network_service);
+
+    // network::mojom::GssapiLibraryLoadObserver implementation:
+    void OnBeforeGssapiLibraryLoad() override;
+
+   private:
+    mojo::Receiver<network::mojom::GssapiLibraryLoadObserver>
+        gssapi_library_loader_observer_receiver_{this};
+    raw_ptr<SystemNetworkContextManager> owner_;
+  };
+#endif
+
   // Constructor. |pref_service| must out live this object.
   explicit SystemNetworkContextManager(PrefService* pref_service);
 
@@ -252,6 +274,10 @@ class SystemNetworkContextManager {
   static StubResolverConfigReader* stub_resolver_config_reader_for_testing_;
 
   static absl::optional<bool> certificate_transparency_enabled_for_testing_;
+
+#if BUILDFLAG(IS_LINUX)
+  GssapiLibraryLoadObserver gssapi_library_loader_observer_{this};
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 #endif  // CHROME_BROWSER_NET_SYSTEM_NETWORK_CONTEXT_MANAGER_H_

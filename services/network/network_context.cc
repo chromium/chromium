@@ -440,6 +440,23 @@ bool GetFullDataFilePath(
 
 constexpr uint32_t NetworkContext::kMaxOutstandingRequestsPerProcess;
 
+NetworkContext::NetworkContextHttpAuthPreferences::
+    NetworkContextHttpAuthPreferences(NetworkService* network_service)
+    : network_service_(network_service) {}
+
+NetworkContext::NetworkContextHttpAuthPreferences::
+    ~NetworkContextHttpAuthPreferences() = default;
+
+#if BUILDFLAG(IS_LINUX)
+bool NetworkContext::NetworkContextHttpAuthPreferences::AllowGssapiLibraryLoad()
+    const {
+  if (network_service_) {
+    network_service_->OnBeforeGssapiLibraryLoad();
+  }
+  return net::HttpAuthPreferences::AllowGssapiLibraryLoad();
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 NetworkContext::PendingCertVerify::PendingCertVerify() = default;
 NetworkContext::PendingCertVerify::~PendingCertVerify() = default;
 
@@ -477,6 +494,7 @@ NetworkContext::NetworkContext(
           std::move(params_->first_party_sets_access_delegate_params),
           network_service_->first_party_sets_manager()),
       cors_preflight_controller_(network_service),
+      http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
       cors_non_wildcard_request_headers_support_(base::FeatureList::IsEnabled(
           features::kCorsNonWildcardRequestHeadersSupport)) {
@@ -636,6 +654,7 @@ NetworkContext::NetworkContext(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
                                           url_request_context)),
       cors_preflight_controller_(network_service),
+      http_auth_merged_preferences_(network_service),
       ohttp_handler_(this) {
   // May be nullptr in tests.
   if (network_service_)

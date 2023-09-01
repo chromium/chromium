@@ -663,6 +663,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
  private:
+  class NetworkContextHttpAuthPreferences : public net::HttpAuthPreferences {
+   public:
+    explicit NetworkContextHttpAuthPreferences(NetworkService* network_service);
+    ~NetworkContextHttpAuthPreferences() override;
+#if BUILDFLAG(IS_LINUX)
+    bool AllowGssapiLibraryLoad() const override;
+#endif  // BUILDFLAG(IS_LINUX)
+   private:
+    const raw_ptr<NetworkService> network_service_;
+  };
+
   // To be called back from CookieManager on settings change.
   void OnCookieManagerSettingsChanged();
 
@@ -938,7 +949,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // preferences from |NetworkContext| would be merged to
   // `http_auth_merged_preferences_` which would then be used to create
   // HttpAuthHandle via |NetworkContext::CreateHttpAuthHandlerFactory|.
-  net::HttpAuthPreferences http_auth_merged_preferences_;
+  NetworkContextHttpAuthPreferences http_auth_merged_preferences_;
 
   // Each network context holds its own WebBundleManager, which
   // manages the lifetiem of a WebBundleURLLoaderFactory object.

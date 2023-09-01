@@ -987,6 +987,15 @@ void NetworkService::SetExplicitlyAllowedPorts(
   net::SetExplicitlyAllowedPorts(ports);
 }
 
+#if BUILDFLAG(IS_LINUX)
+void NetworkService::SetGssapiLibraryLoadObserver(
+    mojo::PendingRemote<mojom::GssapiLibraryLoadObserver>
+        gssapi_library_load_observer) {
+  DCHECK(!gssapi_library_load_observer_.is_bound());
+  gssapi_library_load_observer_.Bind(std::move(gssapi_library_load_observer));
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
 void NetworkService::StartNetLogBounded(base::File file,
                                         uint64_t max_total_size,
                                         net::NetLogCaptureMode capture_mode,
@@ -1059,6 +1068,16 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
 #endif
   );
 }
+
+#if BUILDFLAG(IS_LINUX)
+void NetworkService::OnBeforeGssapiLibraryLoad() {
+  if (gssapi_library_load_observer_.is_bound()) {
+    gssapi_library_load_observer_->OnBeforeGssapiLibraryLoad();
+    // OnBeforeGssapiLibraryLoad() only needs to be called once.
+    gssapi_library_load_observer_.reset();
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 void NetworkService::InitMockNetworkChangeNotifierForTesting() {
   mock_network_change_notifier_ =
