@@ -1,0 +1,8 @@
+# OWNERS who are responsible for pipewire related third_party libraries in
+# Chromium.  They are listed here because pipewire is a dependency of WebRTC
+# capture code.
+mfoltz@chromium.org
+alcooper@chromium.org
+
+# Knowledgable people about pipewire who cannot give CR+1:
+# grulja@gmail.com
