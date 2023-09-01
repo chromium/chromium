@@ -461,6 +461,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
                             mask_filter_info(), clip_rect, contents_opaque,
                             draw_properties_.draw_opacity, BlendMode(),
                             sorting_context_id);
+  shared_quad_state->is_fast_rounded_corner = is_fast_rounded_corner();
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {

@@ -74,11 +74,16 @@ class CC_EXPORT RenderSurfaceImpl {
   }
   float draw_opacity() const { return draw_properties_.draw_opacity; }
 
-  void SetMaskFilterInfo(const gfx::MaskFilterInfo& mask_filter_info) {
+  void SetMaskFilterInfo(const gfx::MaskFilterInfo& mask_filter_info,
+                         bool is_fast_rounded_corner) {
     draw_properties_.mask_filter_info = mask_filter_info;
+    draw_properties_.is_fast_rounded_corner = is_fast_rounded_corner;
   }
   const gfx::MaskFilterInfo& mask_filter_info() const {
     return draw_properties_.mask_filter_info;
+  }
+  bool is_fast_rounded_corner() const {
+    return draw_properties_.is_fast_rounded_corner;
   }
 
   SkBlendMode BlendMode() const;
@@ -282,6 +287,13 @@ class CC_EXPORT RenderSurfaceImpl {
     // the target space of the render surface. The root render surface will
     // never have this set.
     gfx::MaskFilterInfo mask_filter_info;
+
+    // This information is further passed to SharedQuadState when a
+    // SharedQuadState and a quad for this layer that represents a render
+    // surface is appended. Then, it's up to the SurfaceAggregator to decide
+    // whether it can actually merge this render surface and avoid having
+    // additional render pass.
+    bool is_fast_rounded_corner : 1 = false;
   };
 
   DrawProperties draw_properties_;
