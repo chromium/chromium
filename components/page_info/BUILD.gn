@@ -30,6 +30,7 @@ static_library("page_info") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
