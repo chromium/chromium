@@ -852,12 +852,23 @@ WebstorePrivateBeginInstallWithManifest3Function::BuildResponse(
     api::webstore_private::Result result,
     const std::string& error) {
   if (result != api::webstore_private::RESULT_SUCCESS) {
+    // TODO(tjudkins): We should not be using ErrorWithArguments here as it
+    // doesn't play well with promise based API calls (only emitting the error
+    // and dropping the arguments). In almost every case the error directly
+    // responds with the result enum value returned, so instead we should drop
+    // the error and have the caller just base logic on the enum value alone.
+    // In the cases where they do not correspond we should add a new enum value.
+    // We will need to ensure that the Webstore is entirely basing its logic on
+    // the result alone before removing the error.
     return ErrorWithArguments(
         BeginInstallWithManifest3::Results::Create(result), error);
   }
 
-  // The web store expects an empty string on success, so don't use
+  // The old Webstore expects an empty string on success, so don't use
   // RESULT_SUCCESS here.
+  // TODO(crbug.com/709120): The new Webstore accepts either the empty string or
+  // RESULT_SUCCESS on success now, so once the old Webstore is turned down this
+  // can be changed over.
   return ArgumentList(BeginInstallWithManifest3::Results::Create(
       api::webstore_private::RESULT_EMPTY_STRING));
 }
