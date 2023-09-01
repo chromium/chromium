@@ -1228,6 +1228,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Setup.ODFSAvailability"
+    enum="BooleanAvailable" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Availability of the ODFS extension when mount is
+    requested (not including retries within the same flow).
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{CloudProvider}"
     enum="OfficeTaskResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
