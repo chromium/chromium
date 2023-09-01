@@ -66,7 +66,8 @@ void AutofillKeyboardAccessoryAdapter::Hide() {
 
 bool AutofillKeyboardAccessoryAdapter::OverlapsWithPictureInPictureWindow()
     const {
-  // TODO(crbug.com/1395164): Find out if pip window can hide the keyboard.
+  // TODO(crbug.com/1477682): Hide the KA suggestion if it overlaps with
+  // picture-in-picture window.
   return false;
 }
 

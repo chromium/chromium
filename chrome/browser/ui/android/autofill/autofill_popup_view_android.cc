@@ -66,7 +66,6 @@ void AutofillPopupViewAndroid::Hide() {
 }
 
 bool AutofillPopupViewAndroid::OverlapsWithPictureInPictureWindow() const {
-  // TODO(crbug.com/1395164): Find out if pip window can hide the keyboard.
   return false;
 }
 
