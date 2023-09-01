@@ -13,7 +13,6 @@
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkString.h"
-#include "third_party/skia/include/core/SkTime.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/accessibility/ax_node.h"
@@ -62,10 +61,10 @@ SkString GetHeadingStructureType(int heading_level) {
   return SkString(kPDFStructureTypeHeading);
 }
 
-SkTime::DateTime TimeToSkTime(base::Time time) {
+SkPDF::DateTime TimeToSkTime(base::Time time) {
   base::Time::Exploded exploded;
   time.UTCExplode(&exploded);
-  SkTime::DateTime skdate;
+  SkPDF::DateTime skdate;
   skdate.fTimeZoneMinutes = 0;
   skdate.fYear = exploded.year;
   skdate.fMonth = exploded.month;
@@ -217,7 +216,7 @@ sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
                                   const ui::AXTreeUpdate& accessibility_tree,
                                   SkWStream* stream) {
   SkPDF::Metadata metadata;
-  SkTime::DateTime now = TimeToSkTime(base::Time::Now());
+  SkPDF::DateTime now = TimeToSkTime(base::Time::Now());
   metadata.fCreation = now;
   metadata.fModified = now;
   // TODO(crbug.com/691162): Switch to SkString's string_view constructor when
