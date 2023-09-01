@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/json/json_writer.h"
@@ -45,6 +46,19 @@ absl::optional<std::string> DecodeBase64Fixed(std::string_view field,
   std::copy(decoded.begin(), decoded.end(), out.data());
 
   return absl::nullopt;
+}
+
+bool AdditionalBidKeyHasMatchingValidSignature(
+    const std::vector<SignedAdditionalBidSignature>& signatures,
+    const std::vector<size_t>& valid_signatures,
+    const blink::InterestGroup::AdditionalBidKey& key) {
+  for (size_t i : valid_signatures) {
+    CHECK_LT(i, signatures.size());
+    if (signatures[i].key == key) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -390,7 +404,7 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
   }
 
   for (const base::Value& sig_entry : *signature_list) {
-    SignedAdditionalBid::Signature decoded_signature;
+    SignedAdditionalBidSignature decoded_signature;
 
     const base::Value::Dict* sig_entry_dict = sig_entry.GetIfDict();
     if (!sig_entry_dict) {
@@ -427,5 +441,82 @@ base::expected<SignedAdditionalBid, std::string> DecodeSignedAdditionalBid(
 
   return result;
 }
+
+AdAuctionNegativeTargeter::AdAuctionNegativeTargeter() = default;
+AdAuctionNegativeTargeter::~AdAuctionNegativeTargeter() = default;
+
+void AdAuctionNegativeTargeter::AddInterestGroupInfo(
+    const url::Origin& buyer,
+    const std::string& name,
+    const url::Origin& joining_origin,
+    const blink::InterestGroup::AdditionalBidKey& key) {
+  // Should not have any duplicates since (buyer, name) ought to be the DB
+  // primary key.
+  DCHECK(!negative_interest_groups_.contains(std::make_pair(buyer, name)));
+  auto& spot = negative_interest_groups_[std::make_pair(buyer, name)];
+  spot.joining_origin = joining_origin;
+  spot.key = key;
+}
+
+bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
+    const url::Origin& buyer,
+    const absl::optional<url::Origin>& negative_target_joining_origin,
+    const std::vector<std::string>& negative_target_interest_group_names,
+    const std::vector<SignedAdditionalBidSignature>& signatures,
+    const std::vector<size_t>& valid_signatures,
+    const url::Origin& seller,
+    std::vector<std::string>& errors_out) {
+  if (valid_signatures.size() != signatures.size()) {
+    errors_out.push_back(
+        base::StrCat({"Warning: Some signatures on an additional bid from '",
+                      buyer.Serialize(), "' on auction with seller '",
+                      seller.Serialize(), "' failed to verify."}));
+  }
+
+  for (const std::string& ig_name : negative_target_interest_group_names) {
+    auto negative_info_it =
+        negative_interest_groups_.find(std::make_pair(buyer, ig_name));
+
+    // Negative group not there, no reason to reject thus far.
+    if (negative_info_it == negative_interest_groups_.end()) {
+      continue;
+    }
+
+    const NegativeInfo& negative_info = negative_info_it->second;
+
+    // Negative group there, but we may need to ignore it if it doesn't have
+    // a matching signature.
+    if (!AdditionalBidKeyHasMatchingValidSignature(signatures, valid_signatures,
+                                                   negative_info.key)) {
+      errors_out.push_back(base::StrCat(
+          {"Warning: Ignoring negative targeting group '", ig_name,
+           "' on an additional bid from '", buyer.Serialize(),
+           "' on auction with seller '", seller.Serialize(),
+           "' since its key does not correspond to a valid signature."}));
+      continue;
+    }
+
+    // Must also have proper joining origin, if applicable.
+    if (negative_target_joining_origin.has_value()) {
+      if (*negative_target_joining_origin != negative_info.joining_origin) {
+        errors_out.push_back(base::StrCat(
+            {"Warning: Ignoring negative targeting group '", ig_name,
+             "' on an additional bid from '", buyer.Serialize(),
+             "' on auction with seller '", seller.Serialize(),
+             "' since it does not have the expected joining origin."}));
+        continue;
+      }
+    }
+
+    // Found a negative group that meets all requirements.
+    return true;
+  }
+
+  // No validated negative groups found.
+  return false;
+}
+
+AdAuctionNegativeTargeter::NegativeInfo::NegativeInfo() = default;
+AdAuctionNegativeTargeter::NegativeInfo::~NegativeInfo() = default;
 
 }  // namespace content

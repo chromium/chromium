@@ -18,6 +18,7 @@
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
 namespace content {
@@ -66,12 +67,12 @@ DecodeAdditionalBid(InterestGroupAuction* auction,
                     const url::Origin& seller,
                     base::optional_ref<const url::Origin> top_level_seller);
 
-struct CONTENT_EXPORT SignedAdditionalBid {
-  struct Signature {
-    std::array<uint8_t, 32> key;
-    std::array<uint8_t, 64> signature;
-  };
+struct CONTENT_EXPORT SignedAdditionalBidSignature {
+  blink::InterestGroup::AdditionalBidKey key;
+  std::array<uint8_t, 64> signature;
+};
 
+struct CONTENT_EXPORT SignedAdditionalBid {
   SignedAdditionalBid();
   SignedAdditionalBid(const SignedAdditionalBid& other) = delete;
   SignedAdditionalBid(SignedAdditionalBid&& other);
@@ -81,7 +82,7 @@ struct CONTENT_EXPORT SignedAdditionalBid {
   SignedAdditionalBid& operator=(SignedAdditionalBid&&);
 
   std::string additional_bid_json;
-  std::vector<Signature> signatures;
+  std::vector<SignedAdditionalBidSignature> signatures;
 
   // Returns a vector of indices of signatures that succeed in verifying.
   std::vector<size_t> VerifySignatures();
@@ -91,6 +92,65 @@ struct CONTENT_EXPORT SignedAdditionalBid {
 // `signed_additional_bid_in`.
 CONTENT_EXPORT base::expected<SignedAdditionalBid, std::string>
 DecodeSignedAdditionalBid(base::Value signed_additional_bid_in);
+
+// This class keeps the memory index of negative targeting interest groups
+// and helps decide whether they apply to particular bids.
+class CONTENT_EXPORT AdAuctionNegativeTargeter {
+ public:
+  AdAuctionNegativeTargeter();
+  ~AdAuctionNegativeTargeter();
+
+  // Register a negative targeting group for buyer `buyer` named `name`
+  // that was joined from `joining_origin` with public key `key`.
+  void AddInterestGroupInfo(const url::Origin& buyer,
+                            const std::string& name,
+                            const url::Origin& joining_origin,
+                            const blink::InterestGroup::AdditionalBidKey& key);
+
+  // Returns true if negative targeting applies to a bid.
+  //
+  // `buyer` is the purported origin of the additional bid.
+  //
+  // `negative_target_joining_origin`, `negative_target_interest_group_names`
+  // is the negative targeting info provided by the additional bid.
+  //
+  // `signatures` are the signatures that were included with the signed
+  // additional bid.
+  //
+  // `valid_signatures` are indices into `signatures` specifying which ones
+  // are actually valid signatures for the key. (This does not mean they are
+  // valid signatures done by the `buyer`).
+  //
+  // `seller` is the seller of the auction this is participating in. It's
+  // only used for error messages.
+  //
+  // Any warning messages that may be of interest to developer will be
+  // collected into `errors_out`.
+  bool ShouldDropDueToNegativeTargeting(
+      const url::Origin& buyer,
+      const absl::optional<url::Origin>& negative_target_joining_origin,
+      const std::vector<std::string>& negative_target_interest_group_names,
+      const std::vector<SignedAdditionalBidSignature>& signatures,
+      const std::vector<size_t>& valid_signatures,
+      const url::Origin& seller,
+      std::vector<std::string>& errors_out);
+
+ private:
+  struct NegativeInfo {
+    NegativeInfo();
+    NegativeInfo(const NegativeInfo& other) = delete;
+    NegativeInfo(NegativeInfo&& other) = delete;
+    ~NegativeInfo();
+
+    NegativeInfo& operator=(const NegativeInfo&) = delete;
+    NegativeInfo& operator=(NegativeInfo&&) = delete;
+
+    url::Origin joining_origin;
+    blink::InterestGroup::AdditionalBidKey key;
+  };
+  std::map<std::pair<url::Origin, std::string>, NegativeInfo>
+      negative_interest_groups_;
+};
 
 }  // namespace content
 

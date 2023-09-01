@@ -1936,6 +1936,7 @@ InterestGroupAuction::InterestGroupAuction(
       config_(config),
       config_promises_resolved_(config_->NumPromises() == 0),
       parent_(parent),
+      negative_targeter_(std::make_unique<AdAuctionNegativeTargeter>()),
       auction_start_time_(auction_start_time),
       creation_time_(base::TimeTicks::Now()),
       is_interest_group_api_allowed_callback_(
@@ -3254,6 +3255,19 @@ void InterestGroupAuction::OnInterestGroupRead(
     }
   }
 
+  // Extract negative targeting info, if something may care.
+  // This needs to happen before dropping IGs w/o scripts and ads, since
+  // negative targeting IGs may lack those.
+  if (MayHaveAdditionalBids()) {
+    for (const StorageInterestGroup& group : interest_groups) {
+      if (group.interest_group.additional_bid_key.has_value()) {
+        negative_targeter_->AddInterestGroupInfo(
+            group.interest_group.owner, group.interest_group.name,
+            group.joining_origin, *group.interest_group.additional_bid_key);
+      }
+    }
+  }
+
   // Ignore interest groups with no bidding script or no ads.
   interest_groups.erase(
       std::remove_if(interest_groups.begin(), interest_groups.end(),
@@ -3538,17 +3552,20 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
     return;
   }
 
-  // TODO(http://crbug.com/1464874): verify the signature, and check IG key?
+  auto valid_signatures = maybe_signed_additional_bid->VerifySignatures();
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       maybe_signed_additional_bid->additional_bid_json,
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(maybe_signed_additional_bid->signatures),
+                     std::move(valid_signatures)));
 }
 
 void InterestGroupAuction::HandleDecodedAdditionalBid(
+    const std::vector<SignedAdditionalBidSignature>& signatures,
+    const std::vector<size_t>& valid_signatures,
     data_decoder::DataDecoder::ValueOrError result) {
-
   if (!result.has_value()) {
     errors_.push_back("Unable to parse additional bid as JSON: " +
                       result.error());
@@ -3574,6 +3591,14 @@ void InterestGroupAuction::HandleDecodedAdditionalBid(
                   maybe_bid->bid->bid_currency)) {
       ok = false;
       errors_.push_back("Rejecting an additionalBid due to currency mismatch.");
+    }
+
+    if (ok && negative_targeter_->ShouldDropDueToNegativeTargeting(
+                  *maybe_bid->bid_state->additional_bid_buyer,
+                  maybe_bid->negative_target_joining_origin,
+                  maybe_bid->negative_target_interest_group_names, signatures,
+                  valid_signatures, config_->seller, errors_)) {
+      ok = false;
     }
 
     if (ok) {

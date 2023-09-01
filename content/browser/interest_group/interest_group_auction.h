@@ -51,12 +51,14 @@ struct AuctionConfig;
 
 namespace content {
 
+class AdAuctionNegativeTargeter;
 class AdAuctionPageData;
 struct AdAuctionRequestContext;
 class AuctionMetricsRecorder;
 class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
+struct SignedAdditionalBidSignature;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBiddingAndAuctionEncryptionMediaType);
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
@@ -882,7 +884,12 @@ class CONTENT_EXPORT InterestGroupAuction
       data_decoder::DataDecoder::ValueOrError result);
 
   // Processes payload of a single additionalBids entry.
+  // `signatures` are the signatures it was supposedly signed with.
+  // `valid_signatures` are the indices of signatures in `signatures` that
+  // actually verify.
   void HandleDecodedAdditionalBid(
+      const std::vector<SignedAdditionalBidSignature>& signatures,
+      const std::vector<size_t>& valid_signatures,
       data_decoder::DataDecoder::ValueOrError result);
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
@@ -1115,12 +1122,6 @@ class CONTENT_EXPORT InterestGroupAuction
   // Configuration of this auction.
   raw_ptr<const blink::AuctionConfig, AcrossTasksDanglingUntriaged> config_;
 
-  // Base64-encoded signed additional bid entries.
-  std::vector<std::string> encoded_signed_additional_bids_;
-
-  // This needs pointer stability for the BidState*.
-  std::vector<std::unique_ptr<BidState>> bid_states_for_additional_bids_;
-
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks
   // at itself; while main auctions do look at their components recursively).
@@ -1133,6 +1134,15 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
+
+  // Base64-encoded signed additional bid entries.
+  std::vector<std::string> encoded_signed_additional_bids_;
+
+  // This needs pointer stability for the BidState*.
+  std::vector<std::unique_ptr<BidState>> bid_states_for_additional_bids_;
+
+  // Helper for computing negative targeting for additional bids.
+  std::unique_ptr<AdAuctionNegativeTargeter> negative_targeter_;
 
   // Component auctions that are part of this auction. This auction manages
   // their state transition, and their bids may participate in this auction as

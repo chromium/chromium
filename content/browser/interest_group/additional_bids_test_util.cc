@@ -30,17 +30,27 @@ std::string GenerateSignedAdditionalBidHeaderPayloadPortion(
 
   base::Value::List signatures_list;
 
+  std::string bid_string_to_sign = bid_string;
+  if (inject_fault == SignedAdditionalBidFault::kInvalidSignature ||
+      inject_fault == SignedAdditionalBidFault::kOneInvalidSignature) {
+    bid_string_to_sign = "something completely different";
+  }
+
   for (size_t i = 0; i < private_keys.size(); ++i) {
     uint8_t sig[64];
-    bool ok =
-        ED25519_sign(sig, reinterpret_cast<const uint8_t*>(bid_string.data()),
-                     bid_string.size(), private_keys[i]);
+    bool ok = ED25519_sign(
+        sig, reinterpret_cast<const uint8_t*>(bid_string_to_sign.data()),
+        bid_string_to_sign.size(), private_keys[i]);
     CHECK(ok);
     base::Value::Dict sig_dict;
     sig_dict.Set("key", base64_public_keys[i]);
     sig_dict.Set("signature",
                  base::Base64Encode(base::make_span(sig, sizeof(sig))));
     signatures_list.Append(std::move(sig_dict));
+
+    if (inject_fault == SignedAdditionalBidFault::kOneInvalidSignature) {
+      bid_string_to_sign = bid_string;
+    }
   }
 
   signed_additional_bid.Set("signatures", std::move(signatures_list));

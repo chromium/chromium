@@ -24,6 +24,13 @@ enum class SignedAdditionalBidFault {
 
   // Signed additional bid JSON doesn't have the right structure.
   kInvalidSignedBidStructure,
+
+  // Everything looks right, but the signature does not verify.
+  kInvalidSignature,
+
+  // Everything looks right, but the signature does not verify for only the
+  // first signature.
+  kOneInvalidSignature,
 };
 
 // Generates value of Ad-Auction-Additional-Bid header for nonce `nonce`,
