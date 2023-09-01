@@ -79,7 +79,6 @@ GlanceablesClassroomCourseWorkItem::~GlanceablesClassroomCourseWorkItem() =
 
 void GlanceablesClassroomCourseWorkItem::SetCourseWorkItem(
     const google_apis::classroom::CourseWorkItem* course_work) {
-  CHECK(!course_work_item_set_);
   course_work_item_set_ = true;
   can_course_work_item_be_revalidated_ = false;
 
