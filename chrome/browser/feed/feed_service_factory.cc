@@ -176,7 +176,8 @@ FeedServiceFactory::FeedServiceFactory()
 
 FeedServiceFactory::~FeedServiceFactory() = default;
 
-KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FeedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Currently feed service is only supported for kWebUiFeed on desktop.
   // TODO(jianli): Update all other places that depend on FeedServiceFactory
@@ -216,7 +217,7 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
   chrome_info.start_surface = false;
 #endif
 
-  return new FeedService(
+  return std::make_unique<FeedService>(
       std::make_unique<FeedServiceDelegateImpl>(),
 #if BUILDFLAG(IS_ANDROID)
       std::make_unique<RefreshTaskSchedulerImpl>(
