@@ -2825,6 +2825,11 @@ const char kPermissionQuietChipDescription[] =
     "right-hand side address bar icon for quiet permission prompts. Requires "
     "chrome://flags/#quiet-notification-prompts to be enabled.";
 
+const char kPermissionStorageAccessAPIName[] =
+    "Storage Access API permission UI";
+const char kPermissionStorageAccessAPIDescription[] =
+    "Enables the new Storage Access API permission UI on Desktop";
+
 const char kRecordPermissionExpirationTimestampsName[] =
     "Record permission expiration timestamps";
 const char kRecordPermissionExpirationTimestampsDescription[] =
@@ -4909,11 +4914,6 @@ const char kOmniboxDriveSuggestionsNoSyncRequirementName[] =
 const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[] =
     "Omnibox Drive suggestions don't require the user to have enabled Chrome "
     "Sync and are available when all other requirements are met.";
-
-const char kPermissionStorageAccessAPIName[] =
-    "Storage Access API permission UI";
-const char kPermissionStorageAccessAPIDescription[] =
-    "Enables the new Storage Access API permission UI on Desktop";
 
 const char kRealboxSecondaryZeroSuggestName[] =
     "Enables showing secondary zero-prefix suggestions in NTP realbox.";

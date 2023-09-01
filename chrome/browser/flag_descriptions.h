@@ -1614,6 +1614,9 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPermissionQuietChipName[];
 extern const char kPermissionQuietChipDescription[];
 
+extern const char kPermissionStorageAccessAPIName[];
+extern const char kPermissionStorageAccessAPIDescription[];
+
 extern const char kRecordPermissionExpirationTimestampsName[];
 extern const char kRecordPermissionExpirationTimestampsDescription[];
 
@@ -2850,9 +2853,6 @@ extern const char kOmniboxDriveSuggestionsNoSettingDescription[];
 
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementName[];
 extern const char kOmniboxDriveSuggestionsNoSyncRequirementDescription[];
-
-extern const char kPermissionStorageAccessAPIName[];
-extern const char kPermissionStorageAccessAPIDescription[];
 
 extern const char kRealboxSecondaryZeroSuggestName[];
 extern const char kRealboxSecondaryZeroSuggestDescription[];

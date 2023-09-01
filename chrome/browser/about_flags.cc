@@ -10535,12 +10535,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid, FEATURE_VALUE_TYPE(device::kWebAuthnAndroidCredManAndGmsCore)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
     {"permission-storage-access-api",
      flag_descriptions::kPermissionStorageAccessAPIName,
-     flag_descriptions::kPermissionStorageAccessAPIDescription, kOsDesktop,
+     flag_descriptions::kPermissionStorageAccessAPIDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(permissions::features::kPermissionStorageAccessAPI)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-extended-keyboard-shortcuts",

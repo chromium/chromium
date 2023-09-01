@@ -19,7 +19,8 @@ namespace {
 // components/permissions/features.h).
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidApproximateLocationPermissionSupport,
-    &permissions::features::kBlockMidiByDefault,
+    &features::kBlockMidiByDefault,
+    &features::kPermissionStorageAccessAPI,
 };
 
 // static

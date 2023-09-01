@@ -14,4 +14,6 @@ public abstract class PermissionsAndroidFeatureList {
     public static final String ANDROID_APPROXIMATE_LOCATION_PERMISSION_SUPPORT =
             "AndroidApproximateLocationPermissionSupport";
     public static final String BLOCK_MIDI_BY_DEFAULT = "BlockMidiByDefault";
+
+    public static final String PERMISSION_STORAGE_ACCESS = "PermissionStorageAccessAPI";
 }
