@@ -163,8 +163,9 @@ class WallpaperControllerClientImpl
   // wallpaper should be shown.
   base::CallbackListSubscription show_user_names_on_signin_subscription_;
 
-  std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
-      surprise_me_image_fetcher_;
+  std::map<std::string,
+           std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>>
+      surprise_me_image_fetchers_;
 
   std::map<AccountId,
            std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>>

@@ -40,6 +40,14 @@ WallpaperFetcherDelegateImpl::CreateBackdropImageInfoFetcher(
   return absl::WrapUnique(new BackdropImageInfoFetcher(collection_id));
 }
 
+std::unique_ptr<BackdropSurpriseMeImageFetcher>
+WallpaperFetcherDelegateImpl::CreateBackdropSurpriseMeImageFetcher(
+    const std::string& collection_id) const {
+  // Use `WrapUnique` to access the protected constructor.
+  return absl::WrapUnique(
+      new BackdropSurpriseMeImageFetcher(collection_id, /*resume_token=*/""));
+}
+
 std::unique_ptr<GooglePhotosAlbumsFetcher>
 WallpaperFetcherDelegateImpl::CreateGooglePhotosAlbumsFetcher(
     Profile* profile) const {

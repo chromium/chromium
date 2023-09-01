@@ -417,9 +417,14 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {
-  surprise_me_image_fetcher_ = std::make_unique<BackdropSurpriseMeImageFetcher>(
-      collection_id, /*resume_token=*/std::string());
-  surprise_me_image_fetcher_->Start(
+  if (surprise_me_image_fetchers_.find(collection_id) ==
+      surprise_me_image_fetchers_.end()) {
+    surprise_me_image_fetchers_.insert(
+        {collection_id,
+         wallpaper_fetcher_delegate_->CreateBackdropSurpriseMeImageFetcher(
+             collection_id)});
+  }
+  surprise_me_image_fetchers_[collection_id]->Start(
       base::BindOnce(&WallpaperControllerClientImpl::OnDailyImageInfoFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -505,7 +510,6 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
     const backdrop::Image& image,
     const std::string& next_resume_token) {
   std::move(callback).Run(success, std::move(image));
-  surprise_me_image_fetcher_.reset();
 }
 
 void WallpaperControllerClientImpl::OnFetchImagesForCollection(

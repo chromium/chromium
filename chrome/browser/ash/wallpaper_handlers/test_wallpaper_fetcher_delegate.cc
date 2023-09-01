@@ -31,6 +31,13 @@ TestWallpaperFetcherDelegate::CreateBackdropImageInfoFetcher(
       collection_id);
 }
 
+std::unique_ptr<BackdropSurpriseMeImageFetcher>
+TestWallpaperFetcherDelegate::CreateBackdropSurpriseMeImageFetcher(
+    const std::string& collection_id) const {
+  return std::make_unique<
+      testing::NiceMock<MockBackdropSurpriseMeImageFetcher>>(collection_id);
+}
+
 std::unique_ptr<GooglePhotosAlbumsFetcher>
 TestWallpaperFetcherDelegate::CreateGooglePhotosAlbumsFetcher(
     Profile* profile) const {

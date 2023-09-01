@@ -23,6 +23,7 @@ namespace {
 
 constexpr char kDataUrlPrefix[] = "data:image/png;base64,";
 constexpr uint64_t kTimeOfDayStartingAssetId = 88;
+constexpr int kMaxImageNum = 5;
 
 // Images used in test must have a unique `asset_id` for Personalization App to
 // function correctly. Make sure that the fake `collection_id` values used in
@@ -181,13 +182,14 @@ MockBackdropCollectionInfoFetcher::~MockBackdropCollectionInfoFetcher() =
 
 MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
     const std::string& collection_id)
-    : BackdropImageInfoFetcher(collection_id) {
+    : BackdropImageInfoFetcher(collection_id), collection_id_(collection_id) {
   ON_CALL(*this, Start)
-      .WillByDefault([&collection_id](OnImagesInfoFetched callback) {
+      .WillByDefault([&collection_id =
+                          collection_id_](OnImagesInfoFetched callback) {
         std::vector<backdrop::Image> images;
         const auto starting_asset_id = GetStartingAssetId(collection_id);
         for (auto asset_id = starting_asset_id;
-             asset_id < starting_asset_id + 5; asset_id++) {
+             asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
           images.push_back(GenerateFakeBackdropImage(collection_id, asset_id));
         }
 
@@ -198,6 +200,28 @@ MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
 }
 
 MockBackdropImageInfoFetcher::~MockBackdropImageInfoFetcher() = default;
+
+MockBackdropSurpriseMeImageFetcher::MockBackdropSurpriseMeImageFetcher(
+    const std::string& collection_id)
+    : BackdropSurpriseMeImageFetcher(collection_id, /*resume_token=*/""),
+      collection_id_(collection_id) {
+  ON_CALL(*this, Start)
+      .WillByDefault([&collection_id = collection_id_,
+                      &id_icrementer =
+                          id_incrementer_](OnSurpriseMeImageFetched callback) {
+        const auto starting_asset_id = GetStartingAssetId(collection_id);
+        id_icrementer = (id_icrementer + 1) % kMaxImageNum;
+        const auto asset_id = starting_asset_id + id_icrementer;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(std::move(callback), /*success=*/true,
+                           GenerateFakeBackdropImage(collection_id, asset_id),
+                           /*new_resume_token=*/""));
+      });
+}
+
+MockBackdropSurpriseMeImageFetcher::~MockBackdropSurpriseMeImageFetcher() =
+    default;
 
 MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
     : GooglePhotosAlbumsFetcher(profile) {

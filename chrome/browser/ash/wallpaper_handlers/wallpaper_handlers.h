@@ -125,20 +125,26 @@ class BackdropSurpriseMeImageFetcher {
                               const backdrop::Image& image,
                               const std::string& new_resume_token)>;
 
-  BackdropSurpriseMeImageFetcher(const std::string& collection_id,
-                                 const std::string& resume_token);
-
   BackdropSurpriseMeImageFetcher(const BackdropSurpriseMeImageFetcher&) =
       delete;
   BackdropSurpriseMeImageFetcher& operator=(
       const BackdropSurpriseMeImageFetcher&) = delete;
 
-  ~BackdropSurpriseMeImageFetcher();
+  virtual ~BackdropSurpriseMeImageFetcher();
 
   // Starts the fetcher.
-  void Start(OnSurpriseMeImageFetched callback);
+  virtual void Start(OnSurpriseMeImageFetched callback);
+
+ protected:
+  // Protected constructor forces creation via `WallpaperFetcherDelegate` to
+  // allow mocking in test code.
+  BackdropSurpriseMeImageFetcher(const std::string& collection_id,
+                                 const std::string& resume_token);
 
  private:
+  // Allow delegate to view the constructor.
+  friend class WallpaperFetcherDelegateImpl;
+
   // Called when the surprise me image info download completes.
   void OnResponseFetched(const std::string& response);
 

@@ -14,6 +14,7 @@ namespace wallpaper_handlers {
 
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
+class BackdropSurpriseMeImageFetcher;
 
 class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
  public:
@@ -29,6 +30,9 @@ class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
   std::unique_ptr<BackdropCollectionInfoFetcher>
   CreateBackdropCollectionInfoFetcher() const override;
   std::unique_ptr<BackdropImageInfoFetcher> CreateBackdropImageInfoFetcher(
+      const std::string& collection_id) const override;
+  std::unique_ptr<BackdropSurpriseMeImageFetcher>
+  CreateBackdropSurpriseMeImageFetcher(
       const std::string& collection_id) const override;
   std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
       Profile* profile) const override;

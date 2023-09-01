@@ -17,6 +17,7 @@ namespace wallpaper_handlers {
 
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
+class BackdropSurpriseMeImageFetcher;
 class GooglePhotosAlbumsFetcher;
 class GooglePhotosSharedAlbumsFetcher;
 class GooglePhotosEnabledFetcher;
@@ -33,6 +34,10 @@ class WallpaperFetcherDelegate {
 
   virtual std::unique_ptr<BackdropImageInfoFetcher>
   CreateBackdropImageInfoFetcher(const std::string& collection_id) const = 0;
+
+  virtual std::unique_ptr<BackdropSurpriseMeImageFetcher>
+  CreateBackdropSurpriseMeImageFetcher(
+      const std::string& collection_id) const = 0;
 
   virtual std::unique_ptr<GooglePhotosAlbumsFetcher>
   CreateGooglePhotosAlbumsFetcher(Profile* profile) const = 0;
@@ -67,6 +72,10 @@ class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
   CreateBackdropCollectionInfoFetcher() const override;
 
   std::unique_ptr<BackdropImageInfoFetcher> CreateBackdropImageInfoFetcher(
+      const std::string& collection_id) const override;
+
+  std::unique_ptr<BackdropSurpriseMeImageFetcher>
+  CreateBackdropSurpriseMeImageFetcher(
       const std::string& collection_id) const override;
 
   std::unique_ptr<GooglePhotosAlbumsFetcher> CreateGooglePhotosAlbumsFetcher(
