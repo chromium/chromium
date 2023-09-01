@@ -1104,6 +1104,14 @@ void BookmarkBarView::Layout() {
     // Add the separator width even if its not shown for correct positioning of
     // the bookmark buttons.
     if (saved_tab_group_bar_width > 0) {
+      // Possibly update the paddings of the separator
+      if (saved_tab_group_bar_->IsOverflowButtonVisible()) {
+        saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
+            gfx::Insets::TLBR(0, 8, 0, 8));
+      } else {
+        saved_tab_groups_separator_view_->UpdateBorderAndPreferredSize(
+            gfx::Insets::TLBR(0, 16, 0, 8));
+      }
       // Update the bounds for the separator.
       gfx::Size saved_tab_groups_separator_view_pref =
           saved_tab_groups_separator_view_->GetPreferredSize();
@@ -1738,7 +1746,6 @@ void BookmarkBarView::Init() {
   saved_tab_groups_separator_view_->SetVisible(
       base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
       browser_->profile()->IsRegularProfile());
-
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
       base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,

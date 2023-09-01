@@ -486,6 +486,10 @@ int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
   return current_x;
 }
 
+bool SavedTabGroupBar::IsOverflowButtonVisible() {
+  return overflow_button_ && overflow_button_->GetVisible();
+}
+
 void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
                                          int index) {
   // Check that the index is valid for buttons

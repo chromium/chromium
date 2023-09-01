@@ -90,6 +90,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // placed on the bar.
   int CalculatePreferredWidthRestrictedBy(int width_restriction);
 
+  bool IsOverflowButtonVisible();
+
  private:
   // Overrides the View methods needed to be a drop target for saved tab groups.
   class OverflowMenu;
