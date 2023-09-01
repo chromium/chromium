@@ -555,7 +555,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     case State::kWaitForBody:
       NOTREACHED_NORETURN();
     case State::kRedirect:
-      CHECK_EQ(state_, State::kWaitForBody);
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)
+          << "state_:" << static_cast<int>(state_);
       break;
     case State::kResponseReceived:
       CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect)

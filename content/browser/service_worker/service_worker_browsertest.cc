@@ -5898,6 +5898,29 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
             EvalJs(GetPrimaryMainFrame(), script));
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       Subresource_Redirect_Multiple) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string path1 =
+      "/service_worker/"
+      "mock_response?server_redirect&server_redirect&sw_pass_through";
+  const std::string path2 =
+      "/service_worker/mock_response?&server_redirect&sw_pass_through";
+  const std::string path3 = "/service_worker/mock_response?&&sw_pass_through";
+
+  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('" + path1 + "').then(response => response.text())"));
+  // The first request (redirect) is deduped.
+  EXPECT_EQ(1, GetRequestCount(path1));
+  // The second request (redirect) is also deduped.
+  EXPECT_EQ(1, GetRequestCount(path2));
+  // The final request is also deduped.
+  EXPECT_EQ(1, GetRequestCount(path3));
+}
+
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_Subresource_NetworkRequest_Wins_Redirect \
