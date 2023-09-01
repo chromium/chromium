@@ -16,10 +16,21 @@
         <WppRecorderEnabled>true</WppRecorderEnabled>
         <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Driver.h" />
-    <ClInclude Include="Trace.h" />
+    <ClCompile Include="HelperMethods.cpp">
+        <WppEnabled>true</WppEnabled>
+        <WppRecorderEnabled>true</WppRecorderEnabled>
+        <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="Direct3DDevice.cpp">
+        <WppEnabled>true</WppEnabled>
+        <WppRecorderEnabled>true</WppRecorderEnabled>
+        <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="SwapChainProcessor.cpp">
+        <WppEnabled>true</WppEnabled>
+        <WppRecorderEnabled>true</WppRecorderEnabled>
+        <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="ChromiumVirtualDisplayDriver.inf" />

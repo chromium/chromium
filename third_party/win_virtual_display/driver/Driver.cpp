@@ -2,32 +2,27 @@
 
 #include "Driver.h"
 #include "Driver.tmh"
+
+#include "Direct3DDevice.h"
+#include "HelperMethods.h"
+#include "IndirectMonitor.h"
+#include "SwapChainProcessor.h"
 #include "public/properties.h"
-
-#include <cfgmgr32.h>
-
-using namespace std;
-using namespace Microsoft::IndirectDisp;
-using namespace Microsoft::WRL;
 
 #pragma region SampleMonitors
 
-static constexpr DWORD IDD_SAMPLE_MONITOR_COUNT =
-    3;  // If monitor count > ARRAYSIZE(s_SampleMonitors), we create edid-less
-        // monitors
+namespace {
+
+static constexpr DWORD IDD_SAMPLE_MONITOR_COUNT = 3;
 
 // Default modes reported for edid-less monitors. The first mode is set as
 // preferred
-static const struct IndirectSampleMonitor::SampleMonitorMode
-    s_SampleDefaultModes[] = {
-        {1920, 1080, 60},
-        {1600, 900, 60},
-        {1024, 768, 75},
-};
+std::vector<Windows::IndirectSampleMonitor::SampleMonitorMode>
+    s_SampleDefaultModes = {{1920, 1080, 60}, {1600, 900, 60}, {1024, 768, 75}};
 
 // FOR SAMPLE PURPOSES ONLY, Static info about monitors that will be reported to
 // OS
-static const struct IndirectSampleMonitor s_SampleMonitors[] = {
+std::vector<Windows::IndirectSampleMonitor> s_SampleMonitors = {
     // Modified EDID from Dell S2719DGF
     {{0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x10, 0xAC, 0xE6, 0xD0,
       0x55, 0x5A, 0x4A, 0x30, 0x24, 0x1D, 0x01, 0x04, 0xA5, 0x3C, 0x22, 0x78,
@@ -44,8 +39,7 @@ static const struct IndirectSampleMonitor s_SampleMonitors[] = {
          {2560, 1440, 144},
          {1920, 1080, 60},
          {1024, 768, 60},
-     },
-     0},
+     }},
     // Modified EDID from Lenovo Y27fA
     {{0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x30, 0xAE, 0xBF, 0x65,
       0x01, 0x01, 0x01, 0x01, 0x20, 0x1A, 0x01, 0x04, 0xA5, 0x3C, 0x22, 0x78,
@@ -62,63 +56,12 @@ static const struct IndirectSampleMonitor s_SampleMonitors[] = {
          {3840, 2160, 60},
          {1600, 900, 60},
          {1024, 768, 60},
-     },
-     0}};
+     }}};
+}  // namespace
 
 #pragma endregion
 
-#pragma region helpers
-
-static inline void FillSignalInfo(DISPLAYCONFIG_VIDEO_SIGNAL_INFO& Mode,
-                                  DWORD Width,
-                                  DWORD Height,
-                                  DWORD VSync,
-                                  bool bMonitorMode) {
-  Mode.totalSize.cx = Mode.activeSize.cx = Width;
-  Mode.totalSize.cy = Mode.activeSize.cy = Height;
-
-  // See
-  // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-displayconfig_video_signal_info
-  Mode.AdditionalSignalInfo.vSyncFreqDivider = bMonitorMode ? 0 : 1;
-  Mode.AdditionalSignalInfo.videoStandard = 255;
-
-  Mode.vSyncFreq.Numerator = VSync;
-  Mode.vSyncFreq.Denominator = 1;
-  Mode.hSyncFreq.Numerator = VSync * Height;
-  Mode.hSyncFreq.Denominator = 1;
-
-  Mode.scanLineOrdering = DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE;
-
-  Mode.pixelRate = ((UINT64)VSync) * ((UINT64)Width) * ((UINT64)Height);
-}
-
-static IDDCX_MONITOR_MODE CreateIddCxMonitorMode(
-    DWORD Width,
-    DWORD Height,
-    DWORD VSync,
-    IDDCX_MONITOR_MODE_ORIGIN Origin = IDDCX_MONITOR_MODE_ORIGIN_DRIVER) {
-  IDDCX_MONITOR_MODE Mode = {};
-
-  Mode.Size = sizeof(Mode);
-  Mode.Origin = Origin;
-  FillSignalInfo(Mode.MonitorVideoSignalInfo, Width, Height, VSync, true);
-
-  return Mode;
-}
-
-static IDDCX_TARGET_MODE CreateIddCxTargetMode(DWORD Width,
-                                               DWORD Height,
-                                               DWORD VSync) {
-  IDDCX_TARGET_MODE Mode = {};
-
-  Mode.Size = sizeof(Mode);
-  FillSignalInfo(Mode.TargetVideoSignalInfo.targetVideoSignalInfo, Width,
-                 Height, VSync, false);
-
-  return Mode;
-}
-
-#pragma endregion
+#pragma region EventDeclaration
 
 extern "C" DRIVER_INITIALIZE DriverEntry;
 
@@ -137,7 +80,7 @@ EVT_IDD_CX_MONITOR_ASSIGN_SWAPCHAIN IddSampleMonitorAssignSwapChain;
 EVT_IDD_CX_MONITOR_UNASSIGN_SWAPCHAIN IddSampleMonitorUnassignSwapChain;
 
 struct IndirectDeviceContextWrapper {
-  IndirectDeviceContext* pContext;
+  Windows::IndirectDeviceContext* pContext;
 
   void Cleanup() {
     delete pContext;
@@ -146,13 +89,17 @@ struct IndirectDeviceContextWrapper {
 };
 
 struct IndirectMonitorContextWrapper {
-  IndirectMonitorContext* pContext;
+  Windows::IndirectMonitorContext* pContext;
 
   void Cleanup() {
     delete pContext;
     pContext = nullptr;
   }
 };
+
+#pragma endregion
+
+#pragma region EventDefinations
 
 // This macro creates the methods for accessing an IndirectDeviceContextWrapper
 // as a context for a WDF object
@@ -250,7 +197,7 @@ IddSampleDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
 
   // Create a new device context object and attach it to the WDF device object
   auto* pContext = WdfObjectGet_IndirectDeviceContextWrapper(Device);
-  pContext->pContext = new IndirectDeviceContext(Device);
+  pContext->pContext = new Windows::IndirectDeviceContext(Device);
 
   // Read the properties structure sent from the client code that created
   // the software device.
@@ -290,191 +237,11 @@ IddSampleDeviceD0Entry(WDFDEVICE Device, WDF_POWER_DEVICE_STATE PreviousState) {
   return STATUS_SUCCESS;
 }
 
-#pragma region Direct3DDevice
-
-Direct3DDevice::Direct3DDevice(LUID AdapterLuid) : AdapterLuid(AdapterLuid) {}
-
-Direct3DDevice::Direct3DDevice() {
-  AdapterLuid = LUID{};
-}
-
-HRESULT Direct3DDevice::Init() {
-  // The DXGI factory could be cached, but if a new render adapter appears on
-  // the system, a new factory needs to be created. If caching is desired, check
-  // DxgiFactory->IsCurrent() each time and recreate the factory if !IsCurrent.
-  HRESULT hr = CreateDXGIFactory2(0, IID_PPV_ARGS(&DxgiFactory));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  // Find the specified render adapter
-  hr = DxgiFactory->EnumAdapterByLuid(AdapterLuid, IID_PPV_ARGS(&Adapter));
-  if (FAILED(hr)) {
-    return hr;
-  }
-
-  // Create a D3D device using the render adapter. BGRA support is required by
-  // the WHQL test suite.
-  hr = D3D11CreateDevice(Adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, nullptr,
-                         D3D11_CREATE_DEVICE_BGRA_SUPPORT, nullptr, 0,
-                         D3D11_SDK_VERSION, &Device, nullptr, &DeviceContext);
-  if (FAILED(hr)) {
-    // If creating the D3D device failed, it's possible the render GPU was lost
-    // (e.g. detachable GPU) or else the system is in a transient state.
-    return hr;
-  }
-
-  return S_OK;
-}
-
 #pragma endregion
 
-#pragma region SwapChainProcessor
+#pragma region IndirectContext
 
-SwapChainProcessor::SwapChainProcessor(IDDCX_SWAPCHAIN hSwapChain,
-                                       std::unique_ptr<Direct3DDevice> Device,
-                                       HANDLE NewFrameEvent)
-    : m_hSwapChain(hSwapChain),
-      m_Device(std::move(Device)),
-      m_hAvailableBufferEvent(NewFrameEvent) {
-  m_hTerminateEvent.Attach(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-
-  // Immediately create and run the swap-chain processing thread, passing 'this'
-  // as the thread parameter
-  m_hThread.Attach(CreateThread(nullptr, 0, RunThread, this, 0, nullptr));
-}
-
-SwapChainProcessor::~SwapChainProcessor() {
-  // Alert the swap-chain processing thread to terminate
-  SetEvent(m_hTerminateEvent.Get());
-
-  if (m_hThread.Get()) {
-    // Wait for the thread to terminate
-    WaitForSingleObject(m_hThread.Get(), INFINITE);
-  }
-}
-
-DWORD CALLBACK SwapChainProcessor::RunThread(LPVOID Argument) {
-  reinterpret_cast<SwapChainProcessor*>(Argument)->Run();
-  return 0;
-}
-
-void SwapChainProcessor::Run() {
-  // For improved performance, make use of the Multimedia Class Scheduler
-  // Service, which will intelligently prioritize this thread for improved
-  // throughput in high CPU-load scenarios.
-  DWORD AvTask = 0;
-  HANDLE AvTaskHandle = AvSetMmThreadCharacteristicsW(L"Distribution", &AvTask);
-
-  RunCore();
-
-  // Always delete the swap-chain object when swap-chain processing loop
-  // terminates in order to kick the system to provide a new swap-chain if
-  // necessary.
-  WdfObjectDelete((WDFOBJECT)m_hSwapChain);
-  m_hSwapChain = nullptr;
-
-  AvRevertMmThreadCharacteristics(AvTaskHandle);
-}
-
-void SwapChainProcessor::RunCore() {
-  // Get the DXGI device interface
-  ComPtr<IDXGIDevice> DxgiDevice;
-  HRESULT hr = m_Device->Device.As(&DxgiDevice);
-  if (FAILED(hr)) {
-    return;
-  }
-
-  IDARG_IN_SWAPCHAINSETDEVICE SetDevice = {};
-  SetDevice.pDevice = DxgiDevice.Get();
-
-  hr = IddCxSwapChainSetDevice(m_hSwapChain, &SetDevice);
-  if (FAILED(hr)) {
-    return;
-  }
-
-  // Acquire and release buffers in a loop
-  for (;;) {
-    ComPtr<IDXGIResource> AcquiredBuffer;
-
-    // Ask for the next buffer from the producer
-    IDARG_OUT_RELEASEANDACQUIREBUFFER Buffer = {};
-    hr = IddCxSwapChainReleaseAndAcquireBuffer(m_hSwapChain, &Buffer);
-
-    // AcquireBuffer immediately returns STATUS_PENDING if no buffer is yet
-    // available
-    if (hr == E_PENDING) {
-      // We must wait for a new buffer
-      HANDLE WaitHandles[] = {m_hAvailableBufferEvent, m_hTerminateEvent.Get()};
-      DWORD WaitResult = WaitForMultipleObjects(ARRAYSIZE(WaitHandles),
-                                                WaitHandles, FALSE, 16);
-      if (WaitResult == WAIT_OBJECT_0 || WaitResult == WAIT_TIMEOUT) {
-        // We have a new buffer, so try the AcquireBuffer again
-        continue;
-      } else if (WaitResult == WAIT_OBJECT_0 + 1) {
-        // We need to terminate
-        break;
-      } else {
-        // The wait was cancelled or something unexpected happened
-        hr = HRESULT_FROM_WIN32(WaitResult);
-        break;
-      }
-    } else if (SUCCEEDED(hr)) {
-      // We have new frame to process, the surface has a reference on it that
-      // the driver has to release
-      AcquiredBuffer.Attach(Buffer.MetaData.pSurface);
-
-      // ==============================
-      // TODO: Process the frame here
-      //
-      // This is the most performance-critical section of code in an IddCx
-      // driver. It's important that whatever is done with the acquired surface
-      // be finished as quickly as possible. This operation could be:
-      //  * a GPU copy to another buffer surface for later processing (such as a
-      //  staging surface for mapping to CPU memory)
-      //  * a GPU encode operation
-      //  * a GPU VPBlt to another surface
-      //  * a GPU custom compute shader encode operation
-      // ==============================
-
-      // We have finished processing this frame hence we release the reference
-      // on it. If the driver forgets to release the reference to the surface,
-      // it will be leaked which results in the surfaces being left around after
-      // swapchain is destroyed. NOTE: Although in this sample we release
-      // reference to the surface here; the driver still owns the
-      // Buffer.MetaData.pSurface surface until
-      // IddCxSwapChainReleaseAndAcquireBuffer returns S_OK and gives us a new
-      // frame, a driver may want to use the surface in future to re-encode the
-      // desktop for better quality if there is no new frame for a while
-      AcquiredBuffer.Reset();
-
-      // Indicate to OS that we have finished initial processing of the frame,
-      // it is a hint that OS could start preparing another frame
-      hr = IddCxSwapChainFinishedProcessingFrame(m_hSwapChain);
-      if (FAILED(hr)) {
-        break;
-      }
-
-      // ==============================
-      // TODO: Report frame statistics once the asynchronous encode/send work is
-      // completed
-      //
-      // Drivers should report information about sub-frame timings, like encode
-      // time, send time, etc.
-      // ==============================
-      // IddCxSwapChainReportFrameStatistics(m_hSwapChain, ...);
-    } else {
-      // The swap-chain was likely abandoned (e.g. DXGI_ERROR_ACCESS_LOST), so
-      // exit the processing loop
-      break;
-    }
-  }
-}
-
-#pragma endregion
-
-#pragma region IndirectDeviceContext
-
+namespace Windows {
 IndirectDeviceContext::IndirectDeviceContext(_In_ WDFDEVICE WdfDevice)
     : m_WdfDevice(WdfDevice) {
   m_Adapter = {};
@@ -564,14 +331,14 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
 
   MonitorInfo.MonitorDescription.Size = sizeof(MonitorInfo.MonitorDescription);
   MonitorInfo.MonitorDescription.Type = IDDCX_MONITOR_DESCRIPTION_TYPE_EDID;
-  if (ConnectorIndex >= ARRAYSIZE(s_SampleMonitors)) {
+  if (ConnectorIndex >= s_SampleMonitors.size()) {
     MonitorInfo.MonitorDescription.DataSize = 0;
     MonitorInfo.MonitorDescription.pData = nullptr;
   } else {
     MonitorInfo.MonitorDescription.DataSize =
         IndirectSampleMonitor::szEdidBlock;
     MonitorInfo.MonitorDescription.pData =
-        const_cast<BYTE*>(s_SampleMonitors[ConnectorIndex].pEdidBlock);
+        (s_SampleMonitors[ConnectorIndex].pEdidBlock);
   }
 
   // ==============================
@@ -638,6 +405,7 @@ void IndirectMonitorContext::UnassignSwapChain() {
   // Stop processing the last swap-chain
   m_ProcessingThread.reset();
 }
+}  // namespace Windows
 
 #pragma endregion
 
@@ -688,10 +456,11 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
   // EDID, so this function can generate known modes.
   // ==============================
 
-  pOutArgs->MonitorModeBufferOutputCount = IndirectSampleMonitor::szModeList;
+  pOutArgs->MonitorModeBufferOutputCount =
+      Windows::IndirectSampleMonitor::szModeList;
 
   if (pInArgs->MonitorModeBufferInputCount <
-      IndirectSampleMonitor::szModeList) {
+      Windows::IndirectSampleMonitor::szModeList) {
     // Return success if there was no buffer, since the caller was only asking
     // for a count of modes
     return (pInArgs->MonitorModeBufferInputCount > 0) ? STATUS_BUFFER_TOO_SMALL
@@ -702,28 +471,27 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
     // by comparing it to the pointer of our known EDID blocks.
 
     if (pInArgs->MonitorDescription.DataSize !=
-        IndirectSampleMonitor::szEdidBlock) {
+        Windows::IndirectSampleMonitor::szEdidBlock) {
       return STATUS_INVALID_PARAMETER;
     }
 
-    DWORD SampleMonitorIdx = 0;
-    for (; SampleMonitorIdx < ARRAYSIZE(s_SampleMonitors); SampleMonitorIdx++) {
-      if (memcmp(pInArgs->MonitorDescription.pData,
-                 s_SampleMonitors[SampleMonitorIdx].pEdidBlock,
-                 IndirectSampleMonitor::szEdidBlock) == 0) {
+    for (const auto& monitor : s_SampleMonitors) {
+      if (memcmp(pInArgs->MonitorDescription.pData, monitor.pEdidBlock,
+                 Windows::IndirectSampleMonitor::szEdidBlock) == 0) {
         // Copy the known modes to the output buffer
-        for (DWORD ModeIndex = 0; ModeIndex < IndirectSampleMonitor::szModeList;
+        for (DWORD ModeIndex = 0;
+             ModeIndex < Windows::IndirectSampleMonitor::szModeList;
              ModeIndex++) {
-          pInArgs->pMonitorModes[ModeIndex] = CreateIddCxMonitorMode(
-              s_SampleMonitors[SampleMonitorIdx].pModeList[ModeIndex].Width,
-              s_SampleMonitors[SampleMonitorIdx].pModeList[ModeIndex].Height,
-              s_SampleMonitors[SampleMonitorIdx].pModeList[ModeIndex].VSync,
-              IDDCX_MONITOR_MODE_ORIGIN_MONITORDESCRIPTOR);
+          pInArgs->pMonitorModes[ModeIndex] =
+              Windows::Methods::CreateIddCxMonitorMode(
+                  monitor.pModeList[ModeIndex].Width,
+                  monitor.pModeList[ModeIndex].Height,
+                  monitor.pModeList[ModeIndex].VSync,
+                  IDDCX_MONITOR_MODE_ORIGIN_MONITORDESCRIPTOR);
         }
 
         // Set the preferred mode as represented in the EDID
-        pOutArgs->PreferredMonitorModeIdx =
-            s_SampleMonitors[SampleMonitorIdx].ulPreferredModeIdx;
+        pOutArgs->PreferredMonitorModeIdx = monitor.ulPreferredModeIdx;
 
         return STATUS_SUCCESS;
       }
@@ -751,19 +519,20 @@ _Use_decl_annotations_ NTSTATUS IddSampleMonitorGetDefaultModes(
 
   if (pInArgs->DefaultMonitorModeBufferInputCount == 0) {
     pOutArgs->DefaultMonitorModeBufferOutputCount =
-        ARRAYSIZE(s_SampleDefaultModes);
+        static_cast<UINT>(s_SampleDefaultModes.size());
   } else {
-    for (DWORD ModeIndex = 0; ModeIndex < ARRAYSIZE(s_SampleDefaultModes);
+    for (DWORD ModeIndex = 0; ModeIndex < s_SampleDefaultModes.size();
          ModeIndex++) {
       pInArgs->pDefaultMonitorModes[ModeIndex] =
-          CreateIddCxMonitorMode(s_SampleDefaultModes[ModeIndex].Width,
-                                 s_SampleDefaultModes[ModeIndex].Height,
-                                 s_SampleDefaultModes[ModeIndex].VSync,
-                                 IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
+          Windows::Methods::CreateIddCxMonitorMode(
+              s_SampleDefaultModes[ModeIndex].Width,
+              s_SampleDefaultModes[ModeIndex].Height,
+              s_SampleDefaultModes[ModeIndex].VSync,
+              IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
     }
 
     pOutArgs->DefaultMonitorModeBufferOutputCount =
-        ARRAYSIZE(s_SampleDefaultModes);
+        static_cast<UINT>(s_SampleDefaultModes.size());
     pOutArgs->PreferredMonitorModeIdx = 0;
   }
 
@@ -776,7 +545,7 @@ IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
                            IDARG_OUT_QUERYTARGETMODES* pOutArgs) {
   UNREFERENCED_PARAMETER(MonitorObject);
 
-  vector<IDDCX_TARGET_MODE> TargetModes;
+  std::vector<IDDCX_TARGET_MODE> TargetModes;
 
   // Create a set of modes supported for frame processing and scan-out. These
   // are typically not based on the monitor's descriptor and instead are based
@@ -784,18 +553,25 @@ IddSampleMonitorQueryModes(IDDCX_MONITOR MonitorObject,
   // available set of modes for a given output as the intersection of monitor
   // modes with target modes.
 
-  TargetModes.push_back(CreateIddCxTargetMode(3840, 2160, 60));
-  TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 144));
-  TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 90));
-  TargetModes.push_back(CreateIddCxTargetMode(2560, 1440, 60));
-  TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 144));
-  TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 90));
-  TargetModes.push_back(CreateIddCxTargetMode(1920, 1080, 60));
-  TargetModes.push_back(CreateIddCxTargetMode(1600, 900, 60));
-  TargetModes.push_back(CreateIddCxTargetMode(1024, 768, 75));
-  TargetModes.push_back(CreateIddCxTargetMode(1024, 768, 60));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(3840, 2160, 60));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 144));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 90));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(2560, 1440, 60));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 144));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 90));
+  TargetModes.push_back(
+      Windows::Methods::CreateIddCxTargetMode(1920, 1080, 60));
+  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1600, 900, 60));
+  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1024, 768, 75));
+  TargetModes.push_back(Windows::Methods::CreateIddCxTargetMode(1024, 768, 60));
 
-  pOutArgs->TargetModeBufferOutputCount = (UINT)TargetModes.size();
+  pOutArgs->TargetModeBufferOutputCount = static_cast<UINT>(TargetModes.size());
 
   if (pInArgs->TargetModeBufferInputCount >= TargetModes.size()) {
     copy(TargetModes.begin(), TargetModes.end(), pInArgs->pTargetModes);
