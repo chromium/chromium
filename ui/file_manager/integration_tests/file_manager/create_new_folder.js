@@ -43,6 +43,21 @@ async function selectFirstFileListItem(appId) {
   chrome.test.assertEq('listitem-1', elements[0].attributes['id']);
 }
 
+/*
+ * Searches for the file being renamed and gets current value for the renaming
+ * field. Throws test assertion error if fails to find one.
+ *
+ * @param {string} appId The Files app windowId.
+ * @return {string} Current value of the name.
+ */
+async function getFileRenamingValue(appId) {
+  const renamingInput = await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId,
+      ['#file-list .table-row[renaming] input.rename']);
+  chrome.test.assertEq(1, renamingInput.length);
+  return renamingInput[0].value;
+}
+
 /**
  * Creates a new folder in the file list.
  *
@@ -77,6 +92,8 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   // Check: the text input should be shown in the file list.
   await remoteCall.waitForElement(appId, textInput);
 
+  chrome.test.assertEq(newFolderName, await getFileRenamingValue(appId));
+
   // Get all file list rows that have attribute 'renaming'.
   const renamingFileListRows = ['#file-list .table-row[renaming]'];
   let elements = await remoteCall.callRemoteTestUtil(
@@ -84,8 +101,9 @@ async function createNewFolder(appId, initialEntrySet, selector) {
 
   // Check: the new folder only should be 'renaming'.
   chrome.test.assertEq(1, elements.length);
-  chrome.test.assertEq(0, elements[0].text.indexOf(`${newFolderName}--`));
   chrome.test.assertTrue('selected' in elements[0].attributes);
+
+  chrome.test.assertEq(newFolderName, await getFileRenamingValue(appId));
 
   // Get all file list rows that have attribute 'selected'.
   const selectedFileListRows = ['#file-list .table-row[selected]'];
@@ -94,7 +112,6 @@ async function createNewFolder(appId, initialEntrySet, selector) {
 
   // Check: the new folder only should be 'selected'.
   chrome.test.assertEq(1, elements.length);
-  chrome.test.assertEq(0, elements[0].text.indexOf(`${newFolderName}--`));
   chrome.test.assertTrue('renaming' in elements[0].attributes);
 
   // Type the test folder name.
