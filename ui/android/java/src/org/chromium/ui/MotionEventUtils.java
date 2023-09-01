@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,8 +33,11 @@ public class MotionEventUtils {
             return event.getEventTime() * 1_000_000;
         }
         long timeNs = 0;
-        // We are calling a method that was set as maxSDK=P so need to ignore strictmode violations.
-        try (StrictModeContext ignored = StrictModeContext.allowAllVmPolicies()) {
+        // We are calling a method that was set as maxSDK=P, there are strictmode violations but
+        // suppressing it with StrictModeContext.allowAllVmPolicies() (or event just NonSDKUsage
+        // suppression) results in a binder call which takes 1.2ms at the median. See
+        // crbug/1454299#c21. So we just allow the violation to occur on Android P to Android U.
+        try {
             if (sGetTimeNanoMethod == null) {
                 sGetTimeNanoMethod = MotionEvent.class.getMethod("getEventTimeNano");
             }
