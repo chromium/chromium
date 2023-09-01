@@ -68,6 +68,9 @@ class GlanceableTrayBubbleView : public TrayBubbleView,
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
+  // Whether the bubble view has been initialized.
+  bool initialized_ = false;
+
   // A scrollable view which contains the individual glanceables.
   raw_ptr<views::ScrollView, ExperimentalAsh> scroll_view_ = nullptr;
 

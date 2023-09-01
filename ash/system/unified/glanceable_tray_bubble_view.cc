@@ -142,6 +142,8 @@ GlanceableTrayBubbleView::~GlanceableTrayBubbleView() {
 }
 
 void GlanceableTrayBubbleView::InitializeContents() {
+  CHECK(!initialized_);
+
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->SetPaintToLayer();
@@ -205,7 +207,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
+  const int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   ChangeAnchorAlignment(shelf_->alignment());
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
@@ -231,10 +233,17 @@ void GlanceableTrayBubbleView::InitializeContents() {
   }
 
   calendar_view_->ScrollViewToVisible();
+
+  // Layout to set the calendar view bounds, so the calendar view finishes
+  // initializing (e.g. scroll to today), which happens when the calendar view
+  // bounds are set.
+  Layout();
+
+  initialized_ = true;
 }
 
 void GlanceableTrayBubbleView::AddedToWidget() {
-  if (!scroll_view_) {
+  if (!initialized_) {
     InitializeContents();
   }
   TrayBubbleView::AddedToWidget();
@@ -308,12 +317,16 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
 }
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {
+  if (!initialized_) {
+    return;
+  }
+
   UpdateBubble();
 }
 
 void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
     int height_delta) {
-  if (!IsDrawn() || !GetWidget() || GetWidget()->IsClosed()) {
+  if (!initialized_ || !IsDrawn() || !GetWidget() || GetWidget()->IsClosed()) {
     return;
   }
 
