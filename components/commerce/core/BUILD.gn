@@ -73,6 +73,7 @@ static_library("metrics") {
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
+    "proto/discounts.proto",
     "proto/merchant_trust.proto",
     "proto/parcel.proto",
     "proto/price_insights.proto",

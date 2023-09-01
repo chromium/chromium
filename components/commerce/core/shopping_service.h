@@ -162,6 +162,9 @@ enum class ShoppingPageType {
   kMaxValue = kBuyingGuidePage,
 };
 
+using DiscountsPair = std::pair<GURL, std::vector<DiscountInfo>>;
+using DiscountsOptGuideCallback = base::OnceCallback<void(DiscountsPair)>;
+
 // A callback for getting updated ProductInfo for a bookmark. This provides the
 // bookmark ID being updated, the URL, and the product info.
 using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
@@ -533,6 +536,26 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       IsShoppingPageCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
+
+  // Whether APIs like |GetDiscountInfoForUrls| are enabled and allowed to be
+  // used.
+  bool IsDiscountInfoApiEnabled();
+
+  void GetDiscountInfoFromOptGuide(const GURL& url,
+                                   DiscountsOptGuideCallback callback);
+
+  void HandleOptGuideDiscountInfoResponse(
+      const GURL& url,
+      DiscountsOptGuideCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  std::vector<DiscountInfo> OptGuideResultToDiscountInfos(
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  void OnGetAllDiscountsFromOptGuide(const std::vector<GURL>& urls,
+                                     DiscountInfoCallback callback,
+                                     const std::vector<DiscountsPair>& results);
 
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;

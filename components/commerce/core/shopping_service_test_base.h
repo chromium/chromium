@@ -48,6 +48,8 @@ class TestSyncService;
 
 namespace commerce {
 
+extern const int64_t kInvalidDiscountId;
+
 // A mock Optimization Guide decider that allows us to specify the response for
 // a particular URL.
 class MockOptGuideDecider
@@ -119,6 +121,9 @@ class MockOptGuideDecider
       const std::string& jackpot_url,
       const PriceBucket& price_bucket,
       const bool has_multiple_catalogs);
+
+  OptimizationMetadata BuildDiscountsResponse(
+      const std::vector<DiscountInfo>& infos);
 
  private:
   absl::optional<GURL> response_url_;

@@ -14,6 +14,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/proto/discounts.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -38,6 +39,8 @@ using optimization_guide::proto::OptimizationType;
 using optimization_guide::proto::RequestContext;
 
 namespace commerce {
+
+const int64_t kInvalidDiscountId = 0;
 
 MockOptGuideDecider::MockOptGuideDecider() = default;
 MockOptGuideDecider::~MockOptGuideDecider() = default;
@@ -257,6 +260,70 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceInsightsResponse(
   Any any;
   any.set_type_url(price_insights_data.GetTypeName());
   price_insights_data.SerializeToString(any.mutable_value());
+  meta.set_any_metadata(any);
+
+  return meta;
+}
+
+OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
+    const std::vector<DiscountInfo>& infos) {
+  OptimizationMetadata meta;
+
+  DiscountsData discounts_data;
+
+  std::vector<DiscountClusterType> checked_cluster_types;
+  for (const auto& info_to_check : infos) {
+    if (std::find(checked_cluster_types.begin(), checked_cluster_types.end(),
+                  info_to_check.cluster_type) != checked_cluster_types.end()) {
+      continue;
+    }
+    checked_cluster_types.push_back(info_to_check.cluster_type);
+
+    DiscountCluster* cluster = discounts_data.add_discount_clusters();
+
+    DiscountCluster_ClusterType cluster_type =
+        DiscountCluster_ClusterType_TYPE_UNSPECIFIED;
+    if (info_to_check.cluster_type == DiscountClusterType::kOfferLevel) {
+      cluster_type = DiscountCluster_ClusterType_OFFER_LEVEL;
+    }
+    cluster->set_cluster_type(cluster_type);
+
+    for (const auto& info : infos) {
+      if (info.cluster_type != info_to_check.cluster_type) {
+        continue;
+      }
+
+      Discount* discount = cluster->add_discounts();
+      if (info.id != kInvalidDiscountId) {
+        discount->set_id(info.id);
+      }
+
+      Discount_Type type = Discount_Type_TYPE_UNSPECIFIED;
+      if (info.type == DiscountType::kFreeListingWithCode) {
+        type = Discount_Type_FREE_LISTING_WITH_CODE;
+      }
+      discount->set_type(type);
+
+      Discount_Description* description = discount->mutable_description();
+      description->set_language_code(info.language_code);
+      description->set_detail(info.description_detail);
+      if (info.terms_and_conditions.has_value()) {
+        description->set_terms_and_conditions(
+            info.terms_and_conditions.value());
+      }
+      description->set_value_text(info.value_in_text);
+      discount->set_expiry_time_sec(info.expiry_time_sec);
+      discount->set_is_merchant_wide(info.is_merchant_wide);
+      if (info.discount_code.has_value()) {
+        discount->set_discount_code(info.discount_code.value());
+      }
+      discount->set_offer_id(info.offer_id);
+    }
+  }
+
+  Any any;
+  any.set_type_url(discounts_data.GetTypeName());
+  discounts_data.SerializeToString(any.mutable_value());
   meta.set_any_metadata(any);
 
   return meta;

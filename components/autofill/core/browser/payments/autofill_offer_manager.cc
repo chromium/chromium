@@ -28,7 +28,7 @@ AutofillOfferData ToAutofillOfferData(
   return AutofillOfferData::FreeListingCouponOffer(
       discount_info.id, base::Time::FromDoubleT(discount_info.expiry_time_sec),
       {url}, url, DisplayStrings{discount_info.description_detail},
-      discount_info.discount_code);
+      discount_info.discount_code.value_or(""));
 }
 
 AutofillOfferManager::AutofillOfferManager(

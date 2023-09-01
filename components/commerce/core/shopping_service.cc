@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -27,6 +28,7 @@
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
+#include "components/commerce/core/proto/discounts.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_insights.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -145,6 +147,10 @@ ShoppingService::ShoppingService(
     if (IsPriceInsightsInfoApiEnabled()) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
+    }
+    if (IsDiscountInfoApiEnabled()) {
+      types.push_back(
+          optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS);
     }
 
     if (IsShoppingPageTypesApiEnabled()) {
@@ -601,8 +607,14 @@ void ShoppingService::GetPriceInsightsInfoForUrl(
 
 void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
                                              DiscountInfoCallback callback) {
-  // TODO(b:289244075): Implement this method.
-  std::move(callback).Run(DiscountsMap());
+  const auto barrier_callback = base::BarrierCallback<DiscountsPair>(
+      urls.size(),
+      base::BindOnce(&ShoppingService::OnGetAllDiscountsFromOptGuide,
+                     weak_ptr_factory_.GetWeakPtr(), urls,
+                     std::move(callback)));
+  for (const GURL& url : urls) {
+    GetDiscountInfoFromOptGuide(url, barrier_callback);
+  }
 }
 
 void ShoppingService::IsShoppingPage(const GURL& url,
@@ -677,6 +689,14 @@ bool ShoppingService::IsShoppingPageTypesApiEnabled() {
   return IsRegionLockedFeatureEnabled(kShoppingPageTypes,
                                       kShoppingPageTypesRegionLaunched,
                                       country_on_startup_, locale_on_startup_);
+}
+
+bool ShoppingService::IsDiscountInfoApiEnabled() {
+  return IsRegionLockedFeatureEnabled(
+             kShowDiscountOnNavigation, kShowDiscountOnNavigationRegionLaunched,
+             country_on_startup_, locale_on_startup_) ||
+         base::FeatureList::IsEnabled(
+             ntp_features::kNtpHistoryClustersModuleDiscounts);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -1066,6 +1086,148 @@ void ShoppingService::HandleOptGuideShoppingPageTypesResponse(
     }
   }
   std::move(callback).Run(url, is_shopping_page);
+}
+
+void ShoppingService::GetDiscountInfoFromOptGuide(
+    const GURL& url,
+    DiscountsOptGuideCallback callback) {
+  if (!opt_guide_ || !IsDiscountInfoApiEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       DiscountsPair(url, std::vector<DiscountInfo>())));
+    return;
+  }
+
+  opt_guide_->CanApplyOptimization(
+      url, optimization_guide::proto::OptimizationType::SHOPPING_DISCOUNTS,
+      base::BindOnce(&ShoppingService::HandleOptGuideDiscountInfoResponse,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
+void ShoppingService::HandleOptGuideDiscountInfoResponse(
+    const GURL& url,
+    DiscountsOptGuideCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(DiscountsPair(url, std::vector<DiscountInfo>()));
+    return;
+  }
+
+  std::move(callback).Run(
+      DiscountsPair(url, OptGuideResultToDiscountInfos(metadata)));
+}
+
+std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
+    const optimization_guide::OptimizationMetadata& metadata) {
+  std::vector<DiscountInfo> discount_infos;
+  if (!metadata.any_metadata().has_value()) {
+    return discount_infos;
+  }
+
+  absl::optional<commerce::DiscountsData> parsed_any =
+      optimization_guide::ParsedAnyMetadata<commerce::DiscountsData>(
+          metadata.any_metadata().value());
+  commerce::DiscountsData discounts_data = parsed_any.value();
+
+  if (!parsed_any.has_value() || !discounts_data.IsInitialized() ||
+      discounts_data.discount_clusters_size() == 0) {
+    return discount_infos;
+  }
+
+  for (const commerce::DiscountCluster& cluster :
+       discounts_data.discount_clusters()) {
+    for (const commerce::Discount& discount : cluster.discounts()) {
+      DiscountInfo info;
+
+      if (cluster.has_cluster_type()) {
+        info.cluster_type = DiscountClusterType(cluster.cluster_type());
+      } else {
+        continue;
+      }
+
+      if (discount.has_id()) {
+        info.id = discount.id();
+      } else {
+        continue;
+      }
+
+      if (discount.has_type()) {
+        info.type = DiscountType(discount.type());
+      } else {
+        continue;
+      }
+
+      if (discount.has_description()) {
+        if (discount.description().has_language_code()) {
+          info.language_code = discount.description().language_code();
+        } else {
+          continue;
+        }
+        if (discount.description().has_detail()) {
+          info.description_detail = discount.description().detail();
+        } else {
+          continue;
+        }
+        if (discount.description().has_terms_and_conditions()) {
+          info.terms_and_conditions =
+              discount.description().terms_and_conditions();
+        }
+        if (discount.description().has_value_text()) {
+          info.value_in_text = discount.description().value_text();
+        } else {
+          continue;
+        }
+      } else {
+        continue;
+      }
+
+      if (info.type == DiscountType::kFreeListingWithCode) {
+        if (discount.has_discount_code()) {
+          info.discount_code = discount.discount_code();
+        } else {
+          continue;
+        }
+      }
+
+      if (discount.has_is_merchant_wide()) {
+        info.is_merchant_wide = discount.is_merchant_wide();
+      } else {
+        continue;
+      }
+
+      if (discount.has_expiry_time_sec()) {
+        info.expiry_time_sec = discount.expiry_time_sec();
+      } else {
+        continue;
+      }
+
+      if (discount.has_offer_id()) {
+        info.offer_id = discount.offer_id();
+      } else {
+        continue;
+      }
+
+      discount_infos.push_back(info);
+    }
+  }
+
+  return discount_infos;
+}
+
+void ShoppingService::OnGetAllDiscountsFromOptGuide(
+    const std::vector<GURL>& urls,
+    DiscountInfoCallback callback,
+    const std::vector<DiscountsPair>& results) {
+  DiscountsMap map;
+  for (auto res : results) {
+    if (res.second.size() > 0) {
+      map.insert(res);
+    }
+  }
+  // TODO(b:289243652): Check local db.
+  std::move(callback).Run(std::move(map));
 }
 
 void ShoppingService::Subscribe(

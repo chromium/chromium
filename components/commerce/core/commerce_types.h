@@ -15,6 +15,20 @@ namespace commerce {
 
 // Data containers that are provided by the above callbacks:
 
+// Discount cluster types.
+enum class DiscountClusterType {
+  kUnspecified = 0,
+  kOfferLevel = 1,
+  kMaxValue = kOfferLevel,
+};
+
+// Discount types.
+enum class DiscountType {
+  kUnspecified = 0,
+  kFreeListingWithCode = 1,
+  kMaxValue = kFreeListingWithCode,
+};
+
 // Information returned by the discount APIs.
 struct DiscountInfo {
   DiscountInfo();
@@ -22,13 +36,17 @@ struct DiscountInfo {
   DiscountInfo& operator=(const DiscountInfo&);
   ~DiscountInfo();
 
+  DiscountClusterType cluster_type;
+  DiscountType type;
+  std::string language_code;
   std::string description_detail;
   absl::optional<std::string> terms_and_conditions;
   std::string value_in_text;
-  std::string discount_code;
+  absl::optional<std::string> discount_code;
   int64_t id;
   bool is_merchant_wide;
   double expiry_time_sec;
+  int64_t offer_id;
 };
 
 // Information returned by the merchant info APIs.
