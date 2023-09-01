@@ -741,11 +741,21 @@ const FeatureEntry::FeatureParam kOneTapForMapsConsentModeForced[] = {
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDisabled[] = {
     {web::features::kOneTapForMapsConsentModeParamTitle,
      web::features::kOneTapForMapsConsentModeDisabledParam}};
+const FeatureEntry::FeatureParam kOneTapForMapsConsentModeIPH[] = {
+    {web::features::kOneTapForMapsConsentModeParamTitle,
+     web::features::kOneTapForMapsConsentModeIPHParam}};
+const FeatureEntry::FeatureParam kOneTapForMapsConsentModeIPHForced[] = {
+    {web::features::kOneTapForMapsConsentModeParamTitle,
+     web::features::kOneTapForMapsConsentModeIPHForcedParam}};
 const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
     {"Consent Default", kOneTapForMapsConsentModeDefault,
      std::size(kOneTapForMapsConsentModeDefault), nullptr},
     {"Consent Forced", kOneTapForMapsConsentModeForced,
      std::size(kOneTapForMapsConsentModeForced), nullptr},
+    {"Consent IPH", kOneTapForMapsConsentModeIPH,
+     std::size(kOneTapForMapsConsentModeIPH), nullptr},
+    {"Consent IPH forced", kOneTapForMapsConsentModeIPHForced,
+     std::size(kOneTapForMapsConsentModeIPHForced), nullptr},
     {"Consent Disabled", kOneTapForMapsConsentModeDisabled,
      std::size(kOneTapForMapsConsentModeDisabled), nullptr},
 };

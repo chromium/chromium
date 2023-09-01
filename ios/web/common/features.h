@@ -69,6 +69,8 @@ extern const char kOneTapForMapsConsentModeParamTitle[];
 extern const char kOneTapForMapsConsentModeDefaultParam[];
 extern const char kOneTapForMapsConsentModeForcedParam[];
 extern const char kOneTapForMapsConsentModeDisabledParam[];
+extern const char kOneTapForMapsConsentModeIPHParam[];
+extern const char kOneTapForMapsConsentModeIPHForcedParam[];
 // Feature flag to enable One tap experience for Maps.
 BASE_DECLARE_FEATURE(kOneTapForMaps);
 
