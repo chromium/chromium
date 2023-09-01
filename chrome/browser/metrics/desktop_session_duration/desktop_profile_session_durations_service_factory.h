@@ -38,7 +38,7 @@ class DesktopProfileSessionDurationsServiceFactory
   ~DesktopProfileSessionDurationsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
