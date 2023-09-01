@@ -3853,6 +3853,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.{Technology}.DHCPv4ProvisionDurationMillis"
+    units="ms" expires_after="2023-12-31">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted after a {Technology} connection has
+    DHCPv4 provisioned, to track the duration from shill starts DHCPv4
+    configuration until shill gets the DHCP configuration from the dhcpcd
+    process.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.{Technology}.IPType" enum="NetworkIPType"
     expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
@@ -3864,6 +3878,20 @@ chromium-metrics-reviews@google.com.
     for 30 seconds because IPv4 and IPv6 configuration are usually provisioned
     at different time. Note that no metric will be emitted if the duration of
     the connection is shorter than 30 seconds.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.{Technology}.SLAACProvisionDurationMillis"
+    units="ms" expires_after="2023-12-31">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted after a {Technology} connection has
+    SLAAC provisioned, to track the duration from shill requests the kernel to
+    start SLAAC configuration until shill gets the first SLAAC address from the
+    kernel.
   </summary>
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
