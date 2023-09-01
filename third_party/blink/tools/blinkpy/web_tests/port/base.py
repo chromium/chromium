@@ -166,6 +166,7 @@ class Port(object):
         ('win11', 'x86_64'),
         ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
+        ('ios16-simulator', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
@@ -173,6 +174,7 @@ class Port(object):
             'mac10.15', 'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64',
             'mac13', 'mac13-arm64'
         ],
+        'ios': ['ios16-simulator'],
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
         'linux': ['linux'],
         'fuchsia': ['fuchsia'],

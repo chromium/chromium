@@ -1041,7 +1041,7 @@ if (is_chromeos_ash) {
   }
 }
 
-if (!is_ios && !is_cronet_build) {
+if (use_blink && !is_cronet_build) {
   group("chromedriver_group") {
     testonly = true
 
@@ -1056,7 +1056,7 @@ if (!is_ios && !is_cronet_build) {
       if (is_android && !is_cast_android) {
         deps += [ "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk" ]
       }
-    } else if (!is_castos) {
+    } else if (!is_castos && !is_ios) {
       deps = [
         "//chrome/test/chromedriver:chromedriver_server",
         "//chrome/test/chromedriver:chromedriver_unittests",

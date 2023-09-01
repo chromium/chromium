@@ -17,6 +17,13 @@
 #include "content/web_test/common/web_test_switches.h"
 #include "net/base/filename_util.h"
 
+#if BUILDFLAG(IS_IOS)
+#include <fstream>
+
+#include "base/files/file_util.h"
+#include "base/threading/platform_thread.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -78,6 +85,21 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
                                     protocol_mode);
 }
 
+#if BUILDFLAG(IS_IOS)
+std::ifstream GetFileStreamToReadTestFileName() {
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir)) {
+    LOG(ERROR) << "GetTempDir failed.";
+    return std::ifstream();
+  }
+
+  std::string test_input_file_path =
+      temp_dir.AppendASCII("webtest_test_name").value();
+  std::ifstream file_name_input_stream(test_input_file_path);
+  return file_name_input_stream;
+}
+#endif
+
 }  // namespace
 
 TestInfo::TestInfo(const GURL& url,
@@ -105,11 +127,31 @@ std::unique_ptr<TestInfo> TestInfoExtractor::GetNextTest() {
   std::string test_string;
   bool protocol_mode = false;
   if (cmdline_args_[cmdline_position_] == FILE_PATH_LITERAL("-")) {
+#if BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/1421239): iOS port reads the test file through a file
+    // stream until using sockets for the communication between run_web_tests.py
+    // and content_shell.
+    std::ifstream file_name_input = GetFileStreamToReadTestFileName();
+    if (!file_name_input.is_open()) {
+      return nullptr;
+    }
+    do {
+      // Need to wait for a while to wait until write function of
+      // |server_process.py| writes a test name in the file.
+      base::PlatformThread::Sleep(base::Milliseconds(10));
+      bool success = !!std::getline(file_name_input, test_string, '\n');
+      if (!success) {
+        return nullptr;
+      }
+    } while (test_string.empty());
+    file_name_input.close();
+#else
     do {
       bool success = !!std::getline(std::cin, test_string, '\n');
       if (!success)
         return nullptr;
     } while (test_string.empty());
+#endif  // BUILDFLAG(IS_IOS)
     protocol_mode = true;
   } else {
 #if BUILDFLAG(IS_WIN)

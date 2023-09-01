@@ -120,6 +120,8 @@ static_library("content_shell_app") {
     sources += [
       "app/ios/shell_application_ios.h",
       "app/ios/shell_application_ios.mm",
+      "app/ios/web_tests_support_ios.h",
+      "app/ios/web_tests_support_ios.mm",
     ]
   }
   defines = [
@@ -650,6 +652,7 @@ if (is_android) {
 
     deps = [
       ":content_shell_app",
+      ":content_shell_lib",
       ":pak",
       "//build/win:default_exe_manifest",
       "//content/public/app",

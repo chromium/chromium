@@ -18,6 +18,8 @@
 #include "base/command_line.h"                            // nogncheck
 #include "content/public/common/content_switches.h"       // nogncheck
 #include "content/shell/app/ios/shell_application_ios.h"
+#include "content/shell/app/ios/web_tests_support_ios.h"
+#include "content/shell/common/shell_switches.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -58,8 +60,13 @@ int main(int argc, const char** argv) {
 
   // The browser process has no --process-type argument.
   if (type.empty()) {
-    // We will create the ContentMainRunner once the UIApplication is ready.
-    return RunShellApplication(argc, argv);
+    if (switches::IsRunWebTestsSwitchPresent()) {
+      // We create a simple UIApplication to run the web tests.
+      return RunWebTestsFromIOSApp(argc, argv);
+    } else {
+      // We will create the ContentMainRunner once the UIApplication is ready.
+      return RunShellApplication(argc, argv);
+    }
   } else {
     content::ShellMainDelegate delegate;
     content::ContentMainParams params(&delegate);

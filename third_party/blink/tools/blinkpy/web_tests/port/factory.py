@@ -42,6 +42,7 @@ class PortFactory(object):
     PORT_CLASSES = (
         'android.AndroidPort',
         'fuchsia.FuchsiaPort',
+        'ios.IOSPort',
         'linux.LinuxPort',
         'mac.MacPort',
         'mock_drt.MockDRTPort',

@@ -280,6 +280,76 @@ void KillSimulator() {
   [task run];
 }
 
+NSString* GetBundleIdentifierFromPath(NSString* app_path) {
+  NSFileManager* file_manager = [NSFileManager defaultManager];
+  NSString* info_plist_path =
+      [app_path stringByAppendingPathComponent:@"Info.plist"];
+  if (![file_manager fileExistsAtPath:info_plist_path]) {
+    return nil;
+  }
+
+  NSDictionary* info_dictionary =
+      [NSDictionary dictionaryWithContentsOfFile:info_plist_path];
+  NSString* bundle_identifier = info_dictionary[@"CFBundleIdentifier"];
+  return bundle_identifier;
+}
+
+void PrepareWebTests(NSString* udid, NSString* app_path) {
+  NSString* bundle_identifier = GetBundleIdentifierFromPath(app_path);
+  XCRunTask* uninstall_task = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"uninstall", udid, bundle_identifier ]];
+  [uninstall_task run];
+
+  XCRunTask* install_task = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"install", udid, app_path ]];
+  [install_task run];
+
+  XCRunTask* launch_task = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"launch", udid, bundle_identifier ]];
+  [launch_task run];
+
+  XCRunTask* terminate_task = [[XCRunTask alloc]
+      initWithArguments:@[ @"simctl", @"terminate", udid, bundle_identifier ]];
+  [terminate_task run];
+}
+
+int RunWebTest(NSString* app_path, NSString* udid, NSMutableArray* cmd_args) {
+  NSMutableArray* arguments = [NSMutableArray array];
+  [arguments addObject:@"simctl"];
+  [arguments addObject:@"launch"];
+  [arguments addObject:@"--console"];
+  [arguments addObject:@"--terminate-running-process"];
+  [arguments addObject:udid];
+  [arguments addObject:GetBundleIdentifierFromPath(app_path)];
+  if (cmd_args.count == 1) {
+    for (NSString* arg in [cmd_args[0] componentsSeparatedByString:@" "]) {
+      [arguments addObject:arg];
+    }
+  }
+  [arguments addObject:@"-"];
+  XCRunTask* task = [[XCRunTask alloc] initWithArguments:arguments];
+
+  // The following stderr message causes a lot of test faiures on the web
+  // tests. Strip the message here.
+  NSArray* ignore_strings = @[ @"Class SwapLayerEAGL" ];
+  NSPipe* stderr_pipe = [NSPipe pipe];
+  stderr_pipe.fileHandleForReading.readabilityHandler =
+      ^(NSFileHandle* handle) {
+        NSString* log = [[NSString alloc] initWithData:handle.availableData
+                                              encoding:NSUTF8StringEncoding];
+        for (NSString* ignore_string in ignore_strings) {
+          if ([log rangeOfString:ignore_string].location != NSNotFound) {
+            return;
+          }
+        }
+        fprintf(stderr, "%s", log.UTF8String);
+      };
+  task.standardError = stderr_pipe;
+
+  [task run];
+  return [task terminationStatus];
+}
+
 int RunApplication(NSString* app_path,
                    NSString* xctest_path,
                    NSString* udid,
@@ -390,6 +460,8 @@ int main(int argc, char* const argv[]) {
   NSString* device_name = @"iPhone 6s";
   bool wants_wipe = false;
   bool wants_print_home = false;
+  bool run_web_test = false;
+  bool prepare_web_test = false;
   NSDictionary* simctl_list = GetSimulatorList();
   float sdk = 0;
   for (NSDictionary* runtime in Runtimes(simctl_list)) {
@@ -450,6 +522,23 @@ int main(int argc, char* const argv[]) {
     }
   }
 
+  NSRange range;
+  for (NSString* cmd_arg in cmd_args) {
+    range = [cmd_arg rangeOfString:@"--run-web-tests"];
+    if (range.location != NSNotFound) {
+      run_web_test = true;
+      break;
+    }
+  }
+
+  for (NSString* cmd_arg in cmd_args) {
+    range = [cmd_arg rangeOfString:@"--prepare-web-tests"];
+    if (range.location != NSNotFound) {
+      prepare_web_test = true;
+      break;
+    }
+  }
+
   if (udid == nil) {
     udid = GetDeviceBySDKAndName(simctl_list, device_name, sdk_version);
     if (udid == nil) {
@@ -476,7 +565,12 @@ int main(int argc, char* const argv[]) {
     exit(kExitSuccess);
   }
 
-  KillSimulator();
+  // To run the web test, the simulator should work. So we do not kill the
+  // simulator when running the web tests.
+  if (!run_web_test && !prepare_web_test) {
+    KillSimulator();
+  }
+
   if (wants_wipe) {
     WipeDevice(udid);
     printf("Device wiped.\n");
@@ -511,8 +605,22 @@ int main(int argc, char* const argv[]) {
     exit(kExitInvalidArguments);
   }
 
-  int return_code = RunApplication(app_path, xctest_path, udid, app_env,
-                                   cmd_args, tests_filter);
-  KillSimulator();
+  if (prepare_web_test) {
+    PrepareWebTests(udid, app_path);
+    exit(kExitSuccess);
+  }
+
+  int return_code = -1;
+  if (run_web_test) {
+    return_code = RunWebTest(app_path, udid, cmd_args);
+  } else {
+    return_code = RunApplication(app_path, xctest_path, udid, app_env, cmd_args,
+                                 tests_filter);
+  }
+
+  if (!run_web_test) {
+    KillSimulator();
+  }
+
   return return_code;
 }
