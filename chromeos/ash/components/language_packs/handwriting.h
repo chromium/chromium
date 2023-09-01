@@ -42,6 +42,16 @@ absl::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id);
 
+// Gets the handwriting language for a given input method ID if it exists.
+// Requires a non-null pointer to `InputMethodUtil`, which can be obtained by
+// calling the `GetInputMethodUtil()` method on an `InputMethodManager`.
+//
+// Intended to be used with `base::BindRepeating` to be passed into
+// `MapIdsToHandwritingLocales`.
+absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
+    input_method::InputMethodUtil* const util,
+    const std::string& input_method_id);
+
 // Given a handwriting locale, get the DLC associated with it if it exists.
 // This function takes in handwriting locales as given in the Google ChromeOS 1P
 // IME manifest. If the locale is not of that form, consider converting it to

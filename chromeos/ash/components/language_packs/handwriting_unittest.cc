@@ -187,6 +187,95 @@ TEST_F(HandwritingTest, MapEngineIdsToHandwritingLocalesIntegration) {
       UnorderedElementsAre("en", "fr"));
 }
 
+TEST_F(HandwritingTest, MapInputMethodIdToHandwritingLocaleNoInputMethods) {
+  DelegateUtil delegate_util({});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
+      absl::nullopt);
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
+      absl::nullopt);
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
+      absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       MapInputMethodIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
+  DelegateUtil delegate_util(
+      {{{"xkb:us::eng", absl::nullopt}, {"xkb:fr::fra", absl::nullopt}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
+      absl::nullopt);
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
+      absl::nullopt);
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
+      absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       MapInputMethodIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
+  DelegateUtil delegate_util(
+      {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", absl::nullopt}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
+      Optional(Eq("en")));
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
+      absl::nullopt);
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
+      absl::nullopt);
+}
+
+TEST_F(HandwritingTest,
+       MapInputMethodIdToHandwritingLocaleInputMethodsWithHandwriting) {
+  DelegateUtil delegate_util({{{"xkb:us::eng", "en"}, {"xkb:fr::fra", "fr"}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")),
+      Optional(Eq("en")));
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")),
+      Optional(Eq("fr")));
+  EXPECT_THAT(
+      MapInputMethodIdToHandwritingLocale(
+          util, extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger")),
+      absl::nullopt);
+}
+
+TEST_F(HandwritingTest, MapInputMethodIdsToHandwritingLocalesIntegration) {
+  DelegateUtil delegate_util({{{"xkb:us::eng", "en"},
+                               {"xkb:gb:extd:eng", "en"},
+                               {"xkb:fr::fra", "fr"}}});
+  input_method::InputMethodUtil* util = delegate_util.util();
+
+  EXPECT_THAT(
+      MapIdsToHandwritingLocales(
+          {{extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger"),
+            extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"),
+            extension_ime_util::GetInputMethodIDByEngineID("xkb:gb:extd:eng"),
+            extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra")}},
+          base::BindRepeating(MapInputMethodIdToHandwritingLocale, util)),
+      UnorderedElementsAre("en", "fr"));
+}
+
 struct HandwritingLocaleToDlcTestCase {
   std::string test_name;
   std::string_view locale;

@@ -43,6 +43,12 @@ absl::optional<std::string> MapEngineIdToHandwritingLocale(
     const std::string& engine_id) {
   const std::string input_method_id =
       extension_ime_util::GetInputMethodIDByEngineID(engine_id);
+  return MapInputMethodIdToHandwritingLocale(util, input_method_id);
+}
+
+absl::optional<std::string> MapInputMethodIdToHandwritingLocale(
+    input_method::InputMethodUtil* const util,
+    const std::string& input_method_id) {
   const input_method::InputMethodDescriptor* descriptor =
       util->GetInputMethodDescriptorFromId(input_method_id);
   if (descriptor == nullptr) {
