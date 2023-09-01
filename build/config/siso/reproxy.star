@@ -244,7 +244,10 @@ def __step_config(ctx, step_config):
             },
             "inputs": rule.get("inputs", []),
             "canonicalize_working_dir": rule.get("canonicalize_dir", False),
-            "exec_strategy": "remote",
+            # TODO: b/297807325 - Siso wants to handle local execution. However,
+            # Reclient's CompileErrorRatioAlert requires local fallback to be
+            # done on Reproxy side.
+            "exec_strategy": "remote_local_fallback",
             "exec_timeout": rule.get("timeout", "10m"),
             "download_outputs": True,
         }
