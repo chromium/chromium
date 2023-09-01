@@ -21,6 +21,11 @@ namespace registry_util {
 
 namespace {
 
+// Overriding HKLM is not permitted in some environments. This is controlled by
+// this bool and disallowed by calling
+// DisallowHKLMRegistryOverrideForIntegrationTests.
+bool g_hklm_override_allowed = true;
+
 constexpr char16_t kTimestampDelimiter[] = u"$";
 constexpr wchar_t kTempTestKeyPath[] = L"Software\\Chromium\\TempTestKeys";
 
@@ -101,6 +106,10 @@ void RegistryOverrideManager::OverrideRegistry(HKEY override) {
 
 void RegistryOverrideManager::OverrideRegistry(HKEY override,
                                                std::wstring* override_path) {
+  CHECK(override != HKEY_LOCAL_MACHINE || g_hklm_override_allowed)
+      << "Use of RegistryOverrideManager to override HKLM is not permitted in "
+         "this environment.";
+
   std::wstring key_path = GenerateTempKeyPath(test_key_root_, timestamp_);
 
   base::win::RegKey temp_key;
@@ -112,6 +121,11 @@ void RegistryOverrideManager::OverrideRegistry(HKEY override,
       std::make_unique<ScopedRegistryKeyOverride>(override, key_path));
   if (override_path)
     override_path->assign(key_path);
+}
+
+void RegistryOverrideManager::SetAllowHKLMRegistryOverrideForIntegrationTests(
+    bool allow) {
+  g_hklm_override_allowed = allow;
 }
 
 std::wstring GenerateTempKeyPath() {

@@ -139,7 +139,12 @@
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace content {
+
 namespace {
 
 // Whether an instance of BrowserTestBase has already been created in this
@@ -268,6 +273,16 @@ BrowserTestBase::BrowserTestBase() {
 
 #if BUILDFLAG(IS_POSIX)
   handle_sigterm_ = true;
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Disallow overriding HKLM during browser test startup. This is because it
+  // will interfere with process launches, which rely on there being a valid
+  // HKLM. This functionality is restored just before the test fixture itself
+  // starts in ProxyRunTestOnMainThreadLoop, after browser startup has been
+  // completed.
+  registry_util::RegistryOverrideManager::
+      SetAllowHKLMRegistryOverrideForIntegrationTests(/*allow=*/false);
 #endif
 
   // This is called through base::TestSuite initially. It'll also be called
@@ -895,6 +910,13 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
                             base::Unretained(this)));
 
     SetUpOnMainThread();
+
+#if BUILDFLAG(IS_WIN)
+    // Now that most of process startup is complete, including launching the
+    // network service process, HKLM override can be safely permitted again.
+    registry_util::RegistryOverrideManager::
+        SetAllowHKLMRegistryOverrideForIntegrationTests(/*allow=*/true);
+#endif  // BUILDFLAG(IS_WIN)
 
     if (!IsSkipped()) {
       initial_navigation_observer.reset();
