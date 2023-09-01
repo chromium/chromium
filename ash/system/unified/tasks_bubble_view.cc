@@ -243,7 +243,14 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     ++num_tasks_;
   }
   task_items_container_view_->SetVisible(num_tasks_shown_ > 0);
-  add_new_task_button_->SetVisible(num_tasks_shown_ == 0);
+
+  const bool add_new_task_button_visible = (num_tasks_shown_ == 0);
+  if (add_new_task_button_visible) {
+    RecordAddTaskButtonShown();
+    add_new_task_button_->SetVisible(true);
+  } else {
+    add_new_task_button_->SetVisible(false);
+  }
 
   list_footer_view_->UpdateItemsCount(num_tasks_shown_, num_tasks_);
   list_footer_view_->SetVisible(num_tasks_shown_ > 0);

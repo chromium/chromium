@@ -256,6 +256,8 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
             "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton"));
+  EXPECT_EQ(
+      1, user_actions.GetActionCount("Glanceables_Tasks_AddTaskButtonShown"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
@@ -269,6 +271,8 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
 }
 
 TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
+  base::UserActionTester user_actions;
+
   // Shows items from the first / default task list.
   EXPECT_TRUE(GetTaskItemsContainerView()->GetVisible());
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 2u);
@@ -282,6 +286,8 @@ TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
   EXPECT_TRUE(GetTaskItemsContainerView()->children().empty());
   EXPECT_TRUE(GetAddNewTaskButton()->GetVisible());
   EXPECT_FALSE(GetListFooterView()->GetVisible());
+  EXPECT_EQ(
+      1, user_actions.GetActionCount("Glanceables_Tasks_AddTaskButtonShown"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {

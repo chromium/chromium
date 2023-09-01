@@ -10272,11 +10272,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glanceables_Tasks_AddTaskButtonShown">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    The add task button is shown for an empty tasks list.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <description>
-    User clicked on the add new task button ion the tasks glanceable.
+    User clicked on the add new task button on the tasks glanceable.
   </description>
 </action>
 

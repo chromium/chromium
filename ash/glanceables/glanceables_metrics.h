@@ -18,6 +18,8 @@ enum class TasksLaunchSource {
 
 void RecordTasksLaunchSource(TasksLaunchSource source);
 
+void RecordAddTaskButtonShown();
+
 }  // namespace ash
 
 #endif  // ASH_GLANCEABLES_GLANCEABLES_METRICS_H_

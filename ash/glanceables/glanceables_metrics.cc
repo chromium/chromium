@@ -28,4 +28,9 @@ void RecordTasksLaunchSource(TasksLaunchSource source) {
   }
 }
 
+void RecordAddTaskButtonShown() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Tasks_AddTaskButtonShown"));
+}
+
 }  // namespace ash
