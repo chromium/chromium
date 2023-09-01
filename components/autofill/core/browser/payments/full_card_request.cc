@@ -341,6 +341,10 @@ void FullCardRequest::OnDidGetRealPan(
             /*app_locale=*/std::string());
         request_->card.SetExpirationYearFromString(
             base::UTF8ToUTF16(response_details.expiration_year));
+        // `request_->card` will already already have a CVC set as it's the card
+        // from the autofill table, so we only need to override from the server
+        // response in the virtual card case.
+        request_->card.set_cvc(base::UTF8ToUTF16(response_details.dcvv));
       } else if (response_details.card_type ==
                  AutofillClient::PaymentsRpcCardType::kServerCard) {
         request_->card.set_record_type(CreditCard::RecordType::kFullServerCard);

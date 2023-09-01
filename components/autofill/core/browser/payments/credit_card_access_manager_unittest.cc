@@ -248,7 +248,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     CreditCard server_card = CreditCard();
     test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
                             test::NextMonth().c_str(), test::NextYear().c_str(),
-                            "1");
+                            "1", kTestCvc16);
     server_card.set_guid(guid);
     server_card.set_record_type(masked
                                     ? CreditCard::RecordType::kMaskedServerCard
@@ -1094,6 +1094,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
   EXPECT_EQ(kCredentialId,
             BytesToBase64(GetFIDOAuthenticator()->GetCredentialId()));
   EXPECT_EQ(kTestNumber16, accessor_->number());
+  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   histogram_tester.ExpectUniqueSample(
       unmask_decision_histogram_name,
@@ -1108,6 +1109,39 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
   histogram_tester.ExpectBucketCount(
       flow_events_histogram_name,
       CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptCompleted, 1);
+}
+
+// Ensures that accessor retrieve empty CVC upon a successful
+// WebAuthn verification and response from payments using masked server card
+// without CVC.
+TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
+  CreditCard server_card = CreditCard();
+  test::SetCreditCardInfo(&server_card, "Elvis Presley", kTestNumber,
+                          test::NextMonth().c_str(), test::NextYear().c_str(),
+                          "1", u"");
+  server_card.set_guid(kTestGUID);
+  server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+  personal_data().AddServerCreditCard(server_card);
+  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  SetCreditCardFIDOAuthEnabled(true);
+  payments_client().AddFidoEligibleCard(card->server_id(), kCredentialId,
+                                        kGooglePaymentsRpid);
+
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  credit_card_access_manager().FetchCreditCard(card, accessor_->GetWeakPtr());
+  WaitForCallbacks();
+
+  // FIDO Success.
+  EXPECT_EQ(CreditCardFidoAuthenticator::Flow::AUTHENTICATION_FLOW,
+            GetFIDOAuthenticator()->current_flow());
+  TestCreditCardFidoAuthenticator::GetAssertion(GetFIDOAuthenticator(),
+                                                /*did_succeed=*/true);
+  EXPECT_TRUE(GetRealPanForFIDOAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                    kTestNumber));
+  EXPECT_EQ(u"", accessor_->cvc());
 }
 
 // Ensures that FetchCreditCard() returns the full PAN upon a successful
@@ -2814,9 +2848,12 @@ TEST_F(CreditCardAccessManagerTest,
   CreditCardFidoAuthenticator::FidoAuthenticationResponse fido_response;
   fido_response.did_succeed = true;
   CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"234");
   fido_response.card = &card;
-  fido_response.cvc = u"123";
   credit_card_access_manager().OnFIDOAuthenticationComplete(fido_response);
+
+  // Expect accessor to successfully retrieve the virtual card CVC.
+  EXPECT_EQ(u"234", accessor_->cvc());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(

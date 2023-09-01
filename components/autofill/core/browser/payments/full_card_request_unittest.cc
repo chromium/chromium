@@ -176,6 +176,15 @@ MATCHER_P2(CardMatches, record_type, card_number, "") {
          arg.GetRawInfo(CREDIT_CARD_NUMBER) == base::ASCIIToUTF16(card_number);
 }
 
+// Matches the |arg| credit card to the given `record_type`, `card_number`, and
+// `cvc`.
+MATCHER_P3(CardMatches, record_type, card_number, cvc, "") {
+  return arg.record_type() == record_type &&
+         arg.GetRawInfo(CREDIT_CARD_NUMBER) ==
+             base::ASCIIToUTF16(card_number) &&
+         arg.cvc() == cvc;
+}
+
 // Matches the |arg| credit card to the given |record_type|, card |number|,
 // expiration |month|, and expiration |year|.
 MATCHER_P4(CardMatches, record_type, number, month, year, "") {
@@ -363,11 +372,12 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
 // retrieval via FIDO as well.
 TEST_F(FullCardRequestTest,
        GetFullCardPanAndExpirationAndDcvvForVirtualCardViaCvc) {
-  EXPECT_CALL(*result_delegate(),
-              OnFullCardRequestSucceeded(
-                  testing::Ref(*request()),
-                  CardMatches(CreditCard::RecordType::kVirtualCard, "4111"),
-                  testing::Eq(u"123")))
+  EXPECT_CALL(
+      *result_delegate(),
+      OnFullCardRequestSucceeded(
+          testing::Ref(*request()),
+          CardMatches(CreditCard::RecordType::kVirtualCard, "4111", u"123"),
+          testing::Eq(u"123")))
       .Times(1);
   EXPECT_CALL(*ui_delegate(), ShowUnmaskPrompt(_, _, _)).Times(1);
   EXPECT_CALL(*ui_delegate(), OnUnmaskVerificationResult(

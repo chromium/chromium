@@ -588,6 +588,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
   // call below will return true and we will safely pass nullptr and that it is
   // an error into `accessor_->OnCreditCardFetched()`, and end the flow.
   if (response.card) {
+    // TODO(crbug/1478392): Deprecate `response.cvc` and `response.card.cvc`.
     card_ = std::make_unique<CreditCard>(*response.card);
     card_->set_cvc(response.cvc);
   }
@@ -722,14 +723,9 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
           autofill_metrics::VirtualCardUnmaskFlowType::kFidoOnly);
     }
 
-    // Save credit card for caching purpose. CVC is also saved if response
-    // contains CVC. `response.card` can be nullptr in the case of an error in
-    // the response. If the response has an error, we will safely pass nullptr
-    // and that it is an error into `accessor_->OnCreditCardFetched()`, and end
-    // the flow.
+    // Save credit card for caching purpose.
     if (response.card) {
       card_ = std::make_unique<CreditCard>(*response.card);
-      card_->set_cvc(response.cvc);
     }
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
                                    card_.get());
