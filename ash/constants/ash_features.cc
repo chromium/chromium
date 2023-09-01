@@ -2932,6 +2932,11 @@ bool IsAllowAmbientEQEnabled() {
   return base::FeatureList::IsEnabled(kAllowAmbientEQ);
 }
 
+bool IsAllowScrollSettingsEnabled() {
+  return IsInputDeviceSettingsSplitEnabled() &&
+         base::FeatureList::IsEnabled(kAllowScrollSettings);
+}
+
 bool IsEapDefaultCasWithoutSubjectVerificationAllowed() {
   return base::FeatureList::IsEnabled(
       kAllowEapDefaultCasWithoutSubjectVerification);

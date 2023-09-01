@@ -762,10 +762,6 @@ const std::vector<SearchConcept>& GetPowerWithBatterySaverModeSearchConcepts() {
   return *tags;
 }
 
-bool AreScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
-}
-
 bool IsUnifiedDesktopAvailable() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableUnifiedDesktop);
@@ -1562,7 +1558,7 @@ void DeviceSection::MouseExists(bool exists) {
 
     if (exists) {
       updater.AddSearchTags(GetMouseSearchConcepts());
-      if (AreScrollSettingsAllowed()) {
+      if (features::IsAllowScrollSettingsEnabled()) {
         updater.AddSearchTags(GetMouseScrollAccelerationSearchConcepts());
       }
     }
@@ -1574,7 +1570,7 @@ void DeviceSection::MouseExists(bool exists) {
 
   if (exists) {
     updater.AddSearchTags(GetPerDeviceMouseSearchConcepts());
-    if (AreScrollSettingsAllowed()) {
+    if (features::IsAllowScrollSettingsEnabled()) {
       updater.AddSearchTags(
           GetPerDeviceMouseScrollAccelerationSearchConcepts());
     }
@@ -1754,7 +1750,7 @@ void DeviceSection::AddDevicePointersStrings(
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
   const bool kIsAllowMouseScrollSettingsEnabled =
-      base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings);
+      features::IsAllowScrollSettingsEnabled();
 
   webui::LocalizedString kPointersStrings[] = {
       {"allMiceDisconnectedA11yLabel",
@@ -1860,7 +1856,8 @@ void DeviceSection::AddDevicePointersStrings(
   html_source->AddString("hapticFeedbackLearnMoreLink",
                          GetHelpUrlWithBoard(chrome::kHapticFeedbackHelpURL));
 
-  html_source->AddBoolean("allowScrollSettings", AreScrollSettingsAllowed());
+  html_source->AddBoolean("allowScrollSettings",
+                          features::IsAllowScrollSettingsEnabled());
 }
 
 void DeviceSection::AddDeviceGraphicsTabletStrings(

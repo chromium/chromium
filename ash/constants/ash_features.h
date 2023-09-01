@@ -830,6 +830,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdvancedDocumentScanAPIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowScrollSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSuppressTextMessagesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEapDefaultCasWithoutSubjectVerificationAllowed();
