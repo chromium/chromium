@@ -5,6 +5,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -121,6 +122,8 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey waitForSyncEngineInitialized:NO
                                    syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearSyncServerData];
+  [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
+                                                 kTabResumptioDisabledPref];
   [super tearDown];
 }
 
@@ -197,6 +200,42 @@ NSString* HostnameFromGURL(GURL URL) {
                             destinationUrl.host())];
   [ChromeEarlGrey
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
+}
+
+// Tests that the context menu has the correct action and correctly hides the
+// tile.
+- (void)testTabResumptionTileLongPress {
+  // Check that the tile is not displayed when there is no distant tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(false);
+
+  // Create a distant session with 4 tabs.
+  [DistantTabsAppInterface
+      addSessionToFakeSyncServer:@"Desktop"
+               modifiedTimeDelta:base::Minutes(5)
+                            tabs:[FakeDistantTab
+                                     createFakeTabsForServerURL:self.testServer
+                                                                    ->base_url()
+                                                   numberOfTabs:4]];
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
+
+  // Check that the tile is displayed when there is a distant tab.
+  WaitUntilTabResumptionTileVisibleOrTimeout(true);
+
+  // Long press the distant tab.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabResumptionViewIdentifier)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION))]
+      performAction:grey_tap()];
+
+  // Check that the tile is hidden.
+  WaitUntilTabResumptionTileVisibleOrTimeout(false);
 }
 
 @end

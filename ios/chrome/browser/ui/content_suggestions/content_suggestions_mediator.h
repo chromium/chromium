@@ -143,8 +143,11 @@ class WebStateList;
 // Indicates that the "Return to Recent Tab" tile should be hidden.
 - (void)hideRecentTabTile;
 
-// Disable and hide the Set Up List;
+// Disables and hide the Set Up List.
 - (void)disableSetUpList;
+
+// Disables the tab resumption tile.
+- (void)disableTabResumption;
 
 // Returns all possible items in the Set Up List.
 - (NSArray<SetUpListItemViewData*>*)allSetUpListItems;

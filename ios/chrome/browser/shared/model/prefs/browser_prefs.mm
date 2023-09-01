@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/memory/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
@@ -154,6 +155,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   PrefProxyConfigTrackerImpl::RegisterPrefs(registry);
   sessions::SessionIdGenerator::RegisterPrefs(registry);
   set_up_list_prefs::RegisterPrefs(registry);
+  tab_resumption_prefs::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);

@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
+#import "ios/chrome/browser/ntp_tiles/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
@@ -311,7 +312,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                        authenticationService:authenticationService];
     }
 
-    if (IsTabResumptionEnabled()) {
+    if (IsTabResumptionEnabled() &&
+        !tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
       if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
         sync_sessions::SessionSyncService* sessionSyncService =
             SessionSyncServiceFactory::GetForBrowserState(
@@ -450,6 +452,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   set_up_list_prefs::DisableSetUpList(_localState);
 }
 
+- (void)disableTabResumption {
+  // TODO(crbug.com/1464185): Add metrics.
+  tab_resumption_prefs::DisableTabResumption(_localState);
+  [self hideTabResumption];
+}
+
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 // Called when a user changes the syncing state.
@@ -580,8 +588,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 
-  [self.consumer hideTabResumption];
-  _tabResumptionItem = nil;
+  [self hideTabResumption];
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
@@ -630,8 +637,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
   if (IsTabResumptionEnabled() && _tabResumptionItem) {
-    _tabResumptionItem = nil;
-    [self.consumer hideTabResumption];
+    [self hideTabResumption];
   } else {
     [self hideRecentTabTile];
   }
@@ -1217,7 +1223,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows the tab resumption tile if there is a `_tabResumptionItem` to present.
 - (void)showTabResumptionTile {
   CHECK(IsTabResumptionEnabled());
-  if (!self.consumer) {
+  if (!self.consumer ||
+      tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
   }
 
@@ -1242,6 +1249,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   _tabResumptionItem = item;
   [self.consumer setMagicStackOrder:[self magicStackOrder]];
   [self.consumer showTabResumptionWithItem:_tabResumptionItem];
+}
+
+// Hides the tab resumption tile.
+- (void)hideTabResumption {
+  [self.consumer hideTabResumption];
+  _tabResumptionItem = nil;
 }
 
 #pragma mark - Properties
@@ -1300,6 +1313,12 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     } else if (preferenceName == set_up_list_prefs::kDisabled &&
                set_up_list_prefs::IsSetUpListDisabled(_localState)) {
       [self hideSetUpList];
+    }
+  }
+  if (IsTabResumptionEnabled()) {
+    if (_tabResumptionItem &&
+        tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
+      [self hideTabResumption];
     }
   }
 }

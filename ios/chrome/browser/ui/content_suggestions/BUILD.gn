@@ -80,6 +80,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ntp_tiles",
+    "//ios/chrome/browser/ntp_tiles/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/promos_manager:factory",

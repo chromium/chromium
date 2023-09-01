@@ -374,6 +374,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 // long-press gesture.
 - (BOOL)allowsLongPress {
   switch (_type) {
+    case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -420,6 +421,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 // Title string for the context menu of this container.
 - (NSString*)contextMenuTitle {
   switch (_type) {
+    case ContentSuggestionsModuleType::kTabResumption:
+      return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -434,6 +437,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 // Descriptor string for hide action of the context menu of this container.
 - (NSString*)contextMenuHideDescription {
   switch (_type) {
+    case ContentSuggestionsModuleType::kTabResumption:
+      return l10n_util::GetNSString(
+          IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
