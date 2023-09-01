@@ -20,5 +20,6 @@ intent_definition("intents") {
     "SetChromeDefaultBrowserIntent",
     "ViewHistoryIntent",
     "OpenNewIncognitoTabIntent",
+    "ManagePaymentMethodsIntent",
   ]
 }

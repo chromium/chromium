@@ -2514,6 +2514,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf showHistory];
       };
+    case OPEN_PAYMENT_METHODS:
+      return ^{
+        [weakSelf openPaymentMethods];
+      };
     default:
       return nil;
   }
@@ -2616,6 +2620,17 @@ void InjectNTP(Browser* browser) {
       HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler showRecentTabs];
+}
+
+- (void)openPaymentMethods {
+  if (!self.currentInterface.browser) {
+    return;
+  }
+
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                         ApplicationCommands);
+  [applicationCommandsHandler showCreditCardSettings];
 }
 
 #pragma mark - TabOpening implementation.

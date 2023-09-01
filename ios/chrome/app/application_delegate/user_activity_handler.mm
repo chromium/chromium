@@ -71,6 +71,7 @@ NSString* const kSiriPlayDinoGame = @"PlayDinoGameIntent";
 NSString* const kSiriSetChromeDefaultBrowser = @"SetChromeDefaultBrowserIntent";
 NSString* const kSiriViewHistory = @"ViewHistoryIntent";
 NSString* const kSiriOpenNewIncognitoTab = @"OpenNewIncognitoTabIntent";
+NSString* const kSiriManagePaymentMethods = @"ManagePaymentMethodsIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -352,6 +353,11 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
                 completeURL:GURL(kChromeUINewTabURL)
             applicationMode:ApplicationModeForTabOpening::INCOGNITO];
     [connectionInformation setStartupParameters:startupParams];
+  } else if ([userActivity.activityType
+                 isEqualToString:kSiriManagePaymentMethods]) {
+    [connectionInformation
+        setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
+                                       OPEN_PAYMENT_METHODS]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

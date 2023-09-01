@@ -103,6 +103,9 @@
     case VIEW_HISTORY:
       [description appendString:@", should open history"];
       break;
+    case OPEN_PAYMENT_METHODS:
+      [description appendString:@", should open payment methods"];
+      break;
     default:
       break;
   }

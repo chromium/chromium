@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
@@ -32,7 +33,8 @@
                                     PlayDinoGameIntentHandling,
                                     SetChromeDefaultBrowserIntentHandling,
                                     ViewHistoryIntentHandling,
-                                    OpenNewIncognitoTabIntentHandling>
+                                    OpenNewIncognitoTabIntentHandling,
+                                    ManagePaymentMethodsIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -275,6 +277,24 @@
   OpenNewIncognitoTabIntentResponse* response =
       [[OpenNewIncognitoTabIntentResponse alloc]
           initWithCode:OpenNewIncognitoTabIntentResponseCodeContinueInApp
+          userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - ManagePaymentMethodsIntentHandling
+
+- (void)handleManagePaymentMethods:(ManagePaymentMethodsIntent*)intent
+                        completion:
+                            (void (^)(ManagePaymentMethodsIntentResponse*))
+                                completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass(
+                               [ManagePaymentMethodsIntent class])];
+
+  ManagePaymentMethodsIntentResponse* response =
+      [[ManagePaymentMethodsIntentResponse alloc]
+          initWithCode:ManagePaymentMethodsIntentResponseCodeContinueInApp
           userActivity:activity];
 
   completion(response);

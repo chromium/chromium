@@ -782,6 +782,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_DESCRIPTION" desc="Siri Shortcut description to open chromium incognito tab [iOS only]">
         Opens a New Chromium Incognito Tab.
       </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_PAYMENT_METHODS_TITLE" desc="Siri Shortcut for manage payment methods title [iOS only]">
+        Manage Payment Methods in Chromium
+      </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_PAYMENT_METHODS_DESCRIPTION" desc="Siri Shortcut description to manage payment methods [iOS only]">
+        Opens The Payment Methods Setting Page in Chromium.
+      </message>
     </messages>
   </release>
 </grit>
