@@ -115,7 +115,6 @@ class DriveIntegrationService : public KeyedService,
                                 public drivefs::DriveFsHost::MountObserver,
                                 public drivefs::pinning::PinManager::Observer {
  public:
-  class BulkPinningPrefUpdater;
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
       std::unique_ptr<drivefs::DriveFsBootstrapListener>()>;
   using GetQuickAccessItemsCallback =
@@ -188,7 +187,8 @@ class DriveIntegrationService : public KeyedService,
                      absl::optional<base::TimeDelta> remount_delay) override;
 
   // PinManager::Observer implementation
-  void OnProgress(const drivefs::pinning::Progress& progress) override;
+  using Progress = drivefs::pinning::Progress;
+  void OnProgress(const Progress& progress) override;
 
   EventLogger* GetLogger() { return &logger_; }
 
@@ -201,7 +201,8 @@ class DriveIntegrationService : public KeyedService,
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
   // Returns the PinManager if DriveFS is mounted and bulk-pinning is enabled.
-  drivefs::pinning::PinManager* GetPinManager() const;
+  using PinManager = drivefs::pinning::PinManager;
+  PinManager* GetPinManager() const;
 
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.
@@ -483,8 +484,8 @@ class DriveIntegrationService : public KeyedService,
 
   class PrefWatcher;
   std::unique_ptr<PrefWatcher> pref_watcher_;
-  std::unique_ptr<drivefs::pinning::PinManager> pin_manager_;
-  std::unique_ptr<BulkPinningPrefUpdater> bulk_pinning_pref_updater_;
+  std::unique_ptr<PinManager> pin_manager_;
+
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
   bool is_online_ = true;

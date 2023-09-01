@@ -679,28 +679,6 @@ class DriveIntegrationService::DriveFsHolder
   base::OnceClosure pending_connect_to_extension_request_;
 };
 
-// Updates the bulk pinning preference when the `PinManager` stops or errors.
-using drivefs::pinning::PinManager;
-using drivefs::pinning::Progress;
-class DriveIntegrationService::BulkPinningPrefUpdater
-    : public PinManager::Observer {
- public:
-  explicit BulkPinningPrefUpdater(PrefService* pref_service)
-      : pref_service_(pref_service) {
-    DCHECK(pref_service_);
-  }
-
-  void OnProgress(const Progress& progress) override {
-    if (progress.IsError()) {
-      pref_service_->SetBoolean(kDriveFsBulkPinningEnabled, false);
-      VLOG(1) << "Disabled bulk-pinning because of error " << progress.stage;
-    }
-  }
-
- private:
-  raw_ptr<PrefService> const pref_service_;
-};
-
 DriveIntegrationService::DriveIntegrationService(
     Profile* profile,
     const std::string& test_mount_point_name,
@@ -1074,10 +1052,6 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
   if (pin_manager_) {
     pin_manager_->Stop();
     pin_manager_->RemoveObserver(this);
-    if (bulk_pinning_pref_updater_) {
-      pin_manager_->RemoveObserver(bulk_pinning_pref_updater_.get());
-      bulk_pinning_pref_updater_.reset();
-    }
     GetDriveFsHost()->RemoveObserver(pin_manager_.get());
     pin_manager_.reset();
   }
@@ -1177,10 +1151,6 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
       OnProgress(pin_manager_->GetProgress());
     }
 
-    DCHECK(!bulk_pinning_pref_updater_);
-    bulk_pinning_pref_updater_ =
-        std::make_unique<BulkPinningPrefUpdater>(GetPrefs());
-    pin_manager_->AddObserver(bulk_pinning_pref_updater_.get());
     GetDriveFsHost()->AddObserver(pin_manager_.get());
 
     // Ensure the new PinManager has the right view of the network state.
@@ -1240,10 +1210,14 @@ void DriveIntegrationService::OnMountFailed(
   MaybeRemountFileSystem(remount_delay, true);
 }
 
-void DriveIntegrationService::OnProgress(
-    const drivefs::pinning::Progress& progress) {
+void DriveIntegrationService::OnProgress(const Progress& progress) {
   for (Observer& observer : observers_) {
     observer.OnBulkPinProgress(progress);
+  }
+
+  if (progress.IsError()) {
+    GetPrefs()->SetBoolean(kDriveFsBulkPinningEnabled, false);
+    VLOG(1) << "Disabled bulk-pinning because of error " << progress.stage;
   }
 }
 
