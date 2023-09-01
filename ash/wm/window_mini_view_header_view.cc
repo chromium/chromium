@@ -121,12 +121,14 @@ void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
 }
 
 void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysHeader
-          : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
-      GetHeaderRoundedCorners(window_mini_view_->source_window()),
-      /*for_border_thickness=*/0));
+  if (chromeos::features::IsJellyrollEnabled()) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        chromeos::features::IsJellyrollEnabled()
+            ? cros_tokens::kCrosSysHeader
+            : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
+        GetHeaderRoundedCorners(window_mini_view_->source_window()),
+        /*for_border_thickness=*/0));
+  }
 }
 
 void WindowMiniViewHeaderView::SetHeaderViewRoundedCornerRadius(
