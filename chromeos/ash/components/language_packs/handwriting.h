@@ -16,26 +16,28 @@
 
 namespace ash::language_packs {
 
-// Given a function to map engine IDs to handwriting locales, returns a set of
-// handwriting locales that we should install for the given list of engine IDs.
+// Given a function to map IDs to handwriting locales, returns a set of
+// handwriting locales that we should install for the given list of IDs.
 //
-// Example `engine_id_to_handwriting_locale`:
+// IDs can be arbitrary - for example, engine IDs or input method IDs.
+//
+// Example `id_to_handwriting_locale` for engine IDs:
 // ```
 // base::BindRepeating(
 //     EngineIdToHandwritingLocale,
 //     input_method::InputMethodManager::Get()->GetInputMethodUtil());
 // ```
-base::flat_set<std::string> EngineIdsToHandwritingLocales(
-    base::span<const std::string> engine_ids,
+base::flat_set<std::string> MapIdsToHandwritingLocales(
+    base::span<const std::string> ids,
     base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
-        engine_id_to_handwriting_locale);
+        id_to_handwriting_locale);
 
 // Gets the handwriting language for a given engine ID if it exists.
 // Requires a non-null pointer to `InputMethodUtil`, which can be obtained by
 // calling the `GetInputMethodUtil()` method on an `InputMethodManager`.
 //
 // Intended to be used with `base::BindRepeating` to be passed into
-// `EngineIdsToHandwritingLocales`.
+// `MapIdsToHandwritingLocales`.
 absl::optional<std::string> EngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id);

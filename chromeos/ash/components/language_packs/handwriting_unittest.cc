@@ -42,9 +42,9 @@ absl::optional<std::string> GetSecondUnderscorePart(
   }
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesNoInput) {
+TEST_F(HandwritingTest, MapIdsToHandwritingLocalesNoInput) {
   EXPECT_THAT(
-      EngineIdsToHandwritingLocales(
+      MapIdsToHandwritingLocales(
           {}, base::BindRepeating([](const std::string& unused_engine_id)
                                       -> absl::optional<std::string> {
             ADD_FAILURE() << "engine_id_to_handwriting_locale was called";
@@ -53,8 +53,8 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesNoInput) {
       IsEmpty());
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesAllToNullopt) {
-  EXPECT_THAT(EngineIdsToHandwritingLocales(
+TEST_F(HandwritingTest, MapIdsToHandwritingLocalesAllToNullopt) {
+  EXPECT_THAT(MapIdsToHandwritingLocales(
                   {{"qwerty_en", "qwertz_de"}},
                   base::BindRepeating([](const std::string& unused_engine_id)
                                           -> absl::optional<std::string> {
@@ -63,25 +63,25 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesAllToNullopt) {
               IsEmpty());
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesAllToUniqueStrings) {
-  EXPECT_THAT(EngineIdsToHandwritingLocales(
-                  {{"qwerty_en", "qwertz_de"}},
-                  base::BindRepeating(GetSecondUnderscorePart)),
-              UnorderedElementsAre("en", "de"));
+TEST_F(HandwritingTest, MapIdsToHandwritingLocalesAllToUniqueStrings) {
+  EXPECT_THAT(
+      MapIdsToHandwritingLocales({{"qwerty_en", "qwertz_de"}},
+                                 base::BindRepeating(GetSecondUnderscorePart)),
+      UnorderedElementsAre("en", "de"));
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesRepeatedString) {
-  EXPECT_THAT(EngineIdsToHandwritingLocales(
-                  {{"qwerty_en", "qzertz_de", "qwertz_en"}},
-                  base::BindRepeating(GetSecondUnderscorePart)),
-              UnorderedElementsAre("en", "de"));
+TEST_F(HandwritingTest, MapIdsToHandwritingLocalesRepeatedString) {
+  EXPECT_THAT(
+      MapIdsToHandwritingLocales({{"qwerty_en", "qzertz_de", "qwertz_en"}},
+                                 base::BindRepeating(GetSecondUnderscorePart)),
+      UnorderedElementsAre("en", "de"));
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesSomeNullopt) {
-  EXPECT_THAT(EngineIdsToHandwritingLocales(
-                  {{"qwerty_en", "nohandwriting", "qwertz_de"}},
-                  base::BindRepeating(GetSecondUnderscorePart)),
-              UnorderedElementsAre("en", "de"));
+TEST_F(HandwritingTest, MapIdsToHandwritingLocalesSomeNullopt) {
+  EXPECT_THAT(
+      MapIdsToHandwritingLocales({{"qwerty_en", "nohandwriting", "qwertz_de"}},
+                                 base::BindRepeating(GetSecondUnderscorePart)),
+      UnorderedElementsAre("en", "de"));
 }
 
 struct PartialDescriptor {
@@ -172,7 +172,7 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesIntegration) {
   input_method::InputMethodUtil* util = delegate_util.util();
 
   EXPECT_THAT(
-      EngineIdsToHandwritingLocales(
+      MapIdsToHandwritingLocales(
           {{"xkb:de::ger", "xkb:us::eng", "xkb:gb:extd:eng", "xkb:fr::fra"}},
           base::BindRepeating(EngineIdToHandwritingLocale, util)),
       UnorderedElementsAre("en", "fr"));

@@ -21,15 +21,15 @@
 
 namespace ash::language_packs {
 
-base::flat_set<std::string> EngineIdsToHandwritingLocales(
-    base::span<const std::string> engine_ids,
+base::flat_set<std::string> MapIdsToHandwritingLocales(
+    base::span<const std::string> ids,
     base::RepeatingCallback<absl::optional<std::string>(const std::string&)>
-        engine_id_to_handwriting_locale) {
+        id_to_handwriting_locale) {
   std::vector<std::string> handwriting_locales;
 
-  for (const std::string& engine_id : engine_ids) {
+  for (const std::string& engine_id : ids) {
     absl::optional<std::string> handwriting_language =
-        engine_id_to_handwriting_locale.Run(engine_id);
+        id_to_handwriting_locale.Run(engine_id);
     if (handwriting_language.has_value()) {
       handwriting_locales.push_back(std::move(*handwriting_language));
     }
