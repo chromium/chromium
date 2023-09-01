@@ -1,6 +1,6 @@
 # Interactive Testing API: "Kombucha"
 
-**[go/kombucha-api](goto.google.com/kombucha-api)**
+**[go/kombucha-api](https://goto.google.com/kombucha-api)**
 
 **Kombucha** is a group of powerful test mix-ins that let you easily and
 concisely write interactive tests.
@@ -10,7 +10,7 @@ either be backwards-compatible with existing tests, or the authors will update
 the API calls for you.
 
 This page provides technical documentation. For a cookbook/FAQ/troubleshooting
-guide, see our [Kombucha Playbook](goto.google.com/kombucha-playbook).
+guide, see our [Kombucha Playbook](https://goto.google.com/kombucha-playbook).
 
  - [Changelog](#changelog)
  - [Known Issues](#known-issues-and-incompatibilities)
