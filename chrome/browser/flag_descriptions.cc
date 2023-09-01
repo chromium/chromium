@@ -3819,9 +3819,9 @@ const char kCCTMinimizedName[] = "Allow Custom Tabs to be minimized";
 const char kCCTMinimizedDescription[] =
     "When enabled, CCTs can be minimized into picture-in-picture (PiP) mode.";
 
-const char kCCTPageInsightsHubName[] = "PageInsights Hub";
+const char kCCTPageInsightsHubName[] = "Page Insights Hub";
 const char kCCTPageInsightsHubDescription[] =
-    "Show PageInsights Hub on Chrome Custom Tabs.";
+    "Show Page Insights Hub on Chrome Custom Tabs.";
 
 const char kCCTPreventTouchesName[] = "Prevent touches from overlay";
 const char kCCTPreventTouchesDescription[] =
