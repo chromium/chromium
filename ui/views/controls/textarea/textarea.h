@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
 
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 
@@ -31,6 +32,11 @@ class VIEWS_EXPORT Textarea : public Textfield {
   ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event) override;
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Textarea, Textfield)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, Textarea)
 
 #endif  // UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
