@@ -55,6 +55,7 @@ source_set("android") {
       sources += [
         "cardboard_device_provider.cc",
         "cardboard_device_provider.h",
+        "cardboard_utils.cc",
         "vr_compositor_delegate_provider.cc",
         "vr_compositor_delegate_provider.h",
       ]
@@ -188,6 +189,7 @@ android_library("xr_java") {
     sources += [
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardClassProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardOverlayDelegate.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardUtils.java",
     ]
     deps += [
       ":cardboard_java_resources",
@@ -209,6 +211,10 @@ generate_jni("xr_jni_headers") {
 
   if (enable_arcore) {
     sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java" ]
+  }
+
+  if (enable_cardboard) {
+    sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardUtils.java" ]
   }
 }
 

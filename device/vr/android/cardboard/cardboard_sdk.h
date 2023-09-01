@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardSdk {
   virtual ~CardboardSdk() = default;
 
   virtual void Initialize(jobject context);
-  virtual void SwitchViewer();
+  virtual void ScanQrCodeAndSaveDeviceParams();
 
   CardboardSdk(const CardboardSdk&) = delete;
   CardboardSdk& operator=(const CardboardSdk&) = delete;

@@ -12,28 +12,68 @@
 #include "third_party/cardboard/src/sdk/include/cardboard.h"
 
 namespace device {
+
+// static
+bool CardboardDeviceParams::use_cardboard_v1_device_params_for_testing_ = false;
+
 // static
 CardboardDeviceParams CardboardDeviceParams::GetDeviceParams() {
-  CardboardDeviceParams params;
-  uint8_t* device_params = nullptr;
-  int size = 0;
+  if (use_cardboard_v1_device_params_for_testing_) {
+    return GetCardboardV1DeviceParams();
+  }
+
+  CardboardDeviceParams params = GetSavedDeviceParams();
+
+  // If no saved device params were returned, use the default V1 device
+  // parameters as a fallback.
+  if (!params.IsValid()) {
+    params = GetCardboardV1DeviceParams();
+  }
+
+  return params;
+}
+
+// static
+CardboardDeviceParams CardboardDeviceParams::GetSavedDeviceParams() {
+  if (use_cardboard_v1_device_params_for_testing_) {
+    return GetCardboardV1DeviceParams();
+  }
 
   // Check if any device parameters have been saved.
+  uint8_t* device_params = nullptr;
+  int size = 0;
   CardboardQrCode_getSavedDeviceParams(&device_params, &size);
   if (size != 0) {
     // If saved device params were returned, store them as owned parameters so
     // them get cleaned up properly.
+    CardboardDeviceParams params;
     params.encoded_device_params_ = OwnedCardboardParams(device_params);
     params.size_ = size;
     return params;
   }
 
-  // If no saved device params were returned, use the default V1 device
-  // parameters as a fallback. They don't need to be cleaned up.
+  // If no saved device params were returned, return an empty object.
+  return CardboardDeviceParams();
+}
+
+// static
+CardboardDeviceParams CardboardDeviceParams::GetCardboardV1DeviceParams() {
+  uint8_t* device_params = nullptr;
+  int size = 0;
   CardboardQrCode_getCardboardV1DeviceParams(&device_params, &size);
+
+  // Cardboard Viewer v1 device parameters don't need to be cleaned up (they are
+  // statically allocated in memory).
+  CardboardDeviceParams params;
   params.encoded_device_params_ = device_params;
   params.size_ = size;
   return params;
+}
+
+// static
+void CardboardDeviceParams::set_use_cardboard_v1_device_params_for_testing(
+    bool value) {
+  use_cardboard_v1_device_params_for_testing_ = value;
 }
 
 CardboardDeviceParams::CardboardDeviceParams() = default;

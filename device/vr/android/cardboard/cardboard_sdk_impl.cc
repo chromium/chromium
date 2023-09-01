@@ -31,7 +31,7 @@ void CardboardSdkImpl::Initialize(jobject context) {
   initialized_ = true;
 }
 
-void CardboardSdkImpl::SwitchViewer() {
+void CardboardSdkImpl::ScanQrCodeAndSaveDeviceParams() {
   CHECK(initialized_);
 
   // Launches a new QR code scanner activity in order to scan a QR code with

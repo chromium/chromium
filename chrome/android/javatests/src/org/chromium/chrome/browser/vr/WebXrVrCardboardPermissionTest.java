@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.components.webxr.CardboardUtils;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -61,6 +62,7 @@ public class WebXrVrCardboardPermissionTest {
     @Before
     public void setUp() {
         mWebXrVrPermissionTestFramework = new WebXrVrPermissionTestFramework(mTestRule);
+        CardboardUtils.useCardboardV1DeviceParamsForTesting();
     }
 
     /**

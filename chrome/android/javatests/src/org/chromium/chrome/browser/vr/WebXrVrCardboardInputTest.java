@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.components.webxr.CardboardUtils;
 import org.chromium.components.webxr.XrSessionCoordinator;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -62,6 +63,7 @@ public class WebXrVrCardboardInputTest {
     @Before
     public void setUp() {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
+        CardboardUtils.useCardboardV1DeviceParamsForTesting();
     }
 
     private long sendScreenTouchDownToView(final View view, final int x, final int y) {

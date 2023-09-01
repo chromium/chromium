@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
+#include "device/vr/android/cardboard/cardboard_device_params.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
 
@@ -79,6 +80,17 @@ void CardboardDevice::RequestSession(
 
   cardboard_sdk_->Initialize(application_context.obj());
 
+  // Launch QR code scanner if there are no saved device parameters.
+  auto params = CardboardDeviceParams::GetSavedDeviceParams();
+  if (!params.IsValid()) {
+    cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
+    // TODO(https://crbug.com/1429091): Allow RequestSession flow to resume once
+    // back from the QR code scanner activity.
+    DVLOG(1) << "Unable to get Cardboard device parameters.";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   pending_session_request_callback_ = std::move(callback);
 
   // Set HasExclusiveSession status to true. This lasts until OnSessionEnded.
@@ -115,7 +127,7 @@ void CardboardDevice::RequestSession(
 }
 
 void CardboardDevice::OnXrSessionButtonTouched() {
-  // The SwitchViewer() method calls the
+  // The ScanQrCodeAndSaveDeviceParams() method calls the
   // CardboardQrCode_scanQrCodeAndSaveDeviceParams() Cardboard API entry which
   // in turn launches a new QR code scanner activity in order to scan a QR code
   // with the parameters of a new Cardboard viewer. The way said activity works
@@ -133,7 +145,7 @@ void CardboardDevice::OnXrSessionButtonTouched() {
   // part the resume process it will have to obtain the newly saved device
   // parameter and recreate the distortion meshes. See
   // https://source.chromium.org/chromium/chromium/src/+/main:device/vr/android/cardboard/cardboard_image_transport.cc;l=64
-  cardboard_sdk_->SwitchViewer();
+  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
 }
 
 void CardboardDevice::OnDrawingSurfaceReady(gfx::AcceleratedWidget window,
