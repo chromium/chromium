@@ -9,7 +9,10 @@ import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 assert(is_chromeos_ash)
 
 source_set("constants") {
-  sources = [ "scalable_iph_constants.h" ]
+  sources = [
+    "scalable_iph_constants.cc",
+    "scalable_iph_constants.h",
+  ]
 }
 
 source_set("scalable_iph") {

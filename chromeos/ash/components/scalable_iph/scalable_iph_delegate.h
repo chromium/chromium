@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_DELEGATE_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_DELEGATE_H_
 
+#include <ostream>
+
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -145,6 +147,9 @@ class ScalableIphDelegate {
   // `PerformAction` in `IphSession` or `ScalableIph`.
   virtual void PerformActionForScalableIph(ActionType action_type) = 0;
 };
+
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::SessionState session_state);
 
 }  // namespace scalable_iph
 

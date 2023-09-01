@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_CONSTANTS_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_CONSTANTS_H_
 
+#include <ostream>
+
 namespace scalable_iph {
 
 constexpr char kScalableIphDebugHost[] = "scalable-iph-debug";
@@ -35,6 +37,8 @@ enum class ActionType {
   kOpenFileManager = 10,
   kLastAction = kOpenFileManager,
 };
+
+std::ostream& operator<<(std::ostream& out, ActionType action_type);
 
 // Constants for action types, has 1 to 1 mapping with the ActionType.
 // Used in server side config.

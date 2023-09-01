@@ -21,4 +21,18 @@ ScalableIphDelegate::NotificationParams::NotificationParams::operator=(
     const NotificationParams&) = default;
 ScalableIphDelegate::NotificationParams::~NotificationParams() = default;
 
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::SessionState session_state) {
+  switch (session_state) {
+    case ScalableIphDelegate::SessionState::kUnknownInitialValue:
+      return out << "UnknownInitialValue";
+    case ScalableIphDelegate::SessionState::kActive:
+      return out << "Active";
+    case ScalableIphDelegate::SessionState::kLocked:
+      return out << "Locked";
+    case ScalableIphDelegate::SessionState::kOther:
+      return out << "Other";
+  }
+}
+
 }  // namespace scalable_iph

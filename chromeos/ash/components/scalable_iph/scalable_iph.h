@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_H_
 
+#include <ostream>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -176,6 +177,8 @@ class ScalableIph : public KeyedService,
 
   base::WeakPtrFactory<ScalableIph> weak_ptr_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& out, ScalableIph::Event event);
 
 }  // namespace scalable_iph
 
