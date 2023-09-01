@@ -10,6 +10,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
+#include "ui/gfx/mac/io_surface.h"
 
 namespace media {
 
@@ -25,6 +26,10 @@ class VideoFrame;
 // If an unsupported frame is specified, null is returned.
 MEDIA_EXPORT base::apple::ScopedCFTypeRef<CVPixelBufferRef>
 WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame);
+
+// Return true if IOSurface Pixel Format is supported by WebGPU and
+// can be imported in WebGPU.
+MEDIA_EXPORT bool IOSurfaceIsWebGPUCompatible(IOSurfaceRef io_surface);
 
 }  // namespace media
 

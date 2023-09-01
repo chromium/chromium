@@ -16,6 +16,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/shared_image_stub.h"
+#include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
@@ -57,10 +58,6 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
     default:
       return PIXEL_FORMAT_UNKNOWN;
   }
-}
-
-bool IsWebGPUCompatible(OSType pixel_format) {
-  return pixel_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
 }
 
 }  // namespace
@@ -191,6 +188,10 @@ void VideoToolboxFrameConverter::Convert(
     return;
   }
 
+  // Extract IOSurface webgpu compatible attribute before image is moved.
+  const bool is_webgpu_compatible =
+      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image));
+
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 
   gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
@@ -234,7 +235,7 @@ void VideoToolboxFrameConverter::Convert(
   // Releasing |image| must happen after command buffer commands are complete
   // (not just submitted).
   frame->metadata().read_lock_fences_enabled = true;
-  frame->metadata().is_webgpu_compatible = IsWebGPUCompatible(pixel_format);
+  frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
   // TODO(crbug.com/1331597): VideoToolbox can report software usage, should
   // we plumb that through?
   frame->metadata().power_efficient = true;

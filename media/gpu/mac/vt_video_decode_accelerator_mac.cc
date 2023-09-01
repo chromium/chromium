@@ -45,6 +45,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
 #include "media/base/mac/color_space_util_mac.h"
+#include "media/base/mac/video_frame_mac.h"
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
@@ -2205,7 +2206,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
                                     plane);
   }
-  if (picture_format_ == PIXEL_FORMAT_NV12) {
+
+  if (IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(frame.image))) {
     picture.set_is_webgpu_compatible(true);
   }
 

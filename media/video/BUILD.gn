@@ -116,6 +116,10 @@ source_set("video") {
     ]
     deps += [ "//third_party/openh264:encoder" ]
   }
+
+  if (is_apple) {
+    deps += [ "//media/base/mac:mac" ]
+  }
 }
 
 # Note: This is a roll-up only target; do not expand the visibility. DEPS should

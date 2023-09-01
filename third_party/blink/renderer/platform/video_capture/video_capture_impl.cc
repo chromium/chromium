@@ -44,6 +44,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "media/base/mac/video_frame_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace blink {
 
 constexpr int kMaxFirstFrameLogs = 5;
@@ -436,6 +440,11 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::Initialize() {
       is_webgpu_compatible_ =
           buffer_handle.native_pixmap_handle.supports_zero_copy_webgpu_import;
 #endif
+
+#if BUILDFLAG(IS_MAC)
+      is_webgpu_compatible_ =
+          media::IOSurfaceIsWebGPUCompatible(buffer_handle.io_surface.get());
+#endif
       // No need to propagate shared memory region further as it's already
       // exposed by |buffer_context_->data()|.
       buffer_handle.region = base::UnsafeSharedMemoryRegion();
@@ -657,7 +666,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 
   frame_->metadata().allow_overlay = true;
   frame_->metadata().read_lock_fences_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
   frame_->metadata().is_webgpu_compatible = is_webgpu_compatible_;
 #endif
   return true;
