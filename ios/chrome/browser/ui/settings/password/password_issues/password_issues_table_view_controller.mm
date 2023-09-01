@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
@@ -69,6 +70,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger _dismissedWarningsCount;
   // Type of insecure credentials displayed in the page.
   WarningType _warningType;
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @end
@@ -272,6 +275,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       PasswordIssueContentItem* passwordIssue =
           base::apple::ObjCCastStrict<PasswordIssueContentItem>(
               [model itemAtIndexPath:indexPath]);
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordIssuesOpenPasswordDetails"));
       [self.presenter presentPasswordIssueDetails:passwordIssue.password];
       break;
     }
@@ -429,6 +434,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
                  [URLCell.faviconView configureWithAttributes:attributes];
                }
              }];
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordIssuesSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - PasswordIssuesConsumer

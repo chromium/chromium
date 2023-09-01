@@ -116,10 +116,10 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [self.delegate passwordCheckupCoordinatorDidRemove:self];
 }
 
-// TODO(crbug.com/1464966): Make sure there aren't mutiple active
-// `_passwordIssuesCoordinator`s at once.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
+  DUMP_WILL_BE_CHECK(!_passwordIssuesCoordinator);
+
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
   password_manager::LogOpenPasswordIssuesList(warningType);

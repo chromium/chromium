@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 
+#import "base/metrics/user_metrics.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -123,6 +124,8 @@ void HandleSafetyCheckPasswordTap(
   // If there are multiple passwords (with multiple warning types), or no
   // compromised credentials at all, navigate users to the Password Checkup
   // overview screen.
+  base::RecordAction(
+      base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
   [handler showPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }

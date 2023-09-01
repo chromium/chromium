@@ -20050,6 +20050,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileKeyboardAccessoryOpenPasswordManager">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Manager page from keyboard accessory.
+    iOS only.
+  </description>
+</action>
+
 <action name="MobileKeyCommandAddToBookmarks">
   <owner>lpromero@google.com</owner>
   <owner>alionadangla@google.com</owner>
@@ -20449,6 +20457,14 @@ should be able to be added at any place in this file.
   <description>
     Reported when Safe Browsing Standard Protection Settings UI was dismissed.
     iOS only.
+  </description>
+</action>
+
+<action name="MobileMagicStackOpenPasswordCheckup">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Checkup page from the Magic Stack. iOS
+    only.
   </description>
 </action>
 
@@ -21386,10 +21402,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="MobilePasswordCheckupOpen">
+<action name="MobilePasswordBreachOpenPasswordManager">
   <owner>noemies@google.com</owner>
   <description>
-    Reported when user opens the Password Checkup page. iOS only.
+    Reported when user opens the Password Manager page from the password breach
+    view. iOS only.
   </description>
 </action>
 
@@ -21416,10 +21433,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobilePasswordDetailsOpen">
+<action name="MobilePasswordDetailsSettingsBack">
   <owner>noemies@google.com</owner>
   <description>
-    Reported when user opens a password details page. iOS only.
+    Reported when user goes back from Password Details Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordDetailsSettingsClose">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when Password Details Settings UI was dismissed. iOS only.
   </description>
 </action>
 
@@ -21431,6 +21456,58 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePasswordInfobarModalOpenPasswordManager">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Manager page from a password infobar
+    modal. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesCompromisedOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the compromised password issues page. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesOpenPasswordDetails">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the password details page from the password issues
+    page. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesReusedOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the reused password issues page. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesSettingsBack">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user goes back from Password Issues Settings UI to root
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesSettingsClose">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when Password Issues Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordIssuesWeakOpen">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the weak password issues page. iOS only.
+  </description>
+</action>
+
 <action name="MobilePasswordManagerAddPassword">
   <owner>noemies@google.com</owner>
   <description>
@@ -21438,10 +21515,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="MobilePasswordManagerOpen">
+<action name="MobilePasswordManagerOpenPasswordCheckup">
   <owner>noemies@google.com</owner>
   <description>
-    Reported when user opens the Password Manager. iOS only.
+    Reported when user opens the Password Checkup page from the Password
+    Manager. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordManagerOpenPasswordDetails">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the password details page from the Password
+    Manager. iOS only.
   </description>
 </action>
 
@@ -21917,6 +22003,14 @@ should be able to be added at any place in this file.
   <owner>sczs@chromium.org</owner>
   <description>
     Reported when Search Engine Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileSearchPasswordsWidgetOpenPasswordManager">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Manager page from the Search Passwords
+    widget. iOS only.
   </description>
 </action>
 
@@ -23409,6 +23503,14 @@ should be able to be added at any place in this file.
   <owner>michaeldo@chromium.org</owner>
   <description>
     Reported when Web Inspector Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobileWebsiteOpenPasswordManager">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user opens the Password Manager page when navigating to a
+    website. iOS only.
   </description>
 </action>
 

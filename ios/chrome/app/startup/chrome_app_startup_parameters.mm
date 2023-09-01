@@ -729,6 +729,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     UMA_HISTOGRAM_ENUMERATION(
         "PasswordManager.ManagePasswordsReferrer",
         password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget);
+    base::RecordAction(base::UserMetricsAction(
+        "MobileSearchPasswordsWidgetOpenPasswordManager"));
   }
   return params;
 }

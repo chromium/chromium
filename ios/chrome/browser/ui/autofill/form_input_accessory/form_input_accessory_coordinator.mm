@@ -371,6 +371,8 @@ const CGFloat kIPHVerticalOffset = -5;
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
+  base::RecordAction(
+      base::UserMetricsAction("MobileKeyboardAccessoryOpenPasswordManager"));
 }
 
 - (void)openPasswordSettings {

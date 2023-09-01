@@ -1576,6 +1576,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   if (!IsPasswordCheckTappable(self.passwordCheckState)) {
     return;
   }
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordManagerOpenPasswordCheckup"));
   [self.handler showPasswordCheckup];
 }
 
@@ -1887,6 +1889,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 }
 
 - (void)showDetailedViewPageForItem:(TableViewItem*)item {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordManagerOpenPasswordDetails"));
   [self.handler
       showDetailedViewForAffiliatedGroup:base::apple::ObjCCastStrict<
                                              AffiliatedGroupTableViewItem>(item)
@@ -1951,6 +1955,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           base::apple::ObjCCastStrict<BlockedSiteTableViewItem>(
               [model itemAtIndexPath:indexPath])
               .credential;
+      base::RecordAction(
+          base::UserMetricsAction("MobilePasswordManagerOpenPasswordDetails"));
       [self.handler showDetailedViewForCredential:credential];
       break;
     }

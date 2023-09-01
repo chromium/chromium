@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -135,6 +136,8 @@
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kManagePasswordsBubble);
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordInfobarModalOpenPasswordManager"));
 }
 
 @end

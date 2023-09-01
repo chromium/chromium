@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 
 @protocol ApplicationCommands;
 @protocol PasswordDetailsHandler;
@@ -16,7 +17,8 @@
 
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
-    : AutofillEditTableViewController <PasswordDetailsConsumer>
+    : AutofillEditTableViewController <PasswordDetailsConsumer,
+                                       SettingsControllerProtocol>
 
 // The designated initializer.
 - (instancetype)init;

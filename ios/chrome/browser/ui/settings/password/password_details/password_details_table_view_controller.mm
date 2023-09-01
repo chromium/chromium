@@ -154,6 +154,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // Title label displayed in the navigation bar.
   UILabel* _titleLabel;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 // Array of passwords that are shown on the screen.
@@ -240,8 +243,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 
   [self setOrExtendAuthValidityTimer];
-
-  base::RecordAction(base::UserMetricsAction("MobilePasswordDetailsOpen"));
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -774,6 +775,24 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       return YES;
   }
   return NO;
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordDetailsSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordDetailsSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _settingsAreDismissed = YES;
 }
 
 #pragma mark - PasswordDetailsConsumer
