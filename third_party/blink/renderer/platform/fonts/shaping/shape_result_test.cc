@@ -356,7 +356,7 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeograph) {
       RecordPositionBeforeApplyingSpacing(result.get(), string.length());
   Vector<OffsetWithSpacing, 16> offsets =
       RecordExpectedSpacing(test_data.offsets);
-  result->ApplyTextAutoSpacing(offsets);
+  result->ApplyTextAutoSpacing(false, offsets);
   float accumulated_spacing = 0.0;
   for (wtf_size_t i = 0, j = 0; i < string.length(); i++) {
     EXPECT_NEAR(accumulated_spacing,
@@ -382,7 +382,7 @@ TEST_P(TextAutoSpaceResultText, AddAutoSpacingToIdeographRTL) {
       RecordPositionBeforeApplyingSpacing(result.get(), string.length());
   Vector<OffsetWithSpacing, 16> offsets =
       RecordExpectedSpacing(test_data.offsets);
-  result->ApplyTextAutoSpacing(offsets);
+  result->ApplyTextAutoSpacing(false, offsets);
   float accumulated_spacing = 0.0;
 
   for (wtf_size_t i = string.length(), j = offsets.size(); i >= 1; i--) {

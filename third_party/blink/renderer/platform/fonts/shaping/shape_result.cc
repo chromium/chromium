@@ -956,27 +956,40 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
 }
 
 void ShapeResult::ApplyTextAutoSpacing(
+    bool has_spacing_added_to_adjacent_glyph,
     const Vector<OffsetWithSpacing, 16>& offsets_with_spacing) {
-  DCHECK(offsets_with_spacing.size());
+  DCHECK(offsets_with_spacing.size() || has_spacing_added_to_adjacent_glyph);
   if (LIKELY(IsLtr())) {
-    ApplyTextAutoSpacingCore(offsets_with_spacing.begin(),
+    ApplyTextAutoSpacingCore(has_spacing_added_to_adjacent_glyph,
+                             offsets_with_spacing.begin(),
                              offsets_with_spacing.end());
   } else {
-    ApplyTextAutoSpacingCore(offsets_with_spacing.rbegin(),
+    ApplyTextAutoSpacingCore(has_spacing_added_to_adjacent_glyph,
+                             offsets_with_spacing.rbegin(),
                              offsets_with_spacing.rend());
   }
 }
 
 template <class Iterator>
-void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
-                                           Iterator offset_end) {
-  DCHECK(offset_begin != offset_end);
+void ShapeResult::ApplyTextAutoSpacingCore(
+    bool has_spacing_added_to_adjacent_glyph,
+    Iterator offset_begin,
+    Iterator offset_end) {
+  DCHECK(offset_begin != offset_end || has_spacing_added_to_adjacent_glyph);
+
   float total_space = 0.0;
   Iterator current_offset = offset_begin;
   for (auto& run : runs_) {
-    if (!run) {
+    if (!run || run->glyph_data_.size() == 0) {
       continue;
     }
+    if (UNLIKELY(has_spacing_added_to_adjacent_glyph)) {
+      // A spacing is added to the previous glyph in the last run, so set the
+      // first glyph unsafe to break before.
+      run->glyph_data_[0].safe_to_break_before = false;
+      has_spacing_added_to_adjacent_glyph = false;
+    }
+
     float total_space_for_run = 0;
     for (wtf_size_t i = 0;
          i < run->glyph_data_.size() && current_offset != offset_end; i++) {
@@ -994,6 +1007,16 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
         glyph_data.advance += current_offset->spacing;
         total_space_for_run += current_offset->spacing;
         current_offset++;
+        // If the LineBreaker breaks the content at this point, there is no
+        // adjacent character so it spacing should be removed.
+        // If the next character is in another item, the caller would be
+        // responsible for asking the next item to update this information.
+        if (LIKELY(i + 1 < run->glyph_data_.size())) {
+          run->glyph_data_[i + 1].safe_to_break_before = false;
+        } else {
+          // Tell the next run to set its first glyph to unsafe to break before.
+          has_spacing_added_to_adjacent_glyph = true;
+        }
       }
     }
     run->width_ += total_space_for_run;

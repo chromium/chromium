@@ -914,7 +914,8 @@
       "external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html",
-      "fast/dynamic/text-combine.html"
+      "fast/dynamic/text-combine.html",
+      "virtual/text-antialias/justify-ideograph-leading-expansion.html"
     ],
     "args": [
       "--enable-blink-features=CSSTextAutoSpace",

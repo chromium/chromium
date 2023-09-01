@@ -277,7 +277,12 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
   // Adds spacing between ideograph character and non-ideograph character for
   // the property of text-autospace.
+  // If `has_spacing_added_to_adjacent_char` is true, it means we append spacing
+  // to the previous glyph, in this case, the first glyph in this result should
+  // be unsafe to break before, because the previous is no longer adjacent to
+  // this one.
   void ApplyTextAutoSpacing(
+      bool has_spacing_added_to_adjacent_char,
       const Vector<OffsetWithSpacing, 16>& offsets_with_spacing);
 
   // Append a copy of a range within an existing result to another result.
@@ -552,7 +557,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Vector::iterator or Vector::reverse_iterator, depending on the text
   // direction.
   template <class Iterator>
-  void ApplyTextAutoSpacingCore(Iterator offset_begin, Iterator offset_end);
+  void ApplyTextAutoSpacingCore(bool has_spacing_added_to_adjacent_glyph,
+                                Iterator offset_begin,
+                                Iterator offset_end);
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);
