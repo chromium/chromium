@@ -20871,6 +20871,12 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<enum name="CrasApNcStartStatus">
+  <summary/>
+  <int value="0" label="CRAS_AP_NC_REQUESTED_FAILED"/>
+  <int value="1" label="CRAS_AP_NC_REQUESTED_SUCCEEDED"/>
+</enum>
+
 <enum name="CrasClientType">
   <summary>
     List of the client type of CRAS. The list can be found in

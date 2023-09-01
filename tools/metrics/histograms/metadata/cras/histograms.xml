@@ -60,6 +60,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.ApNcRuntime" units="seconds" expires_after="2024-08-31">
+  <owner>hunghsienchen@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>Tracks the runtime of the APM when AP NC is active.</summary>
+</histogram>
+
+<histogram name="Cras.ApNcStartStatus" enum="CrasApNcStartStatus"
+    expires_after="2024-08-31">
+  <owner>hunghsienchen@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Sent when AP NC is requested in APM. 0 for AP NC requested but failed; 1 for
+    AP NC requested and success.
+  </summary>
+</histogram>
+
 <histogram name="Cras.Busyloop" units="units" expires_after="2024-03-17">
 <!-- Name completed by histogram_suffixes
      name="Cras.TimePeriod" -->
