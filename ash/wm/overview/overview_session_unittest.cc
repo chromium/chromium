@@ -6816,6 +6816,10 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
 
+  SplitViewDivider* split_view_divider() {
+    return split_view_controller()->split_view_divider();
+  }
+
   bool IsDividerAnimating() {
     return split_view_controller()->IsDividerAnimating();
   }
@@ -7809,9 +7813,9 @@ TEST_F(SplitViewOverviewSessionTest, SplitViewOverviewBothActiveTest) {
   EXPECT_EQ(divider_bounds.right(), overview_grid_bounds.x());
 
   const gfx::Point resize_start_location(divider_bounds.CenterPoint());
-  split_view_controller()->StartResizeWithDivider(resize_start_location);
+  split_view_divider()->StartResizeWithDivider(resize_start_location);
   const gfx::Point resize_end_location(300, 0);
-  split_view_controller()->EndResizeWithDivider(resize_end_location);
+  split_view_divider()->EndResizeWithDivider(resize_end_location);
   SkipDividerSnapAnimation();
 
   const gfx::Rect window1_bounds_after_resize = window1->GetBoundsInScreen();
@@ -8096,8 +8100,8 @@ TEST_F(SplitViewOverviewSessionTest, DragDividerToExitTest) {
 
   // Drag the divider toward closing the snapped window.
   gfx::Rect divider_bounds = GetSplitViewDividerBounds(false /* is_dragging */);
-  split_view_controller()->StartResizeWithDivider(divider_bounds.CenterPoint());
-  split_view_controller()->EndResizeWithDivider(gfx::Point(0, 0));
+  split_view_divider()->StartResizeWithDivider(divider_bounds.CenterPoint());
+  split_view_divider()->EndResizeWithDivider(gfx::Point(0, 0));
   SkipDividerSnapAnimation();
 
   // Test that split view mode is ended. Overview mode is still active.
@@ -8114,8 +8118,8 @@ TEST_F(SplitViewOverviewSessionTest, DragDividerToExitTest) {
   // Drag the divider toward closing the overview window grid.
   divider_bounds = GetSplitViewDividerBounds(false /*is_dragging=*/);
   const gfx::Rect display_bounds = GetWorkAreaInScreen(window2.get());
-  split_view_controller()->StartResizeWithDivider(divider_bounds.CenterPoint());
-  split_view_controller()->EndResizeWithDivider(display_bounds.bottom_right());
+  split_view_divider()->StartResizeWithDivider(divider_bounds.CenterPoint());
+  split_view_divider()->EndResizeWithDivider(display_bounds.bottom_right());
   SkipDividerSnapAnimation();
 
   // Test that split view mode is ended. Overview mode is also ended. |window2|
@@ -8178,10 +8182,10 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
 
   // Then drag the divider to left toward closing the snapped window.
   gfx::Rect divider_bounds = GetSplitViewDividerBounds(false /*is_dragging=*/);
-  split_view_controller()->StartResizeWithDivider(divider_bounds.CenterPoint());
+  split_view_divider()->StartResizeWithDivider(divider_bounds.CenterPoint());
   // Drag the divider to a point that is close enough but still have a short
   // distance to the edge of the screen.
-  split_view_controller()->EndResizeWithDivider(gfx::Point(20, 20));
+  split_view_divider()->EndResizeWithDivider(gfx::Point(20, 20));
   SkipDividerSnapAnimation();
 
   // Test that split view mode is ended. Overview mode is still active.
@@ -8204,11 +8208,11 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsTest) {
 
   // Then drag the divider to right toward closing the snapped window.
   divider_bounds = GetSplitViewDividerBounds(false /* is_dragging */);
-  split_view_controller()->StartResizeWithDivider(divider_bounds.CenterPoint());
+  split_view_divider()->StartResizeWithDivider(divider_bounds.CenterPoint());
   // Drag the divider to a point that is close enough but still have a short
   // distance to the edge of the screen.
   end_location2.Offset(-20, -20);
-  split_view_controller()->EndResizeWithDivider(end_location2);
+  split_view_divider()->EndResizeWithDivider(end_location2);
   SkipDividerSnapAnimation();
 
   // Test that split view mode is ended. Overview mode is still active.
@@ -8234,9 +8238,9 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
   ToggleOverview();
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
-  split_view_controller()->StartResizeWithDivider(
+  split_view_divider()->StartResizeWithDivider(
       GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
-  split_view_controller()->EndResizeWithDivider(
+  split_view_divider()->EndResizeWithDivider(
       gfx::Point(work_area_length / 3, 10));
   SkipDividerSnapAnimation();
   // Use |EXPECT_NEAR| for reasons related to rounding and divider thickness.
@@ -8268,9 +8272,9 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
               SplitViewController::SnapPosition::kSecondary, window2.get())
           .width(),
       8);
-  split_view_controller()->StartResizeWithDivider(
+  split_view_divider()->StartResizeWithDivider(
       GetSplitViewDividerBounds(/*is_dragging=*/false).CenterPoint());
-  split_view_controller()->EndResizeWithDivider(
+  split_view_divider()->EndResizeWithDivider(
       gfx::Point(work_area_length * 2 / 3, 10));
   EXPECT_NEAR(work_area_length * 2 / 3,
               split_view_controller()
@@ -8738,10 +8742,10 @@ TEST_F(SplitViewOverviewSessionTest,
           ->split_view_divider()
           ->GetDividerBoundsInScreen(/*is_dragging=*/false)
           .CenterPoint();
-  split_view_controller()->StartResizeWithDivider(divider_drag_point);
+  split_view_divider()->StartResizeWithDivider(divider_drag_point);
   divider_drag_point.Offset(20, 0);
-  split_view_controller()->ResizeWithDivider(divider_drag_point);
-  split_view_controller()->EndResizeWithDivider(divider_drag_point);
+  split_view_divider()->ResizeWithDivider(divider_drag_point);
+  split_view_divider()->EndResizeWithDivider(divider_drag_point);
   ASSERT_TRUE(IsDividerAnimating());
 
   auto* overview_item = GetOverviewItemForWindow(overview_window.get());

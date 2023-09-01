@@ -31,6 +31,14 @@ class SplitViewDividerView;
 class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
                                     public ::wm::TransientWindowObserver {
  public:
+  // The split view resize behavior in tablet mode. The normal mode resizes
+  // windows on drag events. In the fast mode, windows are instead moved. A
+  // single drag "session" may involve both modes.
+  enum class TabletResizeMode {
+    kNormal,
+    kFast,
+  };
+
   explicit SplitViewDivider(SplitViewController* controller);
   SplitViewDivider(const SplitViewDivider&) = delete;
   SplitViewDivider& operator=(const SplitViewDivider&) = delete;
@@ -43,7 +51,22 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       int divider_position,
       bool is_dragging);
 
-  views::Widget* divider_widget() const { return divider_widget_; }
+  views::Widget* divider_widget() { return divider_widget_; }
+
+  bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
+
+  // Used by SplitViewController to immediately stop resizing in case of
+  // external events (split view ending, tablet mode ending, etc.).
+  // TODO(sophiewen): See if we can call `EndResizeWithDivider()` instead.
+  void set_is_resizing_with_divider(bool is_resizing_with_divider) {
+    is_resizing_with_divider_ = is_resizing_with_divider;
+  }
+
+  // Resizing functions used when resizing with `split_view_divider_` in the
+  // tablet split view mode or clamshell mode if `kSnapGroup` is enabled.
+  void StartResizeWithDivider(const gfx::Point& location_in_screen);
+  void ResizeWithDivider(const gfx::Point& location_in_screen);
+  void EndResizeWithDivider(const gfx::Point& location_in_screen);
 
   // Do the divider spawning animation that adds a finishing touch to the
   // snapping animation of a window.
@@ -136,6 +159,15 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       transient_windows_observations_{this};
+
+  // True when the divider is being dragged (not during its snap animation).
+  bool is_resizing_with_divider_ = false;
+
+  // The location of the previous mouse/gesture event in screen coordinates.
+  gfx::Point previous_event_location_;
+
+  // True *while* a resize event is being processed.
+  bool processing_resize_event_ = false;
 };
 
 }  // namespace ash

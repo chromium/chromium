@@ -569,11 +569,11 @@ TEST_F(SnapGroupEntryPointArm1Test, SnapRatioTest) {
 
   const gfx::Point hover_location =
       split_view_divider_bounds_in_screen().CenterPoint();
-  split_view_controller()->StartResizeWithDivider(hover_location);
+  split_view_divider()->StartResizeWithDivider(hover_location);
   const auto end_point =
       hover_location + gfx::Vector2d(-work_area_bounds().width() / 6, 0);
-  split_view_controller()->ResizeWithDivider(end_point);
-  split_view_controller()->EndResizeWithDivider(end_point);
+  split_view_divider()->ResizeWithDivider(end_point);
+  split_view_divider()->EndResizeWithDivider(end_point);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   EXPECT_NEAR(0.33f, WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.1);
@@ -594,9 +594,9 @@ TEST_F(SnapGroupEntryPointArm1Test,
 
     const gfx::Point hover_location =
         split_view_divider_bounds_in_screen().CenterPoint();
-    split_view_controller()->StartResizeWithDivider(hover_location);
-    split_view_controller()->ResizeWithDivider(
-        hover_location + gfx::Vector2d(distance_delta, 0));
+    split_view_divider()->StartResizeWithDivider(hover_location);
+    split_view_divider()->ResizeWithDivider(hover_location +
+                                            gfx::Vector2d(distance_delta, 0));
     EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
     EXPECT_EQ(w1_cached_bounds.width() + distance_delta,
@@ -1539,7 +1539,7 @@ TEST_F(SnapGroupEntryPointArm1Test,
     event_generator->set_current_screen_location(
         split_view_divider_bounds_in_screen().CenterPoint());
     event_generator->DragMouseBy(test_case.distance_delta, 0);
-    split_view_controller()->EndResizeWithDivider(
+    split_view_divider()->EndResizeWithDivider(
         event_generator->current_screen_location());
     SwitchToTabletMode();
     const auto current_divider_position =

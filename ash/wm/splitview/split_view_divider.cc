@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_divider.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/display/screen_orientation_controller.h"
@@ -30,10 +31,23 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
+
+namespace {
+
+gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
+                              const gfx::Rect& bounds_in_screen) {
+  return gfx::Point(std::clamp(location_in_screen.x(), bounds_in_screen.x(),
+                               bounds_in_screen.right() - 1),
+                    std::clamp(location_in_screen.y(), bounds_in_screen.y(),
+                               bounds_in_screen.bottom() - 1));
+}
+
+}  // namespace
 
 SplitViewDivider::SplitViewDivider(SplitViewController* controller)
     : controller_(controller) {
@@ -95,6 +109,107 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(
   }
 }
 
+void SplitViewDivider::StartResizeWithDivider(
+    const gfx::Point& location_in_screen) {
+  DCHECK(controller_->InSplitViewMode());
+
+  // `is_resizing_with_divider_` may be true here, because you can start
+  // dragging the divider with a pointing device while already dragging it by
+  // touch, or vice versa. It is possible by using the emulator or
+  // chrome://flags/#force-tablet-mode. Bailing out here does not stop the user
+  // from dragging by touch and with a pointing device simultaneously; it just
+  // avoids duplicate calls to `CreateDragDetails()` and `OnDragStarted()`. We
+  // also bail out here if you try to start dragging the divider during its snap
+  // animation.
+  if (is_resizing_with_divider_ || controller_->IsDividerAnimating()) {
+    return;
+  }
+
+  is_resizing_with_divider_ = true;
+  UpdateDividerBounds();
+  previous_event_location_ = location_in_screen;
+
+  controller_->StartTabletResize();
+
+  for (aura::Window* window : observed_windows_) {
+    if (window == nullptr) {
+      continue;
+    }
+
+    WindowState* window_state = WindowState::Get(window);
+    gfx::Point location_in_parent(location_in_screen);
+    wm::ConvertPointFromScreen(window->parent(), &location_in_parent);
+    int window_component = GetWindowComponentForResize(window);
+    window_state->CreateDragDetails(gfx::PointF(location_in_parent),
+                                    window_component,
+                                    wm::WINDOW_MOVE_SOURCE_TOUCH);
+
+    window_state->OnDragStarted(window_component);
+  }
+}
+
+void SplitViewDivider::ResizeWithDivider(const gfx::Point& location_in_screen) {
+  DCHECK(controller_->InSplitViewMode());
+
+  if (!is_resizing_with_divider_) {
+    return;
+  }
+
+  base::AutoReset<bool> auto_reset(&processing_resize_event_, true);
+
+  const gfx::Rect work_area_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          controller_->root_window());
+  gfx::Point modified_location_in_screen =
+      GetBoundedPosition(location_in_screen, work_area_bounds);
+
+  // This updates `tablet_resize_mode_` based on drag speed.
+  controller_->UpdateTabletResizeMode(base::TimeTicks::Now(),
+                                      modified_location_in_screen);
+
+  // Update `divider_position_`.
+  controller_->UpdateDividerPosition(modified_location_in_screen);
+  controller_->NotifyDividerPositionChanged();
+  controller_->UpdateSnappedWindowsAndDividerBounds();
+
+  // Update the resize backdrop, as well as the black scrim layer's bounds and
+  // opacity.
+  // TODO(b/298515546): Add performant resizing pattern.
+  controller_->UpdateResizeBackdrop();
+  controller_->UpdateBlackScrim(modified_location_in_screen);
+
+  // Apply window transform if necessary.
+  controller_->SetWindowsTransformDuringResizing();
+
+  previous_event_location_ = modified_location_in_screen;
+}
+
+void SplitViewDivider::EndResizeWithDivider(
+    const gfx::Point& location_in_screen) {
+  DCHECK(controller_->InSplitViewMode());
+  if (!is_resizing_with_divider_) {
+    return;
+  }
+
+  is_resizing_with_divider_ = false;
+
+  const gfx::Rect work_area_bounds =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          controller_->root_window());
+  gfx::Point modified_location_in_screen =
+      GetBoundedPosition(location_in_screen, work_area_bounds);
+  controller_->UpdateDividerPosition(modified_location_in_screen);
+  controller_->NotifyDividerPositionChanged();
+
+  // Need to update snapped windows bounds even if the split view mode may have
+  // to exit. Otherwise it's possible for a snapped window stuck in the edge of
+  // of the screen while overview mode is active.
+  controller_->UpdateSnappedWindowsAndDividerBounds();
+  controller_->NotifyWindowResized();
+
+  controller_->EndTabletResize();
+}
+
 void SplitViewDivider::DoSpawningAnimation(int spawning_position) {
   static_cast<SplitViewDividerView*>(divider_widget_->GetContentsView())
       ->DoSpawningAnimation(spawning_position);
@@ -109,6 +224,8 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           controller_->root_window()->GetChildById(
               desks_util::GetActiveDeskContainerId()));
+  // TODO(b/296935443): Instead of being dependent on the controller's divider
+  // position, we should set the divider bounds directly.
   const int divider_position = controller_->divider_position();
   const bool landscape = IsCurrentScreenOrientationLandscape();
   return GetDividerBoundsInScreen(work_area_bounds_in_screen, landscape,

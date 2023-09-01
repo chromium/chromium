@@ -146,14 +146,6 @@ bool IsExactlyOneRootInSplitView() {
              });
 }
 
-gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
-                              const gfx::Rect& bounds_in_screen) {
-  return gfx::Point(std::clamp(location_in_screen.x(), bounds_in_screen.x(),
-                               bounds_in_screen.right() - 1),
-                    std::clamp(location_in_screen.y(), bounds_in_screen.y(),
-                               bounds_in_screen.bottom() - 1));
-}
-
 ui::InputMethod* GetCurrentInputMethod() {
   if (auto* bridge = IMEBridge::Get()) {
     if (auto* handler = bridge->GetInputContextHandler())
@@ -268,9 +260,9 @@ void MaybeRemoveSnapGroupContainingWindow(aura::Window* window) {
 // DividerSnapAnimation:
 
 // Animates the divider to its closest fixed position.
-// `SplitViewController::is_resizing_with_divider_` is assumed to be already set
-// to false before this animation starts, but some resizing logic is delayed
-// until this animation ends.
+// `SplitViewController::IsResizingWithDivider()` is assumed to be already false
+// before this animation starts, but some resizing logic is delayed until this
+// animation ends.
 class SplitViewController::DividerSnapAnimation
     : public gfx::SlideAnimation,
       public gfx::AnimationDelegate {
@@ -319,7 +311,7 @@ class SplitViewController::DividerSnapAnimation
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override {
     DCHECK(split_view_controller_->InSplitViewMode());
-    DCHECK(!split_view_controller_->is_resizing_with_divider_);
+    DCHECK(!split_view_controller_->IsResizingWithDivider());
     DCHECK_EQ(ending_position_, split_view_controller_->divider_position_);
 
     split_view_controller_->EndResizeWithDividerImpl();
@@ -331,7 +323,7 @@ class SplitViewController::DividerSnapAnimation
 
   void AnimationProgressed(const gfx::Animation* animation) override {
     DCHECK(split_view_controller_->InSplitViewMode());
-    DCHECK(!split_view_controller_->is_resizing_with_divider_);
+    DCHECK(!split_view_controller_->IsResizingWithDivider());
 
     split_view_controller_->divider_position_ =
         CurrentValueBetween(starting_position_, ending_position_);
@@ -780,6 +772,10 @@ SplitViewController::~SplitViewController() {
   EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
+bool SplitViewController::IsResizingWithDivider() const {
+  return split_view_divider_ && split_view_divider_->is_resizing_with_divider();
+}
+
 bool SplitViewController::InSplitViewMode() const {
   return state_ != State::kNoSnap;
 }
@@ -888,7 +884,7 @@ void SplitViewController::SnapWindow(aura::Window* window,
                                      float snap_ratio) {
   DCHECK(window && CanSnapWindow(window));
   DCHECK_NE(snap_position, SnapPosition::kNone);
-  DCHECK(!is_resizing_with_divider_);
+  DCHECK(!IsResizingWithDivider());
   if (IsDividerAnimating()) {
     StopSnapAnimation();
   }
@@ -1123,7 +1119,7 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
 void SplitViewController::SwapWindows(SwapWindowsSource swap_windows_source) {
   DCHECK(InSplitViewMode());
 
-  // Ignore `is_resizing_with_divider_` because it will be true in case of
+  // Ignore `IsResizingWithDivider()` because it will be true in case of
   // double tapping (not double clicking) the divider without ever actually
   // dragging it anywhere. Double tapping the divider triggers
   // StartResizeWithDivider(), EndResizeWithDivider(), StartResizeWithDivider(),
@@ -1283,7 +1279,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
       GetMinimumWindowLength(window_for_minimum_size, horizontal);
   DCHECK(window_for_minimum_size || minimum == 0);
   if (window_size < minimum) {
-    if (in_tablet_mode && !is_resizing_with_divider_) {
+    if (in_tablet_mode && !IsResizingWithDivider()) {
       // If window with `window_for_minimum_size` gets snapped, the
       // `split_view_divider_` will then be adjusted to its default position and
       // `window_size` will be computed accordingly.
@@ -1342,7 +1338,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
 }
 
 bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
-  return is_resizing_with_divider_ &&
+  return IsResizingWithDivider() &&
          tablet_resize_mode_ == TabletResizeMode::kFast;
 }
 
@@ -1377,146 +1373,6 @@ bool SplitViewController::IsDividerAnimating() const {
   return divider_snap_animation_ && divider_snap_animation_->is_animating();
 }
 
-void SplitViewController::StartResizeWithDivider(
-    const gfx::Point& location_in_screen) {
-  CHECK(InSplitViewMode());
-
-  // `is_resizing_with_divider_` may be true here, because you can start
-  // dragging the divider with a pointing device while already dragging it by
-  // touch, or vice versa. It is possible by using the emulator or
-  // chrome://flags/#force-tablet-mode. Bailing out here does not stop the user
-  // from dragging by touch and with a pointing device simultaneously; it just
-  // avoids duplicate calls to CreateDragDetails() and OnDragStarted(). We also
-  // bail out here if you try to start dragging the divider during its snap
-  // animation.
-  if (is_resizing_with_divider_ || IsDividerAnimating()) {
-    return;
-  }
-
-  is_resizing_with_divider_ = true;
-  split_view_divider_->UpdateDividerBounds();
-  previous_event_location_ = location_in_screen;
-
-  StartTabletResize();
-
-  for (aura::Window* window : {primary_window_, secondary_window_}) {
-    if (window == nullptr) {
-      continue;
-    }
-
-    WindowState* window_state = WindowState::Get(window);
-    gfx::Point location_in_parent(location_in_screen);
-    ::wm::ConvertPointFromScreen(window->parent(), &location_in_parent);
-    int window_component = GetWindowComponentForResize(window);
-    window_state->CreateDragDetails(gfx::PointF(location_in_parent),
-                                    window_component,
-                                    ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-
-    window_state->OnDragStarted(window_component);
-  }
-
-  base::RecordAction(base::UserMetricsAction("SplitView_ResizeWindows"));
-  if (state_ == State::kBothSnapped) {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        split_view_divider_->divider_widget()->GetCompositor(),
-        kTabletSplitViewResizeMultiHistogram,
-        kTabletSplitViewResizeMultiMaxLatencyHistogram);
-    return;
-  }
-
-  DCHECK(GetOverviewSession());
-  if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        split_view_divider_->divider_widget()->GetCompositor(),
-        kTabletSplitViewResizeSingleHistogram,
-        kTabletSplitViewResizeSingleMaxLatencyHistogram);
-  } else {
-    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
-        split_view_divider_->divider_widget()->GetCompositor(),
-        kTabletSplitViewResizeWithOverviewHistogram,
-        kTabletSplitViewResizeWithOverviewMaxLatencyHistogram);
-  }
-}
-
-void SplitViewController::ResizeWithDivider(
-    const gfx::Point& location_in_screen) {
-  DCHECK(InSplitViewMode());
-
-  if (!is_resizing_with_divider_) {
-    return;
-  }
-
-  base::AutoReset<bool> auto_reset(&processing_resize_event_, true);
-
-  presentation_time_recorder_->RequestNext();
-  const gfx::Rect work_area_bounds =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window_);
-  gfx::Point modified_location_in_screen =
-      GetBoundedPosition(location_in_screen, work_area_bounds);
-
-  // This updates `tablet_resize_mode_` based on drag speed.
-  UpdateTabletResizeMode(base::TimeTicks::Now(), modified_location_in_screen);
-
-  // Update `divider_position_`.
-  UpdateDividerPosition(modified_location_in_screen);
-  NotifyDividerPositionChanged();
-
-  // Update the snapped window/windows and divider's position.
-  UpdateSnappedWindowsAndDividerBounds();
-
-  // Update the resize backdrop, as well as the black scrim layer's bounds and
-  // opacity.
-  UpdateResizeBackdrop();
-  UpdateBlackScrim(modified_location_in_screen);
-
-  // Apply window transform if necessary.
-  SetWindowsTransformDuringResizing();
-
-  previous_event_location_ = modified_location_in_screen;
-}
-
-void SplitViewController::EndResizeWithDivider(
-    const gfx::Point& location_in_screen) {
-  presentation_time_recorder_.reset();
-  DCHECK(InSplitViewMode());
-  if (!is_resizing_with_divider_) {
-    return;
-  }
-
-  // TODO(xdai): Use fade out animation instead of just removing it.
-  black_scrim_layer_.reset();
-
-  EndTabletResize();
-  is_resizing_with_divider_ = false;
-
-  const gfx::Rect work_area_bounds =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window_);
-  gfx::Point modified_location_in_screen =
-      GetBoundedPosition(location_in_screen, work_area_bounds);
-  UpdateDividerPosition(modified_location_in_screen);
-  NotifyDividerPositionChanged();
-
-  // Need to update snapped windows bounds even if the split view mode may have
-  // to exit. Otherwise it's possible for a snapped window stuck in the edge of
-  // of the screen while overview mode is active.
-  UpdateSnappedWindowsAndDividerBounds();
-  NotifyWindowResized();
-
-  const int target_divider_position = GetClosestFixedDividerPosition();
-  if (divider_position_ == target_divider_position ||
-      IsSnapGroupEnabledInClamshellMode()) {
-    EndResizeWithDividerImpl();
-    EndSplitViewAfterResizingAtEdgeIfAppropriate();
-  } else {
-    divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
-        this, divider_position_, target_divider_position,
-        base::Milliseconds(300), gfx::Tween::EASE_IN);
-    divider_snap_animation_->Show();
-  }
-}
-
 void SplitViewController::EndSplitView(EndReason end_reason) {
   if (!InSplitViewMode()) {
     return;
@@ -1531,9 +1387,9 @@ void SplitViewController::EndSplitView(EndReason end_reason) {
   // But if the split view is ending due to the destroy of `root_window_`, we
   // should skip the resize.
   const bool is_divider_animating = IsDividerAnimating();
-  if ((is_resizing_with_divider_ || is_divider_animating) &&
+  if ((IsResizingWithDivider() || is_divider_animating) &&
       end_reason != EndReason::kRootWindowDestroyed) {
-    is_resizing_with_divider_ = false;
+    split_view_divider_->set_is_resizing_with_divider(false);
     if (is_divider_animating) {
       // Don't call StopAndShoveAnimatedDivider as it will call observers.
       StopSnapAnimation();
@@ -1720,8 +1576,7 @@ void SplitViewController::MaybeDetachWindow(aura::Window* dragged_window) {
   // ending split view and some post processings to be done such as removing
   // snap group and split view divider.
   auto* snap_group_controller = SnapGroupController::Get();
-  if (snap_group_controller && InSplitViewMode() &&
-      !is_resizing_with_divider_ &&
+  if (snap_group_controller && InSplitViewMode() && !IsResizingWithDivider() &&
       !Shell::Get()->overview_controller()->InOverviewSession()) {
     OnSnappedWindowDetached(dragged_window,
                             WindowDetachedReason::kWindowDragged);
@@ -1775,13 +1630,13 @@ void SplitViewController::OnWindowBoundsChanged(
     ui::PropertyChangeReason reason) {
   CHECK_EQ(root_window_, window->GetRootWindow());
 
-  if (InTabletSplitViewMode() && is_resizing_with_divider_) {
+  if (InTabletSplitViewMode() && IsResizingWithDivider()) {
     // Bounds may be changed while we are processing a resize event. In this
     // case, we don't update the windows transform here, since it will be done
     // soon anyway. If we are *not* currently processing a resize, it means the
     // bounds of a window have been updated "async", and we need to update the
     // window's transform.
-    if (!processing_resize_event_) {
+    if (!split_view_divider_->processing_resize_event_) {
       SetWindowsTransformDuringResizing();
     }
     return;
@@ -2054,7 +1909,7 @@ void SplitViewController::OnDisplayMetricsChanged(
 
   // For other display configuration changes, we only move the divider to the
   // closest fixed position.
-  if (!is_resizing_with_divider_) {
+  if (!IsResizingWithDivider()) {
     divider_position_ = GetClosestFixedDividerPosition();
   }
 
@@ -2090,8 +1945,8 @@ void SplitViewController::OnTabletModeEnding() {
   split_view_type_ = SplitViewType::kClamshellType;
 
   const bool is_divider_animating = IsDividerAnimating();
-  if (is_resizing_with_divider_ || is_divider_animating) {
-    is_resizing_with_divider_ = false;
+  if (IsResizingWithDivider() || is_divider_animating) {
+    split_view_divider_->set_is_resizing_with_divider(false);
     if (is_divider_animating) {
       StopAndShoveAnimatedDivider();
     }
@@ -2557,10 +2412,13 @@ SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
 
 void SplitViewController::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
+  CHECK(split_view_divider_);
   if (IsLayoutHorizontal(root_window_))
-    divider_position_ += location_in_screen.x() - previous_event_location_.x();
+    divider_position_ += location_in_screen.x() -
+                         split_view_divider_->previous_event_location_.x();
   else
-    divider_position_ += location_in_screen.y() - previous_event_location_.y();
+    divider_position_ += location_in_screen.y() -
+                         split_view_divider_->previous_event_location_.y();
   divider_position_ = std::max(0, divider_position_);
 }
 
@@ -2752,8 +2610,8 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   // Stop resizing if one of the snapped window is detached from split
   // view.
   const bool is_divider_animating = IsDividerAnimating();
-  if (is_resizing_with_divider_ || is_divider_animating) {
-    is_resizing_with_divider_ = false;
+  if (IsResizingWithDivider() || is_divider_animating) {
+    split_view_divider_->set_is_resizing_with_divider(false);
     if (is_divider_animating) {
       StopAndShoveAnimatedDivider();
     }
@@ -3010,6 +2868,27 @@ void SplitViewController::FinishWindowResizing(aura::Window* window) {
 }
 
 void SplitViewController::StartTabletResize() {
+  base::RecordAction(base::UserMetricsAction("SplitView_ResizeWindows"));
+  if (state_ == State::kBothSnapped) {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        split_view_divider_->divider_widget()->GetCompositor(),
+        kTabletSplitViewResizeMultiHistogram,
+        kTabletSplitViewResizeMultiMaxLatencyHistogram);
+    return;
+  }
+
+  CHECK(GetOverviewSession());
+  if (GetOverviewSession()->GetGridWithRootWindow(root_window_)->empty()) {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        split_view_divider_->divider_widget()->GetCompositor(),
+        kTabletSplitViewResizeSingleHistogram,
+        kTabletSplitViewResizeSingleMaxLatencyHistogram);
+  } else {
+    presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+        split_view_divider_->divider_widget()->GetCompositor(),
+        kTabletSplitViewResizeWithOverviewHistogram,
+        kTabletSplitViewResizeWithOverviewMaxLatencyHistogram);
+  }
   accumulated_drag_time_ticks_ = base::TimeTicks::Now();
   accumulated_drag_distance_ = 0;
 
@@ -3017,8 +2896,26 @@ void SplitViewController::StartTabletResize() {
 }
 
 void SplitViewController::EndTabletResize() {
+  presentation_time_recorder_.reset();
+
+  // TODO(xdai): Use fade out animation instead of just removing it.
+  black_scrim_layer_.reset();
+
   resize_timer_.Stop();
   tablet_resize_mode_ = TabletResizeMode::kNormal;
+
+  const int target_divider_position = GetClosestFixedDividerPosition();
+  // TODO(b/298515283): Separate Snap Group and tablet resize.
+  if (divider_position_ == target_divider_position ||
+      IsSnapGroupEnabledInClamshellMode()) {
+    EndResizeWithDividerImpl();
+    EndSplitViewAfterResizingAtEdgeIfAppropriate();
+  } else {
+    divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
+        this, divider_position_, target_divider_position,
+        base::Milliseconds(300), gfx::Tween::EASE_IN);
+    divider_snap_animation_->Show();
+  }
 }
 
 void SplitViewController::EndTabletResizeImpl() {
@@ -3035,7 +2932,7 @@ void SplitViewController::EndTabletResizeImpl() {
 
 void SplitViewController::EndResizeWithDividerImpl() {
   DCHECK(InSplitViewMode());
-  DCHECK(!is_resizing_with_divider_);
+  DCHECK(!IsResizingWithDivider());
 
   EndTabletResizeImpl();
   presentation_time_recorder_.reset();
@@ -3045,13 +2942,17 @@ void SplitViewController::EndResizeWithDividerImpl() {
 }
 
 void SplitViewController::OnResizeTimer() {
-  if (InSplitViewMode())
-    ResizeWithDivider(previous_event_location_);
+  if (InSplitViewMode() && split_view_divider_) {
+    split_view_divider_->ResizeWithDivider(previous_event_location_);
+  }
 }
 
 void SplitViewController::UpdateTabletResizeMode(
     base::TimeTicks event_time_ticks,
     const gfx::Point& event_location) {
+  CHECK(presentation_time_recorder_);
+  presentation_time_recorder_->RequestNext();
+
   if (IsLayoutHorizontal(root_window_)) {
     accumulated_drag_distance_ +=
         std::abs(event_location.x() - previous_event_location_.x());

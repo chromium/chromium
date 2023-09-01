@@ -201,7 +201,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   State state() const { return state_; }
   SnapPosition default_snap_position() const { return default_snap_position_; }
   SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
-  bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
   EndReason end_reason() const { return end_reason_; }
   bool in_snap_group_creation_session() const {
     return in_snap_group_creation_session_;
@@ -213,6 +212,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewOverviewSession* split_view_overview_session_for_testing() {
     return split_view_overview_session_.get();
   }
+
+  // Returns true if the divider is resizing (not animating) in tablet mode
+  // split view, or between two windows in Snap Groups.
+  bool IsResizingWithDivider() const;
 
   // Returns true if split view mode is active. Please see SplitViewType above
   // to see the difference between tablet mode and clamshell mode splitview
@@ -343,12 +346,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Returns true during the divider snap animation.
   bool IsDividerAnimating() const;
 
-  // Resizing functions used when resizing with `split_view_divider_` in the
-  // tablet split view mode or clamshell mode if `kSnapGroup` is enabled.
-  void StartResizeWithDivider(const gfx::Point& location_in_screen);
-  void ResizeWithDivider(const gfx::Point& location_in_screen);
-  void EndResizeWithDivider(const gfx::Point& location_in_screen);
-
   // Ends the split view mode, from which point `SplitViewController` no longer
   // manages the window(s).
   void EndSplitView(EndReason end_reason = EndReason::kNormal);
@@ -460,6 +457,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
  private:
   friend class SplitViewControllerTest;
+  friend class SplitViewDivider;
   friend class SplitViewOverviewSessionTest;
   friend class SplitViewOverviewSession;
   class DividerSnapAnimation;
@@ -737,9 +735,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // overlooked for years while occasionally irritating or confusing real users.
   bool is_previous_layout_right_side_up_ = true;
 
-  // True when the divider is being dragged (not during its snap animation).
-  bool is_resizing_with_divider_ = false;
-
   // Stores the reason which cause splitview to end.
   EndReason end_reason_ = EndReason::kNormal;
 
@@ -789,9 +784,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // The split view resize mode for tablet mode.
   TabletResizeMode tablet_resize_mode_ = TabletResizeMode::kNormal;
-
-  // True *while* a resize event is being processed.
-  bool processing_resize_event_ = false;
 
   // Accumulated drag distance, during a time interval.
   int accumulated_drag_distance_ = 0;

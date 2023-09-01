@@ -135,7 +135,7 @@ void SplitViewDividerView::Layout() {
 
   SetBoundsRect(GetLocalBounds());
   divider_handler_view_->Refresh(
-      split_view_controller_->is_resizing_with_divider());
+      split_view_controller_->IsResizingWithDivider());
 
   if (IsSnapGroupEnabledInClamshellMode()) {
     const gfx::Size kebab_button_size = kebab_button_->GetPreferredSize();
@@ -171,7 +171,7 @@ void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
 bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  split_view_controller_->StartResizeWithDivider(location);
+  divider_->StartResizeWithDivider(location);
   OnResizeStatusChanged();
   return true;
 }
@@ -179,14 +179,14 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  split_view_controller_->ResizeWithDivider(location);
+  divider_->ResizeWithDivider(location);
   return true;
 }
 
 void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
-  split_view_controller_->EndResizeWithDivider(location);
+  divider_->EndResizeWithDivider(location);
   OnResizeStatusChanged();
   if (event.GetClickCount() == 2) {
     split_view_controller_->SwapWindows(
@@ -206,14 +206,14 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_TAP_DOWN:
     case ui::ET_GESTURE_SCROLL_BEGIN:
-      split_view_controller_->StartResizeWithDivider(location);
+      divider_->StartResizeWithDivider(location);
       OnResizeStatusChanged();
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      split_view_controller_->ResizeWithDivider(location);
+      divider_->ResizeWithDivider(location);
       break;
     case ui::ET_GESTURE_END:
-      split_view_controller_->EndResizeWithDivider(location);
+      divider_->EndResizeWithDivider(location);
       OnResizeStatusChanged();
       break;
     default:
@@ -246,7 +246,7 @@ void SplitViewDividerView::OnResizeStatusChanged() {
   const gfx::Rect old_bounds =
       divider_->GetDividerBoundsInScreen(/*is_dragging=*/false);
   const gfx::Rect new_bounds = divider_->GetDividerBoundsInScreen(
-      split_view_controller_->is_resizing_with_divider());
+      split_view_controller_->IsResizingWithDivider());
   gfx::Transform transform;
   transform.Translate(new_bounds.x() - old_bounds.x(),
                       new_bounds.y() - old_bounds.y());
@@ -262,7 +262,7 @@ void SplitViewDividerView::OnResizeStatusChanged() {
   SetTransform(transform);
 
   divider_handler_view_->Refresh(
-      split_view_controller_->is_resizing_with_divider());
+      split_view_controller_->IsResizingWithDivider());
 }
 
 void SplitViewDividerView::OnKebabButtonPressed() {

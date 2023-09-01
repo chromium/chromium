@@ -60,7 +60,7 @@ constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  return split_view_controller->is_resizing_with_divider() ||
+  return split_view_controller->IsResizingWithDivider() ||
          split_view_controller->IsDividerAnimating();
 }
 

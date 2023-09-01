@@ -2102,16 +2102,16 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   auto* split_view_divider = split_view_controller->split_view_divider();
   gfx::Rect divider_bounds =
       split_view_divider->GetDividerBoundsInScreen(false);
-  split_view_controller->StartResizeWithDivider(divider_bounds.CenterPoint());
+  split_view_divider->StartResizeWithDivider(divider_bounds.CenterPoint());
   gfx::Rect display_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window.get());
   gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
-  split_view_controller->ResizeWithDivider(resize_point);
+  split_view_divider->ResizeWithDivider(resize_point);
   // This should not cause any metrics change.
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kNotSpecified, 1);
-  split_view_controller->EndResizeWithDivider(resize_point);
+  split_view_divider->EndResizeWithDivider(resize_point);
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kNotSpecified, 1);
 }
