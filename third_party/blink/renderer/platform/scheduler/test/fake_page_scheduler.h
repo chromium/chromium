@@ -56,6 +56,7 @@ class FakePageScheduler : public PageScheduler {
   // PageScheduler implementation:
   void OnTitleOrFaviconUpdated() override {}
   void SetPageVisible(bool is_page_visible) override {}
+  bool IsPageVisible() const override { return true; }
   void SetPageFrozen(bool is_page_frozen) override {}
   void SetPageBackForwardCached(bool) override {}
   bool IsMainFrameLocal() const override { return true; }
