@@ -43,8 +43,9 @@ CompanionSidePanelUntrustedUI::CompanionSidePanelUntrustedUI(
                                    : companion::GetHomepageURLForCompanion();
   // Allow iframing accounts page due to potential redirects.
   std::string frameSrcDirective =
-      std::string("frame-src https://accounts.google.com ") + frameSrcString +
-      ";";
+      std::string(
+          "frame-src https://accounts.google.com https://consent.google.com ") +
+      frameSrcString + ";";
   std::string formActionDirective =
       std::string("form-action ") + frameSrcString + ";";
   html_source->OverrideContentSecurityPolicy(
