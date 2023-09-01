@@ -287,6 +287,18 @@ namespace os.diagnostics {
     MemtesterResult? result;
   };
 
+  dictionary RunMemoryRoutineArguments {
+    // An optional field to indicate how much memory should be tested. If the
+    // value is null, memory test will run with as much memory as possible.
+    long? maxTestingMemKib;
+  };
+
+  dictionary CreateMemoryRoutineResponse {
+    DOMString? uuid;
+  };
+
+  callback CreateMemoryRoutineCallback = void (CreateMemoryRoutineResponse response);
+
   interface Functions {
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -361,6 +373,11 @@ namespace os.diagnostics {
     [supportsPromises] static void runPowerButtonRoutine(RunPowerButtonRequest request, RunRoutineCallback callback);
 
     [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
+
+    // ----------------- DIAGNOSTICS API V2 -----------------
+
+    [supportsPromises] static void createMemoryRoutine(RunMemoryRoutineArguments args,
+                                                          CreateMemoryRoutineCallback callback);
   };
 
   interface Events {

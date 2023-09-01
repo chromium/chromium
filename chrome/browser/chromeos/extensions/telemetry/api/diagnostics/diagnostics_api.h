@@ -43,6 +43,21 @@ class DiagnosticsApiFunctionBase
       remote_diagnostics_service_strategy_;
 };
 
+class DiagnosticsApiFunctionBaseV2
+    : public BaseTelemetryExtensionApiGuardFunction {
+ public:
+  DiagnosticsApiFunctionBaseV2() = default;
+
+ protected:
+  ~DiagnosticsApiFunctionBaseV2() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool IsCrosApiAvailable() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+};
+
+/****************** DIAGNOSTICS API V1 ******************/
+
 class OsDiagnosticsGetAvailableRoutinesFunction
     : public DiagnosticsApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.getAvailableRoutines",
@@ -398,6 +413,19 @@ class OsDiagnosticsRunAudioDriverRoutineFunction
                              OS_DIAGNOSTICS_RUNAUDIODRIVERROUTINE)
  private:
   ~OsDiagnosticsRunAudioDriverRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+/****************** DIAGNOSTICS API V2 ******************/
+
+class OsDiagnosticsCreateMemoryRoutineFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.createMemoryRoutine",
+                             OS_DIAGNOSTICS_CREATEMEMORYROUTINE)
+ private:
+  ~OsDiagnosticsCreateMemoryRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

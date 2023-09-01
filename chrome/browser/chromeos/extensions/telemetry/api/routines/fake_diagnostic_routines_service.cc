@@ -47,12 +47,20 @@ void FakeDiagnosticRoutinesService::CreateRoutine(
       std::forward_as_tuple(routine_argument->which()),
       std::forward_as_tuple(std::move(control_remote),
                             std::move(observer_receiver)));
+  if (on_routine_created_) {
+    on_routine_created_.Run();
+  }
 }
 
 void FakeDiagnosticRoutinesService::IsRoutineArgumentSupported(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
     IsRoutineArgumentSupportedCallback callback) {
   NOTIMPLEMENTED();
+}
+
+void FakeDiagnosticRoutinesService::SetOnCreateRoutineCalled(
+    base::RepeatingClosure callback) {
+  on_routine_created_ = std::move(callback);
 }
 
 }  // namespace chromeos

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_FAKE_DIAGNOSTIC_ROUTINES_SERVICE_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_ROUTINES_FAKE_DIAGNOSTIC_ROUTINES_SERVICE_H_
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routine_control.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -43,6 +44,11 @@ class FakeDiagnosticRoutinesService
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument,
       IsRoutineArgumentSupportedCallback callback) override;
 
+  // Sets a callback that is invoked when `CreateRoutine` was called.
+  // This is useful since in tests we usually want to perform a certain action
+  // as soon as an observation is registered or removed.
+  void SetOnCreateRoutineCalled(base::RepeatingClosure callback);
+
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutinesService>&
   receiver() {
     return receiver_;
@@ -52,6 +58,7 @@ class FakeDiagnosticRoutinesService
   mojo::Receiver<crosapi::mojom::TelemetryDiagnosticRoutinesService> receiver_{
       this};
 
+  base::RepeatingClosure on_routine_created_;
   std::map<crosapi::mojom::TelemetryDiagnosticRoutineArgument::Tag,
            FakeDiagnosticRoutineControl>
       routine_controls_;

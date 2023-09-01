@@ -1885,6 +1885,7 @@ enum HistogramValue {
   FILEMANAGERPRIVATE_GETDEVICECONNECTIONSTATE = 1823,
   USERSCRIPTS_UNREGISTER = 1824,
   AUTOTESTPRIVATE_SETARCINTERACTIVESTATE = 1825,
+  OS_DIAGNOSTICS_CREATEMEMORYROUTINE = 1826,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
