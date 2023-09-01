@@ -829,7 +829,7 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   }
   const char* dawn_search_path_c_str = dawn_search_path.c_str();
 
-  wgpu::DawnInstanceDescriptor dawn_instance_desc = {};
+  dawn::native::DawnInstanceDescriptor dawn_instance_desc = {};
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;

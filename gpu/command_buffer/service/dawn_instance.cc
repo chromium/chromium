@@ -76,7 +76,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
 #endif
   dawn_toggle_desc.disabledToggles = require_instance_disabled_toggles.data();
 
-  wgpu::DawnInstanceDescriptor dawn_instance_desc;
+  dawn::native::DawnInstanceDescriptor dawn_instance_desc;
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
