@@ -1561,6 +1561,10 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
   reordered_view->parent()->NotifyAccessibilityEvent(
       ax::mojom::Event::kTreeChanged, true);
 
+  // Update the desk indices in the shortcut views.
+  reordered_view->UpdateDeskButtonVisibility();
+  mini_views_[old_index]->UpdateDeskButtonVisibility();
+
   Layout();
 
   // Call the animation function after reorder the mini views.

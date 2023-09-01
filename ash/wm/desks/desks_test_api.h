@@ -57,6 +57,7 @@ class DesksTestApi {
   static ui::LayerTreeOwner* GetMirroredContentsLayerTreeForRootAndDesk(
       aura::Window* root,
       Desk* desk);
+  static views::Label* GetDeskShortcutLabel(DeskMiniView* mini_view);
   static bool IsDeskShortcutViewVisible(DeskMiniView* mini_view);
   static bool HasVerticalDotsButton();
   static bool DesksControllerHasDesk(Desk* desk);

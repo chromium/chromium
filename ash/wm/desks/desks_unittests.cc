@@ -10022,6 +10022,80 @@ TEST_P(DeskBarTest, ReorderDesk) {
   CloseDeskBar();
 }
 
+// Tests that the desk button desk bar supports keyboard reordering desks.
+TEST_P(DeskBarTest, KeyboardReorderDesk) {
+  OpenDeskBar();
+  auto* desks_controller = DesksController::Get();
+  auto* desk_bar_view = GetDeskBarView();
+
+  // Create two more desks and store uuids to verify swaps.
+  NewDesk();
+  NewDesk();
+
+  std::vector<base::Uuid> desk_uuids;
+  for (auto& desk : desks_controller->desks()) {
+    desk_uuids.push_back(desk->uuid());
+  }
+
+  auto verify_desk_uuids = [&]() {
+    for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
+      EXPECT_THAT(desks_controller->GetDeskAtIndex(i)->uuid(), desk_uuids[i]);
+    }
+  };
+
+  auto verify_shortcut_label = [&](auto* mini_view, int desk_index) {
+    const bool expected_shortcut_visibility =
+        bar_type_ == DeskBarViewBase::Type::kDeskButton;
+
+    ASSERT_EQ(DesksTestApi::IsDeskShortcutViewVisible(mini_view),
+              expected_shortcut_visibility);
+    if (expected_shortcut_visibility) {
+      views::Label* label = DesksTestApi::GetDeskShortcutLabel(mini_view);
+      ASSERT_TRUE(label);
+      EXPECT_EQ(base::NumberToString16(desk_index + 1), label->GetText());
+    }
+  };
+
+  auto swap_desk = [&](int desk_index, bool left) {
+    SCOPED_TRACE("Swap desk " + base::NumberToString(desk_index) + " to the " +
+                 (left ? "left" : "right"));
+
+    // Ensure swap is possible.
+    ASSERT_FALSE(desk_index == 0 && left);
+    ASSERT_FALSE(desk_index == 2 && !left);
+
+    // Perform the swap.
+    auto* mini_view = desk_bar_view->mini_views()[desk_index];
+    mini_view->desk_preview()->RequestFocus();
+    verify_shortcut_label(mini_view, desk_index);
+    SendKey(left ? ui::VKEY_LEFT : ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+
+    // Verify the swap.
+    const int new_index = desk_index + (left ? -1 : 1);
+    EXPECT_EQ(mini_view, desk_bar_view->mini_views()[new_index]);
+    verify_shortcut_label(mini_view, new_index);
+
+    // Update `desk_uuids` with the expected order and verify desks.
+    std::swap(desk_uuids[desk_index], desk_uuids[new_index]);
+    verify_desk_uuids();
+  };
+
+  verify_desk_uuids();
+  swap_desk(/*desk_index=*/0, /*left=*/false);
+  swap_desk(/*desk_index=*/1, /*left=*/false);
+  swap_desk(/*desk_index=*/0, /*left=*/false);
+  swap_desk(/*desk_index=*/1, /*left=*/false);
+  swap_desk(/*desk_index=*/1, /*left=*/true);
+  swap_desk(/*desk_index=*/2, /*left=*/true);
+  swap_desk(/*desk_index=*/1, /*left=*/true);
+  swap_desk(/*desk_index=*/0, /*left=*/false);
+  swap_desk(/*desk_index=*/2, /*left=*/true);
+  swap_desk(/*desk_index=*/1, /*left=*/false);
+  swap_desk(/*desk_index=*/1, /*left=*/true);
+
+  CloseDeskBar();
+}
+
 TEST_P(DeskBarTest, ActivateDesk) {
   auto* desks_controller = DesksController::Get();
 
