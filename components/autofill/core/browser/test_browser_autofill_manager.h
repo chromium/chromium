@@ -96,7 +96,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
   void AddSeenForm(
       const FormData& form,
-      const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+      const std::vector<
+          std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
           heuristic_types,
       const std::vector<ServerFieldType>& server_types,
       bool preserve_values_in_form_structure = false);

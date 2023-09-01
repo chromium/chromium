@@ -20,7 +20,7 @@ class IbanFieldTest
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
-    return IbanField::Parse(scanner, page_language, GetActivePatternSource(),
+    return IbanField::Parse(scanner, page_language, *GetActivePatternSource(),
                             /*log_manager=*/nullptr);
   }
 };

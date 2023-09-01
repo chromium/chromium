@@ -34,7 +34,7 @@ class FormFieldTest
   // Returns the number of fields parsed.
   int ParseFormFields() {
     FormField::ParseFormFields(list_, LanguageCode(""),
-                               /*is_form_tag=*/true, GetActivePatternSource(),
+                               /*is_form_tag=*/true, *GetActivePatternSource(),
                                field_candidates_map_,
                                /*log_manager=*/nullptr);
     return field_candidates_map_.size();
@@ -42,15 +42,16 @@ class FormFieldTest
 
   // Like `ParseFormFields()`, but using `ParseSingleFieldForms()` instead.
   int ParseSingleFieldForms() {
-    FormField::ParseSingleFieldForms(
-        list_, LanguageCode(""),
-        /*is_form_tag=*/true, GetActivePatternSource(), field_candidates_map_);
+    FormField::ParseSingleFieldForms(list_, LanguageCode(""),
+                                     /*is_form_tag=*/true,
+                                     GetActivePatternSource().value(),
+                                     field_candidates_map_);
     return field_candidates_map_.size();
   }
 
   int ParseStandaloneCVCFields() {
     FormField::ParseStandaloneCVCFields(list_, LanguageCode(""),
-                                        GetActivePatternSource(),
+                                        GetActivePatternSource().value(),
                                         field_candidates_map_);
     return field_candidates_map_.size();
   }

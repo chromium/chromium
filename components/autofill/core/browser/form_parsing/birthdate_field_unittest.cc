@@ -52,7 +52,7 @@ class BirthdateFieldTest
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
     return BirthdateField::Parse(scanner, page_language,
-                                 GetActivePatternSource(),
+                                 *GetActivePatternSource(),
                                  /*log_manager=*/nullptr);
   }
 };

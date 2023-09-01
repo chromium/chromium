@@ -92,7 +92,7 @@ class CreditCardFieldTestBase : public FormFieldTestBase {
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("us")) override {
     return CreditCardField::Parse(scanner, page_language,
-                                  GetActivePatternSource(), nullptr);
+                                  *GetActivePatternSource(), nullptr);
   }
 
   // Runs multiple parsing attempts until the end of the form is reached.

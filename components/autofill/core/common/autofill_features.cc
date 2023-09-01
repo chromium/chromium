@@ -397,6 +397,12 @@ BASE_FEATURE(kAutofillModelPredictions,
 const base::FeatureParam<std::string> kAutofillModelDictionaryFilePath{
     &kAutofillModelPredictions, "dictionary_path", "default"};
 
+// When true, use the machine learning model as the active `HeuristicSource`,
+// else use the source provided by `kAutofillParsingPatternActiveSource`.
+// TODO(crbug.com/1465926): Remove when launched.
+const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
+    &kAutofillModelPredictions, "model_active", false};
+
 // Allows passing a set of overrides for Autofill server predictions.
 // Example command line to override server predictions manually:
 // chrome --enable-features=AutofillOverridePredictions:spec/1_2_4-7_8_9

@@ -274,16 +274,16 @@ std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
 }
 
 ServerFieldType AutofillField::heuristic_type() const {
-  return heuristic_type(GetActivePatternSource());
+  return heuristic_type(GetActiveHeuristicSource());
 }
 
-ServerFieldType AutofillField::heuristic_type(PatternSource s) const {
+ServerFieldType AutofillField::heuristic_type(HeuristicSource s) const {
   ServerFieldType type = local_type_predictions_[static_cast<size_t>(s)];
   // `NO_SERVER_DATA` would mean that there is no heuristic type. Client code
   // presumes there is a prediction, therefore we coalesce to `UNKNOWN_TYPE`.
   // Shadow predictions however are not used and we care whether the type is
   // `UNKNOWN_TYPE` or whether we never ran the heuristics.
-  return (type > 0 || s != GetActivePatternSource()) ? type : UNKNOWN_TYPE;
+  return (type > 0 || s != GetActiveHeuristicSource()) ? type : UNKNOWN_TYPE;
 }
 
 ServerFieldType AutofillField::server_type() const {
@@ -298,7 +298,8 @@ bool AutofillField::server_type_prediction_is_override() const {
                                      : server_predictions_[0].override();
 }
 
-void AutofillField::set_heuristic_type(PatternSource s, ServerFieldType type) {
+void AutofillField::set_heuristic_type(HeuristicSource s,
+                                       ServerFieldType type) {
   if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
       type == FIELD_WITH_DEFAULT_VALUE) {
     NOTREACHED();
@@ -307,8 +308,9 @@ void AutofillField::set_heuristic_type(PatternSource s, ServerFieldType type) {
     type = UNKNOWN_TYPE;
   }
   local_type_predictions_[static_cast<size_t>(s)] = type;
-  if (s == GetActivePatternSource())
+  if (s == GetActiveHeuristicSource()) {
     overall_type_ = AutofillType(NO_SERVER_DATA);
+  }
 }
 
 void AutofillField::add_possible_types_validities(

@@ -52,7 +52,8 @@ TEST_P(PrecedenceOverAutocompleteTest, PrecedenceOverAutocompleteParams) {
   field.SetHtmlType(test_case.html_field_type, HtmlFieldMode::kNone);
   field.set_server_predictions(
       {test::CreateFieldPrediction(test_case.server_type)});
-  field.set_heuristic_type(GetActivePatternSource(), test_case.heuristic_type);
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           test_case.heuristic_type);
   EXPECT_EQ(test_case.expected_result, field.ComputedType().GetStorableType());
 }
 
@@ -356,7 +357,8 @@ TEST_P(AutofillLocalHeuristicsOverridesTest,
   field.SetHtmlType(test_case.html_field_type, HtmlFieldMode::kNone);
   field.set_server_predictions(
       {test::CreateFieldPrediction(test_case.server_type)});
-  field.set_heuristic_type(GetActivePatternSource(), test_case.heuristic_type);
+  field.set_heuristic_type(GetActiveHeuristicSource(),
+                           test_case.heuristic_type);
   EXPECT_EQ(test_case.expected_result, field.ComputedType().GetStorableType());
 }
 

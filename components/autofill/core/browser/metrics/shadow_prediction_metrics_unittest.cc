@@ -193,13 +193,13 @@ TEST_F(AutofillShadowPredictionMetricsTest,
   autofill_manager().AddSeenForm(
       form,
       {// Field 0
-       {{PatternSource::kDefault, NAME_FULL},
-        {PatternSource::kExperimental, NAME_FULL},
-        {PatternSource::kNextGen, NAME_FIRST}},
+       {{HeuristicSource::kDefault, NAME_FULL},
+        {HeuristicSource::kExperimental, NAME_FULL},
+        {HeuristicSource::kNextGen, NAME_FIRST}},
        // Field 1
-       {{PatternSource::kDefault, SEARCH_TERM},
-        {PatternSource::kExperimental, EMAIL_ADDRESS},
-        {PatternSource::kNextGen, SEARCH_TERM}}},
+       {{HeuristicSource::kDefault, SEARCH_TERM},
+        {HeuristicSource::kExperimental, EMAIL_ADDRESS},
+        {HeuristicSource::kNextGen, SEARCH_TERM}}},
       server_types);
 
   // Simulate form submission.
@@ -233,9 +233,9 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 // heuristics to server predictions.
 TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  constexpr PatternSource source = PatternSource::kDefault;
+  constexpr HeuristicSource source = HeuristicSource::kDefault;
 #else
-  constexpr PatternSource source = PatternSource::kLegacy;
+  constexpr HeuristicSource source = HeuristicSource::kLegacy;
 #endif
 
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());

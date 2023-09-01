@@ -67,16 +67,16 @@ class MatchPatternRef {
   UnderlyingType value_;
 };
 
-// The different sets of patterns that are available.
+// The different sets of patterns available for parsing.
 // Each enum constant corresponds to a JSON file.
+// When adding a new value, it's require to add it to
+// `HeuristicSource` as well.
 enum class PatternSource {
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   // Patterns whose stability is above suspicion.
   kLegacy,
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   kMaxValue = kLegacy
 #else
-  // Patterns whose stability is above suspicion.
-  kLegacy,
   // The patterns applied for most users.
   kDefault,
   // Patterns that are being verified experimentally.
@@ -89,9 +89,9 @@ enum class PatternSource {
 };
 
 // The active pattern and the available patterns depend on the build config and
-// the Finch config.
-PatternSource GetActivePatternSource();
-DenseSet<PatternSource> GetNonActivePatternSources();
+// the Finch config. If the active `HeuristicSource` is not a `PatternSource`,
+// then a nullopt is returned.
+absl::optional<PatternSource> GetActivePatternSource();
 
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.

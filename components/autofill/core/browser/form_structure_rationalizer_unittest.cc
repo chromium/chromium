@@ -143,7 +143,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
                                             nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
-      form_structure->field(i)->set_heuristic_type(PatternSource::kLegacy,
+      form_structure->field(i)->set_heuristic_type(HeuristicSource::kLegacy,
                                                    fields[i].heuristic_type);
     }
   }

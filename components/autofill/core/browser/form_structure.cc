@@ -416,11 +416,18 @@ void FormStructure::DetermineHeuristicTypes(
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
-  ParseFieldTypesWithPatterns(GetActivePatternSource(), log_manager);
+  // The active heuristic source might not be a pattern source.
+  if (absl::optional<PatternSource> pattern_source = GetActivePatternSource()) {
+    ParseFieldTypesWithPatterns(*pattern_source, log_manager);
+  }
   if (!base::FeatureList::IsEnabled(
           features::kAutofillDisableShadowHeuristics)) {
-    for (PatternSource shadow_source : GetNonActivePatternSources())
-      ParseFieldTypesWithPatterns(shadow_source, log_manager);
+    for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
+      if (auto shadow_source =
+              HeuristicSourceToPatternSource(heuristic_source)) {
+        ParseFieldTypesWithPatterns(*shadow_source, log_manager);
+      }
+    }
   }
 
   UpdateAutofillCount();
@@ -1090,8 +1097,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     if (reason == RetrieveFromCacheReason::kFormImport) {
       // Transfer attributes of the cached AutofillField to the newly created
       // AutofillField.
-      for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
-        PatternSource s = static_cast<PatternSource>(i);
+      for (int i = 0; i <= static_cast<int>(HeuristicSource::kMaxValue); ++i) {
+        HeuristicSource s = static_cast<HeuristicSource>(i);
         field->set_heuristic_type(s, cached_field->heuristic_type(s));
       }
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
@@ -1219,12 +1226,14 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
     if (iter == field_type_map.end())
       continue;
     const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(pattern_source, candidates.BestHeuristicType());
+    field->set_heuristic_type(PatternSourceToHeuristicSource(pattern_source),
+                              candidates.BestHeuristicType());
 
     ++field_rank_map[field->GetFieldSignature()];
     // Log the field type predicted from local heuristics.
     field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
-        .field_type = field->heuristic_type(pattern_source),
+        .field_type = field->heuristic_type(
+            PatternSourceToHeuristicSource(pattern_source)),
         .pattern_source = pattern_source,
         .is_active_pattern_source = GetActivePatternSource() == pattern_source,
         .rank_in_field_signature_group =

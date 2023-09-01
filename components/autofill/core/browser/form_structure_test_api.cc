@@ -20,13 +20,13 @@ using FieldPrediction =
 
 // static
 void FormStructureTestApi::SetFieldTypes(
-    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
         heuristic_types,
     const std::vector<FieldPrediction>& server_types) {
   ASSERT_EQ(form_structure_->field_count(), heuristic_types.size());
   ASSERT_EQ(form_structure_->field_count(), server_types.size());
   ASSERT_THAT(heuristic_types,
-              Each(Contains(Pair(GetActivePatternSource(), _))))
+              Each(Contains(Pair(GetActiveHeuristicSource(), _))))
       << "There must be a default heuristic prediction for every field.";
 
   for (size_t i = 0; i < form_structure_->field_count(); ++i) {
@@ -42,7 +42,7 @@ void FormStructureTestApi::SetFieldTypes(
 }
 
 void FormStructureTestApi::SetFieldTypes(
-    const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
+    const std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>&
         heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
   std::vector<FieldPrediction> server_predictions;
@@ -54,10 +54,10 @@ void FormStructureTestApi::SetFieldTypes(
 void FormStructureTestApi::SetFieldTypes(
     const std::vector<ServerFieldType>& heuristic_types,
     const std::vector<ServerFieldType>& server_types) {
-  std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
+  std::vector<std::vector<std::pair<HeuristicSource, ServerFieldType>>>
       all_heuristic_types;
   for (ServerFieldType type : heuristic_types)
-    all_heuristic_types.push_back({{GetActivePatternSource(), type}});
+    all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
   SetFieldTypes(all_heuristic_types, server_types);
 }
 

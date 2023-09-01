@@ -6873,7 +6873,8 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
 
   auto get_heuristic_type = [&](const AutofillField& field) {
-    return field.heuristic_type(pattern_source());
+    return field.heuristic_type(
+        PatternSourceToHeuristicSource(pattern_source()));
   };
   EXPECT_THAT(
       form_structure.fields(),
@@ -6882,7 +6883,8 @@ TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
 
   for (PatternSource other_pattern_source : other_pattern_sources()) {
     auto get_other_pattern_heuristic_type = [&](const AutofillField& field) {
-      return field.heuristic_type(other_pattern_source);
+      return field.heuristic_type(
+          PatternSourceToHeuristicSource(other_pattern_source));
     };
     EXPECT_THAT(form_structure.fields(),
                 Each(Pointee(ResultOf(get_other_pattern_heuristic_type,
