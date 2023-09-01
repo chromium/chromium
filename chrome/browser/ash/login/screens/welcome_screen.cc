@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/input_events_blocker.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -390,12 +389,10 @@ void WelcomeScreen::ShowImpl() {
   if (view_)
     view_->Show();
 
-  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
-  // The shortcut method enables a simpler workflow for testers, while the
-  // feature flag will enable us to perform a first run field trial.
-  if (features::IsOobeQuickStartEnabled()) {
-    EnableQuickStart();
-  }
+  // Determine the QuickStart button visibility
+  WizardController::default_controller()->quick_start_controller()->IsSupported(
+      base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   if (LoginScreenClientImpl::HasInstance()) {
     LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
@@ -404,10 +401,6 @@ void WelcomeScreen::ShowImpl() {
 
 void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
-
-  if (context()->quick_start_enabled) {
-    bootstrap_controller_.reset();
-  }
 }
 
 void WelcomeScreen::OnUserAction(const base::Value::List& args) {
@@ -556,11 +549,19 @@ bool WelcomeScreen::HandleAccelerator(LoginAcceleratorAction action) {
       view_->ShowRemoraRequisitionDialog();
     return true;
   } else if (action == LoginAcceleratorAction::kEnableQuickStart) {
-    if (context()->quick_start_enabled) {
-      return true;
-    }
+    // Quick Start can be enabled either by feature flag or by keyboard
+    // shortcut. The shortcut method enables a simpler workflow for testers,
+    // while the feature flag will enable us to perform a first run field trial.
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->ForceEnableQuickStart();
 
-    EnableQuickStart();
+    // Update the entry point button visibility.
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->IsSupported(
+            base::BindOnce(&WelcomeScreen::SetQuickStartButtonVisibility,
+                           weak_ptr_factory_.GetWeakPtr()));
     return true;
   }
 
@@ -580,26 +581,10 @@ void WelcomeScreen::InputMethodChanged(
   }
 }
 
-void WelcomeScreen::EnableQuickStart() {
-  context()->quick_start_enabled = true;
-  bootstrap_controller_ =
-      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindOnce(&WelcomeScreen::OnGetQuickStartFeatureSupportStatus,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WelcomeScreen::OnGetQuickStartFeatureSupportStatus(
-    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-  if (status != quick_start::TargetDeviceConnectionBroker::
-                    FeatureSupportStatus::kSupported) {
-    return;
+void WelcomeScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartEnabled();
   }
-
-  if (!view_) {
-    return;
-  }
-  view_->SetQuickStartEnabled();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

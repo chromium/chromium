@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -69,23 +68,21 @@ void NetworkScreen::ShowImpl() {
   if (view_)
     view_->Show();
 
-  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
-  // The shortcut method enables a simpler workflow for testers, while the
-  // feature flag will enable us to perform a first run field trial.
   // QuickStart should not be enabled for Demo mode or OS Install flows
   if (features::IsOobeQuickStartEnabled() &&
       !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
       !switches::IsOsInstallAllowed()) {
-    EnableQuickStart();
+    // Determine the QuickStart button visibility
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->IsSupported(
+            base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
+                           weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 void NetworkScreen::HideImpl() {
   connection_timer_.Stop();
-
-  if (context()->quick_start_enabled) {
-    bootstrap_controller_.reset();
-  }
 
   UnsubscribeNetworkNotification();
 }
@@ -233,28 +230,10 @@ void NetworkScreen::OnQuickStartButtonClicked() {
   exit_callback_.Run(Result::QUICK_START);
 }
 
-void NetworkScreen::EnableQuickStart() {
-  context()->quick_start_enabled = true;
-  bootstrap_controller_ =
-      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindOnce(&NetworkScreen::OnGetQuickStartFeatureSupportStatus,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NetworkScreen::OnGetQuickStartFeatureSupportStatus(
-    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-  if (status != quick_start::TargetDeviceConnectionBroker::
-                    FeatureSupportStatus::kSupported) {
-    return;
+void NetworkScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartEnabled();
   }
-
-  if (!view_) {
-    return;
-  }
-
-  view_->SetQuickStartEnabled();
 }
 
 bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {

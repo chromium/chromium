@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -200,14 +200,15 @@ void GaiaScreen::ShowImpl() {
   context()->skip_to_login_for_tests = false;
   view_->Show();
 
-  // Quick Start can be enabled either by feature flag or by keyboard shortcut.
-  // The shortcut method enables a simpler workflow for testers, while the
-  // feature flag will enable us to perform a first run field trial.
   // QuickStart should not be enabled for Demo mode or OS Install flows
   if (features::IsOobeQuickStartEnabled() &&
       !DemoSetupController::IsOobeDemoSetupFlowInProgress() &&
       !switches::IsOsInstallAllowed()) {
-    EnableQuickStart();
+    // Determine the QuickStart button visibility
+    WizardController::default_controller()
+        ->quick_start_controller()
+        ->IsSupported(base::BindOnce(&GaiaScreen::SetQuickStartButtonVisibility,
+                                     weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -222,9 +223,6 @@ void GaiaScreen::HideImpl() {
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->Hide();
   backlights_forced_off_observation_.Reset();
-  if (context()->quick_start_enabled) {
-    bootstrap_controller_.reset();
-  }
 }
 
 void GaiaScreen::OnUserAction(const base::Value::List& args) {
@@ -392,27 +390,10 @@ void GaiaScreen::OnQuickStartButtonClicked() {
   exit_callback_.Run(Result::QUICK_START);
 }
 
-void GaiaScreen::EnableQuickStart() {
-  context()->quick_start_enabled = true;
-  bootstrap_controller_ =
-      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-
-  bootstrap_controller_->GetFeatureSupportStatusAsync(
-      base::BindOnce(&GaiaScreen::OnGetQuickStartFeatureSupportStatus,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GaiaScreen::OnGetQuickStartFeatureSupportStatus(
-    quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
-  if (status != quick_start::TargetDeviceConnectionBroker::
-                    FeatureSupportStatus::kSupported) {
-    return;
+void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
+  if (visible && view_) {
+    view_->SetQuickStartEnabled();
   }
-
-  if (!view_) {
-    return;
-  }
-  view_->SetQuickStartEnabled();
 }
 
 }  // namespace ash

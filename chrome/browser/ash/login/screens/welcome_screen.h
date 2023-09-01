@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -141,9 +140,7 @@ class WelcomeScreen : public BaseScreen,
                           Profile* profile,
                           bool show_message) override;
 
-  void EnableQuickStart();
-  void OnGetQuickStartFeatureSupportStatus(
-      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+  void SetQuickStartButtonVisibility(bool visible);
 
   // Handlers for various user actions:
   // Proceed with common user flow.
@@ -198,9 +195,6 @@ class WelcomeScreen : public BaseScreen,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::CallbackListSubscription accessibility_subscription_;
-
-  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
-      bootstrap_controller_;
 
   // WeakPtrFactory used to schedule and cancel tasks related to language update
   // in this object.

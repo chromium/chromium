@@ -52,6 +52,7 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
@@ -367,7 +368,8 @@ WizardController* WizardController::default_controller() {
 PrefService* WizardController::local_state_for_testing_ = nullptr;
 
 WizardController::WizardController(WizardContext* wizard_context)
-    : screen_manager_(std::make_unique<ScreenManager>()),
+    : quickstart_controller_(std::make_unique<QuickStartController>()),
+      screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context),
       shared_url_loader_factory_(
           g_browser_process->shared_url_loader_factory()) {
@@ -594,6 +596,7 @@ WizardController::CreateScreens() {
 
     append(std::make_unique<QuickStartScreen>(
         oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
+        quick_start_controller(),
         base::BindRepeating(&WizardController::OnQuickStartScreenExit,
                             weak_factory_.GetWeakPtr())));
   }

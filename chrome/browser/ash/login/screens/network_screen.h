@@ -119,10 +119,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
 
   // Called when quick start button is clicked.
   void OnQuickStartButtonClicked();
-
-  void EnableQuickStart();
-  void OnGetQuickStartFeatureSupportStatus(
-      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+  void SetQuickStartButtonVisibility(bool visible);
 
   // Skip this screen or automatically continue if the device is connected to
   // Ethernet for the first time in this session.
@@ -157,9 +154,6 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-
-  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
-      bootstrap_controller_;
 
   base::WeakPtrFactory<NetworkScreen> weak_ptr_factory_{this};
 };

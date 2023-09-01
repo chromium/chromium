@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -197,6 +198,11 @@ class WizardController : public OobeUI::Observer {
   // otherwise.
   ChoobeFlowController* choobe_flow_controller() const {
     return choobe_flow_controller_.get();
+  }
+
+  // Main QuickStart controller, always present.
+  QuickStartController* quick_start_controller() {
+    return quickstart_controller_.get();
   }
 
   // Returns a pointer to the current screen or nullptr if there's no such
@@ -522,6 +528,7 @@ class WizardController : public OobeUI::Observer {
 
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
+  std::unique_ptr<QuickStartController> quickstart_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.

@@ -102,11 +102,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   // Called when quick start button is clicked.
   void OnQuickStartButtonClicked();
-
-  void EnableQuickStart();
-
-  void OnGetQuickStartFeatureSupportStatus(
-      quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status);
+  void SetQuickStartButtonVisibility(bool visible);
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
@@ -118,9 +114,6 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
-
-  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
-      bootstrap_controller_;
 
   // Used to cache email between "identifierEntered" event and a switch to
   // enrollment screen.

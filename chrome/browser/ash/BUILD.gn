@@ -1735,6 +1735,8 @@ source_set("ash") {
     "login/quick_unlock/quick_unlock_storage.h",
     "login/quick_unlock/quick_unlock_utils.cc",
     "login/quick_unlock/quick_unlock_utils.h",
+    "login/quickstart_controller.cc",
+    "login/quickstart_controller.h",
     "login/reauth_stats.cc",
     "login/reauth_stats.h",
     "login/reporting/lock_unlock_reporter.cc",

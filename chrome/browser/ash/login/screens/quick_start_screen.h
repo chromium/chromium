@@ -7,13 +7,16 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 
 namespace ash {
+
+class QuickStartController;
 
 class QuickStartScreen
     : public BaseScreen,
@@ -46,6 +49,7 @@ class QuickStartScreen
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   QuickStartScreen(base::WeakPtr<TView> view,
+                   QuickStartController* controller,
                    const ScreenExitCallback& exit_callback);
 
   QuickStartScreen(const QuickStartScreen&) = delete;
@@ -81,8 +85,6 @@ class QuickStartScreen
   // Android devices will see this fast pair notification 'Chromebook (123)'
   void DetermineDiscoverableName();
 
-  void UnbindFromBootstrapController();
-
   // Retrieves the connected phone ID and saves it for later use in OOBE on the
   // MultideviceSetupScreen.
   void SavePhoneInstanceID();
@@ -91,10 +93,8 @@ class QuickStartScreen
   EntryPoint entry_point_ = EntryPoint::WELCOME_SCREEN;
   std::string discoverable_name_;
   base::WeakPtr<TView> view_;
+  raw_ptr<QuickStartController> controller_;
   ScreenExitCallback exit_callback_;
-
-  base::WeakPtr<quick_start::TargetDeviceBootstrapController>
-      bootstrap_controller_;
 };
 
 }  // namespace ash

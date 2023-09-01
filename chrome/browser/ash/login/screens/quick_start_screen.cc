@@ -3,17 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
-#include <memory>
 
-#include "base/i18n/time_formatting.h"
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
@@ -44,13 +40,17 @@ std::string QuickStartScreen::GetResultString(Result result) {
 }
 
 QuickStartScreen::QuickStartScreen(base::WeakPtr<TView> view,
+                                   QuickStartController* controller,
                                    const ScreenExitCallback& exit_callback)
     : BaseScreen(QuickStartView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
+      controller_(controller),
       exit_callback_(exit_callback) {}
 
 QuickStartScreen::~QuickStartScreen() {
-  UnbindFromBootstrapController();
+  if (controller_->bootstrap_controller()) {
+    controller_->bootstrap_controller()->RemoveObserver(this);
+  }
 }
 
 bool QuickStartScreen::MaybeSkip(WizardContext& context) {
@@ -63,21 +63,17 @@ void QuickStartScreen::ShowImpl() {
   }
   view_->Show();
 
-  // Only for the first time setup.
-  if (!bootstrap_controller_) {
-    bootstrap_controller_ =
-        LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
-    bootstrap_controller_->AddObserver(this);
-    DetermineDiscoverableName();
-  }
+  DCHECK(controller_->bootstrap_controller());
+  controller_->bootstrap_controller()->AddObserver(this);
+  DetermineDiscoverableName();
 
   switch (flow_state_) {
     case FlowState::INITIAL:
-      bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+      controller_->bootstrap_controller()->StartAdvertisingAndMaybeGetQRCode();
       break;
     case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
       view_->ShowTransferringGaiaCredentials();
-      bootstrap_controller_->AttemptGoogleAccountTransfer();
+      controller_->bootstrap_controller()->AttemptGoogleAccountTransfer();
       break;
     case FlowState::RESUMING_AFTER_CRITICAL_UPDATE:
     case FlowState::UNKNOWN:
@@ -95,19 +91,16 @@ void QuickStartScreen::SetEntryPoint(EntryPoint entry_point) {
 }
 
 void QuickStartScreen::HideImpl() {
-  if (bootstrap_controller_) {
-    bootstrap_controller_->RemoveObserver(this);
-  }
-  bootstrap_controller_.reset();
+  DCHECK(controller_->bootstrap_controller());
+  controller_->bootstrap_controller()->RemoveObserver(this);
 }
 
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
-    if (bootstrap_controller_) {
-      bootstrap_controller_->CloseOpenConnections();
-      bootstrap_controller_->StopAdvertising();
-    }
+    DCHECK(controller_->bootstrap_controller());
+    controller_->bootstrap_controller()->CloseOpenConnections();
+    controller_->bootstrap_controller()->StopAdvertising();
     switch (entry_point_) {
       case EntryPoint::WELCOME_SCREEN:
         exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
@@ -204,27 +197,18 @@ void QuickStartScreen::OnTransferredGoogleAccountDetails(
 }
 
 void QuickStartScreen::DetermineDiscoverableName() {
-  CHECK(bootstrap_controller_);
-  discoverable_name_ = bootstrap_controller_->GetDiscoverableName();
+  DCHECK(controller_->bootstrap_controller());
+  discoverable_name_ =
+      controller_->bootstrap_controller()->GetDiscoverableName();
   if (view_) {
     view_->SetDiscoverableName(discoverable_name_);
   }
 }
 
-void QuickStartScreen::UnbindFromBootstrapController() {
-  if (!bootstrap_controller_) {
-    return;
-  }
-  bootstrap_controller_->RemoveObserver(this);
-  bootstrap_controller_.reset();
-}
-
 void QuickStartScreen::SavePhoneInstanceID() {
-  if (!bootstrap_controller_) {
-    return;
-  }
-
-  std::string phone_instance_id = bootstrap_controller_->GetPhoneInstanceId();
+  DCHECK(controller_->bootstrap_controller());
+  std::string phone_instance_id =
+      controller_->bootstrap_controller()->GetPhoneInstanceId();
   if (phone_instance_id.empty()) {
     return;
   }
