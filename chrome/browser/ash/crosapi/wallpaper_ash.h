@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -46,7 +47,7 @@ class WallpaperAsh : public mojom::Wallpaper {
 
   mojo::ReceiverSet<mojom::Wallpaper> receivers_;
   // The ID of the extension making the current SetWallpaper() call.
-  std::string extension_id_;
+  extensions::ExtensionId extension_id_;
   SetWallpaperCallback pending_callback_;
   data_decoder::DataDecoder data_decoder_;
   base::WeakPtrFactory<WallpaperAsh> weak_ptr_factory_{this};

@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -158,7 +159,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       std::map<std::string, std::unique_ptr<VpnConfiguration>>;
   using StringToConfigurationMap = std::map<std::string, VpnConfiguration*>;
 
-  const std::string& extension_id() const { return extension_id_; }
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
   // Creates a key for |key_to_configuration_map_| as a hash of |extension_id|
   // and |configuration_name|.
@@ -192,7 +193,7 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   void SetActiveConfiguration(VpnConfiguration*);
 
-  const std::string extension_id_;
+  const extensions::ExtensionId extension_id_;
 
   // Owns all configurations. Key is a hash of |extension_id| and
   // |configuration_name|.

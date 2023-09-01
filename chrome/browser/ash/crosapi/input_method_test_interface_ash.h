@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
@@ -124,7 +125,7 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
     std::string GetInputMethodId() const;
 
    private:
-    std::string extension_id_;
+    extensions::ExtensionId extension_id_;
   };
 
   raw_ptr<ash::InputMethodAsh, ExperimentalAsh> text_input_target_;
