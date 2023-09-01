@@ -195,7 +195,9 @@ suite('Multidevice', function() {
   }
 
   suiteSetup(function() {
-    ALL_MODES = Object.values(MultiDeviceSettingsMode);
+    ALL_MODES = Object.values(MultiDeviceSettingsMode).filter((item) => {
+      return typeof item === 'number';
+    });
   });
 
   setup(function() {
@@ -323,7 +325,7 @@ suite('Multidevice', function() {
 
     // A change in pageContentData will not cause the notification access
     // setup dialog to reappaear
-    setPageContentData({});
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
     flush();
 
     assertFalse(!!multidevicePage.shadowRoot.querySelector(
@@ -369,7 +371,7 @@ suite('Multidevice', function() {
 
     // A change in pageContentData will not cause the multidevice permissions
     // setup dialog to reappaear.
-    setPageContentData({});
+    setHostData(MultiDeviceSettingsMode.NO_HOST_SET);
     flush();
 
     assertFalse(!!multidevicePage.shadowRoot.querySelector(
