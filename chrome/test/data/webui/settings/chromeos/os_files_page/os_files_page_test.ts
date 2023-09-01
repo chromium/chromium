@@ -75,6 +75,11 @@ suite('<os-settings-files-page>', () => {
         value: false,
       },
       {
+        key: 'gdata.cellular.disabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
         key: 'drivefs.bulk_pinning_enabled',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: false,
@@ -141,6 +146,7 @@ suite('<os-settings-files-page>', () => {
     await resetFilesPageWithLoadTimeData({
       showOfficeSettings: false,
       enableDriveFsBulkPinning: false,
+      showGoogleDriveSettingsPage: false,
     });
   });
 
@@ -296,12 +302,13 @@ suite('<os-settings-files-page>', () => {
     });
   });
 
-  suite('with isBulkPinningEnabled_ set to true', () => {
+  suite('with enableDriveFsBulkPinning set to true', () => {
     let googleDriveRow: CrLinkRowElement;
 
     setup(async () => {
       await resetFilesPageWithLoadTimeData({
         enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
       });
 
       googleDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
@@ -423,5 +430,32 @@ suite('<os-settings-files-page>', () => {
           assertFalse(isVisible(addFilesButton));
           assertTrue(isVisible(addFilesRow));
         });
+  });
+
+  suite('with showGoogleDriveSettingsPage  set to true', async () => {
+    let googleDriveRow: CrLinkRowElement;
+
+    setup(async () => {
+      await resetFilesPageWithLoadTimeData({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+      });
+
+      googleDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#GoogleDriveLink')!;
+      assert(googleDriveRow);
+    });
+
+    test('cycling through the prefs updates the sublabel texts', () => {
+      filesPage.setPrefValue('gdata.disabled', true);
+      flush();
+
+      assertEquals('Not signed in', googleDriveRow.subLabel);
+
+      filesPage.setPrefValue('gdata.disabled', false);
+      flush();
+
+      assertTrue(googleDriveRow.subLabel.startsWith('Signed in as'));
+    });
   });
 });
