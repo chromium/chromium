@@ -1387,21 +1387,74 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   EXPECT_FALSE(cvc_removed_statement.Step());
 }
 
-// Tests that update a credit card CVC that doesn't have CVC set initially.
-TEST_F(AutofillTableTest, UpdateCvcForExistingCreditCardWithoutCvc) {
+// Tests that update a credit card CVC that doesn't have CVC set initially
+// inserts a new CVC record.
+TEST_F(AutofillTableTest, UpdateCreditCardCvc_Add) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::GetCreditCard();
-  EXPECT_TRUE(table_->AddCreditCard(card));
-
-  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
-  EXPECT_EQ(u"", db_card->cvc());
+  ASSERT_TRUE(card.cvc().empty());
+  ASSERT_TRUE(table_->AddCreditCard(card));
 
   // Update the credit card CVC, we should expect success and CVC gets updated.
   card.set_cvc(u"123");
   EXPECT_TRUE(table_->UpdateCreditCard(card));
-  db_card = table_->GetCreditCard(card.guid());
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(u"123", db_card->cvc());
+}
+
+// Tests that updating a credit card CVC that is different from CVC set
+// initially.
+TEST_F(AutofillTableTest, UpdateCreditCardCvc_Update) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card = test::GetCreditCard();
+  ASSERT_TRUE(card.cvc().empty());
+  ASSERT_TRUE(table_->AddCreditCard(card));
+
+  // INSERT
+  // Updating a card that doesn't have a CVC is the same as inserting a new CVC
+  // record.
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"123", db_card->cvc());
+
+  // UPDATE
+  // Update the credit card CVC.
+  card.set_cvc(u"234");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"234", db_card->cvc());
+}
+
+// Tests that updating a credit card CVC with empty CVC will delete CVC
+// record. This is necessary because if inserting a CVC, UPDATE is chosen over
+// INSERT, it will causes a crash.
+TEST_F(AutofillTableTest, UpdateCreditCardCvc_Delete) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card = test::GetCreditCard();
+  ASSERT_TRUE(card.cvc().empty());
+  ASSERT_TRUE(table_->AddCreditCard(card));
+
+  // INSERT
+  // Updating a card that doesn't have a CVC is the same as inserting a new CVC
+  // record.
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"123", db_card->cvc());
+
+  // DELETE
+  // Updating a card with empty CVC is the same as deleting the CVC record.
+  card.set_cvc(u"");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  sql::Statement cvc_statement(db_->GetSQLConnection()->GetUniqueStatement(
+      "SELECT guid FROM local_stored_cvc WHERE guid=?"));
+  cvc_statement.BindString(0, card.guid());
+  ASSERT_TRUE(cvc_statement.is_valid());
+  EXPECT_FALSE(cvc_statement.Step());
 }
 
 // Tests that verify add, update and clear server cvc function working as
