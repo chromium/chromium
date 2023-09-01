@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GoogleDrive"
       summary="The file was opened using the file task for Google
                Drive/Workspace"/>
-  <variant name="MicrosoftOneDrive"
+  <variant name="OneDrive"
       summary="The file was opened using the file task for OneDrive/Microsoft
                365"/>
 </variants>
@@ -1006,13 +1006,7 @@ chromium-metrics-reviews@google.com.
     <variant name="0100MB-to-1GB"/>
     <variant name="1000MB-and-above"/>
   </token>
-<!-- Defining this token inline instead of using the `CloudProvider` variant
-  because this it's spelled differently at call sites in existing builds. -->
-
-  <token key="CloudProvider">
-    <variant name="GoogleDrive"/>
-    <variant name="OneDrive"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
@@ -1128,7 +1122,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.Open.FileType.{ProviderName}"
+<histogram name="FileBrowser.OfficeFiles.Open.FileType.{CloudProvider}"
     enum="OfficeOpenExtensions" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -1136,16 +1130,11 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Records the extension of office files that are being
     opened with Drive web or Microsoft 365.
   </summary>
-  <token key="ProviderName">
-    <variant name="GoogleDrive"
-        summary="The file is being opened from Google Drive in Drive web"/>
-    <variant name="OneDrive"
-        summary="The file is being opened from OneDrive with Microsoft 365"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
 <histogram
-    name="FileBrowser.OfficeFiles.Open.IOTaskError.{ProviderName}.{Transfer}"
+    name="FileBrowser.OfficeFiles.Open.IOTaskError.{CloudProvider}.{Transfer}"
     enum="PlatformFileError" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -1155,16 +1144,12 @@ chromium-metrics-reviews@google.com.
     sum of FileBrowser.OfficeFiles.Open.UploadResult.* where the result is a
     copy or move operation error (IO task errors).
   </summary>
-  <token key="ProviderName">
-    <variant name="GoogleDrive"
-        summary="The file must be transferred to Google Drive"/>
-    <variant name="OneDrive"
-        summary="The file must be transferred to Microsoft OneDrive"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
   <token key="Transfer">
     <variant name="Copy"
-        summary="The files have been copied to {ProviderName}"/>
-    <variant name="Move" summary="The files have been moved to {ProviderName}"/>
+        summary="The files have been copied to {CloudProvider}"/>
+    <variant name="Move"
+        summary="The files have been moved to {CloudProvider}"/>
   </token>
 </histogram>
 
@@ -1176,10 +1161,20 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Records the source volume an office file is opened
     from.
   </summary>
-  <token key="CloudProvider" variants="CloudProvider"/>
+<!-- Defining this token inline instead of using the `CloudProvider` variant
+  because this it's spelled differently at call sites in existing builds. -->
+
+  <token key="CloudProvider">
+    <variant name="GoogleDrive"
+        summary="The file was opened using the file task for Google
+                 Drive/Workspace"/>
+    <variant name="MicrosoftOneDrive"
+        summary="The file was opened using the file task for
+                 OneDrive/Microsoft 365"/>
+  </token>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{ProviderName}"
+<histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{CloudProvider}"
     enum="OfficeFilesTransferRequired" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -1187,15 +1182,10 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Records whether an office file must be transferred
     to Google Drive or Microsoft OneDrive in order to open it.
   </summary>
-  <token key="ProviderName">
-    <variant name="GoogleDrive"
-        summary="The file must be transferred to Google Drive"/>
-    <variant name="OneDrive"
-        summary="The file must be transferred to Microsoft OneDrive"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.Open.UploadResult.{ProviderName}"
+<histogram name="FileBrowser.OfficeFiles.Open.UploadResult.{CloudProvider}"
     enum="OfficeFilesUploadResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -1203,12 +1193,7 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: Records the upload result of the &quot;upload and
     open&quot; workflow for Office files.
   </summary>
-  <token key="ProviderName">
-    <variant name="GoogleDrive"
-        summary="The file must be transferred to Google Drive"/>
-    <variant name="OneDrive"
-        summary="The file must be transferred to Microsoft OneDrive"/>
-  </token>
+  <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
 <histogram name="FileBrowser.OfficeFiles.Setup.CancelPage"
@@ -1243,7 +1228,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
+<histogram name="FileBrowser.OfficeFiles.TaskResult.{CloudProvider}"
     enum="OfficeTaskResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
@@ -1251,7 +1236,10 @@ chromium-metrics-reviews@google.com.
     Chrome OS File Browser: The result of the task that opens an Office file
     using Drive or OneDrive.
   </summary>
-  <token key="ProviderName">
+<!-- Defining this token inline instead of using the `CloudProvider` variant
+  because this it's spelled differently at call sites in existing builds. -->
+
+  <token key="CloudProvider">
     <variant name="Drive" summary="The task is for Google Drive/Docs"/>
     <variant name="OneDrive"
         summary="The task is for Microsoft OneDrive/Office"/>
