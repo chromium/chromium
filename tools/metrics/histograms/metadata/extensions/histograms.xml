@@ -812,14 +812,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ReadDynamicRulesJSONStatus"
-    enum="ReadDynamicRulesJSONStatus" expires_after="2023-06-01">
+    enum="ReadDynamicRulesJSONStatus" expires_after="2024-06-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Indicates the result of reading the dynamic JSON rules for an extension from
     the disk. Logged whenever an extension calls the getDynamicRules extension
     function or when it updates the dynamic rules through a call to
-    addDynamicRules or removeDynamicRules.
+    addDynamicRules or removeDynamicRules. Note: this histogram was expired from
+    2023-06-01 to 2023-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -835,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RequestHeaderAdded"
-    enum="WebRequest.RequestHeader" expires_after="2023-08-08">
+    enum="WebRequest.RequestHeader" expires_after="2024-08-08">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
@@ -919,13 +920,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.UpdateDynamicRulesStatus"
-    enum="UpdateDynamicRulesStatus" expires_after="2023-06-26">
+    enum="UpdateDynamicRulesStatus" expires_after="2024-06-26">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Indicates the result of an extension function call to add or remove dynamic
     rules. Logged every time an extension calls the addDynamicRules or
-    removeDynamicRules extension function.
+    removeDynamicRules extension function. Note: this histogram was expired from
+    2023-06-26 to 2023-09-01; data may be missing.
   </summary>
 </histogram>
 
