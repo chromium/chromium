@@ -1682,7 +1682,6 @@ TEST(StaticAVIFTests, BppHistogramAlpha) {
 TEST(StaticAVIFTests, BppHistogramAnimated) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  // red-with-alpha-8bpc.avif
   decoder->SetData(ReadFile("/images/resources/avif/star-animated-8bpc.avif"),
                    true);
   ASSERT_TRUE(decoder->IsSizeAvailable());
