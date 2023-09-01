@@ -13,6 +13,7 @@ static_library("vr_android") {
     "mailbox_to_surface_bridge.h",
     "web_xr_presentation_state.cc",
     "web_xr_presentation_state.h",
+    "xr_activity_state_handler.h",
     "xr_image_transport_base.cc",
     "xr_image_transport_base.h",
     "xr_java_coordinator.h",

@@ -4,6 +4,7 @@
 
 #include "components/webxr/android/cardboard_device_provider.h"
 
+#include "components/webxr/android/xr_activity_listener.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/cardboard/cardboard_device.h"
@@ -27,7 +28,8 @@ void CardboardDeviceProvider::Initialize(
       std::make_unique<device::CardboardSdkImpl>(),
       std::make_unique<webxr::MailboxToSurfaceBridgeFactoryImpl>(),
       std::make_unique<webxr::XrSessionCoordinator>(),
-      std::move(compositor_delegate_provider_));
+      std::move(compositor_delegate_provider_),
+      std::make_unique<webxr::XrActivityListenerFactory>());
 
   client->AddRuntime(cardboard_device_->GetId(),
                      cardboard_device_->GetDeviceData(),

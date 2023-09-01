@@ -14,6 +14,7 @@
 #include "device/vr/android/cardboard/cardboard_device_params.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
 #include "device/vr/android/cardboard/cardboard_render_loop.h"
+#include "device/vr/android/xr_activity_state_handler.h"
 
 namespace device {
 
@@ -35,7 +36,9 @@ CardboardDevice::CardboardDevice(
     std::unique_ptr<MailboxToSurfaceBridgeFactory>
         mailbox_to_surface_bridge_factory,
     std::unique_ptr<XrJavaCoordinator> xr_java_coordinator,
-    std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider)
+    std::unique_ptr<CompositorDelegateProvider> compositor_delegate_provider,
+    std::unique_ptr<XrActivityStateHandlerFactory>
+        activity_state_handler_factory)
     : VRDeviceBase(mojom::XRDeviceId::CARDBOARD_DEVICE_ID),
       main_thread_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -43,7 +46,9 @@ CardboardDevice::CardboardDevice(
       mailbox_to_surface_bridge_factory_(
           std::move(mailbox_to_surface_bridge_factory)),
       xr_java_coordinator_(std::move(xr_java_coordinator)),
-      compositor_delegate_provider_(std::move(compositor_delegate_provider)) {
+      compositor_delegate_provider_(std::move(compositor_delegate_provider)),
+      activity_state_handler_factory_(
+          std::move(activity_state_handler_factory)) {
   SetSupportedFeatures(GetSupportedFeatures());
 }
 
@@ -80,19 +85,39 @@ void CardboardDevice::RequestSession(
 
   cardboard_sdk_->Initialize(application_context.obj());
 
-  // Launch QR code scanner if there are no saved device parameters.
+  // It's an error to close a mojo pipe with an outstanding callback. Since we
+  // are not sure if we will be continued immediately or potentially get
+  // destroyed instead of a Resume event, store the callback now, so that it
+  // can be cleaned up properly during destruction.
+  pending_session_request_callback_ = std::move(callback);
+
+  base::OnceClosure continue_callback =
+      base::BindOnce(&CardboardDevice::OnCardboardParametersAcquired,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
+                     render_process_id, render_frame_id);
+
   auto params = CardboardDeviceParams::GetSavedDeviceParams();
-  if (!params.IsValid()) {
-    cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
-    // TODO(https://crbug.com/1429091): Allow RequestSession flow to resume once
-    // back from the QR code scanner activity.
-    DVLOG(1) << "Unable to get Cardboard device parameters.";
-    std::move(callback).Run(nullptr);
+  if (params.IsValid()) {
+    std::move(continue_callback).Run();
     return;
   }
 
-  pending_session_request_callback_ = std::move(callback);
+  // Launch QR code scanner if there are no saved device parameters; but first
+  // set up the RequestSession flow to be resumed.
+  on_activity_resumed_callback_ = std::move(continue_callback);
+  activity_state_handler_ = activity_state_handler_factory_->Create(
+      render_process_id, render_frame_id);
+  activity_state_handler_->SetResumedHandler(base::BindRepeating(
+      &CardboardDevice::OnActivityResumed, weak_ptr_factory_.GetWeakPtr()));
 
+  // This will suspend us and will trigger the XrActivityStateHandler on Resume.
+  cardboard_sdk_->ScanQrCodeAndSaveDeviceParams();
+}
+
+void CardboardDevice::OnCardboardParametersAcquired(
+    mojom::XRRuntimeSessionOptionsPtr options,
+    int render_process_id,
+    int render_frame_id) {
   // Set HasExclusiveSession status to true. This lasts until OnSessionEnded.
   OnStartPresenting();
 
@@ -124,6 +149,15 @@ void CardboardDevice::RequestSession(
       render_process_id, render_frame_id, *compositor_delegate_provider_.get(),
       std::move(ready_callback), std::move(touch_callback),
       std::move(destroyed_callback), std::move(xr_session_button_callback));
+}
+
+void CardboardDevice::OnActivityResumed() {
+  // Currently we only care about being called back once, so reset the activity
+  // handler here and then continue with our queued work.
+  activity_state_handler_.reset();
+  if (on_activity_resumed_callback_) {
+    std::move(on_activity_resumed_callback_).Run();
+  }
 }
 
 void CardboardDevice::OnXrSessionButtonTouched() {

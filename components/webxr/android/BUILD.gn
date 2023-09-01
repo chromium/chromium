@@ -36,6 +36,8 @@ source_set("android") {
   # assert(enable_vr).
   if (enable_vr) {
     sources = [
+      "xr_activity_listener.cc",
+      "xr_activity_listener.h",
       "xr_session_coordinator.cc",
       "xr_session_coordinator.h",
     ]
@@ -134,6 +136,7 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegate.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/VrCompositorDelegateProvider.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/XrActivityListener.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrDelegateImpl.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrHostActivity.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/XrImmersiveOverlay.java",
@@ -207,7 +210,10 @@ android_library("xr_java") {
 }
 
 generate_jni("xr_jni_headers") {
-  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java" ]
+  sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrActivityListener.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/XrSessionCoordinator.java",
+  ]
 
   if (enable_arcore) {
     sources += [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java" ]
