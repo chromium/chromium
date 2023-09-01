@@ -87,6 +87,9 @@ enum class SetUpListItemType;
 // `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item;
 
+// Hides the tab resumption tile.
+- (void)hideTabResumption;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSUMER_H_

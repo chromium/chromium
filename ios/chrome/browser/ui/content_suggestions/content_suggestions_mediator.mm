@@ -565,6 +565,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   switch (_tabResumptionItem.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       // TODO(crbug.com/1464185): Add metrics.
+      // TODO(crbug.com/1464185): Derank or hide the tile.
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpened];
@@ -572,13 +573,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       break;
     }
   }
-  // TODO(crbug.com/1464185): Hide the tile.
 
   web::NavigationManager::WebLoadParams webLoadParams =
       web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
   UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+
+  [self.consumer hideTabResumption];
+  _tabResumptionItem = nil;
 }
 
 #pragma mark - ContentSuggestionsGestureCommands
@@ -626,8 +629,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
-  if (IsTabResumptionEnabled()) {
-    // TODO(crbug.com/1464185): Implement this.
+  if (IsTabResumptionEnabled() && _tabResumptionItem) {
+    _tabResumptionItem = nil;
+    [self.consumer hideTabResumption];
   } else {
     [self hideRecentTabTile];
   }
@@ -1222,6 +1226,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     [self.consumer showTabResumptionWithItem:_tabResumptionItem];
     return;
   }
+
+  _tabResumptionHelper->SetCanSHowMostRecentItem(
+      NewTabPageTabHelper::FromWebState(self.webState)
+          ->ShouldShowStartSurface());
 
   __weak __typeof(self) weakSelf = self;
   _tabResumptionHelper->LastTabResumptionItem(^(TabResumptionItem* item) {

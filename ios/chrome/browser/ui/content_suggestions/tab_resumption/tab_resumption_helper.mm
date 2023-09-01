@@ -146,8 +146,12 @@ void TabResumptionHelper::LastTabResumptionItem(
   } else if (last_synced_tab_synced_time > most_recent_tab_opened_time) {
     CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
     LastSyncedTabItemFromSession(session, favicon_loader_, item_block_handler);
-  } else {
+  } else if (can_show_most_recent_item_) {
     MostRecentTabItemFromWebState(most_recent_tab, most_recent_tab_opened_time,
                                   favicon_loader_, item_block_handler);
   }
+}
+
+void TabResumptionHelper::SetCanSHowMostRecentItem(const bool show) {
+  can_show_most_recent_item_ = show;
 }

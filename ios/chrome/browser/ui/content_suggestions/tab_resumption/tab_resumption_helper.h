@@ -37,7 +37,12 @@ class TabResumptionHelper {
   void LastTabResumptionItem(
       TabResumptionItemCompletionBlock item_block_handler);
 
+  // Sets `can_show_most_recent_item`.
+  void SetCanSHowMostRecentItem(const bool show);
+
  private:
+  // Bool that tracks if a most recent tab item can be displayed.
+  bool can_show_most_recent_item_ = true;
   // The owning Browser.
   raw_ptr<Browser> browser_ = nullptr;
   // Loads favicons.

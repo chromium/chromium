@@ -743,6 +743,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+- (void)hideTabResumption {
+  NSUInteger moduleIndex = [self
+      indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+  [_tabResumptionModuleContainer removeFromSuperview];
+  [_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+}
+
 #pragma mark - SetUpListItemViewTapDelegate methods
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {
