@@ -3840,7 +3840,8 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb",
-          "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown"
+          "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown",
+          "--emulator-debug-tags=kernel"
         ],
         "merge": {
           "args": [
@@ -4643,7 +4644,8 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb",
           "--git-revision=${got_revision}",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter",
+          "--emulator-debug-tags=kernel"
         ],
         "merge": {
           "args": [
@@ -4937,7 +4939,8 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter",
+          "--emulator-debug-tags=kernel"
         ],
         "merge": {
           "args": [
