@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
+#include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,8 +48,6 @@ class DriveFs;
 }  // namespace drivefs
 
 namespace drive {
-
-class EventLogger;
 
 namespace internal {
 class ResourceMetadataStorage;
@@ -191,7 +190,7 @@ class DriveIntegrationService : public KeyedService,
   // PinManager::Observer implementation
   void OnProgress(const drivefs::pinning::Progress& progress) override;
 
-  EventLogger* event_logger() { return logger_.get(); }
+  EventLogger* GetLogger() { return &logger_; }
 
   // Clears all the local cache folder and remounts the file system. |callback|
   // is called with true when this operation is done successfully. Otherwise,
@@ -473,7 +472,7 @@ class DriveIntegrationService : public KeyedService,
   bool mirroring_enabled_ = false;
 
   base::FilePath cache_root_directory_;
-  std::unique_ptr<EventLogger> logger_;
+  EventLogger logger_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<internal::ResourceMetadataStorage, util::DestroyHelper>
       metadata_storage_;

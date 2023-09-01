@@ -712,7 +712,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
 
     const std::vector<drive::EventLogger::Event> log =
-        service->event_logger()->GetHistory();
+        service->GetLogger()->GetHistory();
 
     Value::List list;
     for (const drive::EventLogger::Event& event : log) {

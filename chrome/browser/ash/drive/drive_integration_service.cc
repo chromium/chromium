@@ -60,7 +60,6 @@
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_pref_names.h"
-#include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/drive/resource_metadata_storage.h"
@@ -721,7 +720,6 @@ DriveIntegrationService::DriveIntegrationService(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile && !profile->IsOffTheRecord());
 
-  logger_ = std::make_unique<EventLogger>();
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::WithBaseSyncPrimitives()});
@@ -759,7 +757,7 @@ void DriveIntegrationService::Shutdown() {
 
   RemoveDriveMountPoint();
 
-  for (auto& observer : observers_) {
+  for (Observer& observer : observers_) {
     observer.OnDriveIntegrationServiceDestroyed();
   }
 }
@@ -1041,8 +1039,8 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
       storage::FileSystemMountOption(), drive_mount_point);
 
   if (success) {
-    logger_->Log(logging::LOGGING_INFO, "Drive mount point is added");
-    for (auto& observer : observers_) {
+    logger_.Log(logging::LOGGING_INFO, "Drive mount point is added");
+    for (Observer& observer : observers_) {
       observer.OnFileSystemMounted();
     }
   }
@@ -1065,10 +1063,10 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
   if (!mount_point_name_.empty()) {
     if (storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
             mount_point_name_)) {
-      for (auto& observer : observers_) {
+      for (Observer& observer : observers_) {
         observer.OnFileSystemBeingUnmounted();
       }
-      logger_->Log(logging::LOGGING_INFO, "Drive mount point is removed");
+      logger_.Log(logging::LOGGING_INFO, "Drive mount point is removed");
     }
   }
   GetDriveFsHost()->Unmount();
@@ -1094,8 +1092,8 @@ void DriveIntegrationService::MaybeRemountFileSystem(
 
   if (!remount_delay) {
     if (failed_to_mount && !is_online_) {
-      logger_->Log(logging::LOGGING_WARNING,
-                   "DriveFs failed to start; will retry when online");
+      logger_.Log(logging::LOGGING_WARNING,
+                  "DriveFs failed to start; will retry when online");
       remount_when_online_ = true;
       return;
     }
@@ -1105,30 +1103,30 @@ void DriveIntegrationService::MaybeRemountFileSystem(
     ++drivefs_total_failures_count_;
     if (drivefs_total_failures_count_ > 10) {
       mount_failed_ = true;
-      logger_->Log(logging::LOGGING_ERROR,
-                   "DriveFs is too crashy. Leaving it alone.");
+      logger_.Log(logging::LOGGING_ERROR,
+                  "DriveFs is too crashy. Leaving it alone.");
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kMoreThanTenTotalFailures);
-      for (auto& observer : observers_) {
+      for (Observer& observer : observers_) {
         observer.OnFileSystemMountFailed();
       }
       return;
     }
     if (drivefs_consecutive_failures_count_ > 3) {
       mount_failed_ = true;
-      logger_->Log(logging::LOGGING_ERROR,
-                   "DriveFs keeps failing at start. Giving up.");
+      logger_.Log(logging::LOGGING_ERROR,
+                  "DriveFs keeps failing at start. Giving up.");
       RecordBulkPinningMountFailureReason(
           profile_, BulkPinningMountFailureReason::kThreeConsecutiveFailures);
-      for (auto& observer : observers_) {
+      for (Observer& observer : observers_) {
         observer.OnFileSystemMountFailed();
       }
       return;
     }
     remount_delay =
         Seconds(5 * (1 << (drivefs_consecutive_failures_count_ - 1)));
-    logger_->Log(logging::LOGGING_WARNING, "DriveFs died, retry in %d seconds",
-                 static_cast<int>(remount_delay.value().InSeconds()));
+    logger_.Log(logging::LOGGING_WARNING, "DriveFs died, retry in %d seconds",
+                static_cast<int>(remount_delay.value().InSeconds()));
   }
 
   SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -1244,7 +1242,7 @@ void DriveIntegrationService::OnMountFailed(
 
 void DriveIntegrationService::OnProgress(
     const drivefs::pinning::Progress& progress) {
-  for (auto& observer : observers_) {
+  for (Observer& observer : observers_) {
     observer.OnBulkPinProgress(progress);
   }
 }
@@ -1475,7 +1473,7 @@ void DriveIntegrationService::OnEnableMirroringStatusUpdate(
     drivefs::mojom::MirrorSyncStatus status) {
   mirroring_enabled_ = (status == drivefs::mojom::MirrorSyncStatus::kSuccess);
   if (mirroring_enabled_) {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnMirroringEnabled();
     }
   }
@@ -1485,7 +1483,7 @@ void DriveIntegrationService::OnDisableMirroringStatusUpdate(
     drivefs::mojom::MirrorSyncStatus status) {
   if (status == drivefs::mojom::MirrorSyncStatus::kSuccess) {
     mirroring_enabled_ = false;
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       observer.OnMirroringDisabled();
     }
   }

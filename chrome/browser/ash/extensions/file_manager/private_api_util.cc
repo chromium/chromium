@@ -747,7 +747,7 @@ drive::EventLogger* GetLogger(Profile* profile) {
   }
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  return service ? service->event_logger() : nullptr;
+  return service ? service->GetLogger() : nullptr;
 }
 
 std::vector<fmp::MountableGuest> CreateMountableGuestList(Profile* profile) {
