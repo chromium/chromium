@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -188,6 +189,7 @@ public final class ToolbarSecurityIconTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Omnibox"})
+    @DisableFeatures(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
     public void testGetSecurityIconResource() {
         for (int securityLevel : SECURITY_LEVELS) {
             assertEquals("Wrong phone resource for security level " + securityLevel,
@@ -244,6 +246,20 @@ public final class ToolbarSecurityIconTest {
                         IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
+                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Omnibox"})
+    @EnableFeatures(ChromeFeatureList.RED_INTERSTITIAL_FACELIFT)
+    public void testDangerousSecurityIconResourceRedInterstitialFaceliftEnabled() {
+        assertEquals(R.drawable.omnibox_dangerous,
+                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.DANGEROUS,
+                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
+        assertEquals(R.drawable.omnibox_dangerous,
+                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.DANGEROUS,
                         !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
     }
 

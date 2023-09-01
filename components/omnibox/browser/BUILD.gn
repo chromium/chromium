@@ -516,6 +516,7 @@ if (is_android) {
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
       "android/java/res/drawable/action_reviews.xml",
+      "android/java/res/drawable/omnibox_dangerous.xml",
       "android/java/res/drawable/omnibox_https_valid_refresh.xml",
       "android/java/res/values/colors.xml",
       "android/java/res/values/drawables.xml",
@@ -544,6 +545,7 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:jni_java",
+      "//chrome/browser/flags:java",
       "//components/embedder_support/android:util_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

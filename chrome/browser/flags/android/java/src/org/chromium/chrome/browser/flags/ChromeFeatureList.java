@@ -396,6 +396,7 @@ public abstract class ChromeFeatureList {
     public static final String RECORD_SUPPRESSION_METRICS = "RecordSuppressionMetrics";
     public static final String RECOVER_FROM_NEVER_SAVE_ANDROID =
             "RecoverFromNeverSaveAndroid_LAUNCHED";
+    public static final String RED_INTERSTITIAL_FACELIFT = "RedInterstitialFacelift";
     public static final String REENGAGEMENT_NOTIFICATION = "ReengagementNotification";
     public static final String RELATED_SEARCHES = "RelatedSearches";
     public static final String RENAME_JOURNEYS = "RenameJourneys";
