@@ -408,7 +408,7 @@ void IsolatedWebAppInstallationManager::MaybeScheduleGarbageCollection() {
           prefs::kShouldGarbageCollectStoragePartitions) ||
       provider_->extensions_manager().ShouldGarbageCollectStoragePartitions()) {
     provider_->command_manager().ScheduleCommand(
-        std::make_unique<web_app::GarbageCollectStoragePartititonsCommand>(
+        std::make_unique<web_app::GarbageCollectStoragePartitionsCommand>(
             &profile_.get(), base::DoNothing()));
   }
 }
