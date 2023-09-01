@@ -13,12 +13,26 @@ export interface Action {
   payload?: any;
 }
 
-type ActionFactory<Payload> = (payload: Payload) =>
-    (Action&{type: string, payload: Payload});
+/**
+ * A callable object that generates actions of a given type while enforcing the
+ * payload typing for that type of action.
+ *
+ * For convenience and debugging purposes, it also includes the action type and
+ * the payload typing.
+ *
+ * Note: PAYLOAD does not hold any useful value. It's exclusively used to
+ * conveniently carry the payload type along with the factory callable.
+ */
+export interface ActionFactory<Payload> {
+  (payload: Payload): (Action&{type: string, payload: Payload});
+  type: Action['type'];
+  PAYLOAD: Payload;
+}
 
 /** Reducers generate a new state from the current state and a payload. */
 export type Reducer<State, Payload> = (state: State, payload: Payload) => State;
 
+type ReducerMap<State> = Map<Action['type'], Reducer<State, any>>;
 type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
 
 /**
@@ -26,45 +40,64 @@ type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
  * state, aggregating its reducers and selectors.
  */
 export class Slice<State> {
-  handlers: ReducersMap<State> = new Map();
+  /**
+   * Reducers registered with this slice.
+   * Only one reducer per slice can be associated with a given action type.
+   */
+  reducers: ReducerMap<State> = new Map();
 
+  /**
+   * @param name The prefix to be used when registering action types with
+   *     this slice.
+   * @param debug Whether this slice's reducers should log when they are
+   *     triggered. This is useful when tracing Store operations is desired but
+   *     tracing the result of every dispatched action would be too verbose.
+   */
   constructor(public name: string, public debug?: boolean) {}
 
   /**
-   * Add type to slice's registry, ensuring it's unique within the slice, and
-   * returning the full action name given by appending the given action name to
-   * the slice's.
+   * Returns the full action name given by prepending the slice's name to the
+   * given action type (the full name is formatted as "[SLICE_NAME] TYPE").
    *
-   * If the given action type is already a full name, nothing is done and the
-   * full name is returned.
+   * If the given action type is already the full name, it's returned without
+   * any changes.
+   *
+   * Note: the only valid scenario where the given type is the full name is when
+   * registering a reducer for an action primarily registered in another slice.
    */
   private prependSliceName_(type: string) {
-    // Full action names are always formatted as "[SLICE_NAME] TYPE".
-    if (type[0] === '[') {
-      return type;
-    }
-
-    if (this.handlers.has(type)) {
-      throw new Error('Attempting to register a duplicate action name.');
-    }
-
-    this.handlers.set(type, []);
-
-    return `[${this.name}] ${type}`;
+    const isFullName = type[0] === '[';
+    return isFullName ? type : `[${this.name}] ${type}`;
   }
 
-  /** Returns an action factory for the added reducer. */
-  addReducer<Payload>(type: Action['type'], reducer: Reducer<State, Payload>):
-      ActionFactory<Payload> {
-    const fullName = this.prependSliceName_(type);
-    let reducerList = this.handlers.get(fullName);
-    if (!reducerList) {
-      reducerList = [];
-      this.handlers.set(fullName, reducerList);
+  /**
+   * Returns an action factory for the added reducer.
+   * @param localType The name of the action handled by this reducer. It should
+   *     be either a new action, (e.g., 'do-thing') in which case it will get
+   *     prefixed with the slice's name (e.g., '[sliceName] do-thing'), or an
+   *     existing action from another slice (e.g., `someActionFactory.type`).
+   * @returns A callable action factory that also holds the type and payload
+   *     typing of the actions it produces. Those can be used to register
+   *     reducers in other slices with the same action type.
+   */
+  addReducer<Payload>(
+      localType: Action['type'],
+      reducer: Reducer<State, Payload>): ActionFactory<Payload> {
+    const type = this.prependSliceName_(localType);
+    if (this.reducers.get(type)) {
+      throw new Error(
+          'Attempting to register multiple reducers ' +
+          `within slice for the same action type: ${type}`);
     }
-    reducerList.push(reducer);
+    this.reducers.set(type, reducer);
 
-    return (payload) => ({type: fullName, payload});
+    const actionFactory = (payload: Payload) => ({type, payload});
+    // Include action type and payload typing so different slices can register
+    // reducers for the same action type.
+    actionFactory.type = type;
+    actionFactory.PAYLOAD = null as Payload;
+
+    return actionFactory;
   }
 
   /** Creates a selector. */
@@ -79,15 +112,6 @@ export class Slice<State> {
  */
 export interface StoreObserver<State> {
   onStateChanged(newState: State): void;
-}
-
-/** Merges multiple maps into one. */
-function mergeMaps<K, V>(maps: Array<Map<K, V>>): Map<K, V> {
-  return new Map(function*() {
-    for (const map of maps) {
-      yield* map;
-    }
-  }());
 }
 
 /**
@@ -143,7 +167,18 @@ export class BaseStore<State> {
           [...sliceNames].join(', '));
     }
 
-    this.reducers_ = mergeMaps(slices.map(slice => slice.handlers));
+    // Populate reducers with given slices.
+    this.reducers_ = new Map();
+    for (const slice of slices) {
+      for (const [type, reducer] of slice.reducers.entries()) {
+        const reducerList = this.reducers_.get(type);
+        if (!reducerList) {
+          this.reducers_.set(type, [reducer]);
+        } else {
+          reducerList.push(reducer);
+        }
+      }
+    }
   }
 
   /**

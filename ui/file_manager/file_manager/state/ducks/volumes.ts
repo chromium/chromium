@@ -10,8 +10,10 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {Slice} from '../../lib/base_store.js';
-import {cacheEntries, getMyFiles, volumeNestingEntries} from '../ducks/all_entries.js';
+import {cacheEntries, getMyFiles, updateFileData, volumeNestingEntries} from '../ducks/all_entries.js';
 import {getEntry} from '../store.js';
+
+import {updateDeviceConnectionState} from './device.js';
 
 /**
  * @fileoverview Volumes slice of the store.
@@ -236,4 +238,45 @@ function updateIsInteractiveVolumeReducer(currentState: State, payload: {
       [payload.volumeId]: updatedVolume,
     },
   };
+}
+
+slice.addReducer(
+    updateDeviceConnectionState.type, updateDeviceConnectionStateReducer);
+
+function updateDeviceConnectionStateReducer(
+    currentState: State,
+    payload: typeof updateDeviceConnectionState.PAYLOAD): State {
+  let volumes: State['volumes']|undefined;
+
+  // Find ODFS volume(s) and disable it (or them) if offline.
+  const disableODFS = payload.connection ===
+      chrome.fileManagerPrivate.DeviceConnectionState.OFFLINE;
+  for (const volume of Object.values<Volume>(currentState.volumes)) {
+    if (!util.isOneDriveId(volume.providerId) ||
+        volume.isDisabled === disableODFS) {
+      continue;
+    }
+    const updatedVolume =
+        updateVolume(currentState, volume.volumeId, {isDisabled: disableODFS});
+    if (updatedVolume) {
+      if (!volumes) {
+        volumes = {
+          ...currentState.volumes,
+          [volume.volumeId]: updatedVolume,
+        };
+      } else {
+        volumes[volume.volumeId] = updatedVolume;
+      }
+    }
+    // Make the ODFS FileData/VolumeEntry consistent with its volume in the
+    // store.
+    updateFileData(currentState, volume.rootKey!, {disabled: disableODFS});
+    const odfsVolumeEntry =
+        getEntry(currentState, volume.rootKey!) as VolumeEntry;
+    if (odfsVolumeEntry) {
+      odfsVolumeEntry.disabled = disableODFS;
+    }
+  }
+
+  return volumes ? {...currentState, volumes} : currentState;
 }

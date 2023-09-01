@@ -102,7 +102,8 @@ export function testBatchDispatch() {
  * Checks that the reducer is called for every action.
  */
 export function testDispatch() {
-  const {store, subscriber, dispatchedActions, createTestAction} = setupTestStore();
+  const {store, subscriber, dispatchedActions, createTestAction} =
+      setupTestStore();
   assertEquals(0, dispatchedActions.length, 'starts with 0 actions');
   store.subscribe(subscriber);
 
@@ -272,4 +273,30 @@ export function testSliceErrorsOnActionNameCollision() {
   }
 
   assertEquals(didError, true);
+}
+
+/**
+ * Tests that Slice::addReducer produces action factories that can be shared
+ * across slices to register other reducers.
+ */
+export function testSliceReducerSplitting() {
+  const slice1 = new Slice<TestState>('name1');
+  const slice2 = new Slice<TestState>('name2');
+
+  const doThing = slice1.addReducer(
+      'do-thing',
+      (state: TestState, payload: number) =>
+          ({...state, numVisitors: state.numVisitors! + payload}));
+
+  slice2.addReducer(
+      doThing.type,
+      (state: TestState, payload: typeof doThing.PAYLOAD) =>
+          ({...state, numVisitors: state.numVisitors! + payload * 2}));
+
+  const store = new BaseStore<TestState>({}, [slice1, slice2]);
+  store.init({numVisitors: 0});
+  store.dispatch(doThing(2));
+
+  assertEquals(store.getState().numVisitors, 6 /* =2+2*2 */);
+  assertEquals(doThing.type, '[name1] do-thing');
 }
