@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1465272): Deflake and reenable the test.
 #define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
   DISABLED_ShouldGetTypesWithUnsyncedDataFromSyncService
