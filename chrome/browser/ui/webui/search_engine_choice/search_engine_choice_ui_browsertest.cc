@@ -69,6 +69,7 @@ struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
+  bool use_first_small_size_variant = false;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -83,6 +84,8 @@ const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
+    {.test_suffix = "FirstSmallSizeVariant",
+     .use_first_small_size_variant = true},
 };
 }  // namespace
 
@@ -126,8 +129,16 @@ class SearchEngineChoiceUIPixelTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, "SearchEngineChoiceDialogView");
 
-    // Make the dialog smaller so that it can fit in the test window.
-    ShowSearchEngineChoiceDialog(*browser(), gfx::Size(840, 580));
+    // Make the default size smaller so that the dialog can fit in the test
+    // window.
+    int dialog_width = 930;
+    int dialog_height = 580;
+
+    if (GetParam().use_first_small_size_variant) {
+      dialog_width = 900;
+    }
+    ShowSearchEngineChoiceDialog(*browser(),
+                                 gfx::Size(dialog_width, dialog_height));
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }

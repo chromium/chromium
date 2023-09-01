@@ -12,21 +12,14 @@
   }
 
   #submitButton {
-    bottom: 0;
     height: unset;
     margin: 40px;
     /* The max-width is needed to stop the button from overlapping with
-     the choice list. The exact value will be updated once the mocks
-     are final. */
+     the choice list in case of large text.  */
     max-width: 115px;
-    position: fixed;
-    right: 0;
+    pointer-events: all;
   }
 
-  :host-context([dir='rtl']) #submitButton {
-    left: 0;
-    right: initial;
-  }
 
   .content-container {
     align-items: center;
@@ -152,6 +145,15 @@
     margin: 0 0 24px;
   }
 
+  .button-container {
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    pointer-events: none;
+    position: fixed;
+    width: 100vw;
+  }
+
   @media (prefers-color-scheme: dark) {
     .tangible-sync-style-left-banner {
       content: url(images/left_illustration_dark.svg);
@@ -178,6 +180,20 @@
   .tangible-sync-style .subtitle {
     font-size: 1.25rem;
     line-height: 30px;
+  }
+}
+
+@media screen and (max-width: 920px) {
+  .button-container {
+    background-color: white;
+    border-top: var(--cr-separator-line);
+    pointer-events: unset;
+  }
+
+  #submitButton {
+    margin: 28px;
+    max-width: unset;
+    pointer-events: unset;
   }
 }
 </style>
@@ -209,10 +225,12 @@
     </template>
   </cr-radio-group>
 </div>
-<cr-button class="action-button" id="submitButton" on-click="onSubmitClicked_"
-    disabled="[[isSubmitDisabled_]]">
-  $i18n{buttonText}
-</cr-button>
+<div class="button-container">
+  <cr-button class="action-button" id="submitButton" on-click="onSubmitClicked_"
+      disabled="[[isSubmitDisabled_]]">
+    $i18n{buttonText}
+  </cr-button>
+</div>
 
 <cr-dialog id="infoDialog">
   <div slot="title">
