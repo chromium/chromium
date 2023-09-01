@@ -1712,50 +1712,9 @@
       },
     },
 
-    # The `cr23` variants of tests run the normal test suites with
-    # `--enable-features=ChromeRefesh2023` and other refresh-related flags.
-    # The `fyi` versions of these test suites just include the normal
-    # versions of browser_tests and interactive_ui_tests to make it easier
-    # to garden the FYI bots and tell if a failure is likely to be
-    # cr23-specific or not.
-
-    'cr23_fyi_linux_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-    'cr23_fyi_mac_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-    'cr23_fyi_win_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-    'cr23_main_linux_gtests': {
+    # TODO(crbug.com/1444855): Delete the cr23_{linux,mac,win}_gtest suites
+    # after the ChromeRefresh2023 is fully rolled out.
+    'cr23_linux_gtests': {
       'cr23_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
@@ -1766,7 +1725,6 @@
           'shards': 20,
         },
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1780,18 +1738,16 @@
           'shards': 10,
         },
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_views_unittests': {
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'views_unittests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
     },
-    'cr23_main_mac_gtests': {
+    'cr23_mac_gtests': {
       'cr23_browser_tests': {
         'args': [
           ('--test-launcher-filter-file='
@@ -1802,7 +1758,6 @@
           'shards': 20,
         },
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'browser_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
@@ -1816,54 +1771,15 @@
           'shards': 10,
         },
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'interactive_ui_tests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
       'cr23_views_unittests': {
         'ci_only': True,
-        'experiment_percentage': 10,
         'test': 'views_unittests',
         'mixins': [ 'chrome-refresh-2023' ],
       },
     },
-    'cr23_main_win_gtests': {
-      'cr23_browser_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-        'ci_only': True,
-        'experiment_percentage': 10,
-        'test': 'browser_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-      'cr23_interactive_ui_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'ci_only': True,
-        'experiment_percentage': 10,
-        'test': 'interactive_ui_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-      'cr23_views_unittests': {
-        'ci_only': True,
-        'experiment_percentage': 10,
-        'test': 'views_unittests',
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-    },
-
     'cr23_pixel_browser_tests_gtests': {
       'cr23_pixel_browser_tests': {
         'args': [
@@ -1898,6 +1814,39 @@
           'skia_gold_test',
           'chrome-refresh-2023',
         ],
+      },
+    },
+    'cr23_win_gtests': {
+      'cr23_browser_tests': {
+        'args': [
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
+          ),
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+        'ci_only': True,
+        'test': 'browser_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
+      },
+      'cr23_interactive_ui_tests': {
+        'args': [
+          ('--test-launcher-filter-file='
+           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
+          ),
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+        'ci_only': True,
+        'test': 'interactive_ui_tests',
+        'mixins': [ 'chrome-refresh-2023' ],
+      },
+      'cr23_views_unittests': {
+        'ci_only': True,
+        'test': 'views_unittests',
+        'mixins': [ 'chrome-refresh-2023' ],
       },
     },
 
@@ -6184,7 +6133,6 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_main_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'gl_gtests_passthrough',
@@ -6204,7 +6152,6 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_main_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'gl_gtests_passthrough',
@@ -6240,7 +6187,8 @@
     ],
 
     # When changing something here, change chromium_linux_and_gl_gtests,
-    # and chromium_linux_and_gl_and_vulkan_gtests in the same way.
+    # chromium_linux_and_gl_and_vulkan_gtests, and
+    # chromium_linux_rel_gtests_once in the same way.
     'chromium_linux_gtests': [
       'aura_gtests',
       'chromium_gtests',
@@ -6249,7 +6197,29 @@
       'chromium_gtests_for_linux_and_mac_only',
       'chromium_gtests_for_linux_only',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_main_linux_gtests',
+      'linux_flavor_specific_chromium_gtests',
+      'linux_specific_xr_gtests',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests',
+      'vr_platform_specific_chromium_gtests',
+    ],
+
+    # TODO(crbug.com/1444855): This set should match chromium_linux_gtests,
+    # except that it also runs tests that we can afford to run only once on
+    # Linux machines (for now, this is just the cr23_linux_gtests).
+    #
+    # Delete this test suite after the ChromeRefresh2023 is fully rolled out
+    # (assuming no other test suites are being run only once) and make sure
+    # any bots go back to using chromium_linux_gtests.
+    'chromium_linux_gtests_once': [
+      'aura_gtests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_linux_and_chromeos_only',
+      'chromium_gtests_for_linux_and_mac_only',
+      'chromium_gtests_for_linux_only',
+      'chromium_gtests_for_win_and_linux_only',
+      'cr23_linux_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -6301,7 +6271,6 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_mac_only',
-      'cr23_main_mac_gtests',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
@@ -6312,17 +6281,34 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_mac_only',
-      'cr23_main_mac_gtests',
       'mac_specific_chromium_gtests',
       'nocompile_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests_no_nacl',
     ],
 
+    # When changing something here, change
+    # chromium_mac_gtests_no_nocompile_once in the same way.
     'chromium_mac_gtests_no_nacl_no_nocompile': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
-      'cr23_main_mac_gtests',
+      'mac_specific_chromium_gtests',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests_no_nacl',
+    ],
+
+    # TODO(crbug.com/1444855): This set should match
+    # chromium_mac_gtests_no_nacl_no_nocompile, except that it also runs
+    # tests that we can only afford to run once on Mac machines (for now,
+    # this is just the cr23_mac_gtests).
+    #
+    # Delete this test suite after the ChromeRefresh2023 is fully rolled out
+    # and make sure any bots go back to using
+    # chromium_mac_gtests_no_nacl_no_nocompile.
+    'chromium_mac_gtests_no_nacl_no_nocompile_once': [
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'cr23_mac_gtests',
       'mac_specific_chromium_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests_no_nacl',
@@ -6368,14 +6354,36 @@
 
     # Pixel tests only enabled on Win 10. So this is
     # 'chromium_win_gtests' + 'pixel_browser_tests_gtests' +
-    # 'non_android_chromium_gtests_skia_gold'.
+    # 'non_android_chromium_gtests_skia_gold'. When changing
+    # something here, also change chromium_win10_gtests_once in the same way.
     'chromium_win10_gtests': [
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_main_win_gtests',
       'cr23_pixel_browser_tests_gtests',
+      'fieldtrial_browser_tests',
+      'non_android_and_cast_and_chromeos_chromium_gtests',
+      'non_android_chromium_gtests',
+      'non_android_chromium_gtests_skia_gold',
+      'pixel_browser_tests_gtests',
+      'vr_platform_specific_chromium_gtests',
+      'win_specific_chromium_gtests',
+    ],
+
+    # TODO(crbug.com/1444855): This set should match chromium_win10_gtests,
+    # except that it also runs tests that we can afford to run only once
+    # on Windows machines (for now this is just the cr23_win_gtests).
+    #
+    # Delete this test suite after the ChromeRefresh2023 is fully rolled out
+    # and make sure any bots go back to using chromium_win10_gtests.
+    'chromium_win10_gtests_once': [
+      'aura_gtests',
+      'chromium_gtests',
+      'chromium_gtests_for_devices_with_graphical_output',
+      'chromium_gtests_for_win_and_linux_only',
+      'cr23_pixel_browser_tests_gtests',
+      'cr23_win_gtests',
       'fieldtrial_browser_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
@@ -6398,7 +6406,6 @@
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
-      'cr23_main_win_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
@@ -6433,21 +6440,6 @@
       'telemetry_desktop_minidump_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
       'win_specific_isolated_scripts',
-    ],
-
-    'cr23_linux_gtests': [
-      'cr23_fyi_linux_gtests',
-      'cr23_main_linux_gtests',
-    ],
-
-    'cr23_mac_gtests': [
-      'cr23_fyi_mac_gtests',
-      'cr23_main_mac_gtests',
-    ],
-
-    'cr23_win_gtests': [
-      'cr23_fyi_win_gtests',
-      'cr23_main_win_gtests',
     ],
 
     'cronet_dbg_isolated_scripts': [
