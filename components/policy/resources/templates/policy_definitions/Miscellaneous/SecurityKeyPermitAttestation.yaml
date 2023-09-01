@@ -1,10 +1,8 @@
 caption: URLs/domains automatically permitted direct Security Key attestation
 desc: |-
-  Setting the policy specifies URLs and domains for which no prompt appears when attestation certificates from Security Keys are requested. A signal is also sent to the Security Key indicating that individual attestation may be used. Without this, when sites request attestation of Security Keys, users are prompted in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 65 and later.
-
-        URLs will only match as U2F appIDs. Domains only match as webauthn RP IDs. So to cover both U2F and webauthn APIs, list the appID URL and domain for a given site.
+  Setting the policy specifies WebAuthn RP IDs for which no prompt appears when attestation certificates from security keys are requested. A signal is also sent to the security key indicating that enterprise attestation may be used. Without this, when sites request attestation of security keys, users are prompted in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 65 and later.
 example_value:
-- https://example.com
+- example.com
 features:
   dynamic_refresh: true
   per_profile: true
