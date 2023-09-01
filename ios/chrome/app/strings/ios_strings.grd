@@ -4132,6 +4132,15 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_ONE" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Incognito
       </message>
+      <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_TITLE" desc="Title of a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Save Without Encryption
+      </message>
+      <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_MESSAGE" desc="Message of a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
+        Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.
+      </message>
+      <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_CONTINUE" desc="Action of a dialog to enable saving addresses to the Google Account. If the user chose to continue, addresses will start syncing.">
+        Continue
+      </message>
       <message name="IDS_IOS_SPOTLIGHT_KEYWORD_SEVEN" desc="Keyword used in Spotlight that will be linked to the Chrome App. [iOS only]">
         Network
       </message>
