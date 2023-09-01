@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -59,7 +60,21 @@ class ASH_EXPORT GeolocationController
       public SessionObserver,
       public SimpleGeolocationProvider::Delegate {
  public:
-  static constexpr base::Time kNoSunRiseSet = base::Time::Min();
+  // Possible errors for `GetSunsetTime()` and `GetSunriseTime()`.
+  enum class SunRiseSetError {
+    // The current geolocation has no sunrise/sunset (24 hours of daylight or
+    // darkness).
+    kNoSunRiseSet,
+    // Sunrise/set are temporarily unavailable, including the default values of
+    // 6 AM/PM local time. Caller should handle this gracefully and try again
+    // later.
+    kUnavailable
+  };
+
+  static constexpr base::expected<base::Time, SunRiseSetError> kNoSunRiseSet =
+      base::unexpected(SunRiseSetError::kNoSunRiseSet);
+  static constexpr base::expected<base::Time, SunRiseSetError>
+      kSunRiseSetUnavailable = base::unexpected(SunRiseSetError::kUnavailable);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -110,10 +125,13 @@ class ASH_EXPORT GeolocationController
 
   // Returns sunset and sunrise time calculated from the most recently observed
   // geoposition. If a geoposition has not been observed, defaults to sunset
-  // 6 PM and sunrise 6 AM. If the current geolocation has no sunrise/sunset
-  // (24 hours of daylight or darkness), both methods return `kNoSunRiseSet`.
-  base::Time GetSunsetTime() const { return GetSunRiseSet(/*sunrise=*/false); }
-  base::Time GetSunriseTime() const { return GetSunRiseSet(/*sunrise=*/true); }
+  // 6 PM and sunrise 6 AM.
+  base::expected<base::Time, SunRiseSetError> GetSunsetTime() const {
+    return GetSunRiseSet(/*sunrise=*/false);
+  }
+  base::expected<base::Time, SunRiseSetError> GetSunriseTime() const {
+    return GetSunRiseSet(/*sunrise=*/true);
+  }
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 
@@ -165,7 +183,7 @@ class ASH_EXPORT GeolocationController
   // GetSunsetTime() or GetSunriseTime() is called rather than once whenever we
   // receive a geoposition (which happens at least once a day). This reduces
   // the chances of getting inaccurate values, especially around DST changes.
-  base::Time GetSunRiseSet(bool sunrise) const;
+  base::expected<base::Time, SunRiseSetError> GetSunRiseSet(bool sunrise) const;
 
   // Called only when the active user changes in order to see if we need to use
   // a previously cached geoposition value from the active user's prefs.

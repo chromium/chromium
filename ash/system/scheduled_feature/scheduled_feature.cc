@@ -352,17 +352,19 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
           GetCheckpointForEnabledState(GetEnabled(), ScheduleType::kNone));
       return;
     case ScheduleType::kSunsetToSunrise: {
-      const base::Time sunrise_time = geolocation_controller_->GetSunriseTime();
-      const base::Time sunset_time = geolocation_controller_->GetSunsetTime();
+      const base::expected<base::Time, GeolocationController::SunRiseSetError>
+          sunrise_time = geolocation_controller_->GetSunriseTime();
+      const base::expected<base::Time, GeolocationController::SunRiseSetError>
+          sunset_time = geolocation_controller_->GetSunsetTime();
       if (sunrise_time == GeolocationController::kNoSunRiseSet ||
           sunset_time == GeolocationController::kNoSunRiseSet) {
         // Simply disable the feature in this corner case. Since sunset and
         // sunrise are exactly the same, there is no time for it to be enabled.
         start_time = Now();
         end_time = start_time;
-      } else if (!sunrise_time.is_null() && !sunset_time.is_null()) {
-        start_time = sunset_time;
-        end_time = sunrise_time;
+      } else if (sunrise_time.has_value() && sunset_time.has_value()) {
+        start_time = sunset_time.value();
+        end_time = sunrise_time.value();
       } else {
         // Sunrise or sunset is temporarily unavailable. Leave `start_time` and
         // `end_time` unset.

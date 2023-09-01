@@ -214,8 +214,10 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
     return;
   }
 
-  absl::optional<base::Time> previous_sunset;
-  absl::optional<base::Time> previous_sunrise;
+  base::expected<base::Time, SunRiseSetError> previous_sunset =
+      kSunRiseSetUnavailable;
+  base::expected<base::Time, SunRiseSetError> previous_sunrise =
+      kSunRiseSetUnavailable;
   bool possible_change_in_timezone = !geoposition_;
   if (geoposition_) {
     previous_sunset = GetSunsetTime();
@@ -229,26 +231,27 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   is_current_geoposition_from_cache_ = false;
   StoreCachedGeoposition();
 
-  if (previous_sunset && previous_sunrise) {
-    const base::Time new_sunset = GetSunsetTime();
-    const base::Time new_sunrise = GetSunriseTime();
-    if (previous_sunset.value() == kNoSunRiseSet ||
-        previous_sunrise.value() == kNoSunRiseSet ||
-        new_sunrise == kNoSunRiseSet || new_sunset == kNoSunRiseSet) {
-      // Any time an area with no sunrise|set is involved, consider it a
-      // *possible* change. Sunrise|set timestamps for these areas are all the
-      // same, so there's no way to tell if it implies a timezone change.
-      possible_change_in_timezone = true;
-    } else {
-      // If the change in geoposition results in an hour or more in either
-      // sunset or sunrise times indicates of a possible timezone change.
-      constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
-      possible_change_in_timezone =
-          (GetSunsetTime() - previous_sunset.value()).magnitude() >
-              kOneHourDuration ||
-          (GetSunriseTime() - previous_sunrise.value()).magnitude() >
-              kOneHourDuration;
-    }
+  const base::expected<base::Time, SunRiseSetError> new_sunset =
+      GetSunsetTime();
+  const base::expected<base::Time, SunRiseSetError> new_sunrise =
+      GetSunriseTime();
+  if (previous_sunset.has_value() && previous_sunrise.has_value() &&
+      new_sunset.has_value() && new_sunrise.has_value()) {
+    // If the change in geoposition results in an hour or more in either
+    // sunset or sunrise times indicates of a possible timezone change.
+    constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
+    possible_change_in_timezone =
+        (new_sunset.value() - previous_sunset.value()).magnitude() >
+            kOneHourDuration ||
+        (new_sunrise.value() - previous_sunrise.value()).magnitude() >
+            kOneHourDuration;
+  } else if (previous_sunset == kNoSunRiseSet ||
+             previous_sunrise == kNoSunRiseSet ||
+             new_sunrise == kNoSunRiseSet || new_sunset == kNoSunRiseSet) {
+    // Any time an area with no sunrise|set is involved, consider it a
+    // *possible* change. Sunrise|set timestamps for these areas are all the
+    // same, so there's no way to tell if it implies a timezone change.
+    possible_change_in_timezone = true;
   }
 
   NotifyGeopositionChange(possible_change_in_timezone);
@@ -291,7 +294,8 @@ void GeolocationController::RequestGeoposition() {
                      base::Unretained(this)));
 }
 
-base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
+base::expected<base::Time, GeolocationController::SunRiseSetError>
+GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
     VLOG(1) << "Invalid geoposition. Using default time for "
             << (sunrise ? "sunrise." : "sunset.");
@@ -301,9 +305,10 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
             .SetClock(clock_)
             .SetLocalTimeConverter(local_time_converter_)
             .ToTimeToday();
-    // TODO(b/294437057): Change this method's return value to return a type
-    // that makes this failure more obvious to the caller.
-    return default_value.value_or(base::Time());
+    if (default_value) {
+      return base::ok(*default_value);
+    }
+    return kSunRiseSetUnavailable;
   }
 
   icu::CalendarAstronomer astro(geoposition_->longitude,
@@ -320,9 +325,7 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
           .SetLocalTimeConverter(local_time_converter_)
           .ToTimeToday();
   if (!midday_today) {
-    // TODO(b/294437057): Change this method's return value to return a type
-    // that makes this failure more obvious to the caller.
-    return base::Time();
+    return kSunRiseSetUnavailable;
   }
 
   astro.setTime(midday_today->ToDoubleT() * 1000.0);
@@ -330,8 +333,10 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
   // a very large negative value. Any timestamp before or at the epoch
   // definitely does not make sense, so assume `kNoSunRiseSet`.
-  return sun_rise_set_ms > 0 ? base::Time::FromDoubleT(sun_rise_set_ms / 1000.0)
-                             : kNoSunRiseSet;
+  if (sun_rise_set_ms > 0) {
+    return base::ok(base::Time::FromDoubleT(sun_rise_set_ms / 1000.0));
+  }
+  return kNoSunRiseSet;
 }
 
 void GeolocationController::LoadCachedGeopositionIfNeeded() {

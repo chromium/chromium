@@ -43,6 +43,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -802,15 +803,17 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
 
   // Firing a timer should to advance the time to sunset and automatically turn
   // on the feature.
-  const TimeOfDay sunset_time =
-      TimeOfDay::FromTime(geolocation_controller()->GetSunsetTime());
+  const auto sunset = geolocation_controller()->GetSunsetTime();
+  ASSERT_TRUE(sunset.has_value());
+  const TimeOfDay sunset_time = TimeOfDay::FromTime(sunset.value());
   FastForwardTo(sunset_time);
   EXPECT_TRUE(GetEnabled());
 
   // Firing a timer should advance the time to sunrise and automatically turn
   // off the feature.
-  const TimeOfDay sunrise_time =
-      TimeOfDay::FromTime(geolocation_controller()->GetSunriseTime());
+  const auto sunrise = geolocation_controller()->GetSunriseTime();
+  ASSERT_TRUE(sunrise.has_value());
+  const TimeOfDay sunrise_time = TimeOfDay::FromTime(sunrise.value());
   FastForwardTo(sunrise_time);
   EXPECT_FALSE(GetEnabled());
 
@@ -853,15 +856,17 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
   EXPECT_TRUE(observer1.possible_change_in_timezone());
-  const base::Time sunset_time1 = geolocation_controller()->GetSunsetTime();
-  const base::Time sunrise_time1 = geolocation_controller()->GetSunriseTime();
+  const auto sunset_time1 = geolocation_controller()->GetSunsetTime();
+  const auto sunrise_time1 = geolocation_controller()->GetSunriseTime();
+  ASSERT_TRUE(sunset_time1.has_value());
+  ASSERT_TRUE(sunrise_time1.has_value());
   // Our assumption is that GeolocationController gives us sunrise time
   // earlier in the same day before sunset.
-  ASSERT_GT(sunset_time1, sunrise_time1);
-  ASSERT_LT(sunset_time1 - base::Days(1), sunrise_time1);
+  ASSERT_GT(sunset_time1.value(), sunrise_time1.value());
+  ASSERT_LT(sunset_time1.value() - base::Days(1), sunrise_time1.value());
 
   // Set time now to be 4 hours before sunset.
-  FastForwardTo(TimeOfDay::FromTime(sunset_time1 - base::Hours(4)));
+  FastForwardTo(TimeOfDay::FromTime(sunset_time1.value() - base::Hours(4)));
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   EXPECT_FALSE(feature()->GetEnabled());
@@ -880,7 +885,7 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
 
   // Simulate reaching sunrise.
   FastForwardTo(TimeOfDay::FromTime(
-      sunrise_time1 + delta));  // Now is sunrise time of the position1
+      sunrise_time1.value() + delta));  // Now is sunrise time of the position1
   EXPECT_FALSE(feature()->GetEnabled());
 
   // Now simulate user changing position.
@@ -900,8 +905,10 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   EXPECT_TRUE(observer1.possible_change_in_timezone());
   EXPECT_TRUE(IsFeatureObservingGeoposition());
 
-  const base::Time sunset_time2 = geolocation_controller()->GetSunsetTime();
-  const base::Time sunrise_time2 = geolocation_controller()->GetSunriseTime();
+  const auto sunset_time2 = geolocation_controller()->GetSunsetTime();
+  const auto sunrise_time2 = geolocation_controller()->GetSunriseTime();
+  ASSERT_TRUE(sunset_time2.has_value());
+  ASSERT_TRUE(sunrise_time2.has_value());
 
   // Expect that the scheduled end delay has been updated to sunrise of location
   // 2, and the status has changed to enabled even though time has not advanced.
@@ -909,10 +916,10 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
 
   // Simulate reaching sunrise.
   FastForwardTo(TimeOfDay::FromTime(
-      sunrise_time2 + delta));  // Now is sunrise time of the position2.
+      sunrise_time2.value() + delta));  // Now is sunrise time of the position2.
   EXPECT_FALSE(feature()->GetEnabled());
   // Timer is running scheduling the start at the sunset of the next day.
-  FastForwardTo(TimeOfDay::FromTime(sunset_time2 + delta));
+  FastForwardTo(TimeOfDay::FromTime(sunset_time2.value() + delta));
   EXPECT_TRUE(feature()->GetEnabled());
 }
 
@@ -1268,8 +1275,12 @@ TEST_F(ScheduledFeatureTest, HandlesLocalTimeFailuresSunsetToSunrise) {
 
   const FailingLocalTimeConverter failing_local_time_converter;
   SetLocalTimeConverter(&failing_local_time_converter);
-  ASSERT_EQ(geolocation_controller()->GetSunsetTime(), base::Time());
-  ASSERT_EQ(geolocation_controller()->GetSunriseTime(), base::Time());
+  ASSERT_EQ(
+      geolocation_controller()->GetSunsetTime(),
+      base::unexpected(GeolocationController::SunRiseSetError::kUnavailable));
+  ASSERT_EQ(
+      geolocation_controller()->GetSunriseTime(),
+      base::unexpected(GeolocationController::SunRiseSetError::kUnavailable));
 
   // Normally, this would retrieve a default sunrise/sunset of 6 AM/PM. But
   // due to local time failure, this should keep the current state (disabled)
