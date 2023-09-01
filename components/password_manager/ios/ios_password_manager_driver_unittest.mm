@@ -113,7 +113,13 @@ TEST_F(IOSPasswordManagerDriverTest, IsInPrimaryMainFrame) {
 }
 
 // Tests the SetPasswordFillData method.
-TEST_F(IOSPasswordManagerDriverTest, SetPasswordFillData) {
+// TODO:(crbug.com/1478147): Re-enable this test on devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_SetPasswordFillData SetPasswordFillData
+#else
+#define MAYBE_SetPasswordFillData DISABLED_SetPasswordFillData
+#endif
+TEST_F(IOSPasswordManagerDriverTest, MAYBE_SetPasswordFillData) {
   autofill::PasswordFormFillData form_data;
 
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
