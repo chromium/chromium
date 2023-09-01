@@ -449,7 +449,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     case SafetyCheckItemType::kDefault:
       [HandlerForProtocol(self.browser->GetCommandDispatcher(),
                           ApplicationCommands)
-          showSafetyCheckSettingsAndStartSafetyCheck];
+          showAndStartSafetyCheckInHalfSheet:YES];
 
       break;
   }

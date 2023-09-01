@@ -62,6 +62,13 @@
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// Sets a custom radius for the half sheet presentation.
+CGFloat const kHalfSheetCornerRadius = 20;
+
+}  // namespace
+
 using password_manager::features::IsPasswordCheckupEnabled;
 
 NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
@@ -214,13 +221,31 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 + (instancetype)
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
-                                        delegate {
+                                        delegate
+                 displayAsHalfSheet:(BOOL)displayAsHalfSheet {
   DCHECK(browser);
+
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
+
+  if (displayAsHalfSheet) {
+    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+    UISheetPresentationController* presentationController =
+        navigationController.sheetPresentationController;
+
+    presentationController.prefersEdgeAttachedInCompactHeight = YES;
+
+    presentationController.detents = @[
+      UISheetPresentationControllerDetent.mediumDetent,
+      UISheetPresentationControllerDetent.largeDetent,
+    ];
+
+    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+  }
 
   [navigationController showSafetyCheckAndStartSafetyCheck];
 
@@ -1166,7 +1191,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.clearBrowsingDataCoordinator start];
 }
 
-- (void)showSafetyCheckSettingsAndStartSafetyCheck {
+- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)displayAsHalfSheet {
   [self showSafetyCheckAndStartSafetyCheck];
 }
 

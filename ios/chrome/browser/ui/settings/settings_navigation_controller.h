@@ -214,11 +214,14 @@ extern NSString* const kSettingsDoneButtonId;
 
 // Creates a new SafetyCheckTableViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
-// should not be nil. `delegate` may be nil.
+// should not be nil. `delegate` may be nil. `displayAsHalfSheet` determines
+// whether the Safety Check will be displayed as a half-sheet, or full-page
+// modal.
 + (instancetype)
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
-                                        delegate;
+                                        delegate
+                 displayAsHalfSheet:(BOOL)displayAsHalfSheet;
 
 // Creates a new PrivacySafeBrowsingViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and

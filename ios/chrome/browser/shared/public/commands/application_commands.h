@@ -94,8 +94,10 @@ enum class WarningType;
 // Shows the settings page allowing the user to clear their browsing data.
 - (void)showClearBrowsingDataSettings;
 
-// Shows the Safety Check page and start Safety Check.
-- (void)showSafetyCheckSettingsAndStartSafetyCheck;
+// Shows the Safety Check page and starts the Safety Check. `showHalfSheet`
+// determines whether the Safety Check will be displayed as a half-sheet, or
+// full-page modal.
+- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet;
 
 // Shows the Safe Browsing page.
 - (void)showSafeBrowsingSettings;

@@ -726,7 +726,8 @@ void InjectNTP(Browser* browser) {
   if (!self.settingsNavigationController) {
     self.settingsNavigationController =
         [SettingsNavigationController safetyCheckControllerForBrowser:browser
-                                                             delegate:self];
+                                                             delegate:self
+                                                   displayAsHalfSheet:NO];
   }
 
   self.passwordCheckupCoordinator = [[PasswordCheckupCoordinator alloc]
@@ -2258,18 +2259,22 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
-- (void)showSafetyCheckSettingsAndStartSafetyCheck {
+- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet {
   UIViewController* baseViewController = self.currentInterface.viewController;
+
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-            showSafetyCheckSettingsAndStartSafetyCheck];
+        showAndStartSafetyCheckInHalfSheet:showHalfSheet];
     return;
   }
+
   Browser* browser = self.mainInterface.browser;
 
-  self.settingsNavigationController =
-      [SettingsNavigationController safetyCheckControllerForBrowser:browser
-                                                           delegate:self];
+  self.settingsNavigationController = [SettingsNavigationController
+      safetyCheckControllerForBrowser:browser
+                             delegate:self
+                   displayAsHalfSheet:showHalfSheet];
+
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

@@ -205,8 +205,7 @@ const CGFloat kSymbolSize = 18;
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
-                           showSafetyCheckSettingsAndStartSafetyCheck];
+                       [pedalsEndpoint showAndStartSafetyCheckInHalfSheet:NO];
                      }];
     }
     case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
