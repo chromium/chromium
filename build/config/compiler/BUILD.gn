@@ -181,6 +181,18 @@ declare_args() {
   # configurations. For more details see
   # https://clang.llvm.org/docs/ShadowCallStack.html
   enable_shadow_call_stack = false
+
+  # Use DWARF simple template names, with the following exceptions:
+  #
+  # * Windows is not supported as it doesn't use DWARF.
+  # * Apple platforms (e.g. MacOS, iPhone, iPad) aren't supported because xcode
+  #   lldb doesn't have the needed changes yet.
+  # TODO(crbug.com/1379070): Remove if the upstream default ever changes.
+  #
+  # This greatly reduces the size of debug builds, at the cost of
+  # debugging information which is required by some specialized
+  # debugging tools.
+  simple_template_names = is_clang && !is_nacl && !is_win && !is_apple
 }
 
 declare_args() {
@@ -857,13 +869,8 @@ config("compiler") {
     cflags += [ "-fcomplete-member-pointers" ]
   }
 
-  # Use DWARF simple template names, with the following exceptions:
-  #
-  # * Windows is not supported as it doesn't use DWARF.
-  # * Apple platforms (e.g. MacOS, iPhone, iPad) aren't supported because xcode
-  #   lldb doesn't have the needed changes yet.
-  # TODO(crbug.com/1379070): Remove if the upstream default ever changes.
-  if (is_clang && !is_nacl && !is_win && !is_apple) {
+  # Use DWARF simple template names.
+  if (simple_template_names) {
     cflags_cc += [ "-gsimple-template-names" ]
   }
 
