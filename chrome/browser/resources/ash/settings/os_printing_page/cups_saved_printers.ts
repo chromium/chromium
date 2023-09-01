@@ -194,7 +194,7 @@ export class SettingsCupsSavedPrintersElement extends
     return [
       'onSearchOrPrintersChanged_(savedPrinters.*, searchTerm,' +
           'hasShowMoreBeenTapped_, newPrinters_.*)',
-      'fetchPrinterStatuses_(savedPrinters.splices)',
+      'fetchAllPrinterStatuses_(savedPrinters.splices)',
     ];
   }
 
@@ -424,18 +424,25 @@ export class SettingsCupsSavedPrintersElement extends
   }
 
   /** Query each saved printer for its printer status. */
-  private fetchPrinterStatuses_(): void {
+  private fetchAllPrinterStatuses_(): void {
     if (!this.isPrinterSettingsPrinterStatusEnabled_) {
       return;
     }
 
     this.savedPrinters.forEach(printer => {
-      this.browserProxy_
-          .requestPrinterStatusUpdate(printer.printerInfo.printerId)
-          .then(printerStatus => this.onPrinterStatusReceived_(printerStatus));
+      this.fetchPrinterStatus_(printer.printerInfo.printerId);
     });
   }
 
+  /** Sends a printer status request for `printerId`. */
+  private fetchPrinterStatus_(printerId: string): void {
+    if (!this.isPrinterSettingsPrinterStatusEnabled_) {
+      return;
+    }
+
+    this.browserProxy_.requestPrinterStatusUpdate(printerId).then(
+        printerStatus => this.onPrinterStatusReceived_(printerStatus));
+  }
   /**
    * For each printer status received, add it to the printer status cache then
    * notify its respective printer entry to update its status.
@@ -488,7 +495,7 @@ export class SettingsCupsSavedPrintersElement extends
   private onPrinterStatusQueryTimerComplete_(): void {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
 
-    this.fetchPrinterStatuses_();
+    this.fetchAllPrinterStatuses_();
 
     // Restart the printer status query timer.
     this.startPrinterStatusQueryTimer_();
