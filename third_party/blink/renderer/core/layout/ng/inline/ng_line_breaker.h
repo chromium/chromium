@@ -329,7 +329,7 @@ class CORE_EXPORT NGLineBreaker {
   // between images, and between text and images.
   bool sticky_images_quirk_ = false;
 
-  // True if the resultant line contains a RubyRun with inline-end overhang.
+  // True if the resultant line contains a RubyColumn with inline-end overhang.
   bool maybe_have_end_overhang_ = false;
 
   // True if ShouldCreateNewSvgSegment() should be called.

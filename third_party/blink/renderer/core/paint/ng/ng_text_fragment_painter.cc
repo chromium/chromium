@@ -123,9 +123,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   if (!containing_block || !containing_block->IsRubyBase())
     return true;
   const LayoutObject* parent = containing_block->Parent();
-  if (!parent || !parent->IsRubyRun())
+  if (!parent || !parent->IsRubyColumn()) {
     return true;
-  const auto* ruby_text = To<LayoutNGRubyRun>(parent)->RubyText();
+  }
+  const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
   if (!ruby_text)
     return true;
   if (!NGInlineCursor(*ruby_text))

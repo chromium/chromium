@@ -3926,7 +3926,7 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers(
     // RubyBase should be kept if RubyText exists
     if (destroy_root_parent->IsRubyBase()) {
       auto* ruby_run =
-          DynamicTo<LayoutNGRubyRun>(destroy_root_parent->Parent());
+          DynamicTo<LayoutRubyColumn>(destroy_root_parent->Parent());
       if (ruby_run && ruby_run->HasRubyText())
         break;
     }

@@ -1054,7 +1054,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
   RestoreTrailingCollapsibleSpaceIfRemoved();
   Append(NGInlineItem::kAtomicInline, kObjectReplacementCharacter,
          layout_object);
-  has_ruby_ = has_ruby_ || layout_object->IsRubyRun();
+  has_ruby_ = has_ruby_ || layout_object->IsRubyColumn();
 
   // When this atomic inline is inside of an inline box, the height of the
   // inline box can be different from the height of the atomic inline. Ensure

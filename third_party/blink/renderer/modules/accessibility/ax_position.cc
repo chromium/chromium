@@ -921,7 +921,7 @@ const PositionWithAffinity AXPosition::ToPositionWithAffinity(
 
   // If NGOffsetMapping supports it, convert from a text offset, which may have
   // white space collapsed, to a DOM offset which should have uncompressed white
-  // space. NGOffsetMapping supports layout text, layout replaced, ruby runs,
+  // space. NGOffsetMapping supports layout text, layout replaced, ruby columns,
   // list markers, and layout block flow at inline-level, i.e. "display=inline"
   // or "display=inline-block". It also supports out-of-flow elements, which
   // should not be relevant to text positions in the accessibility tree.

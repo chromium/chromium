@@ -1007,9 +1007,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectRubyBase);
   }
-  bool IsRubyRun() const {
+  bool IsRubyColumn() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectRubyRun);
+    return IsOfType(kLayoutObjectRubyColumn);
   }
   bool IsRubyText() const {
     NOT_DESTROYED();
@@ -3542,7 +3542,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectReplaced,
     kLayoutObjectRuby,
     kLayoutObjectRubyBase,
-    kLayoutObjectRubyRun,
+    kLayoutObjectRubyColumn,
     kLayoutObjectRubyText,
     kLayoutObjectTable,
     kLayoutObjectTableCaption,

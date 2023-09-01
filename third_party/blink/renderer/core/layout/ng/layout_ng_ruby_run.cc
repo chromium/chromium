@@ -10,44 +10,44 @@
 
 namespace blink {
 
-LayoutNGRubyRun::LayoutNGRubyRun() : LayoutNGBlockFlow(nullptr) {
+LayoutRubyColumn::LayoutRubyColumn() : LayoutNGBlockFlow(nullptr) {
   SetInline(true);
   SetIsAtomicInlineLevel(true);
 }
 
-LayoutNGRubyRun::~LayoutNGRubyRun() = default;
+LayoutRubyColumn::~LayoutRubyColumn() = default;
 
-bool LayoutNGRubyRun::IsOfType(LayoutObjectType type) const {
+bool LayoutRubyColumn::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectRubyRun || LayoutBlockFlow::IsOfType(type);
+  return type == kLayoutObjectRubyColumn || LayoutBlockFlow::IsOfType(type);
 }
 
-bool LayoutNGRubyRun::CreatesAnonymousWrapper() const {
+bool LayoutRubyColumn::CreatesAnonymousWrapper() const {
   NOT_DESTROYED();
   return true;
 }
 
-void LayoutNGRubyRun::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
+void LayoutRubyColumn::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
 }
 
-bool LayoutNGRubyRun::HasRubyText() const {
+bool LayoutRubyColumn::HasRubyText() const {
   NOT_DESTROYED();
   // The only place where a ruby text can be is in the first position
-  // Note: As anonymous blocks, ruby runs do not have ':before' or ':after'
+  // Note: As anonymous blocks, ruby columns do not have ':before' or ':after'
   // content themselves.
   return FirstChild() && FirstChild()->IsRubyText();
 }
 
-bool LayoutNGRubyRun::HasRubyBase() const {
+bool LayoutRubyColumn::HasRubyBase() const {
   NOT_DESTROYED();
   // The only place where a ruby base can be is in the last position
-  // Note: As anonymous blocks, ruby runs do not have ':before' or ':after'
+  // Note: As anonymous blocks, ruby columns do not have ':before' or ':after'
   // content themselves.
   return LastChild() && LastChild()->IsRubyBase();
 }
 
-LayoutNGRubyText* LayoutNGRubyRun::RubyText() const {
+LayoutNGRubyText* LayoutRubyColumn::RubyText() const {
   NOT_DESTROYED();
   LayoutObject* child = FirstChild();
   // If in future it becomes necessary to support floating or positioned ruby
@@ -57,12 +57,12 @@ LayoutNGRubyText* LayoutNGRubyRun::RubyText() const {
   return DynamicTo<LayoutNGRubyText>(child);
 }
 
-LayoutNGRubyBase* LayoutNGRubyRun::RubyBase() const {
+LayoutNGRubyBase* LayoutRubyColumn::RubyBase() const {
   NOT_DESTROYED();
   return DynamicTo<LayoutNGRubyBase>(LastChild());
 }
 
-LayoutNGRubyBase& LayoutNGRubyRun::EnsureRubyBase() {
+LayoutNGRubyBase& LayoutRubyColumn::EnsureRubyBase() {
   NOT_DESTROYED();
   if (auto* base = RubyBase()) {
     return *base;
@@ -72,14 +72,14 @@ LayoutNGRubyBase& LayoutNGRubyRun::EnsureRubyBase() {
   return new_base;
 }
 
-bool LayoutNGRubyRun::IsChildAllowed(LayoutObject* child,
-                                     const ComputedStyle&) const {
+bool LayoutRubyColumn::IsChildAllowed(LayoutObject* child,
+                                      const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsRubyText() || child->IsInline();
 }
 
-void LayoutNGRubyRun::AddChild(LayoutObject* child,
-                               LayoutObject* before_child) {
+void LayoutRubyColumn::AddChild(LayoutObject* child,
+                                LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(child);
 
@@ -92,29 +92,29 @@ void LayoutNGRubyRun::AddChild(LayoutObject* child,
     } else if (before_child->IsRubyText()) {
       // New text is inserted just before another.
       // In this case the new text takes the place of the old one, and
-      // the old text goes into a new run that is inserted as next sibling.
+      // the old text goes into a new column that is inserted as next sibling.
       DCHECK_EQ(before_child->Parent(), this);
       LayoutObject* ruby = Parent();
       DCHECK(ruby->IsRuby());
-      auto& new_run = Create(ruby, *ContainingBlock());
-      ruby->AddChild(&new_run, NextSibling());
-      new_run.EnsureRubyBase();
-      // Add the new ruby text and move the old one to the new run
-      // Note: Doing it in this order and not using LayoutNGRubyRun's methods,
-      // in order to avoid automatic removal of the ruby run in case there is no
-      // other child besides the old ruby text.
+      auto& new_column = Create(ruby, *ContainingBlock());
+      ruby->AddChild(&new_column, NextSibling());
+      new_column.EnsureRubyBase();
+      // Add the new ruby text and move the old one to the new column
+      // Note: Doing it in this order and not using LayoutRubyColumn's methods,
+      // in order to avoid automatic removal of the ruby column in case there is
+      // no other child besides the old ruby text.
       LayoutBlockFlow::AddChild(child, before_child);
       LayoutBlockFlow::RemoveChild(before_child);
-      new_run.AddChild(before_child);
+      new_column.AddChild(before_child);
     } else if (RubyBase()->FirstChild()) {
       // Insertion before a ruby base object.
-      // In this case we need insert a new run before the current one and split
-      // the base.
+      // In this case we need insert a new column before the current one and
+      // split the base.
       LayoutObject* ruby = Parent();
-      LayoutNGRubyRun& new_run = Create(ruby, *ContainingBlock());
-      ruby->AddChild(&new_run, this);
-      auto& new_base = new_run.EnsureRubyBase();
-      new_run.AddChild(child);
+      LayoutRubyColumn& new_column = Create(ruby, *ContainingBlock());
+      ruby->AddChild(&new_column, this);
+      auto& new_base = new_column.EnsureRubyBase();
+      new_column.AddChild(child);
 
       EnsureRubyBase().MoveChildren(new_base, before_child);
     }
@@ -133,21 +133,22 @@ void LayoutNGRubyRun::AddChild(LayoutObject* child,
   }
 }
 
-void LayoutNGRubyRun::RemoveChild(LayoutObject* child) {
+void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   // If the child is a ruby text, then merge the ruby base with the base of
-  // the right sibling run, if possible.
+  // the right sibling column, if possible.
   if (!BeingDestroyed() && !DocumentBeingDestroyed() && child->IsRubyText()) {
     auto* base = RubyBase();
     LayoutObject* right_neighbour = NextSibling();
-    if (base->FirstChild() && right_neighbour && right_neighbour->IsRubyRun()) {
-      auto* right_run = To<LayoutNGRubyRun>(right_neighbour);
-      auto& right_base = right_run->EnsureRubyBase();
+    if (base->FirstChild() && right_neighbour &&
+        right_neighbour->IsRubyColumn()) {
+      auto* right_column = To<LayoutRubyColumn>(right_neighbour);
+      auto& right_base = right_column->EnsureRubyBase();
       if (right_base.FirstChild()) {
         // Collect all children in a single base, then swap the bases.
         right_base.MoveChildren(*base);
-        MoveChildTo(right_run, base);
-        right_run->MoveChildTo(this, &right_base);
+        MoveChildTo(right_column, base);
+        right_column->MoveChildTo(this, &right_base);
         DCHECK(!RubyBase()->FirstChild());
       }
     }
@@ -166,7 +167,7 @@ void LayoutNGRubyRun::RemoveChild(LayoutObject* child) {
   }
 }
 
-LayoutNGRubyBase& LayoutNGRubyRun::CreateRubyBase() const {
+LayoutNGRubyBase& LayoutRubyColumn::CreateRubyBase() const {
   NOT_DESTROYED();
   auto* layout_object = MakeGarbageCollected<LayoutNGRubyBase>();
   layout_object->SetDocumentForAnonymous(&GetDocument());
@@ -178,7 +179,7 @@ LayoutNGRubyBase& LayoutNGRubyRun::CreateRubyBase() const {
   return *layout_object;
 }
 
-void LayoutNGRubyRun::UpdateAnonymousChildStyle(
+void LayoutRubyColumn::UpdateAnonymousChildStyle(
     const LayoutObject* child,
     ComputedStyleBuilder& builder) const {
   NOT_DESTROYED();
@@ -190,19 +191,20 @@ void LayoutNGRubyRun::UpdateAnonymousChildStyle(
 }
 
 // static
-LayoutNGRubyRun& LayoutNGRubyRun::Create(const LayoutObject* parent_ruby,
-                                         const LayoutBlock& containing_block) {
+LayoutRubyColumn& LayoutRubyColumn::Create(
+    const LayoutObject* parent_ruby,
+    const LayoutBlock& containing_block) {
   DCHECK(parent_ruby);
   DCHECK(parent_ruby->IsRuby());
-  LayoutNGRubyRun* rr = MakeGarbageCollected<LayoutNGRubyRun>();
-  rr->SetDocumentForAnonymous(&parent_ruby->GetDocument());
+  LayoutRubyColumn* column = MakeGarbageCollected<LayoutRubyColumn>();
+  column->SetDocumentForAnonymous(&parent_ruby->GetDocument());
   const ComputedStyle* new_style =
       parent_ruby->GetDocument()
           .GetStyleResolver()
           .CreateAnonymousStyleWithDisplay(parent_ruby->StyleRef(),
                                            EDisplay::kInlineBlock);
-  rr->SetStyle(new_style);
-  return *rr;
+  column->SetStyle(new_style);
+  return *column;
 }
 
 }  // namespace blink

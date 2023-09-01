@@ -96,16 +96,15 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
           PhysicalSize(new_line_height, rect.size.height)};
 }
 
-// See LayoutRubyRun::GetOverhang().
 NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
   NGAnnotationOverhang overhang;
   if (!item.layout_result)
     return overhang;
 
-  const auto& run_fragment = item.layout_result->PhysicalFragment();
+  const auto& column_fragment = item.layout_result->PhysicalFragment();
 
   const ComputedStyle* ruby_text_style = nullptr;
-  for (const auto& child_link : run_fragment.PostLayoutChildren()) {
+  for (const auto& child_link : column_fragment.PostLayoutChildren()) {
     const NGPhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object)
@@ -124,7 +123,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
   LayoutUnit start_overhang = half_width_of_ruby_font;
   LayoutUnit end_overhang = half_width_of_ruby_font;
   bool found_line = false;
-  for (const auto& child_link : run_fragment.PostLayoutChildren()) {
+  for (const auto& child_link : column_fragment.PostLayoutChildren()) {
     const NGPhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object->IsRubyBase())
@@ -133,7 +132,7 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
     const auto writing_direction = base_style.GetWritingDirection();
     const LayoutUnit base_inline_size =
         NGFragment(writing_direction, child_fragment).InlineSize();
-    // RubyBase's inline_size is always same as RubyRun's inline_size.
+    // RubyBase's inline_size is always same as RubyColumn's inline_size.
     // Overhang values are offsets from RubyBase's inline edges to
     // the outmost text.
     for (const auto& base_child_link : child_fragment.PostLayoutChildren()) {
@@ -159,7 +158,6 @@ NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item) {
   return overhang;
 }
 
-// See LayoutRubyRun::GetOverhang().
 bool CanApplyStartOverhang(const NGLineInfo& line_info,
                            LayoutUnit& start_overhang) {
   if (start_overhang <= LayoutUnit())
@@ -188,7 +186,6 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
   return true;
 }
 
-// See LayoutRubyRun::GetOverhang().
 LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
   DCHECK(line_info);
   NGInlineItemResults* items = line_info->MutableResults();
@@ -207,8 +204,9 @@ LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info) {
       return LayoutUnit();
   }
   NGInlineItemResult& atomic_inline_item = (*items)[i];
-  if (!atomic_inline_item.layout_result->PhysicalFragment().IsRubyRun())
+  if (!atomic_inline_item.layout_result->PhysicalFragment().IsRubyColumn()) {
     return LayoutUnit();
+  }
   if (atomic_inline_item.pending_end_overhang <= LayoutUnit())
     return LayoutUnit();
   if (atomic_inline_item.item->Style()->FontSize() <
@@ -257,7 +255,7 @@ NGAnnotationMetrics ComputeAnnotationOverflow(
       }
     } else {
       const auto* fragment = item.PhysicalFragment();
-      if (fragment && fragment->IsRubyRun()) {
+      if (fragment && fragment->IsRubyColumn()) {
         PhysicalRect rect =
             To<NGPhysicalBoxFragment>(fragment)->ScrollableOverflow(
                 NGPhysicalFragment::kEmHeight);

@@ -86,12 +86,12 @@ class NGInlineItemsBuilderTest : public RenderingTest {
     builder->AppendBlockInInline(layout_block_flow);
   }
 
-  void AppendRubyRun(NGInlineItemsBuilder* builder) {
-    LayoutNGRubyRun* ruby_run = MakeGarbageCollected<LayoutNGRubyRun>();
-    ruby_run->SetDocumentForAnonymous(&GetDocument());
-    ruby_run->SetStyle(style_);
-    anonymous_objects_->push_back(ruby_run);
-    builder->AppendAtomicInline(ruby_run);
+  void AppendRubyColumn(NGInlineItemsBuilder* builder) {
+    auto* ruby_column = MakeGarbageCollected<LayoutRubyColumn>();
+    ruby_column->SetDocumentForAnonymous(&GetDocument());
+    ruby_column->SetStyle(style_);
+    anonymous_objects_->push_back(ruby_column);
+    builder->AppendAtomicInline(ruby_column);
   }
 
   struct Input {
@@ -568,7 +568,7 @@ TEST_F(NGInlineItemsBuilderTest, HasRuby) {
   EXPECT_FALSE(HasRuby(builder))
       << "Adding non-ruby AtomicInline should not affect it.";
 
-  AppendRubyRun(&builder);
+  AppendRubyColumn(&builder);
   EXPECT_TRUE(HasRuby(builder))
       << "Adding a ruby AtomicInline should set it to true.";
 

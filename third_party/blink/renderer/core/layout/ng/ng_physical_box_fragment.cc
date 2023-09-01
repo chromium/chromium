@@ -1061,7 +1061,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     } else if (add_inline_children && child->IsLineBox()) {
       context.AddLineBoxChild(To<NGPhysicalLineBoxFragment>(*child),
                               child.Offset());
-    } else if (height_type == TextHeightType::kEmHeight && IsRubyRun()) {
+    } else if (height_type == TextHeightType::kEmHeight && IsRubyColumn()) {
       PhysicalRect r = child->ScrollableOverflow(*this, height_type);
       r.offset += child.offset;
       context.AddChild(r);

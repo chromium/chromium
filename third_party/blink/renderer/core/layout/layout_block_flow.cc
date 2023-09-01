@@ -277,7 +277,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
 static bool IsMergeableAnonymousBlock(const LayoutBlockFlow* block) {
   return block->IsAnonymousBlock() && !block->BeingDestroyed() &&
-         !block->IsRubyRun() && !block->IsRubyBase();
+         !block->IsRubyColumn() && !block->IsRubyBase();
 }
 
 void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
@@ -392,10 +392,11 @@ static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
   // destroyed. See crbug.com/282088
   if (child.BeingDestroyed())
     return false;
-  // Ruby elements use anonymous wrappers for ruby runs and ruby bases by
+  // Ruby elements use anonymous wrappers for ruby columns and ruby bases by
   // design, so we don't remove them.
-  if (child.IsRubyRun() || child.IsRubyBase())
+  if (child.IsRubyColumn() || child.IsRubyBase()) {
     return false;
+  }
   if (IsA<LayoutMultiColumnFlowThread>(parent) &&
       parent.Parent()->IsLayoutNGObject() && child.ChildrenInline()) {
     // The test[1] reaches here.
@@ -524,10 +525,11 @@ void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
     // siblings underneath them.
     if (!child->ChildrenInline())
       return;
-    // Ruby elements use anonymous wrappers for ruby runs and ruby bases by
+    // Ruby elements use anonymous wrappers for ruby columns and ruby bases by
     // design, so we don't remove them.
-    if (child->IsRubyRun() || child->IsRubyBase())
+    if (child->IsRubyColumn() || child->IsRubyBase()) {
       return;
+    }
 
     blocks_to_remove.push_back(child_block_flow);
   }

@@ -3175,11 +3175,11 @@ bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
 }
 
 bool NGBlockLayoutAlgorithm::IsRubyText(const NGLayoutInputNode& child) const {
-  return Node().IsRubyRun() && child.IsRubyText();
+  return Node().IsRubyColumn() && child.IsRubyText();
 }
 
 void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
-  DCHECK(Node().IsRubyRun());
+  DCHECK(Node().IsRubyColumn());
 
   const NGBlockBreakToken* break_token = nullptr;
   if (const auto* token = BreakToken()) {

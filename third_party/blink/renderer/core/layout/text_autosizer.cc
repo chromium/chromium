@@ -368,8 +368,9 @@ void TextAutosizer::BeginLayout(LayoutBlock* block) {
     return;
 
   // Skip ruby's inner blocks, because these blocks already are inflated.
-  if (block->IsRubyRun() || block->IsRubyBase() || block->IsRubyText())
+  if (block->IsRubyColumn() || block->IsRubyBase() || block->IsRubyText()) {
     return;
+  }
 
   DCHECK(!cluster_stack_.empty() || IsA<LayoutView>(block));
   if (cluster_stack_.empty())
@@ -444,10 +445,10 @@ float TextAutosizer::Inflate(LayoutObject* parent,
 
   LayoutObject* child = nullptr;
   if (parent->IsRuby()) {
-    // Skip LayoutNGRubyRun which is inline-block.
-    // Inflate rubyRun's inner blocks.
-    if (auto* run = DynamicTo<LayoutNGRubyRun>(parent->SlowFirstChild())) {
-      child = run->FirstChild();
+    // Skip LayoutRubyColumn which is inline-block.
+    // Inflate its inner blocks.
+    if (auto* column = DynamicTo<LayoutRubyColumn>(parent->SlowFirstChild())) {
+      child = column->FirstChild();
       behavior = kDescendToInnerBlocks;
     }
   } else if (parent->IsLayoutBlock() &&

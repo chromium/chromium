@@ -122,7 +122,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsFieldsetContainer() const { return IsBlock() && box_->IsFieldset(); }
   bool IsInitialLetterBox() const { return box_->IsInitialLetterBox(); }
   bool IsMedia() const { return box_->IsMedia(); }
-  bool IsRubyRun() const { return IsBlock() && box_->IsRubyRun(); }
+  bool IsRubyColumn() const { return IsBlock() && box_->IsRubyColumn(); }
   bool IsRubyText() const { return box_->IsRubyText(); }
 
   // Return true if this is the legend child of a fieldset that gets special

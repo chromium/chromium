@@ -146,8 +146,8 @@ class CORE_EXPORT NGInlineItem {
   bool IsImage() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutImage();
   }
-  bool IsRubyRun() const {
-    return GetLayoutObject() && GetLayoutObject()->IsRubyRun();
+  bool IsRubyColumn() const {
+    return GetLayoutObject() && GetLayoutObject()->IsRubyColumn();
   }
   bool IsTextCombine() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutNGTextCombine();

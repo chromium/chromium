@@ -922,8 +922,9 @@ bool NGLineBreaker::CanBreakAfterAtomicInline(const NGInlineItem& item) const {
   if (item.IsImage())
     return !sticky_images_quirk_;
 
-  if (item.IsRubyRun())
+  if (item.IsRubyColumn()) {
     return break_iterator_.IsBreakable(item.EndOffset());
+  }
 
   // Handles text combine
   // See "fast/writing-mode/text-combine-line-break.html".
@@ -970,8 +971,9 @@ bool NGLineBreaker::CanBreakAfter(const NGInlineItem& item) const {
   if (!atomic_inline_item)
     return can_break_after;
 
-  if (atomic_inline_item->IsRubyRun())
+  if (atomic_inline_item->IsRubyColumn()) {
     return can_break_after;
+  }
 
   // We can not break before sticky images quirk was applied.
   if (UNLIKELY(Text()[atomic_inline_item->StartOffset()] ==
@@ -2580,7 +2582,7 @@ void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
 
   position_ += item_result->inline_size;
 
-  if (item.IsRubyRun()) {
+  if (item.IsRubyColumn()) {
     NGAnnotationOverhang overhang = GetOverhang(*item_result);
     if (overhang.end > LayoutUnit()) {
       item_result->pending_end_overhang = overhang.end;

@@ -75,7 +75,7 @@ struct CORE_EXPORT NGInlineItemResult {
   // See "text-combine-justify.html".
   LayoutUnit spacing_before;
 
-  // Pending inline-end overhang amount for RubyRun.
+  // Pending inline-end overhang amount for RubyColumn.
   // This is committed if a following item meets conditions.
   LayoutUnit pending_end_overhang;
 

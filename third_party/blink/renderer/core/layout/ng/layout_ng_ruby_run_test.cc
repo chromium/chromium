@@ -9,12 +9,12 @@
 
 namespace blink {
 
-class LayoutNGRubyRunTest : public RenderingTest {};
+class LayoutRubyColumnTest : public RenderingTest {};
 
 // crbug.com/1461993
-TEST_F(LayoutNGRubyRunTest, StylePropagation) {
+TEST_F(LayoutRubyColumnTest, StylePropagation) {
   SetBodyInnerHTML(R"HTML(<ruby id="target">Hello<rt>hola</rt></ruby>)HTML");
-  auto* run_box = To<LayoutNGRubyRun>(
+  auto* run_box = To<LayoutRubyColumn>(
       GetLayoutObjectByElementId("target")->SlowFirstChild());
 
   GetElementById("target")->setAttribute(html_names::kStyleAttr,

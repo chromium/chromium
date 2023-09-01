@@ -39,15 +39,17 @@ namespace blink {
 // === generic helper functions to avoid excessive code duplication ===
 
 // static
-LayoutNGRubyRun* LayoutRubyAsInline::LastRubyRun(const LayoutObject& ruby) {
-  return To<LayoutNGRubyRun>(ruby.SlowLastChild());
+LayoutRubyColumn* LayoutRubyAsInline::LastRubyColumn(const LayoutObject& ruby) {
+  return To<LayoutRubyColumn>(ruby.SlowLastChild());
 }
 
 // static
-LayoutNGRubyRun* LayoutRubyAsInline::FindRubyRunParent(LayoutObject* child) {
-  while (child && !child->IsRubyRun())
+LayoutRubyColumn* LayoutRubyAsInline::FindRubyColumnParent(
+    LayoutObject* child) {
+  while (child && !child->IsRubyColumn()) {
     child = child->Parent();
-  return To<LayoutNGRubyRun>(child);
+  }
+  return To<LayoutRubyColumn>(child);
 }
 
 // === ruby as inline object ===
@@ -69,54 +71,56 @@ void LayoutRubyAsInline::StyleDidChange(StyleDifference diff,
 void LayoutRubyAsInline::AddChild(LayoutObject* child,
                                   LayoutObject* before_child) {
   NOT_DESTROYED();
-  // If the child is a ruby run, just add it normally.
-  if (child->IsRubyRun()) {
+  // If the child is a ruby column, just add it normally.
+  if (child->IsRubyColumn()) {
     LayoutInline::AddChild(child, before_child);
     return;
   }
 
   if (before_child) {
-    // insert child into run
-    LayoutObject* run = before_child;
-    while (run && !run->IsRubyRun())
-      run = run->Parent();
-    if (run) {
-      if (before_child == run)
-        before_child = To<LayoutNGRubyRun>(before_child)->FirstChild();
-      DCHECK(!before_child || before_child->IsDescendantOf(run));
-      run->AddChild(child, before_child);
+    // Insert the child into a column.
+    LayoutObject* column = before_child;
+    while (column && !column->IsRubyColumn()) {
+      column = column->Parent();
+    }
+    if (column) {
+      if (before_child == column) {
+        before_child = To<LayoutRubyColumn>(before_child)->FirstChild();
+      }
+      DCHECK(!before_child || before_child->IsDescendantOf(column));
+      column->AddChild(child, before_child);
       return;
     }
-    NOTREACHED();  // before_child should always have a run as parent!
+    NOTREACHED();  // before_child should always have a column as parent!
                    // Emergency fallback: fall through and just append.
   }
 
   // If the new child would be appended, try to add the child to the previous
-  // run if possible, or create a new run otherwise.
-  // (The LayoutRubyRun object will handle the details)
-  auto* last_run = LastRubyRun(*this);
-  if (!last_run || last_run->HasRubyText()) {
-    last_run = &LayoutNGRubyRun::Create(this, *ContainingBlock());
-    LayoutInline::AddChild(last_run, before_child);
-    last_run->EnsureRubyBase();
+  // column if possible, or create a new column otherwise.
+  // (The LayoutRubyColumn object will handle the details)
+  auto* last_column = LastRubyColumn(*this);
+  if (!last_column || last_column->HasRubyText()) {
+    last_column = &LayoutRubyColumn::Create(this, *ContainingBlock());
+    LayoutInline::AddChild(last_column, before_child);
+    last_column->EnsureRubyBase();
   }
-  last_run->AddChild(child);
+  last_column->AddChild(child);
 }
 
 void LayoutRubyAsInline::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
-  // If the child's parent is *this (must be a ruby run), just use the normal
+  // If the child's parent is *this (must be a ruby column), just use the normal
   // remove method.
   if (child->Parent() == this) {
-    DCHECK(child->IsRubyRun());
+    DCHECK(child->IsRubyColumn());
     LayoutInline::RemoveChild(child);
     return;
   }
 
-  // Otherwise find the containing run and remove it from there.
-  auto* run = FindRubyRunParent(child);
-  DCHECK(run);
-  run->RemoveChild(child);
+  // Otherwise find the containing column and remove it from there.
+  auto* column = FindRubyColumnParent(child);
+  DCHECK(column);
+  column->RemoveChild(child);
 }
 
 }  // namespace blink

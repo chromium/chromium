@@ -136,10 +136,10 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   // How much an annotation box overflow from this box.
-  // This is for LayoutNGRubyRun and line boxes.
+  // This is for LayoutRubyColumn and line boxes.
   // 0 : No overflow
   // -N : Overflowing by N px at block-start side
-  //      This happens only for LayoutRubyRun.
+  //      This happens only for LayoutRubyColumn.
   // N : Overflowing by N px at block-end side
   LayoutUnit AnnotationOverflow() const {
     return rare_data_ ? rare_data_->annotation_overflow : LayoutUnit();

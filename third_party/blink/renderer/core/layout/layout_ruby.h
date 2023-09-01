@@ -35,14 +35,14 @@
 
 namespace blink {
 
-class LayoutNGRubyRun;
+class LayoutRubyColumn;
 
 // Following the HTML 5 spec, the box object model for a <ruby> element allows
 // several runs of ruby
 // bases with their respective ruby texts looks as follows:
 //
 // 1 LayoutRuby object, corresponding to the whole <ruby> HTML element
-//      1+ LayoutRubyRun (anonymous)
+//      1+ LayoutRubyColumn (anonymous)
 //          0 or 1 LayoutRubyText - shuffled to the front in order to re-use
 //                                  existing block layouting
 //              0-n inline object(s)
@@ -70,8 +70,8 @@ class LayoutRubyAsInline final : public LayoutInline {
     return "LayoutRuby (inline)";
   }
 
-  static LayoutNGRubyRun* LastRubyRun(const LayoutObject& ruby);
-  static LayoutNGRubyRun* FindRubyRunParent(LayoutObject* child);
+  static LayoutRubyColumn* LastRubyColumn(const LayoutObject& ruby);
+  static LayoutRubyColumn* FindRubyColumnParent(LayoutObject* child);
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;

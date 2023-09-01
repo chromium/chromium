@@ -359,7 +359,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
     return false;
   }
 
-  // Returns true if |this| is a ruby segment (LayoutNGRubyRun) and the
+  // Returns true if |this| is a ruby segment (LayoutRubyColumn) and the
   // specified |child| is a ruby annotation box (LayoutNGRubyText).
   bool IsRubyText(const NGLayoutInputNode& child) const;
 

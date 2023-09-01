@@ -202,7 +202,7 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   // Layout tree:
   //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
   //   LayoutNGRubyAsBlock {RUBY} at (0,0) size 784x27
-  //     LayoutNGRubyRun (anonymous) at (0,7) size 22x20
+  //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
   //       LayoutNGRubyText {RT} at (0,-10) size 22x12
   //         LayoutText {#text} at (2,0) size 18x12
   //           text run at (2,0) width 18: "XYZ"
@@ -231,7 +231,7 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsInlineBlock) {
 TEST_F(TextOffsetMappingTest, RangeOfBlockWithRUBYandBR) {
   EXPECT_EQ("<ruby>^abc<br>def|<rt>123<br>456</rt></ruby>",
             GetRange("<ruby>|abc<br>def<rt>123<br>456</rt></ruby>"))
-      << "RT(LayoutRubyRun) is a block";
+      << "RT(LayoutRubyColumn) is a block";
   EXPECT_EQ("<ruby>abc<br>def<rt>^123<br>456|</rt></ruby>",
             GetRange("<ruby>abc<br>def<rt>123|<br>456</rt></ruby>"))
       << "RUBY introduce LayoutRuleBase for 'abc'";

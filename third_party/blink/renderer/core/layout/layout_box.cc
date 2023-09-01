@@ -3120,7 +3120,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   // Anonymous blocks should not impede percentage resolution on a child.
   // Examples of such anonymous blocks are blocks wrapped around inlines that
   // have block siblings (from the CSS spec) and multicol flow threads (an
-  // implementation detail). Another implementation detail, ruby runs, create
+  // implementation detail). Another implementation detail, ruby columns, create
   // anonymous inline-blocks, so skip those too. All other types of anonymous
   // objects, such as table-cells, will be treated just as if they were
   // non-anonymous.

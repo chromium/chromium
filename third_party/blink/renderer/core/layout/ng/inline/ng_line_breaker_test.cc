@@ -953,7 +953,7 @@ TEST_F(NGLineBreakerTest, RewindPositionedFloat) {
 }
 
 // crbug.com/1091359
-TEST_F(NGLineBreakerTest, RewindRubyRun) {
+TEST_F(NGLineBreakerTest, RewindRubyColumn) {
   NGInlineNode node = CreateInlineNode(R"HTML(
 <div id="container">
 <style>

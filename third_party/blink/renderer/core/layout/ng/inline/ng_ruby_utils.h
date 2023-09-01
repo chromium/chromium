@@ -31,7 +31,7 @@ struct NGAnnotationOverhang {
 };
 
 // Returns overhang values of the specified NGInlineItemResult representing
-// LayoutNGRubyRun.
+// LayoutRubyColumn.
 //
 // This is used by NGLineBreaker.
 NGAnnotationOverhang GetOverhang(const NGInlineItemResult& item);
@@ -46,7 +46,7 @@ bool CanApplyStartOverhang(const NGLineInfo& line_info,
 // This should be called after NGInlineItemResult for a text is added in
 // NGLineBreaker::HandleText().
 //
-// This function may update a NGInlineItemResult representing RubyRun
+// This function may update a NGInlineItemResult representing RubyColumn
 // in |line_info|
 LayoutUnit CommitPendingEndOverhang(NGLineInfo* line_info);
 

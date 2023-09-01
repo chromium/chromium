@@ -20,7 +20,7 @@ bool LayoutNGRubyBase::IsOfType(LayoutObjectType type) const {
 bool LayoutNGRubyBase::IsChildAllowed(LayoutObject*,
                                       const ComputedStyle&) const {
   NOT_DESTROYED();
-  NOTREACHED();  // Because LayoutRubyRun manages child types.
+  NOTREACHED();  // Because LayoutRubyColumn manages child types.
   return true;
 }
 

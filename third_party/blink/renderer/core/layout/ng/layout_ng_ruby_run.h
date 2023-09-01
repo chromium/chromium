@@ -13,19 +13,21 @@ namespace blink {
 class LayoutNGRubyBase;
 class LayoutNGRubyText;
 
-// LayoutNGRubyRun are 'inline-block/table' like objects,and wrap a single
-// pairing of a ruby base with its ruby text(s).
+// LayoutRubyColumn represents 'inline-block/table' like objects, and wrap a
+// single pairing of a ruby base with its ruby text(s).
+// https://drafts.csswg.org/css-ruby-1/#ruby-columns
+//
 // See layout_ruby.h for further comments on the structure
-class CORE_EXPORT LayoutNGRubyRun final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyColumn final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGRubyRun();
-  ~LayoutNGRubyRun() override;
-  static LayoutNGRubyRun& Create(const LayoutObject* parent_ruby,
-                                 const LayoutBlock& containing_block);
+  explicit LayoutRubyColumn();
+  ~LayoutRubyColumn() override;
+  static LayoutRubyColumn& Create(const LayoutObject* parent_ruby,
+                                  const LayoutBlock& containing_block);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGRubyRun";
+    return "LayoutRubyColumn";
   }
 
   bool HasRubyText() const;
@@ -50,9 +52,9 @@ class CORE_EXPORT LayoutNGRubyRun final : public LayoutNGBlockFlow {
 };
 
 template <>
-struct DowncastTraits<LayoutNGRubyRun> {
+struct DowncastTraits<LayoutRubyColumn> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsRubyRun();
+    return object.IsRubyColumn();
   }
 };
 

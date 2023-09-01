@@ -218,13 +218,13 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsListMarker() const {
     return IsCSSBox() && layout_object_->IsLayoutNGOutsideListMarker();
   }
-  bool IsRubyRun() const { return layout_object_->IsRubyRun(); }
+  bool IsRubyColumn() const { return layout_object_->IsRubyColumn(); }
 
-  // Return true if this fragment is for LayoutNGRubyRun, LayoutNGRubyText, or
+  // Return true if this fragment is for LayoutRubyColumn, LayoutNGRubyText, or
   // LayoutNGRubyBase. They are handled specially in scrollable overflow
   // computation.
   bool IsRubyBox() const {
-    return layout_object_->IsRubyRun() || layout_object_->IsRubyText() ||
+    return layout_object_->IsRubyColumn() || layout_object_->IsRubyText() ||
            layout_object_->IsRubyBase();
   }
 
