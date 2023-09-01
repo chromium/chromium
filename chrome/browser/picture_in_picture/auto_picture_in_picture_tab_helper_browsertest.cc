@@ -279,10 +279,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                                         /*should_document_pip=*/true);
 }
 
-// TODO(https://crbug.com/1457056): Enable when media session actions can be
-// routed without requesting audio focus (see https://crrev.com/c/4659151).
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       DISABLED_CanAutopipWithCameraMicrophone) {
+                       CanAutopipWithCameraMicrophone) {
   // Load a page that registers for autopip and starts using camera/microphone.
   LoadCameraMicrophonePage(browser());
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
