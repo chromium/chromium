@@ -214,8 +214,8 @@ void AshAcceleratorConfiguration::RegisterProfilePrefs(
 void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // A pref service may not be available in tests.
-  if (!pref_service || pref_service != GetActiveUserPrefService() ||
-      !Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
+  if (!::features::IsShortcutCustomizationEnabled() || !pref_service ||
+      pref_service != GetActiveUserPrefService()) {
     return;
   }
 
