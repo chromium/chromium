@@ -6,6 +6,7 @@
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
@@ -13,6 +14,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/style/typography.h"
 
 namespace chromeos::editor_menu {
 
@@ -23,6 +25,7 @@ constexpr int kHorizontalPaddingDip = 8;
 constexpr int kIconSizeDip = 20;
 constexpr int kImageLabelSpacingDip = 8;
 constexpr int kRadiusDip = 8;
+constexpr int kBorderThicknessDip = 1;
 
 }  // namespace
 
@@ -69,13 +72,13 @@ gfx::Size EditorMenuChipView::CalculatePreferredSize() const {
 void EditorMenuChipView::InitLayout() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-  SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
+  label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  label()->SetEnabledColorId(ui::kColorSysOnSurface);
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
-                    *icon_, cros_tokens::kCrosSysOnSurface, kIconSizeDip));
+                    *icon_, cros_tokens::kCrosSysPrimary, kIconSizeDip));
   SetBorder(views::CreateThemedRoundedRectBorder(
-      1, kRadiusDip, cros_tokens::kCrosSysSeparator));
-
+      kBorderThicknessDip, kRadiusDip, ui::kColorSysTonalOutline));
   PreferredSizeChanged();
 }
 

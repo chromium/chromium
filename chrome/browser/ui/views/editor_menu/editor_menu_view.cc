@@ -314,7 +314,7 @@ void EditorMenuView::AddChipsContainer() {
     auto chip = std::make_unique<EditorMenuChipView>(
         base::BindRepeating(&EditorMenuView::OnChipButtonPressed,
                             weak_factory_.GetWeakPtr(), index++),
-        label.data(), &vector_icons::kProductIcon);
+        label.data(), &vector_icons::kKeyboardIcon);
 
     int chip_width = chip->GetPreferredSize().width();
     if (running_width == 0) {
