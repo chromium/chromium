@@ -6646,3 +6646,6 @@ crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/w
 crbug.com/1477701 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Failure Pass ]
 crbug.com/1477701 [ Mac ] http/tests/inspector-protocol/timeline/auction-worklet-network.js [ Failure Pass ]
 crbug.com/1477701 [ Mac13-arm64 Release ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
+
+# Gardener 2023-09-01
+crbug.com/1477586 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/anonymous-image-object.js [ Failure Pass ]
