@@ -7,6 +7,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/containers/enum_set.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1246,7 +1247,16 @@ void CloudUploadDialog::RequestODFSMount(
   Service* service = Service::Get(profile);
   ProviderId provider_id =
       ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
-  service->RequestMount(provider_id, std::move(callback));
+  auto logging_callback = base::BindOnce(
+      [](file_system_provider::RequestMountCallback callback,
+         base::File::Error error) {
+        if (error != base::File::FILE_OK) {
+          LOG(ERROR) << "RequestMount: " << base::File::ErrorToString(error);
+        }
+        std::move(callback).Run(error);
+      },
+      std::move(callback));
+  service->RequestMount(provider_id, std::move(logging_callback));
 }
 
 bool CloudUploadDialog::IsODFSMounted(Profile* profile) {
