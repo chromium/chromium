@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -163,5 +164,47 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
 
   menu_model->ActivatedAt(tootle_pin_command_index.value());
 
+  EXPECT_FALSE(controller()->GetItem(ash::ShelfID(shortcut_id.value())));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfItemControllerBrowserTest,
+                       ContextMenuRemove) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  PinAppWithIDToShelf(shortcut_id.value());
+
+  ash::ShelfItemDelegate* delegate =
+      controller()->shelf_model()->GetShelfItemDelegate(
+          ash::ShelfID(shortcut_id.value()));
+
+  ASSERT_TRUE(delegate);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  delegate->GetContextMenu(display::kDefaultDisplayId, future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto uninstall_command_index =
+      menu_model->GetIndexOfCommandId(ash::UNINSTALL);
+  ASSERT_TRUE(uninstall_command_index);
+  EXPECT_EQ(uninstall_command_index.value(), 2u);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_REMOVE_SHORTCUT),
+            menu_model->GetLabelAt(uninstall_command_index.value()));
+  EXPECT_EQ(&views::kUninstallIcon,
+            menu_model->GetIconAt(uninstall_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  menu_model->ActivatedAt(uninstall_command_index.value());
+  base::RunLoop().RunUntilIdle();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_FALSE(apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+                   ->ShortcutRegistryCache()
+                   ->HasShortcut(shortcut_id));
   EXPECT_FALSE(controller()->GetItem(ash::ShelfID(shortcut_id.value())));
 }

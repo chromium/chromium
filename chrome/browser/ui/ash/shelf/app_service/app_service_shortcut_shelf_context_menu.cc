@@ -59,11 +59,29 @@ void AppServiceShortcutShelfContextMenu::GetMenuModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      ash::kAppContextMenuIconSize));
+
+  // Pin/unpin shortcut from shelf.
   AddPinMenu(menu_model.get());
+
+  // Remove shortcut.
+  AddContextMenuOption(menu_model.get(),
+                       static_cast<ash::CommandId>(ash::UNINSTALL),
+                       IDS_APP_LIST_REMOVE_SHORTCUT);
+
   std::move(callback).Run(std::move(menu_model));
 }
 
 void AppServiceShortcutShelfContextMenu::ExecuteCommand(int command_id,
                                                         int event_flags) {
+  if (command_id == ash::UNINSTALL) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
+    if (!proxy->ShortcutRegistryCache()->HasShortcut(shortcut_id_)) {
+      return;
+    }
+    proxy->RemoveShortcut(shortcut_id_, apps::UninstallSource::kShelf,
+                          nullptr /* parent_window */);
+    return;
+  }
   ExecuteCommonCommand(command_id, event_flags);
 }
