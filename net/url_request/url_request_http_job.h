@@ -216,7 +216,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   // Called after getting the FirstPartySetMetadata during Start for this job.
   void OnGotFirstPartySetMetadata(
-      bool emit_log_event,
       FirstPartySetMetadata first_party_set_metadata);
 
   // Called after getting the FirstPartySetsCacheFilter match info during Start

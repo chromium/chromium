@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -103,22 +104,20 @@
 namespace {
 
 base::Value::Dict FirstPartySetMetadataNetLogParams(
-    const GURL& request_site,
-    const net::FirstPartySetMetadata* first_party_set_metadata = nullptr) {
+    const net::FirstPartySetMetadata& first_party_set_metadata,
+    const int64_t* const fps_cache_filter) {
   base::Value::Dict dict;
-  dict.Set("request_url", request_site.spec());
-  if (first_party_set_metadata) {
-    auto entry_or_empty =
-        [](const absl::optional<net::FirstPartySetEntry>& entry)
-        -> std::string {
-      return entry.has_value() ? entry->GetDebugString() : "none";
-    };
+  auto entry_or_empty =
+      [](const absl::optional<net::FirstPartySetEntry>& entry) -> std::string {
+    return entry.has_value() ? entry->GetDebugString() : "none";
+  };
 
-    dict.Set("frame_entry",
-             entry_or_empty(first_party_set_metadata->frame_entry()));
-    dict.Set("top_frame_primary",
-             entry_or_empty(first_party_set_metadata->top_frame_entry()));
-  }
+  dict.Set("cache_filter",
+           fps_cache_filter ? base::NumberToString(*fps_cache_filter) : "none");
+  dict.Set("frame_entry",
+           entry_or_empty(first_party_set_metadata.frame_entry()));
+  dict.Set("top_frame_primary",
+           entry_or_empty(first_party_set_metadata.top_frame_entry()));
   return dict;
 }
 
@@ -310,39 +309,27 @@ void URLRequestHttpJob::Start() {
   UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
                         should_add_cookie_header);
 
+  request_->net_log().BeginEvent(NetLogEventType::FIRST_PARTY_SETS_METADATA);
+
   if (!should_add_cookie_header) {
-    OnGotFirstPartySetMetadata(/*emit_log_event=*/false,
-                               FirstPartySetMetadata());
+    OnGotFirstPartySetMetadata(FirstPartySetMetadata());
     return;
   }
 
-  request_->net_log().AddEvent(
-      NetLogEventType::FIRST_PARTY_SETS_METADATA_REQUESTED,
-      [&]() { return FirstPartySetMetadataNetLogParams(request()->url()); });
   absl::optional<FirstPartySetMetadata> metadata =
       cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           SchemefulSite(request()->url()), request()->isolation_info(),
           request()->context()->cookie_store()->cookie_access_delegate(),
           base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
-                         weak_factory_.GetWeakPtr(), /*emit_log_event=*/true));
+                         weak_factory_.GetWeakPtr()));
 
   if (metadata.has_value())
-    OnGotFirstPartySetMetadata(/*emit_log_event=*/true,
-                               std::move(metadata.value()));
+    OnGotFirstPartySetMetadata(std::move(metadata.value()));
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
-    bool emit_log_event,
     FirstPartySetMetadata first_party_set_metadata) {
   first_party_set_metadata_ = std::move(first_party_set_metadata);
-
-  if (emit_log_event) {
-    request_->net_log().AddEvent(
-        NetLogEventType::FIRST_PARTY_SETS_METADATA_RECEIVED, [&]() {
-          return FirstPartySetMetadataNetLogParams(request()->url(),
-                                                   &first_party_set_metadata_);
-        });
-  }
 
   if (!request()->network_delegate()) {
     OnGotFirstPartySetCacheFilterMatchInfo(
@@ -366,6 +353,13 @@ void URLRequestHttpJob::OnGotFirstPartySetCacheFilterMatchInfo(
     FirstPartySetsCacheFilter::MatchInfo match_info) {
   request_info_.fps_cache_filter = match_info.clear_at_run_id;
   request_info_.browser_run_id = match_info.browser_run_id;
+
+  request_->net_log().EndEvent(
+      NetLogEventType::FIRST_PARTY_SETS_METADATA, [&]() {
+        return FirstPartySetMetadataNetLogParams(
+            first_party_set_metadata_,
+            base::OptionalToPtr(request_info_.fps_cache_filter));
+      });
 
   // Privacy mode could still be disabled in SetCookieHeaderAndStart if we are
   // going to send previously saved cookies.

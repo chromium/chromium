@@ -4311,18 +4311,11 @@ EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_DATA)
 // decryption.
 EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)
 
-// This event is logged when First-Party Sets metadata is requested. The
-// following parameters are attached:
+// This event is logged when First-Party Sets metadata is requested/received.
+// The following parameters are attached to the "end" event:
 //   {
-//     "request_url": <request URL>,
-//   }
-EVENT_TYPE(FIRST_PARTY_SETS_METADATA_REQUESTED)
-
-// This event is logged when First-Party Sets metadata is received. The
-// following parameters are attached:
-//   {
-//     "request_url": <request URL>,
+//     "cache_filter": <string>,
 //     "frame_entry": <string>,
 //     "top_frame_entry": <string>,
 //   }
-EVENT_TYPE(FIRST_PARTY_SETS_METADATA_RECEIVED)
+EVENT_TYPE(FIRST_PARTY_SETS_METADATA)
