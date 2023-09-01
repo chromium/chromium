@@ -4,6 +4,9 @@
 
 #include "ui/base/interaction/interaction_sequence.h"
 
+#include <list>
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -270,7 +273,8 @@ InteractionSequence::StepBuilder::SetElementName(
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
     StepContext context) {
   DCHECK(context != StepContext(ElementContext()));
-  DCHECK(!step_->uses_named_element());
+  DCHECK(context == StepContext(ContextMode::kAny) ||
+         !step_->uses_named_element());
   step_->context = context;
   if (const ContextMode* mode = absl::get_if<ContextMode>(&context)) {
     step_->in_any_context = *mode == ContextMode::kAny;

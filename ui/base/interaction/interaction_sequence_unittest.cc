@@ -3046,6 +3046,37 @@ TEST(InteractionSequenceTest,
 
 // Named element tests:
 
+TEST(InteractionSequenceTest, CanNameElementInAnyContext) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  test::TestElement element1(kTestIdentifier1, kTestContext1);
+  test::TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(kTestContext1)
+          .AddStep(
+              InteractionSequence::StepBuilder()
+                  .SetElementID(kTestIdentifier1)
+                  .SetType(InteractionSequence::StepType::kShown)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&element2](InteractionSequence* seq, TrackedElement*) {
+                        seq->NameElement(&element2, kElementName1);
+                      }))
+                  .SetContext(InteractionSequence::ContextMode::kAny)
+                  .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetContext(InteractionSequence::ContextMode::kAny)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
 TEST(InteractionSequenceTest,
      NameElement_ElementShown_NamedBeforeSequenceStarts) {
   UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
