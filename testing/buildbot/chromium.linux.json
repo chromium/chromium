@@ -3361,6 +3361,52 @@
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
       {
+        "experiment_percentage": 10,
+        "isolate_name": "content_shell_wpt",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite",
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test_id_prefix": "ninja://:content_shell_wpt/"
+      },
+      {
+        "args": [
+          "--flag-specific",
+          "highdpi"
+        ],
+        "experiment_percentage": 10,
+        "isolate_name": "content_shell_wpt",
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "wpt_tests_suite_highdpi",
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "test_id_prefix": "ninja://:content_shell_wpt/"
+      },
+      {
         "isolate_name": "xvfb_py_unittests",
         "isolate_profile_data": true,
         "merge": {
