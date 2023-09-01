@@ -864,7 +864,7 @@ _CET_ENDBR
 	.byte	0xf3,0xc3
 
 .cfi_endproc	
-.size	aesni_gcm_decrypt,.-aesni_gcm_decrypt
+.size	aesni_gcm_encrypt,.-aesni_gcm_encrypt
 .section	.rodata
 .align	64
 .Lbswap_mask:

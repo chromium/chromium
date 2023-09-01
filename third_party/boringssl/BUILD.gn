@@ -28,7 +28,10 @@ config("external_config") {
 config("component_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
   configs = [ ":internal_config" ]
-  defines = [ "BORINGSSL_IMPLEMENTATION" ]
+  defines = [
+    "BORINGSSL_IMPLEMENTATION",
+    "_BORINGSSL_LIBPKI_",
+  ]
 }
 
 # This config is used by anything that consumes internal headers. Tests consume
@@ -38,6 +41,7 @@ config("internal_config") {
   defines = [
     "BORINGSSL_ALLOW_CXX_RUNTIME",
     "BORINGSSL_NO_STATIC_INITIALIZER",
+    "_BORINGSSL_LIBPKI_",
     "OPENSSL_SMALL",
   ]
 }
@@ -47,7 +51,7 @@ config("no_asm_config") {
   defines = [ "OPENSSL_NO_ASM" ]
 }
 
-all_sources = crypto_sources + ssl_sources
+all_sources = crypto_sources + ssl_sources + pki_sources
 all_headers = crypto_headers + ssl_headers
 
 if (enable_rust_boringssl) {
@@ -216,6 +220,26 @@ if (build_with_chromium) {
     deps += [ "//base/test:test_support" ]
   }
 
+  test("boringssl_pki_tests") {
+    sources = pki_test_sources + test_support_sources
+    data = pki_test_data
+    deps = [
+      ":boringssl",
+      "//testing/gtest",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      ":internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
+
+    # Chromium infrastructure does not support GTest, only the //base wrapper.
+    sources -= [ "src/crypto/test/gtest_main.cc" ]
+    sources += [ "gtest_main_chromium.cc" ]
+    deps += [ "//base/test:test_support" ]
+  }
+
   config("fuzzer_config") {
     visibility = [ ":*" ]  # Only targets in this file can depend on this.
     defines = [
@@ -251,10 +275,11 @@ if (build_with_chromium) {
     }
   }
 
-  foreach(fuzzer, fuzzers) {
-    # TODO(crbug.com/1322914): Enable the BoringSSL libpki build and associated
-    # fuzzers.
-    if (fuzzer != "parse_certificate_fuzzer") {
+  # Do not run the fuzzers on windows until 1477042 is fixed, they
+  # make the fuzzer infrastructure exceed the windows command line
+  # length.
+  if (!is_win) {
+    foreach(fuzzer, fuzzers) {
       fuzzer_test("boringssl_${fuzzer}_fuzzer") {
         sources = [
           "src/fuzz/${fuzzer}.cc",
