@@ -186,7 +186,7 @@ export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './os_apps_page/app_management_page/actions.js';
 export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
-export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
+export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
 export {AppManagementPageState, AppManagementStore} from './os_apps_page/app_management_page/store.js';
 export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';

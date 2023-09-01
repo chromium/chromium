@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PluginVmBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {PluginVmBrowserProxy} */
-export class TestPluginVmBrowserProxy extends TestBrowserProxy {
+export class TestPluginVmBrowserProxy extends TestBrowserProxy implements
+    PluginVmBrowserProxy {
+  private pluginVmRunning: boolean;
   constructor() {
     super([
       'isRelaunchNeededForNewPermissions',
@@ -14,14 +16,16 @@ export class TestPluginVmBrowserProxy extends TestBrowserProxy {
     this.pluginVmRunning = false;
   }
 
-  /** @override */
-  isRelaunchNeededForNewPermissions() {
+  setPluginVmRunning(pluginVmRunning: boolean): void {
+    this.pluginVmRunning = pluginVmRunning;
+  }
+
+  isRelaunchNeededForNewPermissions(): Promise<boolean> {
     this.methodCalled('isRelaunchNeededForNewPermissions');
     return Promise.resolve(this.pluginVmRunning);
   }
 
-  /** @override */
-  relaunchPluginVm() {
+  relaunchPluginVm(): void {
     this.methodCalled('relaunchPluginVm');
   }
 }

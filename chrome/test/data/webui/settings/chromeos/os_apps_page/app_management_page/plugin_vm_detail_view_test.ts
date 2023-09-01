@@ -14,8 +14,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {FakePageHandler} from '../../app_management/fake_page_handler.js';
-import {TestPluginVmBrowserProxy} from '../../app_management/test_plugin_vm_browser_proxy.js';
 import {getPermissionCrToggleByType, getPermissionToggleByType, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
+
+import {TestPluginVmBrowserProxy} from './test_plugin_vm_browser_proxy.js';
 
 // TODO(b/270728282) - remove "as" cast once getPermissionCrToggleByType()
 // becomes a TS function.
@@ -95,9 +96,12 @@ suite('<app-management-plugin-vm-detail-view>', () => {
     await fakeHandler.flushPipesForTesting();
   }
 
-  setup(async () => {
+  suiteSetup(() => {
     pluginVmBrowserProxy = new TestPluginVmBrowserProxy();
     PluginVmBrowserProxyImpl.setInstanceForTesting(pluginVmBrowserProxy);
+  });
+
+  setup(async () => {
     fakeHandler = setupFakeHandler();
     replaceStore();
 
@@ -117,7 +121,7 @@ suite('<app-management-plugin-vm-detail-view>', () => {
           createBoolPermission(permissionType, true, false /*is_managed*/);
     }
 
-    pluginVmBrowserProxy.pluginVmRunning = false;
+    pluginVmBrowserProxy.setPluginVmRunning(false);
 
     // Add an app, and make it the currently selected app.
     const options = {
@@ -136,6 +140,7 @@ suite('<app-management-plugin-vm-detail-view>', () => {
 
   teardown(() => {
     pluginVmDetailView.remove();
+    pluginVmBrowserProxy.reset();
   });
 
   test('App is rendered correctly', () => {
@@ -175,7 +180,7 @@ suite('<app-management-plugin-vm-detail-view>', () => {
               (cancelByEsc) => test(
                   `Toggle ${type} with dialogs (${cancelByEsc})`, async () => {
                     const permissionType = type as PermissionTypeIndex;
-                    pluginVmBrowserProxy.pluginVmRunning = true;
+                    pluginVmBrowserProxy.setPluginVmRunning(true);
 
                     assertTrue(getPermissionBoolByType(permissionType));
                     assertTrue(isCrToggleChecked(permissionType));
