@@ -52,7 +52,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -76,7 +75,6 @@ import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -529,8 +527,6 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"PrivacyGuide"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
-    @SuppressWarnings("CheckReturnValue")
-    @DisabledTest(message = "crbug.com/1477852, likely because of the TODOs(crbug.com/1469988)")
     public void testBackwardNavAllActions() {
         setMSBBState(false);
         setHistorySyncState(false);
@@ -541,46 +537,28 @@ public class PrivacyGuideFragmentTest {
         goToCompletionCard();
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_done_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_cookies_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+        onViewWaiting(allOf(withId(R.id.enhanced_option), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_safe_browsing_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
         onView(withId(R.id.history_sync_switch)).perform(click());
         onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_history_sync_toggle), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
         onView(withId(R.id.msbb_switch)).perform(click());
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.url_keyed_anonymized_data_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
@@ -589,8 +567,6 @@ public class PrivacyGuideFragmentTest {
     @Feature({"PrivacyGuide"})
     @EnableFeatures(
             {ChromeFeatureList.PRIVACY_GUIDE_POST_MVP, ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3})
-    @SuppressWarnings("CheckReturnValue")
-    @DisabledTest(message = "crbug.com/1477852, likely because of the TODOs(crbug.com/1469988)")
     public void
     testBackwardNavAllActionsPG3() {
         setMSBBState(false);
@@ -603,55 +579,33 @@ public class PrivacyGuideFragmentTest {
         goToCompletionCardPG3();
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_done_title), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.search_suggestions_switch), isCompletelyDisplayed()));
         onView(withId(R.id.search_suggestions_switch)).perform(click());
         onView(withId(R.id.search_suggestions_switch)).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.improve_search_suggestions_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+        onViewWaiting(allOf(withId(R.id.enhanced_option), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_safe_browsing_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onViewWaiting(allOf(withId(R.id.block_third_party), isCompletelyDisplayed()));
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
         onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_cookies_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
         onView(withId(R.id.history_sync_switch)).perform(click());
         onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.privacy_guide_history_sync_toggle), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
         onView(withId(R.id.msbb_switch)).perform(click());
         onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
 
         pressBack();
-        // TODO(crbug.com/1469988): This is a no-op, replace with
-        // ViewUtils.waitForViewCheckingState().
-        ViewUtils.withEventualExpectedViewState(
-                withText(R.string.url_keyed_anonymized_data_title), ViewUtils.VIEW_GONE);
         onViewWaiting(withText(R.string.privacy_guide_fragment_title));
     }
 
