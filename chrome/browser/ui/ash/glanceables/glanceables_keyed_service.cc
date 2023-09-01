@@ -11,9 +11,11 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -64,7 +66,9 @@ void GlanceablesKeyedService::Shutdown() {
 bool GlanceablesKeyedService::AreGlanceablesEnabled() const {
   PrefService* const prefs = profile_->GetPrefs();
   if (features::AreGlanceablesV2Enabled()) {
-    return prefs->GetBoolean(prefs::kGlanceablesEnabled);
+    return prefs->GetBoolean(prefs::kGlanceablesEnabled) ||
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+               ash::switches::kAshBypassGlanceablesPref);
   }
 
   if (features::AreGlanceablesV2EnabledForTrustedTesters()) {
