@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.ReadFromFileTime" units="ms"
-    expires_after="2023-09-15">
+    expires_after="2024-09-15">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -991,7 +991,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.SerializedSize" units="KB"
-    expires_after="2023-10-08">
+    expires_after="2024-10-08">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -1002,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.WriteToFileTime" units="ms"
-    expires_after="2023-09-15">
+    expires_after="2024-09-15">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
