@@ -73,6 +73,7 @@ bool FormField::MatchesRegexWithCache(base::StringPiece16 input,
 // static
 void FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     bool is_form_tag,
     PatternSource pattern_source,
@@ -84,10 +85,6 @@ void FormField::ParseFormFields(
   ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
   bool found_email_field = !field_candidates.empty();
-
-  // Single fields pass.
-  ParseSingleFieldForms(fields, page_language, is_form_tag, pattern_source,
-                        field_candidates, log_manager);
 
   // Phone pass.
   ParseFormFieldsPass(PhoneField::Parse, processed_fields, field_candidates,
@@ -148,8 +145,12 @@ void FormField::ParseFormFields(
     ParseUsingAutocompleteAttributes(processed_fields, field_candidates);
   }
 
-  ClearCandidatesIfHeuristicsDidNotFindEnoughFields(fields, field_candidates,
-                                                    is_form_tag, log_manager);
+  // Single fields pass.
+  ParseSingleFieldForms(fields, client_country, page_language, is_form_tag,
+                        pattern_source, field_candidates, log_manager);
+
+  ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+      fields, field_candidates, is_form_tag, client_country, log_manager);
 }
 
 // static
@@ -157,6 +158,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates,
     bool is_form_tag,
+    const GeoIpCountryCode& client_country,
     LogManager* log_manager) {
   // Set to count distinct field types.
   ServerFieldTypeSet heuristic_types;
@@ -184,9 +186,14 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     return;
   }
 
-  const ServerFieldTypeSet permitted_single_field_types{
+  ServerFieldTypeSet permitted_single_field_types{
       MERCHANT_PROMO_CODE, IBAN_VALUE,
       CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableZipOnlyAddressForms) &&
+      AddressField::IsStandaloneZipSupported(client_country)) {
+    permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
+  }
 
   // For historic reasons email addresses are only retained if they appear in
   // a <form> tag. It's unclear whether that's necessary.
@@ -254,6 +261,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 
 void FormField::ParseSingleFieldForms(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const GeoIpCountryCode& client_country,
     const LanguageCode& page_language,
     bool is_form_tag,
     PatternSource pattern_source,
@@ -269,6 +277,14 @@ void FormField::ParseSingleFieldForms(
   // IBAN pass.
   ParseFormFieldsPass(IbanField::Parse, processed_fields, field_candidates,
                       page_language, pattern_source, log_manager);
+
+  if (AddressField::IsStandaloneZipSupported(client_country)) {
+    // In some countries we observe address forms that are particularly small
+    // (e.g. only a zip code.)
+    ParseFormFieldsPass(AddressField::ParseStandaloneZip, processed_fields,
+                        field_candidates, page_language, pattern_source,
+                        log_manager);
+  }
 }
 
 void FormField::ParseStandaloneCVCFields(

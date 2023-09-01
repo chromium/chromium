@@ -100,6 +100,7 @@ constexpr MatchParams kOverflowAndLandmarkMatchType =
 
 }  // namespace
 
+// static
 std::unique_ptr<FormField> AddressField::Parse(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
@@ -199,6 +200,40 @@ std::unique_ptr<FormField> AddressField::Parse(
     // Don't slurp non-labeled fields at the end into the address.
     if (has_trailing_non_labeled_fields)
       scanner->RewindTo(begin_trailing_non_labeled_fields);
+    return std::move(address_field);
+  }
+
+  scanner->RewindTo(saved_cursor);
+  return nullptr;
+}
+
+// static
+bool AddressField::IsStandaloneZipSupported(
+    const GeoIpCountryCode& client_country) {
+  return client_country == GeoIpCountryCode("BR") ||
+         client_country == GeoIpCountryCode("MX");
+}
+
+// static
+std::unique_ptr<FormField> AddressField::ParseStandaloneZip(
+    AutofillScanner* scanner,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    LogManager* log_manager) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableZipOnlyAddressForms)) {
+    return nullptr;
+  }
+
+  if (scanner->IsEnd()) {
+    return nullptr;
+  }
+
+  std::unique_ptr<AddressField> address_field(new AddressField(log_manager));
+  size_t saved_cursor = scanner->SaveCursor();
+
+  address_field->ParseZipCode(scanner, page_language, pattern_source);
+  if (address_field->zip_) {
     return std::move(address_field);
   }
 

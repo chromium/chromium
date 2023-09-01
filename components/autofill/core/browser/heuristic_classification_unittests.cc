@@ -399,6 +399,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
 // syntax (https://jqlang.github.io/jq/)
 [[nodiscard]] AssertionResult ClassifyFieldsOfSite(
     base::Value::Dict& site,
+    const GeoIpCountryCode& client_country,
     LanguageCode page_language,
     ResultAnalyzer& result_analyzer,
     LogManager* log_manager) {
@@ -422,7 +423,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     }
     FormStructure form_structure(form_data);
     form_structure.set_current_page_language(page_language);
-    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+    form_structure.DetermineHeuristicTypes(client_country, nullptr,
                                            log_manager);
     result_analyzer.AnalyzeClassification(form_structure, form.GetDict());
   }
@@ -524,7 +525,9 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillEnableDependentLocalityParsing,
       features::kAutofillEnableExpirationDateImprovements,
       // Allow local heuristics to take precedence.
-      features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete};
+      features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+      // Other improvements.
+      features::kAutofillEnableZipOnlyAddressForms};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
@@ -565,8 +568,9 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ResultAnalyzer result_analyzer(std::move(fields_in_scope));
   for (base::Value& site : *sites) {
     ASSERT_TRUE(site.is_dict());
-    ASSERT_TRUE(ClassifyFieldsOfSite(site.GetDict(), page_language,
-                                     result_analyzer, log_manager_.get()));
+    ASSERT_TRUE(ClassifyFieldsOfSite(site.GetDict(), GeoIpCountryCode(*country),
+                                     page_language, result_analyzer,
+                                     log_manager_.get()));
   }
 
   // Update statistics

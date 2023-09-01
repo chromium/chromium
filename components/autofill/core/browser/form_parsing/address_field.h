@@ -30,6 +30,19 @@ class AddressField : public FormField {
                                           PatternSource pattern_source,
                                           LogManager* log_manager);
 
+  // Returns whether a stand-alone zip field is supported for `client_country`.
+  // In some countries that's a prevalent UI (the user is first asked to enter
+  // their zip code and then a lot of information is derived). This is not
+  // enabled for all countries because there is a certain risk of false positive
+  // classifications. We may reevaluate that decision in the future.
+  static bool IsStandaloneZipSupported(const GeoIpCountryCode& client_country);
+
+  static std::unique_ptr<FormField> ParseStandaloneZip(
+      AutofillScanner* scanner,
+      const LanguageCode& page_language,
+      PatternSource pattern_source,
+      LogManager* log_manager);
+
   AddressField(const AddressField&) = delete;
   AddressField& operator=(const AddressField&) = delete;
 

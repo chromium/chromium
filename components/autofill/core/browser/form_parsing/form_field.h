@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
@@ -50,6 +51,7 @@ class FormField {
   // |field_candidates|.
   static void ParseFormFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       bool is_form_tag,
       PatternSource pattern_source,
@@ -61,6 +63,7 @@ class FormField {
   // used as the key into |field_candidates|.
   static void ParseSingleFieldForms(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const GeoIpCountryCode& client_country,
       const LanguageCode& page_language,
       bool is_form_tag,
       PatternSource pattern_source,
@@ -212,6 +215,7 @@ class FormField {
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates,
       bool is_form_tag,
+      const GeoIpCountryCode& client_country,
       LogManager* log_manager);
 
   static bool ParseFieldSpecificsWithNewPatterns(

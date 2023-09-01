@@ -418,14 +418,16 @@ void FormStructure::DetermineHeuristicTypes(
 
   // The active heuristic source might not be a pattern source.
   if (absl::optional<PatternSource> pattern_source = GetActivePatternSource()) {
-    ParseFieldTypesWithPatterns(*pattern_source, log_manager);
+    ParseFieldTypesWithPatterns(*pattern_source, client_country, log_manager);
   }
+
   if (!base::FeatureList::IsEnabled(
           features::kAutofillDisableShadowHeuristics)) {
     for (HeuristicSource heuristic_source : GetNonActiveHeuristicSources()) {
       if (auto shadow_source =
               HeuristicSourceToPatternSource(heuristic_source)) {
-        ParseFieldTypesWithPatterns(*shadow_source, log_manager);
+        ParseFieldTypesWithPatterns(*shadow_source, client_country,
+                                    log_manager);
       }
     }
   }
@@ -1200,17 +1202,19 @@ bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   return has_autocomplete;
 }
 
-void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
-                                                LogManager* log_manager) {
+void FormStructure::ParseFieldTypesWithPatterns(
+    PatternSource pattern_source,
+    const GeoIpCountryCode& client_country,
+    LogManager* log_manager) {
   FieldCandidatesMap field_type_map;
   if (ShouldRunHeuristics()) {
-    FormField::ParseFormFields(fields_, current_page_language_, is_form_tag_,
-                               pattern_source, field_type_map, log_manager);
+    FormField::ParseFormFields(fields_, client_country, current_page_language_,
+                               is_form_tag_, pattern_source, field_type_map,
+                               log_manager);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormField::ParseSingleFieldForms(fields_, current_page_language_,
-                                     is_form_tag_, pattern_source,
-                                     field_type_map, log_manager);
-
+    FormField::ParseSingleFieldForms(
+        fields_, client_country, current_page_language_, is_form_tag_,
+        pattern_source, field_type_map, log_manager);
     FormField::ParseStandaloneCVCFields(fields_, current_page_language_,
                                         pattern_source, field_type_map,
                                         log_manager);
