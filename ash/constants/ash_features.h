@@ -1161,8 +1161,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAuthSessionStorage();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool isSearchCustomizableShortcutsInLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsSearchInShortcutsAppEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldShowPlayStoreInDemoMode();

@@ -1469,11 +1469,9 @@ void PopulateChromeWebUIFrameBinders(
         ash::shortcut_customization::mojom::AcceleratorConfigurationProvider,
         ash::ShortcutCustomizationAppUI>(map);
 
-    if (ash::features::IsSearchInShortcutsAppEnabled()) {
-      RegisterWebUIControllerInterfaceBinder<
-          ash::shortcut_customization::mojom::SearchHandler,
-          ash::ShortcutCustomizationAppUI>(map);
-    }
+    RegisterWebUIControllerInterfaceBinder<
+        ash::shortcut_customization::mojom::SearchHandler,
+        ash::ShortcutCustomizationAppUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

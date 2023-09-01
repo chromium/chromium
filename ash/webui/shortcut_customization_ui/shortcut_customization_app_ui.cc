@@ -251,9 +251,6 @@ void ShortcutCustomizationAppUI::BindInterface(
 void ShortcutCustomizationAppUI::BindInterface(
     mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
         receiver) {
-  // BindInterface should not be called unless the search flag is enabled.
-  DCHECK(features::IsSearchInShortcutsAppEnabled());
-
   shortcut_ui::SearchHandler* search_handler =
       shortcut_ui::ShortcutsAppManagerFactory::GetForBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext())

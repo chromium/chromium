@@ -4141,10 +4141,6 @@ bool isSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
 }
 
-bool IsSearchInShortcutsAppEnabled() {
-  return base::FeatureList::IsEnabled(kSearchInShortcutsApp);
-}
-
 bool ShouldShowPlayStoreInDemoMode() {
   return base::FeatureList::IsEnabled(kShowPlayInDemoMode);
 }
