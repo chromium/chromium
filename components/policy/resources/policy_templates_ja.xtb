@@ -2584,10 +2584,6 @@ Android アプリの場合はパッケージ名（<ph name="DEFAULT_HANDLERS_FOR
       このポリシーが設定されていない場合、システム プロキシ サービスは利用できません。</translation>
 <translation id="334231891933432876">アカウントの認証が無効になったら直ちにユーザーをログアウトする</translation>
 <translation id="3345323903592385588">インストーラで VM 構成が表示される順序。複数の VM 構成が指定されている場合は、display_order 値が小さいものから表示されます。デフォルトは 0 です。</translation>
-<translation id="3348799281602260763">有効にすると、WebRTC ピア接続が TLS/DTLS プロトコルのサポートが終了したバージョン（DTLS 1.0、TLS 1.0、TLS 1.1）にダウングレードされる可能性があります。
-      このポリシーを無効にするか、未設定のままにすると、これらの TLS/DTLS バージョンは無効になります。
-
-      このポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> の将来のバージョンで削除される予定です。</translation>
 <translation id="3351835664671920945">パスワード入力時にデフォルトで標準キーボードを表示する</translation>
 <translation id="3359186795130278362">制限付き管理対象ゲスト セッションを有効にする</translation>
 <translation id="33592541385181121">生成された Kerberos SPN に標準ポートを含めない</translation>

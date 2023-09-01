@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">किसी साइट को, आपके डिवाइस पर डेटा सेव करने की अनुमति दें</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
-<translation id="1409426117486808224">खुले टैब के लिए सरल बनाया गया व्यू</translation>
 <translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="1446450296470737166">MIDI डिवाइस के पूरे नियंत्रण की अनुमति दें</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Android सेटिंग में बंद कर दिया गया है</translation>
 <translation id="7016516562562142042">मौजूदा सर्च इंजन के लिए अनुमति दी गई है</translation>
 <translation id="702275896380648118">यह साइट, आपकी पसंद के विषयों का पता लगाती है और फिर दूसरी साइटों पर, उनके हिसाब से विज्ञापन के सुझाव देती है. यह साइट आपके पसंदीदा, विज्ञापन के विषयों के बारे में जानने के लिए Chrome की भी मदद लेती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखाए जा सकें.</translation>
-<translation id="702463548815491781">उस समय के लिए सुझाया गया जब 'TalkBack' या 'ऐक्सेस करने का तरीका बदलें' चालू हों</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 चुना गया}one{# चुने गए}other{# चुने गए}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> चुने गए.  विकल्प, स्क्रीन के ऊपरी भाग के पास उपलब्ध हैं</translation>

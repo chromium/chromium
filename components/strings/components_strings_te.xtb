@@ -1494,7 +1494,6 @@
 <translation id="4151403195736952345">భౌగోళిక డిఫాల్ట్‌ను ఉపయోగించండి (గుర్తించు)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1వ పేజీ}other{{COUNT}వ పేజీ}}</translation>
 <translation id="4154277373259957087">పేమెంట్ ఆప్షన్‌లలో వివరాలను పూరించడానికి ముందు ఇకపై Chrome, అలా చేస్తున్నది మీరేనని వెరిఫై చేస్తుంది. మీరు దీన్ని <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />లో ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.</translation>
-<translation id="4154664944169082762">వేలిముద్రలు</translation>
 <translation id="4159149286839604525">అంటే చాలా సైట్ ఫీచర్‌లు పని చేయాలి, కానీ మీకు తక్కువ రక్షణ ఉంటుంది</translation>
 <translation id="4159784952369912983">వంగపండు రంగు</translation>
 <translation id="4165986682804962316">సైట్ సెట్టింగ్‌లు</translation>
@@ -2013,7 +2012,6 @@
 <translation id="5201306358585911203">ఈ పేజీలోని పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
 <translation id="5205222826937269299">పేరు ఆవశ్యకం</translation>
 <translation id="5206392433295093945">పడక గది</translation>
-<translation id="5209518306177824490">SHA-1 వేలిముద్ర</translation>
 <translation id="5209670883520018268">ట్రే 20</translation>
 <translation id="521659676233207110">ట్రే 13</translation>
 <translation id="5216942107514965959">చివరిగా ఈరోజు సందర్శించారు</translation>
@@ -2979,7 +2977,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% పూర్తయింది | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">గిఫ్ట్‌లు &amp; ప్రత్యేక ఈవెంట్ ఐటెమ్‌లు</translation>
 <translation id="7237492777898608035">ఈ సైట్‌లో ఈ మెసేజ్‌ను మళ్లీ చూపవద్దు</translation>
-<translation id="7238585580608191973">SHA-256 వేలిముద్ర</translation>
 <translation id="7240120331469437312">సర్టిఫికెట్ విషయ ప్రత్యామ్నాయ పేరు</translation>
 <translation id="7241863998525879494">ఏమి ఆశించవచ్చు</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3310,7 +3307,6 @@
 <translation id="7888575728750733395">ప్రింట్ రెండరింగ్ ఇంటెంట్</translation>
 <translation id="7894280532028510793">స్పెల్లింగ్ సరైనది అయితే, <ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను రన్ చేయడానికి ట్రై చేయండి<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">7 x 9 అంగుళాల ఎన్వలప్</translation>
-<translation id="7904652607559432654">షాపింగ్ కలెక్షన్</translation>
 <translation id="7916162853251942238">ఫ్లెక్సో బేస్</translation>
 <translation id="7927971017714848357">స్థలాలు &amp; భూములు</translation>
 <translation id="793209273132572360">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>

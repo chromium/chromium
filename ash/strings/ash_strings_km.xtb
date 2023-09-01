@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">ឧបករណ៍ USB-C (រន្ធខាងឆ្វេង)</translation>
 <translation id="1293556467332435079">ឯកសារ</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">បើកកម្មវិធី​រុករក</translation>
 <translation id="1294929383540927798">ផ្លាស់ប្ដូរ​ការកំណត់​ការជូនដំណឹងអេក្រង់​ចាក់សោ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">កម្មវិធី​ដែល​បាន​ណែនាំ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">ផ្លាស់ទី​រូបកម្មវិធី​នៅក្នុង​ក្រឡាកម្មវិធី</translation>
 <translation id="2620016719323068571">ស្វែងរក <ph name="CATEGORY" /> ឯកសារ កម្មវិធី និងអ្វីៗជាច្រើនទៀត...</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
+<translation id="2620900772667816510">កម្រិតគុណភាពកំពូលរបស់ប៊្លូធូស</translation>
 <translation id="2621713457727696555">មាន​សុវត្ថិភាព</translation>
 <translation id="2624588537172718173">មីក្រូហ្វូន និង​សំឡេង​ឧបករណ៍</translation>
 <translation id="263399434338050016">"ជ្រើសរើសទាំងអស់"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">បិទតុ និងវិនដូ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> កំពុងបន្ទាបកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក។ ឧបករណ៍​របស់អ្នកនឹង​កំណត់​ឡើងវិញ ហើយទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប។</translation>
 <translation id="3171170659304083361">ការកំណត់​វិធីបញ្ចូល</translation>
+<translation id="3176221688814061633">Chromebook ឬឧបករណ៍ប៊្លូធូសរបស់អ្នកកំពុងប្រើប៊្លូធូសកំណែចាស់។ បើកកម្រិតគុណភាពកំពូលរបស់ប៊្លូធូស ឬប្រើមីក្រូហ្វូនខាងក្នុង ដើម្បីទទួលបានគុណភាពសំឡេងកាន់តែច្បាស់។</translation>
 <translation id="3181441307743005334">ការចាប់ផ្ដើម​ឡើងវិញអាច​ចំណាយ​ពេលបន្តិច</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍មួយ}other{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍ #}}</translation>
 <translation id="320207200541803018">កំណត់កម្មវិធីកំណត់ម៉ោង</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7189412385142492784">តើភពសុក្រនៅ​ឆ្ងាយ​ប៉ុណ្ណា</translation>
 <translation id="7198435252016571249">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងស្ដាំ​ផ្នែកខាងក្រោម។ ខុសគ្នា​ជាមួយនឹង​ផ្ទៃប្រព័ន្ធ។</translation>
 <translation id="7219573373513695352">មិនមាន​ឧបករណ៍​ដែល​បានភ្ជាប់ទេ</translation>
+<translation id="7229029500464092426">បានប្រើអង្គចងចាំ <ph name="AVAILABLE_MEMORY" /> | សរុប <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />។ Chromebook នេះ​ត្រូវចាប់ផ្ដើមឡើងវិញ ដើម្បី​អនុវត្តកំណែថ្មី។ សកម្មភាពនេះអាចចំណាយពេលរហូតដល់ 1 នាទី។</translation>
 <translation id="7256634071279256947">មីក្រូហ្វូន​ខាងក្រោយ</translation>
 <translation id="7258828758145722155">បានកែ​កាលពីម្សិលមិញ</translation>
@@ -1522,6 +1526,7 @@
 <translation id="7360036564632145207">ការផ្លាស់ប្ដូរការការពារការចូលប្រើទិន្នន័យរបស់អ្នកសម្រាប់ការកំណត់ឧបករណ៍សម្រាប់​ភ្ជាប់​ជាមួយ​កុំព្យូទ័រអាចជំរុញឱ្យប្រតិបត្តិការមានប្រសិទ្ធភាពបំផុត</translation>
 <translation id="736045644501761622">កំណត់​ផ្ទាំងរូបភាព និង​រចនាប័ទ្ម</translation>
 <translation id="7371404428569700291">ថតវីដេអូ​វិនដូ</translation>
+<translation id="7372069265635026568">មាន​អង្គចងចាំទំនេរ <ph name="AVAILABLE_MEMORY" /> នៃ​អង្គចងចាំ​សរុប <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">ការធ្វើបែបនេះផ្ដល់សិទ្ធិចូលប្រើប្រាស់​មីក្រូហ្វូន​ដល់គ្រប់កម្មវិធី និង​គេហទំព័រ​ដែលមាន​ការអនុញ្ញាត​ឱ្យប្រើមីក្រូហ្វូន</translation>
 <translation id="7377169924702866686">Caps Lock ត្រូវបានបើក។</translation>
 <translation id="7377481913241237033">ភ្ជាប់ដោយប្រើកូដ</translation>

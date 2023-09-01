@@ -33,17 +33,20 @@
 <translation id="2426113998523353159">La teva organització requereix que iniciïs la sessió per utilitzar Chromium.</translation>
 <translation id="2450140762465183767">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="2478931088402984578">Selecciona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2574528844022712255">Mostra les adreces d'interès de Chromium</translation>
 <translation id="2590893390871230428">Sincronitza les dades de Chromium</translation>
 <translation id="2618596336309823556">Des de la configuració del dispositiu, obre <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i selecciona Chromium</translation>
-<translation id="2631735236435791495">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chromium. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="2650312721222849884">Per veure les pestanyes des de tots els llocs on facis servir Chromium, activa la sincronització</translation>
 <translation id="2684230048001240293">Configura Chromium com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
+<translation id="2798503587425057129">Obre la llista de lectura de Chromium.</translation>
 <translation id="2915596697727466327">Chromium utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="2918709798697875261">La teva organització requereix que tanquis la sessió de Chromium.</translation>
 <translation id="2942241131342758843">Utilitza Chromium de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="3102849287235003384">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chromium<ph name="END_LINK" />.</translation>
+<translation id="3228349498066165585">Algunes dades de Chromium encara no s'han desat al teu Compte de Google.
+        Prova d'esperar uns quants minuts abans de tancar la sessió. Si la tanques ara, aquestes dades se suprimiran.</translation>
 <translation id="3256316712990552818">Copiada a Chromium</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
@@ -148,6 +151,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7905064834449738336">Quan utilitzes una contrasenya, Chromium t'avisa si s'ha publicat en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten perquè ningú no els pugui llegir (ni tan sols Google).</translation>
 <translation id="7928628054454574139">Obre Chromium cada vegada que toquis enllaços en altres aplicacions</translation>
 <translation id="7931842119211730154">Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
+<translation id="7934404985878918282">Mostra la llista de lectura de Chromium</translation>
 <translation id="7980860476903281594">Chromium comparteix la teva ubicació amb els llocs web que autoritzis.</translation>
 <translation id="8013573822802650211">Per veure les pestanyes des de tots els llocs on facis servir Chromium, inicia la sessió en tots els dispositius</translation>
 <translation id="8071041515667087705">Ves a la configuració de Chromium.</translation>
@@ -168,6 +172,7 @@ Aspectes que cal tenir en compte:
   • Si Chromium falla, els detalls sobre el bloqueig poden incloure informació personal.
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
+<translation id="88376265765385899">Obre les adreces d'interès de Chromium.</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="8963279154877372067">Permet que les notificacions de Chromium incloguin alertes de baixada de preu</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>

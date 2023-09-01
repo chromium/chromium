@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Zezwól witrynie na zapisywanie danych na Twoim urządzeniu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
-<translation id="1409426117486808224">Uproszczony widok otwartych kart</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
-<translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>

@@ -83,6 +83,7 @@
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Տեղորոշել հեռախոսը</translation>
 <translation id="1287002645302686982">«<ph name="DESK_TEMPLATE_NAME" />» անվանումով աշխատասեղան արդեն գոյություն ունի</translation>
+<translation id="1288276784862223576">Կարգավորել հեռախոսի վերջին լուսանկարների և մեդիաֆայլերի դիտումը</translation>
 <translation id="1289185460362160437">Սարքը հասանելի կլինի <ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />։</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1290982764014248209">Տեղափոխել «<ph name="DRAGGED_APP" />» հավելվածը «<ph name="FOLDER_NAME" />» պանակ:</translation>
@@ -139,6 +140,7 @@
 <translation id="1528259147807435347">Անցած շաբաթ փոփոխել եք</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> հասցեն օգտագործելու համար նախ դուք պետք է դուրս գաք բոլոր հաշիվներից։ Դրա համար սեղմեք «Չեղարկել» և մեկ քայլ հետ գնացեք։ Այնուհետև սեղմեք ժամացույցի վրա և վիճակի տարածքում ընտրեք «Դուրս գալ»։ Նորից մտեք <ph name="USER_EMAIL_ADDRESS_2" /> հաշիվ։</translation>
 <translation id="15373452373711364">Մկնիկի մեծ նշորդ</translation>
+<translation id="1545331255323159851">Դիտել հեռախոսի լուսանկարները, մեդիաֆայլերը և ծանուցումները</translation>
 <translation id="1546492247443594934">Աշխատասեղան 2</translation>
 <translation id="1546930421365146760">Խնդրեք ձեր ադմինիստրատորին կարգավորել այս սարքը Google ադմինիստրատորի վահանակում</translation>
 <translation id="1549512626801247439">հիշողության կառավարում</translation>
@@ -155,6 +157,7 @@
 <translation id="1592682369233288537">Հաջորդ աշխատասեղանը՝ <ph name="NEXT_DESK_NAME" />։ Այն ակտիվացնելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ներքև սլաք</translation>
 <translation id="1604857178818051494">Դադարեցնել</translation>
+<translation id="1607312127821884567">Բաց թողնել հեռախոսի հավելվածների դիտման կարգավորումը</translation>
 <translation id="1610778689852195798">«Undo» (հետարկել)</translation>
 <translation id="1611993646327628135">Միացված է</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
@@ -183,6 +186,7 @@
 <translation id="1731815243805539470">Անցնել նախորդ օգտատիրոջը</translation>
 <translation id="1733996486177697563">Անցեք մուգ թեմայից բաց թեմային և հակառակը։ Հպեք աշխատասեղանին և պահեք, այնուհետև ընտրեք «Պաստառ և ոճ»։</translation>
 <translation id="1736898441010944794">«<ph name="NAME" />» ադապտերը տեսանելի է Bluetooth սարքերին։</translation>
+<translation id="1737078180382804488">Բաց թողնել հեռախոսի ծանուցումների դիտումը</translation>
 <translation id="174102739345480129">Նշիչն անջատված է։</translation>
 <translation id="1743570585616704562">Չճանաչվեց</translation>
 <translation id="1746730358044914197">Ներածման եղանակները կարգավորվում են ձեր ադմինիստրատորի կողմից:</translation>
@@ -198,6 +202,7 @@
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="1775598828170459419">Ցուցադրված է <ph name="NUM_SHOWN_ITEMS" /> տարր՝ <ph name="NUM_TOTAL_ITEMS" />-ից</translation>
+<translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="1815245884418711390">Միացնել/անջատել թեժ կետը։ Թեժ կետն անջատված է։</translation>
@@ -354,6 +359,7 @@
 <translation id="2484513351006226581">Ստեղնաշարի դասավորությունը փոխելու համար սեղմեք <ph name="KEYBOARD_SHORTCUT" />։</translation>
 <translation id="2487915095798731898">Միանալ</translation>
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
+<translation id="2504454902900101003">Բաց թողնել հեռախոսի վերջին լուսանկարների մեդիաֆայլերի և ծանուցումների դիտման կարգավորումը</translation>
 <translation id="2509468283778169019">CAPS LOCK-ը միացված է</translation>
 <translation id="2514415433888497495">Կանգնեցնել <ph name="CAPTURE_MEDIUM" />ը։ <ph name="CAPTURE_MEDIUM" />ը <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -525,6 +531,7 @@
 <translation id="3260969790895726815">Քանի որ խոսքը սարքում է մշակվում, թելադրումը կարելի է օգտագործել անցանց ռեժիմում, սակայն որոշ ձայնային հրամաններ չեն աշխատի։</translation>
 <translation id="3265032511221679826">Միացնե՞լ ճշգրիտ տեղորոշումը</translation>
 <translation id="3269597722229482060">Աջ սեղմում</translation>
+<translation id="3274634049061007184">Դիտել հեռախոսի հավելվածները</translation>
 <translation id="3289364673986435196">Սնուցման կոճակի ընտրացանկ</translation>
 <translation id="3289544412142055976">Լինուքսի հավելվածները ներկայումս չեն աջակցվում</translation>
 <translation id="3289674678944039601">Լիցքավորում ադապտերի միջոցով</translation>
@@ -592,6 +599,7 @@
 <translation id="353086728817903341">Միացված է <ph name="NUM_DEVICES" /> սարքի</translation>
 <translation id="3533126039236445965">Հավելվածներ դարակում</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-ի թեժ կետ</translation>
+<translation id="3540893133818942399">Բաց թողնել հեռախոսի վերջին լուսանկարների և մեդիաֆայլերի դիտման կարգավորումը</translation>
 <translation id="3542066395059568317">Դուք առաջարկություններ կտեսնեք և կկարողանաք շարունակել այն պահից, որտեղ կանգ էիք առել։ Առաջարկությունները հեռացնելու համար սեղմեք մկնիկի աջ կոճակը։</translation>
 <translation id="3552189655002856821">Wi-Fi-ն անջատված է</translation>
 <translation id="3554215588514239132">Ցուցադրել կամ թաքցնել Ծրագրավորողի գործիքների վահանակը</translation>
@@ -606,6 +614,7 @@
 <translation id="3576141592585647168">Փոխեք ժամային գոտին</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3580650856351781466">Խոսքի ճանաչման ֆայլերը ներբեռնվում են</translation>
+<translation id="3585296979871889131">Դիտել հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը, ծանուցումները և հավելվածները</translation>
 <translation id="3593039967545720377">Սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + V՝ սեղմատախտակի պատմությունը տեսնելու համար։ Սկսելու համար պատճենեք որևէ տարր։</translation>
 <translation id="3593646411856133110">Մատը սահեցրեք վեր և պահեք՝ բացված հավելվածները տեսնելու համար</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
@@ -704,6 +713,7 @@
 <translation id="3953130726459169782">Դեռևս ավարտված առաջադրանքներ չկան։</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3969043077941541451">Անջատված է</translation>
+<translation id="3970324493235864154">Դիտել հեռախոսի ծանուցումները</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="397726367135689299">Մարտկոցի լիցքավորման աղբյուրը կարող է հուսալի չլինել։</translation>
 <translation id="3977512764614765090">Մարտկոցը լիցքավորվում է (լիցքը՝ <ph name="PERCENTAGE" />%)։</translation>
@@ -755,6 +765,7 @@
 <translation id="4185671786623711291">Ակտիվ պատուհանը տեղափոխել աջ աշխատասեղան</translation>
 <translation id="4189826113259617332">Պահել ընթացիկ պատուհանում բացված բոլոր էջերը որպես էջանիշներ՝ նոր պանակում</translation>
 <translation id="4190143678693626113">Խնայեք ձեր ժամանակը՝ արագ պատասխանելով հեռախոսի SMS-ներին ձեր Chromebook-ից</translation>
+<translation id="4190780880566297084">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և հավելվածների դիտման կարգավորումը</translation>
 <translation id="4192112279662688596">Կամ</translation>
 <translation id="4193857202545160520">Ցույց տալ մկնիկի սեղմումները և ստեղնային դյուրանցումները</translation>
 <translation id="4195579532193195633">Ընթացիկ տարբերակ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -793,6 +804,7 @@
 <translation id="4302592941791324970">Հասանելի չէ</translation>
 <translation id="4303223480529385476">Ծավալել կարգավիճակի տարածքը</translation>
 <translation id="4305133312001648038">Վերականգնել էջի սկզբնական մասշտաբը</translation>
+<translation id="4307713728991152670">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և հավելվածների դիտումը</translation>
 <translation id="4312840429157639164">Տեսախցիկի պատկերն ամրացված է վերևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="4316910396681052118">ԲՈԼՈՐ ՀԱՎԵԼՎԱԾՆԵՐԸ</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -833,6 +845,7 @@
 <translation id="4477892968187500306">Այս սարքում կարող են լինել հավելվածներ, որոնք չեն ստուգվել Google-ի կողմից։</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Ապազուգակցված սարքեր</translation>
+<translation id="4485506555414638855">Բաց թողնել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
 <translation id="450584155212756404">Մշակողների կապուղի</translation>
 <translation id="4513946894732546136">Հետադարձ կապ</translation>
 <translation id="4516212064498225455">Ընթացիկ աշխատասեղանը՝ <ph name="CURRENT_DESK_NAME" />։ Բոլոր աշխատասեղանների ընտրացանկը բացելու համար սեղմեք «Որոնում» + բացատ։</translation>
@@ -850,6 +863,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
 <translation id="4566144812051858745">Ինձ ոչ մի առաջարկ չի հետաքրքրում</translation>
+<translation id="4569753163207712681">Դիտել հեռախոսի վերջին լուսանկարները, մեդիաֆայլերը և հավելվածները</translation>
 <translation id="4573176682887762361">«Type [word/phrase]» (մուտքագրել բառ/արտահայտություն)</translation>
 <translation id="4577274620589681794">Ժամանակը սպառվել է · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Միացնել նախադիտումը</translation>
@@ -973,6 +987,7 @@
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։ Ձայնը մնում է ձեր սարքում։</translation>
+<translation id="5077416371682039027">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի, ծանուցումների և հավելվածների դիտումը</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083035541015925118">ctrl + alt + վերև սլաք</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
@@ -1204,6 +1219,7 @@
 <translation id="6018164090099858612">Ելք հայելային ռեժիմից</translation>
 <translation id="6019566113895157499">Ստեղնաշարային դյուրանցումներ</translation>
 <translation id="602001110135236999">Ոլորել ձախ</translation>
+<translation id="6020147141355393792">Կարգավորել հեռախոսի ծանուցումների և հավելվածների դիտումը</translation>
 <translation id="6022924867608035986">Մաքրել որոնման դաշտի տեքստը</translation>
 <translation id="602472752137106327">Բոլոր աշխատասեղանների պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
@@ -1346,6 +1362,7 @@
 <translation id="6612889377159412215">ենթաառաջադրանք</translation>
 <translation id="6613765291890844037">Օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" /> տարածք | Ընդհանուր տարածքը՝ <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>
+<translation id="6622679827379792051">Կարգավորել հեռախոսի հավելվածների դիտումը</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> և այլ հավելվածների ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6627638273713273709">Որոնում+Shift+K</translation>
 <translation id="662830937908749204">Անցնել հաջորդ փեղկին</translation>
@@ -1364,6 +1381,7 @@
 <translation id="6671661918848783005">Չհաջողվեց ապակողպել Chromebook-ը</translation>
 <translation id="6682029141988159141">Տեղադրել սեղմատախտակի բովանդակությունը</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>
+<translation id="6686023075541098243">Կարգավորել հեռախոսի ծանուցումների դիտումը</translation>
 <translation id="6696025732084565524">Անհրաժեշտ է թարմացնել արտաքին ստեղնաշարը</translation>
 <translation id="6700713906295497288">IME ընտրացանկի կոճակ</translation>
 <translation id="6707693040195709527">Օպերացիոն համակարգի նախորդ տարբերակին անցնելու ժամանակը լրացել է</translation>
@@ -1559,6 +1577,7 @@
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
 <translation id="7567950130372125778">Ողջո՛ւյն։ Chromebook-ը մի փոքր տարբեր է։</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
+<translation id="7569886975397378678">Բաց թողնել հեռախոսի ծանուցումների և հավելվածների դիտման կարգավորումը</translation>
 <translation id="7571361473021531288">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Մնացել է <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Ակտիվ պատուհանն ամրացված է աջ կողմում։</translation>
 <translation id="7579778809502851308">Էկրանի լուսանկարում</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
+<translation id="1333745675627230582">Chrome Dino ゲームをプレイ</translation>
 <translation id="1352919863522755794">Google パスワード マネージャーでパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="1462727070346936664">Chrome を最大限に活用するにはログインしてください。</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
@@ -68,7 +69,6 @@
 <translation id="417201473131094001">Chrome Canary ではサポートされていません</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> は Chrome を使用しており、ブックマークやパスワードなどの設定がこのデバイスに残っています。</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
-<translation id="4463378960278646000">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。管理者は特定の機能を設定または制限できます。</translation>
 <translation id="4508370294876102450">他のアプリから Chrome を開く</translation>
 <translation id="4523886039239821078">アドオンが原因でChromeがクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="4633328489441962921">Chrome でアップデートを確認できません</translation>

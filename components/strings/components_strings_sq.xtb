@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Qelq (me ngjyra)</translation>
 <translation id="1074497978438210769">Jo i sigurt</translation>
 <translation id="1075079914415273530">Agrikultura dhe pylltaria</translation>
+<translation id="1075364221219156102">Përdor një çelës kalimi</translation>
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
 <translation id="1089439967362294234">Ndrysho fjalëkalimin</translation>
@@ -1489,7 +1490,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4151403195736952345">Përdor parazgjedhjen globale (zbulo)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Faqja 1}other{Faqja {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome tani do të verifikojë që je ti para se të plotësojë mënyrat e pagesës. Mund ta përditësosh këtë në çdo kohë te <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Gjurmë gishtash</translation>
 <translation id="4159149286839604525">Kjo do të thotë që shumica e veçorive të sajtit do të punojnë, por do të kesh më pak mbrojtje</translation>
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
@@ -2008,7 +2008,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5201306358585911203">Një faqe e integruar në këtë faqe thotë</translation>
 <translation id="5205222826937269299">Emri është i detyrueshëm</translation>
 <translation id="5206392433295093945">Dhoma e gjumit</translation>
-<translation id="5209518306177824490">Gjurma e gishtit SHA-1</translation>
 <translation id="5209670883520018268">Tabakaja 20</translation>
 <translation id="521659676233207110">Tabakaja 13</translation>
 <translation id="5216942107514965959">Vizituar për herë të fundit sot</translation>
@@ -2973,7 +2972,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7236417832106250253">Përfunduar: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Dhurata dhe artikuj për ngjarje të veçanta</translation>
 <translation id="7237492777898608035">Mos e shfaq më këtë mesazh për këtë sajt</translation>
-<translation id="7238585580608191973">Gjurma e gishtit SHA-256</translation>
 <translation id="7240120331469437312">Emri alternativ i subjektit të certifikatës</translation>
 <translation id="7241863998525879494">Çfarë mund të presësh</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3135,6 +3133,7 @@ Detaje shtesë:
 <translation id="7554475479213504905">Ringarkoje dhe shfaqe gjithsesi</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
 <translation id="7555777498260651025">Shfaqjet televizive për familje</translation>
+<translation id="7556328470713619625">Përdor një çelës kalimi</translation>
 <translation id="7559278538486662777">Përmasat e këtij aplikacioni nuk mund të ndryshohen.</translation>
 <translation id="7561784249784255101">Disk dixhital i gjithanshëm</translation>
 <translation id="7564049878696755256">Mund të ndodhë që të humbësh qasjen në llogarinë tënde të <ph name="ORG_NAME" /> ose mund të pësosh vjedhje të identitetit. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
@@ -3303,7 +3302,6 @@ Detaje shtesë:
 <translation id="7888575728750733395">Synimi i paraqitjes për printimin</translation>
 <translation id="7894280532028510793">Nëse nuk ka ndonjë gabim drejtshkrimor, <ph name="BEGIN_LINK" />provo të ekzekutosh "Diagnostikimin e rrjetit"<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Zarf 7 x 9 inç</translation>
-<translation id="7904652607559432654">Koleksioni i blerjeve</translation>
 <translation id="7916162853251942238">Baza fleksografike</translation>
 <translation id="7927971017714848357">Trojet dhe tokat</translation>
 <translation id="793209273132572360">Të përditësohet adresa?</translation>

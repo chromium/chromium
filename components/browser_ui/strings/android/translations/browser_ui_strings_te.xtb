@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">మీ పరికరంలో డేటాను సేవ్ చేయడానికి సైట్‌ను అనుమతించండి</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1384959399684842514">డౌన్‌లోడ్ పాజ్ చేయబడింది</translation>
-<translation id="1409426117486808224">తెరిచిన ట్యాబ్‌ల కోసం సరళమైన వీక్షణ</translation>
 <translation id="1415402041810619267">URL కుదించబడింది</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1446450296470737166">MIDI పరికరాల పూర్తి నియం. అనుమ.</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Android సెట్టింగ్‌లలో ఆఫ్ చేయబడింది</translation>
 <translation id="7016516562562142042">ప్రస్తుత సెర్చ్ ఇంజిన్‌కు అనుమతించబడింది</translation>
 <translation id="702275896380648118">ఈ సైట్ మీకు నచ్చిన అంశాలను నిర్ణయించి, ఆపై ఇతర సైట్‌లకు యాడ్‌లను సూచిస్తుంది. మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ యాడ్ టాపిక్‌లను Chrome నుండి కూడా పొందుతుంది.</translation>
-<translation id="702463548815491781">TalkBack లేదా స్విచ్ యాక్సెస్ ఆన్‌లో ఉన్నప్పుడు సిఫార్సు చేయబడింది</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ఎంచుకోబడింది}other{# ఎంచుకోబడ్డాయి}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ఎంచుకోబడ్డాయి.  ఎంపికలు స్క్రీన్ పైభాగానికి సమీపంలో అందుబాటులో ఉన్నాయి</translation>

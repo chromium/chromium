@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Verre (coloré)</translation>
 <translation id="1074497978438210769">Pas sécuritaire</translation>
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
+<translation id="1075364221219156102">Utiliser une clé d'accès</translation>
 <translation id="1080116354587839789">Adapter à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
@@ -1470,7 +1471,6 @@
 <translation id="4151403195736952345">Paramètres par défaut (Détecter)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome va maintenant vérifier qu'il s'agit bien de vous avant de renseigner les modes de paiement. Vous pouvez le mettre à jour à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Empreintes</translation>
 <translation id="4159149286839604525">Cela signifie que la plupart des fonctionnalités du site devraient fonctionner, mais vous avez moins de protection</translation>
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -1989,7 +1989,6 @@
 <translation id="5201306358585911203">Une page intégrée de cette page indique</translation>
 <translation id="5205222826937269299">Vous devez indiquer un nom</translation>
 <translation id="5206392433295093945">Chambre</translation>
-<translation id="5209518306177824490">Empreinte SHA-1</translation>
 <translation id="5209670883520018268">Bac 20</translation>
 <translation id="521659676233207110">Bac 13</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
@@ -2941,7 +2940,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % effectué | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Cadeaux et articles pour événements spéciaux</translation>
 <translation id="7237492777898608035">Ne plus afficher ce message pour ce site</translation>
-<translation id="7238585580608191973">Empreintes digitales SHA-256</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
 <translation id="7241863998525879494">À quoi vous attendre</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3102,6 +3100,7 @@ Détails supplémentaires :
 <translation id="7554475479213504905">Relancer et afficher malgré tout</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7555777498260651025">Émissions télévisées familiales</translation>
+<translation id="7556328470713619625">Utiliser une clé d'accès</translation>
 <translation id="7559278538486662777">Impossible de redimensionner cette application.</translation>
 <translation id="7561784249784255101">Disque numérique polyvalent</translation>
 <translation id="7564049878696755256">Vous risquez de perdre l'accès à votre compte <ph name="ORG_NAME" /> ou d'être victime d'un vol d'identité. Chrome recommande de modifier votre mot de passe maintenant.</translation>

@@ -83,6 +83,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar teléfono</translation>
 <translation id="1287002645302686982">Xa hai un escritorio co nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
+<translation id="1288276784862223576">Configurar a visualización do contido multimedia e das fotos recentes do teu teléfono</translation>
 <translation id="1289185460362160437">Volve o <ph name="COME_BACK_DAY_OF_WEEK" /> á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1290982764014248209">Mover <ph name="DRAGGED_APP" /> ao cartafol: <ph name="FOLDER_NAME" />.</translation>
@@ -139,6 +140,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1528259147807435347">Editouse durante a última semana</translation>
 <translation id="1536604384701784949">Para usar <ph name="USER_EMAIL_ADDRESS" />, primeiro debes pechar sesión en todas as contas. Se queres ir á pantalla anterior e pechar sesión, selecciona Cancelar. Despois, selecciona a hora para abrir a área de estado e escolle Pechar sesión. A continuación, inicia sesión de novo en <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
+<translation id="1545331255323159851">Consulta as notificacións, o contido multimedia e as fotos recentes do teu teléfono</translation>
 <translation id="1546492247443594934">Escritorio 2</translation>
 <translation id="1546930421365146760">Pídelle ao teu administrador que configure este dispositivo na consola de administración de Google</translation>
 <translation id="1549512626801247439">xestión do almacenamento</translation>
@@ -155,6 +157,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1592682369233288537">Seguinte escritorio: <ph name="NEXT_DESK_NAME" />. Usa Buscar + Espazo para activalo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + frecha abaixo</translation>
 <translation id="1604857178818051494">Pór en pausa o contido multimedia</translation>
+<translation id="1607312127821884567">Pechar a configuración de visualización das aplicacións do teu teléfono</translation>
 <translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -183,6 +186,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1731815243805539470">Cambia ao usuario anterior</translation>
 <translation id="1733996486177697563">Cambia do tema claro ao escuro, e viceversa. Mantén premido o escritorio e despois selecciona Estilo e fondo de pantalla.</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" detectable por dispositivos Bluetooth.</translation>
+<translation id="1737078180382804488">Pechar a configuración de visualización das notificacións do teu teléfono</translation>
 <translation id="174102739345480129">O marcador está desactivado.</translation>
 <translation id="1743570585616704562">Non se recoñece</translation>
 <translation id="1746730358044914197">O teu administrador configura os métodos de entrada.</translation>
@@ -198,6 +202,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Mostrando <ph name="NUM_SHOWN_ITEMS" /> de <ph name="NUM_TOTAL_ITEMS" /></translation>
+<translation id="178347895271755507">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="1815245884418711390">Activar ou desactivar a zona wifi. A zona wifi está desactivada.</translation>
@@ -354,6 +359,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2484513351006226581">Para cambiar o deseño de teclado, preme <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2487915095798731898">Unirse</translation>
 <translation id="2501920221385095727">Teclas presas</translation>
+<translation id="2504454902900101003">Pechar a configuración de visualización do contido multimedia, das notificacións, e das fotos recentes do teu teléfono</translation>
 <translation id="2509468283778169019">Bloqueo de maiúsculas activado</translation>
 <translation id="2514415433888497495">Deter <ph name="CAPTURE_MEDIUM" /> A función <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -525,6 +531,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
 <translation id="3265032511221679826">Queres activar o acceso á localización precisa?</translation>
 <translation id="3269597722229482060">Facer clic co botón dereito</translation>
+<translation id="3274634049061007184">Consulta as aplicacións do teu teléfono</translation>
 <translation id="3289364673986435196">Menú de acendido</translation>
 <translation id="3289544412142055976">As aplicación de Linux agora mesmo non son compatibles</translation>
 <translation id="3289674678944039601">Cargando cun adaptador</translation>
@@ -592,6 +599,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Aplicacións no andel</translation>
 <translation id="3539957339480430241">Zona wifi de <ph name="DEVICE_NAME" /></translation>
+<translation id="3540893133818942399">Pechar a configuración de visualización do contido multimedia e das fotos recentes do teu teléfono</translation>
 <translation id="3542066395059568317">Recibirás recomendacións para poder continuar coas túas actividades desde onde as deixaches. Podes facer clic co botón dereito para quitar as recomendacións.</translation>
 <translation id="3552189655002856821">A wifi está desactivada</translation>
 <translation id="3554215588514239132">Mostrar ou ocultar panel de ferramentas para programadores</translation>
@@ -606,6 +614,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3576141592585647168">Cambiar fuso horario</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3580650856351781466">Descargando ficheiros de voz</translation>
+<translation id="3585296979871889131">Consulta o contido multimedia, as notificacións, as aplicacións e as fotos recentes do teu teléfono</translation>
 <translation id="3593039967545720377">Para acceder ao historial do teu portapapeis, preme <ph name="SHORTCUT_KEY_NAME" /> + V. Copia un elemento para comezar.</translation>
 <translation id="3593646411856133110">Pasa o dedo cara arriba e mantén premida a pantalla para ver as aplicacións abertas</translation>
 <translation id="3595596368722241419">Batería completa</translation>
@@ -706,6 +715,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3953130726459169782">De momento, non hai ningunha tarefa completada.</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivar</translation>
+<translation id="3970324493235864154">Consulta as notificacións do teu teléfono</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">É posible que cargar a batería non sexa fiable.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
@@ -757,6 +767,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4185671786623711291">Mover ventá activa ao escritorio da dereita</translation>
 <translation id="4189826113259617332">Gardar todas as páxinas abertas da ventá actual como marcadores nun novo cartafol</translation>
 <translation id="4190143678693626113">Contesta rapidamente as mensaxes do teu teléfono desde o Chromebook para aforrar tempo</translation>
+<translation id="4190780880566297084">Pechar a configuración de visualización do contido multimedia, das aplicacións e das fotos recentes do teu teléfono</translation>
 <translation id="4192112279662688596">ou</translation>
 <translation id="4193857202545160520">Mostrar clics e teclas</translation>
 <translation id="4195579532193195633">Versión actual <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -795,6 +806,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4302592941791324970">Non dispoñible</translation>
 <translation id="4303223480529385476">Despregar área de estado</translation>
 <translation id="4305133312001648038">Restablecer nivel de zoom da páxina</translation>
+<translation id="4307713728991152670">Configurar a visualización do contido multimedia, das aplicacións e das fotos recentes do teu teléfono</translation>
 <translation id="4312840429157639164">Cámara axustada á esquina superior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="4316910396681052118">TODAS AS APLICACIÓNS</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -835,6 +847,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicacións non verificadas por Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos desincronizados</translation>
+<translation id="4485506555414638855">Pechar a configuración de visualización do contido multimedia, das notificacións, das aplicacións e das fotos recentes do teu teléfono</translation>
 <translation id="450584155212756404">Canle Dev</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4516212064498225455">Escritorio actual: <ph name="CURRENT_DESK_NAME" />. Usa Buscar + Espazo para abrir o menú Todos os escritorios.</translation>
@@ -852,6 +865,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4566144812051858745">Non me interesa recibir suxestións</translation>
+<translation id="4569753163207712681">Consulta o contido multimedia, as aplicacións e as fotos recentes do teu teléfono</translation>
 <translation id="4573176682887762361">"Escribe [palabra/frase]"</translation>
 <translation id="4577274620589681794">Acabouse o tempo · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Mostrar vistas previas</translation>
@@ -975,6 +989,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Se falas cando o micrófono estea desactivado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
+<translation id="5077416371682039027">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083035541015925118">control + alt + frecha arriba</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
@@ -1206,6 +1221,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6018164090099858612">Saíndo do modo de proxección</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">Desprazarse á esquerda</translation>
+<translation id="6020147141355393792">Configurar a visualización das notificacións e das aplicacións do teu teléfono</translation>
 <translation id="6022924867608035986">Borrar texto da caixa de busca</translation>
 <translation id="602472752137106327">Seleccionouse o botón de opción para mostrar as ventás de todos os escritorios</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
@@ -1348,6 +1364,7 @@ Nova instalación</translation>
 <translation id="6612889377159412215">subtarefa</translation>
 <translation id="6613765291890844037">Almacenamento: <ph name="STORAGE_IN_USE_SIZE" /> en uso | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>
+<translation id="6622679827379792051">Configurar a visualización das aplicacións do teu teléfono</translation>
 <translation id="6625718907317144388">Ocultáronse notificacións das aplicacións <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" />, ademais doutras, porque está activada a protección fronte a miróns</translation>
 <translation id="6627638273713273709">Buscar+Maiús+K</translation>
 <translation id="662830937908749204">Mover enfoque ao seguinte panel</translation>
@@ -1366,6 +1383,7 @@ Nova instalación</translation>
 <translation id="6671661918848783005">Non se puido desbloquear o Chromebook</translation>
 <translation id="6682029141988159141">Pega o contido do portapapeis</translation>
 <translation id="6683022854667115063">Auriculares</translation>
+<translation id="6686023075541098243">Configurar a visualización das notificacións do teu teléfono</translation>
 <translation id="6696025732084565524">É necesario instalar unha actualización esencial do teclado extraíble</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
 <translation id="6707693040195709527">Está pendente o cambio do dispositivo a unha versión anterior</translation>
@@ -1562,6 +1580,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
 <translation id="7567950130372125778">Ola! Chromebook é un pouco diferente.</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
+<translation id="7569886975397378678">Pechar a configuración de visualización das notificacións e das aplicacións do teu teléfono</translation>
 <translation id="7571361473021531288">Batería: <ph name="BATTERY_PERCENTAGE" /> % | Tempo restante: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Ventá activa fixada á dereita.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

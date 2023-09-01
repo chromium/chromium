@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">வண்ணக் கண்ணாடி</translation>
 <translation id="1074497978438210769">பாதுகாப்பற்றது</translation>
 <translation id="1075079914415273530">வேளாண்மை &amp; வனவியல்</translation>
+<translation id="1075364221219156102">கடவுச்சாவியைப் பயன்படுத்துங்கள்</translation>
 <translation id="1080116354587839789">அகலத்திற்குப் பொருத்து</translation>
 <translation id="1081061862829655580">டிரே 19</translation>
 <translation id="1089439967362294234">கடவுச்சொல்லை மாற்று</translation>
@@ -1485,7 +1486,6 @@
 <translation id="4151403195736952345">குளோபல் இயல்பைப் பயன்படுத்து (கண்டறிதல்)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{பக்கம் 1}other{பக்கம் {COUNT}}}</translation>
 <translation id="4154277373259957087">பேமெண்ட் முறைகளை நிரப்பும் முன் நீங்கள்தான் அதை நிரப்புகிறீர்கள் என்பதை Chrome இப்போது சரிபார்க்கும். <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> இல் இதை நீங்கள் எப்போது வேண்டுமானாலும் மாற்றலாம்.</translation>
-<translation id="4154664944169082762">விரல் அச்சுகள்</translation>
 <translation id="4159149286839604525">இதனால், பெரும்பாலான தள அம்சங்கள் நன்கு செயல்படும் என்றாலும் பாதுகாப்பு குறைந்துவிடும்</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4165986682804962316">இணையதள அமைப்புகள்</translation>
@@ -2004,7 +2004,6 @@
 <translation id="5201306358585911203">இந்தப் பக்கத்திலுள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
 <translation id="5205222826937269299">பெயர் தேவை</translation>
 <translation id="5206392433295093945">படுக்கை அறை</translation>
-<translation id="5209518306177824490">SHA-1 விரல்அச்சு</translation>
 <translation id="5209670883520018268">டிரே 20</translation>
 <translation id="521659676233207110">டிரே 13</translation>
 <translation id="5216942107514965959">கடைசியாகப் பார்த்தது: இன்று</translation>
@@ -2969,7 +2968,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% முடிந்தது | இன்னும் <ph name="ESTIMATED_REMAINING_TIME" /> உள்ளது</translation>
 <translation id="7237166092326447040">பரிசுகள் &amp; சிறப்பு நிகழ்வுக்கான பொருட்கள்</translation>
 <translation id="7237492777898608035">இந்தத் தளத்திற்கு இந்த மெசேஜை மீண்டும் காட்டாதே</translation>
-<translation id="7238585580608191973">SHA-256 விரல்அச்சு</translation>
 <translation id="7240120331469437312">சான்றிதழ் பொருள் மாற்றுப் பெயர்</translation>
 <translation id="7241863998525879494">என்ன எதிர்பார்க்கலாம்?</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3131,6 +3129,7 @@
 <translation id="7554475479213504905">பரவாயில்லை, ரெஃப்ரெஷ் செய்து காட்டு</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
 <translation id="7555777498260651025">குடும்பம் சார்ந்த டிவி ஷோக்கள்</translation>
+<translation id="7556328470713619625">கடவுச்சாவியைப் பயன்படுத்துங்கள்</translation>
 <translation id="7559278538486662777">இந்த ஆப்ஸின் சாளர அளவை மாற்ற முடியாது.</translation>
 <translation id="7561784249784255101">டிஜிட்டல் வெர்சடைல் டிஸ்க்</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும் அல்லது அடையாளத் திருட்டை எதிர்கொள்ளக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றும்படி Chrome பரிந்துரைக்கிறது.</translation>
@@ -3299,7 +3298,6 @@
 <translation id="7888575728750733395">அச்சு ரென்டரிங் இன்டென்ட்</translation>
 <translation id="7894280532028510793">எழுத்துப்பிழை இல்லையெனில் <ph name="BEGIN_LINK" />நெட்வொர்க் சரிபார்ப்பை இயக்கிப் பார்க்கவும்<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">என்வெலப் 7 x 9 இன்ச்</translation>
-<translation id="7904652607559432654">ஷாப்பிங் சேகரிப்பு</translation>
 <translation id="7916162853251942238">ஃபிளெக்ஸோ பேஸ்</translation>
 <translation id="7927971017714848357">பகுதியளவு நிலங்கள் &amp; நிலம்</translation>
 <translation id="793209273132572360">முகவரியை மாற்றவா?</translation>

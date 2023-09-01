@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">La contraseña se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Sigue usando los datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="1282031177488366470">Ayuda a mejorar las funciones y el rendimiento de Chrome</translation>
+<translation id="1333745675627230582">Jugar al juego del dinosaurio de Chrome</translation>
 <translation id="1352919863522755794">El Administrador de contraseñas de Google no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="1407843355326180937">Accede a este sitio y a Chrome para obtener tus favoritos y mucho más en todos tus dispositivos.</translation>
 <translation id="1462727070346936664">Para aprovechar Chrome al máximo, accede a tu cuenta.</translation>
@@ -22,6 +23,8 @@ Aspectos que debes tener en cuenta:
 
   • Si sincronizas el historial con tu Cuenta de Google, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
+<translation id="1675955119303651351">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
+        Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1733654336159102143">Bloquea el modo Incógnito cuando abandonas Chrome o cambias de app</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@ Aspectos que debes tener en cuenta:
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
 <translation id="2009224836393115614">Chrome no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="2056123005618757196">Realiza más tareas con una versión de Google Chrome más simple, segura y rápida que nunca.</translation>
+<translation id="2120238739383482109">Abre los favoritos de Chrome.</translation>
 <translation id="2147651015520127414">Chrome verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="2199719347983604670">Datos de Sincronización de Chrome</translation>
 <translation id="2339201583852607431">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
@@ -65,6 +69,7 @@ Aspectos que debes tener en cuenta:
 <translation id="3594076341410558780">Ocultar "Aprovecha Chrome al máximo"</translation>
 <translation id="3655656110921623717">Esto significa que Chrome solicitará el sitio móvil cada vez.</translation>
 <translation id="3720541637541300822">Bloquear las pestañas de incógnito cuando cierras Chrome</translation>
+<translation id="3741995255368156336">Abre la Lista de lectura de Chrome.</translation>
 <translation id="3827545470516145620">Recibes protección de seguridad estándar en este dispositivo</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
 <translation id="3901001113120561395">Aprovecha Chrome al máximo.</translation>
@@ -76,7 +81,6 @@ Aspectos que debes tener en cuenta:
 <translation id="417201473131094001">No es compatible con Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> usó Chrome y dejó favoritos, contraseñas y otros parámetros de configuración en este dispositivo.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
-<translation id="4463378960278646000">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="4508370294876102450">Abre Chrome desde cualquier app</translation>
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
 <translation id="4633328489441962921">Chrome no puede buscar actualizaciones</translation>
@@ -91,6 +95,7 @@ Aspectos que debes tener en cuenta:
 <translation id="4903674399067644695">En esta tarjeta, se muestran sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="5030102366287574140">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="5108659628347594808">Cómo mejorar Chrome</translation>
+<translation id="5112925986883715005">Ver la Lista de lectura de Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chrome.</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chrome.</translation>
@@ -154,6 +159,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="804638182476029347">Permite las notificaciones de Chrome para recibir alertas de descuentos</translation>
 <translation id="81358522153858150">Chrome ahora es compatible con las políticas del usuario de tus dispositivos administrados</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
+<translation id="8213758103105806860">Ver los favoritos de Chrome</translation>
 <translation id="8357607116237445042">Decide si quieres borrar o conservar los datos de Chrome que tienes almacenados en este dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>

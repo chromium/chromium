@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Vidro (colorido)</translation>
 <translation id="1074497978438210769">Não seguro</translation>
 <translation id="1075079914415273530">Agricultura e silvicultura</translation>
+<translation id="1075364221219156102">Usar uma chave de acesso</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1089439967362294234">Alterar senha</translation>
@@ -1491,7 +1492,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4151403195736952345">Usar padrão global (Detectar)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}one{Página {COUNT}}other{Página {COUNT}}}</translation>
 <translation id="4154277373259957087">O Chrome vai confirmar sua identidade antes de preencher as formas de pagamento. Você pode atualizar isso a qualquer momento nas <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Assinaturas digitais</translation>
 <translation id="4159149286839604525">Isso significa que a maioria dos recursos do site vai funcionar, mas você terá menos proteção</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
@@ -2010,7 +2010,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5201306358585911203">Uma página incorporada nesta página diz</translation>
 <translation id="5205222826937269299">Nome obrigatório</translation>
 <translation id="5206392433295093945">Quarto</translation>
-<translation id="5209518306177824490">Assinatura digital SHA-1</translation>
 <translation id="5209670883520018268">Bandeja 20</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoje</translation>
@@ -2976,7 +2975,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% concluído | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Presentes e itens para eventos especiais</translation>
 <translation id="7237492777898608035">Não mostrar esta mensagem novamente neste site</translation>
-<translation id="7238585580608191973">Assinatura digital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
 <translation id="7241863998525879494">O que esperar</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />, <ph name="SIGNIN_DATA" /></translation>
@@ -3138,6 +3136,7 @@ Mais detalhes:
 <translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7555777498260651025">Programas de TV voltados para a família</translation>
+<translation id="7556328470713619625">Usar uma chave de acesso</translation>
 <translation id="7559278538486662777">Não é possível redimensionar o app.</translation>
 <translation id="7561784249784255101">Disco versátil digital</translation>
 <translation id="7564049878696755256">Você pode perder o acesso à sua conta de <ph name="ORG_NAME" /> ou ter sua identidade roubada. O Chrome recomenda que sua senha seja alterada agora.</translation>
@@ -3306,7 +3305,6 @@ Mais detalhes:
 <translation id="7888575728750733395">Intent de renderização da impressão</translation>
 <translation id="7894280532028510793">Se o endereço estiver correto, <ph name="BEGIN_LINK" />tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope de 18 cm x 23 cm</translation>
-<translation id="7904652607559432654">Shopping – coleção</translation>
 <translation id="7916162853251942238">Flexográfica</translation>
 <translation id="7927971017714848357">Loteamentos e terrenos</translation>
 <translation id="793209273132572360">Atualizar endereço?</translation>
@@ -3354,7 +3352,7 @@ Mais detalhes:
 <translation id="8002230960325005199">Ver sites relacionados em uma nova guia</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
-<translation id="8009225694047762179">Gerenciar senha</translation>
+<translation id="8009225694047762179">Gerenciar senhas</translation>
 <translation id="8009843239480947060">10 x 11 pol.</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
 <translation id="8012647001091218357">Não foi possível contatar seus pais. Tente novamente.</translation>

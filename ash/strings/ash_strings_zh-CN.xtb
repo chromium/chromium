@@ -83,6 +83,7 @@
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
 <translation id="1285992161347843613">定位手机</translation>
 <translation id="1287002645302686982">已经存在名为“<ph name="DESK_TEMPLATE_NAME" />”的已保存桌面</translation>
+<translation id="1288276784862223576">设置查看手机中的近期照片和媒体内容</translation>
 <translation id="1289185460362160437">您需要等到<ph name="COME_BACK_DAY_OF_WEEK" /><ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1290982764014248209">将“<ph name="DRAGGED_APP" />”移至文件夹“<ph name="FOLDER_NAME" />”内。</translation>
@@ -139,6 +140,7 @@
 <translation id="1528259147807435347">过去一周内修改过</translation>
 <translation id="1536604384701784949">若要使用 <ph name="USER_EMAIL_ADDRESS" />，您需先退出所有账号。若要退出，请点击“取消”以返回。接着，选择屏幕右下角的时间以打开状态区并选择“退出”。然后，再次登录到 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大号鼠标光标</translation>
+<translation id="1545331255323159851">查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">请让您的管理员在 Google 管理控制台中设置此设备</translation>
 <translation id="1549512626801247439">存储空间管理</translation>
@@ -155,6 +157,7 @@
 <translation id="1592682369233288537">下一个桌面：<ph name="NEXT_DESK_NAME" />，使用搜索键 + 空格键即可启用。</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />键 + 向下键</translation>
 <translation id="1604857178818051494">暂停媒体</translation>
+<translation id="1607312127821884567">取消设置查看手机中的应用</translation>
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1620510694547887537">摄像头</translation>
@@ -183,6 +186,7 @@
 <translation id="1731815243805539470">切换到上一个用户</translation>
 <translation id="1733996486177697563">在深色主题和浅色主题之间切换。轻触并按住相应桌面，然后选择“壁纸和样式”。</translation>
 <translation id="1736898441010944794">“<ph name="NAME" />”对蓝牙设备可见。</translation>
+<translation id="1737078180382804488">取消设置查看手机中的通知</translation>
 <translation id="174102739345480129">标记工具已关闭。</translation>
 <translation id="1743570585616704562">无法识别</translation>
 <translation id="1746730358044914197">输入法是由您的管理员配置的。</translation>
@@ -198,6 +202,7 @@
 <translation id="1771761307086386028">向右滚动</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">当前显示 <ph name="NUM_SHOWN_ITEMS" /> 项，共 <ph name="NUM_TOTAL_ITEMS" /> 项</translation>
+<translation id="178347895271755507">设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="1815245884418711390">开启/关闭热点。热点已关闭。</translation>
@@ -354,6 +359,7 @@
 <translation id="2484513351006226581">按 <ph name="KEYBOARD_SHORTCUT" />键可切换键盘布局。</translation>
 <translation id="2487915095798731898">加入</translation>
 <translation id="2501920221385095727">粘滞键</translation>
+<translation id="2504454902900101003">取消设置查看手机中的近期照片、媒体内容和通知</translation>
 <translation id="2509468283778169019">CAPS LOCK 已打开</translation>
 <translation id="2514415433888497495">停用<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -525,6 +531,7 @@
 <translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
 <translation id="3265032511221679826">开启确切位置信息访问权限？</translation>
 <translation id="3269597722229482060">右键点击</translation>
+<translation id="3274634049061007184">查看手机中的应用</translation>
 <translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
@@ -592,6 +599,7 @@
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="3533126039236445965">任务栏中的应用</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 热点</translation>
+<translation id="3540893133818942399">取消设置查看手机中的近期照片和媒体内容</translation>
 <translation id="3542066395059568317">系统会显示建议项目，以便您继续使用上次打开的内容。您可以通过右键点击建议项目将其移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 处于关闭状态</translation>
 <translation id="3554215588514239132">显示或隐藏开发者工具面板</translation>
@@ -606,6 +614,7 @@
 <translation id="3576141592585647168">更改时区</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3580650856351781466">正在下载语音识别结果文件</translation>
+<translation id="3585296979871889131">查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="3593039967545720377">您只需按“<ph name="SHORTCUT_KEY_NAME" /> + V”打开剪贴板，便可访问剪贴板历史记录。首先，请复制一项内容。</translation>
 <translation id="3593646411856133110">向上滑动并按住屏幕可查看已打开的应用</translation>
 <translation id="3595596368722241419">电池已充满</translation>
@@ -705,6 +714,7 @@
 <translation id="3953130726459169782">尚未完成任何作业。</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3969043077941541451">已关闭</translation>
+<translation id="3970324493235864154">查看手机中的通知</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
@@ -756,6 +766,7 @@
 <translation id="4185671786623711291">将活动窗口移至右侧桌面</translation>
 <translation id="4189826113259617332">将当前窗口中所有打开的网页保存为书签，并放在新文件夹中</translation>
 <translation id="4190143678693626113">在 Chromebook 上快速回复手机短信，节省宝贵时间</translation>
+<translation id="4190780880566297084">取消设置查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4192112279662688596">或</translation>
 <translation id="4193857202545160520">显示点击操作和按键</translation>
 <translation id="4195579532193195633">当前版本为 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -794,6 +805,7 @@
 <translation id="4302592941791324970">不可用</translation>
 <translation id="4303223480529385476">展开状态区</translation>
 <translation id="4305133312001648038">重置网页的缩放级别</translation>
+<translation id="4307713728991152670">设置查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4312840429157639164">相机已对准右上角。与系统界面冲突。</translation>
 <translation id="4316910396681052118">所有应用</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -834,6 +846,7 @@
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
+<translation id="4485506555414638855">取消设置查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4516212064498225455">当前桌面：<ph name="CURRENT_DESK_NAME" />，使用搜索键 + 空格键即可打开“所有桌面”菜单。</translation>
@@ -851,6 +864,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4566144812051858745">对任何建议都不感兴趣</translation>
+<translation id="4569753163207712681">查看手机中的近期照片、媒体内容和应用</translation>
 <translation id="4573176682887762361">“输入 [字词/短语]”</translation>
 <translation id="4577274620589681794">时间到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">显示预览</translation>
@@ -974,6 +988,7 @@
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果您在静音状态下说话，会收到通知。音频只会留存在您的设备上。</translation>
+<translation id="5077416371682039027">设置查看手机中的近期照片、媒体内容、通知和应用</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上键</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
@@ -1205,6 +1220,7 @@
 <translation id="6018164090099858612">正在退出镜像模式</translation>
 <translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="602001110135236999">向左滚动</translation>
+<translation id="6020147141355393792">设置查看手机中的通知和应用</translation>
 <translation id="6022924867608035986">清除搜索框文字</translation>
 <translation id="602472752137106327">显示所有桌面中的窗口，已选中单选按钮</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
@@ -1347,6 +1363,7 @@
 <translation id="6612889377159412215">子任务</translation>
 <translation id="6613765291890844037">存储空间：已用 <ph name="STORAGE_IN_USE_SIZE" /> | 总共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
+<translation id="6622679827379792051">设置查看手机中的应用</translation>
 <translation id="6625718907317144388">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" />和其他通知</translation>
 <translation id="6627638273713273709">搜索键+Shift+K</translation>
 <translation id="662830937908749204">将焦点移到下一个窗格</translation>
@@ -1365,6 +1382,7 @@
 <translation id="6671661918848783005">无法解锁 Chromebook</translation>
 <translation id="6682029141988159141">粘贴剪贴板中的内容</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
+<translation id="6686023075541098243">设置查看手机中的通知</translation>
 <translation id="6696025732084565524">您的可拆卸式键盘需要安装一项重要更新</translation>
 <translation id="6700713906295497288">IME 菜单按钮</translation>
 <translation id="6707693040195709527">将设备回滚到上一个版本的截止日期已过</translation>
@@ -1558,6 +1576,7 @@
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
 <translation id="7567950130372125778">您好！Chromebook 有点小变化。</translation>
 <translation id="7569509451529460200">已启用盲文和 ChromeVox</translation>
+<translation id="7569886975397378678">取消设置查看手机中的通知和应用</translation>
 <translation id="7571361473021531288">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="7573585051776738856">将活动窗口停靠在右侧。</translation>
 <translation id="7579778809502851308">截取屏幕</translation>

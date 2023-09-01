@@ -412,10 +412,12 @@
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="3340938510625667914">Дії в Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
+<translation id="3365529507898144230">Зберегти у Фото</translation>
 <translation id="3371831930909698441">Доступний Перекладач. Параметри можна знайти внизу екрана</translation>
 <translation id="3377063233124932127">Тепер ваші збережені закладки, паролі тощо відображаються вгорі екрана.</translation>
 <translation id="3393920035788932672">Спливаючі вікна дозволені</translation>
 <translation id="3399930248910934354">Відкрити налаштування Chrome</translation>
+<translation id="3404232721752787413">Зберегти в Google Фото</translation>
 <translation id="3404744938087714423">Якщо вийти з облікового запису, синхронізацію буде вимкнено.</translation>
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 жовтня 2023 року</translation>
@@ -902,6 +904,7 @@
 <translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>
 <translation id="629730747756840877">Обліковий запис</translation>
+<translation id="630693926528731525">Не вдалося поділитися паролем. Перевірте інтернет-з’єднання й переконайтеся, що ви ввійшли в Chrome. Потім повторіть спробу.</translation>
 <translation id="6321526113093607004">Додати в закладки</translation>
 <translation id="6324669097367352121">Налаштування входу</translation>
 <translation id="6328337032497818759">Налаштувати меню</translation>

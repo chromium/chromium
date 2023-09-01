@@ -69,7 +69,6 @@
 <translation id="1298077576058087471">६०% सम्म डेटा बचत गर्नुहोस्, आजको समाचार पढ्नुहोस्</translation>
 <translation id="1303339473099049190">उक्त पासवर्ड फेला पार्न सकिएन। आफ्नो हिज्जेको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> बाट पठाइएको</translation>
-<translation id="1311657260431405215">यो QR कोड कुनै URL होइन: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">बुकमार्क सेभ गर्ने फ्लोका फोल्डरहरू स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="1327257854815634930">नेभिगेसनको इतिहास खोलियो</translation>
@@ -242,7 +241,6 @@
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
-<translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
@@ -269,7 +267,6 @@
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> इन्स्टल गरिँदै छ...</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङहरूका लागि <ph name="BEGIN_LINK" />सिंक तथा वैयक्तीकरण<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="2517113738956581680">पूर्ण आकारको पाना</translation>
-<translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="2527209463677295330">तपाईंले पेजमा भएका थप पाठहरू समावेश गर्नुभयो भने तपाईं अझ सान्दर्भिक परिणामहरू देख्न सक्नुहुन्छ</translation>
 <translation id="2527497042232966453">इन्कोग्निटो ट्याबहरू चयन गरिएका छन्</translation>
@@ -631,7 +628,6 @@
 <translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
 <translation id="4307992518367153382">आधारभूत</translation>
 <translation id="4320177379694898372">इन्टरनेट छैन</translation>
-<translation id="4321739720395210191">तपाईंको क्यामेरा खोल्न सकिएन। आफ्नो यन्त्र पुनः सुरु गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="433213510553688132">फलो गरिँदै छ…</translation>
 <translation id="4335835283689002019">Safe Browsing अफ छ</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
@@ -927,7 +923,6 @@
 <translation id="5822875253699806474">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक सेयर गर्नुहोस्</translation>
-<translation id="5834764604050996579">QR कोड स्क्यान गर्न Chrome लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">पज गरियो</translation>
 <translation id="5854512288214985237">तथ्याङ्क वा क्र्यास रिपोर्टहरू Google मा पठाइँदैन</translation>
@@ -1007,7 +1002,6 @@
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6294610283659775533">तपाईं उही Google खातामार्फत साइन इन गरिएका एउटा डिभाइसबाट अर्को डिभाइसमा ट्याबहरू पठाउन सक्नुहुन्छ</translation>
 <translation id="6295158916970320988">सबै साइटहरू</translation>
-<translation id="6297765934698848803">तपाईंको डिभाइसको व्यवस्थापन गर्ने सङ्गठनले तपाईंको डिभाइसको क्यामेरा निष्क्रिय पारेको छ।</translation>
 <translation id="6303969859164067831">साइन आउट गरी सिंक प्रक्रिया निष्क्रिय पार्नुहोस्</translation>
 <translation id="6312687380483398334">वेब एपहरू (मौन)</translation>
 <translation id="6316139424528454185">Android को संस्करण समर्थित छैन</translation>
@@ -1131,7 +1125,6 @@
 <translation id="6819199143469632133">तपाईं आफूले चलाइरहेका Google का सेवाहरू विभिन्न डिभाइसमा चलाउन चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6823561724060793716">तपाईं एड्रेस बारबाट पेजसम्बन्धी जानकारी खोलेर आफूले हेरिरहेको पेजसम्बन्धी थप जानकारी प्राप्त गर्न सक्नुहुन्छ</translation>
-<translation id="6824899148643461612"><ph name="TAB_TITLE" />, ट्याब, चयन गरियो</translation>
 <translation id="6828070228333235514">मूल्य ट्रयाक गर्ने सुविधा अफ गर्नुहोस्</translation>
 <translation id="6830728435402077660">सुरक्षित छैन</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
@@ -1171,7 +1164,6 @@
 <translation id="7020741890149022655">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हाल्नुहोस् <ph name="BEGIN_NEW" />नयाँ सुविधा<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउजरमा खाेल्नुहाेस्</translation>
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोर गरियो</translation>
-<translation id="7029390216614421513">QR कोड/बारकोडलाई यस फ्रेमभित्र पार्नुहोस्।</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030304022046916278">यो सुविधाले URL सुरक्षित छ कि छैन भनी जाँच गर्नका निम्ति URL हरू Safe Browsing मा पठाउँछ</translation>
 <translation id="7035701931849773472">अन्य विकल्पहरू</translation>
@@ -1194,7 +1186,6 @@
 <translation id="7140829094791862589">म्यानुअल तरिकाले क्रमबद्ध गरियोस्</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
-<translation id="7155317020660659215">QR कोड स्क्यान गर्न आफ्नो सेटिङ परिवर्तन गरी Chrome लाई तपाईंको क्यामेरा प्रयोग गर्न दिनुहोस्</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। सेटिङ खोल्छ।</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7177466738963138057">तपाईं सेटिङहरूमा पछि यो परिवर्तन गर्न सक्नुहुन्छ</translation>
@@ -1373,7 +1364,6 @@
 <translation id="7986497153528221272">पासवर्डहरू हेर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
 <translation id="7995059495660416932">सामग्री उपलब्ध भएपछि यहाँ देखिने छ</translation>
 <translation id="799576009106109668">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिएको हुनाले तपाईं छिटो ब्राउज गर्नु हुने छ</translation>
-<translation id="7998918019931843664">बन्द ट्याब पुन: खोल्नुहोस्</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8013372441983637696">यो यन्त्रबाट आफ्नो Chrome को डेटा पनि हटाउनुहोस्</translation>
 <translation id="8015452622527143194">पृष्ठमा रहेको सबै कुरालाई डिफल्ट आकारमा ल्याउनुहोस्</translation>
@@ -1535,7 +1525,6 @@
 <translation id="879027982257117598">उदाहरणका लागि, तपाईं लामो दूरीको दौडमा लगाइने जुत्ता बेच्ने कुनै साइटमा जानुभयो भने उक्त साइटले तपाईं म्याराथन दौडमा रुचि राख्नुहुन्छ भन्ने कुरा बुझ्न सक्छ। तपाईं पछि अर्कै साइटमा जानुभयो भने उक्त साइटले तपाईंलाई पहिलो साइटले सिफारिस गरेको दौडिँदा लगाइने जुत्ताको विज्ञापन देखाउन सक्छ।</translation>
 <translation id="8798449543960971550">पढिसकिएको</translation>
 <translation id="8803526663383843427">अन भएका बेला</translation>
-<translation id="8805097383171548551">QR कोड स्क्यान गर्न क्यामेरा भएको कुनै डिभाइस प्रयोग गर्नुहोस्।</translation>
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
 <translation id="8816556050903368450">लिंकसहित: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>

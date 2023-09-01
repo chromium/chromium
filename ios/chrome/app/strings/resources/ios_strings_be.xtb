@@ -412,10 +412,12 @@
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
 <translation id="3340938510625667914">Дзеянні ў Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладка захавана ва ўліковым запісе ({email}) у папцы "{title}"}one{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}few{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}many{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}other{Закладкі захаваны ва ўліковым запісе ({email}) у папцы "{title}"}}</translation>
+<translation id="3365529507898144230">Захаваць у Фота</translation>
 <translation id="3371831930909698441">Пераклад гатовы. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="3377063233124932127">Цяпер вашы захаваныя закладкі, паролі і іншае змесціва будуць паказвацца ўверсе.</translation>
 <translation id="3393920035788932672">Усплывальныя вокны дазволены</translation>
 <translation id="3399930248910934354">Адкрыць налады Chrome</translation>
+<translation id="3404232721752787413">Захаваць у Google Фота</translation>
 <translation id="3404744938087714423">Калі выйсці з уліковага запісу, сінхранізацыя будзе выключана.</translation>
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3416023309465857378">25 кастрычніка 2023 года</translation>
@@ -902,6 +904,7 @@
 <translation id="6289501276895392862">Вы адпісаліся ад канала "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
 <translation id="629730747756840877">Уліковы запіс</translation>
+<translation id="630693926528731525">Ваш пароль не быў абагулены. Праверце падключэнне да інтэрнэту і ўпэўніцеся, што вы ўвайшлі ў Chrome, а затым паўтарыце спробу.</translation>
 <translation id="6321526113093607004">Дадаць у Закладкі</translation>
 <translation id="6324669097367352121">Налады ўваходу</translation>
 <translation id="6328337032497818759">Наладжванне меню</translation>

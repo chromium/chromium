@@ -1491,7 +1491,6 @@
 <translation id="4151403195736952345">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (കണ്ടെത്തുക)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{പേജ് 1}other{പേജ് {COUNT}}}</translation>
 <translation id="4154277373259957087">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിന് മുമ്പ് ഇത് നിങ്ങളാണെന്ന് Chrome ഇപ്പോൾ പരിശോധിച്ചുറപ്പിക്കും. <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> എന്നതിൽ നിങ്ങൾക്ക് ഏതുസമയത്തും ഇത് അപ്ഡേറ്റ് ചെയ്യാം.</translation>
-<translation id="4154664944169082762">ഫിംഗര്‍‌പ്രിന്‍റുകള്‍‌</translation>
 <translation id="4159149286839604525">ഇത് അർത്ഥമാക്കുന്നത്, മിക്ക സൈറ്റ് ഫീച്ചറുകളും പ്രവർത്തിക്കും, എന്നാൽ നിങ്ങൾക്ക് സംരക്ഷണം കുറവായിരിക്കും എന്നാണ്</translation>
 <translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
@@ -2010,7 +2009,6 @@
 <translation id="5201306358585911203">ഈ പേജിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
 <translation id="5205222826937269299">പേര് ആവശ്യമാണ്</translation>
 <translation id="5206392433295093945">ബെഡ്‌റൂം</translation>
-<translation id="5209518306177824490">SHA-1 ഫിംഗര്‍‌പ്രിന്‍റ്</translation>
 <translation id="5209670883520018268">ട്രേ 20</translation>
 <translation id="521659676233207110">ട്രേ 13</translation>
 <translation id="5216942107514965959">അവസാനം സന്ദർശിച്ചത് ഇന്നാണ്</translation>
@@ -2976,7 +2974,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% പൂർത്തിയാക്കി | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">സമ്മാനങ്ങളും പ്രത്യേക ഇവന്റ് ഇനങ്ങളും</translation>
 <translation id="7237492777898608035">ഈ സൈറ്റിൽ വീണ്ടും ഈ സന്ദേശം കാണിക്കരുത്</translation>
-<translation id="7238585580608191973">SHA-256 ഫിംഗര്‍പ്രിന്‍റ്</translation>
 <translation id="7240120331469437312">സര്‍‌ട്ടിഫിക്കറ്റ് വിഷയേതര നാമം</translation>
 <translation id="7241863998525879494">എന്ത് പ്രതീക്ഷിക്കാം</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3305,7 +3302,6 @@
 <translation id="7888575728750733395">പ്രിന്റ് റെൻഡറിംഗ് ഇന്റന്റ്</translation>
 <translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 ഇഞ്ച്</translation>
-<translation id="7904652607559432654">ഷോപ്പിംഗ് ശേഖരം</translation>
 <translation id="7916162853251942238">ഫ്ലെക്‌സോ ബേസ്</translation>
 <translation id="7927971017714848357">ലോട്ടുകളും സ്ഥലങ്ങളും</translation>
 <translation id="793209273132572360">വിലാസം അപ്ഡേറ്റ് ചെയ്യണോ?</translation>

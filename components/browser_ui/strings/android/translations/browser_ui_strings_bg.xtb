@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Разрешаване на даден сайт да запазва данни на устройството ви</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
-<translation id="1409426117486808224">Опростен изглед на отворените раздели</translation>
 <translation id="1415402041810619267">URL адресът е съкратен</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Изключено от настройките на Android</translation>
 <translation id="7016516562562142042">Разрешено за текущата търсеща машина</translation>
 <translation id="702275896380648118">Този сайт определя какво харесвате и след това предлага реклами на други сайтове. Той също така получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами.</translation>
-<translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избран е 1}other{Избрани са #}}</translation>
 <translation id="7087918508125750058">Избрани: <ph name="ITEM_COUNT" />. Налице са опции близо до горната част на екрана</translation>

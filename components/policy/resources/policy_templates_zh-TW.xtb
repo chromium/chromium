@@ -2674,10 +2674,6 @@
       如果不設定這項政策，將無法使用系統 Proxy 服務。</translation>
 <translation id="334231891933432876">在使用者帳戶驗證狀態失效時立即將使用者登出</translation>
 <translation id="3345323903592385588">VM 設定在安裝程式中的顯示順序。如果指定多組 VM 設定，display_order 值最小的設定會顯示在清單頂端。預設值為零。</translation>
-<translation id="3348799281602260763">如果啟用這項政策，WebRTC 對等互連可降級至傳輸層安全標準 (TLS)/DTLS 通訊協定的過時版本 (DTLS 1.0、TLS 1.0 和 TLS 1.1)。
-      如果停用或不設定這項政策，系統會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
-
-      這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
 <translation id="3351835664671920945">輸入密碼時預設顯示標準鍵盤</translation>
 <translation id="3359186795130278362">啟用有限制的受管理訪客工作階段。</translation>
 <translation id="33592541385181121">不在產生的 Kerberos SPN 中納入通訊埠</translation>

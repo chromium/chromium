@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Permite que un sitio garde datos no teu dispositivo</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Pausouse a descarga</translation>
-<translation id="1409426117486808224">Vista simplificada de pestanas abertas</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="1446450296470737166">Permitir control disposit. MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Desactivouse na configuración de Android</translation>
 <translation id="7016516562562142042">Permitido para o motor de busca actual</translation>
 <translation id="702275896380648118">Este sitio determina o que che gusta e logo suxírelles anuncios a outros sitios. Este sitio tamén obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes.</translation>
-<translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hai opcións dispoñibles na parte superior da pantalla</translation>

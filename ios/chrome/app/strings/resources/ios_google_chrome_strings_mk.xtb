@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Продолжете да ги користите податоците од Chrome во вашата сметка на Google.</translation>
 <translation id="1282031177488366470">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
+<translation id="1333745675627230582">Пушти ја играта „Диносаурус на Chrome“</translation>
 <translation id="1352919863522755794">Google Password Manager не можеше да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="1407843355326180937">Најавете се на сајтов и Chrome ќе ги префрли вашите обележувачи и друго на сите ваши уреди.</translation>
 <translation id="1462727070346936664">Најавете се за да извадите максимум од Chrome.</translation>
@@ -22,6 +23,8 @@
 
   • ако ја синхронизирате вашата историја со вашата сметка на Google, метриката може да опфаќа податоци и за URL-адресите што ги отворате<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Ја имате најсилната безбедност на Chrome против штетни веб-сајтови</translation>
+<translation id="1675955119303651351">Некои од вашите податоци од Chrome сѐ уште не се зачувани во вашата сметка на Google.
+        Почекајте неколку минути пред да се одјавите. Ако се одјавите сега, податоциве ќе се избришат.</translation>
 <translation id="1682483655351012182">Синхронизирајте ги податоците од Chrome</translation>
 <translation id="1733654336159102143">Заклучете ги вашите картички „Инкогнито“ кога ќе го напуштите Chrome или ќе се префрлите на друга апликација.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@
 <translation id="1917964099031477364">Сметкава и сите незачувани податоци ќе се отстранат од Chrome и другите апликации на Google на уредов.</translation>
 <translation id="2009224836393115614">Chrome не може да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="2056123005618757196">Завршувајте повеќе работи со едноставниот, безбеден и побрз од кога било Google Chrome.</translation>
+<translation id="2120238739383482109">Ги отвора обележувачите на Chrome.</translation>
 <translation id="2147651015520127414">Chrome потврди дека <ph name="ISSUER" /> го издал сертификатот за веб-сајтов.</translation>
 <translation id="2199719347983604670">Податоци од „Синхронизација на Chrome“</translation>
 <translation id="2339201583852607431">Лозинката ќе се зачува во вашата сметка на Google (<ph name="EMAIL" />)</translation>
@@ -65,6 +69,7 @@
 <translation id="3594076341410558780">Скриј „Извлечете го максимумот од Chrome“</translation>
 <translation id="3655656110921623717">Ова значи дека Chrome ќе го бара сајтот за мобилен уред секој пат.</translation>
 <translation id="3720541637541300822">Заклучувај ги картичките „Инкогнито“ кога ќе го затворам Chrome</translation>
+<translation id="3741995255368156336">Го отвора „Списокот за читање“ на Chrome.</translation>
 <translation id="3827545470516145620">Добивате стандардна безбедносна заштита на уредов</translation>
 <translation id="384394811301901750">Google Chrome не може да ја користи камерата сега</translation>
 <translation id="3901001113120561395">Извлечете го максимумот од Chrome</translation>
@@ -76,7 +81,6 @@
 <translation id="417201473131094001">Не е поддржана на Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> користеше Chrome и остави обележувачи, лозинки и други поставки на уредов.</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
-<translation id="4463378960278646000">Вашата организација, <ph name="DOMAIN" />, управува со сметката на којашто се најавувате, а и со тоа како може да се користи Chrome. Вашиот администратор може да постави или да ограничи конкретни функции.</translation>
 <translation id="4508370294876102450">Отворете Chrome од која било апликација</translation>
 <translation id="4523886039239821078">Некои додатоци предизвикуваат пад на Chrome. Деинсталирајте:</translation>
 <translation id="4633328489441962921">Chrome не може да провери дали има ажурирања</translation>
@@ -91,6 +95,7 @@
 <translation id="4903674399067644695">Картичкава ви прикажува предлози за тоа како да го извлечете максимумот од Chrome.</translation>
 <translation id="5030102366287574140">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>
 <translation id="5108659628347594808">Подобрете го Chrome</translation>
+<translation id="5112925986883715005">Видете го „Списокот за читање“ на Chrome</translation>
 <translation id="5119391094379141756">Изберете Chrome</translation>
 <translation id="5162467219239570114">Chrome е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chrome.</translation>
 <translation id="5190139289262548459">Вашата организација, <ph name="DOMAIN" />, управува со сметката на којашто сте најавени, а и со тоа како се користи Chrome.</translation>
@@ -154,6 +159,7 @@
 <translation id="804638182476029347">Дозволете известувања за Chrome за да добивате известувања за намалувања на цените</translation>
 <translation id="81358522153858150">Chrome сега поддржува политики за корисници за вашата управувана сметка</translation>
 <translation id="8160472928944011082">Chrome не може да се ажурира</translation>
+<translation id="8213758103105806860">Видете ги обележувачите на Chrome</translation>
 <translation id="8357607116237445042">Дали сакате да ги избришете податоците од Chrome од уредов или да ги задржите?</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="840168496893712993">Некои додатоци предизвикуваат падови на Chrome. Обидете се да ги деинсталирате.</translation>

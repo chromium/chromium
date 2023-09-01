@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Saidil teie seadmesse andmete salvestamise lubamine</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1384959399684842514">Allalaadimine peatatud</translation>
-<translation id="1409426117486808224">Avatud vahelehtede lihtsustatud vaade</translation>
 <translation id="1415402041810619267">Lühendatud URL</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1446450296470737166">MIDI-seadm. täieliku juht. lub.</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Androidi seadetes välja lülitatud</translation>
 <translation id="7016516562562142042">Praeguse otsingumootori puhul lubatud</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
-<translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 on valitud}other{# on valitud}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> on valitud.  Valikud on saadaval ekraanikuva ülaosas</translation>

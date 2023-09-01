@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">ग्लास (रङ्गीन)</translation>
 <translation id="1074497978438210769">सुरक्षित छैन</translation>
 <translation id="1075079914415273530">कृषि तथा वन विज्ञान</translation>
+<translation id="1075364221219156102">कुनै पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="1080116354587839789">चौडाइमा फिट गर्नुहोस्</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
 <translation id="1089439967362294234">पासवर्ड परिवर्तन गर्नुहोस्</translation>
@@ -1103,6 +1104,7 @@
 <translation id="3340978935015468852">सेटिङहरू</translation>
 <translation id="3342018947887487892">तपाईंले यसपछि खोल्ने साइटले यो जानकारी (तपाईंका विज्ञापनका विषय वा तपाईंले खोलेका साइटले सिफारिस गरेका विज्ञापनहरू) माग्न सक्छ।</translation>
 <translation id="3342366525167526994">बडी आर्ट</translation>
+<translation id="3344167530090084176">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो कार्ड र सुरक्षा कोड डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="334438173029876234">स्केटबोर्डिङ उपकरण</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">प्रोक्सी सेटिङहरू परिवर्तन गर्नुहोस्...</translation>
@@ -1405,6 +1407,7 @@
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3963721102035795474">पाठक मोड:</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट }other{# साइटहरूबाट }}</translation>
+<translation id="3966044442021752214">उत्पादनको सुरक्षा</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> लाई ब्लक गरिएको छ।</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ले प्रदान गरेको पासकी</translation>
@@ -1487,7 +1490,6 @@
 <translation id="4151403195736952345">विश्वव्यापी डिफल्ट (पत्ता लगाउनुहोस्) प्रयोग गर्नुहोस्</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पृष्ठ १}other{पृष्ठ {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome ले अब भुक्तानी विधिसम्बन्धी जानकारी भर्नुअघि भुक्तानी गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने छ। तपाईं <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मा गई जुनसुकै बेला यो कुरा बदल्न सक्नुहुन्छ।</translation>
-<translation id="4154664944169082762">औँलाछापहरू</translation>
 <translation id="4159149286839604525">यसको अर्थ साइटका अधिकांश सुविधाहरूले काम गर्ने छन् तर सुरक्षाको स्तर कम हुने छ</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
@@ -2006,7 +2008,6 @@
 <translation id="5201306358585911203">यो पृष्ठमा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
 <translation id="5205222826937269299">नाम आवश्यक छ</translation>
 <translation id="5206392433295093945">सुत्ने कोठा</translation>
-<translation id="5209518306177824490">SHA-1 फिंगरप्रिन्ट</translation>
 <translation id="5209670883520018268">ट्रे २०</translation>
 <translation id="521659676233207110">ट्रे १३</translation>
 <translation id="5216942107514965959">पछिल्लो पटक आज खोलिएको</translation>
@@ -2972,7 +2973,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूरा भयो | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">उपहार र विशेष समारोहका सामग्रीहरू</translation>
 <translation id="7237492777898608035">यो साइटका हकमा यो सन्देश फेरि नदेखाइयोस्</translation>
-<translation id="7238585580608191973">SHA-256 अङ्गुठाछाप</translation>
 <translation id="7240120331469437312">प्रमाणपत्र विषय वैकल्पिक नाम</translation>
 <translation id="7241863998525879494">अपेक्षा गर्न सकिने कुराहरू</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3134,6 +3134,7 @@
 <translation id="7554475479213504905">जे भए पनि पुनः लोड गर्नुहोस् र देखाउनुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7555777498260651025">परिवार लक्षित टिभी सोहरू</translation>
+<translation id="7556328470713619625">कुनै पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="7559278538486662777">यो एपको आकार बदल्न मिल्दैन।</translation>
 <translation id="7561784249784255101">डिजिटल भर्सटाइल डिस्क</translation>
 <translation id="7564049878696755256">तपाईंले आफ्नो <ph name="ORG_NAME" /> खातामाथिको पहुँच गुमाउन सक्नुहुन्छ वा तपाईंको पहिचान चोरी हुन सक्छ। Chrome तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ।</translation>
@@ -3302,7 +3303,6 @@
 <translation id="7888575728750733395">प्रिन्टिङ रेन्डर गर्ने प्रक्रियाको उद्देश्य</translation>
 <translation id="7894280532028510793">हिज्जे सही छ भने <ph name="BEGIN_LINK" />'नेटवर्कका डाइगोन्स्टिक्स' चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">Envelope 7 x 9 in</translation>
-<translation id="7904652607559432654">Shopping सङ्ग्रह</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="7927971017714848357">प्लट तथा जग्गा</translation>
 <translation id="793209273132572360">ठेगाना बदल्ने हो?</translation>

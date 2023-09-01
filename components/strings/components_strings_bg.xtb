@@ -1107,6 +1107,7 @@
 <translation id="3340978935015468852">настройките</translation>
 <translation id="3342018947887487892">По-късно посетен от вас сайт може да поиска тази информация – рекламните ви теми или рекламите, предложени от сайтовете, които сте посетили.</translation>
 <translation id="3342366525167526994">Боди арт</translation>
+<translation id="3344167530090084176">За да платите по-бързо следващия път, запазете картата и кода за сигурност на устройството си</translation>
 <translation id="334438173029876234">Оборудване за скейтборд</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Промяна на настройките на прокси сървъра...</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3962859241508114581">Предишен запис</translation>
 <translation id="3963721102035795474">Режим за четене</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Няма}=1{От 1 сайт }other{От # сайта }}</translation>
+<translation id="3966044442021752214">Безопасност на продукта</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="3973234410852337861">Хостът <ph name="HOST_NAME" /> е блокиран</translation>
 <translation id="3983340834939868135">Ключ за достъп от <ph name="VENDOR_NAME" /></translation>
@@ -1490,7 +1492,6 @@
 <translation id="4151403195736952345">Използване на глобалната стандартна стойност (Откриване)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
-<translation id="4154664944169082762">Пръстови отпечатъци</translation>
 <translation id="4159149286839604525">Това означава, че повечето функции на сайта би трябвало да работят, но ще разполагате с по-ниско ниво на защита</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
@@ -2009,7 +2010,6 @@
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
 <translation id="5205222826937269299">Името е задължително</translation>
 <translation id="5206392433295093945">Спалня</translation>
-<translation id="5209518306177824490">Пръстов отпечатък SHA-1</translation>
 <translation id="5209670883520018268">Тава 20</translation>
 <translation id="521659676233207110">Тава 13</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
@@ -2975,7 +2975,6 @@
 <translation id="7236417832106250253">Завършено: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подаръци и предмети за специални събития</translation>
 <translation id="7237492777898608035">Съобщението да не се показва отново за този сайт</translation>
-<translation id="7238585580608191973">Пръстов отпечатък SHA-256</translation>
 <translation id="7240120331469437312">Алтернативно име на субекта на сертификата</translation>
 <translation id="7241863998525879494">Какво да очаквате</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3306,7 +3305,6 @@
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
-<translation id="7904652607559432654">Колекция за пазаруване</translation>
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="7927971017714848357">Парцели и земя</translation>
 <translation id="793209273132572360">Да се актуализира ли адресът?</translation>

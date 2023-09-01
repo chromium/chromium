@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Айнек (түстүү)</translation>
 <translation id="1074497978438210769">Коопсуз эмес</translation>
 <translation id="1075079914415273530">Айыл жана токой чарбасы</translation>
+<translation id="1075364221219156102">Киргизүүчү ачкычты колдонуу</translation>
 <translation id="1080116354587839789">Терезенин туурасына чактоо</translation>
 <translation id="1081061862829655580">19-түпкүч</translation>
 <translation id="1089439967362294234">Сызсөздү өзгөртүү</translation>
@@ -1488,7 +1489,6 @@
 <translation id="4151403195736952345">Глобалдык демейки (аныктоону) колдонуу</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
 <translation id="4154277373259957087">Эми Chrome төлөм ыкмаларын толтуруудан мурун сиз экениңизди текшерет. Муну каалаган убакта <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> бөлүмүнөн өзгөртө аласыз.</translation>
-<translation id="4154664944169082762">Манжа издери</translation>
 <translation id="4159149286839604525">Мында сайттын көптөгөн функциялары иштеши керек, бирок коопсуздугуңуз азыраак корголот</translation>
 <translation id="4159784952369912983">Кызгылт көгүш</translation>
 <translation id="4165986682804962316">Сайт параметрлери</translation>
@@ -2007,7 +2007,6 @@
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
 <translation id="5205222826937269299">Атын киргизиңиз</translation>
 <translation id="5206392433295093945">Уктоочу бөлмө</translation>
-<translation id="5209518306177824490">SHA-1 Манжа изи</translation>
 <translation id="5209670883520018268">20-түпкүч</translation>
 <translation id="521659676233207110">13-түпкүч</translation>
 <translation id="5216942107514965959">Бүгүн акыркы жолу кирген</translation>
@@ -2973,7 +2972,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% аткарылды | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Белектер жана өзгөчө иш-чараларга арналган нерселер</translation>
 <translation id="7237492777898608035">Бул билдирүү ушул сайтта экинчи көрсөтүлбөсүн</translation>
-<translation id="7238585580608191973">SHA-256 Манжа изи</translation>
 <translation id="7240120331469437312">Тастыктама темасынын кошумча аталышы</translation>
 <translation id="7241863998525879494">Кандай өзгөрүү болот</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3135,6 +3133,7 @@
 <translation id="7554475479213504905">Баары бир кайра жүктөп, көрсөтүү</translation>
 <translation id="7554791636758816595">Жаңы өтмөк</translation>
 <translation id="7555777498260651025">Үй-бүлөгө багытталган телекөрсөтүүлөр</translation>
+<translation id="7556328470713619625">Киргизүүчү ачкычты колдонуу</translation>
 <translation id="7559278538486662777">Бул колдонмонун өлчөмүн өзгөртүүгө болбойт.</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">Кимдир бирөө сиздин жеке дайындарыңызга же <ph name="ORG_NAME" /> аккаунтуңузга кирип алган окшойт. Chrome сырсөзүңүздү азыр өзгөртүүнү сунуштайт.</translation>
@@ -3303,7 +3302,6 @@
 <translation id="7888575728750733395">Басып чыгаруу аралыгы</translation>
 <translation id="7894280532028510793">Эгер туура жазылса, <ph name="BEGIN_LINK" />Тармактагы мүчүлүштүктөрдү аныктоону<ph name="END_LINK" /> иштетип көрүңүз.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюйм</translation>
-<translation id="7904652607559432654">Cоода жыйнагы</translation>
 <translation id="7916162853251942238">Флексо басып чыгаруу үчүн негиз</translation>
 <translation id="7927971017714848357">Жер жана участок</translation>
 <translation id="793209273132572360">Дарек жаңыртылсынбы?</translation>

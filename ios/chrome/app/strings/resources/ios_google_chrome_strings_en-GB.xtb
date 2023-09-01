@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">Your password will be saved to Google Password Manager for <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Keep using the Chrome data in your Google Account.</translation>
 <translation id="1282031177488366470">Help improve Chrome's features and performance</translation>
+<translation id="1333745675627230582">Play Chrome Dino Game</translation>
 <translation id="1352919863522755794">Google Password Manager couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="1407843355326180937">Sign in to this site and Chrome to get your bookmarks and more on all your devices.</translation>
 <translation id="1462727070346936664">Sign in to get the most out of Chrome.</translation>
@@ -12,6 +13,7 @@
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
 <translation id="1511320244449497906">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chrome.</translation>
+<translation id="1516692594929310090">Opens the Chrome Tab Grid.</translation>
 <translation id="1526327845902180576">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chrome better for people who use it the way you do.<ph name="END_INDENT" />
 
@@ -80,7 +82,6 @@ Things to consider:
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> was using Chrome and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
-<translation id="4463378960278646000">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="4508370294876102450">Open Chrome from any app</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
@@ -132,6 +133,7 @@ Things to consider:
 
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome couldn't check all passwords. Try again later.</translation>
+<translation id="6916015246697034114">Search with Voice in Chrome</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
@@ -148,6 +150,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7400722733683201933">About Google Chrome</translation>
 <translation id="7501046334262221972">To make Chrome your default browser, open Settings. Tap 'Default browser app', and then select Chrome.</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
+<translation id="7581063337314642333">Visit the Tab Grid in Chrome</translation>
 <translation id="7662994914830945754">To see your tabs from wherever you use Chrome, sign in and turn on sync</translation>
 <translation id="7669869107155339016">Go to Chrome settings</translation>
 <translation id="7693590760643069321">You can now use Chrome any time that you tap links in messages, documents and other apps.</translation>
@@ -155,10 +158,13 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="7754633291442704733">Your organisation <ph name="DOMAIN" /> will have access to your Chrome data, bookmarks, history, passwords and other settings that you store in this account. When you sign out, your data will be cleared from this device.  However, your data will remain stored in your managed Google Account and be available to your organisation. Your organisation can also set user policies specific to that account that can change the behaviour of Chrome.</translation>
 <translation id="7780154209050837198">To get the most out of Chrome, sign in to Chrome with your Google Account.</translation>
 <translation id="7855730255114109580">Google Chrome is up to date</translation>
+<translation id="7897703007638178753">See Chrome Recent Tabs</translation>
+<translation id="7925119591961387184">Select "Chrome."</translation>
 <translation id="8022947259858476807">Use Chrome by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="804638182476029347">Allow Chrome notifications to get price drop alerts</translation>
 <translation id="81358522153858150">Chrome now supports user policies for your managed account</translation>
 <translation id="8160472928944011082">Chrome can't update</translation>
+<translation id="8174679664544842874">Opens a New Tab in Chrome.</translation>
 <translation id="8213758103105806860">See Chrome bookmarks</translation>
 <translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
@@ -172,8 +178,10 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
   2. Tap the default browser app
   3. Select Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Tap "Chrome" then "Default Browser App."</translation>
 <translation id="8603022514504485810">Google Password Manager couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Stay safe with Google Chrome</translation>
+<translation id="8760668027640688122">Open New Tab in Chrome</translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>
 <translation id="8788269841521769222">You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL" /></translation>
@@ -183,6 +191,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Password Manager couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="8897749957032330183">Passwords are saved to Google Password Manager on this device.</translation>
+<translation id="8949681853939555434">Set Chrome as your default browser</translation>
 <translation id="8969290730818637510">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chrome better for people who use it the way that you do.<ph name="END_INDENT" />
 
@@ -194,4 +203,5 @@ Things to consider:
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
+<translation id="9181628561061032322">Opens the Chrome Recent Tabs.</translation>
 </translationbundle>

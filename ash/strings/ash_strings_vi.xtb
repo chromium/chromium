@@ -83,12 +83,14 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Tìm điện thoại</translation>
 <translation id="1287002645302686982">Đã tồn tại một không gian làm việc đã lưu có tên là <ph name="DESK_TEMPLATE_NAME" /></translation>
+<translation id="1288276784862223576">Thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1289185460362160437">Hãy quay lại vào <ph name="COME_BACK_DAY_OF_WEEK" /> lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1290982764014248209">Di chuyển <ph name="DRAGGED_APP" /> sang thư mục <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">Thiết bị USB-C (cổng bên trái)</translation>
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1293699935367580298">Thoát</translation>
+<translation id="1294046132466831888">Mở ứng dụng Khám phá</translation>
 <translation id="1294929383540927798">Thay đổi các mục cài đặt thông báo trên màn hình khóa</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ỨNG DỤNG ĐỀ XUẤT</translation>
@@ -139,6 +141,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1528259147807435347">Chỉnh sửa tuần trước</translation>
 <translation id="1536604384701784949">Để sử dụng <ph name="USER_EMAIL_ADDRESS" />, trước tiên bạn cần đăng xuất khỏi tất cả tài khoản. Để đăng xuất, hãy chọn Huỷ để quay lại. Tiếp theo, hãy chọn thời gian để mở khu vực trạng thái rồi chọn Đăng xuất. Sau đó, hãy đăng nhập lại vào <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
+<translation id="1545331255323159851">Xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1546930421365146760">Hãy yêu cầu quản trị viên thiết lập thiết bị này trong Bảng điều khiển dành cho quản trị viên của Google</translation>
 <translation id="1549512626801247439">quản lý bộ nhớ</translation>
@@ -155,6 +158,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1592682369233288537">Không gian làm việc tiếp theo: <ph name="NEXT_DESK_NAME" />, dùng tổ hợp phím Tìm kiếm + Phím cách để kích hoạt.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên xuống</translation>
 <translation id="1604857178818051494">Tạm dừng nội dung nghe nhìn</translation>
+<translation id="1607312127821884567">Loại bỏ việc thiết lập tính năng xem ứng dụng có trên điện thoại</translation>
 <translation id="1610778689852195798">"Huỷ"</translation>
 <translation id="1611993646327628135">Bật</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
@@ -183,6 +187,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1731815243805539470">Chuyển sang người dùng trước</translation>
 <translation id="1733996486177697563">Thay đổi giữa giao diện sáng và giao diện tối. Chạm và giữ vào màn hình rồi chọn Hình nền và phong cách.</translation>
 <translation id="1736898441010944794">Cho phép các thiết bị Bluetooth tìm thấy "<ph name="NAME" />".</translation>
+<translation id="1737078180382804488">Loại bỏ việc thiết lập tính năng xem thông báo có trên điện thoại</translation>
 <translation id="174102739345480129">Tính năng Đánh dấu đang tắt.</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
@@ -198,6 +203,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1771761307086386028">Cuộn sang phải</translation>
 <translation id="1774796056689732716">Lịch, <ph name="CURRENT_MONTH_YEAR" />, đang chọn <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Đang hiển thị <ph name="NUM_SHOWN_ITEMS" />/<ph name="NUM_TOTAL_ITEMS" /></translation>
+<translation id="178347895271755507">Thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="1815245884418711390">Bật/tắt điểm phát sóng. Điểm phát sóng đang tắt.</translation>
@@ -354,11 +360,13 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2484513351006226581">Hãy nhấn <ph name="KEYBOARD_SHORTCUT" /> để chuyển bố cục bàn phím.</translation>
 <translation id="2487915095798731898">Tham gia</translation>
 <translation id="2501920221385095727">Phím cố định</translation>
+<translation id="2504454902900101003">Loại bỏ việc thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="2509468283778169019">Đang bật CAPS LOCK</translation>
 <translation id="2514415433888497495">Dừng <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ở trạng thái <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Mở khoá cửa sổ</translation>
 <translation id="2528111225373402384">Cài đặt điểm phát sóng</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Bật hoặc tắt tính năng duyệt web có con nháy</translation>
 <translation id="2531025035050312891">thiết bị hoạt động chậm</translation>
 <translation id="2531107890083353124">Trong khi kéo thẻ, hãy nhấn phím <ph name="KEY_ONE" /></translation>
@@ -381,6 +389,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2612614436418177118">Di chuyển một biểu tượng ứng dụng trong lưới ứng dụng</translation>
 <translation id="2620016719323068571">Tìm kiếm <ph name="CATEGORY" />, tệp, ứng dụng, v.v...</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
+<translation id="2620900772667816510">Bluetooth có độ phân giải siêu cao</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="2624588537172718173">Âm thanh trên thiết bị và micrô</translation>
 <translation id="263399434338050016">"Chọn tất cả"</translation>
@@ -505,6 +514,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3161500364292033097">Đóng không gian làm việc và cửa sổ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> đang hạ cấp hệ điều hành trên thiết bị <ph name="DEVICE_TYPE" /> của bạn. Thiết bị của bạn sẽ được đặt lại và toàn bộ dữ liệu sẽ bị xoá.</translation>
 <translation id="3171170659304083361">Chế độ cài đặt phương thức nhập</translation>
+<translation id="3176221688814061633">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Hãy bật Bluetooth có độ phân giải siêu cao hoặc sử dụng micrô bên trong để có chất lượng âm thanh tốt hơn.</translation>
 <translation id="3181441307743005334">Quá trình khởi động có thể mất một chút thời gian</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Đã kết nối với một thiết bị}other{Đã kết nối với # thiết bị}}</translation>
 <translation id="320207200541803018">Hẹn giờ</translation>
@@ -525,6 +535,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3260969790895726815">Lời nói được xử lý trên thiết bị còn tính năng nhập bằng giọng nói hoạt động khi không có mạng, nhưng một số lệnh thoại sẽ không hoạt động.</translation>
 <translation id="3265032511221679826">Bật quyền truy cập vào thông tin vị trí chính xác?</translation>
 <translation id="3269597722229482060">Nhấp chuột phải</translation>
+<translation id="3274634049061007184">Xem ứng dụng có trên điện thoại</translation>
 <translation id="3289364673986435196">Trình đơn nguồn</translation>
 <translation id="3289544412142055976">Hiện không hỗ trợ ứng dụng Linux</translation>
 <translation id="3289674678944039601">Đang sạc qua bộ sạc</translation>
@@ -592,6 +603,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
 <translation id="3539957339480430241">Điểm phát sóng <ph name="DEVICE_NAME" /></translation>
+<translation id="3540893133818942399">Loại bỏ việc thiết lập tính năng xem nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="3542066395059568317">Bạn sẽ thấy các đề xuất để có thể tiếp tục từ nơi mình chưa xong. Bạn có thể nhấp chuột phải để xoá đề xuất.</translation>
 <translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3554215588514239132">Hiển thị hoặc ẩn bảng Công cụ cho nhà phát triển</translation>
@@ -606,6 +618,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3580650856351781466">Đang tải các tệp mã chuyển lời nói thành văn bản xuống</translation>
+<translation id="3585296979871889131">Xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="3593039967545720377">Truy cập vào nhật ký lưu dữ liệu vào bảng nhớ tạm bằng cách nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm của bạn. Hãy sao chép một mục để bắt đầu.</translation>
 <translation id="3593646411856133110">Vuốt lên và giữ để xem các ứng dụng đang mở</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
@@ -705,6 +718,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3953130726459169782">Chưa hoàn thành bài tập nào.</translation>
 <translation id="3962859241508114581">Bản nhạc trước</translation>
 <translation id="3969043077941541451">Đang tắt</translation>
+<translation id="3970324493235864154">Xem thông báo có trên điện thoại</translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="397726367135689299">Quá trình sạc pin có thể không ổn định.</translation>
 <translation id="3977512764614765090">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc.</translation>
@@ -756,6 +770,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4185671786623711291">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên phải</translation>
 <translation id="4189826113259617332">Lưu tất cả các trang đang mở trong cửa sổ hiện tại làm dấu trang trong một thư mục mới</translation>
 <translation id="4190143678693626113">Tiết kiệm thời gian nhờ nhanh chóng trả lời tin nhắn văn bản trên điện thoại bằng Chromebook</translation>
+<translation id="4190780880566297084">Loại bỏ việc thiết lập tính năng xem ứng dụng, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="4192112279662688596">Hoặc</translation>
 <translation id="4193857202545160520">Hiện thao tác nhấp và phím</translation>
 <translation id="4195579532193195633">Phiên bản hiện tại: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -794,6 +809,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4302592941791324970">Không dùng được</translation>
 <translation id="4303223480529385476">Mở rộng khu vực trạng thái</translation>
 <translation id="4305133312001648038">Đặt lại mức thu phóng trên trang</translation>
+<translation id="4307713728991152670">Thiết lập tính năng xem ứng dụng, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="4312840429157639164">Máy ảnh đang bám theo góc trên bên phải. Xung đột với khu vực hệ thống.</translation>
 <translation id="4316910396681052118">TẤT CẢ ỨNG DỤNG</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -834,6 +850,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4477892968187500306">Thiết bị này có thể chứa những ứng dụng mà Google chưa xác minh.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Thiết bị được hủy ghép nối</translation>
+<translation id="4485506555414638855">Loại bỏ việc thiết lập tính năng xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="450584155212756404">Kênh nhà phát triển</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4516212064498225455">Không gian làm việc hiện tại: <ph name="CURRENT_DESK_NAME" />, dùng tổ hợp phím Tìm kiếm + Phím cách để mở trình đơn Tất cả các không gian làm việc.</translation>
@@ -851,6 +868,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
 <translation id="4566144812051858745">Không quan tâm đến nội dung đề xuất</translation>
+<translation id="4569753163207712681">Xem ứng dụng, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="4573176682887762361">"Nhập [từ/cụm từ]"</translation>
 <translation id="4577274620589681794">Hết giờ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Hiển thị bản xem trước</translation>
@@ -974,6 +992,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5045550434625856497">Mật khẩu sai</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Bạn sẽ nhận được thông báo nếu bạn nói trong khi tắt tiếng. Thiết bị của bạn sẽ không truyền âm thanh đi.</translation>
+<translation id="5077416371682039027">Thiết lập tính năng xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5083035541015925118">ctrl + alt + mũi tên lên</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
@@ -1205,6 +1224,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6018164090099858612">Đang thoát chế độ phản chiếu</translation>
 <translation id="6019566113895157499">Phím tắt</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
+<translation id="6020147141355393792">Thiết lập tính năng xem thông báo và ứng dụng có trên điện thoại</translation>
 <translation id="6022924867608035986">Xóa văn bản trong hộp tìm kiếm</translation>
 <translation id="602472752137106327">Hiển thị cửa sổ từ tất cả không gian làm việc, đã chọn nút chọn</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
@@ -1347,6 +1367,7 @@ Mới cài đặt</translation>
 <translation id="6612889377159412215">việc phụ cần làm</translation>
 <translation id="6613765291890844037">Đang sử dụng <ph name="STORAGE_IN_USE_SIZE" /> dung lượng lưu trữ | Tổng cộng <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Màn hình bảo vệ quyền riêng tư đang bật</translation>
+<translation id="6622679827379792051">Thiết lập tính năng xem ứng dụng có trên điện thoại</translation>
 <translation id="6625718907317144388">Đã ẩn thông báo của <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> và các thông báo khác do đang bật chế độ chống nhìn lén</translation>
 <translation id="6627638273713273709">Tìm kiếm+Shift+K</translation>
 <translation id="662830937908749204">Di chuyển tiêu điểm đến ngăn tiếp theo</translation>
@@ -1365,6 +1386,7 @@ Mới cài đặt</translation>
 <translation id="6671661918848783005">Không thể mở khoá Chromebook của bạn</translation>
 <translation id="6682029141988159141">Dán nội dung trong bảng nhớ tạm</translation>
 <translation id="6683022854667115063">Tai nghe</translation>
+<translation id="6686023075541098243">Thiết lập tính năng xem thông báo có trên điện thoại</translation>
 <translation id="6696025732084565524">Bàn phím có thể tháo rời của bạn cần một bản cập nhật quan trọng</translation>
 <translation id="6700713906295497288">Nút menu IME</translation>
 <translation id="6707693040195709527">Việc hạ cấp hệ điều hành trên thiết bị về phiên bản trước đã quá hạn</translation>
@@ -1480,6 +1502,7 @@ Mới cài đặt</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
 <translation id="7219573373513695352">Chưa kết nối thiết bị nào</translation>
+<translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
 <translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7258828758145722155">Chỉnh sửa hôm qua</translation>
@@ -1505,6 +1528,7 @@ Mới cài đặt</translation>
 <translation id="7360036564632145207">Để tối ưu hóa hiệu suất, hãy tắt chế độ ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="736045644501761622">Cài đặt hình nền và phong cách</translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
+<translation id="7372069265635026568">Còn trống <ph name="AVAILABLE_MEMORY" /> trong tổng <ph name="TOTAL_MEMORY" /> bộ nhớ</translation>
 <translation id="737315737514430195">Điều này cho phép sử dụng micrô đối với tất cả ứng dụng và trang web có quyền sử dụng micrô</translation>
 <translation id="7377169924702866686">Caps Lock đang bật.</translation>
 <translation id="7377481913241237033">Kết nối bằng mã</translation>
@@ -1561,6 +1585,7 @@ Mới cài đặt</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7567950130372125778">Chào bạn, Chromebook mới có vài thay đổi nhỏ.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
+<translation id="7569886975397378678">Loại bỏ việc thiết lập tính năng xem thông báo và ứng dụng có trên điện thoại</translation>
 <translation id="7571361473021531288"><ph name="BATTERY_PERCENTAGE" />% pin | Còn <ph name="TIME" /></translation>
 <translation id="7573585051776738856">Cửa sổ đang hoạt động gắn phía bên phải.</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>
@@ -1833,6 +1858,7 @@ Mới cài đặt</translation>
 <translation id="8731487213223706745">Kết thúc lúc <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn</translation>
 <translation id="8735678380411481005">Màu đèn nền bàn phím</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Đang kích hoạt...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>

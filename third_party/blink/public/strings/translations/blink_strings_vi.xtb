@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Đã chuyển sang chế độ phản chiếu</translation>
 <translation id="2031987842108996681">Kênh đỏ</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' bị sử dụng sai vị trí trong '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">Giá trị tối thiểu (<ph name="MINIMUM" />) phải nhỏ hơn giá trị tối đa (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
 <translation id="2226276347425096477">Hãy cắt ngắn văn bản này thành <ph name="MAX_CHARACTERS" /> ký tự hoặc ít hơn (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
 <translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

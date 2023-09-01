@@ -412,10 +412,12 @@
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="3340938510625667914">Chrome अ‍ॅक्शन्स</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
+<translation id="3365529507898144230">Photos मध्ये सेव्ह करा</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
 <translation id="3377063233124932127">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी आता सर्वात वरती आहेत.</translation>
 <translation id="3393920035788932672">पॉप-अपला अनुमती</translation>
 <translation id="3399930248910934354">Chrome सेटिंग्ज उघडा</translation>
+<translation id="3404232721752787413">Google Photos मध्ये सेव्ह करा</translation>
 <translation id="3404744938087714423">साइन आउट केल्यामुळे सिंक करणे बंद होईल.</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">२५ ऑक्टोबर २०२३</translation>
@@ -656,6 +658,7 @@
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4854345657858711387">पासकोड सेट करा</translation>
 <translation id="4856498338299082007">तुमच्या Google खाते मध्ये</translation>
+<translation id="4856841893565072365">मेनू बार स्‍मार्टरीत्या क्रमाने लावा</translation>
 <translation id="4858786880085262208">शक्य असेल, तेव्हा HTTPS वर अपग्रेड करा. सुरक्षित साइट कदाचित सुरक्षित नसलेला आशय एम्बेड करू शकतात.</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
 <translation id="4872323082491632254">पासवर्ड तपासा</translation>
@@ -902,6 +905,7 @@
 <translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप
 करा.</translation>
 <translation id="629730747756840877">खाते</translation>
+<translation id="630693926528731525">तुमचा पासवर्ड शेअर केला नाही. तुमचे इंटरनेट कनेक्शन तपासा आणि तुम्ही Chrome मध्ये साइन इन केले असल्याची खात्री करा. त्यानंतर, पुन्हा प्रयत्न करा.</translation>
 <translation id="6321526113093607004">बुकमार्क मध्ये जोडा</translation>
 <translation id="6324669097367352121">साइन इन सेटिंग्ज</translation>
 <translation id="6328337032497818759">मेनू कस्टमाइझ करा</translation>

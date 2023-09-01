@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Сайтка түзмөгүңүзгө маалымат сактоого уруксат берүү</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1384959399684842514">Жүктөп алуу тындырылды</translation>
-<translation id="1409426117486808224">Ачык өтмөктөр үчүн жөнөкөйлөштүрүлгөн көрүнүш</translation>
 <translation id="1415402041810619267">URL кесилди</translation>
 <translation id="1426410128494586442">Ооба</translation>
 <translation id="1446450296470737166">MIDI түзмктрд толук көзмлд уркст</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Android Параметрлеринен өчүрүлгөн</translation>
 <translation id="7016516562562142042">Учурдагы издөө каражаты үчүн уруксат берилген</translation>
 <translation id="702275896380648118">Бул сайт сизге жаккан нерселерди аныктап, башка сайттарга жарнамаларды сунуштап турат. Ошондой эле, ал Сhrome'дон жарнама темаларыңыз тууралуу маалымат алып, сизге ылайыктуу жарнамаларды көрсөтүп турат.</translation>
-<translation id="702463548815491781">TalkBack же Switch Access функциялары күйүк кезде сунушталат</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 тандалды}other{# тандалды}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> тандалды.  Параметрлер экрандын жогору жагында берилген</translation>

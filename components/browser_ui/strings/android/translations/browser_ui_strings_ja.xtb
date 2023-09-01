@@ -19,7 +19,6 @@
 <translation id="1371239764779356792">サイトによるデバイスへのデータ保存を許可します</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
-<translation id="1409426117486808224">開いているタブの簡易表示</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
@@ -336,7 +335,6 @@
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="7016516562562142042">現在の検索エンジンに対して許可</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
-<translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>

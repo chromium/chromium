@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">允許特定網站將資料儲存到裝置</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
-<translation id="1409426117486808224">使用簡易檢視模式查看開啟的分頁</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1446450296470737166">允許完整控制 MIDI 裝置</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
 <translation id="7016516562562142042">允許目前的搜尋引擎存取位置資訊</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
-<translation id="702463548815491781">建議在 TalkBack 或切換控制功能開啟時使用</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>

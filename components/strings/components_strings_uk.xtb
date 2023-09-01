@@ -1107,6 +1107,7 @@
 <translation id="3340978935015468852">налаштування</translation>
 <translation id="3342018947887487892">Пізніше сайт, який ви відвідаєте, може запитати ваші теми оголошень або рекламу, пропоновану сайтами, які ви відкривали.</translation>
 <translation id="3342366525167526994">Боді-арт</translation>
+<translation id="3344167530090084176">Щоб наступного разу платити швидше, збережіть картку й код безпеки на пристрої</translation>
 <translation id="334438173029876234">Обладнання для катання на скейтборді</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3963721102035795474">Режим перегляду</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Немає}=1{З 1 сайту }one{З # сайту }few{З # сайтів }many{З # сайтів }other{З # сайту }}</translation>
+<translation id="3966044442021752214">Безпека продукту</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
 <translation id="3983340834939868135">Ключ доступу від постачальника "<ph name="VENDOR_NAME" />"</translation>
@@ -1490,7 +1492,6 @@
 <translation id="4151403195736952345">Використовувати загальне значення за умовчанням (визначати)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Сторінка 1}one{Сторінка {COUNT}}few{Сторінка {COUNT}}many{Сторінка {COUNT}}other{Сторінка {COUNT}}}</translation>
 <translation id="4154277373259957087">Тепер Chrome підтверджуватиме вашу особу, перш ніж заповнювати способи оплати. Ви будь-коли можете змінити це налаштування на сторінці <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Відбитки</translation>
 <translation id="4159149286839604525">Це означає, що більшість функцій сайту мають працювати, проте ви будете менш захищені</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
@@ -2009,7 +2010,6 @@
 <translation id="5201306358585911203">Повідомлення з вбудованої сторінки на цій сторінці</translation>
 <translation id="5205222826937269299">Укажіть ім’я</translation>
 <translation id="5206392433295093945">Спальня</translation>
-<translation id="5209518306177824490">Відбиток SHA-1</translation>
 <translation id="5209670883520018268">Лоток 20</translation>
 <translation id="521659676233207110">Лоток 13</translation>
 <translation id="5216942107514965959">Останнє відвідування: сьогодні</translation>
@@ -2975,7 +2975,6 @@
 <translation id="7236417832106250253">Виконано <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подарунки й атрибути особливих подій</translation>
 <translation id="7237492777898608035">Більше не показувати це повідомлення для цього сайту</translation>
-<translation id="7238585580608191973">Відбиток SHA-256</translation>
 <translation id="7240120331469437312">Альтернативне ім'я суб'єкта сертифіката</translation>
 <translation id="7241863998525879494">Чого слід очікувати</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3306,7 +3305,6 @@
 <translation id="7888575728750733395">Команда обробки друку</translation>
 <translation id="7894280532028510793">Якщо помилок немає, <ph name="BEGIN_LINK" />проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 7 x 9 дюймів</translation>
-<translation id="7904652607559432654">Колекція товарів</translation>
 <translation id="7916162853251942238">Флексографічна основа</translation>
 <translation id="7927971017714848357">Земельні ділянки</translation>
 <translation id="793209273132572360">Оновити адресу?</translation>

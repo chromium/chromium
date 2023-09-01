@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Шыны (түрлі түсті)</translation>
 <translation id="1074497978438210769">Қауіпсіз емес</translation>
 <translation id="1075079914415273530">Ауыл және орман шаруашылығы</translation>
+<translation id="1075364221219156102">Кіру кілтін пайдалану</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
 <translation id="1089439967362294234">Құпия сөзді өзгерту</translation>
@@ -1488,7 +1489,6 @@
 <translation id="4151403195736952345">Ғаламдық әдепкі мәнді пайдалану (анықтау)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
 <translation id="4154277373259957087">Chrome енді төлеу әдістерін толтырмас бұрын жеке басыңызды растайды. Мұны <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ішінде кез келген уақытта жаңартуға болады.</translation>
-<translation id="4154664944169082762">Саусақ іздері</translation>
 <translation id="4159149286839604525">Бұл сайт мүмкіндіктерінің көпшілігі жұмыс істеуі керек дегенді білдіреді, бірақ сізде қорғаныс аз.</translation>
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
@@ -2007,7 +2007,6 @@
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
 <translation id="5205222826937269299">Аты қажет</translation>
 <translation id="5206392433295093945">Жатын бөлме</translation>
-<translation id="5209518306177824490">SHA-1 саусақ ізі</translation>
 <translation id="5209670883520018268">20-науа</translation>
 <translation id="521659676233207110">13-науа</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>
@@ -2973,7 +2972,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% аяқталды | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Сыйлықтар және арнайы іс-шара элементтері</translation>
 <translation id="7237492777898608035">Бұл хабарды осы сайт үшін қайта көрсетпеу</translation>
-<translation id="7238585580608191973">SHA-256 саусақ ізі</translation>
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
 <translation id="7241863998525879494">Әрі қарай не болады</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3135,6 +3133,7 @@
 <translation id="7554475479213504905">Қайта жүктеу және бәрібір көрсету</translation>
 <translation id="7554791636758816595">Жаңа қойынды</translation>
 <translation id="7555777498260651025">Отбасылық телешоулар</translation>
+<translation id="7556328470713619625">Кіру кілтін пайдалану</translation>
 <translation id="7559278538486662777">Бұл қолданбаның өлшемі өзгертілмейді.</translation>
 <translation id="7561784249784255101">Цифрлық әмбебап диск</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
@@ -3303,7 +3302,6 @@
 <translation id="7888575728750733395">Басып шығарудың рендеринг мақсаты</translation>
 <translation id="7894280532028510793">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Network Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">178 x 229 мм хатқалта</translation>
-<translation id="7904652607559432654">Сатып алулар жинағы</translation>
 <translation id="7916162853251942238">Флексографиялық база</translation>
 <translation id="7927971017714848357">Жер телімдері</translation>
 <translation id="793209273132572360">Мекенжайды жаңарту керек пе?</translation>

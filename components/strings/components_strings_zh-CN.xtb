@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">玻璃（彩色）</translation>
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1075079914415273530">农业与林业</translation>
+<translation id="1075364221219156102">使用通行密钥</translation>
 <translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1081061862829655580">纸匣 19</translation>
 <translation id="1089439967362294234">更改密码</translation>
@@ -1485,7 +1486,6 @@
 <translation id="4151403195736952345">使用全局默认设置（检测）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 页}other{第 {COUNT} 页}}</translation>
 <translation id="4154277373259957087">现在，Chrome 会在填充付款方式之前验证是您本人在操作。您可以随时在“<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />”中更新这项设定。</translation>
-<translation id="4154664944169082762">指纹</translation>
 <translation id="4159149286839604525">这意味着大部分网站功能应该能正常运行，但您将采用较低级别的保护措施</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">网站设置</translation>
@@ -2004,7 +2004,6 @@
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
 <translation id="5205222826937269299">需要提供名称</translation>
 <translation id="5206392433295093945">卧室</translation>
-<translation id="5209518306177824490">SHA-1 指纹</translation>
 <translation id="5209670883520018268">纸匣 20</translation>
 <translation id="521659676233207110">纸匣 13</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
@@ -2969,7 +2968,6 @@
 <translation id="7236417832106250253">已完成 <ph name="PROGRESS_PERCENT" />% | 预计剩余时间：<ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">礼品与特殊活动用品</translation>
 <translation id="7237492777898608035">不再在此网站上显示此消息</translation>
-<translation id="7238585580608191973">SHA-256 指纹</translation>
 <translation id="7240120331469437312">证书主题背景的备用名称</translation>
 <translation id="7241863998525879494">内容概要</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />；<ph name="SIGNIN_DATA" /></translation>
@@ -3131,6 +3129,7 @@
 <translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7555777498260651025">面向家庭的电视节目</translation>
+<translation id="7556328470713619625">使用通行密钥</translation>
 <translation id="7559278538486662777">无法调整此应用的大小。</translation>
 <translation id="7561784249784255101">DVD</translation>
 <translation id="7564049878696755256">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 账号，或者身份信息遭到盗用。Chrome 建议您立即更改密码。</translation>
@@ -3299,7 +3298,6 @@
 <translation id="7888575728750733395">打印操作渲染方式</translation>
 <translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 英寸信封</translation>
-<translation id="7904652607559432654">购物集合</translation>
 <translation id="7916162853251942238">柔印底基</translation>
 <translation id="7927971017714848357">地块与土地</translation>
 <translation id="793209273132572360">更新地址？</translation>

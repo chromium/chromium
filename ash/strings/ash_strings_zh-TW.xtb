@@ -83,6 +83,7 @@
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">尋找手機</translation>
 <translation id="1287002645302686982">系統中已經有名稱為「<ph name="DESK_TEMPLATE_NAME" />」的桌面</translation>
+<translation id="1288276784862223576">配置以下設定：查看手機上最近的相片和媒體</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1290982764014248209">將「<ph name="DRAGGED_APP" />」移到「<ph name="FOLDER_NAME" />」資料夾。</translation>
@@ -139,6 +140,7 @@
 <translation id="1528259147807435347">過去一週編輯過</translation>
 <translation id="1536604384701784949">如要使用 <ph name="USER_EMAIL_ADDRESS" />，你必須先登出所有帳戶，做法是選擇 [取消] 返回上個頁面，然後選取時間來開啟狀態區，並且點選 [登出]。接著就能重新登入 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
+<translation id="1545331255323159851">查看手機上最近的相片、媒體和通知</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請與系統管理員聯絡，要求對方在 Google 管理控制台中設定這部裝置</translation>
 <translation id="1549512626801247439">儲存空間管理</translation>
@@ -155,6 +157,7 @@
 <translation id="1592682369233288537">下一個桌面：<ph name="NEXT_DESK_NAME" />，使用搜尋鍵 + 空格鍵即可啟用。</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + 向下鍵</translation>
 <translation id="1604857178818051494">暫停播放媒體</translation>
+<translation id="1607312127821884567">取消以下設定：查看手機的應用程式</translation>
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">攝影機</translation>
@@ -183,6 +186,7 @@
 <translation id="1731815243805539470">切換到前一位使用者</translation>
 <translation id="1733996486177697563">在深色和淺色主題之間切換。按住桌面，接著選取桌布和樣式。</translation>
 <translation id="1736898441010944794">「<ph name="NAME" />」可供藍牙裝置搜尋。</translation>
+<translation id="1737078180382804488">取消以下設定：查看手機的通知</translation>
 <translation id="174102739345480129">標記功能已關閉。</translation>
 <translation id="1743570585616704562">無法識別</translation>
 <translation id="1746730358044914197">輸入法是由你的管理員所設定。</translation>
@@ -198,6 +202,7 @@
 <translation id="1771761307086386028">向右捲動</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="1775598828170459419">目前顯示 <ph name="NUM_SHOWN_ITEMS" /> 個，共 <ph name="NUM_TOTAL_ITEMS" /> 個</translation>
+<translation id="178347895271755507">配置以下設定：查看手機上最近的相片、媒體和通知</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
 <translation id="1815245884418711390">切換無線基地台。無線基地台已關閉。</translation>
@@ -354,6 +359,7 @@
 <translation id="2484513351006226581">按下 <ph name="KEYBOARD_SHORTCUT" />可切換鍵盤配置。</translation>
 <translation id="2487915095798731898">加入</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
+<translation id="2504454902900101003">取消以下設定：查看手機上最近的相片、媒體和通知</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
 <translation id="2514415433888497495">停止<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -525,6 +531,7 @@
 <translation id="3260969790895726815">語音內容會在本機進行處理，語音輸入可離線運作，但部分語音指令無法使用。</translation>
 <translation id="3265032511221679826">要開啟精確位置存取權嗎？</translation>
 <translation id="3269597722229482060">按一下滑鼠右鍵</translation>
+<translation id="3274634049061007184">查看手機的應用程式</translation>
 <translation id="3289364673986435196">電源鍵選單</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
@@ -592,6 +599,7 @@
 <translation id="353086728817903341">已連線至 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">檔案櫃中的應用程式</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 無線基地台</translation>
+<translation id="3540893133818942399">取消以下設定：查看手機上最近的相片和媒體</translation>
 <translation id="3542066395059568317">系統會顯示建議項目，以便你繼續使用上次開啟的內容。只要在建議項目上按一下滑鼠右鍵即可移除。</translation>
 <translation id="3552189655002856821">Wi-Fi 已關閉</translation>
 <translation id="3554215588514239132">顯示或隱藏開發人員工具面板</translation>
@@ -606,6 +614,7 @@
 <translation id="3576141592585647168">變更時區</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3580650856351781466">正在下載語音檔案</translation>
+<translation id="3585296979871889131">查看手機上最近的相片、媒體、通知和應用程式</translation>
 <translation id="3593039967545720377">按下 <ph name="SHORTCUT_KEY_NAME" /> + V 鍵查看剪貼簿，藉此存取剪貼簿歷史記錄。複製任一項目即可開始。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
@@ -702,6 +711,7 @@
 <translation id="3953130726459169782">尚未完成任何作業。</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3969043077941541451">關閉</translation>
+<translation id="3970324493235864154">查看手機的通知</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="397726367135689299">電池充電過程可能不穩定。</translation>
 <translation id="3977512764614765090">電池電量：<ph name="PERCENTAGE" />% (充電中)。</translation>
@@ -753,6 +763,7 @@
 <translation id="4185671786623711291">將使用中的視窗移至右側桌面</translation>
 <translation id="4189826113259617332">將目前視窗中所有開啟的網頁儲存為書籤，並放在新資料夾中</translation>
 <translation id="4190143678693626113">透過 Chromebook 快速回覆手機簡訊，節省寶貴時間</translation>
+<translation id="4190780880566297084">取消以下設定：查看手機上最近的相片、媒體和應用程式</translation>
 <translation id="4192112279662688596">或</translation>
 <translation id="4193857202545160520">顯示點擊次數和鍵盤快速鍵</translation>
 <translation id="4195579532193195633">目前版本 <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
@@ -791,6 +802,7 @@
 <translation id="4302592941791324970">無法使用</translation>
 <translation id="4303223480529385476">展開狀態區</translation>
 <translation id="4305133312001648038">重設網頁的縮放比例</translation>
+<translation id="4307713728991152670">配置以下設定：查看手機上最近的相片、媒體和應用程式</translation>
 <translation id="4312840429157639164">攝影機已對齊右上角，與系統平台發生衝突。</translation>
 <translation id="4316910396681052118">所有應用程式</translation>
 <translation id="4321179778687042513">Ctrl</translation>
@@ -831,6 +843,7 @@
 <translation id="4477892968187500306">這個裝置可能包含尚未經 Google 驗證的應用程式。</translation>
 <translation id="4479639480957787382">乙太網路</translation>
 <translation id="4481530544597605423">解除配對的裝置</translation>
+<translation id="4485506555414638855">取消以下設定：查看手機上最近的相片、媒體、通知和應用程式</translation>
 <translation id="450584155212756404">開發人員版</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4516212064498225455">目前的桌面：<ph name="CURRENT_DESK_NAME" />，使用搜尋鍵 + 空格鍵即可開啟所有桌面選單。</translation>
@@ -848,6 +861,7 @@
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">隱藏密碼</translation>
 <translation id="4566144812051858745">對任何建議都不感興趣</translation>
+<translation id="4569753163207712681">查看手機上最近的相片、媒體和應用程式</translation>
 <translation id="4573176682887762361">「輸入 [文字/詞組]」</translation>
 <translation id="4577274620589681794">時間到 · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">顯示預覽</translation>
@@ -971,6 +985,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
+<translation id="5077416371682039027">配置以下設定：查看手機上最近的相片、媒體、通知和應用程式</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上鍵</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
@@ -1202,6 +1217,7 @@
 <translation id="6018164090099858612">退出鏡像模式</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="602001110135236999">向左捲動</translation>
+<translation id="6020147141355393792">配置以下設定：查看手機的通知和應用程式</translation>
 <translation id="6022924867608035986">清除搜尋框文字</translation>
 <translation id="602472752137106327">顯示所有桌面的視窗，已點選圓形按鈕</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
@@ -1343,6 +1359,7 @@
 <translation id="6612889377159412215">子工作</translation>
 <translation id="6613765291890844037">已使用 <ph name="STORAGE_IN_USE_SIZE" /> 的儲存空間 | 共 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">已啟用隱私保護畫面</translation>
+<translation id="6622679827379792051">配置以下設定：查看手機的應用程式</translation>
 <translation id="6625718907317144388">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" />、<ph name="APP_2_TITLE" /> 和其他應用程式的通知</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
 <translation id="662830937908749204">將焦點移至下一個窗格</translation>
@@ -1361,6 +1378,7 @@
 <translation id="6671661918848783005">無法解鎖 Chromebook</translation>
 <translation id="6682029141988159141">貼上剪貼簿中的內容</translation>
 <translation id="6683022854667115063">耳罩式耳機</translation>
+<translation id="6686023075541098243">配置以下設定：查看手機的通知</translation>
 <translation id="6696025732084565524">你的卸除式鍵盤需安裝重大更新</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
 <translation id="6707693040195709527">未在期限內將裝置復原為先前的版本</translation>
@@ -1557,6 +1575,7 @@
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
 <translation id="7567950130372125778">你好！Chromebook 的操作方式略有不同。</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>
+<translation id="7569886975397378678">取消以下設定：查看手機的通知和應用程式</translation>
 <translation id="7571361473021531288">電池電量：<ph name="BATTERY_PERCENTAGE" />% | 還可使用 <ph name="TIME" /></translation>
 <translation id="7573585051776738856">讓使用中的視窗固定在畫面右側。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>

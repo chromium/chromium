@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Payagan ang site na mag-save ang data sa iyong device</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1384959399684842514">Na-pause ang pag-download</translation>
-<translation id="1409426117486808224">Pinasimpleng view para sa mga bukas na tab</translation>
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="1446450296470737166">Payagan ganap na kontrol sa MIDI device</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Naka-off sa mga setting ng Android</translation>
 <translation id="7016516562562142042">Pinapayagan para sa kasalukuyang search engine</translation>
 <translation id="702275896380648118">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site. Kinukuha rin ng site na ito ang mga paksa ng ad mo mula sa Chrome para magpakita sa iyo ng higit pang kaugnay na ad.</translation>
-<translation id="702463548815491781">Inirerekomenda kapag naka-on ang TalkBack o Switch Access</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ang napili}one{# ang napili}other{# ang napili}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ang napili.  Available ang mga opsyon malapit sa itaas ng screen</translation>

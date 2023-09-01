@@ -814,7 +814,7 @@
 <translation id="1630768113285622200">重新啟動及繼續</translation>
 <translation id="1631503405579357839">色盲</translation>
 <translation id="1632278969378690607">搜尋鍵 + 按一下左鍵</translation>
-<translation id="1632293440289326475">開啟節能模式可延長電池續航力</translation>
+<translation id="1632293440289326475">開啟「省電模式」可延長電池壽命</translation>
 <translation id="1632756664321977232">裁剪工具</translation>
 <translation id="163309982320328737">初始字元寬度為全形</translation>
 <translation id="1633947793238301227">停用「Google 助理」</translation>
@@ -1285,7 +1285,7 @@
 <translation id="1988259784461813694">要求</translation>
 <translation id="1988733631391393183">在 ChromeVox 選單中顯示點字指令</translation>
 <translation id="1989112275319619282">瀏覽</translation>
-<translation id="1989601282983766341">管理應用程式通知、零打擾設定和應用程式標記</translation>
+<translation id="1989601282983766341">管理應用程式通知、「請勿騷擾」和應用程式徽章</translation>
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1990512225220753005">不要在此頁面顯示捷徑</translation>
@@ -5264,7 +5264,7 @@
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
-<translation id="5213658238771284310">啟動時還原工作階段</translation>
+<translation id="5213658238771284310">在啟動時還原工作階段</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5214639857958972833">建立咗「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
@@ -8446,7 +8446,7 @@
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援屏幕鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題背景：<ph name="EXTENSION_NAME" /></translation>
-<translation id="7819087895293765164">重新啟動後，繼續使用先前的應用程式、網站和已開啟的視窗</translation>
+<translation id="7819087895293765164">重新啟動後，繼續之前在應用程式、網站和已開啟的視窗中未完成的操作</translation>
 <translation id="7819605256207059717">已由機構封鎖</translation>
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="7820561748632634942">要指派其他按鈕裝置嗎？</translation>
@@ -8640,7 +8640,7 @@
 <translation id="7964458523224581615">鉻綠色</translation>
 <translation id="7966241909927244760">複製圖片位址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{書籤清單入面有 1 個項目}other{書籤清單入面有 {COUNT} 個項目}}</translation>
-<translation id="7967776604158229756">更多網頁應用程式設定和權限</translation>
+<translation id="7967776604158229756">更多網絡應用程式設定和權限</translation>
 <translation id="7968072247663421402">供應商選項</translation>
 <translation id="7968742106503422125">讀取和修改您複製並貼上的資料</translation>
 <translation id="7968833647796919681">啟用效能數據收集</translation>
@@ -9402,7 +9402,7 @@
 <translation id="8593450223647418235">設定完成後，您才能在 Microsoft 365 中開啟檔案。</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{已封鎖 1 個網站}other{已封鎖 # 個網站}}</translation>
 <translation id="8596540852772265699">自訂檔</translation>
-<translation id="8597462463725156723">畫面上不會彈出通知。你仍可點選畫面右下方的「零打擾」圖示查看通知。</translation>
+<translation id="8597462463725156723">系統將不會在畫面上彈出顯示通知。你仍可按一下畫面右下方的「請勿騷擾」圖示來查看通知。</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請聯絡您的管理員</translation>
 <translation id="8599864823732014237">要跳過企業註冊嗎？</translation>
@@ -9522,7 +9522,7 @@
 <translation id="8680251145628383637">登入即可從任何裝置取得自己的書籤、記錄、密碼和其他設定。您亦會自動登入至各種 Google 服務。</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="8682730193597992579">已連接 <ph name="PRINTER_NAME" /> 並準備就緒</translation>
-<translation id="8685540043423825702">你的 Chrome 設定檔</translation>
+<translation id="8685540043423825702">你的 Chrome 個人檔案</translation>
 <translation id="8686142379631285985">以 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 的身份登入</translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">可用</translation>

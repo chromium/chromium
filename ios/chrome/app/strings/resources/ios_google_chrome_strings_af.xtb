@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">Jou wagwoord sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="1180362651362502943">Hou aan om die Chrome-data in jou Google-rekening te gebruik.</translation>
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
+<translation id="1333745675627230582">Speel Chrome Dino-speletjie</translation>
 <translation id="1352919863522755794">Google Wagwoordbestuurder kon nie jou wagwoorde nagaan nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1407843355326180937">Meld by hierdie werf en Chrome aan om jou boekmerke en meer op al jou toestelle te kry.</translation>
 <translation id="1462727070346936664">Meld aan om Chrome ten beste te benut.</translation>
@@ -22,6 +23,8 @@ Dinge om in ag te neem:
 
    • As jy jou geskiedenis met jou Google-rekening sinkroniseer, kan maatstawwe ook inligting insluit oor URL’e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Jy het Chrome se sterkste sekuriteit teen skadelike webwerwe</translation>
+<translation id="1675955119303651351">Sommige van jou Chrome-data is nog nie in jou Google-rekening gestoor nie.
+        Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="1682483655351012182">Sinkroniseer jou Chrome-data</translation>
 <translation id="1733654336159102143">Sluit jou Incognito wanneer jy Chrome verlaat of na ’n ander app toe oorskakel.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@ Dinge om in ag te neem:
 <translation id="1917964099031477364">Hierdie rekening en enige ongstoorde data sal uit Chrome en ander Google-programme op hierdie toestel verwyder word.</translation>
 <translation id="2009224836393115614">Chrome kon nie jou wagwoorde nagaan nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="2056123005618757196">Kry meer gedoen met 'n eenvoudige, veiliger Google Chrome wat vinniger as ooit vantevore is.</translation>
+<translation id="2120238739383482109">Maak die Chrome-boekmerke oop.</translation>
 <translation id="2147651015520127414">Chrome het geverifieer dat <ph name="ISSUER" /> hierdie webwerf se sertifikaat uitgereik het.</translation>
 <translation id="2199719347983604670">Data van Chrome-sinkronisering af</translation>
 <translation id="2339201583852607431">Jou wagwoord sal in jou Google-rekening (<ph name="EMAIL" />) gestoor word.</translation>
@@ -65,6 +69,7 @@ Dinge om in ag te neem:
 <translation id="3594076341410558780">Versteek “Benut Chrome ten beste”</translation>
 <translation id="3655656110921623717">Dit beteken dat Chrome elke keer die mobiele werf sal versoek.</translation>
 <translation id="3720541637541300822">Sluit Incognito-oortjies wanneer jy Chrome toemaak</translation>
+<translation id="3741995255368156336">Maak die Chrome-leeslys oop.</translation>
 <translation id="3827545470516145620">Jy kry tans standaardsekuriteitbeskerming op hierdie toestel</translation>
 <translation id="384394811301901750">Google Chrome kan nie jou kamera nou gebruik nie</translation>
 <translation id="3901001113120561395">Benut Chrome ten beste.</translation>
@@ -76,7 +81,6 @@ Dinge om in ag te neem:
 <translation id="417201473131094001">Nie gesteun op Chrome Kanarie nie</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> het Chrome gebruik en het boekmerke, wagwoorde en ander instellings op hierdie toestel gelos.</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
-<translation id="4463378960278646000">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aanmeld en hoe Chrome gebruik kan word. Jou administrateur kan sekere kenmerke opstel of beperk.</translation>
 <translation id="4508370294876102450">Maak Chrome uit enige app oop</translation>
 <translation id="4523886039239821078">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer:</translation>
 <translation id="4633328489441962921">Chrome kan nie vir opdaterings kyk nie</translation>
@@ -91,6 +95,7 @@ Dinge om in ag te neem:
 <translation id="4903674399067644695">Hierdie kaart wys vir jou voorstelle oor hoe jy Chrome ten beste kan benut.</translation>
 <translation id="5030102366287574140">Chrome kan help om jou teen dataskendings, onveilige webwerwe en meer te beskerm.</translation>
 <translation id="5108659628347594808">Maak Chrome beter</translation>
+<translation id="5112925986883715005">Sien Chrome-leeslys</translation>
 <translation id="5119391094379141756">Kies Chrome</translation>
 <translation id="5162467219239570114">Chrome is verouderd. As geen opdatering in die <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> beskikbaar is nie, is dit moontlik dat jou toestel nie meer nuwe weergawes van Chrome steun nie.</translation>
 <translation id="5190139289262548459">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aangemeld is en hoe Chrome gebruik word.</translation>
@@ -154,6 +159,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="804638182476029347">Laat Chrome-kennisgewings toe om prysverlagingopletberigte te kry</translation>
 <translation id="81358522153858150">Chrome steun nou gebruikerbeleide vir jou bestuurde rekening</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
+<translation id="8213758103105806860">Sien Chrome-boekmerke</translation>
 <translation id="8357607116237445042">Kies of jy jou Chrome-data van hierdie toestel wil verwyder, of dit wil hou</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840168496893712993">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer.</translation>

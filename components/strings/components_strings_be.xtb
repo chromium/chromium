@@ -1489,7 +1489,6 @@
 <translation id="4151403195736952345">Выкарыстоўваць глабальныя стандартныя налады (выяўляць)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Старонка 1}one{Старонка {COUNT}}few{Старонка {COUNT}}many{Старонка {COUNT}}other{Старонка {COUNT}}}</translation>
 <translation id="4154277373259957087">Цяпер Chrome уносіць даныя спосабаў аплаты толькі пасля спраўджання асобы. Калі вы хочаце змяніць гэтыя параметры, перайдзіце ў <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4159149286839604525">Гэта азначае, што большасць функцый сайта павінна працаваць, але ваша абароненасць будзе меншай</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
@@ -2008,7 +2007,6 @@
 <translation id="5201306358585911203">Убудаваная старонка на гэтай старонцы паведамляе</translation>
 <translation id="5205222826937269299">Увядзіце імя</translation>
 <translation id="5206392433295093945">Спальня</translation>
-<translation id="5209518306177824490">Лічбавы адбітак SHA-1:</translation>
 <translation id="5209670883520018268">Латок 20</translation>
 <translation id="521659676233207110">Латок 13</translation>
 <translation id="5216942107514965959">Апошняе наведванне: сёння</translation>
@@ -2974,7 +2972,6 @@
 <translation id="7236417832106250253">Завершана <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Падарункі і тавары для ўрачыстых падзей</translation>
 <translation id="7237492777898608035">Больш не паказваць гэта паведамленне для дадзенага сайта</translation>
-<translation id="7238585580608191973">Лічбавы адбітак SHA-256</translation>
 <translation id="7240120331469437312">Альтэрнатыўнае імя суб'екта сертыфіката</translation>
 <translation id="7241863998525879494">Што далей</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3306,7 +3303,6 @@
 <translation id="7888575728750733395">Намер візуалізацыі раздрукоўкі</translation>
 <translation id="7894280532028510793">Калі напісанне правільнае, <ph name="BEGIN_LINK" />паспрабуйце запусціць дыягностыку сеткі<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Канверт 7 x 9 цаляў</translation>
-<translation id="7904652607559432654">Калекцыя пакупак</translation>
 <translation id="7916162853251942238">Аснова для флексаграфічнага друку</translation>
 <translation id="7927971017714848357">Зямельныя ўчасткі</translation>
 <translation id="793209273132572360">Абнавіць адрас?</translation>

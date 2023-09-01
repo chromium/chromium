@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Eman zure gailuan datuak gordetzeko baimena webgune bati</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384959399684842514">Pausatu da deskarga</translation>
-<translation id="1409426117486808224">Irekitako fitxen ikuspegi sinplifikatua</translation>
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1426410128494586442">Bai</translation>
 <translation id="1446450296470737166">Onartu MIDI gailuen kontrol osoa</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Desaktibatuta dago Android-en ezarpenetan</translation>
 <translation id="7016516562562142042">Baimenduta dago oraingo bilatzailean</translation>
 <translation id="702275896380648118">Webguneak gustatzen zaizkizun gauzak zehazten ditu eta, gero, beste webguneei iragarkiak iradokitzen dizkie. Halaber, Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun.</translation>
-<translation id="702463548815491781">TalkBack edo Erabilerraztasun-osagarria aktibatuta daudenean gomendatua</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 hautatuta}other{# hautatuta}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> hautatu dira. Pantailaren goialdean daude aukera erabilgarriak.</translation>

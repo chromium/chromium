@@ -712,6 +712,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1563702743503072935">As senhas da sua Conta do Google também estarão disponíveis neste dispositivo enquanto ela estiver conectada</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não foi instalada corretamente. Verifique a impressora ou selecione outra.</translation>
+<translation id="1566329594234563241">Enquanto o dispositivo estiver inativo e conectado à energia</translation>
 <translation id="1567135437923613642">Ativar experimentos em destaque</translation>
 <translation id="1567387640189251553">Um teclado diferente foi conectado desde a última vez que você inseriu sua senha. Ele pode estar tentando capturar sua digitação.</translation>
 <translation id="156793199942386351">A tecla "<ph name="CURRENTKEY" />" já foi atribuída à ação "<ph name="ACTION" />". Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
@@ -804,6 +805,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1623723619460186680">Redução de luz azul</translation>
 <translation id="1624599281783425761">Você não verá <ph name="MERCHANT" /> novamente</translation>
 <translation id="1624863973697515675">Esse arquivo é grande demais para o dispositivo gerenciar. Tente fazer o download em outro dispositivo</translation>
+<translation id="1626581272720526544">É possível fazer o download de apps e jogos para Android pela Play Store. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Descritores de arquivos</translation>
 <translation id="1627408615528139100">Download já concluído</translation>
 <translation id="1628948239858170093">Verificar arquivo antes de abrir?</translation>
@@ -1312,6 +1314,11 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="2016473077102413275">Os recursos que precisam de imagens não funcionarão</translation>
 <translation id="2016574333161572915">Seu hardware do Google Meet está pronto para ser configurado</translation>
 <translation id="2017334798163366053">Desativar coleta de dados de desempenho</translation>
+<translation id="2017770349934140286">O Google Play e os apps transferidos por download por ele serão excluídos deste Chromebook.
+    <ph name="LINE_BREAKS1" />
+    Os conteúdos que você comprou no Google Play, como filmes, programas de TV, músicas, livros e compras de outros apps, também poderão ser excluídos.
+    <ph name="LINE_BREAKS2" />
+    Isso não afeta os apps nem conteúdos em outros dispositivos.</translation>
 <translation id="2018189721942291407">Não tem certeza se é necessário se registrar?</translation>
 <translation id="2018352199541442911">Seu dispositivo de armazenamento externo não é suportado atualmente.</translation>
 <translation id="2018615379714355980">O PC está conectado a uma rede com fio e o Chromecast está no Wi-Fi</translation>
@@ -2689,6 +2696,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3083193146044397360">Bloqueada temporariamente para proteger sua segurança</translation>
 <translation id="3083899879156272923">Mover a tela, mantendo o mouse no centro dela</translation>
 <translation id="3083998949001524405">O uso de cookies de terceiros foi permitido</translation>
+<translation id="3084121729444215602">A extensão <ph name="EXTENSION_NAME" /> foi fixada pelo administrador</translation>
 <translation id="3084548735795614657">Soltar para instalar</translation>
 <translation id="3084771660770137092">O Google Chrome ficou sem memória ou o processo da página foi encerrado por algum outro motivo. Para continuar, atualize a página ou vá para outra página.</translation>
 <translation id="3085412380278336437">O site pode usar sua câmera</translation>
@@ -3719,6 +3727,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3923221004758245114">Remover <ph name="VM_NAME" /> do seu <ph name="DEVICE_TYPE" />? Isso excluirá todos os apps e dados da máquina virtual.</translation>
 <translation id="3923676227229836009">Esta página tem permissão para ver arquivos</translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3924259174674732591">Tamanho de exibição e de texto: <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Envia URLs para a verificação do "Navegação segura". Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="3925573269917483990">Câmera:</translation>
 <translation id="3925926055063465902">Outros usuários deste dispositivo também podem usar esta rede</translation>
@@ -3731,6 +3740,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3930602610362250897">Para abrir conteúdo protegido por direitos autorais, os sites podem precisar usar um serviço de proteção de conteúdo</translation>
 <translation id="3930737994424905957">Procurando dispositivos</translation>
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
+<translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você</translation>
 <translation id="3936390757709632190">&amp;Abrir áudio em uma nova guia</translation>
 <translation id="3936925983113350642">A senha escolhida será necessária para restaurar este certificado mais tarde. Guarde-a em um local seguro.</translation>
@@ -5126,6 +5136,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5097349930204431044">Os sites que você visita podem determinar do que você gosta e sugerir anúncios enquanto continua a navegar</translation>
 <translation id="5097649414558628673">Ferramenta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clicar automaticamente quando o cursor parar</translation>
+<translation id="5100775515702043594">A extensão <ph name="EXTENSION_NAME" /> foi fixada pelo administrador</translation>
 <translation id="5101839224773798795">Clicar automaticamente quando o cursor parar</translation>
 <translation id="5106350808162641062">Remover</translation>
 <translation id="510695978163689362">A conta <ph name="USER_EMAIL" /> é supervisionada pelo Family Link. Você pode adicionar contas escolares para acessar os recursos da escola com supervisão da família.</translation>
@@ -5354,6 +5365,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="529175790091471945">Formatar este dispositivo</translation>
 <translation id="529296195492126134">O modo temporário não é compatível. Entre em contato com seu administrador</translation>
 <translation id="5293170712604732402">Restaurar configurações para os padrões originais</translation>
+<translation id="5294068591166433464">Se um site tentar roubar sua senha ou você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, ao Google</translation>
 <translation id="5294097441441645251">Comece com um caractere minúsculo ou um sublinhado</translation>
 <translation id="5294618183559481278">Seu <ph name="DEVICE_TYPE" /> usa um sensor integrado para detectar pessoas em frente ao dispositivo. Todos os dados são processados no dispositivo imediatamente e, em seguida, excluídos. Os dados do sensor nunca são enviados ao Google. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5295188371713072404">As extensões podem solicitar acesso a este site</translation>
@@ -5612,6 +5624,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5499476581866658341">Agora, você pode ver fotos e mídias recentes do seu smartphone</translation>
 <translation id="549957179819296104">Novo ícone</translation>
 <translation id="5500168250243071806">O <ph name="BEGIN_LINK_SEARCH" />histórico de pesquisa<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />outras formas de atividade<ph name="END_LINK_GOOGLE" /> podem ser salvos na sua Conta do Google quando ela está conectada. É possível excluí-los a qualquer momento.</translation>
+<translation id="5500516288673745630">Definir senha do <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">A "confirmação de segurança" foi executada hoje</translation>
 <translation id="5501322521654567960">Painel lateral alinhado à esquerda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}one{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}other{Falha ao receber <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}}</translation>
@@ -5920,6 +5933,8 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5772737134857645901">Mais detalhes do arquivo <ph name="FILE_NAME" /> <ph name="STATUS" /></translation>
 <translation id="577313026359983030">Minhas extensões</translation>
 <translation id="5774295353725270860">Abrir aplicativo Arquivos</translation>
+<translation id="5775777649329475570">Remover apps do Google Play e Android?</translation>
+<translation id="5775863968701268310">Gerenciar as preferências do Google Play</translation>
 <translation id="5776450228446082914">A lista de sites que podem ser abertos em qualquer navegador.</translation>
 <translation id="5776571780337000608">Com este app, é possível abrir e editar arquivos com suporte usando o navegador de arquivos ou outros apps. Para controlar quais arquivos são abertos nesse app por padrão, <ph name="BEGIN_LINK" />aprenda a definir os apps padrão no seu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Abra o Chrome</translation>
@@ -7201,6 +7216,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6818802132960437751">Proteção antivírus integrada</translation>
 <translation id="6818920801736417483">Salvar senhas?</translation>
 <translation id="6820079682647046800">Falha na autenticação Kerberos</translation>
+<translation id="6821439254917412979">Liberar <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Tocar para clicar no touchpad</translation>
 <translation id="6823429960180594870">Gerencie os arquivos durante o download e abra-os quando terminar</translation>
 <translation id="6823561724060793716">Na barra de endereço, você pode abrir as informações da página para saber mais sobre o site que está visitando</translation>
@@ -7961,6 +7977,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7448664748118305024">Excluir dados que sites salvaram no dispositivo quando você fechar todas as janelas</translation>
 <translation id="7449752890690775568">Remover a senha?</translation>
 <translation id="7450761244949417357">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
+<translation id="7450926666485653189">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP</translation>
 <translation id="7452166281927983300">Avisos dispensados (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
@@ -8132,6 +8149,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7586498138629385861">O Google Chrome continuará funcionando enquanto os aplicativos do Chrome estiverem abertos.</translation>
 <translation id="7589461650300748890">Ei, tenha cuidado.</translation>
 <translation id="7590883480672980941">Configurações de entrada</translation>
+<translation id="7591317506733736159">Do seu perfil do Chrome</translation>
 <translation id="7592060599656252486">Algumas</translation>
 <translation id="7593653750169415785">Bloqueado automaticamente porque você recusou as notificações algumas vezes</translation>
 <translation id="7594725637786616550">Use a função Powerwash para redefinir seu <ph name="DEVICE_TYPE" /> para as condições de fábrica.</translation>
@@ -8684,7 +8702,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8005600846065423578">Sempre permitir que <ph name="HOST" /> veja a área de transferência</translation>
 <translation id="8006630792898017994">Espaço ou Tab</translation>
 <translation id="8008356846765065031">Internet desconectada. Verifique sua conexão com a Internet.</translation>
-<translation id="8009225694047762179">Gerenciar senha</translation>
+<translation id="8009225694047762179">Gerenciar senhas</translation>
 <translation id="8011372169388649948">O favorito "<ph name="BOOKMARK_TITLE" />" foi movido.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
@@ -9244,6 +9262,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8461973047386722744">Nenhuma senha encontrada</translation>
 <translation id="8463001014623882202">Falha na autorização</translation>
+<translation id="8463348458784127076">Gerenciar chaves de acesso no seu perfil do Chrome</translation>
 <translation id="846374874681391779">Barra de downloads</translation>
 <translation id="8463955938112983119">Plug-in <ph name="PLUGIN_NAME" /> desativado.</translation>
 <translation id="846399539692727039">Executar testes de diagnóstico do ChromeOS Flex</translation>
@@ -9284,6 +9303,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8492822722330266509">Os sites podem exibir pop-ups e usar redirecionamentos</translation>
 <translation id="8492960370534528742">Feedback do Google Cast</translation>
 <translation id="8493236660459102203">Microfone:</translation>
+<translation id="8494147475618188843">Configurações do Android</translation>
 <translation id="849488240089599592">Voltar aos downloads recentes</translation>
 <translation id="8496717697661868878">Executar este plug-in</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
@@ -9401,6 +9421,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Outro programa em seu computador adicionou um aplicativo que pode mudar a forma como o Google Chrome funciona.</translation>
 <translation id="8605428685123651449">Memória SQLite</translation>
+<translation id="8607171490667464784">Enquanto o dispositivo estiver inativo e usando a bateria</translation>
 <translation id="8607326572516521315">A redução de spam e fraudes depende de tokens de estado particular para ajudar os sites a evitar fraudes e diferenciar robôs de pessoas.</translation>
 <translation id="8608618451198398104">Adicionar um tíquete do Kerberos</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
@@ -9964,6 +9985,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9036484080057916082">Lista de carimbos de data/hora do certificado assinado</translation>
 <translation id="9037054491984310631">Conectado ao dispositivo Bluetooth chamado <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">O dispositivo não é permitido</translation>
+<translation id="9037706442425692248">Permitir que apps Android acessem dispositivos USB neste Chromebook</translation>
 <translation id="9037818663270399707">Sua conexão não é particular em todo o tráfego de rede</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9038489124413477075">Pasta sem nome</translation>
@@ -10044,6 +10066,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9095364055741191097">Falha ao acessar dados locais</translation>
 <translation id="909554839118732438">Fechar navegação anônima</translation>
 <translation id="9096776523567481218">não está instalado localmente</translation>
+<translation id="9098860402274800697">Remover apps do Google Play e Android</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta configuração está desativada.</translation>
 <translation id="9100416672768993722">Para mudar para o último método de entrada usado, pressione <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Espaço<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Configurações avançadas</translation>

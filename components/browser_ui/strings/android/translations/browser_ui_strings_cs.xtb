@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Povolit webu ukládat data do zařízení</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
-<translation id="1409426117486808224">Zjednodušené zobrazení otevřených karet</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
-<translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>

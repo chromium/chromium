@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Allow a site to save data on your device</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">Download paused</translation>
-<translation id="1409426117486808224">Simplified view for open tabs</translation>
 <translation id="1415402041810619267">URL truncated</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1446450296470737166">Allow full control of MIDI devices</translation>
@@ -119,6 +118,7 @@
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3069226013421428034">Allow third-party sign-in for a specific site.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
 <translation id="310297983047869047">Previous slide</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="3114012059975132928">Video player</translation>
@@ -340,7 +340,6 @@
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="7016516562562142042">Allowed for current search engine</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
-<translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selected}other{# selected}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selected. Options available near top of the screen</translation>

@@ -811,6 +811,7 @@
 <translation id="1630768113285622200">Рестартиране и продължаване</translation>
 <translation id="1631503405579357839">Цветна слепота</translation>
 <translation id="1632278969378690607">клавиша „търсене“ + кликване</translation>
+<translation id="1632293440289326475">Включете функцията „Икономия на енергия“, за да удължите живота на батерията</translation>
 <translation id="1632756664321977232">Инструмент за подрязване</translation>
 <translation id="163309982320328737">Първоначалната ширина на знаците да бъде цяла</translation>
 <translation id="1633947793238301227">Деактивиране на Google Асистент</translation>
@@ -1280,6 +1281,7 @@
 <translation id="1988259784461813694">Изискване</translation>
 <translation id="1988733631391393183">Показване на брайлови команди в менютата на ChromeVox</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
+<translation id="1989601282983766341">Управление на известията от приложения, режима „Не безпокойте“ и значките за приложенията</translation>
 <translation id="1989903373608997757">Да се използва винаги</translation>
 <translation id="1990046457226896323">Файловете за говор бяха изтеглени</translation>
 <translation id="1990512225220753005">Преките пътища да не се показват на тази страница</translation>
@@ -2268,6 +2270,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2749756011735116528">Вход в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM карта</translation>
 <translation id="2749881179542288782">Проверка на граматиката заедно с правописа</translation>
+<translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
 <translation id="2754226775788136540">Търсят се устройства за бързо сдвояване, запазени в(ъв) <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">От приложения за продуктивност до такива за развлечение – намерете тези, от които имате нужда, в Google Play Магазин. Можете да инсталирате приложения по всяко време.</translation>
@@ -2418,6 +2421,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="286674810810214575">Източниците на захранване се проверяват...</translation>
 <translation id="2867768963760577682">Отваряне като фиксиран раздел</translation>
 <translation id="2868746137289129307">Това разширение не е актуално и е деактивирано от корпоративно правило. Може да бъде активирано автоматично, когато бъде налице по-нова версия.</translation>
+<translation id="2869511363030898130">Отваряне в приложението <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2870909136778269686">Актуализира се...</translation>
 <translation id="2871733351037274014">Предварително зареждане на страници</translation>
@@ -5261,6 +5265,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5210365745912300556">Затваряне на раздела</translation>
 <translation id="5213114823401215820">Повторно отваряне на затворената група</translation>
 <translation id="5213481667492808996">Услугата ви за данни „<ph name="NAME" />“ е готова за използване</translation>
+<translation id="5213658238771284310">Възстановяване на сесията при стартиране</translation>
 <translation id="5213891612754844763">Показване на настройките за прокси сървъра</translation>
 <translation id="5214639857958972833">Отметката „<ph name="BOOKMARK_TITLE" />“ бе създадена.</translation>
 <translation id="5215502535566372932">Изберете държава</translation>
@@ -8446,6 +8451,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7815680994978050279">Блокирано е опасно изтегляне</translation>
 <translation id="7817361223956157679">Екранната клавиатура още не работи в приложения за Linux</translation>
 <translation id="7818135753970109980">Бе добавена нова тема (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">След рестартирането продължете оттам, откъдето сте прекъснали с приложенията, уебсайтовете и отворените прозорци</translation>
 <translation id="7819605256207059717">Блокирано от организацията ви</translation>
 <translation id="7820400255539998692">Изтрийте <ph name="FILENAME" />, така че другите хора, които използват това устройство, да не виждат паролите ви</translation>
 <translation id="7820561748632634942">Да се зададат ли още превключватели?</translation>
@@ -8639,6 +8645,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7964458523224581615">изумруденозелено</translation>
 <translation id="7966241909927244760">К&amp;опиране на адреса на изображението</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 елемент в списъка с отметки}other{{COUNT} елемента в списъка с отметки}}</translation>
+<translation id="7967776604158229756">Още настройки и разрешения за уеб приложенията</translation>
 <translation id="7968072247663421402">Опции за доставчика</translation>
 <translation id="7968742106503422125">Четене и промяна на данните, които копирате и поставяте</translation>
 <translation id="7968833647796919681">Активиране на събирането на данни за ефективността</translation>
@@ -8667,6 +8674,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7987814697832569482">Винаги да се установява връзка през тази VPN</translation>
 <translation id="7988355189918024273">Активиране на функциите за достъпност</translation>
 <translation id="7988805580376093356">Запазване на операционната ви система и изпълняване на <ph name="DEVICE_OS" /> от USB.</translation>
+<translation id="7988876720343145286">Още настройки и разрешения за Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Настройки на „Достъп с превключване“</translation>
 <translation id="7992203134935383159">Синтезиран говор</translation>
@@ -9399,6 +9407,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8593450223647418235">Няма да можете да отваряте файлове в Microsoft 365, докато не завършите настройването.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{Блокиран е 1 сайт}other{Блокирани са # сайта}}</translation>
 <translation id="8596540852772265699">Персонализирани файлове</translation>
+<translation id="8597462463725156723">Известията няма да се показват на екрана. Пак можете да ги видите, като кликнете върху иконата на режима „Не безпокойте“ долу вдясно на екрана.</translation>
 <translation id="8597845839771543242">Формат на свойството:</translation>
 <translation id="8599681327221583254">Едно или повече правила не са конфигурирани правилно. Моля, обърнете се към администратора си</translation>
 <translation id="8599864823732014237">Искате ли да пропуснете корпоративното регистриране?</translation>
@@ -9518,6 +9527,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681886425883659911">Рекламите са блокирани на сайтовете, за които е известно, че показват натрапчиви или подвеждащи реклами</translation>
 <translation id="8682730193597992579">Принтерът <ph name="PRINTER_NAME" /> е свързан и готов</translation>
+<translation id="8685540043423825702">Вашият потребителски профил в Chrome</translation>
 <translation id="8686142379631285985">Влезли сте като <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Анулиране на <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Свободно място</translation>

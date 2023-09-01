@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">允許網站在裝置上儲存資料</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
-<translation id="1409426117486808224">使用簡化檢視模式查看開啟的分頁</translation>
 <translation id="1415402041810619267">縮短咗網址</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1446450296470737166">允許全權控制 MIDI 裝置。</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">已在「Android 設定」中關閉</translation>
 <translation id="7016516562562142042">允許目前的搜尋引擎使用</translation>
 <translation id="702275896380648118">此網站會判斷您喜歡的內容，以便向其他網站建議廣告。此網站亦會從 Chrome 取得您的廣告主題，以便為您顯示更相關的廣告。</translation>
-<translation id="702463548815491781">建議在 TalkBack 或「按鈕控制」開啟時使用</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
 <translation id="7087918508125750058">揀咗 <ph name="ITEM_COUNT" /> 個。選項喺螢幕頂部</translation>

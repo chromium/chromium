@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">മിററിംഗിലേക്ക് മാറി</translation>
 <translation id="2031987842108996681">ചുവപ്പ് ചാനൽ</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />', '<ph name="INVALIDDOMAIN" />' എന്നതിൽ തെറ്റായ സ്ഥാനത്താണ് ഉപയോഗിച്ചിരിക്കുന്നത്.</translation>
+<translation id="2068711044993563745">കുറഞ്ഞ മൂല്യം (<ph name="MINIMUM" />), പരമാവധി മൂല്യത്തെക്കാൾ (<ph name="MAXIMUM" />) കുറവായിരിക്കണം.</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2226276347425096477">ഈ വാചകത്തെ <ph name="MAX_CHARACTERS" /> അല്ലെങ്കില്‍ അതില്‍‌ക്കുറവ് പ്രതീകങ്ങളായി ദയവായി കുറയ്ക്കുക (നിങ്ങള്‍ നിലവില്‍ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങള്‍ ഉപയോഗിക്കുകയാണ്).</translation>
 <translation id="2247351761944213033">ആഴ്‌ച <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

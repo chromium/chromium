@@ -1107,6 +1107,7 @@
 <translation id="3340978935015468852">설정</translation>
 <translation id="3342018947887487892">나중에 방문한 사이트에서 광고 주제 또는 이전에 방문한 사이트에서 추천한 광고에 관한 정보를 요청할 수 있습니다.</translation>
 <translation id="3342366525167526994">바디아트</translation>
+<translation id="3344167530090084176">다음번에 더 빠르게 결제할 수 있도록 기기에 카드와 보안 코드를 저장하세요.</translation>
 <translation id="334438173029876234">스케이트보드 장비</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">프록시 설정 변경...</translation>
@@ -1409,6 +1410,7 @@
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{없음}=1{사이트 1개 }other{사이트 #개 }}</translation>
+<translation id="3966044442021752214">제품 안전</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
 <translation id="3983340834939868135">'<ph name="VENDOR_NAME" />'의 패스키</translation>
@@ -1490,7 +1492,6 @@
 <translation id="4151403195736952345">글로벌 기본값 사용(감지)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{페이지 1}other{페이지 {COUNT}}}</translation>
 <translation id="4154277373259957087">이제 Chrome에서 결제 수단을 입력하기 전에 본인 인증을 진행합니다. 언제든지 <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />에서 업데이트할 수 있습니다.</translation>
-<translation id="4154664944169082762">지문</translation>
 <translation id="4159149286839604525">대부분의 사이트 기능은 작동하지만 보안이 취약해집니다.</translation>
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
@@ -2009,7 +2010,6 @@
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5206392433295093945">침실</translation>
-<translation id="5209518306177824490">SHA-1 지문</translation>
 <translation id="5209670883520018268">트레이 20</translation>
 <translation id="521659676233207110">트레이 13</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
@@ -2975,7 +2975,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% 완료됨 | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">선물 및 특별 이벤트 항목</translation>
 <translation id="7237492777898608035">사이트에서 이러한 메시지를 다시 표시하지 않음</translation>
-<translation id="7238585580608191973">SHA-256 지문</translation>
 <translation id="7240120331469437312">인증서 대상 대체 이름</translation>
 <translation id="7241863998525879494">업데이트로 인한 개선 사항</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3305,7 +3304,6 @@
 <translation id="7888575728750733395">인쇄 렌더링 인텐트</translation>
 <translation id="7894280532028510793">철자가 올바르다면 <ph name="BEGIN_LINK" />네트워크 진단을 실행<ph name="END_LINK" />해 보세요.</translation>
 <translation id="7901831439558593470">봉투 7 x 9 in</translation>
-<translation id="7904652607559432654">쇼핑 컬렉션</translation>
 <translation id="7916162853251942238">Flexo 베이스</translation>
 <translation id="7927971017714848357">토지</translation>
 <translation id="793209273132572360">주소를 업데이트하시겠습니까?</translation>

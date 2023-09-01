@@ -705,6 +705,7 @@
 <translation id="1558391695376153246">Закрыць укладкі інкогніта</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
 <translation id="1558671750917454373">Узнавіць трансляцыю на прыладу "<ph name="DEVICE_NAME" />"</translation>
+<translation id="1561329796773556980">Ідзе праверка наяўнасці месца ў сховішчы…</translation>
 <translation id="1562119309884184621">Дададзены кантакт будзе распазнаны пры наступным абагульванні</translation>
 <translation id="1563137369682381456">Тэрмін заканчэння дзеяння</translation>
 <translation id="1563702743503072935">Паролі, захаваныя ва Уліковым запісе Google, будуць даступныя таксама на гэтай прыладзе, пакуль вы не выканаеце выхад</translation>
@@ -3705,6 +3706,7 @@
 <translation id="3923221004758245114">Выдаліць <ph name="VM_NAME" /> з прылады <ph name="DEVICE_TYPE" />? Будуць выдалены ўсе праграмы і даныя на віртуальнай машыне!</translation>
 <translation id="3923676227229836009">Гэта старонка мае дазвол на прагляд файлаў</translation>
 <translation id="3924145049010392604">Клавіша Meta</translation>
+<translation id="3924259174674732591">Памер элементаў і тэксту <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Адпраўляе URL-адрасы на праверку ў Бяспечны прагляд. Таксама адпраўляе невялікія прыклады старонак, спамповак, дзеянняў пашырэнняў і інфармацыі пра сістэму, каб дапамагчы выяўляць новыя пагрозы. Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google.</translation>
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3925926055063465902">Іншыя карыстальнікі прылады таксама могуць выкарыстоўваць гэту сетку</translation>
@@ -5599,6 +5601,7 @@
 <translation id="5499476581866658341">Цяпер вы можаце праглядаць нядаўнія медыяфайлы і фота з тэлефона</translation>
 <translation id="549957179819296104">Новы значок</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Гісторыя пошуку<ph name="END_LINK_SEARCH" /> і <ph name="BEGIN_LINK_GOOGLE" />іншыя дзеянні<ph name="END_LINK_GOOGLE" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
+<translation id="5500516288673745630">Задайце пароль для прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Праверка бяспекі выконвалася сёння</translation>
 <translation id="5501322521654567960">Бакавая панэль злева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
@@ -8526,6 +8529,7 @@
 <translation id="7893008570150657497">Доступ да фота, музыкі і іншых файлаў мультымедыя на камп'ютары</translation>
 <translation id="7893153962594818789">Bluetooth выключаны на гэтай прыладзе <ph name="DEVICE_TYPE" />. Увядзіце пароль і ўключыце Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (стандартна)</translation>
+<translation id="7894382333736164977">Ідзе праверка наяўнасці месца ў сховішчы. Знойдзена элементаў: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Захаваць файл "<ph name="FILE" />"?</translation>
 <translation id="789722939441020330">Не дазваляць сайтам аўтаматычна спампоўваць некалькі файлаў</translation>
 <translation id="7897900149154324287">У далейшым не забывайце адключаць здымную прыладу праз праграму "Файлы", перад тым як вымаць яе, інакш вы можаце страціць даныя.</translation>

@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">系統會將你的密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中。</translation>
 <translation id="1180362651362502943">請繼續使用 Google 帳戶中的 Chrome 資料。</translation>
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
+<translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1352919863522755794">Google 密碼管理工具無法檢查你的密碼，請確認網際網路連線狀態。</translation>
 <translation id="1407843355326180937">登入這個網站和 Chrome，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="1462727070346936664">登入以充分運用 Chrome 的各項功能。</translation>
@@ -22,6 +23,8 @@
 
   • 如果你將歷史記錄同步至 Google 帳戶，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
+<translation id="1675955119303651351">部分 Chrome 資料尚未儲存至你的 Google 帳戶。
+        請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
 <translation id="1733654336159102143">在你離開 Chrome 或切換到其他應用程式時，鎖定無痕模式。</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@
 <translation id="1917964099031477364">系統會將這個帳戶和所有未儲存的資料從 Chrome 以及這部裝置上的其他 Google 應用程式中移除。</translation>
 <translation id="2009224836393115614">Chrome 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="2056123005618757196">Google Chrome 操作簡便、安全且速度遠勝以往，讓你事半功倍。</translation>
+<translation id="2120238739383482109">開啟 Chrome 書籤。</translation>
 <translation id="2147651015520127414">Chrome 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="2199719347983604670">Chrome 同步功能資料</translation>
 <translation id="2339201583852607431">密碼會儲存至你的 Google 帳戶 (<ph name="EMAIL" />)。</translation>
@@ -65,6 +69,7 @@
 <translation id="3594076341410558780">隱藏「充分運用 Chrome 的各項功能」</translation>
 <translation id="3655656110921623717">這代表 Chrome 每次都會對行動版網站發出要求。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕分頁</translation>
+<translation id="3741995255368156336">開啟 Chrome 閱讀清單。</translation>
 <translation id="3827545470516145620">這部裝置即將啟用標準安全防護機制</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用你的相機</translation>
 <translation id="3901001113120561395">充分運用 Chrome 的各項功能。</translation>
@@ -76,7 +81,6 @@
 <translation id="417201473131094001">Chrome Canary 不支援這項功能</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
-<translation id="4463378960278646000">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶及使用 Chrome 的方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="4508370294876102450">從任何應用程式開啟 Chrome</translation>
 <translation id="4523886039239821078">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -91,6 +95,7 @@
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
 <translation id="5030102366287574140">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="5108659628347594808">讓 Chrome 更臻完美</translation>
+<translation id="5112925986883715005">查看 Chrome 閱讀清單</translation>
 <translation id="5119391094379141756">選取「Chrome」</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chrome。</translation>
 <translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
@@ -154,6 +159,7 @@
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
 <translation id="81358522153858150">Chrome 現在支援受管理帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
+<translation id="8213758103105806860">查看 Chrome 書籤</translation>
 <translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>

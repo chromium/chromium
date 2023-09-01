@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">系统会将您的密码保存到 <ph name="EMAIL" /> 的 Google 密码管理器中。</translation>
 <translation id="1180362651362502943">请继续使用您的 Google 账号中的 Chrome 数据。</translation>
 <translation id="1282031177488366470">帮助我们改进 Chrome 的功能和性能</translation>
+<translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="1407843355326180937">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息。</translation>
 <translation id="1462727070346936664">登录即可充分利用 Chrome。</translation>
@@ -22,6 +23,8 @@
 
   • 如果您将历史记录同步到 Google 账号，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 正在为您提供极强大的安全保护，帮助您防范有害网站</translation>
+<translation id="1675955119303651351">您的部分 Chrome 数据尚未保存到您的 Google 账号。
+        请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="1682483655351012182">同步 Chrome 数据</translation>
 <translation id="1733654336159102143">在您退出 Chrome 或切换到别的应用时锁定您的无痕式标签页。</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@
 <translation id="1917964099031477364">系统会从该设备上的 Chrome 和其他 Google 应用中移除此账号以及所有未保存的数据。</translation>
 <translation id="2009224836393115614">Chrome 无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="2056123005618757196">借助比以前更简单、更安全、更快速的 Google Chrome 提高工作效率。</translation>
+<translation id="2120238739383482109">打开 Chrome 书签。</translation>
 <translation id="2147651015520127414">Chrome 已证实此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
 <translation id="2199719347983604670">Chrome 同步的数据</translation>
 <translation id="2339201583852607431">您的密码将会保存到您的 Google 账号 (<ph name="EMAIL" />) 中。</translation>
@@ -65,6 +69,7 @@
 <translation id="3594076341410558780">隐藏“充分利用 Chrome”</translation>
 <translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
+<translation id="3741995255368156336">打开 Chrome 阅读清单。</translation>
 <translation id="3827545470516145620">此设备正在为您提供标准安全保护</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
 <translation id="3901001113120561395">最大限度利用 Chrome。</translation>
@@ -76,7 +81,6 @@
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> 原本使用 Chrome，并在此设备上保存了书签、密码及其他设置。</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
-<translation id="4463378960278646000">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
 <translation id="4508370294876102450">从任意应用内打开 Chrome</translation>
 <translation id="4523886039239821078">部分插件导致 Chrome 崩溃，请卸载这些插件：</translation>
 <translation id="4633328489441962921">Chrome 无法检查是否有更新</translation>
@@ -91,6 +95,7 @@
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 有助于保护您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
+<translation id="5112925986883715005">查看 Chrome 阅读清单</translation>
 <translation id="5119391094379141756">选择“Chrome”</translation>
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
 <translation id="5190139289262548459">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
@@ -154,6 +159,7 @@
 <translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理账号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
+<translation id="8213758103105806860">查看 Chrome 书签</translation>
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>

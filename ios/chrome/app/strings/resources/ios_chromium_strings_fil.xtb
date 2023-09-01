@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">Hindi gumagana ang iyong account sa Chromium. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="1507010443238049608">Tumulong sa Pagpapahusay ng Mga Feature at Performance ng Chromium</translation>
 <translation id="1531155317299575425">Nagpapakita ng mga prompt na mag-sign in sa Chromium.</translation>
+<translation id="1591119736686995611">Mabubuksan ang Tab Grid sa Chromium.</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1647558790457890304">Mga Setting ng Chromium</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
@@ -36,7 +37,6 @@
 <translation id="2574528844022712255">Tingnan ang Mga Bookmark sa Chromium</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
 <translation id="2618596336309823556">Sa Mga Setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chromium"</translation>
-<translation id="2631735236435791495">Pinapamahalaan ng iyong organisasyon at <ph name="DOMAIN" /> ang account kung saan ka nagsa-sign in at kung paano magagamit ang Chromium. Puwedeng i-set up o paghigpitan ng iyong administrator ang ilang partikular na feature.</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
 <translation id="2684230048001240293">Itakda ang Chromium bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
@@ -46,6 +46,7 @@
 <translation id="2942241131342758843">Gamitin ang Chromium bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
+<translation id="3219277919172823720">Maghanap Gamit ang Boses sa Chromium</translation>
 <translation id="3228349498066165585">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
         Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="3256316712990552818">Kinopya sa Chromium</translation>
@@ -67,6 +68,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
+<translation id="4195557071150719219">Tingnan ang Mga Kamakailang Tab sa Chromium</translation>
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -93,6 +95,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="5453478652154926037">Hindi masuri ng Chromium ang iyong mga password.</translation>
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
 <translation id="5522297504975449419">Hindi na magiging available ang ilang feature ng Chromium.</translation>
+<translation id="5571094606370987472">Mabubuksan ang Mga Kamakailang Tab sa Chromium.</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
@@ -116,6 +119,7 @@ Mga bagay na dapat isaalang-alang:
 3. Piliin ang Chromium.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
+<translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>
 <translation id="632825460376924298">Payagan ang Pag-sign In sa Chromium</translation>
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6407399265324739055">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chromium.
@@ -140,10 +144,12 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7313655110045230863">Para itakda ang Chromium bilang iyong default na browser, buksan ang Mga Setting. I-tap ang Default na Browser App, at pagkatapos ay piliin ang Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Inalis ang piniling data mula sa Chromium at mga naka-sync na device. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account gaya ng mga paghahanap at aktibidad mula sa iba pang mga serbisyo ng Google sa history.google.com.</translation>
+<translation id="7387082980875012885">Buksan ang Bagong Tab sa Chromium</translation>
 <translation id="7395825497086981028">Ise-save ang iyong password sa Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Gamitin ang Chromium Kahit Saan</translation>
 <translation id="7523464085759699266">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chromium.”</translation>
 <translation id="7674213385180944843">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Chromium at i-on ang camera.</translation>
+<translation id="7710137812207066069">Magbubukas ng Bagong Tab sa Chromium.</translation>
 <translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="7812317783196516890">Naka-sign in ka at sini-sync ang iyong data sa isang account na pinamamahalaan ng <ph name="DOMAIN" /> kung saan magagawa na ng administrator nito na magtakda ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa pagkilos ng Chromimum.</translation>
 <translation id="7859018312476869945">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chromium kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>

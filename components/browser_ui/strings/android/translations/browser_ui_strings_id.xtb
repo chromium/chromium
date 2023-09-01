@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Mengizinkan situs menyimpan data di perangkat Anda</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1384959399684842514">Download dijeda</translation>
-<translation id="1409426117486808224">Tampilan sederhana untuk tab yang terbuka</translation>
 <translation id="1415402041810619267">URL dipotong</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1446450296470737166">Izinkan kontrol penuh perangkat MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Dinonaktifkan di setelan Android</translation>
 <translation id="7016516562562142042">Diizinkan untuk mesin telusur yang sedang digunakan</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
-<translation id="702463548815491781">Disarankan saat TalkBack atau Tombol Akses aktif</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> dipilih. Opsi yang tersedia di dekat bagian atas layar</translation>

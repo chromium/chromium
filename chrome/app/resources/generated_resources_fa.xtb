@@ -812,6 +812,7 @@
 <translation id="1630768113285622200">بازراه‌اندازی و ادامه</translation>
 <translation id="1631503405579357839">کوررنگی</translation>
 <translation id="1632278969378690607">جستجو + کلیک</translation>
+<translation id="1632293440289326475">با روشن کردن «بهینه‌سازی انرژی»، عمر باتری بیشتر می‌شود</translation>
 <translation id="1632756664321977232">ابزار برش</translation>
 <translation id="163309982320328737">دامنه نویسه اولیه پر است</translation>
 <translation id="1633947793238301227">‏غیرفعال کردن «دستیار Google»</translation>
@@ -1281,6 +1282,7 @@
 <translation id="1988259784461813694">شرایط لازم</translation>
 <translation id="1988733631391393183">‏نمایش فرمان‌های بریل در منوهای ChromeVox</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
+<translation id="1989601282983766341">مدیریت اعلان‌های برنامه، «مزاحم نشوید»، و نشان برنامه</translation>
 <translation id="1989903373608997757">همیشه استفاده شود</translation>
 <translation id="1990046457226896323">فایل‌های گفتاری بارگیری شد</translation>
 <translation id="1990512225220753005">میان‌برها در این صفحه نشان داده نشود</translation>
@@ -2269,6 +2271,7 @@
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">سیم‌کارت</translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
+<translation id="2750020734439919571">‏دیگر تنظیمات و اجازه‌های برنامه Chrome</translation>
 <translation id="2750602041558385535">بارگیری تأییدنشده مسدود است</translation>
 <translation id="2754226775788136540">درحال جستجوی دستگاه‌های مجهز به «جفت‌سازی سریع» که در <ph name="PRIMARY_EMAIL" /> ذخیره شده است</translation>
 <translation id="2754825024506485820">‏برنامه‌های موردنیازتان را، از بهره‌وری گرفته تا سرگرمی، در «فروشگاه Google Play» پیدا کنید. هر زمانی بخواهید می‌توانید برنامه‌ها را نصب کنید.</translation>
@@ -2419,6 +2422,7 @@
 <translation id="286674810810214575">درحال بررسی منابع برق...</translation>
 <translation id="2867768963760577682">بازکردن به‌عنوان برگه پین شده</translation>
 <translation id="2868746137289129307">این افزونه قدیمی است و خط‌مشی شرکت آن را غیرفعال کرده است. شاید وقتی یک نسخه جدیدتر در دسترس قرار گیرد به صورت خودکار فعال شود.</translation>
+<translation id="2869511363030898130">باز کردن در برنامه <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2870909136778269686">در حال به‌روزرسانی...</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>
@@ -5261,6 +5265,7 @@
 <translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5213114823401215820">باز کردن مجدد گروه بسته‌شده</translation>
 <translation id="5213481667492808996">سرویس داده «<ph name="NAME" />» شما آماده استفاده است</translation>
+<translation id="5213658238771284310">بازیابی جلسه هنگام راه‌اندازی</translation>
 <translation id="5213891612754844763">نمایش تنظیمات پروکسی</translation>
 <translation id="5214639857958972833">نشانک «<ph name="BOOKMARK_TITLE" />» ایجاد شد.</translation>
 <translation id="5215502535566372932">کشور را انتخاب کنید</translation>
@@ -8446,6 +8451,7 @@
 <translation id="7815680994978050279">بارگیری خطرناک مسدود شد</translation>
 <translation id="7817361223956157679">‏صفحه‌کلید مجازی، هنوز در برنامه‌های Linux کار نمی‌کند</translation>
 <translation id="7818135753970109980">طرح‌های زمینه جدید اضافه شده (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">بعداز بازراه‌اندازی، کارتان را در برنامه‌ها، وب‌سایت‌ها، و پنجره‌های باز از همان جایی ادامه دهید که قبلاً متوقف کرده بودید</translation>
 <translation id="7819605256207059717">سازمانتان آن را مسدود کرده است</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌های شما را ببینند</translation>
 <translation id="7820561748632634942">کلیدهای بیشتری اختصاص داده شوند؟</translation>
@@ -8639,6 +8645,7 @@
 <translation id="7964458523224581615">سبزآبی</translation>
 <translation id="7966241909927244760">کپی آدرس تصویر</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{۱ مورد در فهرست نشانک}one{{COUNT} مورد در فهرست نشانک}other{{COUNT} مورد در فهرست نشانک}}</translation>
+<translation id="7967776604158229756">دیگر تنظیمات و اجازه‌های برنامه وب</translation>
 <translation id="7968072247663421402">گزینه‌های ارائه‌دهنده</translation>
 <translation id="7968742106503422125">خواندن و اصلاح داده‌‌هایی که کپی و جای‌گذاری می‌کنید</translation>
 <translation id="7968833647796919681">فعال کردن جمع‌آوری داده‌های عملکرد</translation>
@@ -8667,6 +8674,7 @@
 <translation id="7987814697832569482">‏همیشه ازطریق این VPN اتصال برقرار شود</translation>
 <translation id="7988355189918024273">فعالسازی ویژگی‌های دسترسی</translation>
 <translation id="7988805580376093356">‏سیستم‌عامل کنونی‌تان حفظ می‌شود و <ph name="DEVICE_OS" /> از USB اجرا می‌شود.</translation>
+<translation id="7988876720343145286">‏دیگر تنظیمات و اجازه‌های Android</translation>
 <translation id="7990863024647916394">صدای <ph name="DISPLAY_NAME" />‏ <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">تنظیمات دسترسی کلیدی</translation>
 <translation id="7992203134935383159">ترکیب گفتار</translation>
@@ -9399,6 +9407,7 @@
 <translation id="8593450223647418235">‏تا وقتی راه‌اندازی تکمیل نشود، نمی‌توانید فایل‌ها را در Microsoft 365 باز کنید.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{۱ سایت مسدود است}one{# سایت مسدود است}other{# سایت مسدود هستند}}</translation>
 <translation id="8596540852772265699">فایل‌های سفارشی</translation>
+<translation id="8597462463725156723">اعلان‌ها در صفحه نمایش داده نخواهد شد. همچنان می‌توانید با کلیک روی نماد «مزاحم نشوید» در پایین سمت چپ صفحه، اعلان‌ها را ببینید.</translation>
 <translation id="8597845839771543242">قالب محصول:</translation>
 <translation id="8599681327221583254">یک یا چند خط‌مشی به‌درستی پیکربندی نشده‌اند. لطفاً با سرپرستتان تماس بگیرید</translation>
 <translation id="8599864823732014237">ثبت‌نام در ویژگی‌های سازمانی رد شود؟</translation>
@@ -9518,6 +9527,7 @@
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>
 <translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> متصل و آماده است</translation>
+<translation id="8685540043423825702">‏نمایه Chrome شما</translation>
 <translation id="8686142379631285985">با <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> به سیستم وارد شده‌اید.</translation>
 <translation id="8687103160920393343">لغو <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">دردسترس</translation>

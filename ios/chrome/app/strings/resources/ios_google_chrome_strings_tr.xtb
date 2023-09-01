@@ -4,6 +4,7 @@
 <translation id="1143896152279775643">Şifreniz, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="1180362651362502943">Google Hesabınızdaki Chrome verilerini kullanmaya devam edin.</translation>
 <translation id="1282031177488366470">Chrome'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
+<translation id="1333745675627230582">Chrome Dinozor Oyununu Oyna</translation>
 <translation id="1352919863522755794">Google Şifre Yöneticisi, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="1407843355326180937">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chrome'da oturum açın.</translation>
 <translation id="1462727070346936664">Chrome'dan en iyi şekilde yararlanmak için oturum açın.</translation>
@@ -22,6 +23,8 @@ Dikkate alınması gereken noktalar:
 
   • Geçmişinizi Google Hesabınızla senkronize ederseniz ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Zararlı web sitelerine karşı Chrome'un en güçlü güvenlik avantajına sahipsiniz</translation>
+<translation id="1675955119303651351">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
+        Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="1682483655351012182">Chrome Verilerimi Senkronize Et</translation>
 <translation id="1733654336159102143">Chrome'dan çıktığınızda veya farklı bir uygulamaya geçtiğinizde Gizli modu kilitleyin.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -29,6 +32,7 @@ Dikkate alınması gereken noktalar:
 <translation id="1917964099031477364">Bu hesap ve kaydedilmemiş tüm veriler, Chrome'un yanı sıra bu cihazdaki diğer Google uygulamalarından kaldırılacak.</translation>
 <translation id="2009224836393115614">Chrome, şifrelerinizi kontrol edemedi. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2056123005618757196">Basit, güvenli ve her zamankinden daha hızlı Google Chrome ile daha fazlasını yapın.</translation>
+<translation id="2120238739383482109">Chrome yer işaretlerini açar.</translation>
 <translation id="2147651015520127414">Chrome, bu web sitesi sertifikasının <ph name="ISSUER" /> tarafından yayınlandığını doğruladı.</translation>
 <translation id="2199719347983604670">Chrome senkronizasyonundan veriler</translation>
 <translation id="2339201583852607431">Şifreniz, Google Hesabınıza (<ph name="EMAIL" />) kaydedilir.</translation>
@@ -65,6 +69,7 @@ Dikkate alınması gereken noktalar:
 <translation id="3594076341410558780">"Chrome'dan en iyi şekilde yararlanın"ı gizleyin</translation>
 <translation id="3655656110921623717">Bu durumda Chrome her seferinde mobil siteyi ister.</translation>
 <translation id="3720541637541300822">Chrome'u Kapattığınızda Gizli Sekmeleri Kilitleyin</translation>
+<translation id="3741995255368156336">Chrome Okuma Listesi'ni açar.</translation>
 <translation id="3827545470516145620">Bu cihazda standart güvenlik korumasına sahipsiniz</translation>
 <translation id="384394811301901750">Google Chrome şu anda kameranızı kullanamıyor</translation>
 <translation id="3901001113120561395">Chrome'dan en iyi şekilde yararlanın.</translation>
@@ -76,7 +81,6 @@ Dikkate alınması gereken noktalar:
 <translation id="417201473131094001">Chrome Canary'de desteklenmiyor</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" />, Chrome'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
-<translation id="4463378960278646000">Oturum açtığınız hesabı ve Chrome'un nasıl kullanılabileceğini <ph name="DOMAIN" /> kuruluşunuz yönetir. Yöneticiniz belirli özellikleri ayarlayabilir veya kısıtlayabilir.</translation>
 <translation id="4508370294876102450">Chrome'u İstediğiniz Uygulamadan Açın</translation>
 <translation id="4523886039239821078">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen şunların yüklemelerini kaldırın:</translation>
 <translation id="4633328489441962921">Chrome, güncellemeleri denetleyemiyor</translation>
@@ -91,6 +95,7 @@ Dikkate alınması gereken noktalar:
 <translation id="4903674399067644695">Bu kartta, Chrome'dan en iyi şekilde yararlanmayla ilgili öneriler gösterilmektedir.</translation>
 <translation id="5030102366287574140">Chrome; veri ihlallerine, güvenli olmayan web sitelerine ve diğer tehditlere karşı güvende kalmanıza yardımcı olabilir.</translation>
 <translation id="5108659628347594808">Chrome'u Daha İyi Hale Getirin</translation>
+<translation id="5112925986883715005">Chrome Okuma Listesi'ni Göster</translation>
 <translation id="5119391094379141756">Chrome'u seçin</translation>
 <translation id="5162467219239570114">Chrome sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chrome'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="5190139289262548459">Oturum açtığınız hesabı ve Chrome'un kullanılma şeklini kuruluşunuz (<ph name="DOMAIN" />) yönetiyor.</translation>
@@ -154,6 +159,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="804638182476029347">Fiyat düşüşü uyarıları almak için Chrome bildirimlerine izin verin</translation>
 <translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
+<translation id="8213758103105806860">Chrome Yer İşaretlerini Göster</translation>
 <translation id="8357607116237445042">Chrome verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="840168496893712993">Bazı eklentiler Chrome'un kilitlenmesine neden oluyor. Lütfen bunların yüklemesini kaldırmayı deneyin.</translation>

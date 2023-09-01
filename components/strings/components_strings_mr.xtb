@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">ग्लास (कलर्ड)</translation>
 <translation id="1074497978438210769">सुरक्षित नाही</translation>
 <translation id="1075079914415273530">कृषिशास्त्र आणि वनशास्त्र</translation>
+<translation id="1075364221219156102">पासकी वापरा</translation>
 <translation id="1080116354587839789">रूंदीत फिट करा</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
 <translation id="1089439967362294234">पासवर्ड बदला</translation>
@@ -1488,7 +1489,6 @@
 <translation id="4151403195736952345">जागतिक डीफॉल्‍ट (शोधणे) वापरा</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज एक}other{पेज {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome हे आता पेमेंट पद्धती भरण्यापूर्वी तुम्हीच असल्याची पडताळणी करेल. तुम्ही हे <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> मध्ये कधीही अपडेट करू शकता.</translation>
-<translation id="4154664944169082762">बोटाचा ठसा</translation>
 <translation id="4159149286839604525">याचा अर्थ बुहतेक साइट वैशिष्‍ट्यांनी काम केले पाहिजे, पण तुमच्याकडे कमी संरक्षण आहे</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
@@ -2007,7 +2007,6 @@
 <translation id="5201306358585911203">या पेजवरील एंबेड केलेल्‍या पेजचे म्हणणे हे आहे की</translation>
 <translation id="5205222826937269299">नाव आवश्यक आहे</translation>
 <translation id="5206392433295093945">बेडरूम</translation>
-<translation id="5209518306177824490">SHA-1 बोटाचा ठसा</translation>
 <translation id="5209670883520018268">ट्रे २०</translation>
 <translation id="521659676233207110">ट्रे १३</translation>
 <translation id="5216942107514965959">आज शेवटची भेट दिली</translation>
@@ -2974,7 +2973,6 @@
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% पूर्ण झाले | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">भेटवस्‍तू आणि विशिष्‍ट इव्‍हेंटसंबंधित आयटम</translation>
 <translation id="7237492777898608035">या साइटसाठी हा मेसेज पुन्हा दाखवू नका</translation>
-<translation id="7238585580608191973">SHA-256 बोटाचा ठसा</translation>
 <translation id="7240120331469437312">सर्टिफिकेट विषय वैकल्पिक नाव</translation>
 <translation id="7241863998525879494">काय अपेक्षित आहे</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3136,6 +3134,7 @@
 <translation id="7554475479213504905">रीलोड करा आणि तरीही दाखवा</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7555777498260651025">टीव्हीवरील कुटुंब अभिमुख शो</translation>
+<translation id="7556328470713619625">पासकी वापरा</translation>
 <translation id="7559278538486662777">या अ‍ॅपचा आकार बदलला जाऊ शकत नाही.</translation>
 <translation id="7561784249784255101">डिजिटल वर्सटाइस डिस्क</translation>
 <translation id="7564049878696755256">तुम्ही तुमच्या Google <ph name="ORG_NAME" /> चा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chrome लगेच तुमचा पासवर्ड बदलण्याची शिफारस करत आहे.</translation>
@@ -3304,7 +3303,6 @@
 <translation id="7888575728750733395">प्रस्तुतीकरण इंटेंट प्रिंट करा</translation>
 <translation id="7894280532028510793">शब्दलेखन योग्य असल्यास, <ph name="BEGIN_LINK" />नेटवर्क निदान रन करून पहा<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">एन्व्हलप ७ x ९ इंच</translation>
-<translation id="7904652607559432654">खरेदी संग्रह</translation>
 <translation id="7916162853251942238">फ्लेक्सो बेस</translation>
 <translation id="7927971017714848357">प्लॉट आणि जमीन</translation>
 <translation id="793209273132572360">पत्ता अपडेट करायचा आहे का?</translation>

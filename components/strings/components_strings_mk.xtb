@@ -48,6 +48,7 @@
 <translation id="1073690811593784042">Стакло (во боја)</translation>
 <translation id="1074497978438210769">Не е безбедно</translation>
 <translation id="1075079914415273530">Земјоделство и шумарство</translation>
+<translation id="1075364221219156102">Користете криптографски клуч</translation>
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
 <translation id="1089439967362294234">Смени лозинка</translation>
@@ -1489,7 +1490,6 @@
 <translation id="4151403195736952345">Користи глобално стандардно (откривај)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}one{Страница {COUNT}}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Сега Chrome ќе го потврди вашиот идентитет пред да ги пополни начините на плаќање. Ова може да го ажурирате во секое време во <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
-<translation id="4154664944169082762">Отпечатоци</translation>
 <translation id="4159149286839604525">Ова значи дека повеќето од функциите на сајтот би требало да функционираат, но заштитата е помала</translation>
 <translation id="4159784952369912983">Пурпурна</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
@@ -2008,7 +2008,6 @@
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
 <translation id="5205222826937269299">Потребно е име</translation>
 <translation id="5206392433295093945">Спална соба</translation>
-<translation id="5209518306177824490">SHA-1 отпечаток од прст</translation>
 <translation id="5209670883520018268">Фиока 20</translation>
 <translation id="521659676233207110">Фиока 13</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
@@ -2974,7 +2973,6 @@
 <translation id="7236417832106250253">Завршено: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подароци и ставки за специјални настани</translation>
 <translation id="7237492777898608035">Не покажувај ја поракава повторно за сајтов</translation>
-<translation id="7238585580608191973">SHA-256 отпечаток од прст</translation>
 <translation id="7240120331469437312">Алтернативно име на предмет на сертификат</translation>
 <translation id="7241863998525879494">Што може да очекувате</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
@@ -3136,6 +3134,7 @@
 <translation id="7554475479213504905">Вчитај повторно и сепак прикажи</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
 <translation id="7555777498260651025">ТВ-емисии за семејството</translation>
+<translation id="7556328470713619625">Користете криптографски клуч</translation>
 <translation id="7559278538486662777">Не може да се промени големината на апликацијава.</translation>
 <translation id="7561784249784255101">Дигитален версатилен диск</translation>
 <translation id="7564049878696755256">Може да го изгубите пристапот до вашата сметка на <ph name="ORG_NAME" /> или да ви го украдат идентитетот. Chrome препорачува да ја смените лозинката веднаш.</translation>
@@ -3304,7 +3303,6 @@
 <translation id="7888575728750733395">Намера за прикажување на печатењето</translation>
 <translation id="7894280532028510793">Ако правописот е точен, <ph name="BEGIN_LINK" />извршете дијагностика на мрежата<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 in</translation>
-<translation id="7904652607559432654">Збирка на Shopping</translation>
 <translation id="7916162853251942238">Флексибилна основа</translation>
 <translation id="7927971017714848357">Плацови и земјишта</translation>
 <translation id="793209273132572360">Да се ажурира адресата?</translation>

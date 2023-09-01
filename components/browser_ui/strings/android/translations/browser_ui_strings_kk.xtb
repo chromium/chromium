@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Сайттың деректерді құрылғыңызда сақтауына рұқсат ету</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384959399684842514">Жүктеу кідіртілді</translation>
-<translation id="1409426117486808224">Ашық қойындылардың қарапайым көрінісі</translation>
 <translation id="1415402041810619267">URL қысқартылды</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="1446450296470737166">MIDI толық бақылауға рұқсат беру</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Android параметрлері ішінде өшірілді</translation>
 <translation id="7016516562562142042">Ағымдағы іздеу жүйесіне рұқсат берілген</translation>
 <translation id="702275896380648118">Бұл сайт сізге ұнайтын нәрселерді анықтайды, одан кейін басқа сайттарға жарнамалар ұсынады. Сонымен қатар бұл сайт сізге көбірек сәйкес жарнамаларды көрсету үшін Chrome браузерінен жарнама тақырыптарын алады.</translation>
-<translation id="702463548815491781">TalkBack не Ауыстырғышпен кіру қосулы кезде пайдалануға ұсынылады</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 таңдалды}other{# таңдалды}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> таңдалды. Опциялар экранның жоғарғы жағында тұр</translation>

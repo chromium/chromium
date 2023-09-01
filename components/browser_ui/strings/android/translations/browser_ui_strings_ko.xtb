@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">사이트에서 기기에 데이터를 저장하도록 허용</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
-<translation id="1409426117486808224">열린 탭 간단히 보기</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1446450296470737166">MIDI 기기의 전체 제어 허용</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Android 설정에서 사용 중지됨</translation>
 <translation id="7016516562562142042">현재 검색엔진에 허용됨</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
-<translation id="702463548815491781">TalkBack 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />개 선택됨. 화면 상단에서 옵션 선택 가능</translation>

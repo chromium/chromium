@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Benarkan laman menyimpan data pada peranti anda</translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1384959399684842514">Muat turun dijeda</translation>
-<translation id="1409426117486808224">Paparan ringkas bagi tab terbuka</translation>
 <translation id="1415402041810619267">URL terpangkas</translation>
 <translation id="1426410128494586442">Ya</translation>
 <translation id="1446450296470737166">Benarkan kawalan penuh peranti MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
 <translation id="7016516562562142042">Dibenarkan untuk enjin carian semasa</translation>
 <translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
-<translation id="702463548815491781">Disyorkan apabila TalkBack atau Akses Suis dihidupkan</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> dipilih. Pilihan tersedia berhampiran bahagian atas skrin</translation>

@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">Permet que un lloc web desi dades al dispositiu</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
-<translation id="1409426117486808224">Visualització simplificada de les pestanyes obertes</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
 <translation id="7016516562562142042">Es permet al motor de cerca actual</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anuncis per mostrar-te anuncis més rellevants.</translation>
-<translation id="702463548815491781">Es recomana quan TalkBack o l'accés amb interruptors estan activats</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionat}other{# seleccionats}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elements seleccionats. Hi ha opcions disponibles a prop de la part superior de la pantalla.</translation>

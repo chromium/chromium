@@ -20,7 +20,6 @@
 <translation id="1371239764779356792">La et nettsted lagre data på enheten din</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
-<translation id="1409426117486808224">Forenklet visning for åpne faner</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1446450296470737166">Full kontroll over MIDI-enheter</translation>
@@ -340,7 +339,6 @@
 <translation id="7000754031042624318">Slått av i Android-innstillingene</translation>
 <translation id="7016516562562142042">tillatt for den aktive søkemotoren</translation>
 <translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
-<translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er valgt. Du finner alternativer oppe på skjermen</translation>

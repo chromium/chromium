@@ -19,7 +19,6 @@
 <translation id="1371239764779356792">Autoriser un site à enregistrer des données sur votre appareil</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384959399684842514">Téléchargement interrompu</translation>
-<translation id="1409426117486808224">Affichage simplifié pour les onglets ouverts</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="1446450296470737166">Autoriser le contrôle des appareils MIDI</translation>
@@ -336,7 +335,6 @@
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
-<translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>

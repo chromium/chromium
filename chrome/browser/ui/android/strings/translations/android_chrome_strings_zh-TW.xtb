@@ -69,7 +69,6 @@
 <translation id="1298077576058087471">節省高達 60% 的數據用量，閱讀今日新聞</translation>
 <translation id="1303339473099049190">找不到指定密碼。請檢查你輸入的內容，然後再試一次。</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - 來自 <ph name="DEVICE_NAME" /></translation>
-<translation id="1311657260431405215">這個 QR 圖碼不是網址：<ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">書籤儲存流程資料夾已開啟，目前顯示整個版面的內容</translation>
 <translation id="1327257854815634930">瀏覽記錄已開啟</translation>
@@ -243,7 +242,6 @@
 <translation id="2323763861024343754">網站儲存資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
-<translation id="234265804618409743">無法開啟攝影機，發生錯誤。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和儲存的設定</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -270,7 +268,6 @@
 <translation id="2510106555128151389">正在安裝「<ph name="WEBAPK_NAME" />」...</translation>
 <translation id="2513403576141822879">如需更多隱私權、安全性和資料收集的相關設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
 <translation id="2517113738956581680">完整大小功能表</translation>
-<translation id="2517472476991765520">掃描</translation>
 <translation id="2523184218357549926">將你造訪的網頁網址傳送給 Google</translation>
 <translation id="2527209463677295330">納入較多網頁文字，也許能搜尋到更相關的結果</translation>
 <translation id="2527497042232966453">已切換為無痕分頁</translation>
@@ -630,7 +627,6 @@
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4307992518367153382">基本選項</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
-<translation id="4321739720395210191">無法開啟攝影機，請重新啟動裝置，然後再試一次。</translation>
 <translation id="433213510553688132">正在設為追蹤…</translation>
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
@@ -927,7 +923,6 @@
 <translation id="5822875253699806474">如要快速重新造訪瀏覽過的網站，可以同步分頁和歷史記錄</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享連結</translation>
-<translation id="5834764604050996579">如要掃描 QR 圖碼，請允許 Chrome 使用你的攝影機</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
 <translation id="5853623416121554550">已暫停</translation>
 <translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
@@ -1007,7 +1002,6 @@
 <translation id="6278428485366576908">主題</translation>
 <translation id="6294610283659775533">你可以在已登入相同 Google 帳戶的裝置之間傳送分頁</translation>
 <translation id="6295158916970320988">所有網站</translation>
-<translation id="6297765934698848803">管理這部裝置的機構已關閉攝影機。</translation>
 <translation id="6303969859164067831">登出並關閉同步處理功能</translation>
 <translation id="6312687380483398334">網頁應用程式 (安靜模式)</translation>
 <translation id="6316139424528454185">系統不支援目前的 Android 版本</translation>
@@ -1131,7 +1125,6 @@
 <translation id="6819199143469632133">如要在所有裝置上取得你的 Google 設定，請登入帳戶</translation>
 <translation id="6820686453637990663">信用卡驗證碼</translation>
 <translation id="6823561724060793716">你可以透過網址列開啟網頁資訊，查看目前所在網頁的其他資訊</translation>
-<translation id="6824899148643461612">「<ph name="TAB_TITLE" />」，分頁，已選取</translation>
 <translation id="6828070228333235514">停止追蹤價格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
@@ -1171,7 +1164,6 @@
 <translation id="7020741890149022655">新增到閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
 <translation id="7027549951530753705">已還原 <ph name="ITEM_TITLE" /></translation>
-<translation id="7029390216614421513">將這個方框對準 QR 圖碼或條碼</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
 <translation id="7035701931849773472">其他選項</translation>
@@ -1194,7 +1186,6 @@
 <translation id="7140829094791862589">依手動順序排序</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對你很重要：</translation>
 <translation id="7149893636342594995">過去 24 小時</translation>
-<translation id="7155317020660659215">如要掃描 QR 圖碼，請將設定變更為允許 Chrome 使用你的攝影機</translation>
 <translation id="7168323970702333693">目前登入的帳戶是<ph name="USER_NAME" />。開啟設定。</translation>
 <translation id="7173114856073700355">開啟設定</translation>
 <translation id="7177466738963138057">日後可前往設定頁面進行變更</translation>
@@ -1373,7 +1364,6 @@
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定功能</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
-<translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8013372441983637696">一併清除你在這個裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
@@ -1535,7 +1525,6 @@
 <translation id="879027982257117598">舉例來說，假設你造訪賣長跑鞋的網站，該網站可能會推斷你對跑馬拉松感興趣，並在你造訪其他網站時建議網站顯示跑鞋的廣告。</translation>
 <translation id="8798449543960971550">讀取</translation>
 <translation id="8803526663383843427">開啟時</translation>
-<translation id="8805097383171548551">如要掃描 QR 圖碼，請使用配有攝影機的裝置。</translation>
 <translation id="8812260976093120287">在部分網站上，你可以在你的裝置上使用上述支援的付款應用程式付款。</translation>
 <translation id="8816556050903368450">加入連結：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">無法檢視分頁的預覽內容。</translation>

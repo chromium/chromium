@@ -704,6 +704,7 @@
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
 <translation id="155865706765934889">Сенсорная панель</translation>
 <translation id="1558671750917454373">Возобновить трансляцию на устройство "<ph name="DEVICE_NAME" />"</translation>
+<translation id="1561329796773556980">Мы ещё проверяем хранилище…</translation>
 <translation id="1562119309884184621">Если добавить этот контакт, он станет доступен для обмена файлами и ссылками, когда будет поблизости</translation>
 <translation id="1563137369682381456">Дата окончания действия</translation>
 <translation id="1563702743503072935">Если вы войдете в аккаунт Google, сохраненные в нем пароли будут доступны вам на этом устройстве.</translation>
@@ -3708,6 +3709,7 @@
 <translation id="3923221004758245114">Удалить <ph name="VM_NAME" /> с устройства <ph name="DEVICE_TYPE" />? Все приложения и данные на виртуальной машине будут утеряны.</translation>
 <translation id="3923676227229836009">У этой страницы есть доступ для просмотра файлов</translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3924259174674732591">Масштаб изображения и текста: <ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3924487862883651986">Отправляет URL на проверку с помощью Безопасного просмотра. Также отправляются небольшие образцы страниц, скачанных файлов, действий расширений и данные о системе, которые помогают обнаруживать новые угрозы. Когда вы входите в аккаунт Google, эти данные временно связываются с ним, защищая вас при работе с приложениями Google.</translation>
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3925926055063465902">Эта сеть доступна другим пользователям устройства.</translation>
@@ -5602,6 +5604,7 @@
 <translation id="5499476581866658341">Теперь вы можете просматривать недавние фотографии и медиафайлы с телефона</translation>
 <translation id="549957179819296104">Новый значок</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />История поиска<ph name="END_LINK_SEARCH" /> и сведения о <ph name="BEGIN_LINK_GOOGLE" />других действиях<ph name="END_LINK_GOOGLE" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
+<translation id="5500516288673745630">Установите пароль на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Проверка безопасности выполнена сегодня.</translation>
 <translation id="5501322521654567960">Боковая панель слева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Не удалось получить <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
@@ -6978,6 +6981,7 @@
 <translation id="6644513150317163574">Неверный формат URL. Если используется система единого входа, то в качестве имени хоста необходимо указать сервер.</translation>
 <translation id="6644846457769259194">Обновление устройства (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Отключить Быстрое подключение</translation>
+<translation id="6646696210740573446">Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через конфиденциальный сервер. Ваш IP-адрес при этом скрывается. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с частями контента на проверку.</translation>
 <translation id="6647228709620733774">URL отзыва ЦС Netscape</translation>
 <translation id="6647690760956378579">Предв. прослушивание естественного голоса</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
@@ -8528,6 +8532,7 @@
 <translation id="7893008570150657497">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере</translation>
 <translation id="7893153962594818789">На устройстве <ph name="DEVICE_TYPE" /> отключен Bluetooth. Введите пароль и включите Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (по умолчанию)</translation>
+<translation id="7894382333736164977">Мы ещё проверяем хранилище. Файлов найдено: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Сохранить файл "<ph name="FILE" />"?</translation>
 <translation id="789722939441020330">Запретить сайтам автоматически скачивать несколько файлов</translation>
 <translation id="7897900149154324287">В будущем, прежде чем отключать накопитель, воспользуйтесь командой "Извлечь" в приложении "Файлы", чтобы не потерять данные.</translation>
@@ -9175,6 +9180,7 @@
 <translation id="84098433273647700">Тема, которая у вас установлена</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Предоставлены разрешения: <ph name="PERMISSION" /> и ещё <ph name="COUNT" /></translation>
+<translation id="8413795581997394485">Защита от сайтов, расширений и скачанных файлов, признанных опасными. Когда вы переходите на сайт, Chrome отправляет обфусцированную часть URL в Google через конфиденциальный сервер. Ваш IP-адрес при этом скрывается. Если на сайте зафиксирована подозрительная активность, могут быть переданы полный URL и части контента.</translation>
 <translation id="8413956290606243087">Включить встроенную в Chrome OS программу чтения с экрана ChromeVox?</translation>
 <translation id="8414249071344507766">Воспоминания скрыты на два дня.</translation>
 <translation id="8414396119627470038">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

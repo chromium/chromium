@@ -802,6 +802,7 @@
 <translation id="163072119192489970">データの送受信の完了を許可するサイト</translation>
 <translation id="1630768113285622200">再起動して続行</translation>
 <translation id="1631503405579357839">色覚異常</translation>
+<translation id="1632293440289326475">省エネモードをオンにしてバッテリーを長持ちさせますか？</translation>
 <translation id="1632756664321977232">切り抜きツール</translation>
 <translation id="163309982320328737">初期の文字幅を全角にする</translation>
 <translation id="1633947793238301227">Google アシスタントの無効化</translation>
@@ -1252,6 +1253,7 @@
 <translation id="1988259784461813694">要件</translation>
 <translation id="1988733631391393183">ChromeVox メニューに点字コマンドを表示する</translation>
 <translation id="1989112275319619282">閲覧</translation>
+<translation id="1989601282983766341">アプリの通知、サイレント モード、アプリのバッジを管理する</translation>
 <translation id="1989903373608997757">常に使用</translation>
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
@@ -2229,6 +2231,7 @@
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
+<translation id="2750020734439919571">その他の Chrome アプリの設定と権限</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" /> に保存されているファスト ペアリング デバイスを検出しています</translation>
 <translation id="2754825024506485820">仕事効率化からエンタメまで、Google Play ストアで必要なアプリを探しましょう。アプリはいつでもインストールできます。</translation>
 <translation id="2755349111255270002">この <ph name="DEVICE_TYPE" /> をリセットします</translation>
@@ -2376,6 +2379,7 @@
 <translation id="286674810810214575">電源を確認しています...</translation>
 <translation id="2867768963760577682">固定されたタブとして開く</translation>
 <translation id="2868746137289129307">この拡張機能は古く、企業のポリシーによって無効にされました。新しいバージョンが利用可能になったときに自動的に有効になる可能性があります。</translation>
+<translation id="2869511363030898130"><ph name="APP_NAME" /> アプリで開く</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2870909136778269686">更新しています...</translation>
 <translation id="2871733351037274014">ページをプリロードする</translation>
@@ -5176,6 +5180,7 @@
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5213114823401215820">閉じたグループを開く</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」データサービスを使用できるようになりました</translation>
+<translation id="5213658238771284310">起動時にセッションを復元する</translation>
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
 <translation id="5214639857958972833">ブックマーク「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="5215502535566372932">国を選択</translation>
@@ -8319,6 +8324,7 @@
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
 <translation id="7818135753970109980">新しいテーマが追加されました（<ph name="EXTENSION_NAME" />）</translation>
+<translation id="7819087895293765164">再起動後に、開いていたアプリ、ウェブサイト、ウィンドウを復元します</translation>
 <translation id="7819605256207059717">組織でブロックされました</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
@@ -8511,6 +8517,7 @@
 <translation id="7964458523224581615">ビリジアン</translation>
 <translation id="7966241909927244760">画像アドレスをコピー(&amp;C)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{ブックマーク リストに 1 個のアイテムがあります}other{ブックマーク リストに {COUNT} 個のアイテムがあります}}</translation>
+<translation id="7967776604158229756">ウェブアプリのその他の設定と権限</translation>
 <translation id="7968072247663421402">プロバイダ オプション</translation>
 <translation id="7968742106503422125">コピーして貼り付けるデータの読み取りと修正</translation>
 <translation id="7968833647796919681">パフォーマンス データの収集を有効にする</translation>
@@ -8539,6 +8546,7 @@
 <translation id="7987814697832569482">この VPN で常に接続する</translation>
 <translation id="7988355189918024273">ユーザー補助機能を有効にします</translation>
 <translation id="7988805580376093356">OS を変更せず、<ph name="DEVICE_OS" /> を USB から実行します。</translation>
+<translation id="7988876720343145286">Android のその他の設定と権限</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 音声 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7992203134935383159">音声合成</translation>
@@ -9261,6 +9269,7 @@
 <translation id="8593121833493516339">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="8593450223647418235">設定が完了するまで、Microsoft 365 でファイルを開くことはできません。</translation>
 <translation id="8596540852772265699">カスタム ファイル</translation>
+<translation id="8597462463725156723">画面に通知は表示されません。画面の右下にあるサイレント モード アイコンをクリックすると、通知を確認できます。</translation>
 <translation id="8597845839771543242">プロパティの書式:</translation>
 <translation id="8599681327221583254">正しく設定されていないポリシーがあります。管理者にお問い合わせください</translation>
 <translation id="8599864823732014237">企業の登録をスキップしますか？</translation>
@@ -9379,6 +9388,7 @@
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> が接続され、準備が整いました</translation>
+<translation id="8685540043423825702">自分の Chrome プロフィール</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> としてログインしています</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> をキャンセル</translation>
 <translation id="8688672835843460752">使用可能</translation>

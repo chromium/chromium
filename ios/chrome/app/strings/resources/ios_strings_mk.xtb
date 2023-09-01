@@ -412,10 +412,12 @@
 <translation id="3328801116991980348">Информации за веб-локација</translation>
 <translation id="3340938510625667914">Дејства во Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка, {email}}one{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}other{Обележувачите се зачувани во „{title}“ во вашата сметка, {email}}}</translation>
+<translation id="3365529507898144230">Зачувај во „Фотографии“</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3377063233124932127">Отсега вашите зачувани обележувачи, лозинки и друго се најгоре.</translation>
 <translation id="3393920035788932672">Појавни прозорци се дозволени</translation>
 <translation id="3399930248910934354">Отворете ги поставките за Chrome</translation>
+<translation id="3404232721752787413">Зачувај во „Фотографии на Google“</translation>
 <translation id="3404744938087714423">Одјавувањето ќе ја исклучи синхронизацијата.</translation>
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 окт. 2023 г.</translation>
@@ -656,6 +658,7 @@
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854345657858711387">Поставете лозинка</translation>
 <translation id="4856498338299082007">Во вашата сметка на Google</translation>
+<translation id="4856841893565072365">Лента со мени за паметно подредување</translation>
 <translation id="4858786880085262208">Надградете на HTTPS, кога е можно. Безбедните сајтови може да вметнуваат содржини што не се безбедни.</translation>
 <translation id="4860895144060829044">Повикајте</translation>
 <translation id="4872323082491632254">Проверувај лозинки</translation>
@@ -901,6 +904,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6289501276895392862">Се отследи <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">За да го вклучите „Безбедното прелистување“, отворете <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" /> и допрете „Безбедно прелистување“.</translation>
 <translation id="629730747756840877">Сметка</translation>
+<translation id="630693926528731525">Вашата лозинка не се сподели. Проверете ја вашата интернет-врска и уверете се дека сте најавени на Chrome. Потоа обидете се повторно.</translation>
 <translation id="6321526113093607004">Додај во „Обележувачи“</translation>
 <translation id="6324669097367352121">Поставки за најавување</translation>
 <translation id="6328337032497818759">Приспособување на менито</translation>
