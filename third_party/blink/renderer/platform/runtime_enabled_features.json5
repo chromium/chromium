@@ -649,7 +649,7 @@
     },
     {
       name: "CompositeBackgroundAttachmentFixed",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CompositeBGColorAnimation",
