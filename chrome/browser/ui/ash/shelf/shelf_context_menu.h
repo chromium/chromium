@@ -13,6 +13,9 @@
 
 class ChromeShelfController;
 
+// ElementIdentifier for the shelf context menu "Close" menu item.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kShelfCloseMenuItem);
+
 // A base class for browser, extension, and ARC shelf item context menus.
 class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
  public:
