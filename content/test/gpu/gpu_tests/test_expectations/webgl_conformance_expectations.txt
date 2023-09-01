@@ -214,6 +214,10 @@ crbug.com/957807 [ chromeos ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Sk
 crbug.com/1473838 [ chromeos passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
 crbug.com/1473838 [ chromeos passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 
+# Extensions not available on LaCrOS (ChromeOS / Intel bot).
+crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+
 # Extensions not available on Fuchsia
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 [ fuchsia ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
