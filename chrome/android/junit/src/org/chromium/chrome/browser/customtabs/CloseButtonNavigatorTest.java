@@ -15,8 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +56,7 @@ import java.util.Stack;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
+@Config(manifest = Config.NONE)
 public class CloseButtonNavigatorTest {
     @Parameters
     public static Collection<Object[]> data() {
