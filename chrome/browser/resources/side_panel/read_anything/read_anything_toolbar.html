@@ -33,9 +33,14 @@
   .back, .section {
     font-weight: bold;
   }
-  .end-image {
-    margin-left: 12px;
-    float: right;
+  #font-size-decrease{
+    margin-left: 16px;
+  }
+  .font-size {
+    margin: 0 4px;
+  }
+  .text-button {
+    border: none;
   }
 </style>
 <div class="toolbar-container">
@@ -46,40 +51,49 @@
       on-click="onPlayPauseClick_">
     </cr-icon-button>
   </span>
-  <!-- TODO(crbug.com/1465029): Update font size buttons to be a dropdown menu
-       according to the mocks
-       https://www.figma.com/file/0Nf23Y0KMaZkoYBsuEWz5T/Maui-(reading-support)?type=design&node-id=5091-22871&mode=design&t=EirVfa4CFzGtY61l-0
-  -->
   <cr-icon-button
-      id="settings"
-      iron-icon="read-anything:font-size-increase"
-      on-click="onFontSizeIncreaseClick_">
+      id="font-size"
+      iron-icon="read-anything:font-size"
+      on-click="onShowFontSizeMenuClick_">
   </cr-icon-button>
   <cr-icon-button
-      id="settings"
-      iron-icon="read-anything:font-size-decrease"
-      on-click="onFontSizeDecreaseClick_">
-  </cr-icon-button>
-  <cr-icon-button
-      id="settings"
+      id="font"
       iron-icon="read-anything:font"
       on-click="onShowFontSubMenuClick_">
   </cr-icon-button>
   <cr-icon-button
-      id="settings"
+      id="color"
       iron-icon="read-anything:color"
       on-click="onShowColorSubMenuClick_">
   </cr-icon-button>
   <cr-icon-button
-      id="settings"
+      id="line-spacing"
       iron-icon="read-anything:line-spacing"
       on-click="onShowLineSpacingSubMenuClick_">
   </cr-icon-button>
   <cr-icon-button
-      id="settings"
+      id="letter-spacing"
       iron-icon="read-anything:letter-spacing"
       on-click="onShowLetterSpacingSubMenuClick_">
   </cr-icon-button>
+
+  <cr-action-menu id="fontSizeMenu">
+    <cr-icon-button
+        class="font-size"
+        id="font-size-decrease"
+        iron-icon="read-anything:font-size-decrease"
+        on-click="onFontSizeDecreaseClick_">
+    </cr-icon-button>
+    <cr-icon-button
+        class="font-size"
+        id="font-size-increase"
+        iron-icon="read-anything:font-size-increase"
+        on-click="onFontSizeIncreaseClick_">
+    </cr-icon-button>
+    <cr-button class="text-button" on-click="onFontResetClick_">
+      Reset
+    </cr-button>
+  </cr-action-menu>
   <cr-action-menu id="colorSubmenu">
     <button class="dropdown-item" data$="[[menuStateEnum_.DEFAULT_COLOR]]">
       <iron-icon class="button-image" icon="read-anything:default-theme"></iron-icon>

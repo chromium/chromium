@@ -640,6 +640,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
+      .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
       .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("onStandardLineSpacing",
@@ -907,6 +908,11 @@ void ReadAnythingAppController::OnFontSizeChanged(bool increase) {
     model_.DecreaseTextSize();
   }
 
+  page_handler_->OnFontSizeChange(model_.font_size());
+}
+
+void ReadAnythingAppController::OnFontSizeReset() {
+  model_.ResetTextSize();
   page_handler_->OnFontSizeChange(model_.font_size());
 }
 

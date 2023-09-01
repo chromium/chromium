@@ -182,6 +182,12 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->set_selection_from_action(selection_from_action);
   }
 
+  void IncreaseTextSize() { model_->IncreaseTextSize(); }
+
+  void DecreaseTextSize() { model_->DecreaseTextSize(); }
+
+  void ResetTextSize() { model_->ResetTextSize(); }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -981,4 +987,22 @@ TEST_F(
   // Since 3 is a generic container with more than one child, its sibling nodes
   // are not included, so 2 is ignored.
   ASSERT_FALSE(SelectionNodeIdsContains(2));
+}
+
+TEST_F(ReadAnythingAppModelTest, ResetTextSize_ReturnsTextSizeToDefault) {
+  IncreaseTextSize();
+  IncreaseTextSize();
+  IncreaseTextSize();
+  ASSERT_GT(FontSize(), kReadAnythingDefaultFontScale);
+
+  ResetTextSize();
+  ASSERT_EQ(FontSize(), kReadAnythingDefaultFontScale);
+
+  DecreaseTextSize();
+  DecreaseTextSize();
+  DecreaseTextSize();
+  ASSERT_LT(FontSize(), kReadAnythingDefaultFontScale);
+
+  ResetTextSize();
+  ASSERT_EQ(FontSize(), kReadAnythingDefaultFontScale);
 }

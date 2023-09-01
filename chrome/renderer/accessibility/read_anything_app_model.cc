@@ -734,3 +734,7 @@ void ReadAnythingAppModel::DecreaseTextSize() {
     font_size_ = kReadAnythingMinimumFontScale;
   }
 }
+
+void ReadAnythingAppModel::ResetTextSize() {
+  font_size_ = kReadAnythingDefaultFontScale;
+}

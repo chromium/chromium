@@ -576,8 +576,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  updateFontSize(increase: boolean) {
-    chrome.readingMode.onFontSizeChanged(increase);
+  updateFontSize() {
     this.updateStyles({
       '--font-size': chrome.readingMode.fontSize + 'em',
     });

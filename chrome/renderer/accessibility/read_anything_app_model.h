@@ -150,6 +150,7 @@ class ReadAnythingAppModel {
 
   void IncreaseTextSize();
   void DecreaseTextSize();
+  void ResetTextSize();
 
  private:
   void EraseTree(ui::AXTreeID tree_id);

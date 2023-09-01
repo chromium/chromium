@@ -112,6 +112,7 @@ class ReadAnythingAppController
   std::string FontName() const;
   float FontSize() const;
   void OnFontSizeChanged(bool increase);
+  void OnFontSizeReset();
   SkColor ForegroundColor() const;
   float LetterSpacing() const;
   float LineSpacing() const;

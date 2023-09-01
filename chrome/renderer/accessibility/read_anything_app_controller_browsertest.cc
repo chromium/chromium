@@ -220,6 +220,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool isSelectable() { return controller_->IsSelectable(); }
 
+  void OnFontSizeReset() { controller_->OnFontSizeReset(); }
+
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
   }
@@ -1444,4 +1446,10 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
   EXPECT_EQ(-1, StartOffset());
   EXPECT_EQ(-1, EndOffset());
   EXPECT_EQ(false, HasSelection());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnFontSizeReset_SetsFontSizeToDefault) {
+  EXPECT_CALL(page_handler_, OnFontSizeChange(kReadAnythingDefaultFontScale))
+      .Times(1);
+  OnFontSizeReset();
 }

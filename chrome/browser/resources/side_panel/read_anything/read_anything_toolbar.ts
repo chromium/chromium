@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/icons.html.js';
@@ -21,6 +22,7 @@ export interface ReadAnythingToolbar {
     lineSpacingSubmenu: CrActionMenuElement,
     letterSpacingSubmenu: CrActionMenuElement,
     fontSubmenu: CrActionMenuElement,
+    fontSizeMenu: CrActionMenuElement,
   };
 }
 
@@ -300,6 +302,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.openMenu_(this.$.fontSubmenu, event.target as HTMLElement);
   }
 
+  private onShowFontSizeMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.fontSizeMenu, event.target as HTMLElement);
+  }
+
   private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
     this.closeMenus_();
 
@@ -331,14 +337,26 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   private onFontSizeDecreaseClick_() {
     this.updateFontSize_(false);
   }
+
   private updateFontSize_(increase: boolean) {
     chrome.metricsPrivate.recordEnumerationValue(
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
         ReadAnythingSettingsChange.COUNT);
+    chrome.readingMode.onFontSizeChanged(increase);
     if (this.contentPage) {
-      this.contentPage.updateFontSize(increase);
+      this.contentPage.updateFontSize();
     }
     // Don't close the menu
+  }
+
+  private onFontResetClick_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
+        ReadAnythingSettingsChange.COUNT);
+    chrome.readingMode.onFontSizeReset();
+    if (this.contentPage) {
+      this.contentPage.updateFontSize();
+    }
   }
 
   private onPlayPauseClick_() {
