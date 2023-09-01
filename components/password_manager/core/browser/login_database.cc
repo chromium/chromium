@@ -836,6 +836,7 @@ bool MigrateDatabase(unsigned current_version,
     sql::Statement get_passwords_statement(
         db->GetUniqueStatement("SELECT id, password_value FROM logins"));
 
+    int deleted_passwords = 0, migrated_passwords = 0;
     // Update each password_value with the new BLOB.
     while (get_passwords_statement.Step()) {
       int id = get_passwords_statement.ColumnInt(0);
@@ -843,7 +844,22 @@ bool MigrateDatabase(unsigned current_version,
       std::u16string plaintext_password;
       OSStatus retrieval_status = GetTextFromKeychainIdentifier(
           get_passwords_statement.ColumnString(1), &plaintext_password);
-      if (retrieval_status != errSecSuccess) {
+      // Password no longer exists in the keychain, meaning it's lost forever.
+      // In this case delete the entry from the database and continue with
+      // migration.
+      if (retrieval_status == errSecItemNotFound) {
+        sql::Statement password_delete(
+            db->GetUniqueStatement("DELETE FROM logins WHERE id = ?"));
+        password_delete.BindInt(0, id);
+        if (!password_delete.Run()) {
+          std::move(record_completion_metrics)
+              .Run(MigrationToOSCrypt::kFailedToDelete);
+          return false;
+        }
+        deleted_passwords++;
+      }
+      // Stop migration with any other error.
+      else if (retrieval_status != errSecSuccess) {
         base::UmaHistogramSparse(
             base::StrCat(
                 {"PasswordManager.MigrationToOSCrypt.",
@@ -853,28 +869,40 @@ bool MigrateDatabase(unsigned current_version,
         std::move(record_completion_metrics)
             .Run(MigrationToOSCrypt::kFailedToDecryptFromKeychain);
         return false;
-      }
-      // Encrypt password using OSCrypt.
-      std::string encrypted_password;
-      if (LoginDatabase::EncryptedString(plaintext_password,
-                                         &encrypted_password) !=
-          LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
-        std::move(record_completion_metrics)
-            .Run(MigrationToOSCrypt::kFailedToEncrypt);
-        return false;
-      }
-      // Updated password_value in the database.
-      sql::Statement password_value_update(db->GetUniqueStatement(
-          "UPDATE logins SET password_value = ? WHERE id = ?"));
-      password_value_update.BindBlob(0, encrypted_password);
-      password_value_update.BindInt(1, id);
-      if (!password_value_update.Run()) {
-        std::move(record_completion_metrics)
-            .Run(MigrationToOSCrypt::kFailedToUpdate);
-        return false;
+      } else {
+        // Encrypt password using OSCrypt.
+        std::string encrypted_password;
+        if (LoginDatabase::EncryptedString(plaintext_password,
+                                           &encrypted_password) !=
+            LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
+          std::move(record_completion_metrics)
+              .Run(MigrationToOSCrypt::kFailedToEncrypt);
+          return false;
+        }
+        // Updated password_value in the database.
+        sql::Statement password_value_update(db->GetUniqueStatement(
+            "UPDATE logins SET password_value = ? WHERE id = ?"));
+        password_value_update.BindBlob(0, encrypted_password);
+        password_value_update.BindInt(1, id);
+        if (!password_value_update.Run()) {
+          std::move(record_completion_metrics)
+              .Run(MigrationToOSCrypt::kFailedToUpdate);
+          return false;
+        }
+        migrated_passwords++;
       }
     }
     std::move(record_completion_metrics).Run(MigrationToOSCrypt::kSuccess);
+    base::StringPiece infix_for_store =
+        is_account_store.value() ? "AccountStore" : "ProfileStore";
+    base::UmaHistogramCounts1000(
+        base::StrCat({"PasswordManager.MigrationToOSCrypt.", infix_for_store,
+                      ".DeletedPasswordCount"}),
+        deleted_passwords);
+    base::UmaHistogramCounts1000(
+        base::StrCat({"PasswordManager.MigrationToOSCrypt.", infix_for_store,
+                      ".MigratedPasswordCount"}),
+        migrated_passwords);
   }
 #endif
 
