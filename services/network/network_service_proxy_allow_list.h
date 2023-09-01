@@ -26,7 +26,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   static NetworkServiceProxyAllowList CreateForTesting(
       std::map<std::string, std::set<std::string>> first_party_map);
 
-  mojom::CustomProxyConfigPtr GetCustomProxyConfig();
+  // Create a custom proxy config that instructs NetworkServiceProxyDelegate to
+  // handle IP protection.
+  static mojom::CustomProxyConfigPtr MakeIpProtectionCustomProxyConfig();
 
   // Returns true if the allow list is eligible to be used but does not indicate
   // that allow list is currently populated.
@@ -52,8 +54,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
  private:
   void AddDomainRules(const std::string& domain,
                       const net::ProxyBypassRules& bypass_rules);
-
-  mojom::CustomProxyConfigPtr custom_proxy_config_;
 
   // Matching will require evaluating every `SchemeHostPortMatcherRule`
   // sequentially. To save time, these are partitioned by a suffix of the

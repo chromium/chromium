@@ -673,7 +673,7 @@ void NetworkService::CreateNetworkContext(
       params->initial_custom_proxy_config.is_null() &&
       !params->custom_proxy_config_client_receiver.is_valid()) {
     params->initial_custom_proxy_config =
-        network_service_proxy_allow_list_->GetCustomProxyConfig();
+        network_service_proxy_allow_list_->MakeIpProtectionCustomProxyConfig();
   }
 
   owned_network_contexts_.emplace(std::make_unique<NetworkContext>(

@@ -41,7 +41,7 @@ TEST_F(NetworkServiceProxyAllowListTest, IsEnabled) {
   NetworkServiceProxyAllowList allowList;
 
   EXPECT_TRUE(allowList.IsEnabled());
-  EXPECT_TRUE(allowList.GetCustomProxyConfig()
+  EXPECT_TRUE(allowList.MakeIpProtectionCustomProxyConfig()
                   ->rules.restrict_to_network_service_proxy_allow_list);
 }
 
@@ -59,23 +59,6 @@ TEST_F(NetworkServiceProxyAllowListTest, IsPopulated) {
 TEST_F(NetworkServiceProxyAllowListTest, IsPopulated_Empty) {
   NetworkServiceProxyAllowList allowList;
   EXPECT_FALSE(allowList.IsPopulated());
-}
-
-TEST_F(NetworkServiceProxyAllowListTest, CustomProxyConfig_Rules) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{net::features::kEnableIpProtectionProxy,
-        {{"IpPrivacyProxyServer", "test-server"}}},
-       {network::features::kMaskedDomainList, {}}},
-      {});
-
-  NetworkServiceProxyAllowList allowList;
-  mojom::CustomProxyConfigPtr proxy_config = allowList.GetCustomProxyConfig();
-
-  net::ProxyConfig::ProxyRules expected_rules;
-  expected_rules.ParseFromString("test-server,direct://");
-  expected_rules.restrict_to_network_service_proxy_allow_list = true;
-  EXPECT_TRUE(proxy_config->rules.Equals(expected_rules));
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, Matches_AllowListNotPopulated) {

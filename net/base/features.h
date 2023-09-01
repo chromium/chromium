@@ -403,6 +403,20 @@ NET_EXPORT extern const base::FeatureParam<int>
 NET_EXPORT extern const base::FeatureParam<int>
     kIpPrivacyAuthTokenCacheLowWaterMark;
 
+// Sets the normal time between fetches of the IP protection proxy list.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyProxyListFetchInterval;
+
+// Sets the minimum time between fetches of the IP protection proxy list, such
+// as when a re-fetch is forced due to an error.
+NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyProxyListMinFetchInterval;
+
+// Controls whether IP Protection _proxying_ is bypassed by not including any
+// of the proxies in the proxy list. This supports experimental comparison of
+// connections that _would_ have been proxied, but were not.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

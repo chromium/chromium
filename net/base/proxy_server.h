@@ -60,6 +60,10 @@ class NET_EXPORT ProxyServer {
                                            base::StringPiece host,
                                            absl::optional<uint16_t> port);
 
+  // Creates a ProxyServer identified as `is_for_ip_protection`. This is always
+  // `SCHEME_HTTPS` with the default port.
+  static ProxyServer ForIpProtection(base::StringPiece host);
+
   // In URL format (with brackets around IPv6 literals). Must not call for
   // ProxyServers without a host (invalid or direct).
   std::string GetHost() const;
@@ -101,6 +105,9 @@ class NET_EXPORT ProxyServer {
   // the channel between the client and proxy server is secure.
   bool is_secure_http_like() const { return is_https() || is_quic(); }
 
+  // Returns true if the proxy server is an IP protection proxy.
+  bool is_for_ip_protection() const { return is_for_ip_protection_; }
+
   const HostPortPair& host_port_pair() const;
 
   // Returns a ProxyServer representing DIRECT connections.
@@ -127,6 +134,7 @@ class NET_EXPORT ProxyServer {
 
  private:
   Scheme scheme_ = SCHEME_INVALID;
+  bool is_for_ip_protection_ = false;
   HostPortPair host_port_pair_;
 };
 

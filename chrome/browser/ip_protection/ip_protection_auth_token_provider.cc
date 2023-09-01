@@ -44,6 +44,12 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokens(
   RequestOAuthToken(batch_size, std::move(callback));
 }
 
+void IpProtectionAuthTokenProvider::GetProxyList(
+    GetProxyListCallback callback) {
+  // TODO(crbug.com/1475977): Temporary until we can fetch this from Phosphor.
+  std::move(callback).Run({net::features::kIpPrivacyProxyServer.Get()});
+}
+
 void IpProtectionAuthTokenProvider::RequestOAuthToken(
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {

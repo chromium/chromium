@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCache {
   // This function is called on every URL load, so it should complete quickly.
   virtual bool IsAuthTokenAvailable() = 0;
 
+  // Check whether a proxy list is available.
+  virtual bool IsProxyListAvailable() = 0;
+
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or
@@ -34,6 +37,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCache {
   // `IsAuthTokenAvailable()` recently returned `true`.
   virtual absl::optional<network::mojom::BlindSignedAuthTokenPtr>
   GetAuthToken() = 0;
+
+  // Return the currently cached proxy list. This contains a list of proxy
+  // hostnames. This list may be empty even if `IsProxyListAvailable()` returned
+  // true.
+  virtual const std::vector<std::string>& ProxyList() = 0;
+
+  // Request a refresh of the proxy list. Call this when it's likely that the
+  // proxy list is out of date.
+  virtual void RequestRefreshProxyList() = 0;
 };
 
 }  // namespace network

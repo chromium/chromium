@@ -80,6 +80,9 @@ class IpProtectionAuthTokenProvider
   void TryGetAuthTokens(uint32_t batch_size,
                         TryGetAuthTokensCallback callback) override;
 
+  // Get the list of IP Protection proxies.
+  void GetProxyList(GetProxyListCallback callback) override;
+
   // KeyedService:
   void Shutdown() override;
 

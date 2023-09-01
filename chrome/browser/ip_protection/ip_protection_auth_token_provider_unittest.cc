@@ -435,3 +435,16 @@ TEST_F(IpProtectionAuthTokenProviderTest, CalculateBackoff) {
   check(kFailedBSA403, getter.kNotEligibleBackoff, false);
   check(kFailedBSAOther, getter.kTransientBackoff, true);
 }
+
+TEST_F(IpProtectionAuthTokenProviderTest, GetProxyList) {
+  auto bsa = MockBlindSignAuth();
+  IpProtectionAuthTokenProvider getter(
+      IdentityManager(),
+      base::MakeRefCounted<network::TestSharedURLLoaderFactory>());
+
+  base::test::TestFuture<const std::vector<std::string>&> proxy_list_future;
+  getter.GetProxyList(proxy_list_future.GetCallback());
+  ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
+  EXPECT_THAT(proxy_list_future.Get(),
+              testing::ElementsAre(net::features::kIpPrivacyProxyServer.Get()));
+}

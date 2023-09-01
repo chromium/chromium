@@ -386,6 +386,18 @@ const base::FeatureParam<int> kIpPrivacyAuthTokenCacheLowWaterMark{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheLowWaterMark",
     /*default_value=*/16};
 
+const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListFetchInterval{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyListFetchInterval",
+    /*default_value=*/base::Hours(1)};
+
+const base::FeatureParam<base::TimeDelta> kIpPrivacyProxyListMinFetchInterval{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyMinListFetchInterval",
+    /*default_value=*/base::Minutes(1)};
+
+const base::FeatureParam<bool> kIpPrivacyDirectOnly{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyDirectOnly",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

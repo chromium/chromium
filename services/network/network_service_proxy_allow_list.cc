@@ -37,20 +37,7 @@ net::ProxyBypassRules BuildBypassRules(
 
 }  // namespace
 
-NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
-  custom_proxy_config_ = network::mojom::CustomProxyConfig::New();
-
-  std::string proxy_spec =
-      base::StrCat({net::features::kIpPrivacyProxyServer.Get(), ",direct://"});
-  custom_proxy_config_->rules.ParseFromString(proxy_spec);
-
-  custom_proxy_config_->rules.restrict_to_network_service_proxy_allow_list =
-      true;
-  custom_proxy_config_->should_replace_direct = true;
-  custom_proxy_config_->should_override_existing_config = false;
-  custom_proxy_config_->allow_non_idempotent_methods = true;
-}
-
+NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() = default;
 NetworkServiceProxyAllowList::~NetworkServiceProxyAllowList() = default;
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList(
@@ -83,9 +70,16 @@ bool NetworkServiceProxyAllowList::IsPopulated() {
   return !allow_list_with_bypass_map_.empty();
 }
 
+// static
 mojom::CustomProxyConfigPtr
-NetworkServiceProxyAllowList::GetCustomProxyConfig() {
-  return custom_proxy_config_ ? custom_proxy_config_->Clone() : nullptr;
+NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig() {
+  auto custom_proxy_config = network::mojom::CustomProxyConfig::New();
+  // Indicate to the NetworkServiceProxyDelegate that this is for IP Protection
+  // and it should use the allow list. In this situation, the delegate does not
+  // use any other fields from the custom proxy config.
+  custom_proxy_config->rules.restrict_to_network_service_proxy_allow_list =
+      true;
+  return custom_proxy_config;
 }
 
 // static

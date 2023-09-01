@@ -136,11 +136,6 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     VLOG(3) << "NSPD::OnResolveProxy(" << url << ", " << top_frame_url << ") - "
             << message;
   };
-  if (!EligibleForProxy(*result, method)) {
-    vlog("not eligible");
-    return;
-  }
-
   if (IsForIpProtection()) {
     // Do not use the proxy if the request doesn't match the allow list or the
     // token cache is not available or does not have a token.
@@ -160,7 +155,40 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       vlog("no auth token available from cache");
       return;
     }
+    if (!auth_token_cache_->IsProxyListAvailable()) {
+      // TODO: When this `vlog()` is removed, there's no need to distinguish the
+      // case where a proxy list has not been downloaded, and the case where a
+      // proxy list is empty. The `IsProxyListAvailable()` method can be removed
+      // at that time.
+      vlog("no proxy list available from cache");
+      return;
+    }
+
+    net::ProxyList proxy_list;
+    if (!net::features::kIpPrivacyDirectOnly.Get()) {
+      for (auto& proxy_hostname : auth_token_cache_->ProxyList()) {
+        proxy_list.AddProxyServer(
+            net::ProxyServer::ForIpProtection(proxy_hostname));
+      }
+    }
+    // Final fallback is to DIRECT.
+    proxy_list.AddProxyServer(net::ProxyServer::Direct());
+
+    if (VLOG_IS_ON(3)) {
+      vlog(base::StrCat({"setting proxy list (before deprioritization) to ",
+                         proxy_list.ToPacString()}));
+    }
     result->set_is_for_ip_protection(true);
+    result->OverrideProxyList(
+        MergeProxyRules(result->proxy_list(), proxy_list));
+    result->DeprioritizeBadProxies(proxy_retry_info);
+    return;
+  }
+
+  // At this point, this delegate is not supporting IP protection, so apply the
+  // `proxy_config_` as usual.
+  if (!EligibleForProxy(*result, method)) {
+    return;
   }
 
   net::ProxyInfo proxy_info;
@@ -169,20 +197,22 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
     if (proxy_config_->should_replace_direct &&
         !proxy_config_->should_override_existing_config) {
-      MergeProxyRules(result->proxy_list(), proxy_info);
+      result->OverrideProxyList(
+          MergeProxyRules(result->proxy_list(), proxy_info.proxy_list()));
+    } else {
+      result->OverrideProxyList(proxy_info.proxy_list());
     }
-    if (VLOG_IS_ON(3)) {
-      vlog(base::StrCat(
-          {"setting proxy list to ", proxy_info.proxy_list().ToPacString()}));
-    }
-    result->OverrideProxyList(proxy_info.proxy_list());
-  } else {
-    vlog("not applicable");
   }
 }
 
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
                                              int net_error) {
+  // If the bad proxy was an IP Protection proxy, refresh the list of IP
+  // protection proxies immediately.
+  if (bad_proxy.is_for_ip_protection() && auth_token_cache_) {
+    auth_token_cache_->RequestRefreshProxyList();
+  }
+
   if (observer_) {
     observer_->OnFallback(bad_proxy, net_error);
   }
@@ -196,7 +226,9 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
   };
   if (IsInProxyConfig(proxy_server)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
-    if (auth_token_cache_ && IsForIpProtection()) {
+  }
+  if (IsForIpProtection() && proxy_server.is_for_ip_protection()) {
+    if (auth_token_cache_) {
       auto token = auth_token_cache_->GetAuthToken();
       if (token) {
         vlog("adding auth token");
@@ -209,10 +241,10 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
         vlog("no token available");
       }
     } else {
-      vlog("not for IP protection");
+      vlog("no auth token cache");
     }
   } else {
-    vlog("no matching proxy server");
+    vlog("not for IP protection");
   }
 }
 
@@ -304,10 +336,9 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   return true;
 }
 
-void NetworkServiceProxyDelegate::MergeProxyRules(
+net::ProxyList NetworkServiceProxyDelegate::MergeProxyRules(
     const net::ProxyList& existing_proxy_list,
-    net::ProxyInfo& proxy_info) const {
-  net::ProxyList custom_proxy_list = proxy_info.proxy_list();
+    const net::ProxyList& custom_proxy_list) const {
   net::ProxyList merged_proxy_list;
   for (const auto& existing_proxy : existing_proxy_list.GetAll()) {
     if (existing_proxy.is_direct()) {
@@ -320,7 +351,7 @@ void NetworkServiceProxyDelegate::MergeProxyRules(
     }
   }
 
-  proxy_info.OverrideProxyList(merged_proxy_list);
+  return merged_proxy_list;
 }
 
 void NetworkServiceProxyDelegate::OnObserverDisconnect() {
