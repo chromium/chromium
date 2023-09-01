@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_COMMON_MOCK_QUICK_PAIR_BROWSER_DELEGATE_H_
 #define ASH_QUICK_PAIR_COMMON_MOCK_QUICK_PAIR_BROWSER_DELEGATE_H_
 
+#include <string>
+
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -43,6 +45,14 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   MOCK_METHOD(void,
               RequestService,
               (mojo::PendingReceiver<mojom::QuickPairService>),
+              (override));
+  MOCK_METHOD(bool,
+              CompanionAppInstalled,
+              (const std::string& app_id),
+              (override));
+  MOCK_METHOD(void,
+              LaunchCompanionApp,
+              (const std::string& app_id),
               (override));
 };
 

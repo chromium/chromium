@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 #define ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
@@ -55,6 +57,11 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   // PendingReceiver for it.
   virtual void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) = 0;
+
+  virtual bool CompanionAppInstalled(const std::string& app_id) = 0;
+
+  // Returns true if and only if the app was installed and launched.
+  virtual void LaunchCompanionApp(const std::string& app_id) = 0;
 
  protected:
   static void SetInstance(QuickPairBrowserDelegate* instance);

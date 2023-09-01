@@ -57,6 +57,14 @@ PrefService* FakeQuickPairBrowserDelegate::GetActivePrefService() {
 void FakeQuickPairBrowserDelegate::RequestService(
     mojo::PendingReceiver<mojom::QuickPairService> receiver) {}
 
+bool FakeQuickPairBrowserDelegate::CompanionAppInstalled(
+    const std::string& app_id) {
+  return true;
+}
+
+void FakeQuickPairBrowserDelegate::LaunchCompanionApp(
+    const std::string& app_id) {}
+
 void FakeQuickPairBrowserDelegate::SetIdentityManager(
     signin::IdentityManager* identity_manager) {
   identity_manager_ = identity_manager;

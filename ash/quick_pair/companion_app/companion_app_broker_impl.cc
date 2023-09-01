@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -53,10 +54,15 @@ void CompanionAppBrokerImpl::InstallCompanionApp(scoped_refptr<Device> device) {
 void CompanionAppBrokerImpl::LaunchCompanionApp(scoped_refptr<Device> device) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(ash::features::kFastPairPwaCompanionInstallUri.Get()),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
+  const std::string& app_id = ash::features::kFastPairPwaCompanionAppId.Get();
+  if (QuickPairBrowserDelegate::Get()->CompanionAppInstalled(app_id)) {
+    QuickPairBrowserDelegate::Get()->LaunchCompanionApp(app_id);
+  } else {
+    NewWindowDelegate::GetPrimary()->OpenUrl(
+        GURL(ash::features::kFastPairPwaCompanionInstallUri.Get()),
+        NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        NewWindowDelegate::Disposition::kNewForegroundTab);
+  }
 }
 
 }  // namespace quick_pair

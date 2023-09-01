@@ -1022,6 +1022,11 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionInstallUri{
     &kFastPairPwaCompanion, "pwa-companion-install-uri",
     /*default*/ "https://www.google.com"};
 
+// The app ID for the installed Fast Pair web companion.
+const base::FeatureParam<std::string> kFastPairPwaCompanionAppId{
+    &kFastPairPwaCompanion, "pwa-companion-app-id",
+    /*default*/ ""};
+
 // Sets Fast Pair scanning to low power mode.
 BASE_FEATURE(kFastPairLowPower,
              "FastPairLowPower",

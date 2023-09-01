@@ -40,6 +40,8 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   PrefService* GetActivePrefService() override;
   void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) override;
+  bool CompanionAppInstalled(const std::string& app_id) override;
+  void LaunchCompanionApp(const std::string& app_id) override;
 
  private:
   TestingPrefServiceSimple pref_service_;
