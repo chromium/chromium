@@ -66,4 +66,11 @@ void IdentityManagerObserverBridge::OnEndBatchOfRefreshTokenStateChanges() {
   }
 }
 
+void IdentityManagerObserverBridge::OnIdentityManagerShutdown(
+    IdentityManager* identity_manager) {
+  if ([delegate_ respondsToSelector:@selector(onIdentityManagerShutdown:)]) {
+    [delegate_ onIdentityManagerShutdown:identity_manager];
+  }
+}
+
 }  // namespace signin

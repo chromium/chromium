@@ -29,6 +29,7 @@
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error;
 - (void)onEndBatchOfRefreshTokenStateChanges;
+- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager;
 
 @end
 
@@ -60,6 +61,7 @@ class IdentityManagerObserverBridge : public IdentityManager::Observer {
       const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
   void OnEndBatchOfRefreshTokenStateChanges() override;
+  void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
  private:
   // Identity manager to observe.
