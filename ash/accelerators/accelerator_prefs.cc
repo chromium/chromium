@@ -35,6 +35,7 @@ AcceleratorPrefs::~AcceleratorPrefs() {
   if (Shell::HasInstance()) {
     Shell::Get()->session_controller()->RemoveObserver(this);
   }
+  observers_.Clear();
 }
 
 // static:

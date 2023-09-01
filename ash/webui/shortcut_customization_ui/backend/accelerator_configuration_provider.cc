@@ -587,12 +587,15 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   input_method::InputMethodManager::Get()->AddObserver(this);
 
   // Observe shortcut policy changes.
+  // Gets removed on `AcceleratorPrefs` destruction.
   Shell::Get()->accelerator_prefs()->AddObserver(this);
 
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     // `InputDeviceSettingsController` provides updates whenever a device is
     // connected/disconnected or if its settings changed. In any of these cases,
     // accelerators must be updated.
+    // Observer is removed on destruction of `InputDeviceSettingsController`,
+    // which happens before this class is destroyed.
     Shell::Get()->input_device_settings_controller()->AddObserver(this);
   } else {
     // Observe connected keyboard events.

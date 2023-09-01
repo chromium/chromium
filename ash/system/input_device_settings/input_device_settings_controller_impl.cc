@@ -336,6 +336,9 @@ void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  // Clear all dangling observers. Known dependency issue:
+  // `InputDeviceSettingsControllerImpl` destructs before `ShortcutAppManager`.
+  observers_.Clear();
 }
 
 void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
