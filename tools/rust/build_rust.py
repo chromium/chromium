@@ -593,6 +593,18 @@ def BuildLLVMLibraries(skip_build, build_mac_arm):
     return (x86_64_llvm_config, aarch64_llvm_config, target_llvm_install_dir)
 
 
+def GitCherryPick(git_repository, commit):
+    print(f'Cherry-picking {commit} in {git_repository}')
+    if RunCommand([
+            'git', '-C', git_repository, 'merge-base', '--is-ancestor', commit,
+            'HEAD'
+    ],
+                  fail_hard=False):
+        print('Commit already an ancestor; skipping.')
+        return
+    RunCommand(['git', '-C', git_repository, 'cherry-pick', commit])
+
+
 def main():
     parser = argparse.ArgumentParser(
         description='Build and package Rust toolchain')
@@ -726,9 +738,7 @@ def main():
         # (https://github.com/rust-lang/rust/commit/0081d64e4b8413219ddec5d1).
         # TODO(crbug.com/1472655): Remove this cherrypicking after the
         # cherrypicked commit is included in the checkout.
-        RunCommand(
-            ('git', '-C', RUST_SRC_DIR, 'cherry-pick',
-             '0081d64e4b8413219ddec5d1013d522edbf132',))
+        GitCherryPick(RUST_SRC_DIR, '0081d64e4b8413219ddec5d1013d522edbf132')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
