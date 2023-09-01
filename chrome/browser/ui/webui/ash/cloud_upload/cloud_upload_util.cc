@@ -158,6 +158,18 @@ ProvidedFileSystemInterface* GetODFS(Profile* profile) {
                                         odfs_info->file_system_id());
 }
 
+bool IsODFSInstalled(Profile* profile) {
+  auto* service = ash::file_system_provider::Service::Get(profile);
+  for (const auto& [provider_id, provider] : service->GetProviders()) {
+    if (provider_id.GetType() ==
+            ash::file_system_provider::ProviderId::EXTENSION &&
+        provider_id.GetExtensionId() == extension_misc::kODFSExtensionId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsODFSMounted(Profile* profile) {
   // Assume any file system mounted by ODFS is the correct one.
   return GetODFSInfo(profile).has_value();

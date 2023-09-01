@@ -159,6 +159,7 @@ absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
 file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
 
 bool IsODFSMounted(Profile* profile);
+bool IsODFSInstalled(Profile* profile);
 bool IsOfficeWebAppInstalled(Profile* profile);
 
 // Get ODFS metadata as actions by doing a special GetActions request (for the
