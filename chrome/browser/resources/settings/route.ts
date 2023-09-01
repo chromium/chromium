@@ -272,10 +272,6 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
       r.PERFORMANCE = r.BASIC.createSection(
           '/performance', 'performance',
           loadTimeData.getString('performancePageTitle'));
-      if (loadTimeData.getBoolean(
-              'isPerformanceSettingsPreloadingSubpageEnabled')) {
-        r.PRELOADING = r.PERFORMANCE.createChild('/preloading');
-      }
     }
 
     // <if expr="_google_chrome">

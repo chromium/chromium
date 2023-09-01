@@ -294,6 +294,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
           return loadTimeData.getBoolean('enableSafetyHub');
         },
       },
+
+      showPreloadingSubpage_: {
+        type: Boolean,
+        value: () => !loadTimeData.getBoolean(
+            'isPerformanceSettingsPreloadingSubpageEnabled'),
+      },
     };
   }
 
@@ -320,6 +326,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private enablePermissionStorageAccessApi_: boolean;
   private enableSafetyHub_: boolean;
+  private showPreloadingSubpage_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
