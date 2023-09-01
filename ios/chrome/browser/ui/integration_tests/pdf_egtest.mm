@@ -30,10 +30,13 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Regression test for crbug/981893. Repro steps: open a PDF in a new
 // tab, switch back and forth betweeen the new tab and the old one by
 // swiping in the toolbar. The regression is a crash.
-- (void)testSwitchToAndFromPDF {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+// TODO(crbug.com/1475274): Test is flaky on device. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSwitchToAndFromPDF testSwitchToAndFromPDF
+#else
+#define MAYBE_testSwitchToAndFromPDF DISABLED_testSwitchToAndFromPDF
 #endif
+- (void)MAYBE_testSwitchToAndFromPDF {
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -74,10 +77,13 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Enter and leave the tab grid. Swipe back and forth repeatedly between
 // the two tabs in the toolbar. The regressiom is a crash anywhere in this
 // process.
-- (void)testSwitchBetweenPDFs {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+// TODO(crbug.com/1475274): Test is flaky on device. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSwitchBetweenPDFs testSwitchBetweenPDFs
+#else
+#define MAYBE_testSwitchBetweenPDFs DISABLED_testSwitchBetweenPDFs
 #endif
+- (void)MAYBE_testSwitchBetweenPDFs {
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -112,10 +118,13 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Regression test for crbug/981893. Repro steps: Open a tab, then navigate
 // to a PDF in that tab. Enter the tab grid. Wait five seconds. Exit the
 // tab switcher. The regression is a crash anywhere in this process.
-- (void)testPDFIntoTabGridAndWait {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EARL_GREY_TEST_DISABLED(@"Failing on official builders. crbug.com/1476653");
+// TODO(crbug.com/1475274): Test is flaky on device. Re-enable the test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPDFIntoTabGridAndWait testPDFIntoTabGridAndWait
+#else
+#define MAYBE_testPDFIntoTabGridAndWait DISABLED_testPDFIntoTabGridAndWait
 #endif
+- (void)MAYBE_testPDFIntoTabGridAndWait {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Load a page, then a PDF.
