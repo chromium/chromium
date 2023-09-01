@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
@@ -88,23 +87,16 @@ void PriceInsightsIconView::HidePageActionLabel() {
 }
 
 bool PriceInsightsIconView::MaybeShowPageActionLabel() {
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
+  auto* tab_helper =
+      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
 
-  if (!tracker ||
-      !tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
+  if (!tab_helper || tab_helper->GetPageActionToExpand() !=
+                         PageActionIconType::kPriceInsights) {
     return false;
   }
 
   should_extend_label_shown_duration_ = true;
   AnimateIn(absl::nullopt);
-
-  // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
-  // the FE backend that the promo is done so that other promos can run. Showing
-  // the label should not block other promos from displaying.
-  tracker->Dismissed(
-      feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
 
   return true;
 }

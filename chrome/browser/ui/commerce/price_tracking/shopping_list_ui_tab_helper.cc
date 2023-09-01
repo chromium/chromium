@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -79,6 +80,10 @@ constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
 constexpr base::TimeDelta kDelayIconView = base::Seconds(1);
 
+// The amount in currency micros that a product needs to be to always expand the
+// price tracking chip (assuming price insights isn't expanded).
+constexpr int64_t kAlwaysExpandChipPriceMicros = 100000000L;
+
 bool ShouldDelayChipUpdate() {
   if (base::FeatureList::IsEnabled(commerce::kPriceInsights)) {
     return commerce::kPriceInsightsDelayChip.Get();
@@ -133,6 +138,7 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   last_fetched_image_url_ = GURL();
   is_cluster_id_tracked_by_user_ = false;
   cluster_id_for_page_.reset();
+  product_info_for_page_.reset();
   pending_tracking_state_.reset();
   is_first_load_for_nav_finished_ = false;
   price_insights_info_.reset();
@@ -148,7 +154,8 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
 
   if (shopping_service_->IsPriceInsightsEligible()) {
     UpdatePriceInsightsIconView();
-  } else if (shopping_service_->IsShoppingListEligible()) {
+  }
+  if (shopping_service_->IsShoppingListEligible()) {
     UpdatePriceTrackingIconView();
   }
 
@@ -294,6 +301,7 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
   if (shopping_service_->IsShoppingListEligible() && CanTrackPrice(info) &&
       !info->image_url.is_empty()) {
     cluster_id_for_page_.emplace(info->product_cluster_id.value());
+    product_info_for_page_.emplace(info.value());
     UpdatePriceTrackingStateFromSubscriptions();
 
     // TODO(1360850): Delay this fetch by possibly waiting until page load has
@@ -512,6 +520,46 @@ const absl::optional<PriceInsightsInfo>&
 ShoppingListUiTabHelper::GetPriceInsightsInfo() {
   return price_insights_info_;
 }
+
+absl::optional<PageActionIconType>
+ShoppingListUiTabHelper::GetPageActionToExpand() {
+  if (!web_contents() || !web_contents()->GetBrowserContext()) {
+    return absl::nullopt;
+  }
+
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
+
+  if (!tracker) {
+    return absl::nullopt;
+  }
+
+  if (tracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
+    // Note that `Dismiss()` in these cases does not dismiss the UI. It's
+    // telling the FE backend that the promo is done so that other promos can
+    // run. Showing the label should not block other promos from displaying.
+    tracker->Dismissed(
+        feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
+    return PageActionIconType::kPriceInsights;
+  } else if (tracker->ShouldTriggerHelpUI(
+                 feature_engagement::
+                     kIPHPriceTrackingPageActionIconLabelFeature)) {
+    tracker->Dismissed(
+        feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature);
+    return PageActionIconType::kPriceTracking;
+  }
+
+  // If none of the above cases expanded a chip, expand the price tracking chip
+  // if the product price is > $100.
+  if (product_info_for_page_.has_value() &&
+      product_info_for_page_->amount_micros > kAlwaysExpandChipPriceMicros) {
+    return PageActionIconType::kPriceTracking;
+  }
+
+  return absl::nullopt;
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);
 
 }  // namespace commerce

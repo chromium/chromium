@@ -320,11 +320,8 @@ void LocationBarView::Init() {
     // first so that they appear on the left side of the icon container.
     // TODO(crbug.com/1318890): Improve the ordering heuristics for page action
     // icons and determine a way to handle simultaneous icon animations.
-    if (base::FeatureList::IsEnabled(commerce::kPriceInsights)) {
-      params.types_enabled.push_back(PageActionIconType::kPriceInsights);
-    } else {
-      params.types_enabled.push_back(PageActionIconType::kPriceTracking);
-    }
+    params.types_enabled.push_back(PageActionIconType::kPriceInsights);
+    params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 
     if (side_search::IsEnabledForBrowser(browser_)) {
       params.types_enabled.push_back(PageActionIconType::kSideSearch);
