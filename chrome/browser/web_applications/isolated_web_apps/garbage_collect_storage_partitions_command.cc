@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -15,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -43,7 +45,34 @@ GarbageCollectStoragePartititonsCommand::
 void GarbageCollectStoragePartititonsCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
-  Run();
+
+  ResetStorageGarbageCollectPref();
+}
+
+void GarbageCollectStoragePartititonsCommand::ResetStorageGarbageCollectPref() {
+  base::OnceClosure callback =
+      base::BindOnce(&GarbageCollectStoragePartititonsCommand::OnPrefReset,
+                     weak_factory_.GetWeakPtr());
+
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(2, std::move(callback));
+
+  // TODO(crbug.com/1477027): change this pref to be stateful instead of
+  // resetting to false early.
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kShouldGarbageCollectStoragePartitions, false);
+  // Waits for both prefs to be written to disk before proceeding to prevent
+  // repeating crashes.
+  lock_->extensions_manager().ResetStorageGarbageCollectPref(barrier_closure);
+  profile_->GetPrefs()->CommitPendingWrite(barrier_closure);
+}
+
+void GarbageCollectStoragePartititonsCommand::OnPrefReset() {
+  extensions::OnExtensionSystemReady(
+      profile_,
+      base::BindOnce(
+          &GarbageCollectStoragePartititonsCommand::DoGarbageCollection,
+          weak_factory_.GetWeakPtr()));
 }
 
 const LockDescription&
@@ -55,7 +84,7 @@ base::Value GarbageCollectStoragePartititonsCommand::ToDebugValue() const {
   return base::Value(debug_info_.Clone());
 }
 
-void GarbageCollectStoragePartititonsCommand::Run() {
+void GarbageCollectStoragePartititonsCommand::DoGarbageCollection() {
   std::unordered_set<base::FilePath> allowlist;
 
   // InstallGate delays extension installations.
@@ -101,8 +130,9 @@ void GarbageCollectStoragePartititonsCommand::OnShutdown() {
 }
 
 void GarbageCollectStoragePartititonsCommand::OnSuccess() {
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kShouldGarbageCollectStoragePartitions, false);
+  lock_->extensions_manager()
+      .on_garbage_collect_storage_partitions_done_for_testing()  // IN-TEST
+      .Signal();
 
   SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
                                   std::move(done_closure_));

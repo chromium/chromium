@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -50,6 +51,7 @@ WebAppProviderFactory::WebAppProviderFactory()
   // Required to listen to file handling settings change in
   // `WebAppInstallFinalizer::OnContentSettingChanged()`
   DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(ExtensionsManager::GetExtensionSystemSharedFactory());
 }
 
 WebAppProviderFactory::~WebAppProviderFactory() = default;

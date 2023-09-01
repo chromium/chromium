@@ -43,7 +43,11 @@ class GarbageCollectStoragePartititonsCommand
   base::Value ToDebugValue() const override;
 
  private:
-  void Run();
+  void ResetStorageGarbageCollectPref();
+
+  void OnPrefReset();
+
+  void DoGarbageCollection();
 
   void OnSuccess();
 
