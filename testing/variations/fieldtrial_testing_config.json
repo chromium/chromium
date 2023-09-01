@@ -11493,11 +11493,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Interval_8sec",
                     "params": {
                         "interval": "8s"
                     },
                     "enable_features": [
+                        "PartitionAllocMemoryReclaimer"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
                         "PartitionAllocMemoryReclaimer"
                     ]
                 }
@@ -11538,8 +11544,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Disabled",
+                    "disable_features": [
                         "PartitionAllocSortSmallerSlotSpanFreeLists"
                     ]
                 }
@@ -11559,8 +11565,17 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Always",
+                    "params": {
+                        "mode": "always"
+                    },
                     "enable_features": [
+                        "PartitionAllocStraightenLargerSlotSpanFreeLists"
+                    ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
                         "PartitionAllocStraightenLargerSlotSpanFreeLists"
                     ]
                 }
