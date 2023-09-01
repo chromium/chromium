@@ -16,6 +16,7 @@
  */
 
 import type {Script} from '../../../protocol/protocol.js';
+import {assert} from '../../../utils/assert.js';
 
 const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
 
@@ -42,11 +43,10 @@ export function logMessageFormatter(args: Script.RemoteValue[]): string {
     if (isFormatSpecifier(token)) {
       const arg = argValues.shift();
       // raise an exception when less value is provided
-      if (arg === undefined) {
-        throw new Error(
-          `Less value is provided: "${getRemoteValuesText(args, false)}"`
-        );
-      }
+      assert(
+        arg,
+        `Less value is provided: "${getRemoteValuesText(args, false)}"`
+      );
       if (token === '%s') {
         output += stringFromArg(arg);
       } else if (token === '%d' || token === '%i') {

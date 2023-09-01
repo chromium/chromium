@@ -32,30 +32,28 @@ export class NetworkStorage {
   readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
 
   /** A map to define the properties of active network intercepts. */
-  readonly #interceptMap: Map<
+  readonly #interceptMap = new Map<
     Network.Intercept,
     {
       urlPatterns: Network.UrlPattern[];
       phases: Network.InterceptPhase[];
     }
-  >;
+  >();
 
   /** A map to track the requests which are actively being blocked. */
-  readonly #blockedRequestMap: Map<
+  readonly #blockedRequestMap = new Map<
     Network.Request,
     {
       request: Network.Request;
       phase: Network.InterceptPhase;
       response: Network.ResponseData;
     }
-  >;
+  >();
 
   constructor(eventManager: EventManager) {
     this.#requestMap = new DefaultMap(
       (requestId) => new NetworkRequest(requestId, eventManager)
     );
-    this.#interceptMap = new Map();
-    this.#blockedRequestMap = new Map();
   }
 
   disposeRequestMap() {
@@ -135,12 +133,10 @@ export class NetworkStorage {
   }
 
   deleteRequest(id: Network.Request) {
-    const request = this.#requestMap.get(id);
-    if (request) {
-      request.dispose();
+    if (this.#requestMap.has(id)) {
+      this.#requestMap.get(id).dispose();
+      this.#requestMap.delete(id);
     }
-
-    this.#requestMap.delete(id);
   }
 
   /** Converts a URL pattern from the spec to a CDP URL pattern. */

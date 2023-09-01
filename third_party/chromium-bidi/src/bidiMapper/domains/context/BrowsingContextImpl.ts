@@ -231,9 +231,10 @@ export class BrowsingContextImpl {
   }
 
   get #defaultRealm(): Realm {
-    if (this.#maybeDefaultRealm === undefined) {
-      throw new Error(`No default realm for browsing context ${this.#id}`);
-    }
+    assert(
+      this.#maybeDefaultRealm,
+      `No default realm for browsing context ${this.#id}`
+    );
     return this.#maybeDefaultRealm;
   }
 
