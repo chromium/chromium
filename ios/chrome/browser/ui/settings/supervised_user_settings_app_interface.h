@@ -40,6 +40,10 @@
 
 // Adds the `url` to a supervised user's block-list.
 + (void)addWebsiteToBlockList:(NSURL*)host;
+
+// Marks the "first time banner" of the SU interstitial as not shown.
++ (void)resetFirstTimeBanner;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SUPERVISED_USER_SETTINGS_APP_INTERFACE_H_

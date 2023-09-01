@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 
+#import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -115,6 +119,17 @@ void setUrlFilteringForUrl(const GURL& url, bool isAllowed) {
 
 + (void)addWebsiteToBlockList:(NSURL*)host {
   setUrlFilteringForUrl(net::GURLWithNSURL(host), false);
+}
+
++ (void)resetFirstTimeBanner {
+  ChromeBrowserState* browser_state = ChromeBrowserState::FromBrowserState(
+      chrome_test_util::GetOriginalBrowserState());
+  PrefService* user_prefs = browser_state->GetPrefs();
+  CHECK(user_prefs);
+  user_prefs->SetInteger(
+      prefs::kFirstTimeInterstitialBannerState,
+      static_cast<int>(
+          supervised_user::FirstTimeInterstitialBannerState::kNeedToShow));
 }
 
 @end

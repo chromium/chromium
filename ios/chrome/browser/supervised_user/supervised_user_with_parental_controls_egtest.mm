@@ -23,9 +23,14 @@ namespace {
 static const char* kHost = "a.host";
 static const char* kEchoPath = "/echo";
 static const char* kEchoContent = "Echo";
+static const char* kDefaultPath = "/defaultresponse";
+static const char* kDefaultContent = "Default response";
 static const char* kInterstitialContent = "Ask your parent";
 static const char* kInterstitialWaitingContent = "Waiting for permission";
-static const char* kDetailsContent = "Details";
+static const char* kInterstitialBlockReason = "This site is blocked";
+static const char* kInterstitialDetails = "Details";
+static const char* kInterstitialFirstTimeBanner =
+    "Family Link choices for Chrome apply here";
 }  // namespace
 
 // Tests the core user journeys of a supervised user with FamilyLink parental
@@ -82,19 +87,22 @@ static const char* kDetailsContent = "Details";
 }
 
 - (void)checkShowDetailsLinkVisibility:(BOOL)isVisible {
-  NSString* isShowDetailsVisible = [NSString
-      stringWithFormat:@"getComputedStyle(document.getElementById('block-"
-                       @"reason-show-details-link')).display %s== \"none\"",
-                       isVisible ? "!" : "="];
-  [ChromeEarlGrey waitForJavaScriptCondition:isShowDetailsVisible];
+  [self checkElementDisplayStyleVisibility:@"block-reason-show-details-link"
+                                 isVisible:isVisible];
 }
 
 - (void)checkHideDetailsLinkVisibility:(BOOL)isVisible {
-  NSString* isHideDetailsVisible = [NSString
-      stringWithFormat:@"getComputedStyle(document.getElementById('block-"
-                       @"reason-hide-details-link')).display %s== \"none\"",
-                       isVisible ? "!" : "="];
-  [ChromeEarlGrey waitForJavaScriptCondition:isHideDetailsVisible];
+  [self checkElementDisplayStyleVisibility:@"block-reason-hide-details-link"
+                                 isVisible:isVisible];
+}
+
+- (void)checkElementDisplayStyleVisibility:(NSString*)elementId
+                                 isVisible:(BOOL)isVisible {
+  NSString* isElementVisible =
+      [NSString stringWithFormat:@"getComputedStyle(document.getElementById('%@"
+                                 @"')).display %s== \"none\"",
+                                 elementId, isVisible ? "!" : "="];
+  [ChromeEarlGrey waitForJavaScriptCondition:isElementVisible];
 }
 
 - (void)checkInterstitalIsShown {
@@ -125,7 +133,7 @@ static const char* kDetailsContent = "Details";
 
 // Tests that users with "Allow Approved" filtering are shown the interstitial
 // when they navigate to a non-approved site.
-- (void)testSupervisedUserWithAllowApprovedSitesFilteringIsShownIntersitial {
+- (void)testSupervisedUserWithAllowApprovedSitesFilteringIsShownInterstitial {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -148,7 +156,7 @@ static const char* kDetailsContent = "Details";
 // Tests that users with "Allow All" filtering are shown the interstitial
 // when they navigate to a site from the blocked list.
 - (void)
-    testSupervisedUserWithAllowAllSitesFilteringIsShownIntersitialOnBlockedSite {
+    testSupervisedUserWithAllowAllSitesFilteringIsShownInterstitialOnBlockedSite {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
@@ -301,7 +309,7 @@ static const char* kDetailsContent = "Details";
   GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedUrl];
   [self checkInterstitalIsShown];
-  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
   [self checkShowDetailsLinkVisibility:YES];
   [self checkHideDetailsLinkVisibility:NO];
 
@@ -313,8 +321,7 @@ static const char* kDetailsContent = "Details";
 
   // Shrink the Details link.
   [ChromeEarlGrey tapWebStateElementWithID:@"block-reason-hide-details-link"];
-  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
-  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
   [self checkShowDetailsLinkVisibility:YES];
   [self checkHideDetailsLinkVisibility:NO];
 }
@@ -340,7 +347,7 @@ static const char* kDetailsContent = "Details";
   [self checkInterstitalIsShown];
 
   // Details link must be visible.
-  [ChromeEarlGrey waitForWebStateContainingText:kDetailsContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
   [self checkShowDetailsLinkVisibility:YES];
   [self checkHideDetailsLinkVisibility:NO];
 
@@ -365,6 +372,109 @@ static const char* kDetailsContent = "Details";
   [self checkInterstitalIsShownInWaitingScreen];
   [self checkShowDetailsLinkVisibility:NO];
   [self checkHideDetailsLinkVisibility:NO];
+}
+
+// Tests that the that the Details link / Block reason is displayed on the
+// interstitial "Ask your parent" screen depending on the screen width.
+- (void)testSupervisedUserInterstitialShowBlockReasonAndDetails {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+
+  if ([ChromeEarlGrey isCompactWidth]) {
+    // Narrow screen displays "Details" link ("Block reason" is hidden).
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialDetails];
+    [self checkElementDisplayStyleVisibility:@"block-reason-show-details-link"
+                                   isVisible:YES];
+    [self checkElementDisplayStyleVisibility:@"block-reason" isVisible:NO];
+  } else {
+    // Wide screen displays "Block reason" ("Details" is hidden).
+    [ChromeEarlGrey waitForWebStateContainingText:kInterstitialBlockReason];
+    [self checkElementDisplayStyleVisibility:@"block-reason-show-details-link"
+                                   isVisible:NO];
+    [self checkElementDisplayStyleVisibility:@"block-reason" isVisible:YES];
+  }
+}
+
+// Tests that the Back Button of the interstitial gets us to the previous page.
+- (void)testSupervisedUserInterstitialOnBackButton {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+
+  GURL allowedUrl = self.testServer->GetURL(kDefaultPath);
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+  [SupervisedUserSettingsAppInterface
+      addWebsiteToBlockList:net::NSURLWithGURL(blockedUrl)];
+
+  [ChromeEarlGrey loadURL:allowedUrl];
+  [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
+
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+
+  // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
+  // displayed.
+  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
+  [self checkInterstitalIsShownInWaitingScreen];
+
+  // On clicking the "Ok" (back) button, the browser goes to the previous
+  // (allowed) page.
+  [ChromeEarlGrey tapWebStateElementWithID:@"back-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
+}
+
+// Tests that for already requested for approval urls, the interstitial is shown
+// in the waiting screen upon revisiting.
+- (void)testSupervisedUserInterstitialForAlreadyRequestedHostShowsWaitScreen {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  GURL blockedUrl = self.testServer->GetURL(kHost, kEchoPath);
+
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShown];
+
+  // On clicking "Ask in a message" button, the interstitial "Waiting" screen is
+  // displayed.
+  [ChromeEarlGrey tapWebStateElementWithID:@"remote-approvals-button"];
+  [self checkInterstitalIsShownInWaitingScreen];
+
+  // Navigate to another site.
+  GURL otherUrl = self.testServer->GetURL("other.host", kEchoPath);
+  [ChromeEarlGrey loadURL:otherUrl];
+  [self checkInterstitalIsShown];
+
+  // Navigate to the original blocked site. The interstitial "Waiting" screen is
+  // displayed.
+  [ChromeEarlGrey loadURL:blockedUrl];
+  [self checkInterstitalIsShownInWaitingScreen];
+}
+
+// Tests that users are shown the First Time Banner on the interstitial on their
+// first navigation to a blocked page.
+- (void)testSupervisedUserInterstitialDisplaysFirstTimeBanner {
+  [self signInSupervisedUser];
+  [SupervisedUserSettingsAppInterface resetFirstTimeBanner];
+  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+
+  // On the first blocked site the interstitial displays the first time banner.
+  GURL blockedURL = self.testServer->GetURL(kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
+  [self checkInterstitalIsShown];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialFirstTimeBanner];
+  [self checkElementDisplayStyleVisibility:@"banner" isVisible:YES];
+
+  // Navigate to another blocked site. The banner should not be visible anymore.
+  blockedURL = self.testServer->GetURL("other.host", kEchoPath);
+  [ChromeEarlGrey loadURL:blockedURL];
+  [self checkInterstitalIsShown];
+  [self checkElementDisplayStyleVisibility:@"banner" isVisible:NO];
 }
 
 @end
