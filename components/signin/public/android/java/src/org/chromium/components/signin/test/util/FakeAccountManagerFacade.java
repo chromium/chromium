@@ -123,9 +123,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
+    public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
+            throws AuthException {
         synchronized (mLock) {
-            AccountHolder accountHolder = getAccountHolder(account);
+            AccountHolder accountHolder = getAccountHolder(
+                    AccountUtils.createAccountFromName(coreAccountInfo.getEmail()));
             if (accountHolder.getAuthToken(scope) == null) {
                 accountHolder.updateAuthToken(scope, UUID.randomUUID().toString());
             }

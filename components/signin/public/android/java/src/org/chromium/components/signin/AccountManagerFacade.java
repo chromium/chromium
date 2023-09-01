@@ -95,12 +95,13 @@ public interface AccountManagerFacade {
     /**
      * Synchronously gets an OAuth2 access token. May return a cached version, use
      * {@link #invalidateAccessToken} to invalidate a token in the cache.
-     * @param account The {@link Account} for which the token is requested.
+     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
      * @param scope OAuth2 scope for which the requested token should be valid.
      * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time.
      */
     @WorkerThread
-    AccessTokenData getAccessToken(Account account, String scope) throws AuthException;
+    AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
+            throws AuthException;
 
     /**
      * Removes an OAuth2 access token from the cache with retries asynchronously.

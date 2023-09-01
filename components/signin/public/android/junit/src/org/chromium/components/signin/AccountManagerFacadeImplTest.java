@@ -123,7 +123,7 @@ public class AccountManagerFacadeImplTest {
                 HistogramWatcher.newSingleRecordWatcher("Signin.AndroidNumberOfDeviceAccounts", 1);
         addTestAccount("test@gmail.com");
 
-        AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        new AccountManagerFacadeImpl(mDelegate);
 
         numberOfAccountsHistogram.assertExpected();
     }
@@ -321,15 +321,18 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testGetAndInvalidateAccessToken() throws AuthException {
-        final Account account = addTestAccount("test@gmail.com");
-        final AccessTokenData originalToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
+        final CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "gaiaIdNotUsed");
+        addTestAccount(coreAccountInfo.getEmail());
+        final AccessTokenData originalToken =
+                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
         Assert.assertEquals("The same token should be returned before invalidating the token.",
-                mFacade.getAccessToken(account, TEST_TOKEN_SCOPE).getToken(),
+                mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE).getToken(),
                 originalToken.getToken());
 
         mFacade.invalidateAccessToken(originalToken.getToken());
 
-        final AccessTokenData newToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
+        final AccessTokenData newToken = mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
         Assert.assertNotEquals(
                 "A different token should be returned since the original token is invalidated.",
                 newToken.getToken(), originalToken.getToken());

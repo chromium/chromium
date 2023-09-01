@@ -34,6 +34,7 @@ import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
@@ -44,7 +45,12 @@ import java.util.concurrent.CountDownLatch;
 @Batch(Batch.UNIT_TESTS)
 public class ProfileOAuth2TokenServiceDelegateTest {
     private static final long NATIVE_DELEGATE = 1000L;
-    private static final Account ACCOUNT = AccountUtils.createAccountFromName("test@gmail.com");
+    private static final String EMAIL = "test@gmail.com";
+    private static final CoreAccountInfo CORE_ACCOUNT_INFO =
+            CoreAccountInfo.createFromEmailAndGaiaId(
+                    EMAIL, FakeAccountManagerFacade.toGaiaId(EMAIL));
+    private static final Account ACCOUNT =
+            AccountUtils.createAccountFromName(CORE_ACCOUNT_INFO.getEmail());
 
     /**
      * Class handling GetAccessToken callbacks and providing a blocking {@link
@@ -113,10 +119,11 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testGetOAuth2AccessTokenOnSuccess() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
-        final AccessTokenData expectedToken = mAccountManagerFacade.getAccessToken(ACCOUNT, scope);
+        final AccessTokenData expectedToken =
+                mAccountManagerFacade.getAccessToken(CORE_ACCOUNT_INFO, scope);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mDelegate.getAccessToken(ACCOUNT, scope, mTokenCallback); });
+                () -> { mDelegate.getAccessToken(CORE_ACCOUNT_INFO, scope, mTokenCallback); });
         Assert.assertEquals(expectedToken.getToken(), mTokenCallback.getToken());
     }
 
@@ -125,10 +132,12 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testGetOAuth2AccessTokenOnFailure() throws AuthException {
         final String scope = "oauth2:http://example.com/scope";
         mAccountManagerFacade.addAccount(ACCOUNT);
-        doReturn(null).when(mAccountManagerFacade).getAccessToken(any(Account.class), anyString());
+        doReturn(null)
+                .when(mAccountManagerFacade)
+                .getAccessToken(any(CoreAccountInfo.class), anyString());
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> { mDelegate.getAccessToken(ACCOUNT, scope, mTokenCallback); });
+                () -> { mDelegate.getAccessToken(CORE_ACCOUNT_INFO, scope, mTokenCallback); });
         Assert.assertNull(mTokenCallback.getToken());
     }
 
@@ -153,7 +162,9 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testHasOAuth2RefreshTokenWhenCacheIsNotPopulated() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            doReturn(new Promise<List<Account>>()).when(mAccountManagerFacade).getAccounts();
+            doReturn(new Promise<List<CoreAccountInfo>>())
+                    .when(mAccountManagerFacade)
+                    .getCoreAccountInfos();
             Assert.assertFalse(mDelegate.hasOAuth2RefreshToken(ACCOUNT.name));
         });
     }

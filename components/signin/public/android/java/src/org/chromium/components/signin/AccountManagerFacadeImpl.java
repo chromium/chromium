@@ -132,15 +132,17 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     /**
      * Synchronously gets an OAuth2 access token. May return a cached version, use
      * {@link #invalidateAccessToken} to invalidate a token in the cache.
-     * @param account The {@link Account} for which the token is requested.
+     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
      * @param scope OAuth2 scope for which the requested token should be valid.
      * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time..
      */
     @Override
-    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
-        assert account != null;
+    public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
+            throws AuthException {
+        assert coreAccountInfo != null;
         assert scope != null;
-        return mDelegate.getAuthToken(account, scope);
+        return mDelegate.getAuthToken(
+                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()), scope);
     }
 
     /**

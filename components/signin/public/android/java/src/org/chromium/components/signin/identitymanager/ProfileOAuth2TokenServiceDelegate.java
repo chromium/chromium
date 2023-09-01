@@ -4,8 +4,6 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import android.accounts.Account;
-
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -21,6 +19,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
 import org.chromium.components.signin.ConnectionRetry;
 import org.chromium.components.signin.ConnectionRetry.AuthTask;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.List;
 
@@ -82,9 +81,10 @@ final class ProfileOAuth2TokenServiceDelegate {
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
         assert accountEmail != null : "Account email cannot be null!";
-        mAccountManagerFacade.getAccounts().then(accounts -> {
-            final Account account = AccountUtils.findAccountByName(accounts, accountEmail);
-            if (account == null) {
+        mAccountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
+            final CoreAccountInfo coreAccountInfo =
+                    AccountUtils.findCoreAccountInfoByEmail(coreAccountInfos, accountEmail);
+            if (coreAccountInfo == null) {
                 ThreadUtils.postOnUiThread(() -> {
                     ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
                             null, AccessTokenData.NO_KNOWN_EXPIRATION_TIME, false, nativeCallback);
@@ -92,7 +92,7 @@ final class ProfileOAuth2TokenServiceDelegate {
                 return;
             }
             String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
-            getAccessToken(account, oauth2Scope, new GetAccessTokenCallback() {
+            getAccessToken(coreAccountInfo, oauth2Scope, new GetAccessTokenCallback() {
                 @Override
                 public void onGetTokenSuccess(AccessTokenData token) {
                     ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
@@ -117,11 +117,12 @@ final class ProfileOAuth2TokenServiceDelegate {
      * @param callback called on successful and unsuccessful fetching of auth token.
      */
     @MainThread
-    void getAccessToken(Account account, String scope, GetAccessTokenCallback callback) {
+    void getAccessToken(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
         ConnectionRetry.runAuthTask(new AuthTask<AccessTokenData>() {
             @Override
             public AccessTokenData run() throws AuthException {
-                return mAccountManagerFacade.getAccessToken(account, scope);
+                return mAccountManagerFacade.getAccessToken(coreAccountInfo, scope);
             }
             @Override
             public void onSuccess(AccessTokenData token) {
@@ -155,13 +156,15 @@ final class ProfileOAuth2TokenServiceDelegate {
      * Called by the native method
      * ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable
      * to check whether the account has an OAuth2 refresh token.
+     * TODO(crbug.com/1477628): Use CoreAccountId instead of string email.
      */
     @VisibleForTesting
     @CalledByNative
-    boolean hasOAuth2RefreshToken(String accountName) {
-        Promise<List<Account>> promise = mAccountManagerFacade.getAccounts();
+    boolean hasOAuth2RefreshToken(String accountEmail) {
+        Promise<List<CoreAccountInfo>> promise = mAccountManagerFacade.getCoreAccountInfos();
         return promise.isFulfilled()
-                && AccountUtils.findAccountByName(promise.getResult(), accountName) != null;
+                && AccountUtils.findCoreAccountInfoByEmail(promise.getResult(), accountEmail)
+                != null;
     }
 
     @VisibleForTesting
@@ -169,12 +172,13 @@ final class ProfileOAuth2TokenServiceDelegate {
     void seedAndReloadAccountsWithPrimaryAccount(@Nullable String primaryAccountId) {
         ThreadUtils.assertOnUiThread();
         mAccountTrackerService.seedAccountsIfNeeded(() -> {
-            final List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
-                    AccountManagerFacadeProvider.getInstance().getAccounts());
+            final List<CoreAccountInfo> coreAccountInfos =
+                    AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                            AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
             ProfileOAuth2TokenServiceDelegateJni.get()
                     .reloadAllAccountsWithPrimaryAccountAfterSeeding(
                             mNativeProfileOAuth2TokenServiceDelegate, primaryAccountId,
-                            AccountUtils.toAccountNames(accounts).toArray(new String[0]));
+                            AccountUtils.toAccountEmails(coreAccountInfos).toArray(new String[0]));
         });
     }
 
@@ -194,6 +198,6 @@ final class ProfileOAuth2TokenServiceDelegate {
                 boolean isTransientError, long nativeCallback);
         void reloadAllAccountsWithPrimaryAccountAfterSeeding(
                 long nativeProfileOAuth2TokenServiceDelegateAndroid, @Nullable String accountId,
-                String[] deviceAccountNames);
+                String[] deviceAccountEmails);
     }
 }
