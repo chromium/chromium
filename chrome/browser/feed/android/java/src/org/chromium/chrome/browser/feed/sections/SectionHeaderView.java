@@ -603,6 +603,11 @@ public class SectionHeaderView extends LinearLayout {
         tab.view.setEnabled(mTextsEnabled);
         adjustTouchDelegate(tab.view);
 
+        // Unread indicator is removed in the updated UI.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)) {
+            return;
+        }
+
         String contentDescription = state.text;
         if (state.hasUnreadContent && mTextsEnabled) {
             contentDescription = contentDescription + ", "

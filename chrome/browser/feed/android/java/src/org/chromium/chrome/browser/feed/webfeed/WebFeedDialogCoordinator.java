@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -119,13 +120,16 @@ class WebFeedDialogCoordinator {
                          : WebFeedPostFollowDialogPresentation.UNAVAILABLE,
                 WebFeedPostFollowDialogPresentation.VALUE_COUNT);
 
-        String description;
+        int descriptionResId;
         String primaryButtonText;
         String secondaryButtonText;
         Callback<Integer> buttonClickCallback;
+        boolean uiUpdateEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE);
         if (isActive) {
-            description = mContext.getString(
-                    R.string.web_feed_post_follow_dialog_stories_ready_description, title);
+            descriptionResId = uiUpdateEnabled
+                    ? R.string.web_feed_post_follow_dialog_stories_ready_description_with_ui_update
+                    : R.string.web_feed_post_follow_dialog_stories_ready_description;
             primaryButtonText = mContext.getString(positiveActionLabelId);
             secondaryButtonText = hasCloseAction ? mContext.getString(R.string.close) : null;
             buttonClickCallback = dismissalCause -> {
@@ -138,12 +142,14 @@ class WebFeedDialogCoordinator {
                 }
             };
         } else {
-            description = mContext.getString(
-                    R.string.web_feed_post_follow_dialog_stories_not_ready_description, title);
+            descriptionResId = uiUpdateEnabled
+                    ? R.string.web_feed_post_follow_dialog_stories_not_ready_description_with_ui_update
+                    : R.string.web_feed_post_follow_dialog_stories_not_ready_description;
             primaryButtonText = mContext.getString(R.string.ok);
             secondaryButtonText = null;
             buttonClickCallback = dismissalCause -> {};
         }
+        String description = mContext.getString(descriptionResId, title);
         return new WebFeedDialogContents(
                 mContext.getString(R.string.web_feed_post_follow_dialog_title, title), description,
                 R.drawable.web_feed_post_follow_illustration, primaryButtonText,
