@@ -184,7 +184,8 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
     case VideoCodec::kVP9:
       accelerator_ = std::make_unique<VP9Decoder>(
           std::make_unique<VideoToolboxVP9Accelerator>(
-              media_log_->Clone(), std::move(accelerator_decode_cb),
+              media_log_->Clone(), config.hdr_metadata(),
+              std::move(accelerator_decode_cb),
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;
@@ -337,14 +338,16 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   metadata->aspect_ratio = config_.aspect_ratio();
   metadata->color_space = accelerator_->GetVideoColorSpace().ToGfxColorSpace();
   if (!metadata->color_space.IsValid()) {
+    // Note: It is expected that the accelerated video decoders are already
+    // doing something similar, since the config color space is being provided
+    // to them.
     metadata->color_space = config_.color_space_info().ToGfxColorSpace();
   }
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
   if (!metadata->hdr_metadata) {
-    // TODO(crbug.com/1331597): This HDR metadata arrives too late to affect the
-    // VideoToolbox format extensions. Either the HDR metadata should be passed
-    // to the accelerator constructors, or the accelerated video decoders need
-    // to pass it through (like they already do for color space).
+    // Note: The VP9 accelerator contains this same logic so that the format
+    // description can include HDR metadata (there is no in-band HDR metadata
+    // in VP9). The other accelerators use only in-band HDR metadata.
     metadata->hdr_metadata = config_.hdr_metadata();
   }
 

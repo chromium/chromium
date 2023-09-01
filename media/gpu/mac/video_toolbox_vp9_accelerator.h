@@ -43,6 +43,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxVP9Accelerator(std::unique_ptr<MediaLog> media_log,
+                             absl::optional<gfx::HDRMetadata> hdr_metadata,
                              DecodeCB decode_cb,
                              OutputCB output_cb);
   ~VideoToolboxVP9Accelerator() override;
@@ -70,6 +71,7 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   bool AppendData(CMBlockBufferRef dest, const uint8_t* data, size_t data_size);
 
   std::unique_ptr<MediaLog> media_log_;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
 
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
