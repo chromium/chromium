@@ -165,7 +165,7 @@ void SyncInternalsMessageHandler::RegisterMessages() {
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
     const base::Value::List& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty());
   AllowJavascript();
 
   // is_registered_ flag protects us from double-registering.  This could
@@ -186,7 +186,7 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     const base::Value::List& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty());
   AllowJavascript();
 
   base::Value::Dict event_details;
@@ -202,7 +202,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
     const base::Value::List& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty());
   AllowJavascript();
 
   base::Value::Dict value;
@@ -215,7 +215,7 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
     const base::Value::List& args) {
-  DCHECK_EQ(1U, args.size());
+  CHECK_EQ(1U, args.size());
   AllowJavascript();
 
   const std::string& callback_id = args[0].GetString();
@@ -234,14 +234,14 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
     const base::Value::List& args) {
-  DCHECK_EQ(1U, args.size());
+  CHECK_EQ(1U, args.size());
   AllowJavascript();
   include_specifics_ = args[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleWriteUserEvent(
     const base::Value::List& args) {
-  DCHECK_EQ(2U, args.size());
+  CHECK_EQ(2U, args.size());
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -266,7 +266,7 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::Value::List& args) {
-  DCHECK_EQ(0U, args.size());
+  CHECK_EQ(0U, args.size());
 
   SyncService* service = GetSyncService();
   if (!service) {
@@ -283,7 +283,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::Value::List& args) {
-  DCHECK_EQ(0U, args.size());
+  CHECK_EQ(0U, args.size());
 
   SyncService* service = GetSyncService();
   if (!service) {
