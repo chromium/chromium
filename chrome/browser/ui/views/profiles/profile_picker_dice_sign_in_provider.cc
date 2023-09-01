@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -272,9 +273,16 @@ void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
 }
 
 GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
+  // Activating `kSigninPageWithoutOutboundLinks` will use the embedded version
+  // of the gaia page with no outbound links.
+  signin::Flow signin_flow =
+      base::FeatureList::IsEnabled(kGaiaSigninUrlEmbedded)
+          ? signin::Flow::EMBEDDED_PROMO
+          : signin::Flow::PROMO;
+
   return signin::GetChromeSyncURLForDice({
       .request_dark_scheme = host_->ShouldUseDarkColors(),
-      .for_promo_flow = true,
+      .flow = signin_flow,
   });
 }
 

@@ -109,3 +109,7 @@ BASE_FEATURE(kProfilesReordering,
 BASE_FEATURE(kForceSigninFlowInProfilePicker,
              "ForceSigninFlowInProfilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGaiaSigninUrlEmbedded,
+             "GaiaSigninUrlEmbedded",
+             base::FEATURE_DISABLED_BY_DEFAULT);

@@ -83,8 +83,16 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
   if (args.request_dark_scheme) {
     url = net::AppendQueryParameter(url, "color_scheme", "dark");
   }
-  if (args.for_promo_flow) {
-    url = net::AppendQueryParameter(url, "flow", "promo");
+  switch (args.flow) {
+    // Default behavior.
+    case Flow::NONE:
+      break;
+    case Flow::PROMO:
+      url = net::AppendQueryParameter(url, "flow", "promo");
+      break;
+    case Flow::EMBEDDED_PROMO:
+      url = net::AppendQueryParameter(url, "flow", "embedded_promo");
+      break;
   }
   return url;
 }

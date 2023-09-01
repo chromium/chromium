@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -79,8 +81,13 @@ content::WebContents* WithProfilePickerTestHelpers::web_contents() {
 }
 
 GURL WithProfilePickerTestHelpers::GetSigninChromeSyncDiceUrl() {
+  signin::Flow signin_flow =
+      base::FeatureList::IsEnabled(kGaiaSigninUrlEmbedded)
+          ? signin::Flow::EMBEDDED_PROMO
+          : signin::Flow::PROMO;
+
   return signin::GetChromeSyncURLForDice({
       .request_dark_scheme = view()->ShouldUseDarkColors(),
-      .for_promo_flow = true,
+      .flow = signin_flow,
   });
 }
