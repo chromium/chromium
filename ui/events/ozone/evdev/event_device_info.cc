@@ -55,22 +55,28 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x03f0, 0x4e41},  // HP OMEN Vector Wireless Mouse
     {0x03f0, 0xa407},  // HP X4000 Wireless Mouse
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
+    {0x045e, 0x07a2},  // Microsoft Sculpt Comfort Mouse
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
     {0x045e, 0x082a},  // Microsoft Pro IntelliMouse
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
     {0x045e, 0x0845},  // Microsoft Ocean Plastic Mouse
+    {0x045e, 0x0932},  // Microsoft Surface Arc Mouse
     {0x045e, 0x095d},  // Microsoft Surface Mobile Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
     {0x046d, 0x4026},  // Logitech T400
     {0x046d, 0x405e},  // Logitech M720 Triathlon (Unifying)
     {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying) // nocheck
     {0x046d, 0x406b},  // Logitech M585 (Unifying)
+    {0x046d, 0x406f},  // Logitech MX Ergo
     {0x046d, 0x4072},  // Logitech MX Anywhere 2 (Unifying)
+    {0x046d, 0x407b},  // Logitech MX Vertical
     {0x046d, 0x4080},  // Logitech Pebble M350
+    {0x046d, 0x4082},  // Logitech MX Master 3 (Unifying)
     {0x046d, 0xb00d},  // Logitech T630 Ultrathin
     {0x046d, 0xb011},  // Logitech M558
     {0x046d, 0xb012},  // Logitech MX Master (Bluetooth) // nocheck
     {0x046d, 0xb013},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb014},  // Logitech M337
     {0x046d, 0xb015},  // Logitech M720 Triathlon (Bluetooth)
     {0x046d, 0xb016},  // Logitech M535
     {0x046d, 0xb017},  // Logitech MX Master / Anywhere 2 (Bluetooth) // nocheck
@@ -86,6 +92,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc088},  // Logitech G Pro Wireless (USB)
     {0x046d, 0xc08b},  // Logitech G502 Hero
+    {0x046d, 0xc092},  // Logitech G203 LIGHTSYNC
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc094},  // Logitech G Pro Wireless X Superlight (USB)
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
@@ -94,8 +101,10 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
     {0x05e0, 0x1200},  // Symbol Technologies / Zebra LS2208 barcode scanner
+    {0x0951, 0x16e2},  // HyperX Pulsefire Dart
     {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
     {0x0a5c, 0x8502},  // PageFlip Firefly (Bluetooth)
+    {0x0b05, 0x1949},  // ASUS ROG Strix Impact II
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
     {0x1038, 0x0470},  // SteelSeries Reaper Edge
     {0x1038, 0x0471},  // SteelSeries Rival Rescuer
@@ -244,12 +253,19 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x12cf, 0x0490},  // Acer Cestus 325
+    {0x1532, 0x0062},  // Razer Atheris
+    {0x1532, 0x0071},  // Razer DeathAdder Essential - White
+    {0x1532, 0x0078},  // Razer Viper
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x1532, 0x007d},  // Razer DeathAdder V2 Pro
+    {0x1532, 0x0083},  // Razer Basilsk X HyperSpeed
     {0x1532, 0x008a},  // Razer Viper Mini
     {0x1532, 0x0094},  // Razer Orochi V2 (USB dongle)
+    {0x1532, 0x0098},  // Razer DeathAdder Essential
     {0x1532, 0x009a},  // Razer Pro Click Mini (Dongle)
     {0x1532, 0x009b},  // Razer Pro Click Mini (Bluetooth)
+    {0x1532, 0x00b6},  // Razer DeathAdder V3 Pro
     {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
     {0x17ef, 0x60e4},  // Lenovo Legion M300 RGB Gaming Mouse
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
@@ -257,6 +273,8 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
+    {0x1e7d, 0x2c88},  // ROCCAT Cone Pro
+    {0x1e7d, 0x2ca6},  // ROCCAT Burst Pro Air (USB dongle)
     {0x2201, 0x0100},  // AirTurn PEDpro
     {0x256c, 0x006d},  // Huion HS64
     {0x258a, 0x1007},  // Acer Cestus 330

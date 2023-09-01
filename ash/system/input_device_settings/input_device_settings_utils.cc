@@ -141,17 +141,31 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
   static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
   static constexpr auto kKeyboardsPretendingToBeMice =
       base::MakeFixedFlatSet<VendorProductId>({
+          {0x03f0, 0x1f41},  // HP OMEN Sequencer
           {0x046d, 0x408a},  // Logitech MX Keys (Universal Receiver)
+          {0x046d, 0xb359},  // Logitech ERGO K860
           {0x046d, 0xb35b},  // Logitech MX Keys (Bluetooth)
           {0x046d, 0xb35f},  // Logitech G915 TKL (Bluetooth)
+          {0x046d, 0xb361},  // Logitech MX Keys for Mac (Bluetooth)
           {0x046d, 0xc336},  // Logitech G213
+          {0x046d, 0xc33f},  // Logitech G815 RGB
           {0x046d, 0xc343},  // Logitech G915 TKL (USB)
-          {0x05ac, 0x024f},  // EGA MGK2 (Bluetooth)
+          {0x05ac, 0x024f},  // EGA MGK2 (Bluetooth) + Keychron K2
           {0x05ac, 0x0256},  // EGA MGK2 (USB)
           {0x0951, 0x16e5},  // HyperX Alloy Origins
           {0x0951, 0x16e6},  // HyperX Alloy Origins Core
+          {0x1b1c, 0x1b2d},  // Corsair Gaming K95 RGB Platinum
+          {0x1532, 0x022a},  // Razer Cynosa Chroma
+          {0x1532, 0x025d},  // Razer Ornata V2
           {0x1532, 0x025e},  // Razer Cynosa V2
+          {0x1532, 0x026b},  // Razer Huntsman V2 Tenkeyless
+          {0x28da, 0x1101},  // G.Skill KM780
           {0x29ea, 0x0102},  // Kinesis Freestyle Edge RGB
+          {0x2f68, 0x0082},  // Durgod Taurus K320
+          {0x320f, 0x5044},  // Glorious GMMK Pro
+          {0x3434, 0x0121},  // Keychron Q3
+          {0x3434, 0x0151},  // Keychron Q5
+          {0x3434, 0x0163},  // Keychron Q6
       });
 
   if (kKeyboardsPretendingToBeMice.contains(

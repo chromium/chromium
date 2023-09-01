@@ -686,8 +686,11 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardMouseComboDeviceMetric(
   static base::NoDestructor<base::flat_set<std::string>> logged_devices;
   static constexpr auto kKnownKeyboardMouseComboDevices =
       base::MakeFixedFlatSet<base::StringPiece>({
+          "046d:4024",  // Logitech K400
           "046d:404d",  // Logitech K400+
           "046d:c548",  // Logitech BOLT Receiver
+          "17ef:60ee",  // Lenovo TrackPoint Keyboard II
+          "17ef:609f",  // Lenovo 100 USB-A Wireless Combo Keyboard and Mouse
       });
 
   auto [_, inserted] = logged_devices->insert(keyboard.device_key);
