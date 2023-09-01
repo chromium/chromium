@@ -24,8 +24,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   ~DiscoverFeedService() override;
 
   // Creates models for all enabled feed types.
-  // TODO(crbug.com/1277974): Remove this in favor of initializing feed models
-  // separately.
   virtual void CreateFeedModels() = 0;
 
   // Creates a single feed model based on the given model configuration.

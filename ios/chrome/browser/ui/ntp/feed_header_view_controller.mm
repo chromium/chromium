@@ -259,7 +259,9 @@ NSInteger kFeedSymbolPointSize = 17;
   FeedType selectedFeed = [self.feedControlDelegate selectedFeed];
   self.segmentedControl.selectedSegmentIndex =
       static_cast<NSInteger>(selectedFeed);
-  self.sortButton.alpha = selectedFeed == FeedTypeDiscover ? 0 : 1;
+  if (!IsFollowUIUpdateEnabled()) {
+    self.sortButton.alpha = selectedFeed == FeedTypeDiscover ? 0 : 1;
+  }
 }
 
 #pragma mark - Setters
@@ -267,6 +269,7 @@ NSInteger kFeedSymbolPointSize = 17;
 // Sets `followingFeedSortType` and recreates the sort menu to assign the active
 // sort type.
 - (void)setFollowingFeedSortType:(FollowingFeedSortType)followingFeedSortType {
+  CHECK(!IsFollowUIUpdateEnabled());
   _followingFeedSortType = followingFeedSortType;
   if (self.sortButton) {
     self.sortButton.menu = [self createSortMenu];
@@ -373,11 +376,14 @@ NSInteger kFeedSymbolPointSize = 17;
               forState:UIControlStateNormal];
   sortButton.showsMenuAsPrimaryAction = YES;
 
-  // The sort button is only visible if the Following feed is selected.
-  // TODO(crbug.com/1277974): Determine if the button should show when the feed
-  // is hidden.
-  sortButton.alpha =
-      [self.feedControlDelegate selectedFeed] == FeedTypeFollowing ? 1 : 0;
+  // The sort button is only visible if the Following feed is selected, and if
+  // the Follow UI update is not enabled.
+  if (IsFollowUIUpdateEnabled()) {
+    sortButton.alpha = 0;
+  } else {
+    sortButton.alpha =
+        [self.feedControlDelegate selectedFeed] == FeedTypeDiscover ? 0 : 1;
+  }
 
   if (@available(iOS 15.0, *)) {
     sortButton.configuration = [UIButtonConfiguration plainButtonConfiguration];
@@ -670,7 +676,12 @@ NSInteger kFeedSymbolPointSize = 17;
   [self.segmentedControl addSubview:self.followingDot];
 
   self.sortButton = [self createSortButton];
-  self.sortButton.menu = [self createSortMenu];
+  // If the Follow UI update is enabled, we still create the sort button to help
+  // anchor the segmented control. However, the sort button remains invisible
+  // and the menu is not created.
+  if (!IsFollowUIUpdateEnabled()) {
+    self.sortButton.menu = [self createSortMenu];
+  }
   [self.container addSubview:self.sortButton];
 
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
@@ -749,7 +760,8 @@ NSInteger kFeedSymbolPointSize = 17;
       // Only show sorting button for Following feed.
       [UIView animateWithDuration:kSegmentAnimationDuration
                        animations:^{
-                         self.sortButton.alpha = 1;
+                         self.sortButton.alpha =
+                             IsFollowUIUpdateEnabled() ? 0 : 1;
                        }];
       break;
     }

@@ -642,8 +642,10 @@
   self.feedHeaderViewController.feedControlDelegate = self;
   self.feedHeaderViewController.ntpDelegate = self;
   self.feedHeaderViewController.feedMetricsRecorder = self.feedMetricsRecorder;
-  self.feedHeaderViewController.followingFeedSortType =
-      self.followingFeedSortType;
+  if (!IsFollowUIUpdateEnabled()) {
+    self.feedHeaderViewController.followingFeedSortType =
+        self.followingFeedSortType;
+  }
   self.NTPViewController.feedHeaderViewController =
       self.feedHeaderViewController;
 
@@ -1126,9 +1128,11 @@
 
 - (void)updateForSelectedFeed:(FeedType)selectedFeed {
   [self selectFeedType:selectedFeed];
-  // Reassign the sort type in case it changed in another tab.
-  self.feedHeaderViewController.followingFeedSortType =
-      self.followingFeedSortType;
+  if (!IsFollowUIUpdateEnabled()) {
+    // Reassign the sort type in case it changed in another tab.
+    self.feedHeaderViewController.followingFeedSortType =
+        self.followingFeedSortType;
+  }
   // Update the header so that it's synced with the currently selected
   // feed, which could have been changed when a new web state was
   // inserted.
