@@ -3437,6 +3437,10 @@
       status: {"Android": "test"},
     },
     {
+      name: "SmilAutoSuspendOnLag",
+      status: "stable",
+    },
+    {
       // If enabled Border, Outline and Column-Rule Widths
       // will be pixel snapped before layout.
       name: "SnapBorderWidthsBeforeLayout",
