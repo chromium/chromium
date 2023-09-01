@@ -24,14 +24,16 @@ class GraphInfoBuilder final {
   GraphInfoBuilder& operator=(const GraphInfoBuilder&) = delete;
   ~GraphInfoBuilder();
 
-  uint64_t BuildOperand(
-      const std::vector<uint32_t>& dimensions,
-      mojom::Operand::DataType type,
-      mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
+  uint64_t BuildIntermediateOperand(const std::vector<uint32_t>& dimensions,
+                                    mojom::Operand::DataType type);
 
   uint64_t BuildInput(const std::string& name,
                       const std::vector<uint32_t>& dimensions,
                       mojom::Operand::DataType type);
+
+  uint64_t BuildConstant(const std::vector<uint32_t>& dimensions,
+                         mojom::Operand::DataType type,
+                         base::span<const uint8_t> values);
 
   uint64_t BuildOutput(const std::string& name,
                        const std::vector<uint32_t>& dimensions,
@@ -54,6 +56,11 @@ class GraphInfoBuilder final {
   mojom::GraphInfoPtr CloneGraphInfo() const;
 
  private:
+  uint64_t BuildOperand(
+      const std::vector<uint32_t>& dimensions,
+      mojom::Operand::DataType type,
+      mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
+
   mojom::GraphInfoPtr graph_info_;
   uint64_t operand_id_ = 0;
 };

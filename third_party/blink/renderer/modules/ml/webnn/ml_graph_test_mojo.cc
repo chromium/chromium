@@ -1453,6 +1453,130 @@ TEST_P(MLGraphTestMojo, SoftmaxTest) {
   }
 }
 
+template <typename T>
+struct ConstantTester {
+  OperandInfo<T> constant;
+  OperandInfoMojo expected;
+  Vector<T> expected_constant_data;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* constant_operand =
+        BuildConstant(builder, constant.dimensions, constant.type,
+                      constant.values, scope.GetExceptionState());
+    auto* output_operand =
+        builder->relu(constant_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    EXPECT_EQ(graph_info->id_to_operand_map.size(), 2u);
+    EXPECT_EQ(graph_info->constant_id_to_buffer_map.size(), 1u);
+    // Verify the constant `mojo::Operand`.
+    for (auto& [constant_id, constant_buffer] :
+         graph_info->constant_id_to_buffer_map) {
+      auto constant_operand_iter =
+          graph_info->id_to_operand_map.find(constant_id);
+      ASSERT_TRUE(constant_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(constant_operand_iter->value->kind,
+                blink_mojom::Operand::Kind::kConstant);
+      EXPECT_EQ(constant_operand_iter->value->data_type, expected.type);
+      EXPECT_EQ(constant_operand_iter->value->dimensions, expected.dimensions);
+      EXPECT_EQ(constant_operand_iter->value->name.empty(), true);
+      // Verify the constant data in the mojo.
+      const wtf_size_t constant_size =
+          base::checked_cast<wtf_size_t>(constant_buffer.size() / sizeof(T));
+      Vector<T> constant_data(constant_size);
+      memcpy(constant_data.data(), constant_buffer.data(),
+             constant_buffer.size());
+      EXPECT_EQ(expected_constant_data, constant_data);
+    }
+  }
+};
+
+TEST_P(MLGraphTestMojo, ConstantTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  {
+    // Test Constant operand for Float32 data type.
+    ConstantTester<float>{
+        .constant = {.type = V8MLOperandType::Enum::kFloat32,
+                     .dimensions = {2, 3},
+                     .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test Constant operand for Float16 data type.
+    ConstantTester<uint16_t>{
+        .constant = {.type = V8MLOperandType::Enum::kFloat16,
+                     .dimensions = {2, 3},
+                     .values = {1, 2, 3, 4, 5, 6}},
+        .expected = {.type = blink_mojom::Operand::DataType::kFloat16,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test Constant operand for Int32 data type.
+    ConstantTester<int32_t>{
+        .constant = {.type = V8MLOperandType::Enum::kInt32,
+                     .dimensions = {2, 3},
+                     .values = {1, 2, 3, 4, 5, 6}},
+        .expected = {.type = blink_mojom::Operand::DataType::kInt32,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test Constant operand for UInt32 data type.
+    ConstantTester<uint32_t>{
+        .constant = {.type = V8MLOperandType::Enum::kUint32,
+                     .dimensions = {2, 3},
+                     .values = {1, 2, 3, 4, 5, 6}},
+        .expected = {.type = blink_mojom::Operand::DataType::kUint32,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test Constant operand for Int8 data type.
+    ConstantTester<int8_t>{
+        .constant = {.type = V8MLOperandType::Enum::kInt8,
+                     .dimensions = {2, 3},
+                     .values = {1, 2, 3, 4, 5, 6}},
+        .expected = {.type = blink_mojom::Operand::DataType::kInt8,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test Constant operand for UInt8 data type.
+    ConstantTester<uint8_t>{
+        .constant = {.type = V8MLOperandType::Enum::kUint8,
+                     .dimensions = {2, 3},
+                     .values = {1, 2, 3, 4, 5, 6}},
+        .expected = {.type = blink_mojom::Operand::DataType::kUint8,
+                     .dimensions = {2, 3}},
+        .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+}
+
 TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.

@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -46,6 +47,23 @@ class GraphImpl final : public WebNNGraphImpl {
   ~GraphImpl() override;
 
  private:
+  // The members of `InputBufferBindingInfo` are used to create the buffer
+  // binding (DML_BUFFER_BINDING) array for graph initialization and execution.
+  struct InputBufferBindingInfo {
+    InputBufferBindingInfo();
+    ~InputBufferBindingInfo();
+
+    InputBufferBindingInfo(const InputBufferBindingInfo&) = delete;
+    InputBufferBindingInfo& operator=(const InputBufferBindingInfo&) = delete;
+
+    // The key constant id is used to get the GraphInputIndex to bind a constant
+    // buffer for initialization.
+    std::map<uint64_t, uint32_t> constant_id_to_graph_input_index_map;
+    // The key input name is used to get the GraphInputIndex to bind a input
+    // buffer for inference.
+    std::unordered_map<std::string, uint32_t> graph_input_name_to_index_map;
+  };
+
   GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
             Microsoft::WRL::ComPtr<ID3D12Resource> persistent_buffer,
             Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -67,6 +85,8 @@ class GraphImpl final : public WebNNGraphImpl {
   static void OnCompilationComplete(
       mojom::WebNNContext::CreateGraphCallback callback,
       std::unique_ptr<CommandRecorder> command_recorder,
+      base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
+      std::unique_ptr<InputBufferBindingInfo> input_buffer_binding_info,
       std::unique_ptr<ComputeResourceInfo> compute_resource_info,
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator);
 

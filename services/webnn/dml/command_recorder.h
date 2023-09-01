@@ -111,6 +111,9 @@ class CommandRecorder final {
       base::span<const DML_BINDING_DESC> output_bindings,
       const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
+  // TODO(crbug.com/1476375): Associates a name with the default, upload and
+  // readback buffer.
+  //
   // Create a resource with `size` bytes in
   // D3D12_RESOURCE_STATE_UNORDERED_ACCESS state from the default heap of the
   // owned D3D12 device. For this method and the other two, if there are no

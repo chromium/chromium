@@ -167,4 +167,35 @@ DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
   return feature_levels_supported.MaxSupportedFeatureLevel;
 }
 
+D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
+                                               D3D12_RESOURCE_STATES before,
+                                               D3D12_RESOURCE_STATES after) {
+  return {.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
+          .Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+          .Transition = {.pResource = resource,
+                         .Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
+                         .StateBefore = before,
+                         .StateAfter = after}};
+}
+
+void UploadBufferWithBarrier(CommandRecorder* command_recorder,
+                             ID3D12Resource* dst_resource,
+                             ID3D12Resource* src_buffer,
+                             size_t buffer_size) {
+  // Copy the data from source buffer to destination buffer.
+  D3D12_RESOURCE_BARRIER barriers[1];
+  barriers[0] = CreateTransitionBarrier(dst_resource,
+                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+                                        D3D12_RESOURCE_STATE_COPY_DEST);
+  command_recorder->ResourceBarrier(barriers);
+  command_recorder->CopyBufferRegion(dst_resource, 0, src_buffer, 0,
+                                     buffer_size);
+  // The bound resources should be in D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+  // state before the execution of RecordDispatch on the GPU.
+  barriers[0] =
+      CreateTransitionBarrier(dst_resource, D3D12_RESOURCE_STATE_COPY_DEST,
+                              D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+  command_recorder->ResourceBarrier(barriers);
+}
+
 }  // namespace webnn::dml

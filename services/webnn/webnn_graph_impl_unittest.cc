@@ -1224,4 +1224,134 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   }
 }
 
+struct ConstantOperandTester {
+  std::vector<uint8_t> values;
+  bool expected;
+
+  void Test() {
+    const std::vector<uint32_t> dimensions = {3, 5};
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t lhs_operand_id =
+        builder.BuildInput("lhs", dimensions, mojom::Operand::DataType::kUint8);
+    uint64_t rhs_operand_id = builder.BuildConstant(
+        dimensions, mojom::Operand::DataType::kUint8, values);
+    uint64_t output_operand_id = builder.BuildOutput(
+        "output", dimensions, mojom::Operand::DataType::kUint8);
+    builder.BuildOperator(mojom::Operator::Kind::kAdd,
+                          {lhs_operand_id, rhs_operand_id},
+                          {output_operand_id});
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ValidateConstantOperandTest) {
+  {
+    // Test valid constant data.
+    ConstantOperandTester{.values = std::vector<uint8_t>(15), .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the byte length of constant data doesn't match
+    // the graph's expected.
+    ConstantOperandTester{.values = std::vector<uint8_t>(10), .expected = false}
+        .Test();
+  }
+}
+
+// Test building a graph with two inputs and two constant in the following
+// topology.
+//    [input_a] [constant_a] [input_b] [constant_b]
+//           \    /                \    /
+//            gemm                  gemm
+//                \                /
+//                       gemm
+TEST_F(WebNNGraphImplTest, BuildMultipleInputsAppendingConstants) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  // The graph outputs are built first, and then inputs / constants.
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
+  uint64_t constant_a_operand_id = builder.BuildConstant(
+      {2, 2}, mojom::Operand::DataType::kFloat32,
+      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
+                      constant_data.size() * sizeof(float)));
+  uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_a_operand_id, constant_a_operand_id},
+      {intermediate_1_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t constant_b_operand_id = builder.BuildConstant(
+      {2, 2}, mojom::Operand::DataType::kFloat32,
+      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
+                      constant_data.size() * sizeof(float)));
+  uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {input_b_operand_id, constant_b_operand_id},
+      {intermediate_2_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm,
+      {intermediate_1_operand_id, intermediate_2_operand_id},
+      {output_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+}
+
+// Test building a graph with two inputs and two constant in the following
+// topology.
+//    [constant_a] [input_a] [constant_b] [input_b]
+//           \    /                \    /
+//            gemm                  gemm
+//                \                /
+//                       gemm
+TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  // The graph outputs are built first, and then inputs / constants.
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  std::vector<float> constant_data = {5.0, 6.0, 7.0, 8.0};
+  uint64_t constant_a_operand_id = builder.BuildConstant(
+      {2, 2}, mojom::Operand::DataType::kFloat32,
+      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
+                      constant_data.size() * sizeof(float)));
+  uint64_t input_a_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {constant_a_operand_id, input_a_operand_id},
+      {intermediate_1_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+
+  uint64_t input_b_operand_id =
+      builder.BuildInput("input_b", {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t constant_b_operand_id = builder.BuildConstant(
+      {2, 2}, mojom::Operand::DataType::kFloat32,
+      base::make_span(reinterpret_cast<const uint8_t*>(constant_data.data()),
+                      constant_data.size() * sizeof(float)));
+  uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm, {constant_b_operand_id, input_b_operand_id},
+      {intermediate_2_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+
+  builder.BuildOperator(
+      mojom::Operator::Kind::kGemm,
+      {intermediate_1_operand_id, intermediate_2_operand_id},
+      {output_operand_id},
+      mojom::OperatorAttributes::NewGemm(mojom::GemmAttributes::New()));
+  EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), true);
+}
+
 }  // namespace webnn

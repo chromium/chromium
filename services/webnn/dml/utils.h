@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "services/webnn/dml/command_recorder.h"
 
 namespace webnn::dml {
 
@@ -36,6 +37,19 @@ ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device);
 
 // Returns the maximum feature level supported by the DML device.
 DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device);
+
+// Creates a transition barrier which is used to specify the resource is
+// transitioning from `before` to `after` states.
+D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
+                                               D3D12_RESOURCE_STATES before,
+                                               D3D12_RESOURCE_STATES after);
+
+// Helper function to upload data from CPU to GPU, the resource can be created
+// for a single buffer or a big buffer combined from multiple buffers.
+void UploadBufferWithBarrier(CommandRecorder* command_recorder,
+                             ID3D12Resource* dst_resource,
+                             ID3D12Resource* src_buffer,
+                             size_t buffer_size);
 
 }  // namespace webnn::dml
 

@@ -18,6 +18,8 @@ namespace blink {
 
 namespace {
 
+using webnn::mojom::blink::OperandPtr;
+
 base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs) {
   // The `GraphInfo` represents an entire information of WebNN graph.
@@ -29,8 +31,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
   HeapHashMap<Member<const MLOperand>, uint64_t> operand_to_id_map;
   for (const auto& [name, operand] : named_outputs) {
     // Create `mojo::Operand` for output operands of graph with the name.
-    auto output_operand =
-        mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get());
+    auto output_operand = mojo::ConvertTo<OperandPtr>(operand.Get());
     output_operand->name = name;
     operand_id++;
     graph_info->id_to_operand_map.insert(operand_id, std::move(output_operand));
@@ -54,18 +55,27 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
           // Create `mojo::Operand` for the input MLOperand.
           operand_id++;
           graph_info->id_to_operand_map.insert(
-              operand_id,
-              mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
+              operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
           //  Build the array of input operands for this graph with the id.
           graph_info->input_operands.push_back(operand_id);
           operand_to_id_map.insert(operand, operand_id);
           break;
         }
         case MLOperand::OperandKind::kConstant: {
-          // TODO(crbug.com/1273291): Convert `mojo::Operand` for constant
-          // operand.
-          NOTIMPLEMENTED();
-          return nullptr;
+          // Convert `mojo::Operand` for constant operand.
+          operand_id++;
+          graph_info->id_to_operand_map.insert(
+              operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
+          //  Build the map of constant operands for this graph with the id.
+          const auto* array_buffer_view = operand->ArrayBufferView();
+          CHECK(array_buffer_view);
+          CHECK(!array_buffer_view->IsDetached());
+          graph_info->constant_id_to_buffer_map.insert(
+              operand_id, base::make_span(static_cast<const uint8_t*>(
+                                              array_buffer_view->BaseAddress()),
+                                          array_buffer_view->byteLength()));
+          operand_to_id_map.insert(operand, operand_id);
+          break;
         }
         case MLOperand::OperandKind::kOutput:
           // Because the operators are visited in topological order, if this
@@ -85,8 +95,7 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
       // operators. Create `mojo::Operand` for this operand.
       operand_id++;
       graph_info->id_to_operand_map.insert(
-          operand_id,
-          mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
+          operand_id, mojo::ConvertTo<OperandPtr>(operand.Get()));
       operand_to_id_map.insert(operand, operand_id);
     }
 

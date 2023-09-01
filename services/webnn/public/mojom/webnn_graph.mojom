@@ -173,6 +173,9 @@ struct GraphInfo {
   array<uint64> output_operands;
   // The operators are sorted in the topological order.
   array<Operator> operators;
+  // The constant weight data specified through the MLGraphBuilder.constant()
+  // method defined in the WebIDL, the key is the constant operand id.
+  map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;
 };
 
 enum ComputeResult {

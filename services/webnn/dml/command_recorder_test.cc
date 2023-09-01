@@ -16,21 +16,6 @@
 
 namespace webnn::dml {
 
-namespace {
-
-D3D12_RESOURCE_BARRIER CreateTransitionBarrier(ID3D12Resource* resource,
-                                               D3D12_RESOURCE_STATES before,
-                                               D3D12_RESOURCE_STATES after) {
-  return {.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
-          .Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
-          .Transition = {.pResource = resource,
-                         .Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
-                         .StateBefore = before,
-                         .StateAfter = after}};
-}
-
-}  // namespace
-
 using Microsoft::WRL::ComPtr;
 
 const size_t kBufferSize = 16;
@@ -74,19 +59,8 @@ void WebNNCommandRecorderTest::Upload(CommandRecorder* command_recorder,
   upload_buffer->Unmap(0, nullptr);
 
   // Copy the input data from upload buffer to input buffer.
-  D3D12_RESOURCE_BARRIER barriers[1];
-  barriers[0] = CreateTransitionBarrier(dst_resource,
-                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-                                        D3D12_RESOURCE_STATE_COPY_DEST);
-  command_recorder->ResourceBarrier(barriers);
-  command_recorder->CopyBufferRegion(dst_resource, 0, upload_buffer.Get(), 0,
-                                     buffer_size);
-  // The bound resources should be in D3D12_RESOURCE_STATE_UNORDERED_ACCESS
-  // state before the execution of RecordDispatch on the GPU.
-  barriers[0] =
-      CreateTransitionBarrier(dst_resource, D3D12_RESOURCE_STATE_COPY_DEST,
-                              D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
-  command_recorder->ResourceBarrier(barriers);
+  UploadBufferWithBarrier(command_recorder, dst_resource, upload_buffer.Get(),
+                          buffer_size);
 
   // Keep the upload_buffer alive until the GPU work is done.
   adapter_->command_queue()->ReferenceUntilCompleted(std::move(upload_buffer));

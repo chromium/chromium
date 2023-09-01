@@ -87,21 +87,123 @@ std::string OpKindToString(Operator::Kind kind) {
   }
 }
 
+// Upload constants/inputs buffers in one Direct3D 12 committed resource, the
+// DML_BUFFER_BINDING specifies a resource binding described by a range of bytes
+// in the single buffer.
+template <typename T>
+absl::optional<base::flat_map<T, DML_BUFFER_BINDING>>
+UploadAndCreateBufferBinding(
+    CommandRecorder* command_recorder,
+    const base::flat_map<T, mojo_base::BigBuffer>& input_to_buffer_map) {
+  // Copy all array buffers of constants/inputs to an upload heap and create a
+  // committed resource which is mapped to the heap.
+  //
+  // Calculate the total byte length of constants/inputs array buffer to create
+  // an upload buffer which can be read by GPU.
+  base::CheckedNumeric<size_t> total_byte_length(0);
+  base::flat_map<T, D3D12_RANGE> input_to_range_map;
+  for (auto& [input_id, input_buffer] : input_to_buffer_map) {
+    auto& subresource_range = input_to_range_map[input_id];
+    // There is only one upload heap for all constants/inputs, the byte offset
+    // in the `Begin` attribute is used to get the copied address for each
+    // constant/input tensor.
+    subresource_range.Begin = total_byte_length.ValueOrDie();
+
+    // The buffer has a minimum base address alignment requirement of 16 bytes
+    // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
+    total_byte_length += base::bits::AlignUp<size_t>(
+        input_buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+    if (!total_byte_length.IsValid()) {
+      DLOG(ERROR) << "Failed to calculate the total byte length of the input.";
+      return absl::nullopt;
+    }
+    // The aligned byte length calculated with `End` sub `Begin` attribute is
+    // used to set the `SizeInBytes` field of `DML_BUFFER_BINDING`.
+    subresource_range.End = total_byte_length.ValueOrDie();
+  }
+
+  // Create the upload heap that can be written by CPU and read from GPU, and
+  // create a resource to map the heap.
+  ComPtr<ID3D12Resource> upload_buffer;
+  HRESULT hr = command_recorder->CreateUploadBuffer(
+      total_byte_length.ValueOrDie(), upload_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to create upload buffer for the input: "
+                << logging::SystemErrorCodeToString(hr);
+    return absl::nullopt;
+  }
+  // Create the default heap that only can be accessed by GPU not provide CPU
+  // access, and create a resource to map the heap.
+  ComPtr<ID3D12Resource> default_buffer;
+  hr = command_recorder->CreateDefaultBuffer(total_byte_length.ValueOrDie(),
+                                             default_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to create default buffer: "
+                << logging::SystemErrorCodeToString(hr);
+    return absl::nullopt;
+  }
+
+  // Map entire resource to copy the array buffer of constant/input one by one
+  // with byte offset.
+  void* mapped_upload_buffer = nullptr;
+  hr = upload_buffer->Map(0, nullptr, &mapped_upload_buffer);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to map upload buffer for inputs: "
+                << logging::SystemErrorCodeToString(hr);
+    return absl::nullopt;
+  }
+  base::flat_map<T, DML_BUFFER_BINDING> buffer_binding;
+  for (auto& [input_id, input_buffer] : input_to_buffer_map) {
+    // Copy the input data to the upload heap with byte offset
+    auto& subresource_range = input_to_range_map.at(input_id);
+    memcpy(
+        static_cast<uint8_t*>(mapped_upload_buffer) + subresource_range.Begin,
+        input_buffer.data(), input_buffer.size());
+    // Create the buffer binding for each constant/input and push back into the
+    // DML_BUFFER_BINDING array.
+    auto size_in_bytes = subresource_range.End - subresource_range.Begin;
+    buffer_binding[input_id] =
+        DML_BUFFER_BINDING{.Buffer = default_buffer.Get(),
+                           .Offset = subresource_range.Begin,
+                           .SizeInBytes = size_in_bytes};
+  }
+  upload_buffer->Unmap(0, nullptr);
+
+  UploadBufferWithBarrier(command_recorder, default_buffer.Get(),
+                          upload_buffer.Get(), total_byte_length.ValueOrDie());
+  // Keep the default_buffer and upload_buffer alive until the GPU work is done.
+  command_recorder->GetCommandQueue()->ReferenceUntilCompleted(
+      std::move(default_buffer));
+  command_recorder->GetCommandQueue()->ReferenceUntilCompleted(
+      std::move(upload_buffer));
+
+  return buffer_binding;
+}
+
 // Define some methods like CreateInputNode and CreateOperatorNodeForRelu here
 // to focus on converting the mojo graph struct to corresponding DML graph node
 // by using dml::GraphBuilder as a helper. dml::GraphBuilder should be decoupled
 // from mojo graph structs and focus on manipulating DML graph structs.
-void CreateInputNode(const IdToOperandMap& id_to_operand_map,
-                     uint64_t input_id,
-                     GraphBuilder& graph_builder,
-                     IdToNodeOutputMap& id_to_node_output_map) {
+//
+// Create the input node of graph for computation with the default tensor flag,
+// specifying the DML_TENSOR_FLAG_OWNED_BY_DML is to create input node for
+// constant weight data.
+//
+// The return value is the GraphInputIndex assigned by graph builder.
+uint32_t CreateInputNode(const IdToOperandMap& id_to_operand_map,
+                         uint64_t input_id,
+                         GraphBuilder& graph_builder,
+                         IdToNodeOutputMap& id_to_node_output_map,
+                         DML_TENSOR_FLAGS flags = DML_TENSOR_FLAG_NONE) {
   const OperandPtr& operand = id_to_operand_map.at(input_id);
-  TensorDesc input_tensor_desc(GetTensorDataType(operand->data_type),
+  TensorDesc input_tensor_desc(GetTensorDataType(operand->data_type), flags,
                                operand->dimensions);
   NodeInfo input_node = graph_builder.CreateInputNode();
-  NodeOutputInfo input_node_output = graph_builder.CreateNodeOutput(
-      std::move(input_node), std::move(input_tensor_desc));
+  NodeOutputInfo input_node_output =
+      graph_builder.CreateNodeOutput(input_node, std::move(input_tensor_desc));
   id_to_node_output_map[input_id] = std::move(input_node_output);
+  return input_node.index;
 }
 
 bool CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
@@ -430,6 +532,9 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
 
 }  // namespace
 
+GraphImpl::InputBufferBindingInfo::InputBufferBindingInfo() = default;
+GraphImpl::InputBufferBindingInfo::~InputBufferBindingInfo() = default;
+
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
                      ComPtr<ID3D12Resource> persistent_buffer,
                      ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -453,6 +558,8 @@ ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
 void GraphImpl::OnCompilationComplete(
     mojom::WebNNContext::CreateGraphCallback callback,
     std::unique_ptr<CommandRecorder> command_recorder,
+    base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
+    std::unique_ptr<InputBufferBindingInfo> input_buffer_binding_info,
     std::unique_ptr<ComputeResourceInfo> compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
   if (!compiled_operator) {
@@ -469,8 +576,53 @@ void GraphImpl::OnCompilationComplete(
     return;
   }
 
-  // TODO(crbug.com/1273291): Create the input resource binding for
-  // operator initialization. Only the constant resource needs to be bound.
+  // Create the input resource binding for graph initialization. The number of
+  // bindings must exactly match the number of inputs (including constants) of
+  // the graph, only the constant resource needs to be bound, the inputs for
+  // computation supply nullptr for `Buffer` member to indicate 'no binding'.
+  //
+  // The constant tensor specifying DML_TENSOR_FLAG_OWNED_BY_DML need to bind
+  // the resource in the buffer binding (DML_BUFFER_BINDING) array, the index
+  // of constant in the array is DML_INPUT_GRAPH_EDGE_DESC.GraphInputIndex which
+  // is got from `constant_id_to_graph_input_index_map`.
+  //
+  // TODO(crbug.com/1273291): Support single operator input buffer binding.
+  auto num_inputs =
+      compute_resource_info->input_name_to_byte_length_map.size() +
+      constant_id_to_buffer_map.size();
+  // The inputs tensors without the DML_TENSOR_FLAG_OWNED_BY_DML flag is
+  // expected to be bound during execution, and not during initialization.
+  std::vector<DML_BUFFER_BINDING> input_buffer_binding(
+      num_inputs,
+      DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
+  if (!constant_id_to_buffer_map.empty()) {
+    auto constant_buffer_binding = UploadAndCreateBufferBinding<uint64_t>(
+        command_recorder.get(), constant_id_to_buffer_map);
+    if (!constant_buffer_binding) {
+      DLOG(ERROR) << "Failed to upload constant weight data.";
+      std::move(callback).Run(mojo::NullRemote());
+      return;
+    }
+    // The constant tensor must be bound to the binding table during operator
+    // initialization, and not during execution.
+    for (auto& [constant_id, buffer_binding] :
+         constant_buffer_binding.value()) {
+      // Get the graph input index with the constant id.
+      auto& constant_id_to_graph_input_index_map =
+          input_buffer_binding_info->constant_id_to_graph_input_index_map;
+      const auto graph_input_index_iterator =
+          constant_id_to_graph_input_index_map.find(constant_id);
+      CHECK(graph_input_index_iterator !=
+            constant_id_to_graph_input_index_map.end());
+      input_buffer_binding[graph_input_index_iterator->second] =
+          std::move(buffer_binding);
+    }
+  }
+  DML_BUFFER_ARRAY_BINDING input_buffer_array_binding{
+      .BindingCount = base::checked_cast<uint32_t>(input_buffer_binding.size()),
+      .Bindings = input_buffer_binding.data()};
+  DML_BINDING_DESC input_buffer_binding_desc = {DML_BINDING_TYPE_BUFFER_ARRAY,
+                                                &input_buffer_array_binding};
 
   // Create the persistent resource which is bound as output of operator
   // initializer.
@@ -500,8 +652,9 @@ void GraphImpl::OnCompilationComplete(
         .Type = DML_BINDING_TYPE_BUFFER, .Desc = &persistent_buffer_binding};
   }
 
-  hr = command_recorder->InitializeOperator(
-      compiled_operator.Get(), absl::nullopt, persistent_buffer_binding_desc);
+  hr = command_recorder->InitializeOperator(compiled_operator.Get(),
+                                            input_buffer_binding_desc,
+                                            persistent_buffer_binding_desc);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to initialize the operator: "
                 << logging::SystemErrorCodeToString(hr);
@@ -582,14 +735,29 @@ void GraphImpl::CreateAndBuild(
   GraphBuilder graph_builder(dml_device);
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
+  auto input_buffer_binding_info = std::make_unique<InputBufferBindingInfo>();
   // Add inputs.
   for (auto& input_id : graph_info->input_operands) {
-    CreateInputNode(id_to_operand_map, input_id, graph_builder,
-                    id_to_node_output_map);
+    auto graph_input_index = CreateInputNode(
+        id_to_operand_map, input_id, graph_builder, id_to_node_output_map);
+    const OperandPtr& operand = id_to_operand_map.at(input_id);
+    CHECK(operand);
+    input_buffer_binding_info
+        ->graph_input_name_to_index_map[operand->name.value()] =
+        graph_input_index;
   }
 
-  // TODO(crbug.com/1455278): Add constants. It depends on the mojo constant
-  // definition is ready.
+  // The constant operand in WebNNGraph also is treated as input node in graph
+  // desc, the tensor is identified by DML_TENSOR_FLAG_OWNED_BY_DML which must
+  // be bound to the binding table during operator initialization, and not
+  // during execution.
+  for (auto& [constant_id, _] : graph_info->constant_id_to_buffer_map) {
+    auto graph_input_index =
+        CreateInputNode(id_to_operand_map, constant_id, graph_builder,
+                        id_to_node_output_map, DML_TENSOR_FLAG_OWNED_BY_DML);
+    input_buffer_binding_info
+        ->constant_id_to_graph_input_index_map[constant_id] = graph_input_index;
+  }
 
   // Add operations.
   for (auto& operation : graph_info->operators) {
@@ -683,62 +851,24 @@ void GraphImpl::CreateAndBuild(
                      std::move(graph_outputs), std::move(graph_builder)),
       base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
                      std::move(command_recorder),
+                     std::move(graph_info->constant_id_to_buffer_map),
+                     std::move(input_buffer_binding_info),
                      std::make_unique<ComputeResourceInfo>(graph_info)));
 }
 
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  // Copy all array buffers of inputs to an upload heap and create a committed
-  // resource which is mapped to the heap.
-  //
-  // Calculate the total byte length of inputs array buffer to create an upload
-  // buffer which can be read by GPU.
-  base::CheckedNumeric<size_t> total_byte_length(0);
-  base::flat_map<std::string, size_t> input_to_byte_offset_map;
-  for (auto& [input_name, input_buffer] : named_inputs) {
-    // There is only one upload heap for all inputs, the byte offset is used to
-    // get the copied address for each input tensor.
-    input_to_byte_offset_map[input_name] = total_byte_length.ValueOrDie();
-
-    // The buffer has a minimum base address alignment requirement of 16 bytes
-    // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
-    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
-    total_byte_length += base::bits::AlignUp<size_t>(
-        input_buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
-    if (!total_byte_length.IsValid()) {
-      DLOG(ERROR) << "Failed to calculate the total byte length of inputs.";
-      std::move(callback).Run(mojom::ComputeResult::kUnknownError,
-                              absl::nullopt);
-      return;
-    }
-  }
-  // Create the upload heap and a resource that is mapped to the heap.
-  ComPtr<ID3D12Resource> input_upload_buffer;
-  HRESULT hr = command_recorder_->CreateUploadBuffer(
-      total_byte_length.ValueOrDie(), input_upload_buffer);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create upload buffer for inputs: "
-                << logging::SystemErrorCodeToString(hr);
+  // Create the input resource binding for graph execution. Only the input
+  // tensors of graph need to be bound.
+  absl::optional<base::flat_map<std::string, DML_BUFFER_BINDING>>
+      input_buffer_binding = UploadAndCreateBufferBinding<std::string>(
+          command_recorder_.get(), named_inputs);
+  if (!input_buffer_binding) {
+    DLOG(ERROR) << "Failed to upload input buffers";
     std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
     return;
   }
-  // Map entire resource to copy the array buffer of input one by one with byte
-  // offset.
-  void* mapped_upload_buffer = nullptr;
-  hr = input_upload_buffer->Map(0, nullptr, &mapped_upload_buffer);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to map upload buffer for inputs: "
-                << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
-    return;
-  }
-  for (auto& [input_name, input_buffer] : named_inputs) {
-    memcpy(static_cast<uint8_t*>(mapped_upload_buffer) +
-               input_to_byte_offset_map.at(input_name),
-           input_buffer.data(), input_buffer.size());
-  }
-  input_upload_buffer->Unmap(0, nullptr);
 
   // TODO(crbug.com/1273291): Execute the compiled operator with inputs/outputs.
   std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
