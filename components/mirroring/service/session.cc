@@ -791,9 +791,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
           base::BindRepeating(&Session::CreateVideoEncodeAccelerator,
                               weak_factory_.GetWeakPtr()),
           cast_transport_.get(),
-          media::CreateMojoVideoEncoderMetricsProvider(
+          base::MakeRefCounted<media::MojoVideoEncoderMetricsProviderFactory>(
               media::mojom::VideoEncoderUseCase::kCastMirroring,
-              std::move(metrics_provider_pending_remote)),
+              std::move(metrics_provider_pending_remote))
+              ->CreateVideoEncoderMetricsProvider(),
           base::BindRepeating(&Session::SetTargetPlayoutDelay,
                               weak_factory_.GetWeakPtr()),
           base::BindRepeating(&Session::ProcessFeedback,

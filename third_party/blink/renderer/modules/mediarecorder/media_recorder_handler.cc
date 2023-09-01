@@ -689,9 +689,10 @@ MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
       video_encoder_metrics_provider;
   recorder_->DomWindow()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       video_encoder_metrics_provider.InitWithNewPipeAndPassReceiver());
-  return media::CreateMojoVideoEncoderMetricsProvider(
-      media::mojom::VideoEncoderUseCase::kMediaRecorder,
-      std::move(video_encoder_metrics_provider));
+  return base::MakeRefCounted<media::MojoVideoEncoderMetricsProviderFactory>(
+             media::mojom::VideoEncoderUseCase::kMediaRecorder,
+             std::move(video_encoder_metrics_provider))
+      ->CreateVideoEncoderMetricsProvider();
 }
 
 void MediaRecorderHandler::WriteData(base::StringPiece data) {
