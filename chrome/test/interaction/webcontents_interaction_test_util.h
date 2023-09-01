@@ -123,7 +123,9 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
       kExists,
       // Triggers when the element specified by `where` exists in the DOM *and*
       // `test_function` evaluates to true.
-      kExistsAndConditionTrue
+      kExistsAndConditionTrue,
+      // Triggers if/when the element specified by `where` no longer exists.
+      kDoesNotExist
     };
 
     // By default we want to check `test_function` and assume the element

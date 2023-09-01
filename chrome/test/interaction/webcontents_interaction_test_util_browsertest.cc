@@ -781,6 +781,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser(), kWebContentsElementId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   util->LoadPage(url);
+
+  // This is an element in the document.
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"a#title1"};
 
   auto sequence =
@@ -788,6 +790,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           .SetContext(browser()->window()->GetElementContext())
+
+          // Wait for an element which is already in the document to exist and
+          // fire an event when it does (which should be almost immediate).
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
@@ -805,6 +810,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              util->SendEventOnStateChange(state_change);
                            }))
                        .Build())
+
+          // Once the event is received, verify synchronouosly that the element
+          // does exist.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                                 kInteractionTestUtilCustomEventType)
@@ -829,6 +837,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser(), kWebContentsElementId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   util->LoadPage(url);
+
+  // This is an element that is not (yet) in the document.
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
@@ -836,12 +846,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           .SetContext(browser()->window()->GetElementContext())
+
+          // Queue a method that will cause an element to be added to the
+          // document in 300 ms, then wait for it to become present and fire an
+          // event.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
+                             // Inject JS that will add the element later.
                              util->Evaluate(
                                  R"(function () {
                                       setTimeout(
@@ -852,6 +867,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                                         },
                                         300);
                                     })");
+
+                             // Set up the waiter.
                              WebContentsInteractionTestUtil::StateChange
                                  state_change;
                              state_change.type =
@@ -861,9 +878,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              state_change.event =
                                  kInteractionTestUtilCustomEventType;
                              util->SendEventOnStateChange(state_change);
+
+                             // Verify that the element doesn't exist yet.
                              EXPECT_FALSE(util->Exists(kQuery));
                            }))
                        .Build())
+
+          // Once the event is received, verify synchronouosly that the element
+          // does exist.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                                 kInteractionTestUtilCustomEventType)
@@ -888,6 +910,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
       browser(), kWebContentsElementId);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   util->LoadPage(url);
+
+  // This element is not yet present in the document.
   const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
 
   auto sequence =
@@ -895,12 +919,19 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
           .SetContext(browser()->window()->GetElementContext())
+
+          // Queue a method that will cause an element to be added to the
+          // document in 1000 ms, then wait for it to become present and fire an
+          // event with only a 300ms timeout - the timeout event will be fired
+          // instead.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebContentsElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
+                             // Inject JS into the document that will add the
+                             // element in 1000 ms.
                              util->Evaluate(
                                  R"(function () {
                                       setTimeout(
@@ -911,6 +942,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                                         },
                                         1000);
                                     })");
+
+                             // Set up a waiter that will only wait 300 ms.
                              WebContentsInteractionTestUtil::StateChange
                                  state_change;
                              state_change.type =
@@ -925,6 +958,211 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
                              util->SendEventOnStateChange(state_change);
                            }))
                        .Build())
+
+          // Verify that the timeout event was sent. The sequence will fail if
+          // the event is not received.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType2)
+                       .SetElementID(kWebContentsElementId)
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
+                       SendEventOnStateChangeOnAlreadyDoesNotExist) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
+  util->LoadPage(url);
+
+  // This element is not actually in the document.
+  const WebContentsInteractionTestUtil::DeepQuery kQuery = {"a#title5"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+
+          // Wait for an element which is already not in the document to not
+          // exist and fire an event (which should be almost immediate).
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             WebContentsInteractionTestUtil::StateChange
+                                 state_change;
+                             state_change.type =
+                                 WebContentsInteractionTestUtil::StateChange::
+                                     Type::kDoesNotExist;
+                             state_change.where = kQuery;
+                             state_change.event =
+                                 kInteractionTestUtilCustomEventType;
+                             util->SendEventOnStateChange(state_change);
+                           }))
+                       .Build())
+
+          // Once the event is received, ensure that the element is not present.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_FALSE(util->Exists(kQuery));
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
+                       SendEventOnStateChangeOnDoesNotExistAfterDelay) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
+  util->LoadPage(url);
+
+  // This element is not initially present in the document.
+  const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+
+          // Add the element referenced above and then remove it in 300 ms.
+          // In the interim, wait for the element to be removed and send an
+          // event when it is.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             // This adds the element and queues up a callback
+                             // to remove it again in 300 ms.
+                             util->Evaluate(
+                                 R"(() => {
+                                      let el = document.createElement('ul');
+                                      el.id = 'foo';
+                                      document.body.appendChild(el);
+                                      setTimeout(
+                                        function() {
+                                          el.remove();
+                                        },
+                                        300);
+                                    })");
+
+                             // Wait for the element to be removed.
+                             WebContentsInteractionTestUtil::StateChange
+                                 state_change;
+                             state_change.type =
+                                 WebContentsInteractionTestUtil::StateChange::
+                                     Type::kDoesNotExist;
+                             state_change.where = kQuery;
+                             state_change.event =
+                                 kInteractionTestUtilCustomEventType;
+                             util->SendEventOnStateChange(state_change);
+
+                             // Verify that the element is currently present.
+                             EXPECT_TRUE(util->Exists(kQuery));
+                           }))
+                       .Build())
+
+          // Wait for the event on removal and verify synchronously that the
+          // element is actually gone.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                                kInteractionTestUtilCustomEventType)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_FALSE(util->Exists(kQuery));
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
+                       StateChangeDoesNotExistTimeoutSendsEvent) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithLinksURL);
+  util->LoadPage(url);
+
+  // This element is not initially in the document.
+  const WebContentsInteractionTestUtil::DeepQuery kQuery = {"ul#foo"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+
+          // Add the above-referenced element to the document, and then set up
+          // a callback to remove it 1000 ms later. Wait only 300 ms for the
+          // element to disappear (sending an event on timeout).
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             // Adds the element and then queues up its removal
+                             // 1000 ms later.
+                             util->Evaluate(
+                                 R"(() => {
+                                      let el = document.createElement('ul');
+                                      el.id = 'foo';
+                                      document.body.appendChild(el);
+                                      setTimeout(
+                                        function() {
+                                          el.remove();
+                                        },
+                                        1000);
+                                    })");
+
+                             // Wait for the element to go away, but only 300
+                             // ms. This should send the timeout event instead
+                             // of the success event.
+                             WebContentsInteractionTestUtil::StateChange
+                                 state_change;
+                             state_change.type =
+                                 WebContentsInteractionTestUtil::StateChange::
+                                     Type::kDoesNotExist;
+                             state_change.where = kQuery;
+                             state_change.event =
+                                 kInteractionTestUtilCustomEventType;
+                             state_change.timeout = base::Milliseconds(300);
+                             state_change.timeout_event =
+                                 kInteractionTestUtilCustomEventType2;
+                             util->SendEventOnStateChange(state_change);
+                           }))
+                       .Build())
+
+          // Verify that the timeout event was sent. The sequence will fail if
+          // the event is not received.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                                 kInteractionTestUtilCustomEventType2)

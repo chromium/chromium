@@ -64,17 +64,17 @@ content::WebContents* GetWebContents(Browser* browser,
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
-// Provides a template function for "does this element exist" queries.
-// Will return on_missing_selector if 'err?.selector' is valid.
-// Will return on_found if el is valid.
-std::string GetExistsQuery(const char* on_missing_selector,
-                           const char* on_found) {
+// Provides a JavaScript skeleton for "does this element exist" queries.
+//
+// Will evaluate and return `on_not_found` if 'err?.selector' is valid.
+// Will evaluate and return `on_found` if 'el' is valid.
+std::string GetExistsQuery(const char* on_not_found, const char* on_found) {
   return base::StringPrintf(R"((el, err) => {
         if (err?.selector) return %s;
         if (err) throw err;
         return %s;
       })",
-                            on_missing_selector, on_found);
+                            on_not_found, on_found);
 }
 
 // Common execution code for `EvalJsLocal()` and `ExecuteJsLocal()`.
@@ -745,14 +745,22 @@ void WebContentsInteractionTestUtil::SendEventOnStateChange(
   switch (configuration.type) {
     case StateChange::Type::kExists:
       DCHECK(configuration.test_function.empty());
-      actual_func = GetExistsQuery("false", "true");
+      actual_func = GetExistsQuery(
+          /* on_not_found = */ "false",
+          /* on_found = */ "true");
+      break;
+    case StateChange::Type::kDoesNotExist:
+      actual_func = GetExistsQuery(
+          /* on_not_found = */ "true",
+          /* on_found = */ "false");
       break;
     case StateChange::Type::kConditionTrue:
       actual_func = configuration.test_function;
       break;
     case StateChange::Type::kExistsAndConditionTrue:
       const std::string on_found = "(" + configuration.test_function + ")(el)";
-      actual_func = GetExistsQuery("false", on_found.c_str());
+      actual_func = GetExistsQuery(
+          /* on_not_found = */ "false", on_found.c_str());
       break;
   }
 
