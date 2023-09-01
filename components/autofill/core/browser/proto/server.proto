@@ -357,11 +357,17 @@ message AutofillUploadContents {
     enum SingleUsernameVoteType {
       DEFAULT = 0;
       // Votes with low confidence (i.e. recorded if Save/Update prompt was
-      // accepted without username edits).
+      // accepted without username edits) for UFF classifier.
       WEAK = 1;
       // Votes with high confidence (i.e. recorded if Save/Update prompt was
-      // accepted after username edits).
+      // accepted after username edits) for UFF classifier.
       STRONG = 2;
+      // Votes with low confidence (i.e. recorded if Save/Update prompt was
+      // accepted without username edits) for forgot password form classifier.
+      WEAK_FORGOT_PASSWORD = 3;
+      // Votes with high confidence (i.e. recorded if Save/Update prompt was
+      // accepted after username edits) for forgot password form classifier.
+      STRONG_FORGOT_PASSWORD = 4;
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|

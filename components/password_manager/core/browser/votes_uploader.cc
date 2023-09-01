@@ -628,14 +628,19 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
 // and enable UFF voting.
 #if !BUILDFLAG(IS_ANDROID)
   if (single_username_vote_data_ &&
-      MaybeSendSingleUsernameVote(
-          single_username_vote_data_.value(),
-          single_username_vote_data_->form_predictions)) {
+      MaybeSendSingleUsernameVote(single_username_vote_data_.value(),
+                                  single_username_vote_data_->form_predictions,
+                                  /*is_forgot_password_vote=*/false)) {
     base::UmaHistogramBoolean(
         "PasswordManager.SingleUsername.PasswordFormHadUsernameField",
         single_username_vote_data_->password_form_had_username_field);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  for (auto& [field_id, vote_data] : forgot_password_vote_data_) {
+    MaybeSendSingleUsernameVote(vote_data, vote_data.form_predictions,
+                                /*is_forgot_password_vote=*/true);
+  }
 }
 
 void VotesUploader::CalculateUsernamePromptEditState(
@@ -853,7 +858,8 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
     AutofillField* field,
     const SingleUsernameVoteData& single_username,
     ServerFieldTypeSet* available_field_types,
-    FormSignature form_signature) {
+    FormSignature form_signature,
+    bool is_forgot_password_vote) {
   ServerFieldType type = autofill::UNKNOWN_TYPE;
   autofill::AutofillUploadContents_Field_SingleUsernameVoteType vote_type =
       AutofillUploadContents::Field::DEFAULT;
@@ -871,16 +877,25 @@ bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(
 
     if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
         prompt_edit == AutofillUploadContents::NOT_EDITED_POSITIVE) {
-      type = autofill::SINGLE_USERNAME;
+      type = is_forgot_password_vote ? autofill::SINGLE_USERNAME_FORGOT_PASSWORD
+                                     : autofill::SINGLE_USERNAME;
     } else {
       type = autofill::NOT_USERNAME;
     }
 
-    vote_type = (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
-                 prompt_edit == AutofillUploadContents::EDITED_NEGATIVE)
-                    ? AutofillUploadContents::Field::STRONG
-                    : AutofillUploadContents::Field::WEAK;
+    if (prompt_edit == AutofillUploadContents::EDITED_POSITIVE ||
+        prompt_edit == AutofillUploadContents::EDITED_NEGATIVE) {
+      vote_type = is_forgot_password_vote
+                      ? AutofillUploadContents::Field::STRONG_FORGOT_PASSWORD
+                      : AutofillUploadContents::Field::STRONG;
+    } else {
+      vote_type = is_forgot_password_vote
+                      ? AutofillUploadContents::Field::WEAK_FORGOT_PASSWORD
+                      : AutofillUploadContents::Field::WEAK;
+    }
   }
+  CHECK_NE(type, autofill::UNKNOWN_TYPE);
+  CHECK_NE(vote_type, AutofillUploadContents::Field::DEFAULT);
   available_field_types->insert(type);
   field->set_possible_types({type});
   field->set_single_username_vote_type(vote_type);
@@ -943,7 +958,8 @@ VotesUploader::CalculateUsernamePromptEdit(
 
 bool VotesUploader::MaybeSendSingleUsernameVote(
     const SingleUsernameVoteData& single_username,
-    const FormPredictions& predictions) {
+    const FormPredictions& predictions,
+    bool is_forgot_password_vote) {
   std::vector<FieldSignature> field_signatures;
   for (const auto& field : predictions.fields) {
     field_signatures.push_back(field.signature);
@@ -963,9 +979,9 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
       field->set_possible_types({autofill::UNKNOWN_TYPE});
       continue;
     }
-    if (!SetSingleUsernameVoteOnUsernameForm(field, single_username,
-                                             &available_field_types,
-                                             predictions.form_signature)) {
+    if (!SetSingleUsernameVoteOnUsernameForm(
+            field, single_username, &available_field_types,
+            predictions.form_signature, is_forgot_password_vote)) {
       // The single username field has no field type. Don't send vote.
       return false;
     }

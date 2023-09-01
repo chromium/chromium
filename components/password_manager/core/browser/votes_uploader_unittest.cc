@@ -1090,4 +1090,33 @@ TEST_F(VotesUploaderTest, NoFieldNameCollisionInVotes) {
       "PasswordManager.FieldNameCollisionInVotes", false, 1);
 }
 
+TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
+  VotesUploader votes_uploader(&client_, false);
+  std::u16string single_username_candidate_value = u"username_candidate_value";
+  votes_uploader.AddForgotPasswordVoteData(SingleUsernameVoteData(
+      kSingleUsernameRendererId, single_username_candidate_value,
+      MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
+      /*password_form_had_username_field=*/false));
+  votes_uploader.set_suggested_username(single_username_candidate_value);
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/single_username_candidate_value);
+
+  // Upload on the username form.
+  ServerFieldTypeSet expected_types = {
+      autofill::SINGLE_USERNAME_FORGOT_PASSWORD};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(AllOf(SignatureIs(kSingleUsernameFormSignature),
+                               UploadedSingleUsernameVoteTypeIs(
+                                   autofill::AutofillUploadContents::Field::
+                                       WEAK_FORGOT_PASSWORD)),
+                         /*form_was_autofilled=*/false, expected_types,
+                         /*login_form_signature=*/"",
+                         /*observed_submission=*/true,
+                         /*pref_service=*/nullptr,
+                         /*observer=*/IsNull()));
+
+  votes_uploader.MaybeSendSingleUsernameVotes();
+}
+
 }  // namespace password_manager

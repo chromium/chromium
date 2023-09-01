@@ -155,7 +155,6 @@ class VotesUploader {
   // SINGLE_USERNAME_FORGOT_PASSWORD (if the user saved the credential
   // with the username cached in |forgot_password_vote_data|), or NOT_USERNAME
   // (if the saved username contradicts cached potential usernames).
-  // No-op on Android.
   // TODO (crbug.com/959776): Have a single point in code that calls this
   // method.
   void MaybeSendSingleUsernameVotes();
@@ -253,15 +252,17 @@ class VotesUploader {
       std::unique_ptr<autofill::FormStructure> form_to_upload,
       const autofill::ServerFieldTypeSet& available_field_types);
 
-  // On username first flow votes are uploaded both for the single username form
-  // and for the single password form. This method sets the data needed to
-  // upload vote on the username form. The vote is based on the user interaction
-  // with the save prompt (i.e. whether the suggested value was actually saved).
+  // On username first and forgot password flows votes are uploaded both for the
+  // single username form and for the single password form. This method sets the
+  // data needed to upload vote on the username form. The vote is based on the
+  // user interaction with the save prompt (i.e. whether the suggested value was
+  // actually saved).
   bool SetSingleUsernameVoteOnUsernameForm(
       autofill::AutofillField* field,
       const SingleUsernameVoteData& single_username,
       autofill::ServerFieldTypeSet* available_field_types,
-      autofill::FormSignature form_signature);
+      autofill::FormSignature form_signature,
+      bool is_forgot_password_vote);
 
   // On username first flow votes are uploaded both for the single username form
   // and for the single password form. This method sets the data needed to
@@ -279,11 +280,17 @@ class VotesUploader {
   CalculateUsernamePromptEdit(const std::u16string& saved_username,
                               const std::u16string& potential_username);
 
-  // Attempts to send a vote for a single username form. Returns true if the
-  // vote is sent.
+  // Attempts to send a vote for a single username form.
+  // `is_forgot_password_form` specifies whether the form is considered to be a
+  // part of a username first or a forgot password flow:
+  // 1) When it's true, SINGLE_USERNAME_FORGOT_PASSWORD & NOT_USERNAME can be
+  // sent.
+  // 2) When it's false, SINGLE_USERNAME & NOT_USERNAME votes can be sent.
+  // Returns true if the vote is sent.
   bool MaybeSendSingleUsernameVote(
       const SingleUsernameVoteData& single_username,
-      const FormPredictions& predictions);
+      const FormPredictions& predictions,
+      bool is_forgot_password_vote);
 
   // The client which implements embedder-specific PasswordManager operations.
   raw_ptr<PasswordManagerClient> client_ = nullptr;
