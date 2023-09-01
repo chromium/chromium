@@ -670,7 +670,6 @@ void AutofillAgent::FillOrPreviewForm(
     return;
   }
 
-  // Clear anything that might have been previewing previously.
   ClearPreviewedForm();
 
   if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
@@ -801,8 +800,10 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
     return;
   }
 
-  if (form_util::IsTextAreaElementOrTextInput(element_))
+  if (form_util::IsTextAreaElementOrTextInput(element_)) {
+    ClearPreviewedForm();
     DoFillFieldWithValue(value, element_, WebAutofillState::kAutofilled);
+  }
 }
 
 void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
@@ -813,8 +814,10 @@ void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
   }
 
   WebInputElement input_element = element_.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull())
+  if (!input_element.IsNull()) {
+    ClearPreviewedForm();
     DoPreviewFieldWithValue(value, input_element);
+  }
 }
 
 void AutofillAgent::SetSuggestionAvailability(
@@ -1106,7 +1109,6 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
                                             WebInputElement& node) {
   DCHECK(!unsafe_render_frame() || IsOwnedByFrame(node, unsafe_render_frame()));
 
-  ClearPreviewedForm();
   query_node_autofill_state_ = element_.GetAutofillState();
   node.SetSuggestedValue(blink::WebString::FromUTF16(value));
   form_util::PreviewSuggestion(node.SuggestedValue().Utf16(),
