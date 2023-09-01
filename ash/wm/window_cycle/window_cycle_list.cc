@@ -23,6 +23,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -112,6 +113,29 @@ aura::Window* GetMruWindow(const std::vector<aura::Window*>& windows) {
   }
 
   return front_window;
+}
+
+// Returns the total number of items to be cycled through with the existence of
+// snap groups for the given `windows` list.
+size_t GetCycleItemsCount(const std::vector<aura::Window*>& windows) {
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  if (!snap_group_controller) {
+    return windows.size();
+  }
+
+  base::flat_set<SnapGroup*> visited;
+  size_t count = 0;
+  for (auto* window : windows) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      size_t increment = visited.insert(snap_group).second ? 0 : 1;
+      count += increment;
+    } else {
+      count++;
+    }
+  }
+
+  return count;
 }
 
 }  // namespace
@@ -291,19 +315,20 @@ bool WindowCycleList::IsEventInTabSliderContainer(
 }
 
 bool WindowCycleList::ShouldShowUi() {
-  // Show alt-tab when there are at least two windows to pick from alt-tab, or
-  // when there is at least a window to switch to by switching to the different
-  // mode.
+  const size_t cycle_items_count = GetCycleItemsCount(windows_);
+  // Show alt-tab when there are at least two items to be cycled, or when there
+  // is at least a item to switch to by switching to the different mode.
   if (!Shell::Get()
            ->window_cycle_controller()
            ->IsInteractiveAltTabModeAllowed()) {
-    return windows_.size() > 1u;
+    return cycle_items_count > 1u;
   }
 
-  int total_window_in_all_desks = GetNumberOfWindowsAllDesks();
-  return windows_.size() > 1u ||
-         (windows_.size() <= 1u &&
-          static_cast<size_t>(total_window_in_all_desks) > windows_.size());
+  int total_cycle_items_in_all_desks = GetNumberOfCycleItemsAllDesks();
+  return cycle_items_count > 1u ||
+         (cycle_items_count <= 1u &&
+          static_cast<size_t>(total_cycle_items_in_all_desks) >
+              cycle_items_count);
 }
 
 void WindowCycleList::OnModePrefsChanged() {
@@ -557,16 +582,16 @@ int WindowCycleList::GetIndexOfWindow(aura::Window* window) const {
   return std::distance(windows_.begin(), target_window);
 }
 
-int WindowCycleList::GetNumberOfWindowsAllDesks() const {
+int WindowCycleList::GetNumberOfCycleItemsAllDesks() const {
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
   // If alt-tab mode is not available, the alt-tab defaults to all-desks mode
   // and can obtain the number of all windows easily from `windows_.size()`.
-  DCHECK(Shell::Get()
-             ->window_cycle_controller()
-             ->IsInteractiveAltTabModeAllowed());
-  return Shell::Get()
-      ->mru_window_tracker()
-      ->BuildWindowForCycleWithPipList(kAllDesks)
-      .size();
+  CHECK(window_cycle_controller->IsInteractiveAltTabModeAllowed());
+
+  WindowList windows =
+      window_cycle_controller->BuildWindowListForWindowCycling(kAllDesks);
+  return GetCycleItemsCount(windows);
 }
 
 void WindowCycleList::MaybeReportNonSameAppSkippedWindows(

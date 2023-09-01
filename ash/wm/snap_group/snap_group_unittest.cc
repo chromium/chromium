@@ -1332,6 +1332,23 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowCycleRoundedCorners) {
   CompleteWindowCycling();
 }
 
+// Tests that the window cycle view will not show with only one snap group
+// available which is the same behavior pattern as free-form window cycling.
+TEST_F(SnapGroupEntryPointArm1Test, NoWindowCycleViewWithOneSnapGroup) {
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow(gfx::Rect(100, 200));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(200, 300));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+
+  const auto* cycle_view =
+      window_cycle_controller->window_cycle_list()->cycle_view();
+  EXPECT_FALSE(cycle_view);
+}
+
 // Tests that two windows in a snap group is allowed to be shown as group item
 // view only if both of them belong to the same app as the mru window. If only
 // one window belongs to the app, the representation of the window will be shown
