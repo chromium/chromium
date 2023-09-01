@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/constants/ash_features.h"
@@ -213,8 +214,8 @@ void AshAcceleratorConfiguration::RegisterProfilePrefs(
 void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // A pref service may not be available in tests.
-  if (!::features::IsShortcutCustomizationEnabled() || !pref_service ||
-      pref_service != GetActiveUserPrefService()) {
+  if (!pref_service || pref_service != GetActiveUserPrefService() ||
+      !Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     return;
   }
 
@@ -236,7 +237,7 @@ AshAcceleratorConfiguration::GetAcceleratorsForAction(
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
-  return ::features::IsShortcutCustomizationEnabled();
+  return Shell::Get()->accelerator_prefs()->IsCustomizationAllowed();
 }
 
 bool AshAcceleratorConfiguration::IsDeprecated(
@@ -259,7 +260,7 @@ const AcceleratorAction* AshAcceleratorConfiguration::FindAcceleratorAction(
 AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   const AcceleratorConfigResult result =
       DoAddAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -277,7 +278,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   AcceleratorConfigResult result =
       DoRemoveAccelerator(action_id, accelerator, /*save_override=*/true);
 
@@ -295,7 +296,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::ReplaceAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& old_accelerator,
     const ui::Accelerator& new_accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   const AcceleratorConfigResult result =
       DoReplaceAccelerator(action_id, old_accelerator, new_accelerator);
@@ -455,7 +456,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   // If the accelerator is deprecated, remove it.
   const AcceleratorAction* deprecated_action_id =
@@ -505,7 +506,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator,
     bool save_override) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   const auto& accelerators_iter = id_to_accelerators_.find(action_id);
   if (accelerators_iter == id_to_accelerators_.end()) {
@@ -554,7 +555,7 @@ AshAcceleratorConfiguration::DoReplaceAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& old_accelerator,
     const ui::Accelerator& new_accelerator) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   // Check that `old_accelerator` belongs to `action_id`.
   const AcceleratorAction* found_id = accelerator_to_id_.Find(old_accelerator);
@@ -584,7 +585,7 @@ AshAcceleratorConfiguration::GetDeprecatedAcceleratorData(
 }
 
 void AshAcceleratorConfiguration::NotifyAcceleratorsUpdated() {
-  if (!::features::IsShortcutCustomizationEnabled()) {
+  if (!Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     return;
   }
 
@@ -636,7 +637,7 @@ void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
 
   UpdateAccelerators(id_to_accelerators_);
   NotifyAcceleratorsUpdated();
-  if (::features::IsShortcutCustomizationEnabled()) {
+  if (Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     SaveOverridePrefChanges();
   }
 }

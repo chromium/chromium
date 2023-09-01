@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -53,7 +54,8 @@ class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
       public input_method::InputMethodManager::Observer,
-      public InputDeviceSettingsController::Observer {
+      public InputDeviceSettingsController::Observer,
+      public AcceleratorPrefs::Observer {
  public:
   using ActionIdToAcceleratorsInfoMap =
       base::flat_map<AcceleratorActionId,
@@ -134,6 +136,9 @@ class AcceleratorConfigurationProvider
   void OnKeyboardConnected(const mojom::Keyboard& keyboard) override;
   void OnKeyboardDisconnected(const mojom::Keyboard& keyboard) override;
   void OnKeyboardSettingsUpdated(const mojom::Keyboard& keyboard) override;
+
+  // AcceleratorPrefs::Observer:
+  void OnShortcutPolicyUpdated() override;
 
   AcceleratorConfigurationMap GetAcceleratorConfig();
   std::vector<mojom::AcceleratorLayoutInfoPtr> GetAcceleratorLayoutInfos()

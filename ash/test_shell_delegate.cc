@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/accelerators/test_accelerator_prefs_delegate.h"
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
@@ -37,6 +38,11 @@ TestShellDelegate::CreateCaptureModeDelegate() const {
 std::unique_ptr<GameDashboardDelegate>
 TestShellDelegate::CreateGameDashboardDelegate() const {
   return std::make_unique<TestGameDashboardDelegate>();
+}
+
+std::unique_ptr<AcceleratorPrefsDelegate>
+TestShellDelegate::CreateAcceleratorPrefsDelegate() const {
+  return std::make_unique<TestAcceleratorPrefsDelegate>();
 }
 
 std::unique_ptr<GlanceablesDelegate>

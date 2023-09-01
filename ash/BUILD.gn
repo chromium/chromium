@@ -42,6 +42,7 @@ component("ash") {
     "accelerators/accelerator_notifications.h",
     "accelerators/accelerator_prefs.cc",
     "accelerators/accelerator_prefs.h",
+    "accelerators/accelerator_prefs_delegate.h",
     "accelerators/accelerator_table.cc",
     "accelerators/accelerator_table.h",
     "accelerators/accelerator_tracker.cc",
@@ -3045,6 +3046,7 @@ test("ash_unittests") {
     "accelerators/accelerator_filter_unittest.cc",
     "accelerators/accelerator_history_unittest.cc",
     "accelerators/accelerator_launcher_state_machine_unittest.cc",
+    "accelerators/accelerator_prefs_unittest.cc",
     "accelerators/accelerator_table_unittest.cc",
     "accelerators/accelerator_tracker_unittest.cc",
     "accelerators/accelerator_unittest.cc",
@@ -4106,6 +4108,8 @@ static_library("interactive_ui_test_support") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "accelerators/test_accelerator_prefs_delegate.cc",
+    "accelerators/test_accelerator_prefs_delegate.h",
     "accessibility/accessibility_controller_test_api_impl.cc",
     "accessibility/accessibility_controller_test_api_impl.h",
     "accessibility/test_accessibility_controller_client.cc",

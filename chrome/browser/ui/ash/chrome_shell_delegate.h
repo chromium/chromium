@@ -31,6 +31,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   std::unique_ptr<ash::GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;
+  std::unique_ptr<ash::AcceleratorPrefsDelegate>
+  CreateAcceleratorPrefsDelegate() const override;
   std::unique_ptr<ash::GlanceablesDelegate> CreateGlanceablesDelegate(
       ash::GlanceablesController* controller) const override;
   ash::AccessibilityDelegate* CreateAccessibilityDelegate() override;

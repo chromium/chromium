@@ -343,13 +343,13 @@ void AcceleratorControllerImpl::TestApi::RegisterAccelerators(
   // Initializing accelerators will register them.
   controller_->accelerator_configuration()->Initialize(accelerators);
   // If customization is not available, register the accelerators manually.
-  if (!::features::IsShortcutCustomizationEnabled()) {
+  if (!Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
     controller_->RegisterAccelerators(accelerators);
   }
 }
 
 void AcceleratorControllerImpl::TestApi::ObserveAcceleratorUpdates() {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   controller_->accelerator_configuration()->AddObserver(controller_);
 }
 
@@ -416,6 +416,9 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
     accelerator_configuration_->AddObserver(this);
   }
 
+  // Observe shortcut policy changes.
+  Shell::Get()->accelerator_prefs()->AddObserver(this);
+
   // Let AcceleratorHistory be a PreTargetHandler on aura::Env to ensure that it
   // receives KeyEvents and MouseEvents. In some cases Shell PreTargetHandlers
   // will handle Events before AcceleratorHistory gets to see them. This
@@ -434,6 +437,10 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   }
   if (::features::IsShortcutCustomizationEnabled()) {
     accelerator_configuration_->RemoveObserver(this);
+  }
+  // In unit tests, the Shell instance may already be deleted at this point.
+  if (Shell::HasInstance()) {
+    Shell::Get()->accelerator_prefs()->RemoveObserver(this);
   }
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
   aura::Env::GetInstance()->RemovePreTargetHandler(
@@ -456,12 +463,20 @@ void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
 }
 
 void AcceleratorControllerImpl::OnAcceleratorsUpdated() {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   // Accelerators have been updated, unregister all accelerators and re-register
   // them.
   UnregisterAll(this);
   RegisterAccelerators(accelerator_configuration_->GetAllAccelerators());
+}
+
+void AcceleratorControllerImpl::OnShortcutPolicyUpdated() {
+  // Remove accelerator_configuration_ observer when customization is disabled
+  // by policy.
+  if (!Shell::Get()->accelerator_prefs()->IsCustomizationAllowed()) {
+    accelerator_configuration_->RemoveObserver(this);
+  }
 }
 
 void AcceleratorControllerImpl::Register(

@@ -2419,6 +2419,8 @@ static_library("ui") {
       "ash/capture_mode/recording_overlay_view_impl.h",
       "ash/cast_config_controller_media_router.cc",
       "ash/cast_config_controller_media_router.h",
+      "ash/chrome_accelerator_prefs_delegate.cc",
+      "ash/chrome_accelerator_prefs_delegate.h",
       "ash/chrome_accessibility_delegate.cc",
       "ash/chrome_accessibility_delegate.h",
       "ash/chrome_browser_main_extra_parts_ash.cc",

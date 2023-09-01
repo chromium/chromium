@@ -1391,7 +1391,8 @@ void Shell::Init(
       display::Screen::GetScreen()->GetPrimaryDisplay());
 
   // Initialize before AcceleratorController and AshAcceleratorConfiguration.
-  accelerator_prefs_ = std::make_unique<AcceleratorPrefs>();
+  accelerator_prefs_ = std::make_unique<AcceleratorPrefs>(
+      shell_delegate_->CreateAcceleratorPrefsDelegate());
 
   // Must be initialized after InputMethodManager.
   accelerator_keycode_lookup_cache_ =

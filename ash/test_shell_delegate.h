@@ -50,6 +50,8 @@ class TestShellDelegate : public ShellDelegate {
       const override;
   std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;
+  std::unique_ptr<AcceleratorPrefsDelegate> CreateAcceleratorPrefsDelegate()
+      const override;
   std::unique_ptr<GlanceablesDelegate> CreateGlanceablesDelegate(
       GlanceablesController* controller) const override;
   AccessibilityDelegate* CreateAccessibilityDelegate() override;

@@ -586,6 +586,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // Observe keyboard input method changes.
   input_method::InputMethodManager::Get()->AddObserver(this);
 
+  // Observe shortcut policy changes.
+  Shell::Get()->accelerator_prefs()->AddObserver(this);
+
   if (features::IsInputDeviceSettingsSplitEnabled()) {
     // `InputDeviceSettingsController` provides updates whenever a device is
     // connected/disconnected or if its settings changed. In any of these cases,
@@ -638,6 +641,7 @@ AcceleratorConfigurationProvider::~AcceleratorConfigurationProvider() {
     if (features::IsInputDeviceSettingsSplitEnabled()) {
       Shell::Get()->input_device_settings_controller()->RemoveObserver(this);
     }
+    Shell::Get()->accelerator_prefs()->RemoveObserver(this);
   }
 }
 
@@ -827,6 +831,12 @@ void AcceleratorConfigurationProvider::OnKeyboardSettingsUpdated(
   NotifyAcceleratorsUpdated();
 }
 
+// TODO(longbowei): Create policy_updated_mojo_observer and inform it
+// of any policy updates.
+void AcceleratorConfigurationProvider::OnShortcutPolicyUpdated() {
+  NotifyAcceleratorsUpdated();
+}
+
 AcceleratorConfigurationProvider::AcceleratorConfigurationMap
 AcceleratorConfigurationProvider::GetAcceleratorConfig() {
   return CreateConfigurationMap();
@@ -859,7 +869,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
     uint32_t action_id,
     const ui::Accelerator& accelerator,
     AddAcceleratorCallback callback) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
   // Validate the source and action, if no errors then validate the accelerator.
@@ -935,7 +945,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
     uint32_t action_id,
     const ui::Accelerator& accelerator,
     RemoveAcceleratorCallback callback) {
-  DCHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   ui::Accelerator accelerator_to_remove =
       ModifyKeyStateConditionally(accelerator);
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
@@ -976,7 +986,7 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
     const ui::Accelerator& old_accelerator,
     const ui::Accelerator& new_accelerator,
     ReplaceAcceleratorCallback callback) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
 
   ui::Accelerator accelerator_to_replace =
       ModifyKeyStateConditionally(old_accelerator);
@@ -1071,7 +1081,7 @@ void AcceleratorConfigurationProvider::RestoreDefault(
 
 void AcceleratorConfigurationProvider::RestoreAllDefaults(
     RestoreAllDefaultsCallback callback) {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  CHECK(Shell::Get()->accelerator_prefs()->IsCustomizationAllowed());
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RestoreAllDefaults();

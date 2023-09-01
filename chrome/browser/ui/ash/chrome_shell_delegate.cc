@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accelerators/accelerator_prefs_delegate.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
+#include "chrome/browser/ui/ash/chrome_accelerator_prefs_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
@@ -138,6 +140,11 @@ ChromeShellDelegate::CreateCaptureModeDelegate() const {
 std::unique_ptr<ash::GameDashboardDelegate>
 ChromeShellDelegate::CreateGameDashboardDelegate() const {
   return std::make_unique<ChromeGameDashboardDelegate>();
+}
+
+std::unique_ptr<ash::AcceleratorPrefsDelegate>
+ChromeShellDelegate::CreateAcceleratorPrefsDelegate() const {
+  return std::make_unique<ChromeAcceleratorPrefsDelegate>();
 }
 
 std::unique_ptr<ash::GlanceablesDelegate>
