@@ -455,12 +455,21 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddUsersStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
       {"usersModifiedByOwnerLabel", IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL},
-      {"guestBrowsingLabel", IDS_SETTINGS_USERS_GUEST_BROWSING_LABEL},
+      {"guestBrowsingLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_USERS_GUEST_BROWSING_LABEL
+                        : IDS_SETTINGS_USERS_GUEST_BROWSING_LABEL},
       {"settingsManagedLabel", IDS_SETTINGS_USERS_MANAGED_LABEL},
       {"showOnSigninLabel", IDS_SETTINGS_USERS_SHOW_ON_SIGNIN_LABEL},
-      {"restrictSigninLabel", IDS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL},
+      {"restrictSigninLabel",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_USERS_RESTRICT_SIGNIN_LABEL
+                        : IDS_SETTINGS_USERS_RESTRICT_SIGNIN_LABEL},
+      {"restrictSigninDescription",
+       IDS_OS_SETTINGS_REVAMP_USERS_RESTRICT_SIGNIN_DESCRIPTION},
       {"deviceOwnerLabel", IDS_SETTINGS_USERS_DEVICE_OWNER_LABEL},
       {"removeUserTooltip", IDS_SETTINGS_USERS_REMOVE_USER_TOOLTIP},
       {"userRemovedMessage", IDS_SETTINGS_USERS_USER_REMOVED_MESSAGE},
