@@ -9,7 +9,6 @@
 
   #group-button {
     --cr-icon-button-size: var(--emoji-size);
-    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
     --cr-icon-button-icon-size: 20px;
     font-size: 20px;
     margin: 0;
@@ -17,11 +16,11 @@
   }
 
   #group-button:not(.emoji-group-active) {
-    --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
+    --cr-icon-button-fill-color: var(--emoji-picker-tab-unselected-color);
   }
 
   #group-button.emoji-group-active {
-    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+    --cr-icon-button-fill-color: var(--emoji-picker-tab-selected-color);
   }
 </style>
 

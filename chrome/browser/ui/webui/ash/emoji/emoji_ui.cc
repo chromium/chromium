@@ -25,6 +25,7 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace {
 constexpr gfx::Size kExtensionWindowSize(420, 480);
@@ -136,6 +137,12 @@ void EmojiUI::Show(Profile* profile) {
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
+
+void EmojiUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
 
 void EmojiUI::BindInterface(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandlerFactory> receiver) {

@@ -18,7 +18,7 @@
   }
 
   cr-search-field {
-    --cr-search-field-clear-icon-fill: var(--cros-icon-color-primary);
+    --cr-search-field-clear-icon-fill: var(--emoji-picker-search-field-clear-icon-color);
     --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
     --cr-search-field-clear-icon-size: 20px;
     --cr-search-field-input-border-bottom: none;
@@ -27,15 +27,15 @@
     --cr-search-field-input-padding-start: 8px;
     --cr-search-field-input-padding-top: 0;
     --cr-search-field-input-width: 100%;
-    --cr-search-field-placeholder-color: var(--cros-text-color-disabled);
+    --cr-search-field-placeholder-color: var(--emoji-picker-search-field-placeholder-color);
     --cr-search-field-search-icon-display: none;
-    --cr-search-field-search-icon-fill: var(--cros-text-color-secondary);
+    --cr-search-field-search-icon-fill: var(--emoji-picker-search-field-search-icon-color);
     --cr-search-field-search-icon-inline-display: block;
     --cr-search-field-search-icon-inline-margin-start:
       var(--emoji-picker-search-margins);
     --cr-search-field-underline-display: none;
     align-items: center;
-    background-color: var(--cros-toolbar-search-bg-color);
+    background-color: var(--emoji-picker-search-field-container-color);
     border: 2px solid transparent;
     border-radius: 40px;
     font-size: 13px;
@@ -43,7 +43,7 @@
   }
 
   cr-search-field:focus-within {
-    border: 2px solid var(--cros-focus-ring-color);
+    border: 2px solid var(--emoji-picker-focus-ring-color);
   }
 
   .result {
@@ -55,7 +55,7 @@
 
   .result:focus,
   .result:active {
-    border-color: var(--cros-focus-ring-color);
+    border-color: var(--emoji-picker-focus-ring-color);
     border-style: solid;
     border-width: 2px;
     outline-style: none;
@@ -80,7 +80,7 @@
   }
 
   .no-result {
-    color: var(--cros-button-label-color-secondary-disabled);
+    color: var(--emoji-picker-illustration-text-color);
     font-family: 'Google Sans';
     left: 50%;
     line-height: 24px;
@@ -101,7 +101,7 @@
   }
 
   #searchShadow {
-    background-color: var(--cros-bg-color);
+    background-color: var(--emoji-picker-container-color);
     box-shadow: var(--cr-elevation-2);
     display: flex;
     margin-bottom: 7px;
@@ -193,15 +193,31 @@
     </div>
     <div class="no-result">
       <template is="dom-if" if="[[noResults(status, searchResults)]]">
-        <picture>
-          <source srcset="no_results_dark.svg"
-              media="(prefers-color-scheme: dark)">
-          <img src="no_results.svg" id="no-emoji-image">
-        </picture>
+        <template is="dom-if" if="[[jellySupport]]">
+          <svg id="no-emoji-image" xmlns="http://www.w3.org/2000/svg" width="224" height="168" viewBox="0 0 224 168" fill="none">
+            <path d="M183 71.5103C183 70.6172 183.782 69.9474 184.675 70.0032C192.21 70.8405 198.071 77.2038 198.071 84.9068C198.071 92.6656 192.266 99.0289 184.731 99.8662C183.838 99.9778 183.056 99.2522 183.056 98.3591L183 71.5103Z" fill="var(--cros-sys-illo-secondary)" />
+            <path d="M123.572 74.0606C121.841 74.7862 120.167 75.7351 118.548 76.6282C116.259 77.8562 113.58 78.1353 111.124 77.4097C109.729 77.019 108.389 76.5166 106.938 76.2375C101.97 75.3444 97.1704 78.9168 97.0024 84.0521C96.8904 88.6292 100.742 92.704 105.375 92.4807C107.496 92.3691 109.561 91.5318 111.627 91.2527C113.915 90.9736 116.148 91.3643 118.101 92.5365C119.776 93.5413 121.339 94.7134 123.125 95.5507C124.856 96.3322 126.753 96.6671 128.707 96.5555C134.456 96.1647 139.145 91.5876 139.647 85.8383C140.261 78.9726 134.959 73.1675 128.205 73C126.586 73.0558 125.023 73.4466 123.572 74.0606Z" stroke="var(--cros-sys-illo-secondary)" stroke-width="1.65922" stroke-miterlimit="10" />
+            <path d="M68.0816 87.1182L82.2037 95.491C83.655 96.3283 85.497 95.3236 85.5528 93.649L85.7761 77.2384C85.7761 75.5638 83.9899 74.4474 82.4828 75.2847L68.1374 83.3226C66.6303 84.104 66.6303 86.2251 68.0816 87.1182Z" fill="var(--cros-sys-illo-color1-2)" />
+            <path d="M214.247 90.4939C217.145 90.4939 219.494 88.1448 219.494 85.247C219.494 82.3492 217.145 80 214.247 80C211.349 80 209 82.3492 209 85.247C209 88.1448 211.349 90.4939 214.247 90.4939Z" fill="var(--cros-sys-illo-color1-1)" />
+            <path d="M31.9604 97.1109C44.9697 97.1109 55.5158 86.5648 55.5158 73.5555C55.5158 60.5462 44.9697 50 31.9604 50C18.9511 50 8.40491 60.5462 8.40491 73.5555C8.40491 86.5648 18.9511 97.1109 31.9604 97.1109Z" stroke="var(--cros-sys-illo-color1)" stroke-width="1.65922" stroke-miterlimit="10" />
+            <path d="M19.9036 93.8184L5 118.825" stroke="var(--cros-sys-illo-color1)" stroke-width="5.94044" stroke-miterlimit="10" />
+            <path d="M170.717 88.1871L164.187 94.7179C162.68 96.225 160.168 96.225 158.661 94.7179L152.13 88.1871C150.623 86.68 150.623 84.1682 152.13 82.6611L158.661 76.1303C160.168 74.6232 162.68 74.6232 164.187 76.1303L170.717 82.6611C172.225 84.1682 172.225 86.6242 170.717 88.1871Z" fill="var(--cros-sys-illo-color1)" />
+          </svg>
+        </template>
+        <template is="dom-if" if="[[!jellySupport]]">
+          <picture>
+            <source srcset="no_results_dark.svg"
+                media="(prefers-color-scheme: dark)">
+            <img src="no_results.svg" id="no-emoji-image">
+          </picture>
+        </template>
         No result found
       </template>
       <template is="dom-if" if="[[isGifInErrorState(status, searchResults)]]">
-        <emoji-error status="[[status]]" error-message="[[errorMessage]]">
+        <emoji-error
+          status="[[status]]"
+          error-message="[[errorMessage]]"
+          jelly-support$="[[jellySupport]]">
         </emoji-error>
       </template>
     </div>

@@ -53,7 +53,7 @@
   }
 
   .flex-layout .emoji-button {
-    color: var(--cros-text-color-primary);
+    color: var(--emoji-picker-symbol-color);
     font-family: 'Noto Sans CJK JP';
     font-size: 13px;
     padding: 6px;
@@ -78,7 +78,7 @@
 
   /* Heading styles */
   #heading {
-    color: var(--cros-text-color-secondary);
+    color: var(--emoji-picker-category-header-color);
     display: flex;
     font-size: 13px;
     padding-bottom: var(--emoji-group-heading-padding-bottom);
@@ -87,7 +87,7 @@
 
   #heading:focus,
   #heading:active {
-    outline-color: var(--cros-text-color-prominent);
+    outline-color: var(--emoji-picker-focus-ring-color);
     outline-width: 2px;
   }
 
@@ -103,7 +103,7 @@
   }
 
   #show-clear {
-    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-fill-color: var(--emoji-picker-icon-button-icon-color);
     height: var(--emoji-group-heading-size);
     left: var(--emoji-picker-last-emoji-left);
     margin: 0;
@@ -125,7 +125,7 @@
   }
 
   #clear-recents, #help {
-    background-color: var(--cros-bg-color);
+    background-color: var(--emoji-picker-container-color);
     border: 2px solid transparent;
     color: var(--cros-text-color-secondary);
     cursor: pointer;
@@ -167,7 +167,7 @@
 
   .emoji-button:focus,
   .emoji-button:active {
-    outline-color: var(--cros-focus-ring-color);
+    outline-color: var(--emoji-picker-focus-ring-color);
     outline-style: solid;
     outline-width: 2px;
   }

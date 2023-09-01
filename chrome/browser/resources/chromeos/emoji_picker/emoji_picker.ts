@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import * as constants from './constants.js';
@@ -89,6 +90,9 @@ export class EmojiPicker extends PolymerElement {
       searchExtensionEnabled: {type: Boolean, value: false},
       incognito: {type: Boolean, value: true},
       gifSupport: {type: Boolean, value: false},
+      // TODO(b/297297441): Remove this property once jelly in emoji picker is
+      // fully launched.
+      jellySupport: {type: Boolean, value: false},
       showGifNudgeOverlay: {type: Boolean, value: false},
       nextGifPos: {type: Object, value: () => ({})},
       status: {type: Status, value: null},
@@ -109,6 +113,7 @@ export class EmojiPicker extends PolymerElement {
   private searchExtensionEnabled: boolean;
   private incognito: boolean;
   private gifSupport: boolean;
+  private jellySupport: boolean;
   private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
   private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
@@ -276,6 +281,10 @@ export class EmojiPicker extends PolymerElement {
                 )
             .then(values => values[0]);  // Map to the fetched data only.
 
+    if (this.jellySupport) {
+      await this.loadJellyColorStylesheet();
+    }
+
     // After initial data is loaded, if the GIF nudge is not shown before, show
     // the GIF nudge.
     if (this.gifSupport &&
@@ -345,6 +354,19 @@ export class EmojiPicker extends PolymerElement {
     if (this.gifSupport) {
       await this.fetchAndProcessGifData(prevFetchPromise, prevRenderPromise);
     }
+  }
+
+  private loadJellyColorStylesheet(): Promise<void> {
+    return new Promise((resolve) => {
+      const linkElement = document.createElement('link');
+      linkElement.rel = 'stylesheet';
+      linkElement.href = 'chrome://theme/colors.css?sets=sys';
+      linkElement.addEventListener('load', () => {
+        ColorChangeUpdater.forDocument().start();
+        resolve();
+      });
+      document.head.appendChild(linkElement);
+    });
   }
 
   private fetchAndProcessGifData(
@@ -447,6 +469,8 @@ export class EmojiPicker extends PolymerElement {
     this.searchExtensionEnabled =
         featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
+    this.jellySupport =
+        featureList.includes(Feature.EMOJI_PICKER_JELLY_SUPPORT);
   }
 
   private fetchOrderingData(url: string): Promise<EmojiGroupData> {

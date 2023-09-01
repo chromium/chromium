@@ -24,8 +24,52 @@
     --emoji-picker-subcategory-bar-inline-margin: 18px;
     --emoji-tooltip-delay-in: 500ms;
     --emoji-tooltip-delay-out: 500ms;
+
+    /**
+     * Scemantic color css variables
+     *
+     * TODO(b/297297441): Drop the fallback values once Emoji Picker Jelly
+     * support is enabled by default.
+     */
+    --emoji-picker-category-header-color: var(--cros-sys-on_surface_variant,
+                                          var(--cros-text-color-secondary));
+    --emoji-picker-container-color: var(--cros-sys-base_elevated,
+                                    var(--cros-bg-color));
+    --emoji-picker-focus-ring-color: var(--cros-sys-focus_ring,
+                                     var(--cros-focus-ring-color));
+    --emoji-picker-icon-button-icon-color: var(--cros-sys-on_surface,
+                                           var(--cros-icon-color-primary));
+    --emoji-picker-icon-toggle-unselected-color: var(--cros-sys-on_surface,
+                                                 var(--cros-icon-color-secondary));
+    --emoji-picker-icon-toggle-selected-color: var(--cros-sys-primary,
+                                               var(--cros-icon-color-prominent));
+    --emoji-picker-icon-toggle-selected-container-color: var(--cros-sys-app_base_shaded,
+                                                         var(--cros-highlight-color));
+    --emoji-picker-illustration-text-color: var(--cros-sys-on_surface_variant,
+                                     var(--cros-button-label-color-secondary-disabled));
+    --emoji-picker-illustration-link-color: var(--cros-sys-primary,
+                                     var(--cros-icon-color-prominent));
+    --emoji-picker-nudge-background-color: var(--cros-sys-primary,
+                                           var(--cros-nudge-background-color));
+    --emoji-picker-nudge-icon-color: var(--cros-sys-on_primary,
+                                     var(--cros-button-icon-color-primary));
+    --emoji-picker-search-field-clear-icon-color: var(--cros-sys-primary,
+                                                  var(--cros-icon-color-primary));
+    --emoji-picker-search-field-placeholder-color: var(--cros-sys-secondary,
+                                                   var(--cros-text-color-disabled));
+    --emoji-picker-search-field-search-icon-color: var(--cros-sys-secondary,
+                                                   var(--cros-text-color-secondary));
+    --emoji-picker-search-field-container-color: var(--cros-sys-input_field_on_shaded,
+                                                 var(--cros-toolbar-search-bg-color));
+    --emoji-picker-symbol-color: var(--cros-sys-on_surface,
+                                 var(--cros-text-color-primary));
+    --emoji-picker-tab-selected-color: var(--cros-sys-primary,
+                                       var(--cros-icon-color-prominent));
+    --emoji-picker-tab-unselected-color: var(--cros-sys-on_surface_variant,
+                                         var(--cros-icon-color-secondary));
+
     /* Actual properties of the emoji picker */
-    background-color: var(--cros-bg-color);
+    background-color: var(--emoji-picker-container-color);
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
@@ -95,10 +139,10 @@
   }
 
   .chevron {
-    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    --cr-icon-button-fill-color: var(--emoji-picker-icon-button-icon-color);
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 28px;
-    background-color: var(--cros-bg-color);
+    background-color: var(--emoji-picker-container-color);
     border-radius: 0;
     margin: 0;
     padding: 0;
@@ -136,7 +180,7 @@
   }
 
   #bar {
-    background-color: var(--cros-icon-color-prominent);
+    background-color: var(--emoji-picker-tab-selected-color);
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
     /* This gets made visible after we determine the correct location by loading
@@ -211,6 +255,7 @@
     left: calc(var(--emoji-picker-width) - var(--emoji-size)
     - var(--emoji-picker-subcategory-bar-inline-margin));
     padding-inline-end: 0;
+    --cr-icon-button-fill-color: var(--emoji-picker-icon-button-icon-color);
   }
 
   /* Center vertically the history icon and text buttons.*/
@@ -280,6 +325,7 @@
     on-scroll="onSearchScroll"
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
     gif-support$="[[gifSupport]]"
+    jelly-support$="[[jellySupport]]"
     close-gif-nudge-overlay="[[closeGifNudgeOverlay]]">
   </emoji-search>
 
@@ -403,7 +449,10 @@
       </div>
     </template>
     <template is="dom-if" if="[[isGifInErrorState(status)]]">
-      <emoji-error status="[[status]]" error-message="[[errorMessage]]">
+      <emoji-error
+        status="[[status]]"
+        error-message="[[errorMessage]]"
+        jelly-support$="[[jellySupport]]">
       </emoji-error>
     </template>
   </div>
