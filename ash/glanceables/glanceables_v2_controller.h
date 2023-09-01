@@ -79,6 +79,9 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // account id.
   base::flat_map<AccountId, ClientsRegistration> clients_registry_;
 
+  // Keeps track of the time that the user logged in.
+  base::Time login_time_;
+
   // Keeps track of the last time the glanceables bubble was shown.
   base::TimeTicks last_bubble_show_time_;
 

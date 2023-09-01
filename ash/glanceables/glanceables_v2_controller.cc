@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
@@ -41,6 +42,7 @@ void GlanceablesV2Controller::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
   bubble_shown_count_ = 0;
+  login_time_ = base::Time::Now();
 }
 
 bool GlanceablesV2Controller::AreGlanceablesAvailable() const {
@@ -84,6 +86,11 @@ void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
 void GlanceablesV2Controller::RecordGlanceablesBubbleShowTime(
     base::TimeTicks bubble_show_timestamp) {
   last_bubble_show_time_ = base::TimeTicks::Now();
+
+  if (bubble_shown_count_ == 0) {
+    RecordLoginToShowTime(base::Time::Now() - login_time_);
+  }
+
   bubble_shown_count_++;
 }
 

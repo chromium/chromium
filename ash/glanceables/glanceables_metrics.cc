@@ -6,8 +6,16 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+
+namespace {
+
+constexpr char kLoginToShowTime[] =
+    "Ash.Glanceables.TimeManagement.LoginToShowTime";
+
+}  // namespace
 
 namespace ash {
 
@@ -46,6 +54,10 @@ void RecordTasksLaunchSource(TasksLaunchSource source) {
 void RecordAddTaskButtonShown() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_AddTaskButtonShown"));
+}
+
+void RecordLoginToShowTime(base::TimeDelta login_to_show_time) {
+  base::UmaHistogramMediumTimes(kLoginToShowTime, login_to_show_time);
 }
 
 }  // namespace ash

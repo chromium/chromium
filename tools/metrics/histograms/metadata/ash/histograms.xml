@@ -3873,6 +3873,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Glanceables.TimeManagement.LoginToShowTime" units="ms"
+    expires_after="2024-08-31">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The amount of time that the user spent between login and opening the
+    glanceables time management bubble. The time is measured from the moment the
+    user logs in and the time the glanceables bubble is created.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList"
     units="tasks" expires_after="2024-03-01">
   <owner>amitrokhin@google.com</owner>
