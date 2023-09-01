@@ -41,10 +41,10 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   void OnRecordingEnded();
 
   // Handles repositioning the toolbar view within the game window.
-  void RepositionToolbar(const gfx::PointF& toolbar_location);
+  void RepositionToolbar(const gfx::Vector2d& offset);
 
   // Handles completion of the toolbar movement.
-  void EndDraggingToolbar(const gfx::PointF& toolbar_location);
+  void EndDraggingToolbar(const gfx::Vector2d& offset);
 
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;

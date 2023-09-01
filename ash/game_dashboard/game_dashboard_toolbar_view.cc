@@ -28,7 +28,10 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/background.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -57,15 +60,15 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
 }
 
 ToolbarSnapLocation CalculateToolbarSnapLocation(
-    const gfx::PointF& toolbar_screen_location,
+    const gfx::Point& toolbar_center_point,
     const gfx::Rect& game_window_screen_bounds) {
   const auto game_window_center = game_window_screen_bounds.CenterPoint();
-  if (toolbar_screen_location.x() < game_window_center.x()) {
-    return toolbar_screen_location.y() < game_window_center.y()
+  if (toolbar_center_point.x() < game_window_center.x()) {
+    return toolbar_center_point.y() < game_window_center.y()
                ? ToolbarSnapLocation::kTopLeft
                : ToolbarSnapLocation::kBottomLeft;
   }
-  return toolbar_screen_location.y() < game_window_center.y()
+  return toolbar_center_point.y() < game_window_center.y()
              ? ToolbarSnapLocation::kTopRight
              : ToolbarSnapLocation::kBottomRight;
 }
@@ -112,24 +115,26 @@ class ToolbarDragHandler : public ui::EventHandler {
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
+    const gfx::PointF event_location =
+        capture_mode_util::GetEventScreenLocation(*event);
+
     switch (event->type()) {
       case ui::ET_MOUSE_PRESSED:
-        potential_button_click_ = true;
+        is_dragging_ = false;
+        previous_location_in_screen_ = event_location;
         break;
       case ui::ET_MOUSE_DRAGGED:
-        if (potential_button_click_) {
-          // We've confirmed that the user is trying to drag rather than press a
+        if (!is_dragging_) {
+          // It's confirmed that the user is trying to drag rather than press a
           // button in the toolbar.
-          potential_button_click_ = false;
           is_dragging_ = true;
         }
         DCHECK(is_dragging_)
             << "Received OnMouseDragged event but the toolbar isn't dragging.";
-        toolbar_view_->RepositionToolbar(
-            capture_mode_util::GetEventScreenLocation(*event));
+        toolbar_view_->RepositionToolbar(GetOffset(event_location));
+        previous_location_in_screen_ = event_location;
         break;
       case ui::ET_MOUSE_RELEASED:
-        potential_button_click_ = false;
         if (!is_dragging_) {
           // Allow the toolbar to receive this event so it can handle any button
           // clicks.
@@ -139,8 +144,8 @@ class ToolbarDragHandler : public ui::EventHandler {
         // The toolbar was dragged, so consume this event to ensure the toolbar
         // button doesn't process any button clicks.
         is_dragging_ = false;
-        toolbar_view_->EndDraggingToolbar(
-            capture_mode_util::GetEventScreenLocation(*event));
+        toolbar_view_->EndDraggingToolbar(GetOffset(event_location));
+        previous_location_in_screen_.SetPoint(0, 0);
         break;
       default:
         // Don't stop events from being received on any other mouse events.
@@ -152,32 +157,36 @@ class ToolbarDragHandler : public ui::EventHandler {
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
-    const gfx::PointF toolbar_location =
+    const gfx::PointF event_location =
         capture_mode_util::GetEventScreenLocation(*event);
 
     switch (event->type()) {
       case ui::ET_GESTURE_SCROLL_BEGIN:
         is_dragging_ = true;
+        previous_location_in_screen_ = event_location;
         break;
       case ui::ET_GESTURE_SCROLL_UPDATE:
         DCHECK(is_dragging_)
             << "Received ET_GESTURE_SCROLL_UPDATE event but the "
                "toolbar isn't dragging.";
-        toolbar_view_->RepositionToolbar(toolbar_location);
-        break;
-      case ui::ET_GESTURE_SCROLL_END:
-        DCHECK(is_dragging_) << "Received ET_GESTURE_SCROLL_END event but the "
-                                "toolbar isn't dragging.";
-        is_dragging_ = false;
-        toolbar_view_->EndDraggingToolbar(toolbar_location);
+        toolbar_view_->RepositionToolbar(GetOffset(event_location));
+        previous_location_in_screen_ = event_location;
         break;
       case ui::ET_GESTURE_END:
         if (!is_dragging_) {
           // Pass along event if it occurred outside of a dragging instance.
           return;
         }
+        // Treat dragging `ui::ET_GESTURE_END` events the same as
+        // `ui::ET_GESTURE_SCROLL_END` events.
+        [[fallthrough]];
+      case ui::ET_GESTURE_SCROLL_END:
+        DCHECK(is_dragging_) << "Attempting to call end drag logic but the "
+                                "toolbar wasn't dragging. Event = "
+                             << event->type();
         is_dragging_ = false;
-        toolbar_view_->EndDraggingToolbar(toolbar_location);
+        toolbar_view_->EndDraggingToolbar(GetOffset(event_location));
+        previous_location_in_screen_.SetPoint(0, 0);
         break;
       default:
         // Don't stop events from being received on any other gesture events.
@@ -189,15 +198,18 @@ class ToolbarDragHandler : public ui::EventHandler {
   }
 
  private:
+  // Determines the offset from the current event and the previous event
+  // location.
+  gfx::Vector2d GetOffset(const gfx::PointF& event_location) const {
+    return gfx::ToRoundedVector2d(event_location -
+                                  previous_location_in_screen_);
+  }
+
   // Allows this class to access `GameDashboardToolbarView` owned functions.
   const raw_ptr<GameDashboardToolbarView, ExperimentalAsh> toolbar_view_;
 
-  // Indicates whether a drag event has occurred yet within a given set of mouse
-  // interactions. When the `OnMousePressed` event is initially received, it's
-  // unknown whether dragging will occur yet. The first `OnMouseDragged` event
-  // confirms that the user wanted to drag the toolbar rather than click on a
-  // button in the toolbar.
-  bool potential_button_click_ = false;
+  // The location of the previous drag event in screen coordinates.
+  gfx::PointF previous_location_in_screen_;
 
   // If the toolbar view is in the dragging state.
   bool is_dragging_ = false;
@@ -235,23 +247,22 @@ void GameDashboardToolbarView::OnRecordingEnded() {
   UpdateRecordGameButton(/*is_recording_game_window=*/false);
 }
 
-void GameDashboardToolbarView::RepositionToolbar(
-    const gfx::PointF& event_location) {
-  // TODO(b/290696655): Update toolbar to move based on initial click location
-  // rather than the top left corner.
+void GameDashboardToolbarView::RepositionToolbar(const gfx::Vector2d& offset) {
   // Verify toolbar isn't outside game window bounds.
-  gfx::Rect target_bounds =
-      gfx::Rect(gfx::ToRoundedPoint(event_location), GetPreferredSize());
+  auto* widget = GetWidget();
+  gfx::Rect current_bounds = widget->GetWindowBoundsInScreen();
+  // TODO(b/295536243): Update offset to handle dragging outside game window.
+  current_bounds.Offset(offset);
   capture_mode_util::AdjustBoundsWithinConfinedBounds(
-      context_->game_window()->GetBoundsInScreen(), target_bounds);
-  GetWidget()->SetBounds(target_bounds);
+      context_->game_window()->GetBoundsInScreen(), current_bounds);
+  widget->SetBounds(current_bounds);
 }
 
-void GameDashboardToolbarView::EndDraggingToolbar(
-    const gfx::PointF& event_location) {
-  RepositionToolbar(event_location);
+void GameDashboardToolbarView::EndDraggingToolbar(const gfx::Vector2d& offset) {
+  RepositionToolbar(offset);
   context_->SetToolbarSnapLocation(CalculateToolbarSnapLocation(
-      event_location, context_->game_window()->GetBoundsInScreen()));
+      GetWidget()->GetWindowBoundsInScreen().CenterPoint(),
+      context_->game_window()->GetBoundsInScreen()));
 }
 
 bool GameDashboardToolbarView::OnKeyPressed(const ui::KeyEvent& event) {

@@ -68,10 +68,10 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   }
 
   int GetToolbarHeight() {
-    CHECK(test_api_->GetToolbarWidget())
-        << "The toolbar must be opened first before trying to retrieve its "
-           "height.";
-    return test_api_->GetToolbarWidget()->GetWindowBoundsInScreen().height();
+    auto* widget = test_api_->GetToolbarWidget();
+    CHECK(widget) << "The toolbar must be opened first before trying to "
+                     "retrieve its height.";
+    return widget->GetNativeWindow()->GetBoundsInScreen().height();
   }
 
   // Starts the video recording from `CaptureModeBarView`.
@@ -339,10 +339,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void DragToolbarToPoint(Movement move_type,
                           const gfx::Point& new_location,
                           bool drop = true) {
-    DCHECK(test_api_->GetToolbarWidget())
-        << "Cannot drag toolbar because it's not available on screen.";
-    gfx::Rect toolbar_bounds =
-        test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+    auto* widget = test_api_->GetToolbarWidget();
+    DCHECK(widget) << "Cannot drag toolbar because it's unavailable on screen.";
+    gfx::Rect toolbar_bounds = widget->GetNativeWindow()->GetBoundsInScreen();
     ui::test::EventGenerator* event_generator = GetEventGenerator();
     event_generator->set_current_screen_location(toolbar_bounds.CenterPoint());
 
@@ -618,7 +617,8 @@ TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
       game_window_->GetBoundsInScreen().top_center().x(),
       kAppBounds.y() + frame_header_->GetHeaderHeight() / 2);
   EXPECT_EQ(expected_button_center_point, test_api_->GetMainMenuButtonWidget()
-                                              ->GetWindowBoundsInScreen()
+                                              ->GetNativeWindow()
+                                              ->GetBoundsInScreen()
                                               .CenterPoint());
 }
 
@@ -627,15 +627,15 @@ TEST_P(GameTypeGameDashboardContextTest, MainMenuButtonWidget_InitialLocation) {
 TEST_P(GameTypeGameDashboardContextTest,
        MainMenuButtonWidget_MoveWindowAndVerifyLocation) {
   const gfx::Vector2d move_vector = gfx::Vector2d(100, 200);
+  aura::Window* native_window =
+      test_api_->GetMainMenuButtonWidget()->GetNativeWindow();
   const gfx::Rect expected_widget_location =
-      test_api_->GetMainMenuButtonWidget()->GetWindowBoundsInScreen() +
-      move_vector;
+      native_window->GetBoundsInScreen() + move_vector;
 
   game_window_->SetBoundsInScreen(
       game_window_->GetBoundsInScreen() + move_vector, GetPrimaryDisplay());
 
-  EXPECT_EQ(expected_widget_location,
-            test_api_->GetMainMenuButtonWidget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(expected_widget_location, native_window->GetBoundsInScreen());
 }
 
 // Verifies clicking the main menu button will open the main menu widget.
@@ -931,15 +931,16 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
   // window.
   DragToolbarToPoint(Movement::kMouse, {screen_point_right, screen_point_y},
                      false);
-  auto toolbar_bounds =
-      test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  aura::Window* native_window =
+      test_api_->GetToolbarWidget()->GetNativeWindow();
+  auto toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.right(), window_bounds.right());
   EXPECT_EQ(toolbar_bounds.y(), window_bounds.y());
 
   // Drag toolbar, moving the mouse past the game window to the top left corner
   // of the screen bounds.
   DragToolbarToPoint(Movement::kMouse, {screen_point_x, screen_point_y}, false);
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.x(), window_bounds.x());
   EXPECT_EQ(toolbar_bounds.y(), window_bounds.y());
 
@@ -947,7 +948,7 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
   // corner of the screen bounds.
   DragToolbarToPoint(Movement::kMouse, {screen_point_x, screen_point_bottom},
                      false);
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.x(), window_bounds.x());
   EXPECT_EQ(toolbar_bounds.bottom(), window_bounds.bottom());
 
@@ -955,7 +956,7 @@ TEST_P(GameTypeGameDashboardContextTest, MoveToolbarOutOfBounds) {
   // corner of the screen bounds.
   DragToolbarToPoint(Movement::kMouse,
                      {screen_point_right, screen_point_bottom}, false);
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.right(), window_bounds.right());
   EXPECT_EQ(toolbar_bounds.bottom(), window_bounds.bottom());
 
@@ -1031,8 +1032,9 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   int y_offset = window_bounds.height() / 4;
 
   // Verify initial placement in top right quadrant.
-  auto toolbar_bounds =
-      test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  aura::Window* native_window =
+      test_api_->GetToolbarWidget()->GetNativeWindow();
+  auto toolbar_bounds = native_window->GetBoundsInScreen();
   gfx::Size toolbar_size =
       test_api_->GetToolbarWidget()->GetContentsView()->GetPreferredSize();
   const int frame_header_height = frame_header_->GetHeaderHeight();
@@ -1047,7 +1049,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
                                         window_center_point.y() - y_offset});
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(), ToolbarSnapLocation::kTopLeft);
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
   EXPECT_EQ(toolbar_bounds.y(),
             kAppBounds.y() + kToolbarEdgePadding + frame_header_height);
@@ -1055,7 +1057,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   // Move toolbar to bottom right quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() + x_offset,
                                         window_center_point.y() + y_offset});
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.x(),
             kAppBounds.right() - kToolbarEdgePadding - toolbar_size.width());
   EXPECT_EQ(toolbar_bounds.y(),
@@ -1064,7 +1066,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   // Move toolbar to bottom left quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
                                         window_center_point.y() + y_offset});
-  toolbar_bounds = test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
+  toolbar_bounds = native_window->GetBoundsInScreen();
   EXPECT_EQ(toolbar_bounds.x(), kAppBounds.x() + kToolbarEdgePadding);
   EXPECT_EQ(toolbar_bounds.y(),
             kAppBounds.bottom() - kToolbarEdgePadding - toolbar_size.height());
