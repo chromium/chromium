@@ -218,6 +218,10 @@ BASE_FEATURE(kShoppingListTrackByDefault,
              "ShoppingListTrackByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kShoppingListWAARestrictionRemoval,
+             "ShoppingListWAARestrictionRemoval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
