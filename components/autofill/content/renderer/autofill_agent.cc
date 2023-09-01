@@ -815,8 +815,15 @@ void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
 
   WebInputElement input_element = element_.DynamicTo<WebInputElement>();
   if (!input_element.IsNull()) {
+    DCHECK(!unsafe_render_frame() ||
+           IsOwnedByFrame(input_element, unsafe_render_frame()));
     ClearPreviewedForm();
-    DoPreviewFieldWithValue(value, input_element);
+
+    query_node_autofill_state_ = element_.GetAutofillState();
+    input_element.SetSuggestedValue(blink::WebString::FromUTF16(value));
+    form_util::PreviewSuggestion(input_element.SuggestedValue().Utf16(),
+                                 input_element.Value().Utf16(), &input_element);
+    previewed_elements_.push_back(input_element);
   }
 }
 
@@ -1103,17 +1110,6 @@ void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
     password_autofill_agent_->UpdateStateForTextChange(input_element);
 
   form_tracker_.set_ignore_control_changes(false);
-}
-
-void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
-                                            WebInputElement& node) {
-  DCHECK(!unsafe_render_frame() || IsOwnedByFrame(node, unsafe_render_frame()));
-
-  query_node_autofill_state_ = element_.GetAutofillState();
-  node.SetSuggestedValue(blink::WebString::FromUTF16(value));
-  form_util::PreviewSuggestion(node.SuggestedValue().Utf16(),
-                               node.Value().Utf16(), &node);
-  previewed_elements_.push_back(node);
 }
 
 void AutofillAgent::TriggerFormExtraction() {

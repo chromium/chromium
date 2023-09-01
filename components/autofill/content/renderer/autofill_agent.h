@@ -307,12 +307,6 @@ class AutofillAgent : public content::RenderFrameObserver,
                             blink::WebFormControlElement& element,
                             blink::WebAutofillState autofill_state);
 
-  // Set |node| to display the given |value| as a preview.  The preview is
-  // visible on screen to the user, but not visible to the page via the DOM or
-  // JavaScript.
-  void DoPreviewFieldWithValue(const std::u16string& value,
-                               blink::WebInputElement& node);
-
   // Notifies the AutofillDriver in the browser process of new and/or removed
   // forms, modulo throttling.
   //
