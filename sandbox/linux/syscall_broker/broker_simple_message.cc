@@ -304,7 +304,7 @@ bool BrokerSimpleMessage::ReadData(const char** data, size_t* length) {
     broken_ = true;
     return false;
   }
-  *data = reinterpret_cast<char*>(read_next_.get());
+  *data = reinterpret_cast<char*>(read_next_);
   read_next_ = read_next_ + *length;
   return true;
 }
