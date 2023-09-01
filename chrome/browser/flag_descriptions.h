@@ -508,6 +508,9 @@ extern const char kCompressionDictionaryTransportBackendDescription[];
 extern const char kUseDMSAAForTilesName[];
 extern const char kUseDMSAAForTilesDescription[];
 
+extern const char kUseDMSAAForTilesAndroidGLName[];
+extern const char kUseDMSAAForTilesAndroidGLDescription[];
+
 extern const char kUseDnsHttpsSvcbAlpnName[];
 extern const char kUseDnsHttpsSvcbAlpnDescription[];
 

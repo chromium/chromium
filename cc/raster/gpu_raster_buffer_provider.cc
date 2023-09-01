@@ -158,13 +158,20 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
   CHECK(worker_context_provider);
 
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, DMSAA is currently only enabled for vulkan until GL
-  // regressions are fixed.
   {
     absl::optional<viz::RasterContextProvider::ScopedRasterContextLock> lock;
     lock.emplace(worker_context_provider);
-    is_using_dmsaa_ &=
+    auto is_using_vulkan =
         worker_context_provider->ContextCapabilities().using_vulkan_context;
+
+    // On Android, DMSAA on vulkan backend launch is controlled by
+    // kUseDMSAAForTiles whereas GL backend launch is controlled by
+    // kUseDMSAAForTilesAndroidGL.
+    is_using_dmsaa_ =
+        (base::FeatureList::IsEnabled(features::kUseDMSAAForTiles) &&
+         is_using_vulkan) ||
+        (base::FeatureList::IsEnabled(features::kUseDMSAAForTilesAndroidGL) &&
+         !is_using_vulkan);
   }
 #endif
 }

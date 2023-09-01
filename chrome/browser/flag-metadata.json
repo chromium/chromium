@@ -8093,6 +8093,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "use-dmsaa-for-tiles-android-gl",
+    "owners": [ "vasilyt", "vikassoni" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "use-dns-https-svcb-alpn",
     "owners": [ "horo" ],
     "expiry_milestone": 120

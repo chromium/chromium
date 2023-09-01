@@ -82,6 +82,12 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNormalPriorityImageDecoding);
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 
+#if BUILDFLAG(IS_ANDROID)
+// Use DMSAA instead of MSAA for rastering tiles on Android GL backend. Note
+// that the above flag kUseDMSAAForTiles is used for Android Vulkan backend.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
+#endif
+
 // Updating browser controls state will IPC directly from browser main to the
 // compositor thread. Previously this proxied through the renderer main thread.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUpdateBrowserControlsWithoutProxy);

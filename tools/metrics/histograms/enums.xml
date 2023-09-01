@@ -62754,6 +62754,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
   <int value="-940390151" label="RoundedDisplay:disabled"/>
   <int value="-939676447" label="CrostiniResetLxdDb:enabled"/>
@@ -68522,6 +68523,7 @@ from previous Chrome versions.
       label="MagnifierContinuousMouseFollowingModeSetting:disabled"/>
   <int value="1946358032" label="SwapClankShareHubRows:disabled"/>
   <int value="1947350992" label="drop-sync-credential:disabled"/>
+  <int value="1947757329" label="UseDMSAAForTilesAndroidGL:enabled"/>
   <int value="1948509466" label="PasswordChangeAccountStoreUsers:disabled"/>
   <int value="1948753119" label="OmniboxExpandedStateHeight:disabled"/>
   <int value="1948978490" label="PaintPreviewDemo:disabled"/>
