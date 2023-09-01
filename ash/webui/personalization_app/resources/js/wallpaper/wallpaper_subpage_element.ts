@@ -9,12 +9,12 @@
 
 import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled} from '../load_time_booleans.js';
-import {Paths, PersonalizationRouter, QueryParams} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouterElement, QueryParams} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './wallpaper_subpage_element.html.js';
 
-export class WallpaperSubpage extends WithPersonalizationStore {
+export class WallpaperSubpageElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-subpage';
   }
@@ -59,7 +59,7 @@ export class WallpaperSubpage extends WithPersonalizationStore {
 
   private onCurrentSelectedChanged_(value: CurrentWallpaper|null) {
     if (value && value.type === WallpaperType.kPolicy) {
-      PersonalizationRouter.reloadAtRoot();
+      PersonalizationRouterElement.reloadAtRoot();
     }
   }
 
@@ -86,4 +86,4 @@ export class WallpaperSubpage extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperSubpage.is, WallpaperSubpage);
+customElements.define(WallpaperSubpageElement.is, WallpaperSubpageElement);

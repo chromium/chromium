@@ -25,13 +25,13 @@ import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientPreviewBase} from './ambient_preview_base.js';
 import {getTemplate} from './ambient_preview_small_element.html.js';
 
-export interface AmbientPreviewSmall {
+export interface AmbientPreviewSmallElement {
   $: {
     container: HTMLDivElement,
   };
 }
 
-export class AmbientPreviewSmall extends AmbientPreviewBase {
+export class AmbientPreviewSmallElement extends AmbientPreviewBase {
   static get is() {
     return 'ambient-preview-small';
   }
@@ -98,4 +98,5 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   }
 }
 
-customElements.define(AmbientPreviewSmall.is, AmbientPreviewSmall);
+customElements.define(
+    AmbientPreviewSmallElement.is, AmbientPreviewSmallElement);

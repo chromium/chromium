@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {WallpaperPreview, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {WallpaperPreviewElement, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -15,8 +15,8 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('WallpaperPreviewTest', function() {
-  let wallpaperPreviewElement: WallpaperPreview|null;
+suite('WallpaperPreviewElementTest', function() {
+  let wallpaperPreviewElement: WallpaperPreviewElement|null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
 
@@ -42,7 +42,7 @@ suite('WallpaperPreviewTest', function() {
           selected: {attribution: true, image: true},
           setImage: 0,
         };
-        wallpaperPreviewElement = initElement(WallpaperPreview);
+        wallpaperPreviewElement = initElement(WallpaperPreviewElement);
 
         assertEquals(
             null, wallpaperPreviewElement.shadowRoot!.querySelector('img'));
@@ -82,7 +82,7 @@ suite('WallpaperPreviewTest', function() {
     personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
 
-    wallpaperPreviewElement = initElement(WallpaperPreview);
+    wallpaperPreviewElement = initElement(WallpaperPreviewElement);
     await waitAfterNextRender(wallpaperPreviewElement);
 
     const img = wallpaperPreviewElement.shadowRoot!.querySelector('img');
@@ -93,7 +93,7 @@ suite('WallpaperPreviewTest', function() {
   });
 
   test('shows placeholders when image fails to load', async () => {
-    wallpaperPreviewElement = initElement(WallpaperPreview);
+    wallpaperPreviewElement = initElement(WallpaperPreviewElement);
     await waitAfterNextRender(wallpaperPreviewElement);
 
     // Still loading.
@@ -125,7 +125,7 @@ suite('WallpaperPreviewTest', function() {
     personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
 
-    wallpaperPreviewElement = initElement(WallpaperPreview);
+    wallpaperPreviewElement = initElement(WallpaperPreviewElement);
     await waitAfterNextRender(wallpaperPreviewElement);
 
     function getManagedIcon(): HTMLElement|null {

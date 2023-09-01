@@ -19,7 +19,7 @@ import {getTemplate} from './google_photos_zero_state_element.html.js';
 
 const Base = I18nMixin(PolymerElement);
 
-export class GooglePhotosZeroState extends Base {
+export class GooglePhotosZeroStateElement extends Base {
   static get is() {
     return 'google-photos-zero-state';
   }
@@ -73,4 +73,5 @@ export class GooglePhotosZeroState extends Base {
   }
 }
 
-customElements.define(GooglePhotosZeroState.is, GooglePhotosZeroState);
+customElements.define(
+    GooglePhotosZeroStateElement.is, GooglePhotosZeroStateElement);

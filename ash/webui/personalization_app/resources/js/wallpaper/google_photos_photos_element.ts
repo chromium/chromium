@@ -83,11 +83,11 @@ export interface GooglePhotosPhotosSection {
   rows: GooglePhotosPhotosRow[];
 }
 
-export interface GooglePhotosPhotos {
+export interface GooglePhotosPhotosElement {
   $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
 }
 
-export class GooglePhotosPhotos extends WithPersonalizationStore {
+export class GooglePhotosPhotosElement extends WithPersonalizationStore {
   static get is() {
     return 'google-photos-photos';
   }
@@ -197,24 +197,25 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
     this.addEventListener('iron-resize', this.onResized_.bind(this));
 
-    this.watch<GooglePhotosPhotos['currentSelected_']>(
+    this.watch<GooglePhotosPhotosElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<GooglePhotosPhotos['pendingSelected_']>(
+    this.watch<GooglePhotosPhotosElement['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
-    this.watch<GooglePhotosPhotos['photos_']>(
+    this.watch<GooglePhotosPhotosElement['photos_']>(
         'photos_', state => state.wallpaper.googlePhotos.photos);
-    this.watch<GooglePhotosPhotos['photosLoading_']>(
+    this.watch<GooglePhotosPhotosElement['photosLoading_']>(
         'photosLoading_', state => state.wallpaper.loading.googlePhotos.photos);
-    this.watch<GooglePhotosPhotos['photosResumeToken_']>(
+    this.watch<GooglePhotosPhotosElement['photosResumeToken_']>(
         'photosResumeToken_',
         state => state.wallpaper.googlePhotos.resumeTokens.photos);
-    this.watch<GooglePhotosPhotos['error_']>('error_', state => state.error);
+    this.watch<GooglePhotosPhotosElement['error_']>(
+        'error_', state => state.error);
     this.updateFromStore();
   }
 
   /** Invoked on changes to |focusedPhotoIndex_|. */
   private onFocusedPhotoIndexChanged_(
-      focusedPhotoIndex: GooglePhotosPhotos['focusedPhotoIndex_']) {
+      focusedPhotoIndex: GooglePhotosPhotosElement['focusedPhotoIndex_']) {
     // Attempt to focus the |element| at the focused index. Note that the
     // |element| may not be rendered as it could exist outside of the viewport.
     const selector = `.photo[photoindex="${focusedPhotoIndex}"]`;
@@ -351,7 +352,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_(hidden: GooglePhotosPhotos['hidden']) {
+  private onHiddenChanged_(hidden: GooglePhotosPhotosElement['hidden']) {
     if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
@@ -385,7 +386,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** Invoked on changes to |photosBySection_|. */
   private onPhotosBySectionChanged_(
-      photosBySection: GooglePhotosPhotos['photosBySection_']) {
+      photosBySection: GooglePhotosPhotosElement['photosBySection_']) {
     if (photosBySection === null) {
       // If the list of photos fails to load and is currently showing, display
       // an error to the user that allows them to make another attempt.
@@ -426,8 +427,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to |photosPerRow_|. */
-  private onPhotosPerRowChanged_(photosPerRow:
-                                     GooglePhotosPhotos['photosPerRow_']) {
+  private onPhotosPerRowChanged_(
+      photosPerRow: GooglePhotosPhotosElement['photosPerRow_']) {
     // Because this element manually partitions photos by row, placeholders need
     // to be explicitly regenerated when the desired number of photos per row
     // changes.
@@ -439,7 +440,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** Invoked on changes to |photosResumeToken_|. */
   private onPhotosResumeTokenChanged_(
-      photosResumeToken: GooglePhotosPhotos['photosResumeToken_']) {
+      photosResumeToken: GooglePhotosPhotosElement['photosResumeToken_']) {
     if (photosResumeToken) {
       this.$.gridScrollThreshold.clearTriggers();
     }
@@ -452,8 +453,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** Invoked to compute |photosBySection_|. */
   private computePhotosBySection_(
-      photos: GooglePhotosPhotos['photos_'],
-      photosPerRow: GooglePhotosPhotos['photosPerRow_']):
+      photos: GooglePhotosPhotosElement['photos_'],
+      photosPerRow: GooglePhotosPhotosElement['photosPerRow_']):
       GooglePhotosPhotosSection[]|null|undefined {
     // If |photos| is undefined, this computation is occurring during
     // initialization. In such cases, defer defining |photosBySection_| until
@@ -498,7 +499,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Returns the date to display for the specified grid |row|. */
   private getGridRowDate_(
       row: GooglePhotosPhotosRow,
-      photosBySection: GooglePhotosPhotos['photosBySection_']): string
+      photosBySection: GooglePhotosPhotosElement['photosBySection_']): string
       |undefined {
     if (!photosBySection) {
       return undefined;
@@ -511,7 +512,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Returns the locations to display for the specified grid |row|. */
   private getGridRowLocations_(
       row: GooglePhotosPhotosRow,
-      photosBySection: GooglePhotosPhotos['photosBySection_']): string
+      photosBySection: GooglePhotosPhotosElement['photosBySection_']): string
       |undefined {
     if (!photosBySection) {
       return undefined;
@@ -549,7 +550,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Returns whether the title for the specified grid |row| is visible. */
   private isGridRowTitleVisible_(
       row: GooglePhotosPhotosRow,
-      photosBySection: GooglePhotosPhotos['photosBySection_']): boolean {
+      photosBySection: GooglePhotosPhotosElement['photosBySection_']): boolean {
     return !!this.getGridRowDate_(row, photosBySection);
   }
 
@@ -561,8 +562,8 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Returns whether the specified |photo| is currently selected. */
   private isPhotoSelected_(
       photo: GooglePhotosPhoto|null,
-      currentSelected: GooglePhotosPhotos['currentSelected_'],
-      pendingSelected: GooglePhotosPhotos['pendingSelected_']): boolean {
+      currentSelected: GooglePhotosPhotosElement['currentSelected_'],
+      pendingSelected: GooglePhotosPhotosElement['pendingSelected_']): boolean {
     if (!photo || (!currentSelected && !pendingSelected)) {
       return false;
     }
@@ -584,4 +585,4 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   }
 }
 
-customElements.define(GooglePhotosPhotos.is, GooglePhotosPhotos);
+customElements.define(GooglePhotosPhotosElement.is, GooglePhotosPhotosElement);

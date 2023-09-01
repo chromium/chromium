@@ -16,7 +16,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
-import {PersonalizationRouter} from '../personalization_router_element.js';
+import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {ThemeObserver} from '../theme/theme_observer.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -107,7 +107,7 @@ export function getImageTiles(
   return [...tileMap.values()];
 }
 
-export class WallpaperImages extends WithPersonalizationStore {
+export class WallpaperImagesElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-images';
   }
@@ -185,17 +185,17 @@ export class WallpaperImages extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     ThemeObserver.initThemeObserverIfNeeded();
-    this.watch<WallpaperImages['images_']>(
+    this.watch<WallpaperImagesElement['images_']>(
         'images_', state => state.wallpaper.backdrop.images);
-    this.watch<WallpaperImages['imagesLoading_']>(
+    this.watch<WallpaperImagesElement['imagesLoading_']>(
         'imagesLoading_', state => state.wallpaper.loading.images);
-    this.watch<WallpaperImages['collections_']>(
+    this.watch<WallpaperImagesElement['collections_']>(
         'collections_', state => state.wallpaper.backdrop.collections);
-    this.watch<WallpaperImages['collectionsLoading_']>(
+    this.watch<WallpaperImagesElement['collectionsLoading_']>(
         'collectionsLoading_', state => state.wallpaper.loading.collections);
-    this.watch<WallpaperImages['selectedUnitId_']>(
+    this.watch<WallpaperImagesElement['selectedUnitId_']>(
         'selectedUnitId_', state => getUnitId(state.wallpaper.currentSelected));
-    this.watch<WallpaperImages['pendingSelectedUnitId_']>(
+    this.watch<WallpaperImagesElement['pendingSelectedUnitId_']>(
         'pendingSelectedUnitId_',
         state => isWallpaperImage(state.wallpaper.pendingSelected) ?
             state.wallpaper.pendingSelected.unitId :
@@ -235,7 +235,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     if (hasError) {
       console.warn('An error occurred while loading collections or images');
       // Navigate back to main page and refresh.
-      PersonalizationRouter.reloadAtWallpaper();
+      PersonalizationRouterElement.reloadAtWallpaper();
     }
   }
 
@@ -334,4 +334,4 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperImages.is, WallpaperImages);
+customElements.define(WallpaperImagesElement.is, WallpaperImagesElement);

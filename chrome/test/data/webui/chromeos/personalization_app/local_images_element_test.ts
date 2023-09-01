@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {kDefaultImageSymbol, LocalImages, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {kDefaultImageSymbol, LocalImagesElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -13,8 +13,8 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('LocalImagesTest', function() {
-  let localImagesElement: LocalImages|null;
+suite('LocalImagesElementTest', function() {
+  let localImagesElement: LocalImagesElement|null;
 
   let wallpaperProvider: TestWallpaperProvider;
 
@@ -23,19 +23,22 @@ suite('LocalImagesTest', function() {
   /**
    * Get all currently visible photo loading placeholders.
    */
-  function getLoadingPlaceholders(): WallpaperGridItem[] {
+  function getLoadingPlaceholders(): WallpaperGridItemElement[] {
     if (!localImagesElement) {
       return [];
     }
 
     return Array.from(
-        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-            `${WallpaperGridItem.is}[placeholder]:not([hidden])`));
+        localImagesElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                `${WallpaperGridItemElement.is}[placeholder]:not([hidden])`));
   }
 
-  function getDefaultImageHtmlElement(): WallpaperGridItem|null {
-    return localImagesElement!.shadowRoot!.querySelector<WallpaperGridItem>(
-        `${WallpaperGridItem.is}[data-id="${kDefaultImageSymbol.toString()}"]`);
+  function getDefaultImageHtmlElement(): WallpaperGridItemElement|null {
+    return localImagesElement!.shadowRoot!
+        .querySelector<WallpaperGridItemElement>(
+            `${WallpaperGridItemElement.is}[data-id="${
+                kDefaultImageSymbol.toString()}"]`);
   }
 
   setup(() => {
@@ -60,7 +63,7 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: false},
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
     await waitAfterNextRender(localImagesElement);
 
     // Iron-list creates some extra dom elements as a scroll buffer and
@@ -112,7 +115,7 @@ suite('LocalImagesTest', function() {
           data: {[kDefaultImageSymbol]: false},
         };
 
-        localImagesElement = initElement(LocalImages);
+        localImagesElement = initElement(LocalImagesElement);
 
         const ironList =
             localImagesElement.shadowRoot!.querySelector('iron-list');
@@ -131,9 +134,9 @@ suite('LocalImagesTest', function() {
         await waitAfterNextRender(localImagesElement);
 
         assertEquals(2, ironList.items!.length);
-        let gridItems =
-            localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-                `${WallpaperGridItem.is}:not([placeholder]):not([hidden])`);
+        let gridItems = localImagesElement.shadowRoot!.querySelectorAll<
+            WallpaperGridItemElement>(
+            `${WallpaperGridItemElement.is}:not([placeholder]):not([hidden])`);
         assertEquals(1, gridItems.length);
         assertDeepEquals(
             {url: 'data:image/png;base64,localimage0data'}, gridItems![0]!.src);
@@ -153,9 +156,9 @@ suite('LocalImagesTest', function() {
         await waitAfterNextRender(localImagesElement);
 
         // Still only first thumbnail displayed.
-        gridItems =
-            localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-                `${WallpaperGridItem.is}:not([placeholder]):not([hidden])`);
+        gridItems = localImagesElement.shadowRoot!.querySelectorAll<
+            WallpaperGridItemElement>(
+            `${WallpaperGridItemElement.is}:not([placeholder]):not([hidden])`);
         assertEquals(
             1, gridItems.length, 'still only first thumbnail displayed');
         assertDeepEquals(
@@ -184,14 +187,14 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
     await waitAfterNextRender(localImagesElement);
 
     // iron-list pre-creates some extra DOM elements but marks them as
     // hidden. Ignore them here to only get visible images.
-    const images =
-        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-            `${WallpaperGridItem.is}:not([hidden])`);
+    const images = localImagesElement.shadowRoot!
+                       .querySelectorAll<WallpaperGridItemElement>(
+                           `${WallpaperGridItemElement.is}:not([hidden])`);
 
     assertEquals(2, images.length);
     // Every image is not selected.
@@ -223,14 +226,14 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
     await waitAfterNextRender(localImagesElement);
 
     // iron-list pre-creates some extra DOM elements but marks them as
     // hidden. Ignore them here to only get visible images.
-    const images =
-        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-            `${WallpaperGridItem.is}:not([hidden])`);
+    const images = localImagesElement.shadowRoot!
+                       .querySelectorAll<WallpaperGridItemElement>(
+                           `${WallpaperGridItemElement.is}:not([hidden])`);
 
     assertEquals(2, images.length);
     // Every image has aria-label set.
@@ -253,12 +256,12 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: false},
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
     await waitAfterNextRender(localImagesElement);
 
-    const images =
-        localImagesElement.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-            `${WallpaperGridItem.is}:not([hidden])`);
+    const images = localImagesElement.shadowRoot!
+                       .querySelectorAll<WallpaperGridItemElement>(
+                           `${WallpaperGridItemElement.is}:not([hidden])`);
 
     assertEquals(1, images.length, 'only default image is present');
     assertEquals(
@@ -275,7 +278,7 @@ suite('LocalImagesTest', function() {
       },
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
     await waitAfterNextRender(localImagesElement);
 
     const container = getDefaultImageHtmlElement();
@@ -290,7 +293,7 @@ suite('LocalImagesTest', function() {
       data: {[kDefaultImageSymbol]: {url: ''}},
     };
 
-    localImagesElement = initElement(LocalImages);
+    localImagesElement = initElement(LocalImagesElement);
 
     await waitAfterNextRender(localImagesElement);
 

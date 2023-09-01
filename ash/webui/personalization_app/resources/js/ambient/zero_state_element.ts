@@ -13,7 +13,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './zero_state_element.html.js';
 
-export class AmbientZeroState extends WithPersonalizationStore {
+export class AmbientZeroStateElement extends WithPersonalizationStore {
   static get is() {
     return 'ambient-zero-state';
   }
@@ -45,4 +45,4 @@ export class AmbientZeroState extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AmbientZeroState.is, AmbientZeroState);
+customElements.define(AmbientZeroStateElement.is, AmbientZeroStateElement);

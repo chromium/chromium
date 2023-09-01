@@ -47,14 +47,14 @@ declare global {
   }
 }
 
-export interface ColorSelector {
+export interface ColorSelectorElement {
   $: {
     keys: IronA11yKeysElement,
     selector: IronSelectorElement,
   };
 }
 
-export class ColorSelector extends WithPersonalizationStore {
+export class ColorSelectorElement extends WithPersonalizationStore {
   static get is() {
     return 'color-selector';
   }
@@ -134,12 +134,12 @@ export class ColorSelector extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<ColorSelector['currentBacklightState_']>(
+    this.watch<ColorSelectorElement['currentBacklightState_']>(
         'currentBacklightState_',
         state => state.keyboardBacklight.currentBacklightState);
-    this.watch<ColorSelector['shouldShowNudge_']>(
+    this.watch<ColorSelectorElement['shouldShowNudge_']>(
         'shouldShowNudge_', state => state.keyboardBacklight.shouldShowNudge);
-    this.watch<ColorSelector['wallpaperColor_']>(
+    this.watch<ColorSelectorElement['wallpaperColor_']>(
         'wallpaperColor_', state => state.keyboardBacklight.wallpaperColor);
     this.updateFromStore();
 
@@ -320,4 +320,4 @@ export class ColorSelector extends WithPersonalizationStore {
   }
 }
 
-customElements.define(ColorSelector.is, ColorSelector);
+customElements.define(ColorSelectorElement.is, ColorSelectorElement);

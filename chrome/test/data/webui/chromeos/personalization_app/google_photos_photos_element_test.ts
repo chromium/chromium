@@ -4,7 +4,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotos, GooglePhotosPhotosSection, PersonalizationActionName, SetErrorAction, WallpaperGridItem, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, getNumberOfGridItemsPerRow, GooglePhotosPhoto, GooglePhotosPhotosElement, GooglePhotosPhotosSection, PersonalizationActionName, SetErrorAction, WallpaperGridItemElement, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,8 +13,8 @@ import {baseSetup, createSvgDataUrl, dispatchKeydown, getActiveElement, initElem
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('GooglePhotosPhotosTest', function() {
-  let googlePhotosPhotosElement: GooglePhotosPhotos|null;
+suite('GooglePhotosPhotosElementTest', function() {
+  let googlePhotosPhotosElement: GooglePhotosPhotosElement|null;
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
 
@@ -149,7 +149,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Focus the first photo.
@@ -230,7 +230,7 @@ suite('GooglePhotosPhotosTest', function() {
 
         // Initialize |googlePhotosPhotosElement|.
         googlePhotosPhotosElement =
-            initElement(GooglePhotosPhotos, {hidden: false});
+            initElement(GooglePhotosPhotosElement, {hidden: false});
         await waitAfterNextRender(googlePhotosPhotosElement);
 
         // Initialize Google Photos data in the |personalizationStore| and
@@ -328,7 +328,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // The |personalizationStore| should be empty, so no info or |photos|
@@ -385,7 +385,7 @@ suite('GooglePhotosPhotosTest', function() {
           const photoEl =
               rowEl!.querySelector(
                   `${photoSelector}:nth-of-type(${photoIndex + 1})`) as
-                  WallpaperGridItem |
+                  WallpaperGridItemElement |
               null;
           assertNotEquals(photoEl, null);
           assertDeepEquals(photoEl!.src, photo.url);
@@ -441,12 +441,13 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Verify that the expected photos are rendered.
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
-    const photoEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
+    const photoEls =
+        querySelectorAll(photoSelector) as WallpaperGridItemElement[];
     assertEquals(photoEls.length, 3);
 
     // Verify selected states.
@@ -550,7 +551,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Initially only placeholders should be present.
@@ -673,7 +674,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Scroll to the bottom of the grid.
@@ -701,7 +702,7 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     const rowSelector = '.row:not([hidden])';
@@ -745,7 +746,8 @@ suite('GooglePhotosPhotosTest', function() {
     wallpaperProvider.reset();
 
     // Initialize |googlePhotosPhotosElement| in hidden state.
-    googlePhotosPhotosElement = initElement(GooglePhotosPhotos, {hidden: true});
+    googlePhotosPhotosElement =
+        initElement(GooglePhotosPhotosElement, {hidden: true});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Verify that showing |googlePhotosPhotosElement| results in an automatic
@@ -787,12 +789,13 @@ suite('GooglePhotosPhotosTest', function() {
 
     // Initialize |googlePhotosPhotosElement|.
     googlePhotosPhotosElement =
-        initElement(GooglePhotosPhotos, {hidden: false});
+        initElement(GooglePhotosPhotosElement, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosElement);
 
     // Verify that the expected |photo| is rendered.
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
-    const photoEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
+    const photoEls =
+        querySelectorAll(photoSelector) as WallpaperGridItemElement[];
     assertEquals(photoEls.length, 1);
     assertDeepEquals(photoEls[0]!.src, photo.url);
     assertEquals(photoEls[0]!.primaryText, undefined);

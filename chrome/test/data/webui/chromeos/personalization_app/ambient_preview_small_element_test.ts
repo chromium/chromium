@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AmbientObserver, AmbientPreviewSmall, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import {AmbientObserver, AmbientPreviewSmallElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,12 +16,12 @@ import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
 
-suite('AmbientPreviewSmallTest', function() {
-  let ambientPreviewSmallElement: AmbientPreviewSmall|null;
+suite('AmbientPreviewSmallElementTest', function() {
+  let ambientPreviewSmallElement: AmbientPreviewSmallElement|null;
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
-  const routerOriginal = PersonalizationRouter.instance;
-  const routerMock = TestMock.fromClass(PersonalizationRouter);
+  const routerOriginal = PersonalizationRouterElement.instance;
+  const routerMock = TestMock.fromClass(PersonalizationRouterElement);
 
   setup(() => {
     loadTimeData.overrideValues({isAmbientModeAllowed: true});
@@ -29,14 +29,14 @@ suite('AmbientPreviewSmallTest', function() {
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
     AmbientObserver.initAmbientObserverIfNeeded();
-    PersonalizationRouter.instance = () => routerMock;
+    PersonalizationRouterElement.instance = () => routerMock;
   });
 
   teardown(async () => {
     await teardownElement(ambientPreviewSmallElement);
     ambientPreviewSmallElement = null;
     AmbientObserver.shutdown();
-    PersonalizationRouter.instance = routerOriginal;
+    PersonalizationRouterElement.instance = routerOriginal;
   });
 
   test(
@@ -45,7 +45,7 @@ suite('AmbientPreviewSmallTest', function() {
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.data.ambient.previews = ambientProvider.previews;
-        ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+        ambientPreviewSmallElement = initElement(AmbientPreviewSmallElement);
         personalizationStore.notifyObservers();
         await waitAfterNextRender(ambientPreviewSmallElement);
 
@@ -66,7 +66,7 @@ suite('AmbientPreviewSmallTest', function() {
   test('shows placeholders while loading', async () => {
     // Null indicates that this value has not yet loaded.
     personalizationStore.data.ambient.ambientModeEnabled = null;
-    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmallElement);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewSmallElement);
 
@@ -89,7 +89,7 @@ suite('AmbientPreviewSmallTest', function() {
     personalizationStore.data.ambient.ambientModeEnabled = true;
     // Null indicates that albums have not yet loaded.
     personalizationStore.data.ambient.albums = null;
-    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmallElement);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewSmallElement);
 
@@ -109,7 +109,7 @@ suite('AmbientPreviewSmallTest', function() {
 
   test('ends loading early if ambient mode is disabled', async () => {
     personalizationStore.data.ambient.ambientModeEnabled = false;
-    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmallElement);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewSmallElement);
 
@@ -131,7 +131,7 @@ suite('AmbientPreviewSmallTest', function() {
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
     personalizationStore.data.ambient.ambientModeEnabled = true;
     personalizationStore.data.ambient.previews = ambientProvider.previews;
-    ambientPreviewSmallElement = initElement(AmbientPreviewSmall);
+    ambientPreviewSmallElement = initElement(AmbientPreviewSmallElement);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientPreviewSmallElement);
 

@@ -23,7 +23,7 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './../personalization_app.mojom-webui.js';
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
-import {isPathValid, Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyArray} from './utils.js';
 import {findAlbumById} from './wallpaper/utils.js';
@@ -44,7 +44,7 @@ export function stringToTopicSource(x: string): TopicSource|null {
   return null;
 }
 
-export interface PersonalizationBreadcrumb {
+export interface PersonalizationBreadcrumbElement {
   $: {
     container: HTMLElement,
     keys: IronA11yKeysElement,
@@ -52,7 +52,7 @@ export interface PersonalizationBreadcrumb {
   };
 }
 
-export class PersonalizationBreadcrumb extends WithPersonalizationStore {
+export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
   static get is() {
     return 'personalization-breadcrumb';
   }
@@ -247,14 +247,15 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         // with new path.
         const breadcrumb = e.target as HTMLElement;
         breadcrumb.blur();
-        PersonalizationRouter.instance().goToRoute(newPath as Paths);
+        PersonalizationRouterElement.instance().goToRoute(newPath as Paths);
       }
     }
   }
 
   private onHomeIconClick_() {
-    PersonalizationRouter.instance().goToRoute(Paths.ROOT);
+    PersonalizationRouterElement.instance().goToRoute(Paths.ROOT);
   }
 }
 
-customElements.define(PersonalizationBreadcrumb.is, PersonalizationBreadcrumb);
+customElements.define(
+    PersonalizationBreadcrumbElement.is, PersonalizationBreadcrumbElement);

@@ -19,7 +19,7 @@ import {setScreenSaverDuration} from './ambient_controller.js';
 import {getTemplate} from './ambient_duration_element.html.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
-export class AmbientDuration extends WithPersonalizationStore {
+export class AmbientDurationElement extends WithPersonalizationStore {
   static get is() {
     return 'ambient-duration';
   }
@@ -106,8 +106,8 @@ export class AmbientDuration extends WithPersonalizationStore {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ambient-duration': AmbientDuration;
+    'ambient-duration': AmbientDurationElement;
   }
 }
 
-customElements.define(AmbientDuration.is, AmbientDuration);
+customElements.define(AmbientDurationElement.is, AmbientDurationElement);

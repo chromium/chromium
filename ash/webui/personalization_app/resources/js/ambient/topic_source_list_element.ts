@@ -18,7 +18,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {getTemplate} from './topic_source_list_element.html.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
-export class TopicSourceList extends WithPersonalizationStore {
+export class TopicSourceListElement extends WithPersonalizationStore {
   static get is() {
     return 'topic-source-list';
   }
@@ -77,8 +77,8 @@ export class TopicSourceList extends WithPersonalizationStore {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'topic-source-list': TopicSourceList;
+    'topic-source-list': TopicSourceListElement;
   }
 }
 
-customElements.define(TopicSourceList.is, TopicSourceList);
+customElements.define(TopicSourceListElement.is, TopicSourceListElement);

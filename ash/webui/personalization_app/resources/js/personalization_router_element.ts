@@ -59,7 +59,7 @@ export function isAmbientPathNotAllowed(path: string|null): boolean {
   return isAmbientPath(path) && !isAmbientModeAllowed();
 }
 
-export class PersonalizationRouter extends PolymerElement {
+export class PersonalizationRouterElement extends PolymerElement {
   static get is() {
     return 'personalization-router';
   }
@@ -88,9 +88,9 @@ export class PersonalizationRouter extends PolymerElement {
   private query_: string;
   private queryParams_: QueryParams;
 
-  static instance(): PersonalizationRouter {
-    return document.querySelector(PersonalizationRouter.is) as
-        PersonalizationRouter;
+  static instance(): PersonalizationRouterElement {
+    return document.querySelector(PersonalizationRouterElement.is) as
+        PersonalizationRouterElement;
   }
 
   static reloadAtRoot() {
@@ -228,4 +228,5 @@ export class PersonalizationRouter extends PolymerElement {
   }
 }
 
-customElements.define(PersonalizationRouter.is, PersonalizationRouter);
+customElements.define(
+    PersonalizationRouterElement.is, PersonalizationRouterElement);

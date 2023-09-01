@@ -5,17 +5,17 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosTab, GooglePhotosZeroState} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosTab, GooglePhotosZeroStateElement} from 'chrome://personalization/js/personalization_app.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {initElement} from './personalization_app_test_utils.js';
 
-suite('GooglePhotosZeroState', function() {
-  let googlePhotosZeroStateElement: GooglePhotosZeroState|null;
+suite('GooglePhotosZeroStateElementTest', function() {
+  let googlePhotosZeroStateElement: GooglePhotosZeroStateElement|null;
 
   test('displays no message without tab', async () => {
-    googlePhotosZeroStateElement = initElement(GooglePhotosZeroState);
+    googlePhotosZeroStateElement = initElement(GooglePhotosZeroStateElement);
     await waitAfterNextRender(googlePhotosZeroStateElement);
 
     assertEquals(
@@ -28,7 +28,7 @@ suite('GooglePhotosZeroState', function() {
   });
 
   test('displays correct message for albums and photos tab', async () => {
-    googlePhotosZeroStateElement = initElement(GooglePhotosZeroState);
+    googlePhotosZeroStateElement = initElement(GooglePhotosZeroStateElement);
     for (const tab of [GooglePhotosTab.ALBUMS, GooglePhotosTab.PHOTOS]) {
       googlePhotosZeroStateElement.tab = tab;
       await waitAfterNextRender(googlePhotosZeroStateElement);
@@ -58,7 +58,7 @@ suite('GooglePhotosZeroState', function() {
   });
 
   test('displays correct message for photos by album id tab', async () => {
-    googlePhotosZeroStateElement = initElement(GooglePhotosZeroState);
+    googlePhotosZeroStateElement = initElement(GooglePhotosZeroStateElement);
     googlePhotosZeroStateElement.tab = GooglePhotosTab.PHOTOS_BY_ALBUM_ID;
     await waitAfterNextRender(googlePhotosZeroStateElement);
 

@@ -16,11 +16,11 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './ambient_theme_list_element.html.js';
 
-export interface AmbientThemeList {
+export interface AmbientThemeListElement {
   $: {grid: IronListElement};
 }
 
-export class AmbientThemeList extends WithPersonalizationStore {
+export class AmbientThemeListElement extends WithPersonalizationStore {
   static get is() {
     return 'ambient-theme-list';
   }
@@ -59,4 +59,4 @@ export class AmbientThemeList extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AmbientThemeList.is, AmbientThemeList);
+customElements.define(AmbientThemeListElement.is, AmbientThemeListElement);

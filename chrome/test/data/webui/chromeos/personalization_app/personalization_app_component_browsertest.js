@@ -34,45 +34,51 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
 };
 
 [['AmbientObserverTest', 'ambient_observer_test.js'],
- ['AmbientPreviewLargeTest', 'ambient_preview_large_element_test.js'],
- ['AmbientPreviewSmallTest', 'ambient_preview_small_element_test.js'],
- ['AmbientSubpageTest', 'ambient_subpage_element_test.js'],
- ['AvatarCameraTest', 'avatar_camera_element_test.js'],
- ['AvatarListTest', 'avatar_list_element_test.js'],
- ['DynamicColorTest', 'dynamic_color_element_test.js'],
- ['GooglePhotosAlbumsTest', 'google_photos_albums_element_test.js'],
- ['GooglePhotosCollectionTest', 'google_photos_collection_element_test.js'],
+ ['AmbientPreviewLargeElementTest', 'ambient_preview_large_element_test.js'],
+ ['AmbientPreviewSmallElementTest', 'ambient_preview_small_element_test.js'],
+ ['AmbientSubpageElementTest', 'ambient_subpage_element_test.js'],
+ ['AvatarCameraElementTest', 'avatar_camera_element_test.js'],
+ ['AvatarListElementTest', 'avatar_list_element_test.js'],
+ ['DynamicColorElementTest', 'dynamic_color_element_test.js'],
+ ['GooglePhotosAlbumsElementTest', 'google_photos_albums_element_test.js'],
  [
-   'GooglePhotosPhotosByAlbumIdTest',
-   'google_photos_photos_by_album_id_element_test.js',
+   'GooglePhotosCollectionElementTest',
+   'google_photos_collection_element_test.js'
  ],
- ['GooglePhotosPhotosTest', 'google_photos_photos_element_test.js'],
- ['GooglePhotosZeroStateTest', 'google_photos_zero_state_element_test.js'],
- ['KeyboardBacklightTest', 'keyboard_backlight_element_test.js'],
- ['LocalImagesTest', 'local_images_element_test.js'],
  [
-   'PersonalizationBreadcrumbTest',
-   'personalization_breadcrumb_element_test.js',
+   'GooglePhotosPhotosByAlbumIdElementTest',
+   'google_photos_photos_by_album_id_element_test.js'
  ],
- ['PersonalizationMainTest', 'personalization_main_element_test.js'],
- ['PersonalizationRouterTest', 'personalization_router_element_test.js'],
- ['PersonalizationThemeTest', 'personalization_theme_element_test.js'],
- ['PersonalizationToastTest', 'personalization_toast_element_test.js'],
- ['UserPreviewTest', 'user_preview_element_test.js'],
- ['UserSubpageTest', 'user_subpage_element_test.js'],
- ['WallpaperCollectionsTest', 'wallpaper_collections_element_test.js'],
- ['WallpaperFullscreenTest', 'wallpaper_fullscreen_element_test.js'],
- ['WallpaperGridItemTest', 'wallpaper_grid_item_element_test.js'],
- ['WallpaperImagesTest', 'wallpaper_images_element_test.js'],
- ['WallpaperObserverTest', 'wallpaper_observer_test.js'],
- ['WallpaperPreviewTest', 'wallpaper_preview_element_test.js'],
- ['WallpaperSelectedTest', 'wallpaper_selected_element_test.js'],
- ['WallpaperSubpageTest', 'wallpaper_subpage_element_test.js'],
+ ['GooglePhotosPhotosElementTest', 'google_photos_photos_element_test.js'],
  [
-   'GooglePhotosSharedAlbumDialogTest',
+   'GooglePhotosSharedAlbumDialogElementTest',
    'google_photos_shared_album_dialog_element_test.js'
  ],
- ['ZoneCustomizationTest', 'zone_customization_element_test.js'],
+ [
+   'GooglePhotosZeroStateElementTest',
+   'google_photos_zero_state_element_test.js'
+ ],
+ ['KeyboardBacklightElementTest', 'keyboard_backlight_element_test.js'],
+ ['LocalImagesElementTest', 'local_images_element_test.js'],
+ [
+   'PersonalizationBreadcrumbElementTest',
+   'personalization_breadcrumb_element_test.js'
+ ],
+ ['PersonalizationMainElementTest', 'personalization_main_element_test.js'],
+ ['PersonalizationRouterElementTest', 'personalization_router_element_test.js'],
+ ['PersonalizationThemeElementTest', 'personalization_theme_element_test.js'],
+ ['PersonalizationToastElementTest', 'personalization_toast_element_test.js'],
+ ['UserPreviewElementTest', 'user_preview_element_test.js'],
+ ['UserSubpageElementTest', 'user_subpage_element_test.js'],
+ ['WallpaperCollectionsElementTest', 'wallpaper_collections_element_test.js'],
+ ['WallpaperFullscreenElementTest', 'wallpaper_fullscreen_element_test.js'],
+ ['WallpaperGridItemElementTest', 'wallpaper_grid_item_element_test.js'],
+ ['WallpaperImagesElementTest', 'wallpaper_images_element_test.js'],
+ ['WallpaperObserverTest', 'wallpaper_observer_test.js'],
+ ['WallpaperPreviewElementTest', 'wallpaper_preview_element_test.js'],
+ ['WallpaperSelectedElementTest', 'wallpaper_selected_element_test.js'],
+ ['WallpaperSubpageElementTest', 'wallpaper_subpage_element_test.js'],
+ ['ZoneCustomizationElementTest', 'zone_customization_element_test.js'],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {

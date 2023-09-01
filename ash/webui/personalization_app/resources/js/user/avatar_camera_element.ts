@@ -57,11 +57,11 @@ function getCaptureSize(mode: AvatarCameraMode):
   }
 }
 
-export interface AvatarCamera {
+export interface AvatarCameraElement {
   $: {dialog: CrDialogElement, webcamVideo: HTMLVideoElement};
 }
 
-export class AvatarCamera extends WithPersonalizationStore {
+export class AvatarCameraElement extends WithPersonalizationStore {
   static get is() {
     return 'avatar-camera';
   }
@@ -253,10 +253,10 @@ export class AvatarCamera extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AvatarCamera.is, AvatarCamera);
+customElements.define(AvatarCameraElement.is, AvatarCameraElement);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'avatar-camera': AvatarCamera;
+    'avatar-camera': AvatarCameraElement;
   }
 }

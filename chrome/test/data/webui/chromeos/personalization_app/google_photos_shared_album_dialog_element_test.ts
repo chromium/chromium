@@ -9,15 +9,15 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AcceptEvent, GooglePhotosSharedAlbumDialog} from 'chrome://personalization/js/personalization_app.js';
+import {AcceptEvent, GooglePhotosSharedAlbumDialogElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {initElement} from './personalization_app_test_utils.js';
 
-suite('GooglePhotosSharedAlbumDialogTest', function() {
-  let dialogElement: GooglePhotosSharedAlbumDialog|null;
+suite('GooglePhotosSharedAlbumDialogElementTest', function() {
+  let dialogElement: GooglePhotosSharedAlbumDialogElement|null;
 
   setup(() => {
     loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: true});
@@ -32,7 +32,7 @@ suite('GooglePhotosSharedAlbumDialogTest', function() {
   });
 
   test('sends accept event when accept is clicked', async () => {
-    dialogElement = initElement(GooglePhotosSharedAlbumDialog);
+    dialogElement = initElement(GooglePhotosSharedAlbumDialogElement);
     await waitAfterNextRender(dialogElement);
 
     const acceptEvent = eventToPromise(AcceptEvent.EVENT_NAME, dialogElement);
@@ -41,7 +41,7 @@ suite('GooglePhotosSharedAlbumDialogTest', function() {
   });
 
   test('sends close and cancel event when cancel is clicked', async () => {
-    dialogElement = initElement(GooglePhotosSharedAlbumDialog);
+    dialogElement = initElement(GooglePhotosSharedAlbumDialogElement);
     await waitAfterNextRender(dialogElement);
 
     const closeEvent = eventToPromise('close', dialogElement);

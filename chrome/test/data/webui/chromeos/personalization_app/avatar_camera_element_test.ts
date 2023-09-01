@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AvatarCamera, AvatarCameraMode, GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/js/personalization_app.js';
+import {AvatarCameraElement, AvatarCameraMode, GetUserMediaProxy, setWebcamUtilsForTesting} from 'chrome://personalization/js/personalization_app.js';
 import * as webcamUtils from 'chrome://resources/ash/common/cr_picture/webcam_utils.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -69,8 +69,8 @@ class MockGetUserMediaProxy extends TestBrowserProxy implements
   }
 }
 
-suite('AvatarCameraTest', function() {
-  let avatarCameraElement: AvatarCamera|null = null;
+suite('AvatarCameraElementTest', function() {
+  let avatarCameraElement: AvatarCameraElement|null = null;
   let mockGetUserMediaProxy: MockGetUserMediaProxy;
   let mockWebcamUtils: MockWebcamUtils;
   let userProvider: TestUserProvider;
@@ -92,7 +92,7 @@ suite('AvatarCameraTest', function() {
 
   test('requests webcam media when open and attaches to video', async () => {
     avatarCameraElement =
-        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
+        initElement(AvatarCameraElement, {mode: AvatarCameraMode.CAMERA});
     await mockGetUserMediaProxy.whenCalled('getUserMedia');
     const video = avatarCameraElement.shadowRoot!.getElementById(
                       'webcamVideo') as HTMLVideoElement;
@@ -103,7 +103,7 @@ suite('AvatarCameraTest', function() {
 
   test('shows preview confirm/cancel ui after takePhoto click', async () => {
     avatarCameraElement =
-        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
+        initElement(AvatarCameraElement, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     const previewButtonIds = ['confirmPhoto', 'clearPhoto'];
@@ -140,7 +140,7 @@ suite('AvatarCameraTest', function() {
 
   test('calls captureFrames on takePhoto click', async () => {
     avatarCameraElement =
-        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
+        initElement(AvatarCameraElement, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();
@@ -173,7 +173,7 @@ suite('AvatarCameraTest', function() {
 
   test('displays a loading spinner button while capturing frames', async () => {
     avatarCameraElement =
-        initElement(AvatarCamera, {mode: AvatarCameraMode.VIDEO});
+        initElement(AvatarCameraElement, {mode: AvatarCameraMode.VIDEO});
     await waitAfterNextRender(avatarCameraElement);
 
     assertEquals(
@@ -196,7 +196,7 @@ suite('AvatarCameraTest', function() {
 
   test('calls saveCameraImage with data on confirmPhoto click', async () => {
     avatarCameraElement =
-        initElement(AvatarCamera, {mode: AvatarCameraMode.CAMERA});
+        initElement(AvatarCameraElement, {mode: AvatarCameraMode.CAMERA});
     await waitAfterNextRender(avatarCameraElement);
 
     avatarCameraElement.shadowRoot?.getElementById('takePhoto')?.click();

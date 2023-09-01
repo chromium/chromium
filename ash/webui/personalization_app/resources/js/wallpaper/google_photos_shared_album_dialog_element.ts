@@ -34,15 +34,15 @@ export class AcceptEvent extends CustomEvent<null> {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'google-photos-shared-album-dialog': GooglePhotosSharedAlbumDialog;
+    'google-photos-shared-album-dialog': GooglePhotosSharedAlbumDialogElement;
   }
 }
 
-export interface GooglePhotosSharedAlbumDialog {
+export interface GooglePhotosSharedAlbumDialogElement {
   $: {dialog: CrDialogElement};
 }
 
-export class GooglePhotosSharedAlbumDialog extends PolymerElement {
+export class GooglePhotosSharedAlbumDialogElement extends PolymerElement {
   static get is() {
     return 'google-photos-shared-album-dialog';
   }
@@ -72,4 +72,5 @@ export class GooglePhotosSharedAlbumDialog extends PolymerElement {
 }
 
 customElements.define(
-    GooglePhotosSharedAlbumDialog.is, GooglePhotosSharedAlbumDialog);
+    GooglePhotosSharedAlbumDialogElement.is,
+    GooglePhotosSharedAlbumDialogElement);

@@ -31,7 +31,7 @@ import {KeyboardBacklightObserver} from './keyboard_backlight_observer.js';
  * backlight colors.
  */
 
-export class KeyboardBacklight extends WithPersonalizationStore {
+export class KeyboardBacklightElement extends WithPersonalizationStore {
   static get is() {
     return 'keyboard-backlight';
   }
@@ -106,10 +106,10 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     KeyboardBacklightObserver.initKeyboardBacklightObserverIfNeeded();
-    this.watch<KeyboardBacklight['currentBacklightState_']>(
+    this.watch<KeyboardBacklightElement['currentBacklightState_']>(
         'currentBacklightState_',
         state => state.keyboardBacklight.currentBacklightState);
-    this.watch<KeyboardBacklight['wallpaperColor_']>(
+    this.watch<KeyboardBacklightElement['wallpaperColor_']>(
         'wallpaperColor_', state => state.keyboardBacklight.wallpaperColor);
     this.updateFromStore();
   }
@@ -167,4 +167,4 @@ export class KeyboardBacklight extends WithPersonalizationStore {
   }
 }
 
-customElements.define(KeyboardBacklight.is, KeyboardBacklight);
+customElements.define(KeyboardBacklightElement.is, KeyboardBacklightElement);

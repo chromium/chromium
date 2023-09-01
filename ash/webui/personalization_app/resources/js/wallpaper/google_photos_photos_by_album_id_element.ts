@@ -46,11 +46,12 @@ function getPlaceholders(): GooglePhotosPhoto[] {
   });
 }
 
-export interface GooglePhotosPhotosByAlbumId {
+export interface GooglePhotosPhotosByAlbumIdElement {
   $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};
 }
 
-export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
+export class GooglePhotosPhotosByAlbumIdElement extends
+    WithPersonalizationStore {
   static get is() {
     return 'google-photos-photos-by-album-id';
   }
@@ -148,24 +149,25 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.watch<GooglePhotosPhotosByAlbumId['albums_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['albums_']>(
         'albums_', state => state.wallpaper.googlePhotos.albums);
-    this.watch<GooglePhotosPhotosByAlbumId['albumsShared_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['albumsShared_']>(
         'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
-    this.watch<GooglePhotosPhotosByAlbumId['currentSelected_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<GooglePhotosPhotosByAlbumId['pendingSelected_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
-    this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumId_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['photosByAlbumId_']>(
         'photosByAlbumId_',
         state => state.wallpaper.googlePhotos.photosByAlbumId);
-    this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumIdLoading_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['photosByAlbumIdLoading_']>(
         'photosByAlbumIdLoading_',
         state => state.wallpaper.loading.googlePhotos.photosByAlbumId);
-    this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumIdResumeTokens_']>(
+    this.watch<
+        GooglePhotosPhotosByAlbumIdElement['photosByAlbumIdResumeTokens_']>(
         'photosByAlbumIdResumeTokens_',
         state => state.wallpaper.googlePhotos.resumeTokens.photosByAlbumId);
-    this.watch<GooglePhotosPhotosByAlbumId['error_']>(
+    this.watch<GooglePhotosPhotosByAlbumIdElement['error_']>(
         'error_', state => state.error);
 
     this.updateFromStore();
@@ -199,7 +201,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   }
 
   /** Invoked on changes to this element's |hidden| state. */
-  private onHiddenChanged_(hidden: GooglePhotosPhotosByAlbumId['hidden']) {
+  private onHiddenChanged_(hidden:
+                               GooglePhotosPhotosByAlbumIdElement['hidden']) {
     if (hidden && this.error_ && this.error_.id === ERROR_ID) {
       // If |hidden|, the error associated with this element will have lost
       // user-facing context so it should be dismissed.
@@ -226,10 +229,10 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
   /** Invoked on changes to |albumId|, |albums_|, or |photosByAlbumId_|. */
   private onAlbumIdOrAlbumsOrPhotosByAlbumIdChanged_(
-      albumId: GooglePhotosPhotosByAlbumId['albumId'],
-      albums: GooglePhotosPhotosByAlbumId['albums_'],
-      albumsShared: GooglePhotosPhotosByAlbumId['albumsShared_'],
-      photosByAlbumId: GooglePhotosPhotosByAlbumId['photosByAlbumId_']) {
+      albumId: GooglePhotosPhotosByAlbumIdElement['albumId'],
+      albums: GooglePhotosPhotosByAlbumIdElement['albums_'],
+      albumsShared: GooglePhotosPhotosByAlbumIdElement['albumsShared_'],
+      photosByAlbumId: GooglePhotosPhotosByAlbumIdElement['photosByAlbumId_']) {
     // If no album is currently selected there is nothing to display.
     if (!albumId) {
       this.album_ = [];
@@ -291,9 +294,9 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
   /** Invoked on changes to |albumId| or |photosByAlbumIdResumeTokens_|. */
   private onAlbumIdOrPhotosByAlbumIdResumeTokensChanged_(
-      albumId: GooglePhotosPhotosByAlbumId['albumId'],
+      albumId: GooglePhotosPhotosByAlbumIdElement['albumId'],
       photosByAlbumIdResumeTokens:
-          GooglePhotosPhotosByAlbumId['photosByAlbumIdResumeTokens_']) {
+          GooglePhotosPhotosByAlbumIdElement['photosByAlbumIdResumeTokens_']) {
     if (albumId && photosByAlbumIdResumeTokens &&
         photosByAlbumIdResumeTokens[albumId]) {
       this.$.gridScrollThreshold.clearTriggers();
@@ -326,10 +329,10 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 
   /** Checks whether an album with albumId id is a shared or owned album. */
   private isAlbumShared_(
-      albumId: GooglePhotosPhotosByAlbumId['albumId'],
-      albums: GooglePhotosPhotosByAlbumId['albums_'],
-      albumsShared: GooglePhotosPhotosByAlbumId['albumsShared_']): boolean
-      |null {
+      albumId: GooglePhotosPhotosByAlbumIdElement['albumId'],
+      albums: GooglePhotosPhotosByAlbumIdElement['albums_'],
+      albumsShared: GooglePhotosPhotosByAlbumIdElement['albumsShared_']):
+      boolean|null {
     if (findAlbumById(albumId, albums)) {
       return false;
     } else if (findAlbumById(albumId, albumsShared)) {
@@ -362,8 +365,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   /** Returns whether the specified |photo| is currently selected. */
   private isPhotoSelected_(
       photo: GooglePhotosPhoto|null,
-      currentSelected: GooglePhotosPhotosByAlbumId['currentSelected_'],
-      pendingSelected: GooglePhotosPhotosByAlbumId['pendingSelected_']):
+      currentSelected: GooglePhotosPhotosByAlbumIdElement['currentSelected_'],
+      pendingSelected: GooglePhotosPhotosByAlbumIdElement['pendingSelected_']):
       boolean {
     if (!photo || (!currentSelected && !pendingSelected)) {
       return false;
@@ -387,4 +390,4 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
 }
 
 customElements.define(
-    GooglePhotosPhotosByAlbumId.is, GooglePhotosPhotosByAlbumId);
+    GooglePhotosPhotosByAlbumIdElement.is, GooglePhotosPhotosByAlbumIdElement);

@@ -32,7 +32,7 @@ import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_selected_element.html.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
-export class WallpaperSelected extends WithPersonalizationStore {
+export class WallpaperSelectedElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-selected';
   }
@@ -530,4 +530,4 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperSelected.is, WallpaperSelected);
+customElements.define(WallpaperSelectedElement.is, WallpaperSelectedElement);

@@ -18,14 +18,14 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentAttribution, CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
-import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getWallpaperAriaLabel, getWallpaperSrc} from './utils.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
-export class WallpaperPreview extends WithPersonalizationStore {
+export class WallpaperPreviewElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-preview';
   }
@@ -88,7 +88,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
    */
   private onClickWallpaper_() {
     assert(!!this.image_ && this.image_.type !== WallpaperType.kPolicy);
-    PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
+    PersonalizationRouterElement.instance().goToRoute(Paths.COLLECTIONS);
   }
 
   private getWallpaperSrc_(image: CurrentWallpaper|null): string|null {
@@ -111,4 +111,4 @@ export class WallpaperPreview extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperPreview.is, WallpaperPreview);
+customElements.define(WallpaperPreviewElement.is, WallpaperPreviewElement);

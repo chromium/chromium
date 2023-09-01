@@ -23,7 +23,7 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
 import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
-import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
@@ -216,13 +216,13 @@ function isTimeOfDay({id}: WallpaperCollection|Tile): boolean {
   return id === loadTimeData.getString('timeOfDayWallpaperCollectionId');
 }
 
-export interface WallpaperCollections {
+export interface WallpaperCollectionsElement {
   $: {
     grid: IronListElement,
   };
 }
 
-export class WallpaperCollections extends WithPersonalizationStore {
+export class WallpaperCollectionsElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-collections';
   }
@@ -361,30 +361,30 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<WallpaperCollections['hasError_']>(
+    this.watch<WallpaperCollectionsElement['hasError_']>(
         'hasError_',
         state => hasError(
             state.wallpaper.backdrop.collections,
             state.wallpaper.loading.collections, state.wallpaper.local.images,
             state.wallpaper.loading.local.images));
-    this.watch<WallpaperCollections['collections_']>(
+    this.watch<WallpaperCollectionsElement['collections_']>(
         'collections_', state => state.wallpaper.backdrop.collections);
-    this.watch<WallpaperCollections['images_']>(
+    this.watch<WallpaperCollectionsElement['images_']>(
         'images_', state => state.wallpaper.backdrop.images);
-    this.watch<WallpaperCollections['imagesLoading_']>(
+    this.watch<WallpaperCollectionsElement['imagesLoading_']>(
         'imagesLoading_', state => state.wallpaper.loading.images);
-    this.watch<WallpaperCollections['googlePhotosEnabled_']>(
+    this.watch<WallpaperCollectionsElement['googlePhotosEnabled_']>(
         'googlePhotosEnabled_', state => state.wallpaper.googlePhotos.enabled);
-    this.watch<WallpaperCollections['localImages_']>(
+    this.watch<WallpaperCollectionsElement['localImages_']>(
         'localImages_', state => state.wallpaper.local.images);
     // Treat as loading if either loading local images list or loading the
     // default image thumbnail. This prevents rapid churning of the UI on first
     // load.
-    this.watch<WallpaperCollections['localImagesLoading_']>(
+    this.watch<WallpaperCollectionsElement['localImagesLoading_']>(
         'localImagesLoading_',
         state => state.wallpaper.loading.local.images ||
             state.wallpaper.loading.local.data[kDefaultImageSymbol]);
-    this.watch<WallpaperCollections['localImageData_']>(
+    this.watch<WallpaperCollectionsElement['localImageData_']>(
         'localImageData_', state => state.wallpaper.local.data);
     this.updateFromStore();
     initializeBackdropData(getWallpaperProvider(), this.getStore());
@@ -615,11 +615,12 @@ export class WallpaperCollections extends WithPersonalizationStore {
     }
     switch (tile.id) {
       case kGooglePhotosCollectionId:
-        PersonalizationRouter.instance().goToRoute(
+        PersonalizationRouterElement.instance().goToRoute(
             Paths.GOOGLE_PHOTOS_COLLECTION);
         return;
       case kLocalCollectionId:
-        PersonalizationRouter.instance().goToRoute(Paths.LOCAL_COLLECTION);
+        PersonalizationRouterElement.instance().goToRoute(
+            Paths.LOCAL_COLLECTION);
         return;
       default:
         assert(
@@ -627,7 +628,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
         const collection =
             this.collections_.find(collection => collection.id === tile.id);
         assert(collection, 'collection with matching id required');
-        PersonalizationRouter.instance().selectCollection(collection);
+        PersonalizationRouterElement.instance().selectCollection(collection);
         return;
     }
   }
@@ -674,4 +675,5 @@ export class WallpaperCollections extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperCollections.is, WallpaperCollections);
+customElements.define(
+    WallpaperCollectionsElement.is, WallpaperCollectionsElement);

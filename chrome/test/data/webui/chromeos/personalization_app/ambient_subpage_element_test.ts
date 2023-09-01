@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientTheme, AmbientThemeItem, AmbientUiVisibility, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpageElement, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpageElement, AmbientTheme, AmbientThemeItemElement, AmbientUiVisibility, emptyState, Paths, PersonalizationRouterElement, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItemElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -25,12 +25,12 @@ export function getSelectedAlbums(
       album => album.topicSource === topicSource && album.checked);
 }
 
-suite('AmbientSubpageTest', function() {
-  let ambientSubpageElement: AmbientSubpage|null;
+suite('AmbientSubpageElementTest', function() {
+  let ambientSubpageElement: AmbientSubpageElement|null;
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
-  const routerOriginal = PersonalizationRouter.instance;
-  const routerMock = TestMock.fromClass(PersonalizationRouter);
+  const routerOriginal = PersonalizationRouterElement.instance;
+  const routerMock = TestMock.fromClass(PersonalizationRouterElement);
 
   const enum DurationOptions {
     FIVE_MINUTES = '5',
@@ -50,21 +50,21 @@ suite('AmbientSubpageTest', function() {
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
     AmbientObserver.initAmbientObserverIfNeeded();
-    PersonalizationRouter.instance = () => routerMock;
+    PersonalizationRouterElement.instance = () => routerMock;
   });
 
   teardown(async () => {
     await teardownElement(ambientSubpageElement);
     ambientSubpageElement = null;
     AmbientObserver.shutdown();
-    PersonalizationRouter.instance = routerOriginal;
+    PersonalizationRouterElement.instance = routerOriginal;
   });
 
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null, ambientTheme = AmbientTheme.kSlideshow,
       previews: Url[] = [], duration: number|null = 10,
-      queryParams: QueryParams = {}): Promise<AmbientSubpage> {
+      queryParams: QueryParams = {}): Promise<AmbientSubpageElement> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.ambientTheme = ambientTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
@@ -73,7 +73,7 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.data.ambient.previews = previews;
     personalizationStore.data.ambient.duration = duration;
     const ambientSubpage =
-        initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams});
+        initElement(AmbientSubpageElement, {path: Paths.AMBIENT, queryParams});
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpage);
     return Promise.resolve(ambientSubpage);
@@ -209,7 +209,7 @@ suite('AmbientSubpageTest', function() {
   test('sets ambient mode when pref value changed', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = initElement(AmbientSubpageElement);
     await ambientProvider.whenCalled('setAmbientObserver');
 
     personalizationStore.expectAction(
@@ -288,7 +288,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has correct ambient theme on load', async () => {
     personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = initElement(AmbientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -313,8 +313,8 @@ suite('AmbientSubpageTest', function() {
     const AmbientThemeItems = ambientThemeList!.shadowRoot!.querySelectorAll(
         'ambient-theme-item:not([hidden])');
     assertEquals(3, AmbientThemeItems!.length);
-    const slideshow = AmbientThemeItems[0] as AmbientThemeItem;
-    const feelTheBreeze = AmbientThemeItems[1] as AmbientThemeItem;
+    const slideshow = AmbientThemeItems[0] as AmbientThemeItemElement;
+    const feelTheBreeze = AmbientThemeItems[1] as AmbientThemeItemElement;
     assertEquals(AmbientTheme.kSlideshow, slideshow.ambientTheme);
     assertEquals(AmbientTheme.kFeelTheBreeze, feelTheBreeze.ambientTheme);
 
@@ -337,7 +337,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has correct topic sources on load', async () => {
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = initElement(AmbientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -359,8 +359,8 @@ suite('AmbientSubpageTest', function() {
     const topicSourceItems =
         topicSourceList!.shadowRoot!.querySelectorAll('topic-source-item');
     assertEquals(2, topicSourceItems!.length);
-    const googlePhotos = topicSourceItems[0] as TopicSourceItem;
-    const art = topicSourceItems[1] as TopicSourceItem;
+    const googlePhotos = topicSourceItems[0] as TopicSourceItemElement;
+    const art = topicSourceItems[1] as TopicSourceItemElement;
     assertEquals(TopicSource.kGooglePhotos, googlePhotos.topicSource);
     assertEquals(TopicSource.kArtGallery, art.topicSource);
 
@@ -383,7 +383,7 @@ suite('AmbientSubpageTest', function() {
 
   test('has correct temperature unit on load', async () => {
     personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
-    ambientSubpageElement = initElement(AmbientSubpage);
+    ambientSubpageElement = initElement(AmbientSubpageElement);
 
     await ambientProvider.whenCalled('setAmbientObserver');
     ambientProvider.updateAmbientObserver();
@@ -493,8 +493,8 @@ suite('AmbientSubpageTest', function() {
   });
 
   test('has main settings visible with path ambient', async () => {
-    ambientSubpageElement =
-        initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
+    ambientSubpageElement = initElement(
+        AmbientSubpageElement, {path: Paths.AMBIENT, queryParams: {}});
     await waitAfterNextRender(ambientSubpageElement);
 
     const mainSettings =
@@ -523,7 +523,7 @@ suite('AmbientSubpageTest', function() {
   });
 
   test('has albums subpage visible with path ambient albums', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
@@ -546,9 +546,9 @@ suite('AmbientSubpageTest', function() {
       'loading albums subpage redirects to ambient subpage if disabled',
       async () => {
         const reloadCalledPromise = new Promise<void>((resolve) => {
-          PersonalizationRouter.reloadAtAmbient = resolve;
+          PersonalizationRouterElement.reloadAtAmbient = resolve;
         });
-        const albumsSubpageElement = initElement(AlbumsSubpage);
+        const albumsSubpageElement = initElement(AlbumsSubpageElement);
         personalizationStore.data.ambient.ambientModeEnabled = false;
         personalizationStore.notifyObservers();
         await waitAfterNextRender(albumsSubpageElement);
@@ -557,7 +557,7 @@ suite('AmbientSubpageTest', function() {
       });
 
   test('show placeholders when no albums on albums subpage', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kGooglePhotos},
     });
@@ -596,7 +596,7 @@ suite('AmbientSubpageTest', function() {
   });
 
   test('has correct albums on Google Photos albums subpage', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kGooglePhotos},
     });
@@ -614,13 +614,14 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
 
-    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-        'wallpaper-grid-item:not([hidden])');
+    const albums =
+        albumList.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            'wallpaper-grid-item:not([hidden])');
     assertEquals(1, albums.length);
   });
 
   test('has correct albums on Art albums subpage', async () => {
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
@@ -638,8 +639,9 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
 
-    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-        'wallpaper-grid-item:not([hidden])');
+    const albums =
+        albumList.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
     assertTrue(!!albums[0]);
     assertTrue(!!albums[1]);
@@ -649,7 +651,7 @@ suite('AmbientSubpageTest', function() {
   test('toggle album selection by clicking', async () => {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
@@ -674,8 +676,9 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList, '!!albumList');
 
-    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-        'wallpaper-grid-item:not([hidden])');
+    const albums =
+        albumList.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
     assertTrue(!!albums[0], '!!albums[0]');
     assertTrue(!!albums[1], '!!albums[1]');
@@ -705,7 +708,7 @@ suite('AmbientSubpageTest', function() {
   test('not deselect last art album', async () => {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kArtGallery},
     });
@@ -730,8 +733,9 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
 
-    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-        'wallpaper-grid-item:not([hidden])');
+    const albums =
+        albumList.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            'wallpaper-grid-item:not([hidden])');
     assertEquals(3, albums.length);
     assertTrue(!!albums[0], '!!albums[0]');
     assertTrue(!!albums[1], '!!albums[1]');
@@ -907,10 +911,10 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!ambientThemeList);
 
     const ambientThemeItems =
-        ambientThemeList!.shadowRoot!.querySelectorAll<AmbientThemeItem>(
+        ambientThemeList!.shadowRoot!.querySelectorAll<AmbientThemeItemElement>(
             'ambient-theme-item:not([hidden])');
     assertEquals(4, ambientThemeItems.length);
-    const videoTheme = ambientThemeItems[3] as AmbientThemeItem;
+    const videoTheme = ambientThemeItems[3] as AmbientThemeItemElement;
     assertEquals(AmbientTheme.kVideo, videoTheme.ambientTheme);
     assertEquals('false', videoTheme.ariaChecked);
 
@@ -936,9 +940,9 @@ suite('AmbientSubpageTest', function() {
     const topicSourceItems =
         topicSourceList.shadowRoot!.querySelectorAll('topic-source-item');
     assertEquals(3, topicSourceItems!.length);
-    const video = topicSourceItems[0] as TopicSourceItem;
-    const googlePhotos = topicSourceItems[1] as TopicSourceItem;
-    const art = topicSourceItems[2] as TopicSourceItem;
+    const video = topicSourceItems[0] as TopicSourceItemElement;
+    const googlePhotos = topicSourceItems[1] as TopicSourceItemElement;
+    const art = topicSourceItems[2] as TopicSourceItemElement;
     assertEquals(TopicSource.kGooglePhotos, googlePhotos.topicSource);
     assertEquals(TopicSource.kArtGallery, art.topicSource);
 
@@ -950,7 +954,7 @@ suite('AmbientSubpageTest', function() {
   test('cannot deselect a video album', async () => {
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
-    ambientSubpageElement = initElement(AmbientSubpage, {
+    ambientSubpageElement = initElement(AmbientSubpageElement, {
       path: Paths.AMBIENT_ALBUMS,
       queryParams: {topicSource: TopicSource.kVideo},
     });
@@ -975,8 +979,9 @@ suite('AmbientSubpageTest', function() {
     const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
     assertTrue(!!albumList);
 
-    const albums = albumList.shadowRoot!.querySelectorAll<WallpaperGridItem>(
-        'wallpaper-grid-item:not([hidden])');
+    const albums =
+        albumList.shadowRoot!.querySelectorAll<WallpaperGridItemElement>(
+            'wallpaper-grid-item:not([hidden])');
     assertEquals(2, albums.length);
     assertTrue(!!albums[0]);
     assertTrue(!!albums[1]);

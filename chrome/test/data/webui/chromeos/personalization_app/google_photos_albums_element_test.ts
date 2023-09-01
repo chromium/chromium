@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosSharedAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosSharedAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbumsElement, PersonalizationActionName, PersonalizationRouterElement, SetErrorAction, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,8 +15,8 @@ import {baseSetup, createSvgDataUrl, initElement, teardownElement} from './perso
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('GooglePhotosAlbumsTest', function() {
-  let googlePhotosAlbumsElement: GooglePhotosAlbums|null;
+suite('GooglePhotosAlbumsElementTest', function() {
+  let googlePhotosAlbumsElement: GooglePhotosAlbumsElement|null;
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
 
@@ -98,7 +98,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Initialize |googlePhotosAlbumsElement|.
     googlePhotosAlbumsElement =
-        initElement(GooglePhotosAlbums, {hidden: false});
+        initElement(GooglePhotosAlbumsElement, {hidden: false});
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // The |personalizationStore| should be empty, so no albums should be
@@ -118,7 +118,8 @@ suite('GooglePhotosAlbumsTest', function() {
     albums.forEach(album => album.preview.url += '=s512');
 
     // Verify that the expected |albums| are rendered.
-    const albumEls = querySelectorAll(albumSelector) as WallpaperGridItem[];
+    const albumEls =
+        querySelectorAll(albumSelector) as WallpaperGridItemElement[];
 
     assertEquals(
         albumEls.length, albums.length, 'one wallpaper grid item per album');
@@ -139,7 +140,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
         // Initialize |googlePhotosAlbumsElement|.
         googlePhotosAlbumsElement =
-            initElement(GooglePhotosAlbums, {hidden: false});
+            initElement(GooglePhotosAlbumsElement, {hidden: false});
         await waitAfterNextRender(googlePhotosAlbumsElement);
 
         // Initialize Google Photos data in the |personalizationStore| and
@@ -200,7 +201,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Initialize |googlePhotosAlbumsElement|.
     googlePhotosAlbumsElement =
-        initElement(GooglePhotosAlbums, {hidden: false});
+        initElement(GooglePhotosAlbumsElement, {hidden: false});
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // Initially only placeholders should be present.
@@ -223,8 +224,8 @@ suite('GooglePhotosAlbumsTest', function() {
     });
 
     // Mock singleton |PersonalizationRouter|.
-    const router = TestMock.fromClass(PersonalizationRouter);
-    PersonalizationRouter.instance = () => router;
+    const router = TestMock.fromClass(PersonalizationRouterElement);
+    PersonalizationRouterElement.instance = () => router;
 
     // Mock |PersonalizationRouter.selectGooglePhotosAlbum()|.
     let selectedGooglePhotosAlbum: GooglePhotosAlbum|undefined;
@@ -329,7 +330,7 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Initialize |googlePhotosAlbumsElement|.
     googlePhotosAlbumsElement =
-        initElement(GooglePhotosAlbums, {hidden: false});
+        initElement(GooglePhotosAlbumsElement, {hidden: false});
     await waitAfterNextRender(googlePhotosAlbumsElement);
 
     // Scroll to the bottom of the grid.

@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosAlbum, GooglePhotosCollection, GooglePhotosEnablementState, Paths, PersonalizationRouter} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosAlbum, GooglePhotosCollectionElement, GooglePhotosEnablementState, Paths, PersonalizationRouterElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,8 +14,8 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('GooglePhotosCollectionTest', function() {
-  let googlePhotosCollectionElement: GooglePhotosCollection|null;
+suite('GooglePhotosCollectionElementTest', function() {
+  let googlePhotosCollectionElement: GooglePhotosCollectionElement|null;
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
 
@@ -23,9 +23,10 @@ suite('GooglePhotosCollectionTest', function() {
    * Returns an initialized `googlePhotosCollectionElement`.
    */
   async function displayElement(enabled = GooglePhotosEnablementState.kEnabled):
-      Promise<GooglePhotosCollection> {
+      Promise<GooglePhotosCollectionElement> {
     personalizationStore.data.wallpaper.googlePhotos.enabled = enabled;
-    const googlePhotosCollectionElement = initElement(GooglePhotosCollection);
+    const googlePhotosCollectionElement =
+        initElement(GooglePhotosCollectionElement);
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosCollectionElement);
     return Promise.resolve(googlePhotosCollectionElement);
@@ -372,7 +373,7 @@ suite('GooglePhotosCollectionTest', function() {
 
                 // Mock `PersonalizationRouter.reloadAtWallpaper()`.
                 let didCallReloadAtWallpaper = false;
-                PersonalizationRouter.reloadAtWallpaper = () => {
+                PersonalizationRouterElement.reloadAtWallpaper = () => {
                   didCallReloadAtWallpaper = true;
                 };
 

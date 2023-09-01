@@ -11,7 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './info_svg_element.html.js';
 
-export class InfoSvg extends PolymerElement {
+export class InfoSvgElement extends PolymerElement {
   static get is() {
     return 'info-svg';
   }
@@ -21,4 +21,4 @@ export class InfoSvg extends PolymerElement {
   }
 }
 
-customElements.define(InfoSvg.is, InfoSvg);
+customElements.define(InfoSvgElement.is, InfoSvgElement);

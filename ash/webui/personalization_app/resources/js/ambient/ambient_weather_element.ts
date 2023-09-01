@@ -20,7 +20,7 @@ import {setTemperatureUnit} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './ambient_weather_element.html.js';
 
-export class AmbientWeatherUnit extends WithPersonalizationStore {
+export class AmbientWeatherUnitElement extends WithPersonalizationStore {
   static get is() {
     return 'ambient-weather-unit';
   }
@@ -63,8 +63,8 @@ export class AmbientWeatherUnit extends WithPersonalizationStore {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ambient-weather-unit': AmbientWeatherUnit;
+    'ambient-weather-unit': AmbientWeatherUnitElement;
   }
 }
 
-customElements.define(AmbientWeatherUnit.is, AmbientWeatherUnit);
+customElements.define(AmbientWeatherUnitElement.is, AmbientWeatherUnitElement);

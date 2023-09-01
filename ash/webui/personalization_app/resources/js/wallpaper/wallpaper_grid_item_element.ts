@@ -67,7 +67,7 @@ const enum MaxImageCount {
   DEFAULT = 2,
 }
 
-export class WallpaperGridItem extends PolymerElement {
+export class WallpaperGridItemElement extends PolymerElement {
   static get is(): 'wallpaper-grid-item' {
     return 'wallpaper-grid-item';
   }
@@ -287,8 +287,8 @@ export class WallpaperGridItem extends PolymerElement {
   }
 
   /** Returns the delay to use for the grid item's placeholder animation. */
-  private getItemPlaceholderAnimationDelay_(index: WallpaperGridItem['index']):
-      string {
+  private getItemPlaceholderAnimationDelay_(
+      index: WallpaperGridItemElement['index']): string {
     return getLoadingPlaceholderAnimationDelay(index);
   }
 
@@ -320,8 +320,8 @@ export class WallpaperGridItem extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [WallpaperGridItem.is]: WallpaperGridItem;
+    [WallpaperGridItemElement.is]: WallpaperGridItemElement;
   }
 }
 
-customElements.define(WallpaperGridItem.is, WallpaperGridItem);
+customElements.define(WallpaperGridItemElement.is, WallpaperGridItemElement);

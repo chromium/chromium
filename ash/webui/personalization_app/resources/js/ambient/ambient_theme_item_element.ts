@@ -20,7 +20,7 @@ import {setAmbientTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './ambient_theme_item_element.html.js';
 
-export class AmbientThemeItem extends WithPersonalizationStore {
+export class AmbientThemeItemElement extends WithPersonalizationStore {
   static get is() {
     return 'ambient-theme-item';
   }
@@ -77,7 +77,7 @@ export class AmbientThemeItem extends WithPersonalizationStore {
   }
 
   /** Return the display image for ambient theme option. */
-  private computeImgSrc_(ambientTheme: AmbientThemeItem['ambientTheme']):
+  private computeImgSrc_(ambientTheme: AmbientThemeItemElement['ambientTheme']):
       string {
     switch (ambientTheme) {
       case AmbientTheme.kSlideshow:
@@ -105,4 +105,4 @@ export class AmbientThemeItem extends WithPersonalizationStore {
   }
 }
 
-customElements.define(AmbientThemeItem.is, AmbientThemeItem);
+customElements.define(AmbientThemeItemElement.is, AmbientThemeItemElement);

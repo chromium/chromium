@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, Paths, PersonalizationRouter} from 'chrome://personalization/js/personalization_app.js';
+import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, Paths, PersonalizationRouterElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -14,7 +14,7 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-suite('PersonalizationRouterTest', function() {
+suite('PersonalizationRouterElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
   let wallpaperProvider: TestWallpaperProvider;
 
@@ -26,8 +26,8 @@ suite('PersonalizationRouterTest', function() {
 
   test('will show ambient subpage if allowed', async () => {
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
-    const routerElement = initElement(PersonalizationRouter);
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
+    const routerElement = initElement(PersonalizationRouterElement);
+    PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
     await waitAfterNextRender(routerElement);
 
     const mainElement =
@@ -43,8 +43,8 @@ suite('PersonalizationRouterTest', function() {
 
   test('will not show ambient subpage if disallowed', async () => {
     loadTimeData.overrideValues({'isAmbientModeAllowed': false});
-    const routerElement = initElement(PersonalizationRouter);
-    PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
+    const routerElement = initElement(PersonalizationRouterElement);
+    PersonalizationRouterElement.instance().goToRoute(Paths.AMBIENT);
     await waitAfterNextRender(routerElement);
 
     const mainElement =
@@ -60,7 +60,7 @@ suite('PersonalizationRouterTest', function() {
   test('returns to root page when wrong path is keyed in', async () => {
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
     const routerElement = initElement(
-        PersonalizationRouter, {path: '/wrongpath', queryParams: {}});
+        PersonalizationRouterElement, {path: '/wrongpath', queryParams: {}});
     await waitAfterNextRender(routerElement);
 
     // Due to the wrong path, only shows root page.
@@ -118,7 +118,7 @@ suite('PersonalizationRouterTest', function() {
     personalizationStore.setReducersEnabled(true);
 
     // Start at root page.
-    const routerElement = initElement(PersonalizationRouter);
+    const routerElement = initElement(PersonalizationRouterElement);
     await waitAfterNextRender(routerElement);
 
     // Navigate to wallpaper collections list.

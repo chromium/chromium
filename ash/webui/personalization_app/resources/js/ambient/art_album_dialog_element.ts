@@ -14,11 +14,11 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {getTemplate} from './art_album_dialog_element.html.js';
 
-export interface ArtAlbumDialog {
+export interface ArtAlbumDialogElement {
   $: {dialog: CrDialogElement};
 }
 
-export class ArtAlbumDialog extends WithPersonalizationStore {
+export class ArtAlbumDialogElement extends WithPersonalizationStore {
   static get is() {
     return 'art-album-dialog';
   }
@@ -40,8 +40,8 @@ export class ArtAlbumDialog extends WithPersonalizationStore {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'art-album-dialog': ArtAlbumDialog;
+    'art-album-dialog': ArtAlbumDialogElement;
   }
 }
 
-customElements.define(ArtAlbumDialog.is, ArtAlbumDialog);
+customElements.define(ArtAlbumDialogElement.is, ArtAlbumDialogElement);

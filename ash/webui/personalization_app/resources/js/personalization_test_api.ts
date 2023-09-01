@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from './load_time_booleans.js';
-import {Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
@@ -44,7 +44,7 @@ async function reset() {
         colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
   }
 
-  const router = PersonalizationRouter.instance();
+  const router = PersonalizationRouterElement.instance();
   router.goToRoute(Paths.ROOT);
 }
 

@@ -32,7 +32,7 @@ import {WallpaperGridItemSelectedEvent} from './wallpaper_grid_item_element.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 
-export class LocalImages extends WithPersonalizationStore {
+export class LocalImagesElement extends WithPersonalizationStore {
   static get is() {
     return 'local-images';
   }
@@ -93,21 +93,21 @@ export class LocalImages extends WithPersonalizationStore {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.watch<LocalImages['images_']>(
+    this.watch<LocalImagesElement['images_']>(
         'images_', state => state.wallpaper.local.images);
-    this.watch<LocalImages['imageData_']>(
+    this.watch<LocalImagesElement['imageData_']>(
         'imageData_', state => state.wallpaper.local.data);
-    this.watch<LocalImages['imageDataLoading_']>(
+    this.watch<LocalImagesElement['imageDataLoading_']>(
         'imageDataLoading_', state => state.wallpaper.loading.local.data);
-    this.watch<LocalImages['currentSelected_']>(
+    this.watch<LocalImagesElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<LocalImages['pendingSelected_']>(
+    this.watch<LocalImagesElement['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.updateFromStore();
   }
 
   /** Sets |imagesToDisplay| when a new set of local images loads. */
-  private onImagesChanged_(images: LocalImages['images_']) {
+  private onImagesChanged_(images: LocalImagesElement['images_']) {
     this.imagesToDisplay_ = (images || []).filter(image => {
       const key = getPathOrSymbol(image);
       if (this.imageDataLoading_[key] === false) {
@@ -122,8 +122,8 @@ export class LocalImages extends WithPersonalizationStore {
    * from the list of displayed images if it has failed to load.
    */
   private onImageLoaded_(
-      imageData: LocalImages['imageData_'],
-      imageDataLoading: LocalImages['imageDataLoading_']) {
+      imageData: LocalImagesElement['imageData_'],
+      imageDataLoading: LocalImagesElement['imageDataLoading_']) {
     if (!imageData || !imageDataLoading) {
       return;
     }
@@ -142,8 +142,8 @@ export class LocalImages extends WithPersonalizationStore {
 
   private isImageSelected_(
       image: FilePath|DefaultImageSymbol|null,
-      currentSelected: LocalImages['currentSelected_'],
-      pendingSelected: LocalImages['pendingSelected_']): boolean {
+      currentSelected: LocalImagesElement['currentSelected_'],
+      pendingSelected: LocalImagesElement['pendingSelected_']): boolean {
     if (!image || (!currentSelected && !pendingSelected)) {
       return false;
     }
@@ -161,7 +161,7 @@ export class LocalImages extends WithPersonalizationStore {
 
   private getAriaLabel_(
       image: FilePath|DefaultImageSymbol|null,
-      imageDataLoading: LocalImages['imageDataLoading_']): string {
+      imageDataLoading: LocalImagesElement['imageDataLoading_']): string {
     if (this.isImageLoading_(image, imageDataLoading)) {
       return this.i18n('ariaLabelLoading');
     }
@@ -177,7 +177,7 @@ export class LocalImages extends WithPersonalizationStore {
 
   private isImageLoading_(
       image: FilePath|DefaultImageSymbol|null,
-      imageDataLoading: LocalImages['imageDataLoading_']): boolean {
+      imageDataLoading: LocalImagesElement['imageDataLoading_']): boolean {
     if (!image || !imageDataLoading) {
       return true;
     }
@@ -190,8 +190,8 @@ export class LocalImages extends WithPersonalizationStore {
 
   private getImageData_(
       image: FilePath|DefaultImageSymbol|null,
-      imageData: LocalImages['imageData_'],
-      imageDataLoading: LocalImages['imageDataLoading_']): Url|null {
+      imageData: LocalImagesElement['imageData_'],
+      imageDataLoading: LocalImagesElement['imageDataLoading_']): Url|null {
     if (!image || this.isImageLoading_(image, imageDataLoading)) {
       return null;
     }
@@ -224,4 +224,4 @@ export class LocalImages extends WithPersonalizationStore {
   }
 }
 
-customElements.define(LocalImages.is, LocalImages);
+customElements.define(LocalImagesElement.is, LocalImagesElement);

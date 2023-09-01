@@ -25,11 +25,11 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 const fullscreenClass = 'fullscreen-preview';
 
-export interface WallpaperFullscreen {
+export interface WallpaperFullscreenElement {
   $: {container: HTMLDivElement, exit: HTMLElement};
 }
 
-export class WallpaperFullscreen extends WithPersonalizationStore {
+export class WallpaperFullscreenElement extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-fullscreen';
   }
@@ -87,16 +87,16 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.$.container.addEventListener(
         'fullscreenchange', this.onFullscreenChange_.bind(this));
 
-    this.watch<WallpaperFullscreen['visible_']>(
+    this.watch<WallpaperFullscreenElement['visible_']>(
         'visible_', state => state.wallpaper.fullscreen);
-    this.watch<WallpaperFullscreen['showLayoutOptions_']>(
+    this.watch<WallpaperFullscreenElement['showLayoutOptions_']>(
         'showLayoutOptions_',
         state => !!state.wallpaper.pendingSelected &&
             (isFilePath(state.wallpaper.pendingSelected) ||
              isGooglePhotosPhoto(state.wallpaper.pendingSelected)));
-    this.watch<WallpaperFullscreen['currentSelected_']>(
+    this.watch<WallpaperFullscreenElement['currentSelected_']>(
         'currentSelected_', state => state.wallpaper.currentSelected);
-    this.watch<WallpaperFullscreen['pendingSelected_']>(
+    this.watch<WallpaperFullscreenElement['pendingSelected_']>(
         'pendingSelected_', state => state.wallpaper.pendingSelected);
 
     // Visibility change will fire in case of alt+tab, closing the window, or
@@ -183,4 +183,5 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 }
 
-customElements.define(WallpaperFullscreen.is, WallpaperFullscreen);
+customElements.define(
+    WallpaperFullscreenElement.is, WallpaperFullscreenElement);
