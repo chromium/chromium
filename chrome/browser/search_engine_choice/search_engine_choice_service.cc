@@ -109,3 +109,11 @@ bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
 bool SearchEngineChoiceService::HasPendingDialog(Browser& browser) {
   return IsShowingDialog(&browser) || CanShowDialog(browser);
 }
+
+bool SearchEngineChoiceService::IsUrlSuitableForDialog(GURL url) {
+  if (url == chrome::kChromeUINewTabPageURL || url == url::kAboutBlankURL) {
+    return true;
+  }
+  // Don't show the dialog over remaining urls that start with 'chrome://'.
+  return !url.SchemeIs(content::kChromeUIScheme);
+}

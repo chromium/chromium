@@ -10,7 +10,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -42,11 +41,6 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Don't show the dialog on top of any sub page of the settings page.
-  if (navigation_handle->GetURL().host() == chrome::kChromeUISettingsHost) {
-    return;
-  }
-
   Browser& browser = CHECK_DEREF(
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents()));
   // To avoid conflict, the dialog should not be show  if a sign-in dialog is
@@ -58,7 +52,9 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
   if (!search_engine_choice_service ||
-      !search_engine_choice_service->CanShowDialog(browser)) {
+      !search_engine_choice_service->CanShowDialog(browser) ||
+      !search_engine_choice_service->IsUrlSuitableForDialog(
+          navigation_handle->GetURL())) {
     return;
   }
   ShowSearchEngineChoiceDialog(browser);

@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   // Open 2 more tabs in addition to the existing tab.
   for (int i = 0; i < 2; i++) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(chrome::kChromeUIVersionURL),
+        browser(), GURL(chrome::kChromeUINewTabPageURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
@@ -208,12 +208,12 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
                        RestoreSettingsAndChangeUrl) {
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  // navigate the current tab to the settings page.
+  // Navigate the current tab to the settings page.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUISettingsURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   auto* service = static_cast<MockSearchEngineChoiceService*>(
       SearchEngineChoiceServiceFactory::GetForProfile(browser()->profile()));
@@ -229,15 +229,19 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
   EXPECT_FALSE(service->IsShowingDialog(browser()));
 
-  // Dialog opens when we navigate away from settings.
-
+  // Make sure that the dialog doesn't get displayed after navigating to
+  // `chrome://welcome`.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIVersionURL),
+      browser(), GURL(chrome::kChromeUIWelcomeURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_FALSE(service->IsShowingDialog(browser()));
 
-  EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  // Dialog gets displayed when we navigate to chrome://new-tab-page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_TRUE(service->IsShowingDialog(browser()));
 }
 
@@ -250,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Navigate to a URL to display the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIVersionURL),
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -277,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Navigate to a URL to display the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIVersionURL),
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -318,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Navigate to a URL to display the dialog.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIVersionURL),
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
@@ -346,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 
   // Navigate to a URL
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUIVersionURL),
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   EXPECT_FALSE(service->IsShowingDialog(browser()));

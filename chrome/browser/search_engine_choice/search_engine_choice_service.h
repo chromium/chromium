@@ -51,6 +51,9 @@ class SearchEngineChoiceService : public KeyedService {
   // This will return false if the dialog is currently showing.
   bool CanShowDialog(Browser& browser);
 
+  // Returns whether the dialog should be displayed over the passed URL.
+  bool IsUrlSuitableForDialog(GURL url);
+
   // Returns whether the Search Engine Choice dialog is either shown or
   // pending to be shown.
   bool HasPendingDialog(Browser& browser);
