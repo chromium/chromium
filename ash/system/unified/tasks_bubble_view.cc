@@ -297,6 +297,8 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
           "SubsequentOccurence",
           initial_load_time);
     }
+  } else {
+    RecordActiveTaskListChanged();
   }
 }
 

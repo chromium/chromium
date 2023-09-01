@@ -11,6 +11,21 @@
 
 namespace ash {
 
+void RecordActiveTaskListChanged() {
+  base::RecordAction(
+      base::UserMetricsAction("Glanceables_Tasks_ActiveTaskListChanged"));
+}
+
+void RecordTaskMarkedAsCompleted(bool complete) {
+  if (complete) {
+    base::RecordAction(
+        base::UserMetricsAction("Glanceables_Tasks_TaskMarkedAsCompleted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Glanceables_Tasks_TaskMarkedAsIncomplete"));
+  }
+}
+
 void RecordTasksLaunchSource(TasksLaunchSource source) {
   switch (source) {
     case TasksLaunchSource::kHeaderButton:

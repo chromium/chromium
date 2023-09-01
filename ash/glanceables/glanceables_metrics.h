@@ -16,6 +16,10 @@ enum class TasksLaunchSource {
   kMaxValue = kFooterButton,
 };
 
+void RecordActiveTaskListChanged();
+
+void RecordTaskMarkedAsCompleted(bool complete);
+
 void RecordTasksLaunchSource(TasksLaunchSource source);
 
 void RecordAddTaskButtonShown();

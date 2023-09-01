@@ -210,6 +210,7 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
 }
 
 TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
+  base::UserActionTester user_actions;
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 2u);
 
   auto* const task_view = views::AsViewClass<GlanceablesTaskView>(
@@ -223,6 +224,21 @@ TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
   ASSERT_EQ(tasks_client()->pending_completed_tasks().size(), 1u);
   EXPECT_EQ(tasks_client()->pending_completed_tasks().front(),
             "TaskListID1:TaskListItem1");
+
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsCompleted"));
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsIncomplete"));
+  GestureTapOn(task_view->GetButtonForTest());
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsCompleted"));
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsIncomplete"));
+  GestureTapOn(task_view->GetButtonForTest());
+  EXPECT_EQ(2, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsCompleted"));
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_TaskMarkedAsIncomplete"));
 
   // Tasks should not be marked as completed until closing the bubble.
   EXPECT_EQ(0, tasks_client()->completed_task_count());
@@ -240,6 +256,8 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromFooterView) {
             "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Glanceables_Tasks_ActiveTaskListChanged"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
@@ -258,6 +276,8 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
                    "Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton"));
   EXPECT_EQ(
       1, user_actions.GetActionCount("Glanceables_Tasks_AddTaskButtonShown"));
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "Glanceables_Tasks_ActiveTaskListChanged"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
@@ -268,6 +288,8 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
             "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
+  EXPECT_EQ(0, user_actions.GetActionCount(
+                   "Glanceables_Tasks_ActiveTaskListChanged"));
 }
 
 TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {

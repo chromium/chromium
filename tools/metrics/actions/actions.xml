@@ -10272,6 +10272,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glanceables_Tasks_ActiveTaskListChanged">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User changes the active task list for the tasks glanceable.
+  </description>
+</action>
+
 <action name="Glanceables_Tasks_AddTaskButtonShown">
   <owner>yulunwu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -10301,6 +10309,22 @@ should be able to be added at any place in this file.
   <owner>chromeos-launcher@google.com</owner>
   <description>
     User clicked on the tasks icon in the header of the tasks glanceable.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_TaskMarkedAsCompleted">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User marks a task in the tasks glanceable as completed.
+  </description>
+</action>
+
+<action name="Glanceables_Tasks_TaskMarkedAsIncomplete">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <description>
+    User marks a task in the tasks glanceable as incomplete.
   </description>
 </action>
 

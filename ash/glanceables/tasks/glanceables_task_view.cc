@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -247,6 +248,7 @@ void GlanceablesTaskView::ButtonPressed() {
   // Visually mark the task as completed.
   button_->SetChecked(target_state);
   SetupTasksLabel(/*completed=*/target_state);
+  RecordTaskMarkedAsCompleted(target_state);
 
   ash::Shell::Get()
       ->glanceables_v2_controller()
