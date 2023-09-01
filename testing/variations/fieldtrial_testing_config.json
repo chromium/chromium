@@ -6212,6 +6212,25 @@
             ]
         }
     ],
+    "FastPairPWACompanion": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230831",
+                    "params": {
+                        "pwa-companion-app-id": "",
+                        "pwa-companion-install-uri": "https://www.google.com"
+                    },
+                    "enable_features": [
+                        "FastPairPwaCompanion"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeatureNotificationGuide": [
         {
             "platforms": [
