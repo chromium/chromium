@@ -92,7 +92,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_paths.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -754,18 +753,10 @@ void InProcessBrowserTest::SetScreenInstance() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!display::Screen::HasScreen() &&
       views::test::TestDesktopScreenOzone::IsOzoneInitialized()) {
-    // The shared instance of ResourceBundle is temporarily initialized because
-    // views::test::TestDesktopScreenOzone::Create() may need to localize
-    // display names.
-    ui::RegisterPathProvider();
-    base::FilePath ui_test_pak_path;
-    base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path);
-    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
     // This is necessary for interactive UI tests.
     // It is enabled in interactive_ui_tests_main.cc
     // (or through GPUMain)
     screen_ = views::test::TestDesktopScreenOzone::Create();
-    ui::ResourceBundle::CleanupSharedInstance();
   }
 #endif
 }
