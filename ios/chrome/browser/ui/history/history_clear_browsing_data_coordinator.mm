@@ -111,11 +111,6 @@
 - (void)clearBrowsingDataTableViewControllerWantsDismissal:
     (ClearBrowsingDataTableViewController*)controller {
   CHECK_EQ(controller, self.clearBrowsingDataTableViewController);
-  [self stopWithCompletion:nil];
-}
-
-- (void)dismissClearBrowsingData {
-  DCHECK(self.historyClearBrowsingDataNavigationController);
   [self.delegate dismissHistoryClearBrowsingData:self withCompletion:nil];
 }
 

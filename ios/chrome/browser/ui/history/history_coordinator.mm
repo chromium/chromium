@@ -202,7 +202,14 @@ history::WebHistoryService* WebHistoryServiceGetter(
 - (void)dismissHistoryClearBrowsingData:
             (HistoryClearBrowsingDataCoordinator*)coordinator
                          withCompletion:(ProceduralBlock)completionHandler {
-  [self.delegate closeHistoryWithCompletion:completionHandler];
+  DCHECK_EQ(self.historyClearBrowsingDataCoordinator, coordinator);
+  __weak HistoryCoordinator* weakSelf = self;
+  [coordinator stopWithCompletion:^() {
+    if (completionHandler) {
+      completionHandler();
+    }
+    weakSelf.historyClearBrowsingDataCoordinator = nil;
+  }];
 }
 
 - (void)displayClearHistoryData {
