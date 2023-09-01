@@ -21,13 +21,6 @@ enum class OverscrollState {
   ACTION_READY      // Ready to take action on pull end.
 };
 
-// Notification sent when the overscroll actions controller will start
-// displaying the UI.
-extern NSString* const kOverscrollActionsWillStart;
-// Notification sent when the overscroll actions controller did stop displaying
-// the UI.
-extern NSString* const kOverscrollActionsDidEnd;
-
 // The delegate of the OverscrollActionsController, it provides the headerView
 // on which the OverscrollActionsView will be added.
 // The scrollView is used to control the state of the
