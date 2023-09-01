@@ -120,7 +120,7 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
     bool buffer_attached_and_configured = false;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    raw_ptr<struct wl_callback, DanglingUntriaged> frame_callback = nullptr;
+    raw_ptr<wl_callback, DanglingUntriaged> frame_callback = nullptr;
 
     // The attached buffer.
     raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
@@ -139,23 +139,20 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
                           bool is_configured) override;
   void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) override;
 
-  // ui_controls_ listener.
-  static void HandleRequestProcessed(
-      void* data,
-      struct zcr_ui_controls_v1* zcr_ui_controls_v1,
-      uint32_t id);
+  // zcr_ui_controls_v1_listener callbacks:
+  static void OnRequestProcessed(void* data,
+                                 zcr_ui_controls_v1* ui_controls,
+                                 uint32_t id);
 
-  // wl_registry listener.
-  static void Global(void* data,
-                     wl_registry* registry,
-                     uint32_t name,
-                     const char* interface,
-                     uint32_t version);
+  // wl_registry_listener callbacks:
+  static void OnGlobal(void* data,
+                       wl_registry* registry,
+                       uint32_t name,
+                       const char* interface,
+                       uint32_t version);
 
-  // wl_callback listener.
-  static void FrameCallbackHandler(void* data,
-                                   struct wl_callback* callback,
-                                   uint32_t time);
+  // wl_callback_listener callbacks:
+  static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);
 
   // Returns true if there is at least one window that has been created but that
   // does not yet have a buffer committed.
@@ -182,8 +179,8 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   // Owned raw pointers. wl::Object is not used because the component this
   // class belongs to cannot depend on the "wayland" target in the
   // //ui/ozone/platform/wayland/BUILD.gn
-  raw_ptr<struct wl_registry> registry_ = nullptr;
-  raw_ptr<struct zcr_ui_controls_v1> ui_controls_ = nullptr;
+  raw_ptr<wl_registry> registry_ = nullptr;
+  raw_ptr<zcr_ui_controls_v1> ui_controls_ = nullptr;
 };
 
 }  // namespace wl

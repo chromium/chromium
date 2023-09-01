@@ -51,10 +51,9 @@ WaylandInputEmulate::WaylandInputEmulate(
     LOG(FATAL) << "Failed to get Wayland registry.";
   }
 
-  static const wl_registry_listener registry_listener = {
-      &WaylandInputEmulate::Global};
-
-  wl_registry_add_listener(registry_, &registry_listener, this);
+  static constexpr wl_registry_listener kRegistryListener = {
+      .global = &OnGlobal, .global_remove = nullptr};
+  wl_registry_add_listener(registry_, &kRegistryListener, this);
 
   // Roundtrip one time to get the ui_controls global.
   wayland_proxy->RoundTripQueue();
@@ -62,9 +61,9 @@ WaylandInputEmulate::WaylandInputEmulate(
     LOG(FATAL) << "ui-controls protocol extension is not available.";
   }
 
-  static const struct zcr_ui_controls_v1_listener listener = {
-      &WaylandInputEmulate::HandleRequestProcessed};
-  zcr_ui_controls_v1_add_listener(ui_controls_, &listener, this);
+  static constexpr zcr_ui_controls_v1_listener kUiControlsListener = {
+      .request_processed = &OnRequestProcessed};
+  zcr_ui_controls_v1_add_listener(ui_controls_, &kUiControlsListener, this);
 }
 
 WaylandInputEmulate::~WaylandInputEmulate() {
@@ -242,12 +241,11 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
   wl_surface_attach(wlsurface, test_surface->buffer, 0, 0);
   wl_surface_damage(wlsurface, 0, 0, buffer_size.width(), buffer_size.height());
 
-  static const struct wl_callback_listener kFrameCallbackListener = {
-      &WaylandInputEmulate::FrameCallbackHandler};
-
   // Setup frame callback to know when the surface is finally ready to get
   // events. Otherwise, the width & height might not have been correctly set
   // before the mouse events are sent.
+  static constexpr wl_callback_listener kFrameCallbackListener = {
+      .done = &OnFrameDone};
   test_surface->frame_callback = wl_surface_frame(wlsurface);
   wl_callback_add_listener(test_surface->frame_callback,
                            &kFrameCallbackListener, this);
@@ -291,39 +289,38 @@ void WaylandInputEmulate::OnWindowAdded(gfx::AcceleratedWidget widget) {
 }
 
 // static
-void WaylandInputEmulate::HandleRequestProcessed(
-    void* data,
-    struct zcr_ui_controls_v1* zcr_ui_controls_v1,
-    uint32_t id) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
-  emulate->request_processed_callback_.Run(id);
+void WaylandInputEmulate::OnRequestProcessed(void* data,
+                                             zcr_ui_controls_v1* ui_controls,
+                                             uint32_t id) {
+  auto* self = static_cast<WaylandInputEmulate*>(data);
+  self->request_processed_callback_.Run(id);
 }
 
 // static
-void WaylandInputEmulate::Global(void* data,
-                                 wl_registry* registry,
-                                 uint32_t name,
-                                 const char* interface,
-                                 uint32_t version) {
-  auto* emulate = static_cast<WaylandInputEmulate*>(data);
+void WaylandInputEmulate::OnGlobal(void* data,
+                                   wl_registry* registry,
+                                   uint32_t name,
+                                   const char* interface,
+                                   uint32_t version) {
+  auto* self = static_cast<WaylandInputEmulate*>(data);
   if (strcmp(interface, "zcr_ui_controls_v1") == 0 && version >= kMinVersion) {
-    const struct wl_interface* wayland_interface =
-        static_cast<const struct wl_interface*>(&zcr_ui_controls_v1_interface);
-    emulate->ui_controls_ = static_cast<struct zcr_ui_controls_v1*>(
+    const wl_interface* wayland_interface =
+        static_cast<const wl_interface*>(&zcr_ui_controls_v1_interface);
+    self->ui_controls_ = static_cast<zcr_ui_controls_v1*>(
         wl_registry_bind(registry, name, wayland_interface, version));
   }
 }
 
 // static
-void WaylandInputEmulate::FrameCallbackHandler(void* data,
-                                               struct wl_callback* callback,
-                                               uint32_t time) {
-  WaylandInputEmulate* emulate = static_cast<WaylandInputEmulate*>(data);
-  CHECK(emulate)
+void WaylandInputEmulate::OnFrameDone(void* data,
+                                      wl_callback* callback,
+                                      uint32_t time) {
+  auto* self = static_cast<WaylandInputEmulate*>(data);
+  CHECK(self)
       << "WaylandInputEmulate was destroyed before a frame callback arrived";
 
   WaylandInputEmulate::TestWindow* window = nullptr;
-  for (const auto& window_item : emulate->windows_) {
+  for (const auto& window_item : self->windows_) {
     if (window_item.second->frame_callback == callback) {
       window = window_item.second.get();
       break;
@@ -339,7 +336,7 @@ void WaylandInputEmulate::FrameCallbackHandler(void* data,
     window->waiting_for_buffer_commit = false;
   }
 
-  emulate->DispatchPendingRequests();
+  self->DispatchPendingRequests();
 }
 
 bool WaylandInputEmulate::AnyWindowWaitingForBufferCommit() {

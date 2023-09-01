@@ -126,7 +126,7 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
     bool buffer_attached_and_configured = false;
 
     // Frame callback that invokes WaylandInputEmulate::FrameCallbackHandler.
-    raw_ptr<struct wl_callback, DanglingUntriaged> frame_callback = nullptr;
+    raw_ptr<wl_callback, DanglingUntriaged> frame_callback = nullptr;
 
     // The attached buffer.
     raw_ptr<wl_buffer, DanglingUntriaged> buffer = nullptr;
@@ -145,35 +145,33 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
                           bool is_configured) override;
   void OnWindowRoleAssigned(gfx::AcceleratedWidget widget) override;
 
-  // weston_test_listener.
-  static void HandlePointerPosition(void* data,
-                                    struct weston_test* weston_test,
-                                    wl_fixed_t x,
-                                    wl_fixed_t y);
-  static void HandlePointerButton(void* data,
-                                  struct weston_test* weston_test,
-                                  int32_t button,
-                                  uint32_t state);
-  static void HandleKeyboardKey(void* data,
-                                struct weston_test* weston_test,
-                                uint32_t key,
-                                uint32_t state);
-  static void HandleTouchReceived(void* data,
-                                  struct weston_test* weston_test,
-                                  wl_fixed_t x,
-                                  wl_fixed_t y);
+  // weston_test_listener callbacks:
+  static void OnPointerPosition(void* data,
+                                weston_test* weston_test,
+                                wl_fixed_t x,
+                                wl_fixed_t y);
+  static void OnPointerButton(void* data,
+                              weston_test* weston_test,
+                              int32_t button,
+                              uint32_t state);
+  static void OnKeyboardKey(void* data,
+                            weston_test* weston_test,
+                            uint32_t key,
+                            uint32_t state);
+  static void OnTouchReceived(void* data,
+                              weston_test* weston_test,
+                              wl_fixed_t x,
+                              wl_fixed_t y);
 
-  // wl_registry_listener.
-  static void Global(void* data,
-                     wl_registry* registry,
-                     uint32_t name,
-                     const char* interface,
-                     uint32_t version);
+  // wl_registry_listener callbacks:
+  static void OnGlobal(void* data,
+                       wl_registry* registry,
+                       uint32_t name,
+                       const char* interface,
+                       uint32_t version);
 
-  // wl_callback_listener.
-  static void FrameCallbackHandler(void* data,
-                                   struct wl_callback* callback,
-                                   uint32_t time);
+  // wl_callback_listener callbacks:
+  static void OnFrameDone(void* data, wl_callback* callback, uint32_t time);
 
   // Returns true if there is at least one window that has been created but that
   // does not yet have a buffer committed.
@@ -200,8 +198,8 @@ class WestonTestInputEmulate : public wl::WaylandProxy::Delegate {
   // Owned raw pointers. wl::Object is not used because the component this
   // class belongs to cannot depend on the "wayland" target in the
   // //ui/ozone/platform/wayland/BUILD.gn
-  raw_ptr<struct wl_registry> registry_ = nullptr;
-  raw_ptr<struct weston_test> weston_test_ = nullptr;
+  raw_ptr<wl_registry> registry_ = nullptr;
+  raw_ptr<weston_test> weston_test_ = nullptr;
 };
 
 }  // namespace wl
