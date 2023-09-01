@@ -85,11 +85,6 @@ VulkanImplementationWin32::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationWin32::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_TEXTURE_BIT;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationWin32::GetExternalSemaphoreHandleType() {
   return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT;

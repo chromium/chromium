@@ -98,14 +98,9 @@ VulkanImplementationWayland::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationWayland::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationWayland::GetExternalSemaphoreHandleType() {
-  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
 }
 
 bool VulkanImplementationWayland::CanImportGpuMemoryBuffer(

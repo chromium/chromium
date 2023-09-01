@@ -124,14 +124,9 @@ std::unique_ptr<gfx::GpuFence> VulkanImplementationX11::ExportVkFenceToGpuFence(
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationX11::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationX11::GetExternalSemaphoreHandleType() {
-  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
 }
 
 bool VulkanImplementationX11::CanImportGpuMemoryBuffer(

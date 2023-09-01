@@ -98,6 +98,7 @@ VulkanImplementationHeadless::GetOptionalDeviceExtensions() {
       VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
       VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME,
       VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+      VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
   };
 }
 
@@ -114,20 +115,28 @@ VulkanImplementationHeadless::ExportVkFenceToGpuFence(VkDevice vk_device,
   return nullptr;
 }
 
-VkExternalMemoryHandleTypeFlagBits
-VulkanImplementationHeadless::GetExternalImageHandleType() {
-  return VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-}
-
 VkExternalSemaphoreHandleTypeFlagBits
 VulkanImplementationHeadless::GetExternalSemaphoreHandleType() {
+#if BUILDFLAG(IS_LINUX)
+  return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+#else
   return VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT;
+#endif
 }
 
 bool VulkanImplementationHeadless::CanImportGpuMemoryBuffer(
     gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
+#if BUILDFLAG(IS_LINUX)
+  const auto& enabled_extensions = device_queue->enabled_extensions();
+  return gfx::HasExtension(enabled_extensions,
+                           VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
+         gfx::HasExtension(enabled_extensions,
+                           VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) &&
+         memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+#else
   return memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+#endif
 }
 
 std::unique_ptr<gpu::VulkanImage>
