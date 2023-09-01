@@ -113,8 +113,7 @@ function setupTooltip() {
 function setupToggles() {
   for (const element of dom.getAll('input', HTMLInputElement)) {
     element.addEventListener('keypress', (event) => {
-      const e = assertInstanceof(event, KeyboardEvent);
-      if (util.getKeyboardShortcut(e) === 'Enter') {
+      if (util.getKeyboardShortcut(event) === 'Enter') {
         element.click();
       }
     });
@@ -303,30 +302,14 @@ function setupNewFeatureToast(
   }
 }
 
-/**
- * Suspends app and hides app window.
- */
-async function suspend(cameraManager: CameraManager): Promise<void> {
-  timertick.cancel();
-  await cameraManager.requestSuspend();
-  nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
-}
-
-/**
- * Resumes app from suspension and shows app window.
- */
-function resume(cameraManager: CameraManager): void {
-  cameraManager.requestResume();
-  nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
-}
-
 async function setupMultiWindowHandling(
     cameraManager: CameraManager, cameraView: Camera,
     cameraResourceInitialized: WaitableEvent): Promise<void> {
   async function handleResume() {
     try {
       if (cameraResourceInitialized.isSignaled()) {
-        resume(cameraManager);
+        cameraManager.requestResume();
+        nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
       } else {
         // CCA must get camera usage for completing its initialization when
         // first launched.
@@ -343,7 +326,9 @@ async function setupMultiWindowHandling(
   async function handleSuspend() {
     try {
       assert(cameraResourceInitialized.isSignaled());
-      await suspend(cameraManager);
+      timertick.cancel();
+      await cameraManager.requestSuspend();
+      nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
     } catch (e) {
       reportError(
           ErrorType.SUSPEND_CAMERA_FAILURE, ErrorLevel.ERROR,
@@ -392,30 +377,8 @@ async function setupMultiWindowHandling(
   });
 }
 
-/**
- * Setup Camera App and starts camera stream.
- */
-async function main() {
+function createPerfLogger(): PerfLogger {
   const perfLogger = new PerfLogger();
-
-  await setupDynamicColor();
-
-  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
-
-  state.set(state.State.INTENT, intent !== null);
-
-  addUnloadCallback(() => {
-    // For SWA, we don't cancel the unhandled intent here since there is no
-    // guarantee that asynchronous calls in unload listener can be executed
-    // properly. Therefore, we moved the logic for canceling unhandled intent to
-    // Chrome (CameraAppHelper).
-    window.appWindow?.notifyClosed();
-  });
-
-  metrics.initMetrics();
-  if (window.appWindow !== null) {
-    metrics.setEnabled(false);
-  }
 
   // Setup listener for performance events.
   perfLogger.addListener(({event, duration, perfInfo}) => {
@@ -461,6 +424,49 @@ async function main() {
     });
   }
 
+  return perfLogger;
+}
+
+function setupSvgs() {
+  for (const el of dom.getAll('[data-svg]', HTMLElement)) {
+    const imageName = assertExists(el.dataset['svg']);
+    const svg = document.createElement('svg-wrapper');
+    svg.setAttribute('name', imageName);
+    // Prepend the svg so it's on the bottom-most layer and won't be covering
+    // other possible children (e.g. inkdrop effect).
+    el.prepend(svg);
+  }
+}
+
+/**
+ * Setup Camera App and starts camera stream.
+ */
+async function main() {
+  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
+
+  state.set(state.State.INTENT, intent !== null);
+
+  addUnloadCallback(() => {
+    // For SWA, we don't cancel the unhandled intent here since there is no
+    // guarantee that asynchronous calls in unload listener can be executed
+    // properly. Therefore, we moved the logic for canceling unhandled intent to
+    // Chrome (CameraAppHelper).
+    window.appWindow?.notifyClosed();
+  });
+
+  // metrics.ts handle it's ready state inside the module, and we don't want to
+  // block CCA by metrics initialization.
+  void metrics.initMetrics();
+  if (window.appWindow !== null) {
+    // Disable metrics when in testing.
+    void metrics.setEnabled(false);
+  }
+
+  const perfLogger = createPerfLogger();
+
+  // toast and splash style depends on dynamic color css being imported.
+  await setupDynamicColor();
+
   if (DEPLOYED_VERSION !== undefined) {
     // eslint-disable-next-line no-console
     console.log(
@@ -470,6 +476,15 @@ async function main() {
     toast.showDebugMessage(`Local override enabled (${DEPLOYED_VERSION})`);
   }
 
+  // There are three possible cases:
+  // 1. Regular instance
+  //      (intent === null)
+  // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
+  //      (intent !== null && shouldHandleResult === false)
+  // 3. Other intents
+  //      (intent !== null && shouldHandleResult === true)
+  // `shouldHandleIntentResult` will be false in (1) and (2), and gallery
+  // button will be shown on the UI.
   const shouldHandleIntentResult = intent?.shouldHandleResult === true;
   state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
@@ -478,14 +493,23 @@ async function main() {
     mode: mode ?? Mode.PHOTO,
   };
   const cameraManager = new CameraManager(perfLogger, facing, modeConstraints);
+
   const galleryButton = new GalleryButton();
 
   const cameraView = shouldHandleIntentResult ?
       new CameraIntent(intent, cameraManager, perfLogger) :
       new Camera(galleryButton, cameraManager, perfLogger);
 
-  document.body.addEventListener('keydown', (event) => onKeyPressed(event));
+  // Set up views navigation by their DOM z-order.
+  nav.setup([
+    cameraView,
+    new Warning(),
+    new View(ViewName.SPLASH),
+  ]);
 
+  nav.open(ViewName.SPLASH);
+
+  document.documentElement.dir = loadTimeData.getTextDirection();
   // Disable the zoom in-out gesture which is triggered by wheel and pinch on
   // trackpad.
   document.body.addEventListener('wheel', (event) => {
@@ -505,33 +529,17 @@ async function main() {
   setupEffect();
   setupNewFeatureToast(cameraManager, cameraView);
   setupExperimentalFeatures();
+  preloadImages();
+  setupSvgs();
 
-  // Set up views navigation by their DOM z-order.
-  nav.setup([
-    cameraView,
-    new Warning(),
-    new View(ViewName.SPLASH),
-  ]);
-
-  nav.open(ViewName.SPLASH);
   const launchType = openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
                                                 metrics.LaunchType.DEFAULT;
 
   await DeviceOperator.initializeInstance();
-  document.documentElement.dir = loadTimeData.getTextDirection();
   try {
     await filesystem.initialize();
     const cameraDir = filesystem.getCameraDirectory();
-
-    // There are three possible cases:
-    // 1. Regular instance
-    //      (intent === null)
-    // 2. STILL_CAPTURE_CAMERA and VIDEO_CAMERA intents
-    //      (intent !== null && shouldHandleResult === false)
-    // 3. Other intents
-    //      (intent !== null && shouldHandleResult === true)
-    // Only (1) and (2) will show gallery button on the UI.
-    if (intent === null || !intent.shouldHandleResult) {
+    if (!shouldHandleIntentResult) {
       galleryButton.initialize(cameraDir);
     }
   } catch (error) {
@@ -539,7 +547,9 @@ async function main() {
     nav.open(ViewName.WARNING, WarningType.FILESYSTEM_FAILURE);
   }
 
-  const showWindow = (async () => {
+  // Create a promise to finish the intent, that runs in parallel with starting
+  // camera.
+  const finishIntent = (async () => {
     // For intent only requiring open camera with specific mode without
     // returning the capture result, finish it directly.
     if (intent !== null && !intent.shouldHandleResult) {
@@ -551,39 +561,31 @@ async function main() {
   await setupMultiWindowHandling(
       cameraManager, cameraView, cameraResourceInitialized);
 
-  let cameraStartSuccessful = false;
-
-  const startCamera = (async () => {
-    await cameraResourceInitialized.wait();
-    cameraStartSuccessful = await cameraManager.requestResume();
-
-    if (cameraStartSuccessful) {
-      const {aspectRatio} = cameraManager.getPreviewResolution();
-      const {width, height} = getDefaultWindowSize(aspectRatio);
-      window.resizeTo(width, height);
-    }
-  })();
-
-  preloadImages();
-
-  for (const el of dom.getAll('[data-svg]', HTMLElement)) {
-    const imageName = assertExists(el.dataset['svg']);
-    const svg = document.createElement('svg-wrapper');
-    svg.setAttribute('name', imageName);
-    // Prepend the svg so it's on the bottom-most layer and won't be covering
-    // other possible children (e.g. inkdrop effect).
-    el.prepend(svg);
-  }
+  // Key handler (in particular, back button) depends on windowController being
+  // initialized by setupMultiWindowHandling.
+  document.body.addEventListener('keydown', (event) => onKeyPressed(event));
 
   metrics.sendLaunchEvent({launchType});
-  await Promise.all([showWindow, startCamera]);
+
+  await cameraResourceInitialized.wait();
+  const cameraStartSuccessful = await cameraManager.requestResume();
+
+  if (cameraStartSuccessful) {
+    const {aspectRatio} = cameraManager.getPreviewResolution();
+    const {width, height} = getDefaultWindowSize(aspectRatio);
+    window.resizeTo(width, height);
+  }
+
+  // Waits for the intent to finish before switching to main camera view.
+  // TODO(pihsun): Check if the performance gain for running this in parallel
+  // is significant, and simplify this by inlining the promise if it isn't.
+  await finishIntent;
 
   nav.close(ViewName.SPLASH);
   nav.open(ViewName.CAMERA);
 
-  const windowCreationTime = window.windowCreationTime;
   perfLogger.start(
-      PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
+      PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, window.windowCreationTime);
   perfLogger.stop(
       PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
       {hasError: !cameraStartSuccessful});
