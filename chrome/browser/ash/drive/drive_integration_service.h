@@ -339,12 +339,13 @@ class DriveIntegrationService : public KeyedService,
  private:
   void UpdateNetworkState();
 
-  enum State {
-    NOT_INITIALIZED,
-    INITIALIZING,
-    INITIALIZED,
-    REMOUNTING,
+  enum class State {
+    kNone,
+    kInitializing,
+    kInitialized,
+    kRemounting,
   };
+
   class DriveFsHolder;
 
   PrefService* GetPrefs() const;
@@ -458,9 +459,9 @@ class DriveIntegrationService : public KeyedService,
 
   friend class DriveIntegrationServiceFactory;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  State state_;
-  bool enabled_;
+  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  State state_ = State::kNone;
+  bool enabled_ = false;
   bool mount_failed_ = false;
   bool in_clear_cache_ = false;
 

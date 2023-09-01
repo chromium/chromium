@@ -685,8 +685,6 @@ DriveIntegrationService::DriveIntegrationService(
     const base::FilePath& test_cache_root,
     DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory)
     : profile_(profile),
-      state_(NOT_INITIALIZED),
-      enabled_(false),
       mount_point_name_(test_mount_point_name),
       cache_root_directory_(!test_cache_root.empty()
                                 ? test_cache_root
@@ -709,7 +707,7 @@ DriveIntegrationService::DriveIntegrationService(
   bool migrated_to_drivefs =
       GetPrefs()->GetBoolean(prefs::kDriveFsPinnedMigrated);
   if (migrated_to_drivefs) {
-    state_ = INITIALIZED;
+    state_ = State::kInitialized;
   } else {
     metadata_storage_.reset(new internal::ResourceMetadataStorage(
         cache_root_directory_.Append(kMetadataDirectory),
@@ -756,20 +754,21 @@ void DriveIntegrationService::SetEnabled(bool enabled) {
 
   if (enabled) {
     enabled_ = true;
+    using enum State;
     switch (state_) {
-      case NOT_INITIALIZED:
+      case kNone:
         // If the initialization is not yet done, trigger it.
         Initialize();
         return;
 
-      case INITIALIZING:
-      case REMOUNTING:
-        // If the state is INITIALIZING or REMOUNTING, at the end of the
+      case kInitializing:
+      case kRemounting:
+        // If the state is kInitializing or kRemounting, at the end of the
         // process, it tries to mounting (with re-checking enabled state).
         // Do nothing for now.
         return;
 
-      case INITIALIZED:
+      case kInitialized:
         // The integration service is already initialized. Add the mount point.
         AddDriveMountPoint();
         return;
@@ -909,7 +908,7 @@ void DriveIntegrationService::AddBackDriveMountPoint(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback);
 
-  state_ = error == FILE_ERROR_OK ? INITIALIZED : NOT_INITIALIZED;
+  state_ = error == FILE_ERROR_OK ? State::kInitialized : State::kNone;
 
   if (error != FILE_ERROR_OK || !enabled_) {
     // Failed to reset, or Drive was disabled during the reset.
@@ -939,7 +938,7 @@ DriveIntegrationService::EnsureDirectoryExists(const base::FilePath& data_dir) {
 
 void DriveIntegrationService::AddDriveMountPoint() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(INITIALIZED, state_);
+  DCHECK_EQ(State::kInitialized, state_);
   DCHECK(enabled_);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -1060,7 +1059,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 void DriveIntegrationService::MaybeRemountFileSystem(
     absl::optional<TimeDelta> remount_delay,
     bool failed_to_mount) {
-  DCHECK_EQ(INITIALIZED, state_);
+  DCHECK_EQ(State::kInitialized, state_);
 
   RemoveDriveMountPoint();
 
@@ -1223,10 +1222,10 @@ void DriveIntegrationService::OnProgress(const Progress& progress) {
 
 void DriveIntegrationService::Initialize() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(NOT_INITIALIZED, state_);
+  DCHECK_EQ(State::kNone, state_);
   DCHECK(enabled_);
 
-  state_ = INITIALIZING;
+  state_ = State::kInitializing;
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -1241,7 +1240,7 @@ void DriveIntegrationService::Initialize() {
 void DriveIntegrationService::InitializeAfterMetadataInitialized(
     FileError error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(INITIALIZING, state_);
+  DCHECK_EQ(State::kInitializing, state_);
 
   if (error != FILE_ERROR_OK) {
     GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
@@ -1252,7 +1251,8 @@ void DriveIntegrationService::InitializeAfterMetadataInitialized(
                        base::FilePath(),
                        std::vector<std::pair<base::FilePath, std::string>>()));
   }
-  state_ = INITIALIZED;
+
+  state_ = State::kInitialized;
   if (enabled_) {
     AddDriveMountPoint();
   }
