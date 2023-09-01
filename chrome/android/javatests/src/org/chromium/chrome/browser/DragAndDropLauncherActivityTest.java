@@ -38,6 +38,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.ExecutionException;
@@ -91,7 +92,7 @@ public class DragAndDropLauncherActivityTest {
         Tab activityTab = TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab());
         Assert.assertEquals("Activity tab URL should match the dragged link URL.",
-                JUnitTestGURLs.getGURL(mLinkUrl).getSpec(),
+                new GURL(mLinkUrl).getSpec(),
                 ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec());
     }
 
@@ -134,7 +135,7 @@ public class DragAndDropLauncherActivityTest {
             Tab activityTab = lastAccessedActivity.getActivityTab();
             Criteria.checkThat("Activity tab URL should match the dragged link URL.",
                     ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec(),
-                    Matchers.is(JUnitTestGURLs.getGURL(JUnitTestGURLs.MAPS_URL).getSpec()));
+                    Matchers.is(JUnitTestGURLs.MAPS_URL.getSpec()));
         });
     }
 

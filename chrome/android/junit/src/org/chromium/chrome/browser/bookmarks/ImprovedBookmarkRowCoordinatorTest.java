@@ -72,13 +72,11 @@ public class ImprovedBookmarkRowCoordinatorTest {
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "User folder", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem = new BookmarkItem(mBookmarkId, "Bookmark",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(
             mReadingListFolderId, "Reading List", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId, true,
-            false, 0, false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mReadingListFolderId, true, false, 0, false, 0);
 
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;

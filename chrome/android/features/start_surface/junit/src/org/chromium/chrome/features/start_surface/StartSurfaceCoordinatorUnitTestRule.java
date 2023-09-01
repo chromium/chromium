@@ -202,7 +202,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mJniMocker.mock(IdentityServicesProviderJni.TEST_HOOKS, identityServicesProviderJniMock);
 
         // Set home page url.
-        GURL homePageGURL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+        GURL homePageGURL = JUnitTestGURLs.NTP_URL;
         UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
         when(urlFormatterJniMock.fixupUrl(HomepageManager.getHomepageUri()))
                 .thenReturn(homePageGURL);

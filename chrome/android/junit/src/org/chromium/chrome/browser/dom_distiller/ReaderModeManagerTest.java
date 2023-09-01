@@ -61,7 +61,7 @@ import java.util.concurrent.TimeoutException;
         ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
-    private static final GURL MOCK_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT);
+    private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
 
     @Rule
     public JniMocker jniMocker = new JniMocker();
@@ -174,7 +174,7 @@ public class ReaderModeManagerTest {
     @Feature("ReaderMode")
     public void testUI_notTriggered_navBeforeCallback() {
         // Simulate a page navigation prior to the distillability callback happening.
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals("Distillation should not be possible.", DistillationStatus.NOT_POSSIBLE,
@@ -205,7 +205,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testUI_notTriggered_mutedByDomain() {
-        mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOG));
+        mManager.muteSiteForTesting(JUnitTestGURLs.GOOGLE_URL_DOG);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
                 mManager.getDistillationStatus());
@@ -217,7 +217,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     public void testUI_notTriggered_notMutedByDomain() {
-        mManager.muteSiteForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        mManager.muteSiteForTesting(JUnitTestGURLs.EXAMPLE_URL);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals("Distillation should be possible.", DistillationStatus.POSSIBLE,
                 mManager.getDistillationStatus());

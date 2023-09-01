@@ -56,7 +56,7 @@ import java.io.ByteArrayOutputStream;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ClipboardSuggestionProcessorUnitTest {
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 

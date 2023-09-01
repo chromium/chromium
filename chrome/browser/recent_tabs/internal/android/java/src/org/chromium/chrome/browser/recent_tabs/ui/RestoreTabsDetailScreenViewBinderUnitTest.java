@@ -136,8 +136,7 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
     @Test
     public void testSetReviewTabsScreen() {
         mModel.set(REVIEW_TABS_SCREEN_DELEGATE, mMockDelegate);
-        ForeignSessionTab tab1 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+        ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         PropertyModel model1 = TabItemProperties.create(tab1, true);
 
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
@@ -187,11 +186,9 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
     @Test
     public void testOnReviewTabsScreen_toggleTabSelectionState() {
         mModel.set(REVIEW_TABS_SCREEN_DELEGATE, mMockDelegate);
-        ForeignSessionTab tab1 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+        ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         PropertyModel model1 = TabItemProperties.create(tab1, true);
-        ForeignSessionTab tab2 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title2", 32L, 0);
+        ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 32L, 0);
         PropertyModel model2 = TabItemProperties.create(tab2, true);
 
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);

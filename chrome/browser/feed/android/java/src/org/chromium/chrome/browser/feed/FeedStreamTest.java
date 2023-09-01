@@ -211,7 +211,6 @@ public class FeedStreamTest {
                 /* isInterestFeed= */ StreamKind.FOR_YOU, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher, mStreamsMediator,
                 /*SingleWebFeedHelper=*/null, new FeedSurfaceRendererBridgeFactory());
-        mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
         mContentManager = new FeedListContentManager();

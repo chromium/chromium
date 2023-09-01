@@ -100,13 +100,11 @@ public class BookmarkFolderPickerMediatorTest {
     private final BookmarkItem mUserFolderItem = new BookmarkItem(
             mUserFolderId, "UserFolder", null, true, mMobileFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserBookmarkItem = new BookmarkItem(mUserBookmarkId, "Bookmark",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mUserFolderId, true, false,
-            0, false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mUserFolderId, true, false, 0, false, 0);
     private final BookmarkItem mUserFolderItem2 = new BookmarkItem(
             mUserFolderId2, "UserFolder2", null, true, mMobileFolderId, false, false, 0, false, 0);
     private final BookmarkItem mUserBookmarkItem1 = new BookmarkItem(mUserBookmarkId1, "Bookmark1",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mUserFolderId, true, false,
-            0, false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mUserFolderId, true, false, 0, false, 0);
     private final BookmarkItem mReadingListItem1 = new BookmarkItem(mReadingListItemId1,
             "Reading list item 1", null, true, mReadingListFolderId, false, false, 0, false, 0);
     private final BookmarkItem mReadingListItem2 = new BookmarkItem(mReadingListItemId2,

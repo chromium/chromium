@@ -72,8 +72,8 @@ public final class WebFeedSnackbarControllerTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
-    private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL sFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    private static final GURL sTestUrl = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL sFaviconUrl = JUnitTestGURLs.RED_1;
     private static final String sTitle = "Example Title";
     private static final byte[] sFollowId = new byte[] {1, 2, 3};
 
@@ -208,7 +208,7 @@ public final class WebFeedSnackbarControllerTest {
                 snackbar.getTextForTesting());
 
         // Simulate a navigation, the snackbar is dismissed.
-        mTabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
+        mTabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.URL_2);
         verify(mSnackbarManager).dismissSnackbars(eq(snackbar.getController()));
     }
 
@@ -404,7 +404,7 @@ public final class WebFeedSnackbarControllerTest {
                 snackbar.getTextForTesting());
 
         // Simulate a navigation, the snackbar is dismissed.
-        mTabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
+        mTabObserver.onPageLoadStarted(mTab, JUnitTestGURLs.URL_2);
         verify(mSnackbarManager).dismissSnackbars(eq(snackbar.getController()));
     }
 
@@ -431,8 +431,7 @@ public final class WebFeedSnackbarControllerTest {
         // mTab reports sTestUrl as the current page. Show a follow-failure snackbar for a different
         // page.
         mWebFeedSnackbarController.showPostFollowHelp(mTab, failureFollowResults(), "".getBytes(),
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), sTitle,
-                WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU);
+                JUnitTestGURLs.URL_2, sTitle, WebFeedBridge.CHANGE_REASON_WEB_PAGE_MENU);
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 

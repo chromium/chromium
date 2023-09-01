@@ -120,7 +120,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
                      FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE))
                 .thenReturn(true);
 
-        mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        mTabUrl = JUnitTestGURLs.EXAMPLE_URL;
         when(mTab.getUrl()).thenReturn(mTabUrl);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -194,7 +194,7 @@ public class DesktopSiteSettingsIPHControllerUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testPerSiteIPHPreChecksFailed_ChromePage() {
-        mTabUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.CHROME_ABOUT);
+        mTabUrl = JUnitTestGURLs.CHROME_ABOUT;
         when(mTab.getUrl()).thenReturn(mTabUrl);
 
         boolean failed = mController.perSiteIPHPreChecksFailed(

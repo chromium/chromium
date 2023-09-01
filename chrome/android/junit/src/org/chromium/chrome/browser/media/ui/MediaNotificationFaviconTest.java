@@ -77,7 +77,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
                 .when(mMockForegroundServiceUtils)
                 .startForegroundService(any(Intent.class));
         mTabHolder = createMediaNotificationTestTabHolder(TAB_ID_1, "about:blank", "title1");
-        mFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        mFaviconUrl = JUnitTestGURLs.EXAMPLE_URL;
     }
 
     @Test

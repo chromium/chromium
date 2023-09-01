@@ -52,7 +52,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
 
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
-                .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+                .thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         ShareParams shareParamsWithLinkToText =
                 new ShareParams
                         .Builder(
@@ -101,7 +101,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setContentUrl(JUnitTestGURLs.EXAMPLE_URL)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
@@ -119,7 +119,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareParams.Builder(/*window=*/null, /*title=*/"", "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setContentUrl(JUnitTestGURLs.EXAMPLE_URL)
                         .setDetailedContentType(DetailedContentType.IMAGE)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
@@ -168,9 +168,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
                                                   JUnitTestGURLs.EXAMPLE_URL.getSpec())
                                           .build();
         ChromeShareExtras chromeShareExtras =
-                new ChromeShareExtras.Builder()
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
-                        .build();
+                new ChromeShareExtras.Builder().setContentUrl(JUnitTestGURLs.EXAMPLE_URL).build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
@@ -200,7 +198,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL))
+                        .setContentUrl(JUnitTestGURLs.EXAMPLE_URL)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(

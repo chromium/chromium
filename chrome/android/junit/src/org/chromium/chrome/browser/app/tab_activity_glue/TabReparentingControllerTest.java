@@ -117,8 +117,7 @@ public class TabReparentingControllerTest {
     @Test
     public void testReparenting_singleTab_NTP() {
         // New tab pages aren't reparented intentionally.
-        mForegroundTab =
-                createAndAddMockTab(1, false, JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        mForegroundTab = createAndAddMockTab(1, false, JUnitTestGURLs.NTP_URL);
         mController.prepareTabsForReparenting();
 
         Assert.assertFalse(mRealAsyncTabParamsManager.hasParamsWithTabToReparent());
@@ -263,7 +262,6 @@ public class TabReparentingControllerTest {
     }
 
     private Tab createAndAddMockTab(int id, boolean incognito) {
-        return createAndAddMockTab(
-                id, incognito, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        return createAndAddMockTab(id, incognito, JUnitTestGURLs.EXAMPLE_URL);
     }
 }

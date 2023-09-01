@@ -59,6 +59,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
@@ -129,7 +130,7 @@ public final class ShareSheetCoordinatorTest {
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
         ShadowPropertyModelBuilder.sThirdPartyModels = thirdPartyPropertyModels;
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
-                .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
+                .thenReturn(new GURL(MOCK_URL));
         TrackerFactory.setTrackerForTests(mTracker);
 
         mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)

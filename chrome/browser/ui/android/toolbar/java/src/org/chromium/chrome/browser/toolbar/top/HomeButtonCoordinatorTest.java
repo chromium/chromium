@@ -43,8 +43,8 @@ import java.util.Map;
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeButtonCoordinatorTest {
-    private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
-    private static final GURL NOT_NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL NTP_URL = JUnitTestGURLs.NTP_URL;
+    private static final GURL NOT_NTP_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     private static final ImmutableMap<Integer, String> ID_TO_STRING_MAP = ImmutableMap.of(
             R.string.iph_ntp_with_feed_text, "feed", R.string.iph_ntp_without_feed_text, "no_feed",

@@ -77,7 +77,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * A implementation of a Feed {@link Stream} that is just able to render a vertical stream of
@@ -86,8 +85,6 @@ import java.util.function.Function;
 public class FeedStream implements Stream {
     private static final String TAG = "FeedStream";
     private static final String SPACER_KEY = "Spacer";
-
-    Function<String, GURL> mMakeGURL = url -> new GURL(url);
 
     /**
      * Implementation of SurfaceActionsHandler methods.
@@ -105,13 +102,13 @@ public class FeedStream implements Stream {
             switch (openMode) {
                 case OpenMode.UNKNOWN:
                 case OpenMode.SAME_TAB:
-                    mBridge.reportOpenAction(mMakeGURL.apply(url),
+                    mBridge.reportOpenAction(new GURL(url),
                             getSliceIdFromView(options.actionSourceView()), OpenActionType.DEFAULT);
                     openSuggestionUrl(
                             url, WindowOpenDisposition.CURRENT_TAB, /*inGroup=*/false, options);
                     break;
                 case OpenMode.NEW_TAB:
-                    mBridge.reportOpenAction(mMakeGURL.apply(url),
+                    mBridge.reportOpenAction(new GURL(url),
                             getSliceIdFromView(options.actionSourceView()), OpenActionType.NEW_TAB);
                     openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
                             /*inGroup=*/false, options);
@@ -131,7 +128,7 @@ public class FeedStream implements Stream {
                     mActionDelegate.addToReadingList(options.getTitle(), url);
                     break;
                 case OpenMode.NEW_TAB_IN_GROUP:
-                    mBridge.reportOpenAction(mMakeGURL.apply(url),
+                    mBridge.reportOpenAction(new GURL(url),
                             getSliceIdFromView(options.actionSourceView()),
                             OpenActionType.NEW_TAB_IN_GROUP);
                     openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
@@ -217,7 +214,7 @@ public class FeedStream implements Stream {
             for (int i = 0; i < entityMids.size(); ++i) {
                 entityArray[i] = entityMids.get(i);
             }
-            mBridge.updateUserProfileOnLinkClick(mMakeGURL.apply(url), entityArray);
+            mBridge.updateUserProfileOnLinkClick(new GURL(url), entityArray);
         }
 
         @Override

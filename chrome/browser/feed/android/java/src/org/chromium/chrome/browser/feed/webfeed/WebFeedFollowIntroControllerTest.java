@@ -75,8 +75,8 @@ import java.util.concurrent.TimeUnit;
 @LooperMode(LooperMode.Mode.LEGACY)
 public final class WebFeedFollowIntroControllerTest {
     private static final long SAFE_INTRO_WAIT_TIME_MILLIS = 3 * 1000 + 100;
-    private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL sFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    private static final GURL sTestUrl = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL sFaviconUrl = JUnitTestGURLs.RED_1;
     private static final byte[] sWebFeedId = "webFeedId".getBytes();
     private static final SharedPreferencesManager sSharedPreferencesManager =
             SharedPreferencesManager.getInstance();

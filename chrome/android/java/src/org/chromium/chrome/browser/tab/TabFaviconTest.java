@@ -83,7 +83,7 @@ public class TabFaviconTest {
         doReturn(false).when(mTab).isNativePage();
         doReturn(true).when(mTab).isInitialized();
         doReturn(mWebContents).when(mTab).getWebContents();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mTab).getUrl();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         doReturn(new EmptyIterator()).when(mTab).getTabObservers();
 
         mTabFavicon = TabFavicon.from(mTab);
@@ -100,7 +100,7 @@ public class TabFaviconTest {
     }
 
     private void onFaviconAvailable(Bitmap bitmap) {
-        mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
     }
 
     @Test

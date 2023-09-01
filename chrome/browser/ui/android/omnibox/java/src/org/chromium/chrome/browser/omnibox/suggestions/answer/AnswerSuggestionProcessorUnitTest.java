@@ -382,8 +382,7 @@ public class AnswerSuggestionProcessorUnitTest {
                 AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
 
         ArgumentCaptor<Callback<Bitmap>> cb = ArgumentCaptor.forClass(Callback.class);
-        verify(mImageSupplier, times(1))
-                .fetchImage(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)), cb.capture());
+        verify(mImageSupplier, times(1)).fetchImage(eq(JUnitTestGURLs.BLUE_1), cb.capture());
 
         var sds1 = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(sds1);

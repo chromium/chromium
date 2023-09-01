@@ -29,7 +29,7 @@ public class DropDataAndroidUnitTest {
     @Test
     public void testLink() {
         final String text = "text";
-        final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        final GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
         final DropDataAndroid data = DropDataAndroid.create(text, gurl, null, null, null);
 
         assertDragData(data, /*isPlainText=*/false, /*hasLink=*/true, /*hasImage=*/false);
@@ -52,7 +52,7 @@ public class DropDataAndroidUnitTest {
 
     @Test
     public void testImageLink() {
-        final GURL gurl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        final GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
         final byte[] img = new byte[] {1, 2};
         final String imageExtension = "webp";
         final DropDataAndroid data =

@@ -121,9 +121,9 @@ public class SearchResumptionModuleMediatorUnitTest {
 
         mUserDataHost = new UserDataHost();
         doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
-        mUrlToTrack = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        mUrlToTrack = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(mUrlToTrack).when(mTabToTrack).getUrl();
-        GURL currentUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+        GURL currentUrl = JUnitTestGURLs.NTP_URL;
         doReturn(currentUrl).when(mTab).getUrl();
         doReturn(false).when(mTab).canGoForward();
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
@@ -209,7 +209,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     @MediumTest
     public void testDoNotBuildModuleWithoutEnoughSuggestions_newServiceAPI() {
         String[] texts = {"suggestion 1"};
-        GURL[] gUrls = {JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)};
+        GURL[] gUrls = {JUnitTestGURLs.URL_1};
 
         createMediator(null, true /* useNewServiceEnabled */);
         mMediator.onSuggestionsAvailable(texts, gUrls);
@@ -315,8 +315,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     private void initSuggestions() {
         mSuggestionTexts = new String[] {"suggestion 1", "suggestion2"};
-        mSuggestionUrls = new GURL[] {JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2)};
+        mSuggestionUrls = new GURL[] {JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_2};
     }
 
     private SuggestionResult createCachedSuggestions() {

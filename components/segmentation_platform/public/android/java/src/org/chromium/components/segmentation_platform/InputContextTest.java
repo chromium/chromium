@@ -61,8 +61,7 @@ public class InputContextTest {
         inputContext.addEntry(
                 "time_value", ProcessedValue.fromTimeMillis(TimeUtils.currentTimeMillis()));
         inputContext.addEntry("int64 value", ProcessedValue.fromInt64(Long.MIN_VALUE));
-        inputContext.addEntry("url_value",
-                ProcessedValue.fromGURL(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
+        inputContext.addEntry("url_value", ProcessedValue.fromGURL(JUnitTestGURLs.EXAMPLE_URL));
 
         // Native calls this method with a pointer to a native InputContext.
         inputContext.fillNativeInputContext(0x12345678);
@@ -74,8 +73,7 @@ public class InputContextTest {
                         new String[] {"string_value"}, new String[] {"Hello, World!"},
                         new String[] {"time_value"}, new long[] {TimeUtils.currentTimeMillis()},
                         new String[] {"int64 value"}, new long[] {Long.MIN_VALUE},
-                        new String[] {"url_value"},
-                        new GURL[] {JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)});
+                        new String[] {"url_value"}, new GURL[] {JUnitTestGURLs.EXAMPLE_URL});
     }
 
     @Test

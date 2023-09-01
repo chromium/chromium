@@ -251,7 +251,7 @@ public class HomepageSettingsUnitTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_Customized() {
-        setHomepagePolicy(JUnitTestGURLs.getGURL(TEST_URL_BAR));
+        setHomepagePolicy(new GURL(TEST_URL_BAR));
 
         launchHomepageSettings();
 
@@ -280,7 +280,7 @@ public class HomepageSettingsUnitTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_NTP() {
-        setHomepagePolicy(JUnitTestGURLs.getGURL(CHROME_NTP));
+        setHomepagePolicy(new GURL(CHROME_NTP));
 
         launchHomepageSettings();
 

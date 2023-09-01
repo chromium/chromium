@@ -391,7 +391,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void getFooterResourceId_nonHttpUrl_doesNotReturnWebFeedMenuItem() {
         setUpMocksForWebFeedFooter();
-        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
 
         assertNotEquals("Footer Resource ID should not be web_feed_main_menu_item.",
                 R.layout.web_feed_main_menu_item,
@@ -420,7 +420,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private void setUpMocksForWebFeedFooter() {
         when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.isIncognito()).thenReturn(false);
-        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        when(mTab.getOriginalUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mOfflinePageUtils.isOfflinePage(mTab)).thenReturn(false);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
     }
@@ -442,7 +442,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isAutoDarkWebContentsEnabled();
 
         setUpIncognitoMocks();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)

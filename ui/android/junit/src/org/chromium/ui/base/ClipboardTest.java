@@ -42,6 +42,7 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.ToastManager;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -121,13 +122,13 @@ public class ClipboardTest {
         ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
         ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
-        String url = JUnitTestGURLs.SEARCH_URL.getSpec();
-        clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
+        GURL url = JUnitTestGURLs.SEARCH_URL;
+        clipboard.copyUrlToClipboard(url);
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
-        assertEquals(url, clipCaptor.getValue().getItemAt(0).getText());
+        assertEquals(url.getSpec(), clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test
@@ -137,13 +138,13 @@ public class ClipboardTest {
         ((ClipboardImpl) clipboard).overrideClipboardManagerForTesting(clipboardManager);
 
         doThrow(SecurityException.class).when(clipboardManager).setPrimaryClip(any(ClipData.class));
-        String url = JUnitTestGURLs.SEARCH_URL.getSpec();
-        clipboard.copyUrlToClipboard(JUnitTestGURLs.getGURL(url));
+        GURL url = JUnitTestGURLs.SEARCH_URL;
+        clipboard.copyUrlToClipboard(url);
 
         ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
         verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
         assertEquals("url", clipCaptor.getValue().getDescription().getLabel());
-        assertEquals(url, clipCaptor.getValue().getItemAt(0).getText());
+        assertEquals(url.getSpec(), clipCaptor.getValue().getItemAt(0).getText());
     }
 
     @Test

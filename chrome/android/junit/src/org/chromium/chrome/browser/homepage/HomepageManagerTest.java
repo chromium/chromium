@@ -89,12 +89,10 @@ public class HomepageManagerTest {
         Assert.assertFalse(
                 "Empty string should fall back to NTP.", HomepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl =
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.EXAMPLE_URL;
         Assert.assertTrue("Random web page is not the NTP.", HomepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl =
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL);
+        ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.NTP_NATIVE_URL;
         Assert.assertFalse("NTP should be considered the NTP.", HomepageManager.isHomepageNonNtp());
     }
 
@@ -121,21 +119,21 @@ public class HomepageManagerTest {
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, null);
         Assert.assertEquals(blueUrl, HomepageManager.getDefaultHomepageUri());
 
-        final String redUrl = JUnitTestGURLs.RED_1.getSpec();
-        final String serializedRedGurl = JUnitTestGURLs.getGURL(redUrl).serialize();
+        final GURL redUrl = JUnitTestGURLs.RED_1;
+        final String serializedRedGurl = redUrl.serialize();
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, null);
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, serializedRedGurl);
-        Assert.assertEquals(redUrl, HomepageManager.getDefaultHomepageUri());
+        Assert.assertEquals(redUrl.getSpec(), HomepageManager.getDefaultHomepageUri());
 
-        final String url1 = JUnitTestGURLs.URL_1.getSpec();
-        final String url2 = JUnitTestGURLs.URL_2.getSpec();
-        final String serializedGurl2 = JUnitTestGURLs.getGURL(url2).serialize();
+        final GURL url1 = JUnitTestGURLs.URL_1;
+        final GURL url2 = JUnitTestGURLs.URL_2;
+        final String serializedGurl2 = url2.serialize();
         SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, url1);
+                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, url1.getSpec());
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, serializedGurl2);
-        Assert.assertEquals(url2, HomepageManager.getDefaultHomepageUri());
+        Assert.assertEquals(url2.getSpec(), HomepageManager.getDefaultHomepageUri());
     }
 }

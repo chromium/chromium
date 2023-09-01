@@ -42,8 +42,8 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for LoadProgressMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LoadProgressMediatorTest {
-    private static final GURL URL_1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL NATIVE_PAGE_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+    private static final GURL URL_1 = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL NATIVE_PAGE_URL = JUnitTestGURLs.NTP_URL;
 
     @Mock
     private Tab mTab;

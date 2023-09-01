@@ -67,9 +67,9 @@ public class PaymentRequestServiceBuilder implements Delegate {
             PaymentAppService appService, BrowserPaymentRequest browserPaymentRequest,
             JourneyLogger journeyLogger) {
         mWebContents = Mockito.mock(WebContents.class);
-        setTopLevelOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+        setTopLevelOrigin(JUnitTestGURLs.URL_1);
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
-        setFrameOrigin(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2));
+        setFrameOrigin(JUnitTestGURLs.URL_2);
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         mJourneyLogger = journeyLogger;

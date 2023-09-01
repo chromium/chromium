@@ -151,7 +151,7 @@ public class DownloadMessageUiControllerTest {
     private static void markItemComplete(OfflineItem item) {
         item.state = OfflineItemState.COMPLETE;
         item.title = TEST_FILE_NAME;
-        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        item.url = JUnitTestGURLs.EXAMPLE_URL;
         item.receivedBytes = 10L;
         item.totalSizeBytes = 10L;
     }

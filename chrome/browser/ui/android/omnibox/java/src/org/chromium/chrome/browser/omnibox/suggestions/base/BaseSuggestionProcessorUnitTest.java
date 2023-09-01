@@ -83,7 +83,7 @@ public class BaseSuggestionProcessorUnitTest {
         }
     }
 
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL TEST_URL = JUnitTestGURLs.URL_1;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mFeaturesProcessor = new Features.JUnitProcessor();

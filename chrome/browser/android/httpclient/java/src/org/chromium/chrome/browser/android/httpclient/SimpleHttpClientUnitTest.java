@@ -85,14 +85,14 @@ public class SimpleHttpClientUnitTest {
         final byte[] requestBody = {};
         final String requestType = "requestType";
 
-        mHttpClient.send(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), requestType, requestBody,
-                headers, NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
+        mHttpClient.send(JUnitTestGURLs.BLUE_1, requestType, requestBody, headers,
+                NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                 (response) -> responseCallback.notifyCalled());
 
         Mockito.verify(mNativeMock)
-                .sendNetworkRequest(eq(FAKE_NATIVE_POINTER),
-                        eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)), eq(requestType),
-                        eq(requestBody), mHeaderKeysCaptor.capture(), mHeaderValuesCaptor.capture(),
+                .sendNetworkRequest(eq(FAKE_NATIVE_POINTER), eq(JUnitTestGURLs.BLUE_1),
+                        eq(requestType), eq(requestBody), mHeaderKeysCaptor.capture(),
+                        mHeaderValuesCaptor.capture(),
                         eq(NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS.getHashCode()),
                         any());
 

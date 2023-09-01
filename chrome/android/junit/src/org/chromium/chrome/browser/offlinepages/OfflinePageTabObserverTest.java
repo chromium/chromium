@@ -51,7 +51,7 @@ import java.lang.ref.WeakReference;
 public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;
-    private static final GURL TAB_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TAB_URL = JUnitTestGURLs.EXAMPLE_URL;
     @Mock
     private ChromeActivity mActivity;
     @Mock

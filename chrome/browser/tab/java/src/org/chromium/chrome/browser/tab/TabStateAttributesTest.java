@@ -167,7 +167,7 @@ public class TabStateAttributesTest {
         while (observers.hasNext()) observers.next().onContentChanged(mTab);
         WebContentsObserver webContentsObserver = mWebContentsObserverCaptor.getValue();
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
-        GURL testGURL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL testGURL = JUnitTestGURLs.EXAMPLE_URL;
         NavigationHandle navHandle = NavigationHandle.createForTesting(testGURL, false, 0, false);
 
         Assert.assertEquals(TabStateAttributes.DirtinessState.CLEAN,
@@ -184,7 +184,7 @@ public class TabStateAttributesTest {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(mTab);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
-        GURL testGURL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL testGURL = JUnitTestGURLs.EXAMPLE_URL;
 
         Assert.assertEquals(TabStateAttributes.DirtinessState.CLEAN,
                 TabStateAttributes.from(mTab).getDirtinessState());

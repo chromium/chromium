@@ -141,9 +141,9 @@ public class MultiInstanceManagerApi31UnitTest {
     private static final String TITLE1 = "title1";
     private static final String TITLE2 = "title2";
     private static final String TITLE3 = "title3";
-    private static final GURL URL1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL URL2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    private static final GURL URL3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
+    private static final GURL URL1 = JUnitTestGURLs.URL_1;
+    private static final GURL URL2 = JUnitTestGURLs.URL_2;
+    private static final GURL URL3 = JUnitTestGURLs.URL_3;
 
     private TestMultiInstanceManagerApi31 mMultiInstanceManager;
     @Mock

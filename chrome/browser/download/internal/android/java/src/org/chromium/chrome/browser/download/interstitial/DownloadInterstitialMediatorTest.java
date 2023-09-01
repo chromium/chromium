@@ -114,7 +114,7 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testSecondDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
-        item1.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+        item1.originalUrl = JUnitTestGURLs.URL_1;
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
         assertEquals(mItem0, mModel.get(DOWNLOAD_ITEM));
@@ -126,7 +126,7 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testInProgressDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
-        item1.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+        item1.originalUrl = JUnitTestGURLs.URL_1;
         // Remove observer so that the mediator can attach its own observer.
         mProvider.setObserver(null);
         mModel.set(DOWNLOAD_ITEM, null);
@@ -315,7 +315,7 @@ public class DownloadInterstitialMediatorTest {
         item.state = OfflineItemState.IN_PROGRESS;
         item.title = "Test Item";
         item.description = "Test Description";
-        item.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+        item.originalUrl = JUnitTestGURLs.URL_2;
         return item;
     }
 

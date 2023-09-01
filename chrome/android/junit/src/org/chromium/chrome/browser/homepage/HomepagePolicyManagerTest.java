@@ -111,7 +111,7 @@ public class HomepagePolicyManagerTest {
     @Test
     @SmallTest
     public void testEmptyInstance_EnabledFromSharedPreference() {
-        setHomepageInSharedPreference(JUnitTestGURLs.getGURL(CHROME_NTP));
+        setHomepageInSharedPreference(new GURL(CHROME_NTP));
 
         // Create a new empty instance
         HomepagePolicyManager manager = new HomepagePolicyManager();
@@ -279,16 +279,14 @@ public class HomepagePolicyManagerTest {
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, null);
         SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
-                JUnitTestGURLs.getGURL(url1).serialize());
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, new GURL(url1).serialize());
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(url1, mHomepagePolicyManager.getHomepagePreference().getSpec());
 
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, url1);
         SharedPreferencesManager.getInstance().writeString(
-                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
-                JUnitTestGURLs.getGURL(url2).serialize());
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, new GURL(url2).serialize());
         mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(url2, mHomepagePolicyManager.getHomepagePreference().getSpec());
     }

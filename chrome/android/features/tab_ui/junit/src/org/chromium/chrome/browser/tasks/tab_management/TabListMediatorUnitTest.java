@@ -190,10 +190,10 @@ public class TabListMediatorUnitTest {
     private static final String NEW_TITLE = "New title";
     private static final String CUSTOMIZED_DIALOG_TITLE1 = "Cool Tabs";
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
-    private static final GURL TAB1_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL TAB2_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    private static final GURL TAB3_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
-    private static final GURL TAB4_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    private static final GURL TAB1_URL = JUnitTestGURLs.URL_1;
+    private static final GURL TAB2_URL = JUnitTestGURLs.URL_2;
+    private static final GURL TAB3_URL = JUnitTestGURLs.URL_3;
+    private static final GURL TAB4_URL = JUnitTestGURLs.RED_1;
     private static final String NEW_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -346,8 +346,8 @@ public class TabListMediatorUnitTest {
         mTab1Domain = TAB1_URL.getHost().replace("www.", "");
         mTab2Domain = TAB2_URL.getHost().replace("www.", "");
         mTab3Domain = TAB3_URL.getHost().replace("www.", "");
-        mNewDomain = JUnitTestGURLs.getGURL(NEW_URL).getHost().replace("www.", "");
-        mFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        mNewDomain = new GURL(NEW_URL).getHost().replace("www.", "");
+        mFaviconUrl = JUnitTestGURLs.RED_1;
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE, TAB2_URL);
@@ -584,7 +584,7 @@ public class TabListMediatorUnitTest {
     public void updatesFaviconFetcher_Navigation_NoOpNtpUrl() {
         doReturn(mFavicon).when(mTabListFaviconProvider).getDefaultFavicon(anyBoolean());
 
-        GURL ntpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
+        GURL ntpUrl = JUnitTestGURLs.NTP_URL;
         doReturn("")
                 .when(mUrlUtilitiesJniMock)
                 .getDomainAndRegistry(eq(ntpUrl.getSpec()), anyBoolean());
@@ -2412,7 +2412,7 @@ public class TabListMediatorUnitTest {
                 .when(mUrlUtilitiesJniMock)
                 .getDomainAndRegistry(eq(NEW_URL), anyBoolean());
 
-        doReturn(JUnitTestGURLs.getGURL(NEW_URL)).when(mTab1).getUrl();
+        doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
         mTabObserver.onUrlUpdated(mTab1);
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
@@ -2435,14 +2435,14 @@ public class TabListMediatorUnitTest {
                 .getDomainAndRegistry(eq(NEW_URL), anyBoolean());
 
         // Update URL_DOMAIN for mTab1.
-        doReturn(JUnitTestGURLs.getGURL(NEW_URL)).when(mTab1).getUrl();
+        doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
         mTabObserver.onUrlUpdated(mTab1);
 
         assertEquals(mNewDomain + ", " + mTab2Domain,
                 mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
 
         // Update URL_DOMAIN for mTab2.
-        doReturn(JUnitTestGURLs.getGURL(NEW_URL)).when(mTab2).getUrl();
+        doReturn(new GURL(NEW_URL)).when(mTab2).getUrl();
         mTabObserver.onUrlUpdated(mTab2);
 
         assertEquals(mNewDomain + ", " + mNewDomain,
@@ -2467,14 +2467,14 @@ public class TabListMediatorUnitTest {
                 .getDomainAndRegistry(eq(NEW_URL), anyBoolean());
 
         // Update URL_DOMAIN for mTab1.
-        doReturn(JUnitTestGURLs.getGURL(NEW_URL)).when(mTab1).getUrl();
+        doReturn(new GURL(NEW_URL)).when(mTab1).getUrl();
         mTabObserver.onUrlUpdated(mTab1);
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModel.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
 
         // Update URL_DOMAIN for mTab2.
-        doReturn(JUnitTestGURLs.getGURL(NEW_URL)).when(mTab2).getUrl();
+        doReturn(new GURL(NEW_URL)).when(mTab2).getUrl();
         mTabObserver.onUrlUpdated(mTab2);
 
         assertEquals(mNewDomain, mModel.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
@@ -2922,7 +2922,7 @@ public class TabListMediatorUnitTest {
         // Test a group of five.
         mModel.get(1).model.set(TabProperties.FAVICON_FETCHER, null);
         TabImpl tab4 = prepareTab(0, "tab 4", TAB2_URL);
-        TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        TabImpl tab5 = prepareTab(1, "tab 5", JUnitTestGURLs.EXAMPLE_URL);
         tabs.addAll(Arrays.asList(tab4, tab5));
         createTabGroup(tabs, TAB2_ID);
         mTabObserver.onFaviconUpdated(mTab2, mFaviconBitmap, mFaviconUrl);

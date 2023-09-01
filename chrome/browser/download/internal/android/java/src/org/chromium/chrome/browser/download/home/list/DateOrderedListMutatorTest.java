@@ -1165,7 +1165,7 @@ public class DateOrderedListMutatorTest {
         item.isSuggested = true;
         item.creationTimeMs = calendar.getTimeInMillis();
         item.filter = filter;
-        item.url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        item.url = JUnitTestGURLs.EXAMPLE_URL;
         return item;
     }
 

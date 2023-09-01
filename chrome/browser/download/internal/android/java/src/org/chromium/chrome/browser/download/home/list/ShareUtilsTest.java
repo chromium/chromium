@@ -178,7 +178,7 @@ public class ShareUtilsTest {
         } else if (url.isEmpty()) {
             item.url = GURL.emptyGURL();
         } else {
-            item.url = JUnitTestGURLs.getGURL(url);
+            item.url = new GURL(url);
         }
         item.mimeType = mimeType;
         item.title = title;

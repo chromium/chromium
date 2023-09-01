@@ -68,7 +68,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class SingleTabSwitcherOnTabletMediatorUnitTest {
     private final int mTabId = 1;
     private final String mTitle = "test";
-    private final GURL mUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private final GURL mUrl = JUnitTestGURLs.URL_1;
     private final String mUrlHost = mUrl.getHost();
     private final String mTitle2 = "test2";
     private PropertyModel mPropertyModel;

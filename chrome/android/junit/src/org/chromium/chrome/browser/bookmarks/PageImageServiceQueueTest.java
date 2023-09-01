@@ -50,7 +50,7 @@ public class PageImageServiceQueueTest {
         MockitoHelper
                 .doCallback(1,
                         (Callback<GURL> callback) -> {
-                            callback.onResult(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+                            callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
                         })
                 .when(mBookmarkModel)
                 .getImageUrlForBookmark(any(), any());
@@ -67,12 +67,10 @@ public class PageImageServiceQueueTest {
                      }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
 
         // Our limit is 1 for testing.
-        mPageImageServiceQueue.getSalientImageUrl(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
 
         // Then add one more.
-        mPageImageServiceQueue.getSalientImageUrl(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), mQueuedBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_2, mQueuedBookmarkUrlCallback);
 
         verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
         // Run the 1st callback and verify that the queued one is executed.
@@ -82,12 +80,10 @@ public class PageImageServiceQueueTest {
 
     @Test
     public void testCachedRequest() {
-        mPageImageServiceQueue.getSalientImageUrl(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
 
         // The result from URL_1 should be in the queue
-        mPageImageServiceQueue.getSalientImageUrl(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), mQueuedBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mQueuedBookmarkUrlCallback);
 
         verify(mBookmarkUrlCallback).onResult(any());
         verify(mQueuedBookmarkUrlCallback).onResult(any());

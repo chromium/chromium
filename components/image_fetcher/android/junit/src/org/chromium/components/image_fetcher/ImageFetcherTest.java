@@ -35,8 +35,8 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImageFetcherTest {
-    private static final GURL URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL URL_2 = JUnitTestGURLs.URL_2;
     private static final String CLIENT_NAME = "client";
     private static final int WIDTH_PX = 100;
     private static final int HEIGHT_PX = 200;

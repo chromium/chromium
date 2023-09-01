@@ -136,7 +136,7 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl() {
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(url).when(mTab1).getUrl();
 
         Assert.assertNotEquals(url, TabAttributeCache.getUrl(TAB1_ID));
@@ -151,12 +151,12 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void updateUrl_incognito() {
-        String url = JUnitTestGURLs.EXAMPLE_URL.getSpec();
-        doReturn(JUnitTestGURLs.getGURL(url)).when(mTab1).getUrl();
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(url).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isIncognito();
 
         mTabObserverCaptor.getValue().onUrlUpdated(mTab1);
-        Assert.assertNotEquals(url, TabAttributeCache.getUrl(TAB1_ID));
+        Assert.assertNotEquals(url.getSpec(), TabAttributeCache.getUrl(TAB1_ID));
     }
 
     @Test
@@ -284,10 +284,10 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void findLastSearchTerm() {
-        GURL otherUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        GURL searchUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+        GURL otherUrl = JUnitTestGURLs.EXAMPLE_URL;
+        GURL searchUrl = JUnitTestGURLs.SEARCH_URL;
         String searchTerm = "test";
-        GURL searchUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_2_URL);
+        GURL searchUrl2 = JUnitTestGURLs.SEARCH_2_URL;
         String searchTerm2 = "query";
 
         TemplateUrlService service = Mockito.mock(TemplateUrlService.class);
@@ -361,7 +361,7 @@ public class TabAttributeCacheUnitTest {
 
     @Test
     public void onTabStateInitialized() {
-        GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url1 = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(url1).when(mTab1).getUrl();
         String title1 = "title 1";
         doReturn(title1).when(mTab1).getTitle();
@@ -370,7 +370,7 @@ public class TabAttributeCacheUnitTest {
         long timestamp1 = 123456;
         doReturn(timestamp1).when(mCriticalPersistedTabData1).getTimestampMillis();
 
-        GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+        GURL url2 = JUnitTestGURLs.URL_2;
         doReturn(url2).when(mTab2).getUrl();
         String title2 = "title 2";
         doReturn(title2).when(mTab2).getTitle();

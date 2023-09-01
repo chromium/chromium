@@ -120,7 +120,7 @@ public class OptionalNewTabButtonControllerActivityTest {
         ShadowDelegate.sTabModelSelector = tabModelSelector;
         ShadowDelegate.sTabCreatorManager = new MockTabCreatorManager(tabModelSelector);
         mTab = (MockTab) tabModelSelector.getCurrentTab();
-        mTab.setGurlOverrideForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        mTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
 
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
         mActivityScenario.onActivity(activity -> {
@@ -194,10 +194,10 @@ public class OptionalNewTabButtonControllerActivityTest {
         mActivityScenario.onActivity(activity -> {
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
 
-            mTab.setGurlOverrideForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+            mTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
             assertFalse(mAdaptiveButtonController.get(mTab).canShow());
 
-            mTab.setGurlOverrideForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+            mTab.setGurlOverrideForTesting(JUnitTestGURLs.EXAMPLE_URL);
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
         });
     }

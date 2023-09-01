@@ -175,8 +175,7 @@ public class CustomTabToolbarUnitTest {
         assertEquals("www.nyt.com", CustomTabToolbar.parsePublisherNameFromUrl(AMP_URL));
         assertEquals("www.nyt.com", CustomTabToolbar.parsePublisherNameFromUrl(AMP_CACHE_URL));
         assertEquals(JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                CustomTabToolbar.parsePublisherNameFromUrl(
-                        JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)));
+                CustomTabToolbar.parsePublisherNameFromUrl(JUnitTestGURLs.EXAMPLE_URL));
     }
 
     @Test
@@ -262,7 +261,7 @@ public class CustomTabToolbarUnitTest {
         fakeTextureCapture();
         when(mToolbarDataProvider.getTab()).thenReturn(mTab);
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.RED_1);
         UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.RED_1.getSpec());
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
         mLocationBar.onUrlChanged();
@@ -439,7 +438,7 @@ public class CustomTabToolbarUnitTest {
     private void setUpForAboutBlank() {
         UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.ABOUT_BLANK.getSpec());
         when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.ABOUT_BLANK);
     }
 
     private void setUpForUrl(GURL url) {

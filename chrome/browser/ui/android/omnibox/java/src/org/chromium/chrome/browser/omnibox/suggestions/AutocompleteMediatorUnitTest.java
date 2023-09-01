@@ -187,8 +187,8 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList = buildSampleSuggestionsList(10, "Suggestion");
         mAutocompleteResult = AutocompleteResult.fromCache(mSuggestionsList, null);
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
-        setUpLocationBarDataProvider(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), "New Tab Page",
-                PageClassification.NTP_VALUE);
+        setUpLocationBarDataProvider(
+                JUnitTestGURLs.NTP_URL, "New Tab Page", PageClassification.NTP_VALUE);
     }
 
     /**
@@ -377,7 +377,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -394,7 +394,7 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
         mMediator.setAutocompleteProfile(mProfile);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, url.getSpec(), pageClassification);
 
@@ -413,7 +413,7 @@ public class AutocompleteMediatorUnitTest {
     public void onTextChanged_cancelsPendingRequests() {
         mMediator.setAutocompleteProfile(mProfile);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, url.getSpec(), pageClassification);
 
@@ -439,7 +439,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -468,7 +468,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -495,7 +495,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -529,7 +529,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -574,7 +574,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
 
         mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
         // Verify that the URL is not loaded in a new tab.
@@ -633,7 +633,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -655,7 +655,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -819,7 +819,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -854,7 +854,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -885,7 +885,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -916,7 +916,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -941,7 +941,7 @@ public class AutocompleteMediatorUnitTest {
         when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
         when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
@@ -971,7 +971,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void queryFromGurl_notServedBeforeProfile() {
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         assertNull(mMediator.queryFromGurl(url));
         verifyNoMoreInteractions(mTemplateUrlService);
     }
@@ -981,7 +981,7 @@ public class AutocompleteMediatorUnitTest {
         ShadowTemplateUrlServiceFactory.sService = null;
         mMediator.setAutocompleteProfile(mProfile);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         assertNull(mMediator.queryFromGurl(url));
         verifyNoMoreInteractions(mTemplateUrlService);
     }
@@ -990,7 +990,7 @@ public class AutocompleteMediatorUnitTest {
     public void queryFromGurl_servesDataFromTemplateUrlService() {
         mMediator.setAutocompleteProfile(mProfile);
 
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url = JUnitTestGURLs.BLUE_1;
         doReturn("query").when(mTemplateUrlService).getSearchQueryForUrl(url);
         assertEquals("query", mMediator.queryFromGurl(url));
         verify(mTemplateUrlService).getSearchQueryForUrl(url);
@@ -1028,8 +1028,8 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
-        mMediator.onSuggestionClicked(mSuggestionsList.get(0), /*matchIndex=*/0,
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+        mMediator.onSuggestionClicked(
+                mSuggestionsList.get(0), /*matchIndex=*/0, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);
@@ -1068,8 +1068,8 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
-        mMediator.onSuggestionClicked(mSuggestionsList.get(1), /*matchIndex=*/1,
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+        mMediator.onSuggestionClicked(
+                mSuggestionsList.get(1), /*matchIndex=*/1, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);
@@ -1110,8 +1110,8 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
-        mMediator.onSuggestionClicked(mSuggestionsList.get(0), /*matchIndex=*/0,
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+        mMediator.onSuggestionClicked(
+                mSuggestionsList.get(0), /*matchIndex=*/0, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);

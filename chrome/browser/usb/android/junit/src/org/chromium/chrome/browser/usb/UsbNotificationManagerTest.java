@@ -39,7 +39,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 public class UsbNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();

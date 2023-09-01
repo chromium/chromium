@@ -246,7 +246,7 @@ public class PseudoTabUnitTest {
 
     @Test
     public void getUrl_real() {
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
         doReturn(url).when(mTab1).getUrl();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);

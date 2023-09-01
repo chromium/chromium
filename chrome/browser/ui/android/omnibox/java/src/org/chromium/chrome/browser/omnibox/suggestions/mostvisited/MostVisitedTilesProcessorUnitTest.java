@@ -59,9 +59,9 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class MostVisitedTilesProcessorUnitTest {
-    private static final GURL NAV_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL NAV_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+    private static final GURL NAV_URL = JUnitTestGURLs.URL_1;
+    private static final GURL NAV_URL_2 = JUnitTestGURLs.URL_2;
+    private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
 

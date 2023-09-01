@@ -160,23 +160,23 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public static HistoryItem createHistoryItem(int which, long timestamp) {
         long[] nativeTimestamps = {timestamp * 1000};
         if (which == 0) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
-                    "www.google.com", "Google", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.SEARCH_URL, "www.google.com", "Google", timestamp,
+                    nativeTimestamps, false);
         } else if (which == 1) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL),
-                    "www.example.com", "Foo", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.EXAMPLE_URL, "www.example.com", "Foo", timestamp,
+                    nativeTimestamps, false);
         } else if (which == 2) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "www.one.com",
-                    "Bar", timestamp, nativeTimestamps, false);
+            return new HistoryItem(
+                    JUnitTestGURLs.URL_1, "www.one.com", "Bar", timestamp, nativeTimestamps, false);
         } else if (which == 3) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), "www.two.com",
-                    "News", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.URL_2, "www.two.com", "News", timestamp,
+                    nativeTimestamps, false);
         } else if (which == 4) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3), "www.three.com",
-                    "Engineering", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.URL_3, "www.three.com", "Engineering", timestamp,
+                    nativeTimestamps, false);
         } else if (which == 5) {
-            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.INITIAL_URL),
-                    "initial.com", "Cannot Visit", timestamp, nativeTimestamps, true);
+            return new HistoryItem(JUnitTestGURLs.INITIAL_URL, "initial.com", "Cannot Visit",
+                    timestamp, nativeTimestamps, true);
         } else {
             return null;
         }

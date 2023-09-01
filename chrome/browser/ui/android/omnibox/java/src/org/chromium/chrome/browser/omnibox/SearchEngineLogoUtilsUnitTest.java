@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -139,7 +140,7 @@ public class SearchEngineLogoUtilsUnitTest {
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        faviconCallback.onFaviconAvailable(mBitmap, JUnitTestGURLs.getGURL(LOGO_URL));
+        faviconCallback.onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
 
         assertTrue(promise.isFulfilled());
         assertEquals(promise.getResult(), expected);
@@ -187,7 +188,7 @@ public class SearchEngineLogoUtilsUnitTest {
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        faviconCallback.onFaviconAvailable(mBitmap, JUnitTestGURLs.getGURL(LOGO_URL));
+        faviconCallback.onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
         assertEquals(promise.getResult(), expected);
 
         Promise<StatusIconResource> promise2 = mSearchEngineLogoUtils.getSearchEngineLogo(
@@ -258,7 +259,7 @@ public class SearchEngineLogoUtilsUnitTest {
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
-        faviconCallback.onFaviconAvailable(null, JUnitTestGURLs.getGURL(LOGO_URL));
+        faviconCallback.onFaviconAvailable(null, new GURL(LOGO_URL));
 
         assertEquals(promise.getResult(), expected);
         assertEquals(1,

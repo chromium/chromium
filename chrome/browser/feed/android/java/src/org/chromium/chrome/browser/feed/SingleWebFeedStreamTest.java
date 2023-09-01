@@ -194,7 +194,6 @@ public class SingleWebFeedStreamTest {
                 new SingleWebFeedParameters("WebFeedId".getBytes(), SingleWebFeedEntryPoint.OTHER),
                 new FeedSurfaceRendererBridgeFactory());
 
-        mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
         mContentManager = new FeedListContentManager();

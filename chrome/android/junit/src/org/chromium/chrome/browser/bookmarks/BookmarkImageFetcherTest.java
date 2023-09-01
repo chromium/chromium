@@ -109,11 +109,9 @@ public class BookmarkImageFetcherTest {
     private final BookmarkItem mFolderItem =
             new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem1 = new BookmarkItem(mBookmarkId1, "Bookmark1",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem2 = new BookmarkItem(mBookmarkId2, "Bookmark1",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId, true, false, 0,
-            false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId, true, false, 0, false, 0);
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
     private Activity mActivity;
@@ -145,7 +143,7 @@ public class BookmarkImageFetcherTest {
             // Setup image fetching.
             doAnswer((invocation) -> {
                 Callback<GURL> callback = invocation.getArgument(1);
-                callback.onResult(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+                callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
                 return null;
             })
                     .when(mBookmarkModel)
@@ -228,8 +226,7 @@ public class BookmarkImageFetcherTest {
     @Test
     public void testFetchImageUrlWithFallbacks() {
         mBookmarkImageFetcher.fetchImageUrlWithFallbacks(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), mBookmarkItem1,
-                mDrawableCallback);
+                JUnitTestGURLs.EXAMPLE_URL, mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         verify(mImageFetcher, times(1)).fetchImage(any(), any());
         // There shouldn't be any interaction with large icon bridge since an image was found.
@@ -249,7 +246,7 @@ public class BookmarkImageFetcherTest {
 
         // Now that mBookmarkImageFetcher is destroyed, all the callbacks should have been
         // cancelled.
-        mGURLCallbackCaptor.getValue().onResult(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
+        mGURLCallbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
         verify(mImageFetcher, times(0)).fetchImage(any(), any());
     }
 }

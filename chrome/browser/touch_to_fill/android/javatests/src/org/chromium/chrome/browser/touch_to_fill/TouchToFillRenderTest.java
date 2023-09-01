@@ -80,7 +80,7 @@ public class TouchToFillRenderTest {
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final Credential ARON =
             new Credential("אהרן", "S3cr3t", "אהרן", "", "example.com", GetLoginMatchType.EXACT, 0);
     private static final Credential BOB =

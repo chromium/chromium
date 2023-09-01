@@ -88,8 +88,7 @@ public class TestTileProvider implements TileProvider {
         for (int i = 0; i < count; i++) {
             String id = prefix + "_" + i;
             children.add(new QueryTile(id + "_id", id + "_displayTitle", id + "_accessibilityText",
-                    id + "_queryText",
-                    new GURL[] {JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)}, null,
+                    id + "_queryText", new GURL[] {JUnitTestGURLs.EXAMPLE_URL}, null,
                     buildTiles(id, levelsLeft - 1, count)));
         }
 

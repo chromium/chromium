@@ -81,7 +81,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mTab).getUrl();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         doReturn(mContext).when(mTab).getContext();
 
         doReturn(mTab).when(mTabSupplier).get();

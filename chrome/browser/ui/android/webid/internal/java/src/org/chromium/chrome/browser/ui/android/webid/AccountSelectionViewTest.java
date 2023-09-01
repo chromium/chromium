@@ -60,8 +60,8 @@ import java.util.Collections;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountSelectionViewTest {
-    private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_1;
 
     private static final Account ANA =
             new Account("Ana", "ana@email.example", "Ana Doe", "Ana", TEST_PROFILE_PIC, true);

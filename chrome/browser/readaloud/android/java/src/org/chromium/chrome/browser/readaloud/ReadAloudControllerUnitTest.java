@@ -46,7 +46,7 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ReadAloudControllerUnitTest {
-    private static final GURL sTestGURL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
 
     private MockTab mTab;
     private ReadAloudController mController;
@@ -209,7 +209,7 @@ public class ReadAloudControllerUnitTest {
         // Disable MSBB. Sending requests to Google servers no longer allowed but using
         // previous results is ok.
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
-        mController.maybeCheckReadability(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_CAT));
+        mController.maybeCheckReadability(JUnitTestGURLs.GOOGLE_URL_CAT);
 
         verify(mHooksImpl, times(1))
                 .isPageReadable(Mockito.anyString(),

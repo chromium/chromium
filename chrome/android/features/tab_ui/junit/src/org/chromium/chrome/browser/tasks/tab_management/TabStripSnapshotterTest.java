@@ -35,7 +35,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +97,7 @@ public class TabStripSnapshotterTest {
     }
 
     private static TabFavicon makeTabFavicon(String url) {
-        GURL gurl = JUnitTestGURLs.getGURL(url);
+        GURL gurl = new GURL(url);
         return new UrlTabFavicon(newDrawable(), gurl);
     }
 

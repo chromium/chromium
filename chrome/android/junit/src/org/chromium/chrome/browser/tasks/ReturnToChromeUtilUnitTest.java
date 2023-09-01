@@ -157,10 +157,10 @@ public class ReturnToChromeUtilUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
+        doReturn(JUnitTestGURLs.NTP_URL)
                 .when(mUrlFormatterJniMock)
                 .fixupUrl(UrlConstants.NTP_NON_NATIVE_URL);
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(mNtpTab).getUrl();
+        doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mNtpTab).getUrl();
 
         ChromeFeatureList.sStartSurfaceAndroid.setForTesting(true);
 
@@ -626,7 +626,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
         doReturn(2).when(mCurrentTabModel).getCount();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
 
         doReturn(true).when(mNtpTab).isNativePage();
@@ -693,7 +693,7 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
         doReturn(1).when(mCurrentTabModel).getCount();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
 
         // Verifies that if the return time doesn't arrive, there isn't a new NTP is created.
@@ -733,17 +733,17 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
         doReturn(3).when(mCurrentTabModel).getCount();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(mTab1).when(mCurrentTabModel).getTabAt(0);
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(mNtpTab).getUrl();
+        doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(mNtpTab).getUrl();
         doReturn(true).when(mNtpTab).isNativePage();
         doReturn(mNewTabPage).when(mNtpTab).getNativePage();
         doReturn(mNtpTab).when(mCurrentTabModel).getTabAt(1);
 
         Tab activeNtpTab = Mockito.mock(Tab.class);
         NewTabPage activeNtp = Mockito.mock(NewTabPage.class);
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_NATIVE_URL)).when(activeNtpTab).getUrl();
+        doReturn(JUnitTestGURLs.NTP_NATIVE_URL).when(activeNtpTab).getUrl();
         doReturn(true).when(activeNtpTab).isNativePage();
         doReturn(activeNtp).when(activeNtpTab).getNativePage();
         doReturn(activeNtpTab).when(mCurrentTabModel).getTabAt(2);
@@ -806,7 +806,7 @@ public class ReturnToChromeUtilUnitTest {
     public void testColdStartupWithOnlyLastActiveTabUrl() {
         Assert.assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mTab1).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
         doReturn(true).when(mNtpTab).isNativePage();
         doReturn(mNewTabPage).when(mNtpTab).getNativePage();
         doReturn(mNtpTab)

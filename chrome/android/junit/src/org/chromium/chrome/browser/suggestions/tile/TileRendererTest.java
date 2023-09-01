@@ -76,7 +76,7 @@ public class TileRendererTest {
     }
 
     private static final int TITLE_LINES = 1;
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Mock
     private ImageFetcher mMockImageFetcher;

@@ -237,17 +237,15 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkItem mFolderItem3 = new BookmarkItem(
             mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false, 0);
     private final BookmarkItem mBookmarkItem21 = new BookmarkItem(mBookmarkId21, "Bookmark21",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId2, true, false, 0,
-            false, 0);
+            JUnitTestGURLs.EXAMPLE_URL, false, mFolderId2, true, false, 0, false, 0);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
             "Reading List", null, true, mRootFolderId, false, false, 0, false, 0);
-    private final BookmarkItem mReadingListItem =
-            new BookmarkItem(mReadingListId, JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId,
-                    true, false, 0, false, 0);
-    private final BookmarkItem mPriceTrackedBookmarkItem = new BookmarkItem(mPriceTrackedBookmarkId,
-            "Price tracked bookmark", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false,
-            mMobileFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId,
+            JUnitTestGURLs.EXAMPLE_URL.getSpec(), JUnitTestGURLs.EXAMPLE_URL, false,
+            mReadingListFolderId, true, false, 0, false, 0);
+    private final BookmarkItem mPriceTrackedBookmarkItem =
+            new BookmarkItem(mPriceTrackedBookmarkId, "Price tracked bookmark",
+                    JUnitTestGURLs.EXAMPLE_URL, false, mMobileFolderId, true, false, 0, false, 0);
 
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);

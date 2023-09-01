@@ -76,11 +76,8 @@ public class TabSelectionEditorShareActionUnitTest {
     private MockTabModel mTabModel;
     private TabSelectionEditorShareAction mAction;
 
-    Map<Integer, GURL> mIdUrlMap = Map.of(1, JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), 2,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), 3,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3), 4,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), 5,
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
+    Map<Integer, GURL> mIdUrlMap = Map.of(1, JUnitTestGURLs.URL_1, 2, JUnitTestGURLs.URL_2, 3,
+            JUnitTestGURLs.URL_3, 4, JUnitTestGURLs.NTP_URL, 5, JUnitTestGURLs.ABOUT_BLANK);
 
     @Before
     public void setUp() {
@@ -150,7 +147,7 @@ public class TabSelectionEditorShareActionUnitTest {
         Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
         when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any(String.class)))
-                .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+                .thenReturn(JUnitTestGURLs.URL_1);
 
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(

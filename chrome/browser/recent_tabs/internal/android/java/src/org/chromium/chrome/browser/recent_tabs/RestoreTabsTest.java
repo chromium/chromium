@@ -125,8 +125,7 @@ public class RestoreTabsTest {
         RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
 
         // Setup mock data
-        ForeignSessionTab tab = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
         ForeignSessionWindow window = new ForeignSessionWindow(31L, 1, tabs);
@@ -352,8 +351,7 @@ public class RestoreTabsTest {
 
     private void setupMultipleDevicesAndTabsMockData() {
         // Setup mock data
-        ForeignSessionTab tab1 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title1", 31L, 0);
+        ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 31L, 0);
         List<ForeignSessionTab> tabs1 = new ArrayList<>();
         tabs1.add(tab1);
         ForeignSessionWindow window1 = new ForeignSessionWindow(32L, 1, tabs1);
@@ -362,12 +360,9 @@ public class RestoreTabsTest {
         ForeignSession session1 =
                 new ForeignSession("tag", "John's iPhone 6", 33L, windows1, FormFactor.PHONE);
 
-        ForeignSessionTab tab2 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title2", 34L, 0);
-        ForeignSessionTab tab3 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title3", 35L, 0);
-        ForeignSessionTab tab4 = new ForeignSessionTab(
-                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title4", 36L, 0);
+        ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 34L, 0);
+        ForeignSessionTab tab3 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title3", 35L, 0);
+        ForeignSessionTab tab4 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title4", 36L, 0);
         List<ForeignSessionTab> tabs2 = new ArrayList<>();
         tabs2.add(tab2);
         tabs2.add(tab3);

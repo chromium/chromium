@@ -307,9 +307,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_focusedNativePage() {
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.onUrlFocusChange(true);
         mMediator.revertChanges();
         verify(mUrlCoordinator)
@@ -319,9 +317,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRevertChanges_unFocused() {
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.revertChanges();
         verify(mUrlCoordinator)
                 .setUrlBarData(mLocationBarDataProvider.getUrlBarData(),
@@ -346,7 +342,7 @@ public class LocationBarMediatorTest {
                         anyLong(), any(), anyString(), anyString(), anyLong(), any(), any());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING).when(mPreloadPagesSettingsJni).getState();
-        GURL url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+        GURL url = JUnitTestGURLs.RED_1;
         mMediator.setUrl(url, null);
         doReturn(true).when(mLocationBarDataProvider).hasTab();
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
@@ -707,7 +703,7 @@ public class LocationBarMediatorTest {
         String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
-        doReturn(JUnitTestGURLs.getGURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn(new GURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
@@ -724,12 +720,12 @@ public class LocationBarMediatorTest {
     public void testSetUrl() {
         String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
-        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
+        mMediator.setUrl(new GURL(url), urlBarData);
 
         // Assume that the URL bar is now focused without focus animations.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
+        mMediator.setUrl(new GURL(url), urlBarData);
 
         // Verify that setUrl() never clears focus when the URL bar is focused without animations.
         verify(mUrlCoordinator, never()).clearFocus();

@@ -63,10 +63,10 @@ import org.chromium.url.JUnitTestGURLs;
 public class SingleTabSwitcherMediatorUnitTest {
     private final int mTabId = 1;
     private final String mTitle = "test";
-    private final GURL mUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
+    private final GURL mUrl = JUnitTestGURLs.URL_1;
     private final int mTabId2 = 2;
     private final String mTitle2 = "test2";
-    private final GURL mUrl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private final GURL mUrl2 = JUnitTestGURLs.URL_2;
     private SingleTabSwitcherMediator mMediator;
     private PropertyModel mPropertyModel;
 

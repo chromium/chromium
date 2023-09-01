@@ -138,7 +138,7 @@ public class SearchResumptionModuleViewUnitTest {
     public void testTileView() {
         SearchResumptionTileView tileView = inflateTileView();
         String text = "foo";
-        GURL gUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL gUrl = JUnitTestGURLs.EXAMPLE_URL;
 
         tileView.updateSuggestionData(gUrl, text);
         Assert.assertEquals(text, tileView.getTextForTesting());

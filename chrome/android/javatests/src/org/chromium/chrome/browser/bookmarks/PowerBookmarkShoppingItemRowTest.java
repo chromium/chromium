@@ -126,7 +126,7 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
         doReturn(mDragStateDelegate).when(mDelegate).getDragStateDelegate();
         doReturn(mLargeIconBridge).when(mDelegate).getLargeIconBridge();
         doReturn(TITLE).when(mBookmarkItem).getTitle();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mBookmarkItem).getUrl();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mBookmarkItem).getUrl();
         doReturn(JUnitTestGURLs.EXAMPLE_URL.getSpec()).when(mBookmarkItem).getUrlForDisplay();
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(mBookmarkId);

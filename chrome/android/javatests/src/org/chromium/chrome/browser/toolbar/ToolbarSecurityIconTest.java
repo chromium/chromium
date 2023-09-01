@@ -112,15 +112,14 @@ public final class ToolbarSecurityIconTest {
         mocker.mock(org.chromium.chrome.browser.toolbar.LocationBarModelJni.TEST_HOOKS,
                 mLocationBarModelJni);
 
-        String exampleUrl = JUnitTestGURLs.EXAMPLE_URL.getSpec();
-        GURL exampleGurl = JUnitTestGURLs.getGURL(exampleUrl);
-        doReturn(exampleGurl)
+        GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
+        doReturn(exampleUrl)
                 .when(mLocationBarModelJni)
                 .getUrlOfVisibleNavigationEntry(Mockito.anyLong(), Mockito.any());
-        doReturn(exampleUrl)
+        doReturn(exampleUrl.getSpec())
                 .when(mLocationBarModelJni)
                 .getFormattedFullURL(Mockito.anyLong(), Mockito.any());
-        doReturn(exampleUrl)
+        doReturn(exampleUrl.getSpec())
                 .when(mLocationBarModelJni)
                 .getURLForDisplay(Mockito.anyLong(), Mockito.any());
         doReturn((new Random()).nextLong()).when(mLocationBarModelJni).init(Mockito.any());

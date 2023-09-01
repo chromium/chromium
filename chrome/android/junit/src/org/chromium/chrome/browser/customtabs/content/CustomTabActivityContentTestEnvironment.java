@@ -198,7 +198,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 () -> customTabObserver) {
             @Override
             public GURL getGurlForUrl(String url) {
-                return JUnitTestGURLs.getGURL(url);
+                return new GURL(url);
             }
         };
         return new CustomTabIntentHandler(

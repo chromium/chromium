@@ -87,15 +87,11 @@ public class AccountSelectionControllerTest {
     private static final String TEST_ETLD_PLUS_ONE = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private static final String TEST_ETLD_PLUS_ONE_1 = JUnitTestGURLs.URL_1.getSpec();
     private static final String TEST_ETLD_PLUS_ONE_2 = JUnitTestGURLs.URL_2.getSpec();
-    private static final GURL TEST_PROFILE_PIC =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
-    private static final GURL TEST_URL_TERMS_OF_SERVICE =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-    private static final GURL TEST_URL_PRIVACY_POLICY =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
-    private static final GURL TEST_IDP_BRAND_ICON_URL =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_3);
-    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.URL_1_WITH_PATH;
+    private static final GURL TEST_URL_TERMS_OF_SERVICE = JUnitTestGURLs.RED_1;
+    private static final GURL TEST_URL_PRIVACY_POLICY = JUnitTestGURLs.RED_2;
+    private static final GURL TEST_IDP_BRAND_ICON_URL = JUnitTestGURLs.RED_3;
+    private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_2;
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);

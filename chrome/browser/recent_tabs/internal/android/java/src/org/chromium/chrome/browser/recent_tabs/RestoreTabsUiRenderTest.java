@@ -148,8 +148,7 @@ public class RestoreTabsUiRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // 0 devices in DEVICE_MODEL_LIST and 1 selected tab in REVIEW_TABS_MODEL_LIST.
             // Restore tabs button enabled and chevron/onClickListener for device view.
-            ForeignSessionTab tab = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+            ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
             ForeignSession session = new ForeignSession(
                     "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
 
@@ -280,12 +279,9 @@ public class RestoreTabsUiRenderTest {
     public void testReviewTabsScreenSheet_allTabsSelected()
             throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ForeignSessionTab tab1 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
-            ForeignSessionTab tab2 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title2", 33L, 0);
-            ForeignSessionTab tab3 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title3", 34L, 0);
+            ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
+            ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 33L, 0);
+            ForeignSessionTab tab3 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title3", 34L, 0);
 
             List<ForeignSessionTab> tabs = new ArrayList<>();
             tabs.add(tab1);
@@ -317,8 +313,7 @@ public class RestoreTabsUiRenderTest {
     public void testReviewTabsScreenSheet_noTabsSelectedSingleTab()
             throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ForeignSessionTab tab1 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
+            ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
 
             List<ForeignSessionTab> tabs = new ArrayList<>();
             tabs.add(tab1);
@@ -350,22 +345,14 @@ public class RestoreTabsUiRenderTest {
     public void testReviewTabsScreenSheet_fillScreenWithTabsScrolledToBottom()
             throws IOException, InterruptedException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ForeignSessionTab tab1 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title", 32L, 0);
-            ForeignSessionTab tab2 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title2", 33L, 0);
-            ForeignSessionTab tab3 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title3", 34L, 0);
-            ForeignSessionTab tab4 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title4", 35L, 0);
-            ForeignSessionTab tab5 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title5", 36L, 0);
-            ForeignSessionTab tab6 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title6", 37L, 0);
-            ForeignSessionTab tab7 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title7", 38L, 0);
-            ForeignSessionTab tab8 = new ForeignSessionTab(
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "title8", 39L, 0);
+            ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
+            ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title2", 33L, 0);
+            ForeignSessionTab tab3 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title3", 34L, 0);
+            ForeignSessionTab tab4 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title4", 35L, 0);
+            ForeignSessionTab tab5 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title5", 36L, 0);
+            ForeignSessionTab tab6 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title6", 37L, 0);
+            ForeignSessionTab tab7 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title7", 38L, 0);
+            ForeignSessionTab tab8 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title8", 39L, 0);
 
             List<ForeignSessionTab> tabs = new ArrayList<>();
             tabs.add(tab1);

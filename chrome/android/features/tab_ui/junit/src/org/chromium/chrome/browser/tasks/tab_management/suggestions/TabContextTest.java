@@ -68,15 +68,12 @@ public class TabContextTest {
     @Mock
     private TabModelFilter mTabModelFilter;
 
-    private Tab mTab0 =
-            mockTab(TAB_0_ID, 6, "mock_title_tab_0", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
-                    JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), 100);
+    private Tab mTab0 = mockTab(
+            TAB_0_ID, 6, "mock_title_tab_0", JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_1, 100);
     private Tab mRelatedTab0 = mockTab(RELATED_TAB_0_ID, 6, "mock_title_related_tab_0",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2),
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), 200);
+            JUnitTestGURLs.URL_2, JUnitTestGURLs.URL_2, 200);
     private Tab mRelatedTab1 = mockTab(RELATED_TAB_1_ID, 6, "mock_title_related_tab_1",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3),
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3), 300);
+            JUnitTestGURLs.URL_3, JUnitTestGURLs.URL_3, 300);
 
     @Before
     public void setUp() {

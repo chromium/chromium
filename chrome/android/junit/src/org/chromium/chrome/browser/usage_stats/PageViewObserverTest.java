@@ -56,10 +56,9 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class PageViewObserverTest {
-    private static final GURL STARTING_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL STARTING_URL_WITH_PATH =
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1_WITH_PATH);
-    private static final GURL DIFFERENT_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
+    private static final GURL STARTING_URL = JUnitTestGURLs.URL_1;
+    private static final GURL STARTING_URL_WITH_PATH = JUnitTestGURLs.URL_1_WITH_PATH;
+    private static final GURL DIFFERENT_URL = JUnitTestGURLs.URL_2;
     private static final String STARTING_FQDN = "www.one.com";
     private static final String DIFFERENT_FQDN = "www.two.com";
 

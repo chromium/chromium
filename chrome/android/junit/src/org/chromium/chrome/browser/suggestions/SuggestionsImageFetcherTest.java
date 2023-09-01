@@ -33,7 +33,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public class SuggestionsImageFetcherTest {
     public static final int IMAGE_SIZE_PX = 100;
-    public static final GURL URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    public static final GURL URL = JUnitTestGURLs.EXAMPLE_URL;
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();

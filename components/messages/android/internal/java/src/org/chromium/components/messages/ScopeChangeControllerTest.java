@@ -173,9 +173,9 @@ public class ScopeChangeControllerTest {
         int expectedOnScopeChangeCalls = 0;
         ScopeKey key = new ScopeKey(MessageScopeType.ORIGIN, webContents);
         controller.firstMessageEnqueued(key);
-        final GURL gurl1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL);
-        final GURL gurl2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOG);
-        final GURL gurl3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        final GURL gurl1 = JUnitTestGURLs.GOOGLE_URL;
+        final GURL gurl2 = JUnitTestGURLs.GOOGLE_URL_DOG;
+        final GURL gurl3 = JUnitTestGURLs.EXAMPLE_URL;
 
         final ArgumentCaptor<WebContentsObserver> runnableCaptor =
                 ArgumentCaptor.forClass(WebContentsObserver.class);

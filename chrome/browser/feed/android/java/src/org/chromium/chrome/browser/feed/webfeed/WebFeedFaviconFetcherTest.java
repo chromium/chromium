@@ -44,8 +44,8 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @SmallTest
 public class WebFeedFaviconFetcherTest {
-    private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-    private static final GURL FAVICON_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
+    private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final GURL FAVICON_URL = JUnitTestGURLs.RED_1;
 
     private Bitmap mBitmapFromImageFetcher;
     private Bitmap mBitmapFromIconBridge;

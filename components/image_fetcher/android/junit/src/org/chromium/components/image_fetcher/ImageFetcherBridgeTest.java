@@ -94,9 +94,8 @@ public class ImageFetcherBridgeTest {
                         callbackCaptor.capture());
 
         mBridge.fetchImage(-1,
-                ImageFetcher.Params.createWithExpirationInterval(
-                        JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "clientname", WIDTH_PX,
-                        HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
+                ImageFetcher.Params.createWithExpirationInterval(JUnitTestGURLs.EXAMPLE_URL,
+                        "clientname", WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
                 mBitmapCallback);
         verify(mBitmapCallback).onResult(bitmap);
     }

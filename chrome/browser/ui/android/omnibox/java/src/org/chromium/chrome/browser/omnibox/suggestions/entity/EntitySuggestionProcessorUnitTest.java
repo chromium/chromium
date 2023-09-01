@@ -58,9 +58,9 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class EntitySuggestionProcessorUnitTest {
-    private static final GURL WEB_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    private static final GURL WEB_URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    private static final GURL SEARCH_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
+    private static final GURL WEB_URL = JUnitTestGURLs.URL_1;
+    private static final GURL WEB_URL_2 = JUnitTestGURLs.URL_2;
+    private static final GURL SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 

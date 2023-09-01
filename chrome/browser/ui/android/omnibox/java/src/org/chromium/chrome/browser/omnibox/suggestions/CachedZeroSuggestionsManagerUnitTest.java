@@ -287,7 +287,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         listWithInvalidItems.add(createSuggestionBuilder(72).setGroupId(12).build());
         listWithInvalidItems.add(createSuggestionBuilder(73)
                                          .setGroupId(12)
-                                         .setUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.INVALID_URL))
+                                         .setUrl(JUnitTestGURLs.INVALID_URL)
                                          .build());
         listWithInvalidItems.add(createSuggestionBuilder(74).setGroupId(34).build());
 

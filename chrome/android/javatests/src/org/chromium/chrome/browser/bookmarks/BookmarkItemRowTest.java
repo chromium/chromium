@@ -86,7 +86,7 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
         doReturn(mLargeIconBridge).when(mDelegate).getLargeIconBridge();
         mBookmarkId = new BookmarkId(1, BookmarkType.NORMAL);
         doReturn(TITLE).when(mBookmarkItem).getTitle();
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mBookmarkItem).getUrl();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mBookmarkItem).getUrl();
         doReturn(JUnitTestGURLs.EXAMPLE_URL.getSpec()).when(mBookmarkItem).getUrlForDisplay();
         doReturn(mBookmarkItem).when(mModel).getBookmarkById(mBookmarkId);
 

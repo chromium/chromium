@@ -54,10 +54,10 @@ public class FollowManagementMediatorTest {
 
     static final byte[] ID1 = "ID1".getBytes(StandardCharsets.US_ASCII);
     static final byte[] ID2 = "ID2".getBytes(StandardCharsets.US_ASCII);
-    static final GURL URL1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
-    static final GURL FAVICON1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-    static final GURL URL2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
-    static final GURL FAVICON2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_2);
+    static final GURL URL1 = JUnitTestGURLs.URL_1;
+    static final GURL FAVICON1 = JUnitTestGURLs.RED_1;
+    static final GURL URL2 = JUnitTestGURLs.URL_2;
+    static final GURL FAVICON2 = JUnitTestGURLs.RED_2;
 
     @Captor
     ArgumentCaptor<Callback<WebFeedBridge.UnfollowResults>> mUnfollowCallbackCaptor;

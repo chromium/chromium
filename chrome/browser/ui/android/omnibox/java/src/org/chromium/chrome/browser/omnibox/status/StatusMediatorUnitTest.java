@@ -604,9 +604,7 @@ public final class StatusMediatorUnitTest {
      * @param isIncognito Whether the current page is in an incognito mode.
      */
     private void setupStoreIconForTesting(boolean isIncognito) {
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1))
-                .when(mLocationBarDataProvider)
-                .getCurrentGurl();
+        doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(isIncognito).when(mLocationBarDataProvider).isIncognito();
     }
 }

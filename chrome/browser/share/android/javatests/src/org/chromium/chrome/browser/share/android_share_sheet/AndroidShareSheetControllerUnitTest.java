@@ -300,8 +300,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -324,8 +324,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -348,8 +348,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -370,8 +370,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
@@ -536,8 +536,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
 
         mController.showShareSheet(params, chromeShareExtras, 1L);
@@ -564,8 +564,8 @@ public class AndroidShareSheetControllerUnitTest {
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
-                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
-                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .setContentUrl(JUnitTestGURLs.GOOGLE_URL)
+                        .setImageSrcUrl(JUnitTestGURLs.GOOGLE_URL_DOGS)
                         .build();
 
         mController.showShareSheet(params, chromeShareExtras, 1L);

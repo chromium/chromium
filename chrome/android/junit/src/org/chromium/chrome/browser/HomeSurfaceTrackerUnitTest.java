@@ -37,7 +37,7 @@ public class HomeSurfaceTrackerUnitTest {
         MockitoAnnotations.initMocks(this);
         mHomeSurfaceTracker = new HomeSurfaceTracker();
 
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(mLastActiveTab).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(mLastActiveTab).getUrl();
         doReturn(true).when(mNtpTab).isNativePage();
     }
 

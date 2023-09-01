@@ -463,14 +463,14 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
         Tab tab1 = mock(Tab.class);
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1)).when(tab1).getUrl();
+        doReturn(JUnitTestGURLs.URL_1).when(tab1).getUrl();
         mTabModelObserverCaptor.getValue().didSelectTab(tab1, TabSelectionType.FROM_CLOSE, 1);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(true));
 
         Tab NTPTab = mock(Tab.class);
-        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL)).when(NTPTab).getUrl();
+        doReturn(JUnitTestGURLs.NTP_URL).when(NTPTab).getUrl();
         mTabModelObserverCaptor.getValue().didSelectTab(NTPTab, TabSelectionType.FROM_CLOSE, 2);
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
@@ -1488,7 +1488,7 @@ public class StartSurfaceMediatorUnitTest {
                 .when(mCarouselOrSingleTabSwitcherModuleController)
                 .getTabSwitcherType();
         MockTab regularTab = new MockTab(1, false);
-        regularTab.setGurlOverrideForTesting(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
+        regularTab.setGurlOverrideForTesting(JUnitTestGURLs.NTP_URL);
         when(mTabModelSelector.getCurrentTab()).thenReturn(regularTab);
 
         StartSurfaceMediator mediator =
