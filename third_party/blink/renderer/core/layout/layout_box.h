@@ -864,7 +864,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     wtf_size_t Size() const { return layout_results_.size(); }
     bool IsEmpty() const { return layout_results_.empty(); }
 
-    bool HasFragmentItems() const;
+    bool MayHaveFragmentItems() const;
+    bool HasFragmentItems() const {
+      return MayHaveFragmentItems() && SlowHasFragmentItems();
+    }
+    bool SlowHasFragmentItems() const;
 
     wtf_size_t IndexOf(const NGPhysicalBoxFragment& fragment) const;
     bool Contains(const NGPhysicalBoxFragment& fragment) const;
@@ -1406,10 +1410,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // call SetBackgroundPaintLocation() with the value to be used for painting.
   BackgroundPaintLocation ComputeBackgroundPaintLocationIfComposited() const;
 
+  bool MayHaveFragmentItems() const {
+    NOT_DESTROYED();
+    // When the tree is not clean, `ChildrenInline()` is not reliable.
+    return (ChildrenInline() || NeedsLayout()) &&
+           PhysicalFragments().MayHaveFragmentItems();
+  }
   bool HasFragmentItems() const {
     NOT_DESTROYED();
-    return ChildrenInline() && PhysicalFragments().HasFragmentItems();
+    // See `MayHaveFragmentItems()`.
+    return (ChildrenInline() || NeedsLayout()) &&
+           PhysicalFragments().HasFragmentItems();
   }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void CheckMayHaveFragmentItems() const;
+#endif
 
   // Returns true if this box is fixed position and will not move with
   // scrolling. If the caller can pre-calculate |container_for_fixed_position|,

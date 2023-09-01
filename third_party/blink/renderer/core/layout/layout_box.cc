@@ -2671,7 +2671,11 @@ void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
     ClearFirstInlineFragmentItemIndex();
 }
 
-bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
+bool LayoutBox::NGPhysicalFragmentList::MayHaveFragmentItems() const {
+  return !IsEmpty() && front().IsInlineFormattingContext();
+}
+
+bool LayoutBox::NGPhysicalFragmentList::SlowHasFragmentItems() const {
   for (const NGPhysicalBoxFragment& fragment : *this) {
     if (fragment.HasItems())
       return true;
@@ -2831,6 +2835,9 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
 void LayoutBox::FinalizeLayoutResults() {
   DCHECK(!layout_results_.empty());
   DCHECK(!layout_results_.back()->PhysicalFragment().BreakToken());
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  CheckMayHaveFragmentItems();
+#endif
   // If we've added all the results we were going to, and the node establishes
   // an inline formatting context, we have some finalization to do.
   if (HasFragmentItems())
@@ -2875,6 +2882,15 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   layout_results_.Shrink(results_to_keep);
   InvalidateCachedGeometry();
 }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+void LayoutBox::CheckMayHaveFragmentItems() const {
+  NOT_DESTROYED();
+  if (!MayHaveFragmentItems()) {
+    DCHECK(!PhysicalFragments().SlowHasFragmentItems());
+  }
+}
+#endif
 
 void LayoutBox::InvalidateCachedGeometry() {
   NOT_DESTROYED();

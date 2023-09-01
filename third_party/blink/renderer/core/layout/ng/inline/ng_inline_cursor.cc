@@ -169,6 +169,13 @@ void NGInlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
 bool NGInlineCursor::TrySetRootFragmentItems() {
   DCHECK(root_block_flow_);
   DCHECK(!fragment_items_ || fragment_items_->Equals(items_));
+  if (UNLIKELY(!root_block_flow_->MayHaveFragmentItems())) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    DCHECK(!root_block_flow_->PhysicalFragments().SlowHasFragmentItems());
+#endif
+    fragment_index_ = max_fragment_index_ + 1;
+    return false;
+  }
   for (; fragment_index_ <= max_fragment_index_; IncrementFragmentIndex()) {
     const NGPhysicalBoxFragment* fragment =
         root_block_flow_->GetPhysicalFragment(fragment_index_);
