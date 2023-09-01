@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -107,6 +108,8 @@ class PictureInPictureBrowserFrameView
   LocationBarModel* GetLocationBarModel() const override;
   ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
+  absl::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
+      const override;
 
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -123,6 +126,7 @@ class PictureInPictureBrowserFrameView
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::View:
@@ -249,6 +253,10 @@ class PictureInPictureBrowserFrameView
   gfx::MultiAnimation hide_back_to_tab_button_animation_;
   gfx::MultiAnimation show_close_button_animation_;
   gfx::MultiAnimation hide_close_button_animation_;
+
+  // The foreground color given the current state of the
+  // `top_bar_color_animation_`.
+  absl::optional<SkColor> current_foreground_color_;
 
 #if BUILDFLAG(IS_LINUX)
   // Used to draw window frame borders and shadow on Linux when GTK theme is

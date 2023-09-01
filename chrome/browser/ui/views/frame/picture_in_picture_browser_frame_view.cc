@@ -24,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
@@ -112,10 +113,13 @@ class BackToTabButton : public OverlayWindowImageButton {
 
   explicit BackToTabButton(PressedCallback callback)
       : OverlayWindowImageButton(std::move(callback)) {
+    auto* icon = &vector_icons::kBackToTabIcon;
+    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+      icon = &vector_icons::kBackToTabChromeRefreshIcon;
+    }
     SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(vector_icons::kBackToTabIcon,
-                                                 kColorPipWindowForeground,
-                                                 kBackToTabImageSize));
+                  ui::ImageModel::FromVectorIcon(
+                      *icon, kColorPipWindowForeground, kBackToTabImageSize));
 
     const std::u16string back_to_tab_button_label = l10n_util::GetStringUTF16(
         IDS_PICTURE_IN_PICTURE_BACK_TO_TAB_CONTROL_TEXT);
@@ -296,6 +300,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
   location_icon_view_ = top_bar_container_view_->AddChildView(
       std::make_unique<LocationIconView>(font_list, this, this));
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    // The PageInfo icon should be 8px from the left of the window and 4px from
+    // the right of the origin.
+    location_icon_view_->SetProperty(views::kMarginsKey,
+                                     gfx::Insets::TLBR(0, 8, 0, 4));
+  }
 
   // Creates the window title.
   top_bar_container_view_->AddChildView(
@@ -610,6 +620,10 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   show_close_button_animation_.SetContainer(animation_container);
   hide_close_button_animation_.SetContainer(animation_container);
 
+  // TODO(https://crbug.com/1475419): Don't force dark mode once we support a
+  // light mode window.
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+
   BrowserNonClientFrameView::AddedToWidget();
 }
 
@@ -726,9 +740,30 @@ LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
 
 ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+  ui::ColorId foreground_color_id = kColorOmniboxSecurityChipSecure;
+
+  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    // If we're animating between colors, use the current color value.
+    if (current_foreground_color_.has_value()) {
+      return ui::ImageModel::FromVectorIcon(
+          location_bar_model_->GetVectorIcon(), *current_foreground_color_,
+          kWindowIconImageSize);
+    }
+
+    foreground_color_id = (top_bar_color_animation_.GetCurrentValue() == 0)
+                              ? kColorPipWindowForegroundInactive
+                              : kColorPipWindowForeground;
+  }
+
   return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),
-                                        kColorOmniboxSecurityChipSecure,
+                                        foreground_color_id,
                                         kWindowIconImageSize);
+}
+
+absl::optional<ui::ColorId>
+PictureInPictureBrowserFrameView::GetLocationIconBackgroundColorOverride()
+    const {
+  return kColorPipWindowTopBarBackground;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -789,6 +824,14 @@ void PictureInPictureBrowserFrameView::OnWidgetDestroying(
 ///////////////////////////////////////////////////////////////////////////////
 // gfx::AnimationDelegate implementations:
 
+void PictureInPictureBrowserFrameView::AnimationEnded(
+    const gfx::Animation* animation) {
+  if (animation == &top_bar_color_animation_) {
+    current_foreground_color_ = absl::nullopt;
+    location_icon_view_->Update(/*suppress_animations=*/false);
+  }
+}
+
 void PictureInPictureBrowserFrameView::AnimationProgressed(
     const gfx::Animation* animation) {
   if (animation == &top_bar_color_animation_) {
@@ -799,6 +842,10 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
     window_title_->SetEnabledColor(color);
     for (ContentSettingImageView* view : content_setting_views_) {
       view->SetIconColor(color);
+    }
+    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+      current_foreground_color_ = color;
+      location_icon_view_->Update(/*suppress_animations=*/false);
     }
     return;
   }
