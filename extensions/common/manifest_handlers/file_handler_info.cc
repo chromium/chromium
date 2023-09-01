@@ -148,7 +148,8 @@ FileHandlers::~FileHandlers() = default;
 // static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
     const Extension* extension) {
-  if (WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version())) {
+  CHECK(extension);
+  if (WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     return nullptr;
   }
   FileHandlers* info = static_cast<FileHandlers*>(

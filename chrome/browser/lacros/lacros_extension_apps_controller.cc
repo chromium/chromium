@@ -323,8 +323,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
 
   } else if (which_type_.IsExtensions()) {
     // Web File Handlers use the `file_handlers` manifest key for registration.
-    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-            extension->manifest_version())) {
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
       // Launch Web File Handlers.
       params.container = apps::LaunchContainer::kLaunchContainerTab;
       OpenApplication(profile, std::move(params));

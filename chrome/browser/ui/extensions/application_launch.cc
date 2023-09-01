@@ -289,8 +289,7 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
   prefs->SetActiveBit(extension.id(), true);
   bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension.manifest_version());
+      extensions::WebFileHandlers::SupportsWebFileHandlers(extension);
 
   if (CanLaunchViaEvent(&extension) && !supports_web_file_handlers) {
     // When launching an app with a command line, there might be a file path to
@@ -429,6 +428,7 @@ WebContents* CheckForMultiClientLaunchSupport(
 
 WebContents* OpenEnabledApplication(Profile* profile,
                                     const apps::AppLaunchParams& params) {
+  // `extension` is required.
   const Extension* extension = GetExtension(profile, params);
   if (!extension) {
     return nullptr;
@@ -440,8 +440,7 @@ WebContents* OpenEnabledApplication(Profile* profile,
   }
 #endif
 
-  if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version())) {
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     // If the extension supports Web File Handlers, File Handlers are required.
     auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
     if (!handlers) {

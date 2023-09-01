@@ -161,7 +161,8 @@
     {
       "channel": "stable",
       "extension_types": ["platform_app"]
-    }, {
+    },
+    {
       "channel": "stable",
       "extension_types": [ "extension"],
       "allowlist": [

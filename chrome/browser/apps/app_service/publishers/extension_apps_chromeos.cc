@@ -324,6 +324,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
                                                 LaunchSource launch_source,
                                                 WindowInfoPtr window_info,
                                                 LaunchCallback callback) {
+  // `extension` is required.
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension) {
     std::move(callback).Run(LaunchResult(State::FAILED));
@@ -331,8 +332,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
   }
 
   bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version());
+      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
 
   // Launch Web File Handlers.
   if (supports_web_file_handlers) {
@@ -824,14 +824,15 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
+  CHECK(extension);
+
   if (app_type() == AppType::kExtension) {
     if (!extension->is_extension() || IsBlocklisted(extension->id())) {
       return false;
     }
 
     // Allow MV3 file handlers.
-    if (extensions::WebFileHandlers::SupportsWebFileHandlers(
-            extension->manifest_version()) &&
+    if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension) &&
         extensions::WebFileHandlers::HasFileHandlers(*extension)) {
       return true;
     }
@@ -928,6 +929,7 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
 
 AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
                                         Readiness readiness) {
+  CHECK(extension);
   // When Lacros is enabled, extensions not on the ash keep list should not be
   // published to the app service at all. Thus this method should not be called.
   DCHECK(!(extension->is_platform_app() &&
@@ -956,8 +958,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   // File Handlers extension API instead.
   bool is_legacy_quick_office_extension =
       extension_misc::IsQuickOfficeExtension(extension->id()) &&
-      !extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version());
+      !extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
 
   if (extension->is_app() || is_legacy_quick_office_extension) {
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);

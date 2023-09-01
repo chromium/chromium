@@ -6,9 +6,12 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/api/file_handlers.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_provider.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -200,7 +203,7 @@ bool WebFileHandlers::HasFileHandlers(const Extension& extension) {
 const WebFileHandlersInfo* WebFileHandlers::GetFileHandlers(
     const Extension& extension) {
   // Guard against incompatible extension manifest versions.
-  if (!WebFileHandlers::SupportsWebFileHandlers(extension.manifest_version())) {
+  if (!WebFileHandlers::SupportsWebFileHandlers(extension)) {
     return nullptr;
   }
 
@@ -213,13 +216,12 @@ WebFileHandlersParser::WebFileHandlersParser() = default;
 WebFileHandlersParser::~WebFileHandlersParser() = default;
 
 bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
-  DCHECK(extension);
+  CHECK(extension);
 
   // Only parse if Web File Handlers supported in this session. If they are not,
   // the install will succeed with a warning, and the key won't be parsed.
   // TODO(crbug.com/1446007): Remove this after launching web file handlers.
-  if (!WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version())) {
+  if (!WebFileHandlers::SupportsWebFileHandlers(*extension)) {
     extension->AddInstallWarning(InstallWarning(ErrorUtils::FormatErrorMessage(
         manifest_errors::kUnrecognizedManifestKey, "file_handlers")));
     return true;
@@ -250,10 +252,26 @@ bool WebFileHandlersParser::Validate(
   return true;
 }
 
-bool WebFileHandlers::SupportsWebFileHandlers(const int manifest_version) {
-  return manifest_version >= 3 &&
-         base::FeatureList::IsEnabled(
-             extensions_features::kExtensionWebFileHandlers);
+bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
+  // MV3+ is required.
+  if (extension.manifest_version() < 3) {
+    return false;
+  }
+
+  // Use of the extension feature is supported.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionWebFileHandlers)) {
+    return true;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#else
+  // An extension in the allowlist running on Ash is supported.
+  const Feature* feature = FeatureProvider::GetManifestFeature("file_handlers");
+  bool is_id_in_allowlist = feature->IsIdInAllowlist(extension.hashed_id());
+  return is_id_in_allowlist;
+#endif
 }
 
 // static.
