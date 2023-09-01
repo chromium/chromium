@@ -11202,7 +11202,6 @@
     "OutOfProcessSystemDnsResolution": [
         {
             "platforms": [
-                "linux",
                 "android"
             ],
             "experiments": [
