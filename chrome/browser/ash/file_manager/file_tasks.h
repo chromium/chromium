@@ -209,8 +209,13 @@ enum class OfficeFilesUseOutsideDriveHook {
   kMaxValue = OPEN_FROM_FILES_APP,
 };
 
-// UMA metric name that tracks the result of using a MS Office file outside
-// of Drive.
+// UMA metric name that tracks the extension of Office files that are being
+// opened with Drive web.
+constexpr char kOfficeOpenExtensionDriveMetricName[] =
+    "FileBrowser.OfficeFiles.Open.FileType.GoogleDrive";
+
+// UMA metric name that tracks the extension of Office files that are being
+// opened with MS365.
 constexpr char kOfficeOpenExtensionOneDriveMetricName[] =
     "FileBrowser.OfficeFiles.Open.FileType.OneDrive";
 

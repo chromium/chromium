@@ -890,6 +890,11 @@ bool ExecuteFileTask(Profile* profile,
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsWebDriveOfficeTask(task)) {
+    for (const FileSystemURL& file_url : file_urls) {
+      UMA_HISTOGRAM_ENUMERATION(
+          file_manager::file_tasks::kOfficeOpenExtensionDriveMetricName,
+          GetOfficeOpenExtension(file_url));
+    }
     const bool started =
         ExecuteWebDriveOfficeTask(profile, task, file_urls, modal_parent);
     if (done) {
