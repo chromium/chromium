@@ -16,8 +16,6 @@ namespace wolvic {
 
 namespace {
 
-const int64_t kFrameTimeOutMilliseconds = 1000;
-
 void WvrMatToTransform(const float in[16], gfx::Transform* out) {
   *out = gfx::Transform::RowMajor(in[0], in[1], in[2], in[3], in[4], in[5],
                                   in[6], in[7], in[8], in[9], in[10], in[11],
@@ -359,9 +357,6 @@ void WvrManager::OnWebXrFrameAvailable() {
   DVLOG(2) << __func__ << "frame: " << frame_index;
   pending_frames_.pop();
 
-  if (!webxr_frame_timeout_closure_.IsCancelled())
-    webxr_frame_timeout_closure_.Cancel();
-
   // LIFECYCLE: we should be in processing state.
   DCHECK(webxr_.HaveProcessingFrame());
   device::WebXrFrame* processing_frame = webxr_.GetProcessingFrame();
@@ -374,15 +369,7 @@ void WvrManager::OnWebXrFrameAvailable() {
   DrawFrameSubmitNow(processing_frame);
 }
 
-void WvrManager::OnWebXrTimedOut() {
-  DCHECK(IsOnWvrThread());
-  OnWebXrFrameAvailable();
-}
-
 void WvrManager::ClosePresentationBindings() {
-  if (!webxr_frame_timeout_closure_.IsCancelled())
-    webxr_frame_timeout_closure_.Cancel();
-
   if (!get_frame_data_callback_.is_null())
     std::move(get_frame_data_callback_).Run(nullptr);
 
@@ -785,13 +772,6 @@ void WvrManager::ProcessWebVrFrameFromMailbox(
   // Notify the client that we're done with the mailbox so that the underlying
   // image is eligible for destruction.
   submit_client_->OnSubmitFrameTransferred(true);
-
-  webxr_frame_timeout_closure_.Reset(
-      base::BindOnce(&WvrManager::OnWebXrTimedOut, GetWeakPtr()));
-
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                webxr_frame_timeout_closure_.callback(),
-                                base::Milliseconds(kFrameTimeOutMilliseconds));
 }
 
 void WvrManager::SubmitFrameDrawnIntoTexture(int16_t frame_index,

@@ -97,7 +97,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void CreateSurfaceBridge(gl::SurfaceTexture* surface_texture);
 
   void OnWebXrFrameAvailable();
-  void OnWebXrTimedOut();
 
   std::vector<device::mojom::XRInputSourceStatePtr> GetInputSourceState();
 
@@ -142,8 +141,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   device::WebXrPresentationState webxr_;
   std::unique_ptr<device::MailboxToSurfaceBridge> mailbox_bridge_;
-
-  base::CancelableOnceClosure webxr_frame_timeout_closure_;
 
   base::OnceClosure exit_vr_callback_;
 
