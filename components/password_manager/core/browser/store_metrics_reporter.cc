@@ -189,6 +189,14 @@ void ReportNumberOfAccountsMetrics(
       total_user_created_accounts + total_generated_accounts +
           total_received_via_sharing_accounts);
 
+  // Same as above but not split by custom passphrase which is most always
+  // useless.
+  LogAccountStatHiRes(
+      base::StrCat({kPasswordManager, store_suffix, kTotalAccountsByTypeSuffix,
+                    kOverallSuffix}),
+      total_user_created_accounts + total_generated_accounts +
+          total_received_via_sharing_accounts);
+
   LogAccountStatHiRes(
       base::StrCat({kPasswordManager, store_suffix, ".BlacklistedSitesHiRes3",
                     custom_passphrase_suffix}),
