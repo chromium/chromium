@@ -35,8 +35,6 @@ const {hash_datatype} kExpiredHistogramsHashes[] = {{
 {hashes}
 }};
 
-const size_t kNumExpiredHistograms = {hashes_size};
-
 }}  // namespace {namespace}
 
 #endif  // {include_guard}
@@ -181,13 +179,11 @@ def _GenerateHeaderFileContent(header_filename, namespace,
       "  {hash},  // {name}".format(hash=value, name=histograms_map[value])
       for value in sorted(histograms_map.keys())
   ])
-  return _HEADER.format(
-      script_name=_SCRIPT_NAME,
-      include_guard=include_guard,
-      namespace=namespace,
-      hash_datatype=_HASH_DATATYPE,
-      hashes=hashes,
-      hashes_size=len(histograms_map))
+  return _HEADER.format(script_name=_SCRIPT_NAME,
+                        include_guard=include_guard,
+                        namespace=namespace,
+                        hash_datatype=_HASH_DATATYPE,
+                        hashes=hashes)
 
 
 def _GenerateFileContent(descriptions, branch_file_content,

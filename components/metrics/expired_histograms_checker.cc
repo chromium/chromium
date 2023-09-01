@@ -16,21 +16,22 @@
 namespace metrics {
 
 ExpiredHistogramsChecker::ExpiredHistogramsChecker(
-    const uint32_t* expired_histogram_hashes,
-    size_t size,
+    base::span<const uint32_t> expired_histogram_hashes,
     const std::string& allowlist_str)
-    : expired_histogram_hashes_(expired_histogram_hashes), size_(size) {
+    : expired_histogram_hashes_(expired_histogram_hashes) {
   InitAllowlist(allowlist_str);
 }
 
-ExpiredHistogramsChecker::~ExpiredHistogramsChecker() {}
+ExpiredHistogramsChecker::~ExpiredHistogramsChecker() = default;
 
 bool ExpiredHistogramsChecker::ShouldRecord(uint32_t histogram_hash) const {
   // If histogram is explicitly allowed then it should always be recorded.
-  if (base::Contains(allowlist_, histogram_hash))
+  if (base::Contains(allowlist_, histogram_hash)) {
     return true;
-  return !std::binary_search(expired_histogram_hashes_,
-                             expired_histogram_hashes_ + size_, histogram_hash);
+  }
+  return !std::binary_search(std::begin(expired_histogram_hashes_),
+                             std::end(expired_histogram_hashes_),
+                             histogram_hash);
 }
 
 void ExpiredHistogramsChecker::InitAllowlist(const std::string& allowlist_str) {

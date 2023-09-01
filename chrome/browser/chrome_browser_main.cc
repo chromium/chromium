@@ -911,8 +911,7 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
   blink::OriginTrialsSettingsProvider::Get()->SetSettings(
       origin_trials_settings_storage->GetSettings());
 
-  metrics::EnableExpiryChecker(chrome_metrics::kExpiredHistogramsHashes,
-                               chrome_metrics::kNumExpiredHistograms);
+  metrics::EnableExpiryChecker(chrome_metrics::kExpiredHistogramsHashes);
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

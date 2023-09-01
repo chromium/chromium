@@ -258,8 +258,7 @@ void IOSChromeMainParts::PreCreateThreads() {
 
   variations::InitCrashKeys();
 
-  metrics::EnableExpiryChecker(::kExpiredHistogramsHashes,
-                               ::kNumExpiredHistograms);
+  metrics::EnableExpiryChecker(::kExpiredHistogramsHashes);
 
   // TODO(crbug.com/1164533): Remove code below some time after February 2021.
   NSString* const kRemoveProtectionFromPrefFileKey =
