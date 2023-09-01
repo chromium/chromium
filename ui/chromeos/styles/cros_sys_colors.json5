@@ -184,6 +184,14 @@
       light: 'rgba($cros.ref.neutral10.rgb, 0.14)',
       dark:  'rgba($cros.ref.neutral90.rgb, 0.14)',
     },
+    white: {
+      light: '$cros.ref.neutral100',
+      dark: '$cros.ref.neutral100',
+    },
+    black: {
+      light: '$cros.ref.neutral0',
+      dark: '$cros.ref.neutral0',
+    },
 
     /* Bases */
     header: {
