@@ -33,6 +33,12 @@ class CrosHealthdPsrSamplerHandler : public CrosHealthdSamplerHandler {
   void HandleResult(OptionalMetricCallback callback,
                     cros_healthd::TelemetryInfoPtr result) const override;
 
+ protected:
+  // Request PSR info from healthd again to retry for at most num_retries_left
+  // times. Should only be overridden in tests.
+  virtual void Retry(OptionalMetricCallback callback,
+                     size_t num_retries_left) const;
+
  private:
   // Implementation of `HandleResult`. If it fails to obtain PSR info, it will
   // get PSR info from healthd again for at most `num_retries_left` times with
@@ -41,9 +47,6 @@ class CrosHealthdPsrSamplerHandler : public CrosHealthdSamplerHandler {
   void HandleResultImpl(OptionalMetricCallback callback,
                         size_t num_retries_left,
                         cros_healthd::TelemetryInfoPtr result) const;
-  // Request PSR info from healthd again to retry for at most num_retries_left
-  // times.
-  void Retry(OptionalMetricCallback callback, size_t num_retries_left) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
