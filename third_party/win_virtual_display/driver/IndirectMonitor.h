@@ -11,13 +11,13 @@
 #include <windows.h>
 
 #include <vector>
+#include "Edid.h"
 
 namespace Windows {
 // Represents a virtual monitor, encapsulates an EDID and modes.
 struct IndirectSampleMonitor {
-  static constexpr size_t szEdidBlock = 128;
   static constexpr size_t szModeList = 3;
-  BYTE pEdidBlock[szEdidBlock];
+  BYTE pEdidBlock[Edid::kBlockSize];
   struct SampleMonitorMode {
     DWORD Width;
     DWORD Height;

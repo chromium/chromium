@@ -16,6 +16,11 @@
         <WppRecorderEnabled>true</WppRecorderEnabled>
         <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="Edid.cpp">
+        <WppEnabled>true</WppEnabled>
+        <WppRecorderEnabled>true</WppRecorderEnabled>
+        <WppPreprocessorDefinitions>WPP_MACRO_USE_KM_VERSION_FOR_UM=1</WppPreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="HelperMethods.cpp">
         <WppEnabled>true</WppEnabled>
         <WppRecorderEnabled>true</WppRecorderEnabled>

@@ -4,6 +4,7 @@
 #include "Driver.tmh"
 
 #include "Direct3DDevice.h"
+#include "Edid.h"
 #include "HelperMethods.h"
 #include "IndirectMonitor.h"
 #include "SwapChainProcessor.h"
@@ -335,8 +336,7 @@ void IndirectDeviceContext::FinishInit(UINT ConnectorIndex) {
     MonitorInfo.MonitorDescription.DataSize = 0;
     MonitorInfo.MonitorDescription.pData = nullptr;
   } else {
-    MonitorInfo.MonitorDescription.DataSize =
-        IndirectSampleMonitor::szEdidBlock;
+    MonitorInfo.MonitorDescription.DataSize = Windows::Edid::kBlockSize;
     MonitorInfo.MonitorDescription.pData =
         (s_SampleMonitors[ConnectorIndex].pEdidBlock);
   }
@@ -470,14 +470,13 @@ _Use_decl_annotations_ NTSTATUS IddSampleParseMonitorDescription(
     // connected monitors Check which of the reported monitors this call is for
     // by comparing it to the pointer of our known EDID blocks.
 
-    if (pInArgs->MonitorDescription.DataSize !=
-        Windows::IndirectSampleMonitor::szEdidBlock) {
+    if (pInArgs->MonitorDescription.DataSize != Windows::Edid::kBlockSize) {
       return STATUS_INVALID_PARAMETER;
     }
 
     for (const auto& monitor : s_SampleMonitors) {
       if (memcmp(pInArgs->MonitorDescription.pData, monitor.pEdidBlock,
-                 Windows::IndirectSampleMonitor::szEdidBlock) == 0) {
+                 Windows::Edid::kBlockSize) == 0) {
         // Copy the known modes to the output buffer
         for (DWORD ModeIndex = 0;
              ModeIndex < Windows::IndirectSampleMonitor::szModeList;
