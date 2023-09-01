@@ -923,6 +923,66 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                      }];
 }
 
+- (NSString*)hideItemTextForDestination:
+    (overflow_menu::Destination)destination {
+  switch (destination) {
+    case overflow_menu::Destination::SiteInfo:
+    case overflow_menu::Destination::Settings:
+    case overflow_menu::Destination::SpotlightDebugger:
+      // These items are unhideable.
+      return @"";
+    case overflow_menu::Destination::Bookmarks:
+      // TODO(crbug.com/1477431): Add all these strings
+      return @"";
+    case overflow_menu::Destination::History:
+      return @"";
+    case overflow_menu::Destination::ReadingList:
+      return @"";
+    case overflow_menu::Destination::Passwords:
+      return @"";
+    case overflow_menu::Destination::Downloads:
+      return @"";
+    case overflow_menu::Destination::RecentTabs:
+      return @"";
+    case overflow_menu::Destination::WhatsNew:
+      return @"";
+    case overflow_menu::Destination::PriceNotifications:
+      return @"";
+  }
+}
+
+- (NSString*)hideItemTextForActionType:(overflow_menu::ActionType)actionType {
+  switch (actionType) {
+    case overflow_menu::ActionType::Reload:
+    case overflow_menu::ActionType::NewTab:
+    case overflow_menu::ActionType::NewIncognitoTab:
+    case overflow_menu::ActionType::NewWindow:
+    case overflow_menu::ActionType::ReportAnIssue:
+    case overflow_menu::ActionType::Help:
+    case overflow_menu::ActionType::ShareChrome:
+    case overflow_menu::ActionType::EditActions:
+      // These items are unhideable
+      return @"";
+    case overflow_menu::ActionType::Follow:
+      // TODO(crbug.com/1477431): Add all these strings
+      return @"";
+    case overflow_menu::ActionType::Bookmark:
+      return @"";
+    case overflow_menu::ActionType::ReadingList:
+      return @"";
+    case overflow_menu::ActionType::ClearBrowsingData:
+      return @"";
+    case overflow_menu::ActionType::Translate:
+      return @"";
+    case overflow_menu::ActionType::DesktopSite:
+      return @"";
+    case overflow_menu::ActionType::FindInPage:
+      return @"";
+    case overflow_menu::ActionType::TextZoom:
+      return @"";
+  }
+}
+
 #pragma mark - Private
 
 // Creates an OverflowMenuDestination to be displayed in the destinations
@@ -960,6 +1020,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   if (IsOverflowMenuCustomizationEnabled()) {
     result.longPressItems = @[
+      [[OverflowMenuLongPressItem alloc]
+          initWithTitle:[self hideItemTextForDestination:destination]
+             symbolName:@"eye.slash"
+                handler:^{
+                  [weakSelf hideDestination:destination];
+                }],
       [[OverflowMenuLongPressItem alloc]
           initWithTitle:l10n_util::GetNSString(
                             IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
@@ -1001,6 +1067,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                 actionType) != reorderableActions.end();
   if (IsOverflowMenuCustomizationEnabled() && actionIsReorderable) {
     action.longPressItems = @[
+      [[OverflowMenuLongPressItem alloc]
+          initWithTitle:[self hideItemTextForActionType:actionType]
+             symbolName:@"eye.slash"
+                handler:^{
+                  [weakSelf hideActionType:actionType];
+                }],
       [[OverflowMenuLongPressItem alloc]
           initWithTitle:l10n_util::GetNSString(
                             IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
@@ -1872,6 +1944,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Begins the action edit flow.
 - (void)beginCustomization {
   [self.dispatcher showMenuCustomization];
+}
+
+- (void)hideDestination:(overflow_menu::Destination)destination {
+  DestinationCustomizationModel* destinationCustomizationModel =
+      self.menuOrderer.destinationCustomizationModel;
+  for (OverflowMenuDestination* menuDestination in destinationCustomizationModel
+           .shownDestinations) {
+    if (menuDestination.destination == static_cast<int>(destination)) {
+      menuDestination.shown = NO;
+    }
+  }
+  [self.menuOrderer commitDestinationsUpdate];
+}
+
+- (void)hideActionType:(overflow_menu::ActionType)actionType {
+  ActionCustomizationModel* actionCustomizationModel =
+      self.menuOrderer.actionCustomizationModel;
+  for (OverflowMenuAction* action in actionCustomizationModel.shownActions) {
+    if (action.actionType == static_cast<int>(actionType)) {
+      action.shown = NO;
+    }
+  }
+  [self.menuOrderer commitActionsUpdate];
 }
 
 #pragma mark - Destinations Handlers

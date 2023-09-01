@@ -34,8 +34,8 @@ struct OverflowMenuDestinationList: View {
     /// screen width minus a fixed space.
     static let largeTextSizeSpace: CGFloat = 120
 
-    /// The bottom margin between the destinations and the edge of the list.
-    static let bottomMargin: CGFloat = 5
+    /// The top margin between the destinations and the edge of the list.
+    static let defaultTopMargin: CGFloat = 15
 
     /// The name for the coordinate space of the scroll view, so children can
     /// find their positioning in the scroll view.
@@ -73,6 +73,8 @@ struct OverflowMenuDestinationList: View {
 
   /// The destinations for this view.
   @Binding var destinations: [OverflowMenuDestination]
+
+  var extraTopMargin: CGFloat = 0
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
@@ -128,7 +130,15 @@ struct OverflowMenuDestinationList: View {
           forScreenWidth: geometry.size.width, forSizeCategory: sizeCategory)
         let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .icon
 
-        ZStack(alignment: .bottom) {
+        // Use a ZStack with a huge spacer inside to allow positioning the
+        // HStack easier. These views are all inside a geometry reader, which
+        // expands to take all of the possible space, but also positions its
+        // children at the top left corner. The ZStack allows for controlling
+        // the position of the children, and the huge spacer makes sure the
+        // ZStack also takes up as much space as possible, so it fills the
+        // entire parent (GeometryReader).
+        ZStack(alignment: .top) {
+          Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
           HStack(alignment: alignment, spacing: 0) {
             // Make sure the space to the first icon is constant, so add extra
             // spacing before the first item.
@@ -171,18 +181,20 @@ struct OverflowMenuDestinationList: View {
                   id: MenuCustomizationAnimationID.from(destination), in: namespace
                 )
             }
-          }.alignmentGuide(.bottom) { $0[.bottom] + Constants.bottomMargin }
+          }
+          .alignmentGuide(.top) { $0[.top] - (Constants.defaultTopMargin + extraTopMargin) }
+          .overlay {
+            GeometryReader { innerGeometry in
+              let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
+              let parentWidth = geometry.size.width
 
-          GeometryReader { innerGeometry in
-            let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
-            let parentWidth = geometry.size.width
+              // When the view is RTL, the offset should be calculated from the
+              // right edge.
+              let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
 
-            // When the view is RTL, the offset should be calculated from the
-            // right edge.
-            let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
-
-            Color.clear
-              .preference(key: ScrollViewLeadingOffset.self, value: offset)
+              Color.clear
+                .preference(key: ScrollViewLeadingOffset.self, value: offset)
+            }
           }
         }
       }

@@ -25,6 +25,14 @@ import SwiftUI
     self.actions = actions
     self.footer = footer
   }
+
+  /// Sets the actions wrapped in a SwiftUI `withAnimation` block.
+  /// `withAnimation` is otherwise inaccessible to Objective-C.
+  public func setActionsWithAnimation(_ actions: [OverflowMenuAction]) {
+    withAnimation {
+      self.actions = actions
+    }
+  }
 }
 
 // MARK: - Identifiable

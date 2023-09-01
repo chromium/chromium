@@ -350,7 +350,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)updatePageActions {
-  self.pageActionsGroup.actions = [self pageActions];
+  [self.pageActionsGroup setActionsWithAnimation:[self pageActions]];
 }
 
 - (void)updateForMenuDisappearance {
@@ -444,7 +444,8 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       _destinationCustomizationModel.destinationUsageEnabled;
   [self flushDestinationsToPrefs];
 
-  self.model.destinations = [self destinationsFromCurrentRanking];
+  [self.model
+      setDestinationsWithAnimation:[self destinationsFromCurrentRanking]];
 
   // Reset customization model so next customization can start fresh.
   _destinationCustomizationModel = nil;
@@ -633,6 +634,9 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
 // Write stored action data back to local prefs/disk.
 - (void)flushActionsToPrefs {
+  if (!_localStatePrefs) {
+    return;
+  }
   base::Value::Dict storedActions;
 
   base::Value::List shownActions;

@@ -981,3 +981,40 @@ TEST_F(OverflowMenuMediatorTest,
       mediator_.model.destinations[kNewDestinationsInsertionIndex + 1].badge);
   EXPECT_EQ(8U, [mediator_.model.destinations count]);
 }
+
+// Tests that the actions have the correct longpress items set.
+TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // The 1st action group should contain modifiable actions with 2 longpress
+  // items. All other action groups should contain un-modifiable actions with no
+  // longpress items.
+  for (NSUInteger index = 0; index < mediator_.model.actionGroups.count;
+       index++) {
+    OverflowMenuActionGroup* actionGroup = mediator_.model.actionGroups[index];
+    for (OverflowMenuAction* action in actionGroup.actions) {
+      if (index == 1) {
+        EXPECT_EQ(action.longPressItems.count, 2ul);
+      } else {
+        EXPECT_EQ(action.longPressItems.count, 0ul);
+      }
+    }
+  }
+}
+
+// Tests that the destinations have the correct longpress items set.
+TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
+  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
+  CreateMediator(/*is_incognito=*/NO);
+
+  mediator_.model = model_;
+
+  // The 1st action group should contain modifiable actions with 2 longpress
+  // items.
+  for (OverflowMenuDestination* destination in mediator_.model.destinations) {
+    EXPECT_EQ(destination.longPressItems.count, 2ul);
+  }
+}
