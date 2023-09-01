@@ -257,6 +257,10 @@ class DiceWebSigninInterceptor : public KeyedService,
       absl::optional<std::string>
           managed_account_profile_level_signin_restriction) const;
 
+  // Records the heuristic outcome and latency metrics.
+  void RecordSigninInterceptionHeuristicOutcome(
+      SigninInterceptionHeuristicOutcome outcome) const;
+
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
@@ -282,7 +286,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   // Used to retain the interception UI bubble until profile creation completes.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
       interception_bubble_handle_;
-  // Used for metrics:
+
+  // Used for metrics.
+  base::TimeTicks interception_start_time_;
   bool was_interception_ui_displayed_ = false;
 
   // Timeout for the fetch of cloud user level policy value of

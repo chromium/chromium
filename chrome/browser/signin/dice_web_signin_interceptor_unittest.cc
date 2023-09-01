@@ -122,7 +122,9 @@ std::string ParamToTestSuffixForInterceptionAndSyncPromo(
 
 class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
  public:
-  DiceWebSigninInterceptorTest() = default;
+  DiceWebSigninInterceptorTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~DiceWebSigninInterceptorTest() override = default;
 
   DiceWebSigninInterceptor* interceptor() {
@@ -177,6 +179,9 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
+    histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
+                                            base::Milliseconds(0), 1);
+
     EXPECT_EQ(interceptor()->is_interception_in_progress(),
               SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
   }
@@ -201,6 +206,8 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
+    histogram_tester.ExpectUniqueTimeSample("Signin.Intercept.HeuristicLatency",
+                                            base::Milliseconds(0), 1);
     EXPECT_EQ(interceptor()->is_interception_in_progress(),
               SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
   }

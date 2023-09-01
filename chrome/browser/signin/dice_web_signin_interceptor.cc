@@ -72,11 +72,6 @@ namespace {
 constexpr char kProfileCreationInterceptionDeclinedPref[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
 
-void RecordSigninInterceptionHeuristicOutcome(
-    SigninInterceptionHeuristicOutcome outcome) {
-  base::UmaHistogramEnumeration("Signin.Intercept.HeuristicOutcome", outcome);
-}
-
 // Helper function to return the primary account info. The returned info is
 // empty if there is no primary account, and non-empty otherwise. Extended
 // fields may be missing if they are not available.
@@ -220,17 +215,22 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     return;
   }
 
+  DCHECK_EQ(interception_start_time_, base::TimeTicks());
+  interception_start_time_ = base::TimeTicks::Now();
+
   if (!web_contents) {
     // The tab has been closed (typically during the token exchange, which may
     // take some time).
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortTabClosed);
+    Reset();
     return;
   }
 
   if (!delegate_->IsSigninInterceptionSupported(*web_contents)) {
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortNoSupportedBrowser);
+    Reset();
     return;
   }
 
@@ -243,6 +243,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
                                      ->IsFormManagerPendingPasswordUpdate()) {
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortPasswordUpdatePending);
+    Reset();
     return;
   }
 
@@ -253,6 +254,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
           password_manager::ui::State::PENDING_PASSWORD_UPDATE_STATE) {
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kAbortPasswordUpdate);
+    Reset();
     return;
   }
 
@@ -325,6 +327,7 @@ void DiceWebSigninInterceptor::Reset() {
   intercepted_account_management_accepted_ = false;
   interception_type_ = absl::nullopt;
   dice_signed_in_profile_creator_.reset();
+  interception_start_time_ = base::TimeTicks();
   was_interception_ui_displayed_ = false;
   interception_bubble_handle_.reset();
   on_intercepted_account_level_policy_value_timeout_.Cancel();
@@ -906,4 +909,26 @@ DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
   }
 
   return false;
+}
+
+void DiceWebSigninInterceptor::RecordSigninInterceptionHeuristicOutcome(
+    SigninInterceptionHeuristicOutcome outcome) const {
+  // Record the outcome.
+  base::UmaHistogramEnumeration("Signin.Intercept.HeuristicOutcome", outcome);
+
+  // Record the latency, except in the case where this is a duplicate request
+  // for the same interception.
+  DCHECK_NE(interception_start_time_, base::TimeTicks());
+  if (outcome ==
+      SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress) {
+    // This is a special-case where we immediately abort the intercept request
+    // without first updating interception_start_time_ (because the previous
+    // request has not completed).
+    // Record the histogram for this request with zero duration.
+    base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
+                            base::Milliseconds(0));
+  } else {
+    base::UmaHistogramTimes("Signin.Intercept.HeuristicLatency",
+                            base::TimeTicks::Now() - interception_start_time_);
+  }
 }
