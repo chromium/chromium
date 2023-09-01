@@ -5,6 +5,12 @@
     overflow: hidden;
   }
 
+  #illustration {
+    height: 216px;
+    width: 448px;
+    align-self: center;
+  }
+
 </style>
 <base-page>
   <div slot="page-body" id="pageBody">
@@ -13,5 +19,9 @@
         localized-string="[[i18nAdvanced('profileDiscoveryConsentMessageWithLink')]]"
         on-link-clicked="shouldSkipDiscoveryClicked_">
     </localized-link>
+    <iron-icon id="illustration"
+        icon="cellular-setup-illo:network-setup"
+        slot="page-body">
+    </iron-icon>
   </div>
 </base-page>
