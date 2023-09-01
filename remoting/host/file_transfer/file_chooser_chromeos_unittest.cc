@@ -4,15 +4,10 @@
 
 #include "remoting/host/file_transfer/file_chooser_chromeos.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -23,9 +18,7 @@
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/env.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
-#include "ui/shell_dialogs/select_file_dialog_factory.h"
 
 using base::test::TestFuture;
 
@@ -43,7 +36,7 @@ class FileChooserChromeOsTest : public testing::Test {
   FileChooserChromeOsTest(const FileChooserChromeOsTest&) = delete;
   FileChooserChromeOsTest& operator=(const FileChooserChromeOsTest&) = delete;
 
-  // `testing::Test` implementation.
+  // `testing::Test` implementation:
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
 
   void CreateAndShowFileChooser(FileChooser::ResultCallback callback) {
@@ -78,14 +71,7 @@ class FileChooserChromeOsTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-#if defined(LEAK_SANITIZER)
-// TODO(https://crbug.com/1453685): Fix LeakSanitizer failure.
-#define MAYBE_DISABLED(name) DISABLED_##name
-#else
-#define MAYBE_DISABLED(name) name
-#endif
-
-TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(SingleFileSelection)) {
+TEST_F(FileChooserChromeOsTest, SingleFileSelection) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetResultFileSelectionFactory(kTestFilePath);
 
@@ -95,7 +81,7 @@ TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(SingleFileSelection)) {
   EXPECT_EQ(result_future.Get().success(), kTestFilePath);
 }
 
-TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(FileCancelationAllowed)) {
+TEST_F(FileChooserChromeOsTest, FileCancelationAllowed) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetCancelFileSelectionFactory();
 
@@ -106,7 +92,7 @@ TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(FileCancelationAllowed)) {
             protocol::FileTransfer_Error_Type_CANCELED);
 }
 
-TEST_F(FileChooserChromeOsTest, MAYBE_DISABLED(OnlyAllowSingleFileSelection)) {
+TEST_F(FileChooserChromeOsTest, OnlyAllowSingleFileSelection) {
   base::test::TestFuture<FileChooser::Result> result_future;
   SetResultFileSelectionFactory(kTestFilePath);
 
