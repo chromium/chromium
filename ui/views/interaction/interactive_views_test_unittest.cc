@@ -56,7 +56,6 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
     // Set up the Views hierarchy to use for the tests.
     auto contents =
         Builder<FlexLayoutView>()
-            .CopyAddressTo(&contents_)
             .SetProperty(kElementIdentifierKey, kContentsId)
             .SetOrientation(LayoutOrientation::kVertical)
             .AddChildren(
@@ -67,7 +66,6 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
                     .AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents))
                     .AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents)),
                 Builder<FlexLayoutView>()
-                    .CopyAddressTo(&buttons_)
                     .SetProperty(kElementIdentifierKey, kButtonsId)
                     .SetOrientation(LayoutOrientation::kHorizontal)
                     .AddChildren(
@@ -113,13 +111,11 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
 
   void TearDown() override {
     SetContextWidget(nullptr);
-    widget_.reset();
-    contents_ = nullptr;
     tabs_ = nullptr;
-    buttons_ = nullptr;
     button1_ = nullptr;
     button2_ = nullptr;
     scroll_ = nullptr;
+    widget_.reset();
     InteractiveViewsTest::TearDown();
   }
 
@@ -139,12 +135,10 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
       base::MockCallback<Button::PressedCallback::Callback>>;
 
   std::unique_ptr<Widget> widget_;
-  raw_ptr<FlexLayoutView, DanglingUntriaged> contents_;
-  raw_ptr<TabbedPane, DanglingUntriaged> tabs_;
-  raw_ptr<FlexLayoutView, DanglingUntriaged> buttons_;
-  raw_ptr<LabelButton, DanglingUntriaged> button1_;
-  raw_ptr<LabelButton, DanglingUntriaged> button2_;
-  raw_ptr<ScrollView, DanglingUntriaged> scroll_;
+  raw_ptr<TabbedPane> tabs_;
+  raw_ptr<LabelButton> button1_;
+  raw_ptr<LabelButton> button2_;
+  raw_ptr<ScrollView> scroll_;
   ButtonCallbackMock button1_callback_;
   ButtonCallbackMock button2_callback_;
 };
