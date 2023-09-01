@@ -925,7 +925,8 @@ enum class MigrationToOSCrypt {
   kFailedToEncrypt = 3,
   kFailedToUpdate = 4,
   kSuccess = 5,
-  kMaxValue = kSuccess,
+  kFailedToDelete = 6,
+  kMaxValue = kFailedToDelete,
 };
 
 // Records the latency of the migration to OSCrypt of the login db on iOS

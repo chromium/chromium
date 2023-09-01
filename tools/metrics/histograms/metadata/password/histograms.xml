@@ -2057,6 +2057,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.MigrationToOSCrypt.{Store}DeletedPasswordCount"
+    units="count" expires_after="M119">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records number of passwords which are missing from the keychain during
+    migration to OSCrypt on iOS. Recorded when migration succeeds.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
 <histogram name="PasswordManager.MigrationToOSCrypt.{Store}ErrorLatency"
     units="ms" expires_after="M119">
   <owner>vsemeniuk@google.com</owner>
@@ -2076,6 +2088,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records keychain retrieval error code received during the migration of
     PasswordStore to OSCrypt on iOS {Store}. Recorded when retrieval fails.
+  </summary>
+  <token key="Store" variants="Store"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.MigrationToOSCrypt.{Store}MigratedPasswordCount"
+    units="count" expires_after="M119">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records number of passwords successfully migrated to encryption with OSCrypt
+    on iOS. Recorded when migration succeeds.
   </summary>
   <token key="Store" variants="Store"/>
 </histogram>
