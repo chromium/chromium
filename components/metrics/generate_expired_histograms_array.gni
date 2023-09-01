@@ -74,7 +74,6 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/data/histograms.xml",
       "//tools/metrics/histograms/metadata/dev/histograms.xml",
       "//tools/metrics/histograms/metadata/diagnostics/histograms.xml",
-      "//tools/metrics/histograms/metadata/direct/histograms.xml",
       "//tools/metrics/histograms/metadata/disk/histograms.xml",
       "//tools/metrics/histograms/metadata/download/histograms.xml",
       "//tools/metrics/histograms/metadata/enterprise/histograms.xml",
