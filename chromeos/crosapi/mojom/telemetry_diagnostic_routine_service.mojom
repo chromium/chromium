@@ -16,7 +16,6 @@
 // Thus, we have the following routines that are supported by cros_healthd in
 // ChromiumOS but not yet part of this crosapi interface (in both
 // `TelemetryDiagnosticRoutineArgument` and `TelemetryDiagnosticRoutineDetail`):
-// - Memory routine
 // - Audio driver routine
 // - Cpu stress routine
 // - Ufs lifetime routine
