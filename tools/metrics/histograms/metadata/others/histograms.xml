@@ -4889,18 +4889,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DisplayManager.MirroringDisplayCountRanges"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2022-12-04">
-  <owner>zentaro@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    The number of displays connected to the device that are in software or
-    hardware mirror mode. This is emitted once when the normal or mixed mirror
-    mode is enabled through API call, or the display configuration changes (e.g.
-    adding or removing a display) when mirror mode is on.
-  </summary>
-</histogram>
-
 <histogram name="DisplayManager.MirroringImplementation"
     enum="DisplayMirroringImplementation" expires_after="2024-02-25">
   <owner>jshargo@chromium.org</owner>
