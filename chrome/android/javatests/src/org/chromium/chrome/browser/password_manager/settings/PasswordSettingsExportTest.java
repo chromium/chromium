@@ -796,13 +796,13 @@ public class PasswordSettingsExportTest {
     }
 
     /**
-     * Check that a progressbar is displayed when the user confirms the export and the serialized
+     * Check that a progress bar is displayed when the user confirms the export and the serialized
      * passwords are not ready yet.
      */
     @Test
     @SmallTest
+    @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/1223360")
     public void testExportProgress() throws Exception {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
@@ -830,7 +830,7 @@ public class PasswordSettingsExportTest {
 
         // Before simulating the serialized passwords being received, check that the progress bar is
         // shown.
-        onView(withText(R.string.settings_passwords_preparing_export))
+        onViewWaiting(withText(R.string.settings_passwords_preparing_export))
                 .check(matches(isCompletelyDisplayed()));
 
         File tempFile = createFakeExportedPasswordsFile();
