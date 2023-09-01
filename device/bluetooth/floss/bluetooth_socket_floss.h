@@ -145,6 +145,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketFloss
   // socket is currently doing on the Floss daemon side.
   bool is_accepting_ = false;
 
+  // Hold the listen callbacks and invoke them in DoConnectionStateChanged.
+  base::OnceClosure pending_listen_ready_callback_;
+  base::OnceClosure pending_listen_close_callback_;
+
   // Information about a connecting socket. Check |is_valid| before using.
   FlossSocketManager::FlossSocket connecting_socket_info_;
 

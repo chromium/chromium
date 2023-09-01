@@ -199,9 +199,9 @@ void FakeFlossSocketManager::Close(const SocketId id,
     FlossListeningSocket socket;
     socket.id = id;
 
+    std::move(callback).Run(BtifStatus::kSuccess);
     state_changed.Run(ServerSocketState::kClosed, std::move(socket),
                       BtifStatus::kSuccess);
-    std::move(callback).Run(BtifStatus::kSuccess);
 
     listening_sockets_to_callbacks_.erase(found);
   } else {

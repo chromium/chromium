@@ -227,6 +227,11 @@ TEST_F(BluetoothSocketFlossTest, Listen) {
         base::BindOnce(&BluetoothSocketFlossTest::ErrorCallback,
                        weak_ptr_factory_.GetWeakPtr(),
                        run_loop.QuitWhenIdleClosure()));
+    // Mark the socket as ready. This should trigger the success callback and an
+    // accept.
+    GetFakeFlossSocketManager()->SendSocketReady(
+        id, device::BluetoothUUID(FakeFlossSocketManager::kRfcommUuid),
+        FlossDBusClient::BtifStatus::kSuccess);
     run_loop.Run();
   }
 
@@ -238,11 +243,6 @@ TEST_F(BluetoothSocketFlossTest, Listen) {
   scoped_refptr<device::BluetoothSocket> server_socket =
       std::move(last_socket_);
   ClearCounters();
-
-  // Mark the socket as ready. This should trigger an accept.
-  GetFakeFlossSocketManager()->SendSocketReady(
-      id, device::BluetoothUUID(FakeFlossSocketManager::kRfcommUuid),
-      FlossDBusClient::BtifStatus::kSuccess);
 
   // Simulate incoming connection. This queues one up to be accepted later.
   FlossDeviceId device = {.address = FakeFlossAdapterClient::kBondedAddress1,

@@ -150,6 +150,14 @@ void BluetoothSocketFloss::Disconnect(base::OnceClosure callback) {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     listening_socket_info_ = absl::nullopt;
     pending_accept_socket_.reset();
+  } else {
+    if (pending_listen_ready_callback_) {
+      LOG(WARNING) << "Disconnecting listening socket before it is ready, "
+                   << "which may cause leaking!";
+      pending_listen_ready_callback_.Reset();
+    } else {
+      LOG(WARNING) << "Disconnecting socket (" << this << ") with no info";
+    }
   }
 
   // If there is a pending accept, clear it.
@@ -208,6 +216,12 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
     listening_socket_info_ = socket;
   }
 
+  // Since we've received the socket info, we are ready for |Accept| and
+  // |Disconnect| now.
+  if (pending_listen_ready_callback_) {
+    std::move(pending_listen_ready_callback_).Run();
+  }
+
   // Every time we get a socket state update, the socket gets reset to a not
   // accepting state. Mark our internal state to match that.
   is_accepting_ = false;
@@ -220,6 +234,17 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
         listening_socket_info_->id, absl::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (state == FlossSocketManager::ServerSocketState::kClosed) {
+    if (pending_listen_close_callback_) {
+      std::move(pending_listen_close_callback_).Run();
+    } else {
+      LOG(WARNING) << "Server socket with uuid "
+                   << listening_socket_info_->uuid.value()
+                   << " closed unexpectedly";
+    }
     return;
   }
 
@@ -256,7 +281,8 @@ void BluetoothSocketFloss::CompleteListen(
     return;
   }
 
-  std::move(success_callback).Run();
+  // On success, the callbacks will be invoked in DoConnectionStateChanged.
+  pending_listen_ready_callback_ = std::move(success_callback);
 }
 
 void BluetoothSocketFloss::CompleteConnect(
@@ -351,6 +377,11 @@ void BluetoothSocketFloss::CompleteClose(
     DBusResult<FlossDBusClient::BtifStatus> result) {
   if (result.has_value()) {
     DVLOG(1) << "Result of closing socket = " << static_cast<uint32_t>(*result);
+    if (*result == FlossDBusClient::BtifStatus::kSuccess) {
+      // If |Close| succeeded, run the callback in DoConnectionStateChanged.
+      pending_listen_close_callback_ = std::move(callback);
+      return;
+    }
   }
 
   is_accepting_ = false;
