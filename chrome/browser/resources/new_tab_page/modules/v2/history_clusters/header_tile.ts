@@ -45,6 +45,17 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
         value: () => loadTimeData.getBoolean(
             'historyClustersSuggestionChipHeaderEnabled'),
       },
+
+      /* Whether the container is tabbable or not. If the suggestion chip
+       * feature is enabled, the container should not be tabbable.
+       */
+      containerTabIndex_: {
+        type: String,
+        value: () => loadTimeData.getBoolean(
+                         'historyClustersSuggestionChipHeaderEnabled') ?
+            '' :
+            '0',
+      },
     };
   }
 
