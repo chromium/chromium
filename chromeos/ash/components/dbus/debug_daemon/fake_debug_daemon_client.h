@@ -91,10 +91,12 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void CupsAddManuallyConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       const std::string& ppd_contents,
       CupsAddPrinterCallback callback) override;
   void CupsAddAutoConfiguredPrinter(const std::string& name,
                                     const std::string& uri,
+                                    const std::string& language,
                                     CupsAddPrinterCallback callback) override;
   void CupsRemovePrinter(const std::string& name,
                          CupsRemovePrinterCallback callback,

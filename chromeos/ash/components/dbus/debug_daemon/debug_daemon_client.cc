@@ -530,13 +530,15 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void CupsAddManuallyConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       const std::string& ppd_contents,
       DebugDaemonClient::CupsAddPrinterCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddManuallyConfiguredPrinter);
+                                 debugd::kCupsAddManuallyConfiguredPrinterV2);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     writer.AppendString(uri);
+    writer.AppendString(language);
     writer.AppendArrayOfBytes(
         reinterpret_cast<const uint8_t*>(ppd_contents.data()),
         ppd_contents.size());
@@ -550,12 +552,14 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void CupsAddAutoConfiguredPrinter(
       const std::string& name,
       const std::string& uri,
+      const std::string& language,
       DebugDaemonClient::CupsAddPrinterCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kCupsAddAutoConfiguredPrinter);
+                                 debugd::kCupsAddAutoConfiguredPrinterV2);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
     writer.AppendString(uri);
+    writer.AppendString(language);
 
     debugdaemon_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

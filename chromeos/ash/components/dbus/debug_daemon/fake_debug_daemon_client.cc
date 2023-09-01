@@ -247,6 +247,7 @@ void FakeDebugDaemonClient::SetServiceIsAvailable(bool is_available) {
 void FakeDebugDaemonClient::CupsAddManuallyConfiguredPrinter(
     const std::string& name,
     const std::string& uri,
+    const std::string& language,
     const std::string& ppd_contents,
     CupsAddPrinterCallback callback) {
   printers_.insert(name);
@@ -257,6 +258,7 @@ void FakeDebugDaemonClient::CupsAddManuallyConfiguredPrinter(
 void FakeDebugDaemonClient::CupsAddAutoConfiguredPrinter(
     const std::string& name,
     const std::string& uri,
+    const std::string& language,
     CupsAddPrinterCallback callback) {
   printers_.insert(name);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

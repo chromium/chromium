@@ -139,6 +139,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << printer.uri().GetNormalized();
     DebugDaemonClient::Get()->CupsAddAutoConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
+        g_browser_process->GetApplicationLocale(),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
                        weak_factory_.GetWeakPtr(), printer,
                        std::move(callback)));
@@ -169,7 +170,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
                        << printer.uri().GetNormalized();
     DebugDaemonClient::Get()->CupsAddManuallyConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
-        ppd_contents,
+        g_browser_process->GetApplicationLocale(), ppd_contents,
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
                        weak_factory_.GetWeakPtr(), printer, std::move(cb)));
   }
