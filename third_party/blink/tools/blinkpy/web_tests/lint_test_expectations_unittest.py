@@ -534,9 +534,9 @@ class LintTest(LoggingTestCase):
             failure2, 'Create or update a metadata file '
             "'wpt_internal/dir/multiglob\.https\.any\.js\.ini' instead")
         self.assertLog([
-            'WARNING: Detected WPT expectation lines or `*-expected.txt`, '
-            'which should not be used anymore. Please see these docs for '
-            'the new way to set WPT expectations in `.ini` files: '
+            'WARNING: TestExpectation lines should not be used anymore '
+            'for WPT. Please see this doc for the new way to set WPT '
+            'expectations in `.ini` files: '
             'https://chromium.googlesource.com/chromium/src/+/HEAD/'
             'docs/testing/web_platform_tests_wptrunner.md#Expectations\n',
         ])
