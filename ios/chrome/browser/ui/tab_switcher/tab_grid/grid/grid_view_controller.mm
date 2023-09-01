@@ -269,6 +269,11 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
       return [weakSelf headerForSectionAtIndexPath:indexPath];
     };
     collectionView.dataSource = self.diffableDataSource;
+
+    // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
+    // registered.
+    [collectionView registerClass:[GridCell class]
+        forCellWithReuseIdentifier:kCellIdentifier];
   } else {
     [collectionView registerClass:[GridCell class]
         forCellWithReuseIdentifier:kCellIdentifier];
