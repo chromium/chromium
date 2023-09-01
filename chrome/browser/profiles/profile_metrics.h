@@ -68,7 +68,8 @@ class ProfileMetrics {
     kAbortedOnEnterpriseWelcome = 12,
     kSkippedAlreadySyncing = 13,
     kSkippedByPolicies = 14,
-    kMaxValue = kSkippedByPolicies,
+    kForceSigninSyncNotGranted = 15,
+    kMaxValue = kForceSigninSyncNotGranted,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

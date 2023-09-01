@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -69,7 +70,10 @@ void ProfilePickerSignedInFlowController::Init() {
   new TurnSyncOnHelper(
       profile_, signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
+      signin_util::IsForceSigninEnabled()
+          ? signin_metrics::Reason::kForcedSigninPrimaryAccount
+          : signin_metrics::Reason::kSigninPrimaryAccount,
+      account_info.account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
       std::make_unique<ProfilePickerTurnSyncOnDelegate>(
           weak_ptr_factory_.GetWeakPtr(), profile_),

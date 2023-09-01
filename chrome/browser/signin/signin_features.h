@@ -59,4 +59,6 @@ BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
 
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+BASE_DECLARE_FEATURE(kForceSigninFlowInProfilePicker);
+
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

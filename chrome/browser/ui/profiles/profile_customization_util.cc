@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -12,9 +13,12 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
 
@@ -68,6 +72,20 @@ void FinalizeNewProfileSetup(Profile* profile,
     // Skip the welcome page for this profile as we already showed a profile
     // setup experience.
     profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+  }
+
+  if (signin_util::IsForceSigninEnabled() &&
+      base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
+    // Managed accounts do not need to have Sync consent set.
+    // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+    if (!entry->CanBeManaged()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile);
+      CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
+          << "A non syncing account should not be able to finalize the "
+             "profile.";
+    }
+    entry->LockForceSigninProfile(/*is_lock=*/false);
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -710,7 +712,8 @@ void ProfilePickerView::SwitchToDiceSignIn(
     base::OnceCallback<void(bool)> switch_finished_callback) {
   // TODO(crbug.com/1360774): Consider having forced signin as separate step
   // controller for `Step::kAccountSelection`.
-  if (signin_util::IsForceSigninEnabled()) {
+  if (signin_util::IsForceSigninEnabled() &&
+      !base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
     SwitchToForcedSignIn(std::move(switch_finished_callback));
     return;
   }

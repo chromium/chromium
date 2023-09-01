@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -853,6 +855,101 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // The tail end of the flow is handled by inline_login_*
 }
+
+// Force signin is disabled on Linux and ChromeOS.
+// TODO(https://crbug.com/1353109): enable this test when enabling force sign in
+// on Linux.
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+class ForceSigninProfilePickerCreationFlowBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter_{true};
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kForceSigninFlowInProfilePicker};
+};
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninSuccessful) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
+  // promo.
+  Profile* force_sign_in_profile =
+      SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
+                          "Joe", kNoHostedDomainFound, true);
+  // No browser for the created profile exist yet.
+  ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(force_sign_in_profile->GetPath());
+  // Profile is still locked and ephemeral at this point.
+  EXPECT_EQ(entry->IsSigninRequired(), true);
+  EXPECT_EQ(entry->IsEphemeral(), true);
+
+  // Simulate the "Yes, I'm in" button clicked.
+  LoginUIServiceFactory::GetForProfile(force_sign_in_profile)
+      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+  // A browser should open up and the picker should be closed.
+  Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
+  WaitForPickerClosed();
+
+  // The browser is for the newly created profile.
+  EXPECT_EQ(new_browser->profile(), force_sign_in_profile);
+  // Profile is unlocked and ready to be used.
+  EXPECT_EQ(entry->IsSigninRequired(), false);
+  EXPECT_EQ(entry->IsEphemeral(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninAbortedBySyncDeclined) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Only the default profile exists at this point.
+  size_t initial_profile_count = 1u;
+  ASSERT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count);
+
+  // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
+  // promo.
+  Profile* force_sign_in_profile =
+      SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
+                          "Joe", kNoHostedDomainFound, true);
+  base::FilePath force_sign_in_profile_path = force_sign_in_profile->GetPath();
+  // No browser for the created profile exist yet.
+  ASSERT_EQ(chrome::GetBrowserCount(force_sign_in_profile), 0u);
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(force_sign_in_profile_path);
+  ASSERT_NE(entry, nullptr);
+
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count + 1);
+  // Profile is still locked and ephemeral at this point.
+  EXPECT_EQ(entry->IsSigninRequired(), true);
+  EXPECT_EQ(entry->IsEphemeral(), true);
+
+  ProfileDeletionObserver deletion_observer;
+  // Simulate the "No thanks" button clicked.
+  LoginUIServiceFactory::GetForProfile(force_sign_in_profile)
+      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+
+  // Expect the profile to be deleted.
+  deletion_observer.Wait();
+
+  // Expect a redirect to the initial page of the profile picker.
+  WaitForLoadStop(GURL("chrome://profile-picker"));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+
+  // The created profile path entry is now deletec.
+  EXPECT_EQ(storage.GetProfileAttributesWithPath(force_sign_in_profile_path),
+            nullptr);
+  // Makes sure that the only profile that exist is the default one and not the
+  // one we attempted to create.
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), initial_profile_count);
+}
+#endif
 
 // Regression test for crbug.com/1266415.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,

@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -106,7 +108,8 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     Profile* signed_in_profile,
     const CoreAccountId& account_id,
     std::unique_ptr<content::WebContents> contents) {
-  DCHECK(!signin_util::IsForceSigninEnabled());
+  CHECK(!signin_util::IsForceSigninEnabled() ||
+        base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
   DCHECK(signed_in_profile);
   DCHECK_EQ(Step::kAccountSelection, current_step());
 

@@ -5,9 +5,13 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
@@ -25,8 +29,9 @@ absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> GetSyncOutcome(
     bool sync_disabled,
     LoginUIService::SyncConfirmationUIClosedResult result) {
   // The decision of the user is not relevant for the metric.
-  if (sync_disabled)
+  if (sync_disabled) {
     return ProfileMetrics::ProfileSignedInFlowOutcome::kEnterpriseSyncDisabled;
+  }
 
   switch (result) {
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
@@ -84,8 +89,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile onboarding is silently skipped if there's any error.
-    if (controller_)
+    if (controller_) {
       controller_->FinishAndOpenBrowser(PostHostClearedCallback());
+    }
     return;
   }
 
@@ -204,6 +210,19 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       LoginUIServiceFactory::GetForProfile(profile_)));
   scoped_login_ui_service_observation_.Reset();
 
+  // If the user declines enabling sync while browser sign-in is forced, prevent
+  // them from going further by cancelling the creation of this profile.
+  // It does not apply to managed accounts.
+  // TODO(https://crbug.com/1478102): Align Managed and Consumer accounts.
+  if (signin_util::IsForceSigninEnabled() &&
+      !chrome::enterprise_util::ProfileCanBeManaged(profile_) &&
+      result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
+    CHECK(base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
+    HandleCancelSigninChoice(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kForceSigninSyncNotGranted);
+    return;
+  }
+
   absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =
       GetSyncOutcome(enterprise_account_, sync_disabled_, result);
   if (outcome) {
@@ -223,8 +242,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
-  if (controller_)
+  if (controller_) {
     controller_->SwitchToSyncConfirmation();
+  }
 }
 
 void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
@@ -246,9 +266,9 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseWelcome(
   }
 }
 
-void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice() {
-  LogOutcome(
-      ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedOnEnterpriseWelcome);
+void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice(
+    ProfileMetrics::ProfileSignedInFlowOutcome outcome) {
+  LogOutcome(outcome);
   // The callback provided by TurnSyncOnHelper must be called, UI_CLOSED
   // makes sure the final callback does not get called. It does not matter
   // what happens to sync as the signed-in profile creation gets cancelled
@@ -263,7 +283,8 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     EnterpriseProfileWelcomeUI::ScreenType type,
     signin::SigninChoice choice) {
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
-    HandleCancelSigninChoice();
+    HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
+                                 kAbortedOnEnterpriseWelcome);
     return;
   }
 
@@ -299,7 +320,8 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
 void ProfilePickerTurnSyncOnDelegate::OnLacrosIntroClosed(
     signin::SigninChoice choice) {
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
-    HandleCancelSigninChoice();
+    HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
+                                 kAbortedOnEnterpriseWelcome);
     return;
   }
   ShowSyncConfirmationScreen();

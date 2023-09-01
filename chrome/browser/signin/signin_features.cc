@@ -105,3 +105,7 @@ BASE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders,
 BASE_FEATURE(kProfilesReordering,
              "ProfilesReordering",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kForceSigninFlowInProfilePicker,
+             "ForceSigninFlowInProfilePicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);

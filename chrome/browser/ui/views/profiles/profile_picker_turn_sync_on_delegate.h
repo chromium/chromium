@@ -76,7 +76,8 @@ class ProfilePickerTurnSyncOnDelegate : public TurnSyncOnHelper::Delegate,
 #endif
 
   // Handles the logic behind when the cancel button is clicked
-  void HandleCancelSigninChoice();
+  void HandleCancelSigninChoice(
+      ProfileMetrics::ProfileSignedInFlowOutcome outcome);
 
   // Reports metric with the outcome of the turn-sync-on flow.
   void LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome outcome);
