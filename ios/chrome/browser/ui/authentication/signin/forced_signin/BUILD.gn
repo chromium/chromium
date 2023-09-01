@@ -33,6 +33,7 @@ source_set("eg2_tests") {
     "//components/policy:policy_code_generate",
     "//components/policy/core/common:common_constants",
     "//components/signin/ios/browser:features",
+    "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
