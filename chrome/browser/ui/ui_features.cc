@@ -29,6 +29,10 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
+BASE_FEATURE(kBrowserMetricsAPI,
+             "BrowserMetricsAPI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_ENABLED_BY_DEFAULT);
 const char kChromeLabsActivationParameterName[] =
