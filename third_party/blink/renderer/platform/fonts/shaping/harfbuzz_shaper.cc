@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_caps_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/east_asian_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/font_features.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
@@ -842,6 +843,9 @@ void HarfBuzzShaper::ShapeSegment(
     CapsFeatureSettingsScopedOverlay caps_overlay(
         &range_data->font_features,
         caps_support.FontFeatureToUse(small_caps_behavior));
+    EastAsianSpacing east_asian_sapcing(text_, range_data->start,
+                                        range_data->end, *adjusted_font,
+                                        range_data->font_features);
     hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
 
     if (!ShapeRange(range_data->buffer, range_data->font_features,

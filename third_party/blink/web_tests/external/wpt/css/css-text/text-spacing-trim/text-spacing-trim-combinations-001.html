@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://drafts.csswg.org/css-text-4/#text-spacing-trim-property">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#container {
+  /* This test prefers fonts with the `halt` feature. */
+  font-family: 'Yu Gothic', 'Noto Sans CJK JP';
+  font-size: 10px;
+}
+</style>
+<div id="container">
+  <div expect="FHFF">国））国</div>
+  <div expect="FHHFF">国）））国</div>
+</div>
+<script>
+const range = document.createRange();
+
+function assertNode(textNode, expect) {
+  const text = textNode.nodeValue;
+  const results = [];
+  for (let i = 0; i < text.length; ++i) {
+    range.setStart(textNode, i);
+    range.setEnd(textNode, i + 1);
+    const rect = range.getBoundingClientRect();
+    results.push(rect.width >= 8 ? 'F' : 'H');
+  }
+  const result = results.join('');
+  assert_equals(result, expect);
+}
+
+for (const element of document.querySelectorAll('div[expect]')) {
+  const textNode = element.firstChild;
+  const text = textNode.nodeValue;
+  test(() => {
+    let expect = element.getAttribute('expect');
+    assertNode(textNode, expect);
+  }, `"${text}"`);
+}
+</script>
