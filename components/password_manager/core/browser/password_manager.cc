@@ -632,7 +632,7 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     }
     field_info_manager->AddFieldInfo(
         {driver_id, renderer_id, GetSignonRealm(driver->GetLastCommittedURL()),
-         value},
+         value, is_likely_otp},
         FindPredictionsForField(renderer_id, driver_id));
   }
 }

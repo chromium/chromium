@@ -38,6 +38,10 @@ struct FieldInfo {
   // Lowercased field value.
   std::u16string value;
 
+  // Whether the field is likely to be an OTP field, based on its HTML
+  // attributes.
+  bool is_likely_otp;
+
   // The type of the field predicted by the server.
   autofill::ServerFieldType type = autofill::ServerFieldType::UNKNOWN_TYPE;
 
@@ -47,7 +51,8 @@ struct FieldInfo {
   FieldInfo(int driver_id,
             autofill::FieldRendererId field_id,
             std::string signon_realm,
-            std::u16string value);
+            std::u16string value,
+            bool is_likely_otp);
   FieldInfo(const FieldInfo&);
   FieldInfo& operator=(const FieldInfo&);
   ~FieldInfo();

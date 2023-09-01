@@ -39,11 +39,13 @@ bool StoresPredictionsForInfo(const FormPredictions& predictions,
 FieldInfo::FieldInfo(int driver_id,
                      FieldRendererId field_id,
                      std::string signon_realm,
-                     std::u16string value)
+                     std::u16string value,
+                     bool is_likely_otp)
     : driver_id(driver_id),
       field_id(field_id),
       signon_realm(signon_realm),
-      value(base::i18n::ToLower(value)) {}
+      value(base::i18n::ToLower(value)),
+      is_likely_otp(is_likely_otp) {}
 
 FieldInfo::FieldInfo(const FieldInfo&) = default;
 FieldInfo& FieldInfo::operator=(const FieldInfo&) = default;
