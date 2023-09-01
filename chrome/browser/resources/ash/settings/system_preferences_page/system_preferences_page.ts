@@ -8,7 +8,7 @@
  * system preferences settings.
  */
 
-import '../date_time_page/date_time_card.js';
+import '../date_time_page/date_time_settings_card.js';
 import '../os_languages_page/language_settings_card.js';
 import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';

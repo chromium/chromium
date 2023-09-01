@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-date-time-card' is the card element containing date and time
+ * 'date-time-settings-card' is the card element containing date and time
  * settings.
  */
 
@@ -27,16 +27,16 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
-import {getTemplate} from './date_time_card.html.js';
+import {getTemplate} from './date_time_settings_card.html.js';
 import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 
-const SettingsDateTimeCardElementBase = DeepLinkingMixin(RouteOriginMixin(
+const DateTimeSettingsCardElementBase = DeepLinkingMixin(RouteOriginMixin(
     PrefsMixin(I18nMixin(WebUiListenerMixin(PolymerElement)))));
 
-export class SettingsDateTimeCardElement extends
-    SettingsDateTimeCardElementBase {
+export class DateTimeSettingsCardElement extends
+    DateTimeSettingsCardElementBase {
   static get is() {
-    return 'settings-date-time-card' as const;
+    return 'date-time-settings-card' as const;
   }
 
   static get template() {
@@ -173,9 +173,9 @@ export class SettingsDateTimeCardElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsDateTimeCardElement.is]: SettingsDateTimeCardElement;
+    [DateTimeSettingsCardElement.is]: DateTimeSettingsCardElement;
   }
 }
 
 customElements.define(
-    SettingsDateTimeCardElement.is, SettingsDateTimeCardElement);
+    DateTimeSettingsCardElement.is, DateTimeSettingsCardElement);

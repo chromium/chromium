@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsDateTimeCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {DateTimeSettingsCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {ControlledRadioButtonElement, CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -188,18 +188,19 @@ suite('<settings-date-time-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  function getDateTimeCard(): SettingsDateTimeCardElement {
-    const dateTimeCard =
-        dateTime.shadowRoot!.querySelector('settings-date-time-card');
-    assertTrue(!!dateTimeCard);
-    return dateTimeCard;
+  function getDateTimeSettingsCard(): DateTimeSettingsCardElement {
+    const dateTimeSettingsCard =
+        dateTime.shadowRoot!.querySelector('date-time-settings-card');
+    assertTrue(!!dateTimeSettingsCard);
+    return dateTimeSettingsCard;
   }
 
   function getTimeZoneAutoDetectToggle(): SettingsToggleButtonElement {
-    const dateTimeCard = getDateTimeCard();
+    const dateTimeSettingsCard = getDateTimeSettingsCard();
     const timeZoneAutoDetectToggle =
-        dateTimeCard.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#timeZoneAutoDetectToggle');
+        dateTimeSettingsCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>(
+                '#timeZoneAutoDetectToggle');
     assertTrue(!!timeZoneAutoDetectToggle);
     return timeZoneAutoDetectToggle;
   }

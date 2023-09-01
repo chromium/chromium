@@ -10,7 +10,7 @@
 
 import '../os_settings_page/os_settings_subpage.js';
 import '../settings_shared.css.js';
-import './date_time_card.js';
+import './date_time_settings_card.js';
 import './date_time_types.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

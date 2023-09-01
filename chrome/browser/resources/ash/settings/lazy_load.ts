@@ -135,8 +135,8 @@ export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://
 // TrustedTypes policies from being created.
 export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
-export {SettingsDateTimeCardElement} from './date_time_page/date_time_card.js';
 export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
+export {DateTimeSettingsCardElement} from './date_time_page/date_time_settings_card.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';

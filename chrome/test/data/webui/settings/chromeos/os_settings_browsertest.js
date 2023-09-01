@@ -200,8 +200,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['DateTimePage', 'date_time_page/date_time_page_test.js'],
  [
-   'DateTimePageDateTimeCard',
-   'date_time_page/date_time_card_test.js',
+   'DateTimePageDateTimeSettingsCard',
+   'date_time_page/date_time_settings_card_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
@@ -859,8 +859,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    },
  ],
  [
-   'SystemPreferencesPageDateTimeCard',
-   'date_time_page/date_time_card_test.js',
+   'SystemPreferencesPageDateTimeSettingsCard',
+   'date_time_page/date_time_settings_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [

@@ -62,13 +62,14 @@ suite('<settings-system-preferences-page>', () => {
   });
 
   suite('Date and Time subsection', () => {
-    test('Date and Time card is visible', async () => {
+    test('Date and Time settings card is visible', async () => {
       await createPage();
 
-      const dateTimeCard =
-          page.shadowRoot!.querySelector('settings-date-time-card');
+      const dateTimeSettingsCard =
+          page.shadowRoot!.querySelector('date-time-settings-card');
       assertTrue(
-          isVisible(dateTimeCard), 'Date and Time card should be visible.');
+          isVisible(dateTimeSettingsCard),
+          'Date and Time settings card should be visible.');
     });
 
     test('Timezone subpage is visible', async () => {

@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsDateTimeCardElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
+import {DateTimeSettingsCardElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSelectorElement} from 'chrome://os-settings/lazy_load.js';
 import {CrLinkRowElement, CrSettingsPrefs, PrefsState, Router, routes, settingMojom, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -84,13 +84,13 @@ function getFakePrefs() {
   };
 }
 
-suite('<settings-date-time-card>', () => {
+suite('<date-time-settings-card>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
   const route =
       isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.DATETIME;
 
-  let dateTimeCard: SettingsDateTimeCardElement;
+  let dateTimeSettingsCard: DateTimeSettingsCardElement;
   let testBrowserProxy: TestTimeZoneBrowserProxy;
 
   setup(() => {
@@ -101,12 +101,12 @@ suite('<settings-date-time-card>', () => {
   });
 
   teardown(() => {
-    dateTimeCard.remove();
+    dateTimeSettingsCard.remove();
     testBrowserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
-  function createDateTimeCard(prefs: PrefsState): void {
+  function createDateTimeSettingsCard(prefs: PrefsState): void {
     const initialTimezoneDisplayName = prefs['cros'].system.timezone.value;
 
     // Find the desired initial timezone by ID.
@@ -119,25 +119,25 @@ suite('<settings-date-time-card>', () => {
       timeZoneName,
     });
 
-    dateTimeCard = document.createElement('settings-date-time-card');
-    dateTimeCard.prefs = prefs;
-    dateTimeCard.activeTimeZoneDisplayName = initialTimezoneDisplayName;
+    dateTimeSettingsCard = document.createElement('date-time-settings-card');
+    dateTimeSettingsCard.prefs = prefs;
+    dateTimeSettingsCard.activeTimeZoneDisplayName = initialTimezoneDisplayName;
     CrSettingsPrefs.setInitialized();
-    document.body.appendChild(dateTimeCard);
+    document.body.appendChild(dateTimeSettingsCard);
     flush();
   }
 
   function getTimezoneAutoDetectToggle(): SettingsToggleButtonElement {
-    const element =
-        dateTimeCard.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#timeZoneAutoDetectToggle');
+    const element = dateTimeSettingsCard.shadowRoot!
+                        .querySelector<SettingsToggleButtonElement>(
+                            '#timeZoneAutoDetectToggle');
     assertTrue(!!element);
     return element;
   }
 
   function getTimeZoneSelector(): TimezoneSelectorElement {
     const timezoneSelector =
-        dateTimeCard.shadowRoot!.querySelector('timezone-selector');
+        dateTimeSettingsCard.shadowRoot!.querySelector('timezone-selector');
     assertTrue(!!timezoneSelector);
     return timezoneSelector;
   }
@@ -159,10 +159,10 @@ suite('<settings-date-time-card>', () => {
 
   test('Set date and time row only shows if editable', async () => {
     const prefs = getFakePrefs();
-    createDateTimeCard(prefs);
+    createDateTimeSettingsCard(prefs);
 
     const setDateTimeRow =
-        dateTimeCard.shadowRoot!.querySelector<CrLinkRowElement>(
+        dateTimeSettingsCard.shadowRoot!.querySelector<CrLinkRowElement>(
             '#setDateTimeRow');
     assertFalse(isVisible(setDateTimeRow));
 
@@ -184,25 +184,26 @@ suite('<settings-date-time-card>', () => {
     setup(() => {
       const prefs = getFakePrefs();
       prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = true;
-      createDateTimeCard(prefs);
+      createDateTimeSettingsCard(prefs);
     });
 
     test('Timezone selector is hidden', () => {
       const timezoneSelector =
-          dateTimeCard.shadowRoot!.querySelector('timezone-selector');
+          dateTimeSettingsCard.shadowRoot!.querySelector('timezone-selector');
       assertFalse(isVisible(timezoneSelector));
     });
 
     test('Timezone auto-detect toggle is hidden', () => {
-      const toggle =
-          dateTimeCard.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#timeZoneAutoDetectToggle');
+      const toggle = dateTimeSettingsCard.shadowRoot!
+                         .querySelector<SettingsToggleButtonElement>(
+                             '#timeZoneAutoDetectToggle');
       assertFalse(isVisible(toggle));
     });
 
     test('Timezone subpage row is visible', () => {
-      const rowElement = dateTimeCard.shadowRoot!.querySelector<HTMLElement>(
-          '#timeZoneSettingsTrigger');
+      const rowElement =
+          dateTimeSettingsCard.shadowRoot!.querySelector<HTMLElement>(
+              '#timeZoneSettingsTrigger');
       assertTrue(isVisible(rowElement));
     });
 
@@ -211,7 +212,7 @@ suite('<settings-date-time-card>', () => {
         async () => {
           const triggerSelector = '#timeZoneSettingsTrigger';
           const rowElement =
-              dateTimeCard.shadowRoot!.querySelector<HTMLElement>(
+              dateTimeSettingsCard.shadowRoot!.querySelector<HTMLElement>(
                   triggerSelector);
           assertTrue(!!rowElement);
           rowElement.click();
@@ -220,10 +221,10 @@ suite('<settings-date-time-card>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           Router.getInstance().navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitAfterNextRender(dateTimeCard);
+          await waitAfterNextRender(dateTimeSettingsCard);
 
           assertEquals(
-              rowElement, dateTimeCard.shadowRoot!.activeElement,
+              rowElement, dateTimeSettingsCard.shadowRoot!.activeElement,
               `${triggerSelector} should be focused.`);
         });
   });
@@ -232,12 +233,12 @@ suite('<settings-date-time-card>', () => {
     setup(() => {
       const prefs = getFakePrefs();
       prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
-      createDateTimeCard(prefs);
+      createDateTimeSettingsCard(prefs);
     });
 
     test('Timezone selector is visible', () => {
       const timezoneSelector =
-          dateTimeCard.shadowRoot!.querySelector('timezone-selector');
+          dateTimeSettingsCard.shadowRoot!.querySelector('timezone-selector');
       assertTrue(isVisible(timezoneSelector));
     });
 
@@ -256,7 +257,7 @@ suite('<settings-date-time-card>', () => {
       const toggle = getTimezoneAutoDetectToggle();
       await waitAfterNextRender(toggle);
       assertEquals(
-          toggle, dateTimeCard.shadowRoot!.activeElement,
+          toggle, dateTimeSettingsCard.shadowRoot!.activeElement,
           `Auto set time zone toggle should be focused for settingId=${
               settingId}.`);
     });
@@ -280,13 +281,13 @@ suite('<settings-date-time-card>', () => {
       const autodetectToggle = getTimezoneAutoDetectToggle();
       assertTrue(
           autodetectToggle.checked, 'Expected auto-detect toggle to be on');
-      assertTrue(dateTimeCard.get(
+      assertTrue(dateTimeSettingsCard.get(
           'prefs.generated.resolve_timezone_by_geolocation_on_off.value'));
 
       autodetectToggle.click();
       assertFalse(
           autodetectToggle.checked, 'Expected auto-detect toggle to be off');
-      assertFalse(dateTimeCard.get(
+      assertFalse(dateTimeSettingsCard.get(
           'prefs.generated.resolve_timezone_by_geolocation_on_off.value'));
     });
   });
