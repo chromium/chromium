@@ -56,7 +56,8 @@ class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
 
 TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kGlanceablesV2);
+  feature_list.InitWithFeatures(
+      {}, {features::kGlanceablesV2, features::kGlanceablesV2TrustedTesters});
 
   EXPECT_FALSE(
       GlanceablesKeyedServiceFactory::GetInstance()->GetService(GetProfile()));

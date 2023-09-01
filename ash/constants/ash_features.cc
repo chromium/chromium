@@ -1274,7 +1274,7 @@ BASE_FEATURE(kGlanceablesV2,
 // Enables glanceables on time management surface for trusted testers.
 BASE_FEATURE(kGlanceablesV2TrustedTesters,
              "GlanceablesV2TrustedTesters",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables glanceables on time management surface for classroom teachers.
 BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
