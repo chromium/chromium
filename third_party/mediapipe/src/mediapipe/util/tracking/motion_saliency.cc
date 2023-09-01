@@ -24,12 +24,12 @@
 #include <memory>
 #include <vector>
 
-#include "mediapipe/framework/port/logging.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/util/tracking/camera_motion.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/region_flow.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -418,8 +418,8 @@ void DetermineFeatureModes(
           center = new_center;
         }
       } else {
-        LOG(WARNING) << "No features found in band_width radius, "
-                     << "should not happen. ";
+        ABSL_LOG(WARNING) << "No features found in band_width radius, "
+                          << "should not happen. ";
         break;
       }
     }

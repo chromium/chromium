@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "absl/container/btree_map.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/string_view.h"
 #include "google/protobuf/message_lite.h"
 #include "mediapipe/framework/api2/port.h"
@@ -18,7 +19,6 @@
 #include "mediapipe/framework/calculator_contract.h"
 #include "mediapipe/framework/port/any_proto.h"
 #include "mediapipe/framework/port/ret_check.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {
@@ -722,14 +722,14 @@ class Graph {
       config.set_type(type_);
     }
     FixUnnamedConnections();
-    CHECK_OK(UpdateBoundaryConfig(&config));
+    ABSL_CHECK_OK(UpdateBoundaryConfig(&config));
     for (const std::unique_ptr<NodeBase>& node : nodes_) {
       auto* out_node = config.add_node();
-      CHECK_OK(UpdateNodeConfig(*node, out_node));
+      ABSL_CHECK_OK(UpdateNodeConfig(*node, out_node));
     }
     for (const std::unique_ptr<PacketGenerator>& node : packet_gens_) {
       auto* out_node = config.add_packet_generator();
-      CHECK_OK(UpdateNodeConfig(*node, out_node));
+      ABSL_CHECK_OK(UpdateNodeConfig(*node, out_node));
     }
     return config;
   }

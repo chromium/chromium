@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_format.h"
@@ -43,7 +44,6 @@
 #if MEDIAPIPE_OPENGL_ES_VERSION < MEDIAPIPE_OPENGL_ES_31
 #include "mediapipe/gpu/gl_simple_shaders.h"
 #include "mediapipe/gpu/shader_util.h"
-#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_OPENGL_ES_VERSION < MEDIAPIPE_OPENGL_ES_31
 #endif  // MEDIAPIPE_METAL_ENABLED
 #endif  // !MEDIAPIPE_DISABLE_GPU

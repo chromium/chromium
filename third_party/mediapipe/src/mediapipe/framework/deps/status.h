@@ -21,9 +21,9 @@
 #include <string>
 
 #include "absl/base/attributes.h"
+#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
-#include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {
 
@@ -44,7 +44,7 @@ inline std::string* MediaPipeCheckOpHelper(absl::Status v, const char* msg) {
 
 #define MEDIAPIPE_DO_CHECK_OK(val, level)                             \
   while (auto _result = mediapipe::MediaPipeCheckOpHelper(val, #val)) \
-  LOG(level) << *(_result)
+  ABSL_LOG(level) << *(_result)
 
 #define MEDIAPIPE_CHECK_OK(val) MEDIAPIPE_DO_CHECK_OK(val, FATAL)
 #define MEDIAPIPE_QCHECK_OK(val) MEDIAPIPE_DO_CHECK_OK(val, QFATAL)
@@ -52,8 +52,9 @@ inline std::string* MediaPipeCheckOpHelper(absl::Status v, const char* msg) {
 #ifndef NDEBUG
 #define MEDIAPIPE_DCHECK_OK(val) MEDIAPIPE_CHECK_OK(val)
 #else
-#define MEDIAPIPE_DCHECK_OK(val) \
-  while (false && (absl::OkStatus() == (val))) LOG(FATAL)
+#define MEDIAPIPE_DCHECK_OK(val)               \
+  while (false && (absl::OkStatus() == (val))) \
+  ABSL_LOG(FATAL)
 #endif
 
 #define CHECK_OK MEDIAPIPE_CHECK_OK

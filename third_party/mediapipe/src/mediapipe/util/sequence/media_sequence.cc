@@ -17,11 +17,11 @@
 #include <cmath>
 #include <limits>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_split.h"
 #include "mediapipe/framework/port/opencv_imgcodecs_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/sequence/media_sequence_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace mediasequence {

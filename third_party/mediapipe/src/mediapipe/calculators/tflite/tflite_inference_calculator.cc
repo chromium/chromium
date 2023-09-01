@@ -17,9 +17,12 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "mediapipe/calculators/tflite/tflite_inference_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
+#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/tflite/config.h"
 
@@ -86,7 +89,6 @@ constexpr char kTensorsGpuTag[] = "TENSORS_GPU";
 
 #if defined(MEDIAPIPE_EDGE_TPU)
 #include "tflite/public/edgetpu.h"
-#include "absl/log/absl_check.h"
 
 // Checkes whether model contains Edge TPU custom op or not.
 bool ContainsEdgeTpuCustomOp(const tflite::FlatBufferModel& model) {
@@ -111,7 +113,7 @@ std::unique_ptr<tflite::Interpreter> BuildEdgeTpuInterpreter(
   resolver->AddCustom(edgetpu::kCustomOp, edgetpu::RegisterCustomOp());
   std::unique_ptr<tflite::Interpreter> interpreter;
   ABSL_CHECK_EQ(tflite::InterpreterBuilder(model, *resolver)(&interpreter),
-           kTfLiteOk);
+                kTfLiteOk);
   interpreter->SetExternalContext(kTfLiteEdgeTpuContext, edgetpu_context);
   return interpreter;
 }
@@ -407,8 +409,9 @@ absl::Status TfLiteInferenceCalculator::Open(CalculatorContext* cc) {
   }
 
   if (use_advanced_gpu_api_ && !gpu_input_) {
-    LOG(WARNING) << "Cannot use advanced GPU APIs, input must be GPU buffers."
-                    "Falling back to the default TFLite API.";
+    ABSL_LOG(WARNING)
+        << "Cannot use advanced GPU APIs, input must be GPU buffers."
+           "Falling back to the default TFLite API.";
     use_advanced_gpu_api_ = false;
   }
   ABSL_CHECK(!use_advanced_gpu_api_ || gpu_inference_);
@@ -803,7 +806,8 @@ absl::Status TfLiteInferenceCalculator::InitTFLiteGPURunner(
       const int tensor_idx = interpreter_->inputs()[i];
       interpreter_->SetTensorParametersReadWrite(tensor_idx, kTfLiteFloat32, "",
                                                  shape, quant);
-      ABSL_CHECK(interpreter_->ResizeInputTensor(tensor_idx, shape) == kTfLiteOk);
+      ABSL_CHECK(interpreter_->ResizeInputTensor(tensor_idx, shape) ==
+                 kTfLiteOk);
     }
     ABSL_CHECK(interpreter_->AllocateTensors() == kTfLiteOk);
   }
@@ -1054,7 +1058,7 @@ absl::Status TfLiteInferenceCalculator::LoadDelegate(CalculatorContext* cc) {
           gpu_data_in_[i]->shape.w * gpu_data_in_[i]->shape.c;
       // Input to model can be RGBA only.
       if (tensor->dims->data[3] != 4) {
-        LOG(WARNING) << "Please ensure input GPU tensor is 4 channels.";
+        ABSL_LOG(WARNING) << "Please ensure input GPU tensor is 4 channels.";
       }
       const std::string shader_source =
           absl::Substitute(R"(#include <metal_stdlib>

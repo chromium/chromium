@@ -18,10 +18,9 @@ limitations under the License.
 
 #include <vector>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/status/statusor.h"
 #include "mediapipe/framework/port/integral_types.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

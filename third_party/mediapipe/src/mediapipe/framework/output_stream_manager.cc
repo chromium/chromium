@@ -14,10 +14,10 @@
 
 #include "mediapipe/framework/output_stream_manager.h"
 
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/input_stream_handler.h"
 #include "mediapipe/framework/port/status_builder.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

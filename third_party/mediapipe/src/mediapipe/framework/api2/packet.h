@@ -13,11 +13,11 @@
 #include <functional>
 #include <type_traits>
 
+#include "absl/log/absl_check.h"
 #include "absl/meta/type_traits.h"
 #include "mediapipe/framework/api2/tuple.h"
 #include "mediapipe/framework/packet.h"
 #include "mediapipe/framework/port/logging.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {

@@ -19,6 +19,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -46,7 +48,6 @@
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/tool/tag_map.h"
 #include "mediapipe/framework/tool/validate_name.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -507,7 +508,7 @@ absl::Status CalculatorNode::OpenNode() {
                                                             Timestamp(0));
   }
 
-  LOG_IF(FATAL, result == tool::StatusStop()) << absl::Substitute(
+  ABSL_LOG_IF(FATAL, result == tool::StatusStop()) << absl::Substitute(
       "Open() on node \"$0\" returned tool::StatusStop() which should only be "
       "used to signal that a source node is done producing data.",
       DebugName());
@@ -520,7 +521,7 @@ absl::Status CalculatorNode::OpenNode() {
     offset_enabled = offset_enabled || stream->Spec()->offset_enabled;
   }
   if (offset_enabled && input_stream_handler_->SyncSetCount() > 1) {
-    LOG(WARNING) << absl::Substitute(
+    ABSL_LOG(WARNING) << absl::Substitute(
         "Calculator node \"$0\" is configured with multiple input sync-sets "
         "and an output timestamp-offset, which will often conflict due to "
         "the order of packet arrival.  With multiple input sync-sets, use "
@@ -602,7 +603,7 @@ absl::Status CalculatorNode::CloseNode(const absl::Status& graph_status,
   }
   needs_to_close_ = false;
 
-  LOG_IF(FATAL, result == tool::StatusStop()) << absl::Substitute(
+  ABSL_LOG_IF(FATAL, result == tool::StatusStop()) << absl::Substitute(
       "Close() on node \"$0\" returned tool::StatusStop() which should only be "
       "used to signal that a source node is done producing data.",
       DebugName());
@@ -895,8 +896,8 @@ absl::Status CalculatorNode::ProcessNode(
         // too.
         // If the streams are closed, there shouldn't be more input.
         ABSL_CHECK_EQ(calculator_context_manager_.NumberOfContextTimestamps(
-                     *calculator_context),
-                 1);
+                          *calculator_context),
+                      1);
         return CloseNode(absl::OkStatus(), /*graph_run_ended=*/false);
       } else {
         RET_CHECK_FAIL()

@@ -16,8 +16,9 @@
 
 #include <string>
 
-#include "absl/strings/str_cat.h"
 #include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
+#include "absl/strings/str_cat.h"
 
 namespace mediapipe {
 
@@ -113,7 +114,7 @@ std::string Timestamp::DebugString() const {
     } else if (*this == Timestamp::Done()) {
       return "Timestamp::Done()";
     } else {
-      LOG(FATAL) << "Unknown special type.";
+      ABSL_LOG(FATAL) << "Unknown special type.";
     }
   }
   return absl::StrCat(timestamp_.value());

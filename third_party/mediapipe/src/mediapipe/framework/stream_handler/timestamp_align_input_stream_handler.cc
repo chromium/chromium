@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/strings/substitute.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_context_manager.h"
@@ -32,7 +32,6 @@
 #include "mediapipe/framework/stream_handler/timestamp_align_input_stream_handler.pb.h"
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/validate_name.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

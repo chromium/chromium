@@ -14,9 +14,9 @@
 
 #include "mediapipe/framework/formats/image_opencv.h"
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/formats/image_format.pb.h"
 #include "mediapipe/framework/port/logging.h"
-#include "absl/log/absl_check.h"
 
 namespace {
 // Maps Image format to OpenCV Mat type.

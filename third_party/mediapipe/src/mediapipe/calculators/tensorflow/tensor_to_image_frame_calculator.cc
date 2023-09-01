@@ -14,6 +14,7 @@
 
 #include <iostream>
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/calculators/tensorflow/tensor_to_image_frame_calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/image_frame.h"
@@ -22,7 +23,6 @@
 #include "mediapipe/framework/port/status_macros.h"
 #include "tensorflow/core/framework/tensor.h"
 #include "tensorflow/core/framework/types.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

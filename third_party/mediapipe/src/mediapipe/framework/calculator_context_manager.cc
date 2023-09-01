@@ -16,10 +16,10 @@
 
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/port/logging.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

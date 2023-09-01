@@ -2,10 +2,11 @@
 
 #include <memory>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/gpu/gl_context.h"
 #include "mediapipe/gpu/gpu_buffer_storage_image_frame.h"
 #include "mediapipe/objc/util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -114,7 +115,7 @@ static void ViewDoneWritingSimulatorWorkaround(CVPixelBufferRef pixel_buffer,
                              view.target(), 0, 0);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
     } else {
-      LOG(ERROR) << "unsupported pixel format: " << pixel_format;
+      ABSL_LOG(ERROR) << "unsupported pixel format: " << pixel_format;
     }
     err = CVPixelBufferUnlockBaseAddress(pixel_buffer, 0);
     ABSL_CHECK(err == kCVReturnSuccess)

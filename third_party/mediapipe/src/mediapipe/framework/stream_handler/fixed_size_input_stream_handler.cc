@@ -19,8 +19,8 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/check.h"
-#include "absl/log/log.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_context_manager.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -31,7 +31,6 @@
 #include "mediapipe/framework/stream_handler/default_input_stream_handler.h"
 #include "mediapipe/framework/stream_handler/fixed_size_input_stream_handler.pb.h"
 #include "mediapipe/framework/tool/tag_map.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -183,7 +182,7 @@ void FixedSizeInputStreamHandler::FillInputSet(Timestamp input_timestamp,
   ABSL_CHECK(input_set);
   absl::MutexLock lock(&erase_mutex_);
   if (!pending_) {
-    LOG(ERROR) << "FillInputSet called without GetNodeReadiness.";
+    ABSL_LOG(ERROR) << "FillInputSet called without GetNodeReadiness.";
   }
   // input_timestamp is recalculated here to process the most recent packets.
   EraseSurplusPackets(true);

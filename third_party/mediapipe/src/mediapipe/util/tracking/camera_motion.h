@@ -17,10 +17,11 @@
 
 #include <vector>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/util/tracking/camera_motion.pb.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -166,7 +167,7 @@ Model UnstableCameraMotionToModel(const CameraMotion& camera_motion,
     }
 
     case CameraMotion::VALID:
-      LOG(FATAL) << "Specify a type != VALID";
+      ABSL_LOG(FATAL) << "Specify a type != VALID";
       return Model();
   }
 }
@@ -226,7 +227,7 @@ Model ProjectToTypeModel(const Model& model, float frame_width,
 template <>
 inline MixtureHomography ProjectToTypeModel(const MixtureHomography&, float,
                                             float, CameraMotion::Type) {
-  LOG(FATAL) << "Projection not supported for mixtures.";
+  ABSL_LOG(FATAL) << "Projection not supported for mixtures.";
   return MixtureHomography();
 }
 

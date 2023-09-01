@@ -19,11 +19,12 @@
 #include <algorithm>
 #include <cmath>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/color.pb.h"
 #include "mediapipe/util/render_data.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace {
@@ -117,7 +118,7 @@ void AnnotationRenderer::RenderDataOnImage(const RenderData& render_data) {
     } else if (annotation.data_case() == RenderAnnotation::kScribble) {
       DrawScribble(annotation);
     } else {
-      LOG(FATAL) << "Unknown annotation type: " << annotation.data_case();
+      ABSL_LOG(FATAL) << "Unknown annotation type: " << annotation.data_case();
     }
   }
 }
@@ -149,11 +150,11 @@ void AnnotationRenderer::DrawRectangle(const RenderAnnotation& annotation) {
   const auto& rectangle = annotation.rectangle();
   if (rectangle.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.left(), rectangle.top(),
-                                       image_width_, image_height_, &left,
-                                       &top));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(), rectangle.bottom(),
-                                       image_width_, image_height_, &right,
-                                       &bottom));
+                                            image_width_, image_height_, &left,
+                                            &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(),
+                                            rectangle.bottom(), image_width_,
+                                            image_height_, &right, &bottom));
   } else {
     left = static_cast<int>(rectangle.left() * scale_factor_);
     top = static_cast<int>(rectangle.top() * scale_factor_);
@@ -201,11 +202,11 @@ void AnnotationRenderer::DrawFilledRectangle(
   const auto& rectangle = annotation.filled_rectangle().rectangle();
   if (rectangle.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.left(), rectangle.top(),
-                                       image_width_, image_height_, &left,
-                                       &top));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(), rectangle.bottom(),
-                                       image_width_, image_height_, &right,
-                                       &bottom));
+                                            image_width_, image_height_, &left,
+                                            &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(),
+                                            rectangle.bottom(), image_width_,
+                                            image_height_, &right, &bottom));
   } else {
     left = static_cast<int>(rectangle.left() * scale_factor_);
     top = static_cast<int>(rectangle.top() * scale_factor_);
@@ -241,11 +242,11 @@ void AnnotationRenderer::DrawRoundedRectangle(
   const auto& rectangle = annotation.rounded_rectangle().rectangle();
   if (rectangle.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.left(), rectangle.top(),
-                                       image_width_, image_height_, &left,
-                                       &top));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(), rectangle.bottom(),
-                                       image_width_, image_height_, &right,
-                                       &bottom));
+                                            image_width_, image_height_, &left,
+                                            &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(),
+                                            rectangle.bottom(), image_width_,
+                                            image_height_, &right, &bottom));
   } else {
     left = static_cast<int>(rectangle.left() * scale_factor_);
     top = static_cast<int>(rectangle.top() * scale_factor_);
@@ -274,11 +275,11 @@ void AnnotationRenderer::DrawFilledRoundedRectangle(
       annotation.filled_rounded_rectangle().rounded_rectangle().rectangle();
   if (rectangle.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.left(), rectangle.top(),
-                                       image_width_, image_height_, &left,
-                                       &top));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(), rectangle.bottom(),
-                                       image_width_, image_height_, &right,
-                                       &bottom));
+                                            image_width_, image_height_, &left,
+                                            &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(rectangle.right(),
+                                            rectangle.bottom(), image_width_,
+                                            image_height_, &right, &bottom));
   } else {
     left = static_cast<int>(rectangle.left() * scale_factor_);
     top = static_cast<int>(rectangle.top() * scale_factor_);
@@ -345,9 +346,9 @@ void AnnotationRenderer::DrawOval(const RenderAnnotation& annotation) {
   int bottom = -1;
   const auto& enclosing_rectangle = annotation.oval().rectangle();
   if (enclosing_rectangle.normalized()) {
-    ABSL_CHECK(NormalizedtoPixelCoordinates(enclosing_rectangle.left(),
-                                       enclosing_rectangle.top(), image_width_,
-                                       image_height_, &left, &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(
+        enclosing_rectangle.left(), enclosing_rectangle.top(), image_width_,
+        image_height_, &left, &top));
     ABSL_CHECK(NormalizedtoPixelCoordinates(
         enclosing_rectangle.right(), enclosing_rectangle.bottom(), image_width_,
         image_height_, &right, &bottom));
@@ -374,9 +375,9 @@ void AnnotationRenderer::DrawFilledOval(const RenderAnnotation& annotation) {
   int bottom = -1;
   const auto& enclosing_rectangle = annotation.filled_oval().oval().rectangle();
   if (enclosing_rectangle.normalized()) {
-    ABSL_CHECK(NormalizedtoPixelCoordinates(enclosing_rectangle.left(),
-                                       enclosing_rectangle.top(), image_width_,
-                                       image_height_, &left, &top));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(
+        enclosing_rectangle.left(), enclosing_rectangle.top(), image_width_,
+        image_height_, &left, &top));
     ABSL_CHECK(NormalizedtoPixelCoordinates(
         enclosing_rectangle.right(), enclosing_rectangle.bottom(), image_width_,
         image_height_, &right, &bottom));
@@ -404,11 +405,11 @@ void AnnotationRenderer::DrawArrow(const RenderAnnotation& annotation) {
   const auto& arrow = annotation.arrow();
   if (arrow.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(arrow.x_start(), arrow.y_start(),
-                                       image_width_, image_height_, &x_start,
-                                       &y_start));
+                                            image_width_, image_height_,
+                                            &x_start, &y_start));
     ABSL_CHECK(NormalizedtoPixelCoordinates(arrow.x_end(), arrow.y_end(),
-                                       image_width_, image_height_, &x_end,
-                                       &y_end));
+                                            image_width_, image_height_, &x_end,
+                                            &y_end));
   } else {
     x_start = static_cast<int>(arrow.x_start() * scale_factor_);
     y_start = static_cast<int>(arrow.y_start() * scale_factor_);
@@ -455,7 +456,7 @@ void AnnotationRenderer::DrawPoint(const RenderAnnotation::Point& point,
   int y = -1;
   if (point.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(point.x(), point.y(), image_width_,
-                                       image_height_, &x, &y));
+                                            image_height_, &x, &y));
   } else {
     x = static_cast<int>(point.x() * scale_factor_);
     y = static_cast<int>(point.y() * scale_factor_);
@@ -483,10 +484,11 @@ void AnnotationRenderer::DrawLine(const RenderAnnotation& annotation) {
   const auto& line = annotation.line();
   if (line.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_start(), line.y_start(),
-                                       image_width_, image_height_, &x_start,
-                                       &y_start));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_end(), line.y_end(), image_width_,
-                                       image_height_, &x_end, &y_end));
+                                            image_width_, image_height_,
+                                            &x_start, &y_start));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_end(), line.y_end(),
+                                            image_width_, image_height_, &x_end,
+                                            &y_end));
   } else {
     x_start = static_cast<int>(line.x_start() * scale_factor_);
     y_start = static_cast<int>(line.y_start() * scale_factor_);
@@ -511,10 +513,11 @@ void AnnotationRenderer::DrawGradientLine(const RenderAnnotation& annotation) {
   const auto& line = annotation.gradient_line();
   if (line.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_start(), line.y_start(),
-                                       image_width_, image_height_, &x_start,
-                                       &y_start));
-    ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_end(), line.y_end(), image_width_,
-                                       image_height_, &x_end, &y_end));
+                                            image_width_, image_height_,
+                                            &x_start, &y_start));
+    ABSL_CHECK(NormalizedtoPixelCoordinates(line.x_end(), line.y_end(),
+                                            image_width_, image_height_, &x_end,
+                                            &y_end));
   } else {
     x_start = static_cast<int>(line.x_start() * scale_factor_);
     y_start = static_cast<int>(line.y_start() * scale_factor_);
@@ -539,8 +542,8 @@ void AnnotationRenderer::DrawText(const RenderAnnotation& annotation) {
   const auto& text = annotation.text();
   if (text.normalized()) {
     ABSL_CHECK(NormalizedtoPixelCoordinates(text.left(), text.baseline(),
-                                       image_width_, image_height_, &left,
-                                       &baseline));
+                                            image_width_, image_height_, &left,
+                                            &baseline));
     font_size = static_cast<int>(round(text.font_height() * image_height_));
   } else {
     left = static_cast<int>(text.left() * scale_factor_);

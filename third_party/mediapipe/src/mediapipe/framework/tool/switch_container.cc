@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -31,7 +32,6 @@
 #include "mediapipe/framework/tool/name_util.h"
 #include "mediapipe/framework/tool/subgraph_expansion.h"
 #include "mediapipe/framework/tool/switch_container.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace tool {

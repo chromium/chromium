@@ -17,6 +17,8 @@
 #include <memory>
 #include <unordered_set>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/numbers.h"
 #include "mediapipe/calculators/video/box_detector_calculator.pb.h"
@@ -25,7 +27,6 @@
 #include "mediapipe/framework/formats/image_frame_opencv.h"
 #include "mediapipe/framework/formats/video_stream_header.h"
 #include "mediapipe/framework/port/integral_types.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/opencv_features2d_inc.h"
 #include "mediapipe/framework/port/ret_check.h"
@@ -43,7 +44,6 @@
 #include "mediapipe/util/android/file/base/helpers.h"
 #else
 #include "mediapipe/framework/port/file_helpers.h"
-#include "absl/log/absl_check.h"
 #endif
 
 namespace mediapipe {
@@ -199,7 +199,8 @@ absl::Status BoxDetectorCalculator::Open(CalculatorContext* cc) {
     if (!predefined_index.ParseFromString(cc->InputSidePackets()
                                               .Tag(kIndexProtoStringTag)
                                               .Get<std::string>())) {
-      LOG(FATAL) << "failed to parse BoxDetectorIndex from INDEX_PROTO_STRING";
+      ABSL_LOG(FATAL)
+          << "failed to parse BoxDetectorIndex from INDEX_PROTO_STRING";
     }
     box_detector_->AddBoxDetectorIndex(predefined_index);
   }
@@ -211,7 +212,7 @@ absl::Status BoxDetectorCalculator::Open(CalculatorContext* cc) {
     MP_RETURN_IF_ERROR(file::GetContents(string_path, &index_string));
     BoxDetectorIndex predefined_index;
     if (!predefined_index.ParseFromString(index_string)) {
-      LOG(FATAL)
+      ABSL_LOG(FATAL)
           << "failed to parse BoxDetectorIndex from index_proto_filename";
     }
     box_detector_->AddBoxDetectorIndex(predefined_index);
@@ -249,7 +250,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
     BoxDetectorIndex predefined_index;
     if (!predefined_index.ParseFromString(
             add_index_stream->Get<std::string>())) {
-      LOG(FATAL) << "failed to parse BoxDetectorIndex from ADD_INDEX";
+      ABSL_LOG(FATAL) << "failed to parse BoxDetectorIndex from ADD_INDEX";
     }
     box_detector_->AddBoxDetectorIndex(predefined_index);
   }
@@ -278,7 +279,7 @@ absl::Status BoxDetectorCalculator::Process(CalculatorContext* cc) {
                                        : nullptr;
 
   ABSL_CHECK(track_stream != nullptr || video_stream != nullptr ||
-        (feature_stream != nullptr && descriptor_stream != nullptr))
+             (feature_stream != nullptr && descriptor_stream != nullptr))
       << "One and only one of {tracking_data, input image frame, "
          "feature/descriptor} need to be valid.";
 

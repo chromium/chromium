@@ -27,7 +27,8 @@
 #include <utility>
 #include <vector>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
@@ -43,7 +44,6 @@
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/name_util.h"
 #include "mediapipe/framework/tool/status_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -167,7 +167,7 @@ void AddCallbackCalculator(const std::string& stream_name,
     sink_node->add_input_side_packet(
         absl::StrCat("CALLBACK:", input_side_packet_name));
   } else {
-    LOG(FATAL) << "AddCallbackCalculator must use std::function";
+    ABSL_LOG(FATAL) << "AddCallbackCalculator must use std::function";
   }
 }
 
@@ -242,7 +242,7 @@ void AddCallbackWithHeaderCalculator(const std::string& stream_name,
     sink_node->add_input_side_packet(
         absl::StrCat("CALLBACK:", input_side_packet_name));
   } else {
-    LOG(FATAL) << "AddCallbackWithHeaderCalculator must use std::function";
+    ABSL_LOG(FATAL) << "AddCallbackWithHeaderCalculator must use std::function";
   }
 }
 
@@ -291,7 +291,7 @@ absl::Status CallbackCalculator::Open(CalculatorContext* cc) {
             .Tag("VECTOR_CALLBACK")
             .Get<std::function<void(const std::vector<Packet>&)>>();
   } else {
-    LOG(FATAL) << "InputSidePackets must use tags.";
+    ABSL_LOG(FATAL) << "InputSidePackets must use tags.";
   }
   if (callback_ == nullptr && vector_callback_ == nullptr) {
     return mediapipe::InvalidArgumentErrorBuilder(MEDIAPIPE_LOC)
@@ -348,7 +348,7 @@ absl::Status CallbackWithHeaderCalculator::Open(CalculatorContext* cc) {
                     .Tag("CALLBACK")
                     .Get<std::function<void(const Packet&, const Packet&)>>();
   } else {
-    LOG(FATAL) << "InputSidePackets must use tags.";
+    ABSL_LOG(FATAL) << "InputSidePackets must use tags.";
   }
   if (callback_ == nullptr) {
     return mediapipe::InvalidArgumentErrorBuilder(MEDIAPIPE_LOC)

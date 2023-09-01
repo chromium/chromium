@@ -23,12 +23,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/formats/image_format.pb.h"
 #include "mediapipe/framework/port/aligned_malloc_and_free.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/proto_ns.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -288,7 +288,7 @@ int ImageFrame::NumberOfChannelsForFormat(ImageFormat::Format format) {
     case ImageFormat::SBGRA:
       return 4;
     default:
-      LOG(FATAL) << InvalidFormatString(format);
+      ABSL_LOG(FATAL) << InvalidFormatString(format);
   }
 }
 
@@ -319,7 +319,7 @@ int ImageFrame::ChannelSizeForFormat(ImageFormat::Format format) {
     case ImageFormat::SBGRA:
       return sizeof(uint8_t);
     default:
-      LOG(FATAL) << InvalidFormatString(format);
+      ABSL_LOG(FATAL) << InvalidFormatString(format);
   }
 }
 
@@ -350,7 +350,7 @@ int ImageFrame::ByteDepthForFormat(ImageFormat::Format format) {
     case ImageFormat::SBGRA:
       return 1;
     default:
-      LOG(FATAL) << InvalidFormatString(format);
+      ABSL_LOG(FATAL) << InvalidFormatString(format);
   }
 }
 

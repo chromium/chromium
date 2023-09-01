@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
@@ -37,7 +38,6 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/util/time_series_util.h"
 #include "pffft.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {

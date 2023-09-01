@@ -31,8 +31,9 @@
 #include "Eigen/SVD"
 #include "absl/container/node_hash_map.h"
 #include "absl/container/node_hash_set.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/util/tracking/camera_motion.h"
 #include "mediapipe/util/tracking/measure_time.h"
 #include "mediapipe/util/tracking/motion_models.h"
@@ -40,7 +41,6 @@
 #include "mediapipe/util/tracking/parallel_invoker.h"
 #include "mediapipe/util/tracking/region_flow.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -487,17 +487,19 @@ void MotionEstimation::InitializeWithOptions(
           MotionEstimationOptions::ESTIMATION_HOMOG_NONE &&
       options.linear_similarity_estimation() ==
           MotionEstimationOptions::ESTIMATION_LS_NONE) {
-    LOG(FATAL) << "Invalid MotionEstimationOptions. "
-               << "Homography estimation requires similarity to be estimated";
+    ABSL_LOG(FATAL)
+        << "Invalid MotionEstimationOptions. "
+        << "Homography estimation requires similarity to be estimated";
   }
 
   if (options.mix_homography_estimation() !=
           MotionEstimationOptions::ESTIMATION_HOMOG_MIX_NONE &&
       options.homography_estimation() ==
           MotionEstimationOptions::ESTIMATION_HOMOG_NONE) {
-    LOG(FATAL) << "Invalid MotionEstimationOptions. "
-               << "Mixture homography estimation requires homography to be "
-               << "estimated.";
+    ABSL_LOG(FATAL)
+        << "Invalid MotionEstimationOptions. "
+        << "Mixture homography estimation requires homography to be "
+        << "estimated.";
   }
 
   // Check for deprecated options.
@@ -505,11 +507,11 @@ void MotionEstimation::InitializeWithOptions(
       << "Option estimate_similarity is deprecated, use static function "
       << "EstimateSimilarityModelL2 instead.";
   ABSL_CHECK_NE(options.linear_similarity_estimation(),
-           MotionEstimationOptions::ESTIMATION_LS_L2_RANSAC)
+                MotionEstimationOptions::ESTIMATION_LS_L2_RANSAC)
       << "Option ESTIMATION_LS_L2_RANSAC is deprecated, use "
       << "ESTIMATION_LS_IRLS instead.";
   ABSL_CHECK_NE(options.linear_similarity_estimation(),
-           MotionEstimationOptions::ESTIMATION_LS_L1)
+                MotionEstimationOptions::ESTIMATION_LS_L1)
       << "Option ESTIMATION_LS_L1 is deprecated, use static function "
       << "EstimateLinearSimilarityL1 instead.";
 
@@ -797,7 +799,7 @@ class EstimateMotionIRLSInvoker {
         break;
 
       case MotionEstimation::MODEL_NUM_VALUES:
-        LOG(FATAL) << "Function should not be called with this value";
+        ABSL_LOG(FATAL) << "Function should not be called with this value";
         break;
     }
   }
@@ -942,8 +944,8 @@ void MotionEstimation::EstimateMotionsParallelImpl(
 
     if (options_.long_feature_initialization().activated()) {
       if (!feature_list.long_tracks()) {
-        LOG(ERROR) << "Requesting long feature initialization but "
-                   << "input is not computed with long features.";
+        ABSL_LOG(ERROR) << "Requesting long feature initialization but "
+                        << "input is not computed with long features.";
       } else {
         LongFeatureInitialization(feature_list, long_feature_info,
                                   track_length_importance, &irls_weight_input);
@@ -1081,7 +1083,8 @@ void MotionEstimation::EstimateMotionsParallelImpl(
   // Estimate mixtures across a spectrum a different regularizers, from the
   // weakest to the most regularized one.
   const int num_mixture_levels = options_.mixture_regularizer_levels();
-  ABSL_CHECK_LE(num_mixture_levels, 10) << "Only up to 10 mixtures are supported.";
+  ABSL_CHECK_LE(num_mixture_levels, 10)
+      << "Only up to 10 mixtures are supported.";
 
   // Initialize to weakest regularizer.
   float regularizer = options_.mixture_regularizer();
@@ -1126,7 +1129,7 @@ void MotionEstimation::EstimateMotionsParallelImpl(
   for (const CameraMotion& motion : *camera_motions) {
     if (motion.mixture_homography_spectrum_size() > 0) {
       ABSL_CHECK_EQ(motion.mixture_homography_spectrum_size(),
-               options_.mixture_regularizer_levels());
+                    options_.mixture_regularizer_levels());
     }
   }
 
@@ -1740,7 +1743,7 @@ void MotionEstimation::IrlsInitialization(
   if (options_.estimation_policy() ==
       MotionEstimationOptions::TEMPORAL_LONG_FEATURE_BIAS) {
     ABSL_CHECK_NE(frame, -1) << "Only per frame processing for this policy "
-                        << "supported.";
+                             << "supported.";
   }
 
   IrlsInitializationInvoker invoker(type, max_unstable_type, model_options,
@@ -1944,11 +1947,11 @@ void MotionEstimation::BiasLongFeatures(
 
   // Bias along long tracks.
   if (!prior_weights->use_full_prior) {
-    LOG_IF(WARNING,
-           []() {
-             static int k = 0;
-             return k++ < 2;
-           }())
+    ABSL_LOG_IF(WARNING,
+                []() {
+                  static int k = 0;
+                  return k++ < 2;
+                }())
         << "Use full prior overridden to true, no initialization used. "
         << "Atypical usage.";
     prior_weights->use_full_prior = true;
@@ -1956,8 +1959,9 @@ void MotionEstimation::BiasLongFeatures(
 
   const int num_features = feature_list->feature_size();
   if (prior_weights->priors.empty() && num_features > 0) {
-    LOG(WARNING) << "BiasLongFeatures without using IrlsOutlierInitialization "
-                 << "or LongFeatureInitialization.";
+    ABSL_LOG(WARNING)
+        << "BiasLongFeatures without using IrlsOutlierInitialization "
+        << "or LongFeatureInitialization.";
     prior_weights->priors.resize(num_features, 1.0f);
   }
 
@@ -2061,7 +2065,7 @@ void MotionEstimation::ComputeSpatialBias(
       }
 
       ABSL_DCHECK(spatial_bias->find(feature_ptr->track_id()) ==
-             spatial_bias->end());
+                  spatial_bias->end());
 
       // Threshold such that few similar tracks do not count.
       // Set to 0.25% of features.
@@ -2232,7 +2236,8 @@ void MotionEstimation::UpdateLongFeatureBias(
       // Update feature's weight as well.
       feature.set_irls_weight(1.0f / (biased_weight + kIrlsEps));
     } else {
-      ABSL_CHECK(!update_irls_observation) << "Should never happen on >= 2nd round";
+      ABSL_CHECK(!update_irls_observation)
+          << "Should never happen on >= 2nd round";
 
       // Not present, reset to spatial bias.
       const float biased_weight = spatial_bias[feature.track_id()].first;
@@ -2317,7 +2322,7 @@ int MotionEstimation::IRLSRoundsFromSettings(const MotionType& type) const {
   const int irls_rounds = options_.irls_rounds();
   switch (type) {
     case MODEL_AVERAGE_MAGNITUDE:
-      LOG(WARNING) << "Called with irls free motion type. Returning zero.";
+      ABSL_LOG(WARNING) << "Called with irls free motion type. Returning zero.";
       return 0;
 
     case MODEL_TRANSLATION:
@@ -2341,7 +2346,8 @@ int MotionEstimation::IRLSRoundsFromSettings(const MotionType& type) const {
 
         case MotionEstimationOptions::ESTIMATION_LS_L2_RANSAC:
         case MotionEstimationOptions::ESTIMATION_LS_L1:
-          LOG(FATAL) << "Deprecated options, use ESTIMATION_LS_IRLS instead.";
+          ABSL_LOG(FATAL)
+              << "Deprecated options, use ESTIMATION_LS_IRLS instead.";
           return -1;
       }
       break;
@@ -2386,11 +2392,12 @@ int MotionEstimation::IRLSRoundsFromSettings(const MotionType& type) const {
       break;
 
     case MODEL_NUM_VALUES:
-      LOG(FATAL) << "Function should never be called with this value";
+      ABSL_LOG(FATAL) << "Function should never be called with this value";
       break;
   }
 
-  LOG(FATAL) << "All branches above return, execution can not reach this point";
+  ABSL_LOG(FATAL)
+      << "All branches above return, execution can not reach this point";
   return -1;
 }
 
@@ -2463,7 +2470,7 @@ void MotionEstimation::CheckSingleModelStability(
 
   switch (type) {
     case MODEL_AVERAGE_MAGNITUDE:
-      LOG(WARNING) << "Nothing to check for requested model type.";
+      ABSL_LOG(WARNING) << "Nothing to check for requested model type.";
       return;
 
     case MODEL_TRANSLATION:
@@ -2552,8 +2559,8 @@ void MotionEstimation::CheckSingleModelStability(
 
           case CameraMotion::INVALID:
           case CameraMotion::UNSTABLE_HOMOG:
-            LOG(FATAL) << "Unexpected CameraMotion::Type: "
-                       << camera_motion->type();
+            ABSL_LOG(FATAL)
+                << "Unexpected CameraMotion::Type: " << camera_motion->type();
             break;
         }
 
@@ -2576,7 +2583,7 @@ void MotionEstimation::CheckSingleModelStability(
     }
 
     case MODEL_NUM_VALUES:
-      LOG(FATAL) << "Function should not be called with this value";
+      ABSL_LOG(FATAL) << "Function should not be called with this value";
       break;
   }
 }
@@ -2590,7 +2597,7 @@ void MotionEstimation::ProjectMotionsDown(
       case MODEL_TRANSLATION:
       case MODEL_MIXTURE_HOMOGRAPHY:
       case MODEL_AFFINE:
-        LOG(WARNING) << "Nothing to project for requested model type";
+        ABSL_LOG(WARNING) << "Nothing to project for requested model type";
         return;
 
       case MODEL_HOMOGRAPHY:
@@ -2621,7 +2628,7 @@ void MotionEstimation::ProjectMotionsDown(
         break;
 
       case MODEL_NUM_VALUES:
-        LOG(FATAL) << "Function should not be called with this value";
+        ABSL_LOG(FATAL) << "Function should not be called with this value";
         break;
     }
   }
@@ -3164,7 +3171,7 @@ void MotionEstimation::EstimateTranslationModelIRLS(
     CameraMotion* camera_motion) const {
   if (prior_weights && !prior_weights->HasCorrectDimension(
                            irls_rounds, flow_feature_list->feature_size())) {
-    LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
+    ABSL_LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
     prior_weights = nullptr;
   }
 
@@ -3525,7 +3532,7 @@ bool MotionEstimation::EstimateLinearSimilarityModelIRLS(
     CameraMotion* camera_motion) const {
   if (prior_weights && !prior_weights->HasCorrectDimension(
                            irls_rounds, flow_feature_list->feature_size())) {
-    LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
+    ABSL_LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
     prior_weights = nullptr;
   }
 
@@ -4069,7 +4076,8 @@ bool MixtureHomographyL2DLTSolve(
 
   ABSL_CHECK_EQ(matrix->cols(), num_dof);
   // 2 Rows (x,y) per feature.
-  ABSL_CHECK_EQ(matrix->rows(), 2 * feature_list.feature_size() + num_constraints);
+  ABSL_CHECK_EQ(matrix->rows(),
+                2 * feature_list.feature_size() + num_constraints);
   ABSL_CHECK_EQ(solution->cols(), 1);
   ABSL_CHECK_EQ(solution->rows(), num_dof);
 
@@ -4165,7 +4173,8 @@ bool TransMixtureHomographyL2DLTSolve(
 
   ABSL_CHECK_EQ(matrix->cols(), num_dof);
   // 2 Rows (x,y) per feature.
-  ABSL_CHECK_EQ(matrix->rows(), 2 * feature_list.feature_size() + num_constraints);
+  ABSL_CHECK_EQ(matrix->rows(),
+                2 * feature_list.feature_size() + num_constraints);
   ABSL_CHECK_EQ(solution->cols(), 1);
   ABSL_CHECK_EQ(solution->rows(), num_dof);
 
@@ -4264,7 +4273,8 @@ bool SkewRotMixtureHomographyL2DLTSolve(
 
   ABSL_CHECK_EQ(matrix->cols(), num_dof);
   // 2 Rows (x,y) per feature.
-  ABSL_CHECK_EQ(matrix->rows(), 2 * feature_list.feature_size() + num_constraints);
+  ABSL_CHECK_EQ(matrix->rows(),
+                2 * feature_list.feature_size() + num_constraints);
   ABSL_CHECK_EQ(solution->cols(), 1);
   ABSL_CHECK_EQ(solution->rows(), num_dof);
 
@@ -4383,7 +4393,7 @@ void MotionEstimation::GetHomographyIRLSCenterWeights(
         weights->push_back(1.0f - weight * 0.5f);
         break;
       default:
-        LOG(INFO) << "Unsupported IRLS weighting.";
+        ABSL_LOG(INFO) << "Unsupported IRLS weighting.";
     }
   }
 }
@@ -4864,7 +4874,7 @@ bool MotionEstimation::EstimateHomographyIRLS(
     RegionFlowFeatureList* feature_list, CameraMotion* camera_motion) const {
   if (prior_weights && !prior_weights->HasCorrectDimension(
                            irls_rounds, feature_list->feature_size())) {
-    LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
+    ABSL_LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
     prior_weights = nullptr;
   }
 
@@ -5080,7 +5090,7 @@ bool MotionEstimation::MixtureHomographyFromFeature(
     MixtureHomography* mix_homography) const {
   if (prior_weights && !prior_weights->HasCorrectDimension(
                            irls_rounds, feature_list->feature_size())) {
-    LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
+    ABSL_LOG(ERROR) << "Prior weights incorrectly initialized, ignoring.";
     prior_weights = nullptr;
   }
 
@@ -5110,7 +5120,7 @@ bool MotionEstimation::MixtureHomographyFromFeature(
       adjacency_constraints = 4 * (num_mixtures - 1);
       break;
     default:
-      LOG(FATAL) << "Unknown MixtureModelMode specified.";
+      ABSL_LOG(FATAL) << "Unknown MixtureModelMode specified.";
   }
 
   Eigen::MatrixXf matrix(
@@ -5196,7 +5206,7 @@ bool MotionEstimation::MixtureHomographyFromFeature(
         break;
 
       default:
-        LOG(FATAL) << "Unknown MixtureModelMode specified.";
+        ABSL_LOG(FATAL) << "Unknown MixtureModelMode specified.";
     }
 
     norm_model = MixtureHomographyAdapter::FromFloatPointer(
@@ -5265,7 +5275,7 @@ bool MotionEstimation::MixtureHomographyFromFeature(
       mix_homography->set_dof(MixtureHomography::SKEW_ROTATION_DOF);
       break;
     default:
-      LOG(FATAL) << "Unknown MixtureModelMode specified.";
+      ABSL_LOG(FATAL) << "Unknown MixtureModelMode specified.";
   }
   return true;
 }
@@ -5364,8 +5374,8 @@ bool MotionEstimation::EstimateMixtureHomographyIRLS(
   // Cap rolling shutter analysis level to be valid level.
   if (options_.mixture_rs_analysis_level() >=
       options_.mixture_regularizer_levels()) {
-    LOG(WARNING) << "Resetting mixture_rs_analysis_level to "
-                 << options_.mixture_regularizer_levels() - 1;
+    ABSL_LOG(WARNING) << "Resetting mixture_rs_analysis_level to "
+                      << options_.mixture_regularizer_levels() - 1;
   }
 
   const int rs_analysis_level =

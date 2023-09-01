@@ -7,11 +7,11 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/port.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/gpu/gl_base.h"
-#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_TENSOR_USE_AHWB
 
 namespace mediapipe {
@@ -209,7 +209,8 @@ class DelayedReleaser {
 
 Tensor::AHardwareBufferView Tensor::GetAHardwareBufferReadView() const {
   auto lock(absl::make_unique<absl::MutexLock>(&view_mutex_));
-  ABSL_CHECK(valid_ != kValidNone) << "Tensor must be written prior to read from.";
+  ABSL_CHECK(valid_ != kValidNone)
+      << "Tensor must be written prior to read from.";
   ABSL_CHECK(!(valid_ & kValidOpenGlTexture2d))
       << "Tensor conversion between OpenGL texture and AHardwareBuffer is not "
          "supported.";
@@ -343,7 +344,8 @@ void Tensor::MoveCpuOrSsboToAhwb() const {
     // of the Ahwb at the next request to the OpenGlBufferView.
     valid_ &= ~kValidOpenGlBuffer;
   } else {
-    LOG(FATAL) << "Can't convert tensor with mask " << valid_ << " into AHWB.";
+    ABSL_LOG(FATAL) << "Can't convert tensor with mask " << valid_
+                    << " into AHWB.";
   }
   if (__builtin_available(android 26, *)) {
     auto error = AHardwareBuffer_unlock(ahwb_, nullptr);
@@ -422,8 +424,9 @@ void* Tensor::MapAhwbToCpuRead() const {
           // TODO: Use tflite::gpu::GlBufferSync and GlActiveSync.
           gl_context_->Run([]() { glFinish(); });
         } else if (valid_ & kValidAHardwareBuffer) {
-          ABSL_CHECK(ahwb_written_) << "Ahwb-to-Cpu synchronization requires the "
-                                  "completion function to be set";
+          ABSL_CHECK(ahwb_written_)
+              << "Ahwb-to-Cpu synchronization requires the "
+                 "completion function to be set";
           ABSL_CHECK(ahwb_written_(true))
               << "An error oqcured while waiting for the buffer to be written";
         }

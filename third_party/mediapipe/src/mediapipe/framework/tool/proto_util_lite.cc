@@ -16,6 +16,7 @@
 
 #include <tuple>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_cat.h"
@@ -25,7 +26,6 @@
 #include "mediapipe/framework/port/statusor.h"
 #include "mediapipe/framework/tool/field_data.pb.h"
 #include "mediapipe/framework/type_map.h"
-#include "absl/log/absl_check.h"
 
 #define RET_CHECK_NO_LOG(cond) RET_CHECK(cond).SetNoLogging()
 

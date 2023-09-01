@@ -18,7 +18,7 @@
 #include <memory>
 #include <vector>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/status/status.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_context_manager.h"
@@ -27,7 +27,6 @@
 #include "mediapipe/framework/input_stream_handler.h"
 #include "mediapipe/framework/mediapipe_options.pb.h"
 #include "mediapipe/framework/tool/tag_map.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

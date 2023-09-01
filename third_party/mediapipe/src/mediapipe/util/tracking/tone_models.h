@@ -23,12 +23,12 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "mediapipe/framework/port/integral_types.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/vector.h"
 #include "mediapipe/util/tracking/tone_models.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 // Abstract Adapter for tone models.
@@ -293,7 +293,7 @@ inline GainBiasModel ToneModelAdapter<GainBiasModel>::InvertChecked(
   const float det = GainBiasModelAdapter::Determinant(model);
   if (fabs(det) < 1e-10f) {
     *success = false;
-    LOG(ERROR) << "Model not invertible.";
+    ABSL_LOG(ERROR) << "Model not invertible.";
     return GainBiasModel();
   }
 
@@ -339,7 +339,7 @@ inline float ToneModelAdapter<GainBiasModel>::GetParameter(
     case 5:
       return model.bias_c3();
     default:
-      LOG(FATAL) << "Unknown parameter requested.";
+      ABSL_LOG(FATAL) << "Unknown parameter requested.";
   }
 
   return 0.0f;
@@ -414,7 +414,7 @@ inline AffineToneModel ToneModelAdapter<AffineToneModel>::InvertChecked(
   cv::Mat inv_model_mat(4, 4, CV_64F, inv_data);
 
   if (cv::invert(model_mat, inv_model_mat) < 1e-10) {
-    LOG(ERROR) << "AffineToneModel not invertible, det is zero.";
+    ABSL_LOG(ERROR) << "AffineToneModel not invertible, det is zero.";
     *success = false;
     return AffineToneModel();
   }
@@ -468,7 +468,7 @@ inline float ToneModelAdapter<AffineToneModel>::GetParameter(
     case 11:
       return model.g_23();
     default:
-      LOG(FATAL) << "Unknown parameter requested.";
+      ABSL_LOG(FATAL) << "Unknown parameter requested.";
   }
 
   return 0.0f;

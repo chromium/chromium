@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/match.h"
 #include "absl/strings/numbers.h"
@@ -28,7 +30,6 @@
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/tool/calculator_graph_template.pb.h"
 #include "mediapipe/framework/tool/proto_util_lite.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -178,7 +179,8 @@ FieldType GetFieldType(const TemplateExpression& rule) {
 int FieldCount(const FieldValue& base, ProtoPath field_path,
                FieldType field_type) {
   int result = 0;
-  CHECK_OK(ProtoUtilLite::GetFieldCount(base, field_path, field_type, &result));
+  ABSL_CHECK_OK(
+      ProtoUtilLite::GetFieldCount(base, field_path, field_type, &result));
   return result;
 }
 
@@ -688,7 +690,7 @@ absl::Status TemplateExpander::ExpandTemplates(
   }
   absl::Status status;
   for (const absl::Status& error : errors_) {
-    LOG(ERROR) << error;
+    ABSL_LOG(ERROR) << error;
     status.Update(error);
   }
   return status;

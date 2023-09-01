@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
 #include "absl/types/span.h"
 #include "mediapipe/calculators/tflite/tflite_tensors_to_detections_calculator.pb.h"
@@ -541,7 +543,7 @@ absl::Status TfLiteTensorsToDetectionsCalculator::ProcessGPU(
                                          output_detections));
 
 #else
-  LOG(ERROR) << "GPU input on non-Android not supported yet.";
+  ABSL_LOG(ERROR) << "GPU input on non-Android not supported yet.";
 #endif  // MEDIAPIPE_TFLITE_GL_INFERENCE
   return absl::OkStatus();
 }
@@ -571,8 +573,8 @@ absl::Status TfLiteTensorsToDetectionsCalculator::LoadOptions(
 
   // Check if the output size is equal to the requested boxes and keypoints.
   ABSL_CHECK_EQ(options_.num_keypoints() * options_.num_values_per_keypoint() +
-               kNumCoordsPerBox,
-           num_coords_);
+                    kNumCoordsPerBox,
+                num_coords_);
 
   for (int i = 0; i < options_.ignore_classes_size(); ++i) {
     ignore_classes_.insert(options_.ignore_classes(i));
@@ -900,7 +902,8 @@ void main() {
     ABSL_CHECK_LT(num_classes_, max_wg_size)
         << "# classes must be < " << max_wg_size;
     // TODO support better filtering.
-    ABSL_CHECK_LE(ignore_classes_.size(), 1) << "Only ignore class 0 is allowed";
+    ABSL_CHECK_LE(ignore_classes_.size(), 1)
+        << "Only ignore class 0 is allowed";
 
     // Shader program
     GlShader score_shader;
@@ -1058,7 +1061,6 @@ kernel void decodeKernel(
   const std::string score_src = absl::Substitute(
       R"(
 #include <metal_stdlib>
-#include "absl/log/absl_check.h"
 
 using namespace metal;
 
@@ -1148,7 +1150,8 @@ kernel void scoreKernel(
                             options:MTLResourceStorageModeShared];
     // # filter classes supported is hardware dependent.
     int max_wg_size = gpu_data_->score_program.maxTotalThreadsPerThreadgroup;
-    ABSL_CHECK_LT(num_classes_, max_wg_size) << "# classes must be <" << max_wg_size;
+    ABSL_CHECK_LT(num_classes_, max_wg_size)
+        << "# classes must be <" << max_wg_size;
   }
 
 #endif  // MEDIAPIPE_TFLITE_GL_INFERENCE

@@ -18,13 +18,13 @@
 #include <queue>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/calculator_node.h"
 #include "mediapipe/framework/executor.h"
 #include "mediapipe/framework/port/canonical_errors.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/status.h"
-#include "absl/log/absl_check.h"
 
 #ifdef __APPLE__
 #define AUTORELEASEPOOL @autoreleasepool
@@ -193,8 +193,9 @@ void SchedulerQueue::RunNextTask() {
   {
     absl::MutexLock lock(&mutex_);
 
-    ABSL_CHECK(!queue_.empty()) << "Called RunNextTask when the queue is empty. "
-                              "This should not happen.";
+    ABSL_CHECK(!queue_.empty())
+        << "Called RunNextTask when the queue is empty. "
+           "This should not happen.";
 
     node = queue_.top().Node();
     calculator_context = queue_.top().Context();
@@ -267,8 +268,8 @@ void SchedulerQueue::RunCalculatorNode(CalculatorNode* node,
         // that all sources will be closed and no further sources should be
         // scheduled. The graph will be terminated as soon as its scheduler
         // queue becomes empty.
-        ABSL_CHECK(!node->IsSource());  // ProcessNode takes care of StatusStop()
-                                   // from sources.
+        ABSL_CHECK(!node->IsSource());  // ProcessNode takes care of
+                                        // StatusStop() from sources.
         shared_->stopping = true;
       } else {
         // If we have an error in this calculator.

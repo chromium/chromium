@@ -16,13 +16,13 @@
 
 #include "mediapipe/framework/calculator_runner.h"
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -150,8 +150,8 @@ CalculatorRunner::CalculatorRunner(const std::string& calculator_type,
                                    int num_inputs, int num_outputs,
                                    int num_side_packets) {
   node_config_.set_calculator(calculator_type);
-  ABSL_CHECK(proto_ns::TextFormat::ParseFromString(options_string,
-                                              node_config_.mutable_options()));
+  ABSL_CHECK(proto_ns::TextFormat::ParseFromString(
+      options_string, node_config_.mutable_options()));
   SetNumInputs(num_inputs);
   SetNumOutputs(num_outputs);
   SetNumInputSidePackets(num_side_packets);
@@ -263,16 +263,18 @@ absl::Status CalculatorRunner::BuildGraph() {
 
   if (log_calculator_proto_) {
 #if defined(MEDIAPIPE_PROTO_LITE)
-    LOG(INFO) << "Please initialize CalculatorRunner using the recommended "
-                 "constructor:\n    CalculatorRunner runner(node_config);";
+    ABSL_LOG(INFO)
+        << "Please initialize CalculatorRunner using the recommended "
+           "constructor:\n    CalculatorRunner runner(node_config);";
 #else
     std::string config_string;
     proto_ns::TextFormat::Printer printer;
     printer.SetInitialIndentLevel(4);
     printer.PrintToString(node_config_, &config_string);
-    LOG(INFO) << "Please initialize CalculatorRunner using the recommended "
-                 "constructor:\n    CalculatorRunner runner(R\"(\n"
-              << config_string << "\n    )\");";
+    ABSL_LOG(INFO)
+        << "Please initialize CalculatorRunner using the recommended "
+           "constructor:\n    CalculatorRunner runner(R\"(\n"
+        << config_string << "\n    )\");";
 #endif
   }
 

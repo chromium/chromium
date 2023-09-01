@@ -27,8 +27,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "mediapipe/framework/port/logging.h"
 #include "absl/log/absl_check.h"
+#include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {
 

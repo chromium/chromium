@@ -18,6 +18,7 @@
 #include <memory>
 #include <vector>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "mediapipe/framework/calculator_contract.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -34,7 +35,6 @@
 #include "absl/synchronization/blocking_counter.h"
 #include "mediapipe/framework/port/threadpool.h"
 #include "mediapipe/util/cpu_util.h"
-#include "absl/log/absl_check.h"
 #endif  // !MEDIAPIPE_MOBILE && !MEDIAPIPE_LITE
 
 namespace mediapipe {

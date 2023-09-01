@@ -20,6 +20,8 @@
 #include <cmath>
 #include <memory>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/port/logging.h"
@@ -30,7 +32,6 @@
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/motion_models.pb.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -322,9 +323,9 @@ void FlowPackager::EncodeTrackingData(const TrackingData& tracking_data,
   const float max_vector_threshold = hypot(domain_width, domain_height) * 0.2f;
   // Warn if too much truncation.
   if (max_vector_value > max_vector_threshold * 1.5f) {
-    LOG(WARNING) << "A lot of truncation will occur during encoding. "
-                 << "Vector magnitudes are larger than 20% of the "
-                 << "frame diameter.";
+    ABSL_LOG(WARNING) << "A lot of truncation will occur during encoding. "
+                      << "Vector magnitudes are larger than 20% of the "
+                      << "frame diameter.";
   }
 
   max_vector_value =
@@ -940,7 +941,7 @@ std::string FlowPackager::SplitContainerFromString(
   ABSL_CHECK(binary_data != nullptr);
   ABSL_CHECK(container != nullptr);
   ABSL_CHECK_GE(binary_data->size(), 12) << "Data does not contain "
-                                    << "valid container";
+                                         << "valid container";
 
   container->set_header(PopSubstring(4, binary_data));
 
@@ -981,7 +982,7 @@ void FlowPackager::TrackingContainerFormatFromBinary(
   absl::string_view data(binary);
 
   ABSL_CHECK_EQ("META", SplitContainerFromString(
-                       &data, container_format->mutable_meta_data()));
+                            &data, container_format->mutable_meta_data()));
   MetaData meta_data;
   DecodeMetaData(container_format->meta_data(), &meta_data);
 
@@ -991,7 +992,7 @@ void FlowPackager::TrackingContainerFormatFromBinary(
   }
 
   ABSL_CHECK_EQ("TERM", SplitContainerFromString(
-                       &data, container_format->mutable_term_data()));
+                            &data, container_format->mutable_term_data()));
 }
 
 void FlowPackager::SortRegionFlowFeatureList(

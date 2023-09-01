@@ -15,9 +15,9 @@
 #include "mediapipe/gpu/gpu_buffer_format.h"
 
 #include "absl/container/flat_hash_map.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/deps/no_destructor.h"
 #include "mediapipe/framework/port/logging.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

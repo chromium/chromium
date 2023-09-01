@@ -16,6 +16,7 @@
 
 #include <tuple>
 
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/port/logging.h"
@@ -24,7 +25,6 @@
 #ifdef __APPLE__
 #include "mediapipe/objc/CFHolder.h"
 #include "mediapipe/objc/util.h"
-#include "absl/log/absl_check.h"
 #endif  // __APPLE__
 #endif  // !MEDIAPIPE_DISABLE_GPU
 
@@ -201,7 +201,7 @@ void ImageMultiPool::RegisterTextureCache(mediapipe::CVTextureCacheType cache) {
   absl::MutexLock lock(&mutex_gpu_);
 
   ABSL_CHECK(std::find(texture_caches_.begin(), texture_caches_.end(), cache) ==
-        texture_caches_.end())
+             texture_caches_.end())
       << "Attempting to register a texture cache twice";
   texture_caches_.emplace_back(cache);
 }

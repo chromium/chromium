@@ -19,15 +19,14 @@ limitations under the License.
 #include <memory>
 #include <vector>
 
-#include "absl/log/check.h"
-#include "absl/log/log.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "libyuv/video_common.h"
 #include "mediapipe/framework/formats/frame_buffer.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/framework/formats/yuv_image.h"
 #include "mediapipe/gpu/gpu_buffer_format.h"
 #include "mediapipe/util/frame_buffer/frame_buffer_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -98,7 +97,8 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
   switch (format) {
     case FrameBuffer::Format::kNV12:
     case FrameBuffer::Format::kNV21: {
-      ABSL_CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0)
+      ABSL_CHECK(yuv_image->mutable_data(1) != nullptr &&
+                 yuv_image->stride(1) > 0)
           << "Invalid YuvImage. Expected plane at index 1 to be non-null and "
              "have stride > 0.";
       planes.emplace_back(
@@ -109,8 +109,9 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
     }
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
-      ABSL_CHECK(yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0 &&
-            yuv_image->mutable_data(2) != nullptr && yuv_image->stride(2) > 0)
+      ABSL_CHECK(
+          yuv_image->mutable_data(1) != nullptr && yuv_image->stride(1) > 0 &&
+          yuv_image->mutable_data(2) != nullptr && yuv_image->stride(2) > 0)
           << "Invalid YuvImage. Expected planes at indices 1 and 2 to be "
              "non-null and have stride > 0.";
       planes.emplace_back(
@@ -124,7 +125,7 @@ std::shared_ptr<FrameBuffer> YuvImageToFrameBuffer(
       break;
     }
     default:
-      LOG(FATAL)
+      ABSL_LOG(FATAL)
           << "Invalid format. Only FOURCC_NV12, FOURCC_NV21, FOURCC_YV12 and "
              "FOURCC_I420 are supported.";
   }
@@ -149,7 +150,7 @@ std::shared_ptr<ImageFrame> YuvImageToImageFrame(
   auto rgb_buffer =
       FrameBuffer(planes, yuv_buffer->dimension(), FrameBuffer::Format::kRGB);
   // Convert.
-  CHECK_OK(frame_buffer::Convert(*yuv_buffer, &rgb_buffer));
+  ABSL_CHECK_OK(frame_buffer::Convert(*yuv_buffer, &rgb_buffer));
   return image_frame;
 }
 
@@ -158,7 +159,7 @@ std::shared_ptr<ImageFrame> YuvImageToImageFrame(
 GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(
     std::shared_ptr<YUVImage> yuv_image) {
   ABSL_CHECK(GpuBufferFormatForFourCC(yuv_image->fourcc()) !=
-        GpuBufferFormat::kUnknown)
+             GpuBufferFormat::kUnknown)
       << "Invalid format. Only FOURCC_NV12, FOURCC_NV21, FOURCC_YV12 and "
          "FOURCC_I420 are supported.";
   yuv_image_ = yuv_image;
@@ -196,7 +197,7 @@ GpuBufferStorageYuvImage::GpuBufferStorageYuvImage(int width, int height,
       break;
     }
     default:
-      LOG(FATAL)
+      ABSL_LOG(FATAL)
           << "Invalid format. Only kNV12, kNV21, kYV12 and kYV21 are supported";
   }
 }
@@ -224,6 +225,6 @@ std::shared_ptr<ImageFrame> GpuBufferStorageYuvImage::GetWriteView(
     internal::types<ImageFrame>) {
   // Not supported on purpose: writes into the resulting ImageFrame cannot
   // easily be ported back to the original YUV image.
-  LOG(FATAL) << "GetWriteView<ImageFrame> is not supported.";
+  ABSL_LOG(FATAL) << "GetWriteView<ImageFrame> is not supported.";
 }
 }  // namespace mediapipe

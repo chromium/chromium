@@ -48,9 +48,6 @@ config("mediapipe_flags") {
   cflags = [
     # MediaPipe's CHECK macros are redefined from absl's.
     "-Wno-macro-redefined",
-
-    # TODO(b/283522287): Upstream or patch these.
-    "-Wno-range-loop-bind-reference",
   ]
 
   defines = [ "MEDIAPIPE_PROTO_LITE=1" ]

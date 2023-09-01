@@ -17,6 +17,8 @@
 #include <memory>
 #include <string>
 
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/strings/numbers.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
@@ -36,7 +38,6 @@
 #include "mediapipe/util/tracking/motion_estimation.h"
 #include "mediapipe/util/tracking/motion_models.h"
 #include "mediapipe/util/tracking/region_flow.pb.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -349,8 +350,8 @@ absl::Status MotionAnalysisCalculator::Open(CalculatorContext* cc) {
     video_header =
         &(cc->Inputs().Tag(kSelectionTag).Header().Get<VideoHeader>());
   } else {
-    LOG(WARNING) << "No input video header found. Downstream calculators "
-                    "expecting video headers are likely to fail.";
+    ABSL_LOG(WARNING) << "No input video header found. Downstream calculators "
+                         "expecting video headers are likely to fail.";
   }
 
   with_saliency_ = options_.analysis_options().compute_motion_saliency();
@@ -358,9 +359,9 @@ absl::Status MotionAnalysisCalculator::Open(CalculatorContext* cc) {
   if (cc->Outputs().HasTag(kSaliencyTag)) {
     with_saliency_ = true;
     if (!options_.analysis_options().compute_motion_saliency()) {
-      LOG(WARNING) << "Enable saliency computation. Set "
-                   << "compute_motion_saliency to true to silence this "
-                   << "warning.";
+      ABSL_LOG(WARNING) << "Enable saliency computation. Set "
+                        << "compute_motion_saliency to true to silence this "
+                        << "warning.";
       options_.mutable_analysis_options()->set_compute_motion_saliency(true);
     }
   }
@@ -604,8 +605,8 @@ absl::Status MotionAnalysisCalculator::Close(CalculatorContext* cc) {
   }
   if (csv_file_input_) {
     if (!meta_motions_.empty()) {
-      LOG(ERROR) << "More motions than frames. Unexpected! Remainder: "
-                 << meta_motions_.size();
+      ABSL_LOG(ERROR) << "More motions than frames. Unexpected! Remainder: "
+                      << meta_motions_.size();
     }
   }
   return absl::OkStatus();
@@ -742,8 +743,8 @@ absl::Status MotionAnalysisCalculator::InitOnProcess(
     }
     if (region_options->image_format() != image_format &&
         region_options->image_format() != image_format2) {
-      LOG(WARNING) << "Requested image format in RegionFlowComputation "
-                   << "does not match video stream format. Overriding.";
+      ABSL_LOG(WARNING) << "Requested image format in RegionFlowComputation "
+                        << "does not match video stream format. Overriding.";
       region_options->set_image_format(image_format);
     }
 
@@ -762,7 +763,7 @@ absl::Status MotionAnalysisCalculator::InitOnProcess(
     frame_width_ = camera_motion.frame_width();
     frame_height_ = camera_motion.frame_height();
   } else {
-    LOG(FATAL) << "Either VIDEO or SELECTION stream need to be specified.";
+    ABSL_LOG(FATAL) << "Either VIDEO or SELECTION stream need to be specified.";
   }
 
   // Filled by CSV file parsing.
@@ -801,7 +802,7 @@ bool MotionAnalysisCalculator::ParseModelCSV(
   for (const auto& value : values) {
     double value_64f;
     if (!absl::SimpleAtod(value, &value_64f)) {
-      LOG(ERROR) << "Not a double, expected!";
+      ABSL_LOG(ERROR) << "Not a double, expected!";
       return false;
     }
 
@@ -819,7 +820,7 @@ bool MotionAnalysisCalculator::HomographiesFromValues(
   // Obvious constants are obvious :D
   constexpr int kHomographyValues = 9;
   if (homog_values.size() % kHomographyValues != 0) {
-    LOG(ERROR) << "Contents not a multiple of " << kHomographyValues;
+    ABSL_LOG(ERROR) << "Contents not a multiple of " << kHomographyValues;
     return false;
   }
 
@@ -831,7 +832,7 @@ bool MotionAnalysisCalculator::HomographiesFromValues(
 
     // Normalize last entry to 1.
     if (h_vals[kHomographyValues - 1] == 0) {
-      LOG(ERROR) << "Degenerate homography, last entry is zero";
+      ABSL_LOG(ERROR) << "Degenerate homography, last entry is zero";
       return false;
     }
 
@@ -845,8 +846,8 @@ bool MotionAnalysisCalculator::HomographiesFromValues(
   }
 
   if (homographies->size() % options_.meta_models_per_frame() != 0) {
-    LOG(ERROR) << "Total homographies not a multiple of specified models "
-               << "per frame.";
+    ABSL_LOG(ERROR) << "Total homographies not a multiple of specified models "
+                    << "per frame.";
     return false;
   }
 
@@ -948,7 +949,8 @@ void MotionAnalysisCalculator::AppendCameraMotionsFromHomographies(
   }
 
   const int models_per_frame = options_.meta_models_per_frame();
-  ABSL_CHECK_GT(models_per_frame, 0) << "At least one model per frame is needed";
+  ABSL_CHECK_GT(models_per_frame, 0)
+      << "At least one model per frame is needed";
   ABSL_CHECK_EQ(0, homographies.size() % models_per_frame);
   const int num_frames = homographies.size() / models_per_frame;
 

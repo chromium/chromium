@@ -24,6 +24,8 @@
 #include <type_traits>
 
 #include "absl/base/macros.h"
+#include "absl/log/absl_check.h"
+#include "absl/log/absl_log.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 #include "absl/synchronization/mutex.h"
@@ -40,7 +42,6 @@
 #include "mediapipe/framework/timestamp.h"
 #include "mediapipe/framework/tool/type_util.h"
 #include "mediapipe/framework/type_map.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 
@@ -735,7 +736,7 @@ inline const T& Packet::Get() const {
   if (holder == nullptr) {
     // Produce a good error message.
     absl::Status status = ValidateAsType<T>();
-    LOG(FATAL) << "Packet::Get() failed: " << status.message();
+    ABSL_LOG(FATAL) << "Packet::Get() failed: " << status.message();
   }
   return holder->data();
 }

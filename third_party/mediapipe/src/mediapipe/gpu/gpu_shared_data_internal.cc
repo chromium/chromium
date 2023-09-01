@@ -15,6 +15,7 @@
 #include "mediapipe/gpu/gpu_shared_data_internal.h"
 
 #include "absl/base/attributes.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/deps/no_destructor.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/gpu/gl_context.h"
@@ -23,7 +24,6 @@
 
 #if __APPLE__
 #include "mediapipe/gpu/metal_shared_resources.h"
-#include "absl/log/absl_check.h"
 #endif  // __APPLE__
 
 namespace mediapipe {

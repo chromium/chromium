@@ -19,8 +19,8 @@
 
 #include "absl/container/flat_hash_map.h"
 #include "absl/functional/function_ref.h"
-#include "mediapipe/framework/port/logging.h"
 #include "absl/log/absl_check.h"
+#include "mediapipe/framework/port/logging.h"
 
 namespace mediapipe {
 

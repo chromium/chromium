@@ -17,10 +17,10 @@
 #include <tuple>
 
 #include "CoreFoundation/CFBase.h"
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/objc/CFHolder.h"
 #include "mediapipe/objc/util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

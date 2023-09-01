@@ -14,6 +14,7 @@
 
 #include "mediapipe/util/tflite/cpu_op_resolver.h"
 
+#include "absl/log/absl_check.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/util/tflite/operations/landmarks_to_transform_matrix.h"
 #include "mediapipe/util/tflite/operations/max_pool_argmax.h"
@@ -23,7 +24,6 @@
 #include "mediapipe/util/tflite/operations/transpose_conv_bias.h"
 #include "tensorflow/lite/builtin_op_data.h"
 #include "tensorflow/lite/mutable_op_resolver.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 

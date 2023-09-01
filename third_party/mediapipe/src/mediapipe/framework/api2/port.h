@@ -20,6 +20,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/framework/api2/const_str.h"
@@ -29,7 +30,6 @@
 #include "mediapipe/framework/output_side_packet.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/tool/type_util.h"
-#include "absl/log/absl_check.h"
 
 namespace mediapipe {
 namespace api2 {

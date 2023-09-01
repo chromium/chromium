@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "absl/base/thread_annotations.h"
+#include "absl/log/absl_check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_split.h"
 #include "absl/synchronization/mutex.h"
@@ -42,7 +43,6 @@
 
 #if !defined(MEDIAPIPE_MOBILE) && !defined(__APPLE__)
 #include "tensorflow/core/profiler/lib/traceme.h"
-#include "absl/log/absl_check.h"
 #endif
 
 namespace tf = ::tensorflow;

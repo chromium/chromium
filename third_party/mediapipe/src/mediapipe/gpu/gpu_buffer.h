@@ -20,7 +20,7 @@
 #include <memory>
 #include <utility>
 
-#include "absl/log/check.h"
+#include "absl/log/absl_check.h"
 #include "absl/synchronization/mutex.h"
 #include "mediapipe/framework/formats/image_frame.h"
 #include "mediapipe/gpu/gpu_buffer_format.h"
@@ -42,7 +42,6 @@
 #include "mediapipe/gpu/gpu_buffer_storage_cv_pixel_buffer.h"
 #else
 #include "mediapipe/gpu/gl_texture_buffer.h"
-#include "absl/log/absl_check.h"
 #endif  // MEDIAPIPE_GPU_BUFFER_USE_CV_PIXEL_BUFFER
 #endif  // MEDIAPIPE_DISABLE_GPU
 
