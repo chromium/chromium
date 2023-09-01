@@ -52,6 +52,8 @@ bool CheckLinearValues(const std::string& name, int maximum) {
 // Default interval between externally-reported metrics being collected.
 constexpr base::TimeDelta kDefaultCollectionInterval = base::Seconds(30);
 
+ExternalMetrics* g_instance = nullptr;
+
 }  // namespace
 
 constexpr char ExternalMetrics::kEventsFilePath[];
@@ -59,6 +61,9 @@ constexpr char ExternalMetrics::kEventsFilePath[];
 ExternalMetrics::ExternalMetrics()
     : uma_events_file_(kEventsFilePath),
       collection_interval_(kDefaultCollectionInterval) {
+  CHECK(!g_instance);
+  g_instance = this;
+
   const std::string flag_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kExternalMetricsCollectionInterval);
@@ -73,7 +78,15 @@ ExternalMetrics::ExternalMetrics()
   }
 }
 
-ExternalMetrics::~ExternalMetrics() {}
+ExternalMetrics::~ExternalMetrics() {
+  CHECK(g_instance == this);
+  g_instance = nullptr;
+}
+
+// static
+ExternalMetrics* ExternalMetrics::Get() {
+  return g_instance;
+}
 
 void ExternalMetrics::Start() {
   ScheduleCollector();

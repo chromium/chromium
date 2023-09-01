@@ -33,6 +33,9 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   ExternalMetrics(const ExternalMetrics&) = delete;
   ExternalMetrics& operator=(const ExternalMetrics&) = delete;
 
+  // Returns the global singleton or null if it hasn't been created.
+  static ExternalMetrics* Get();
+
   // Begins the external data collection.  This service is started and stopped
   // by the chrome metrics service.  Calls to RecordAction originate in the
   // blocking pool but are executed in the UI thread.
@@ -42,6 +45,10 @@ class ExternalMetrics : public base::RefCountedThreadSafe<ExternalMetrics> {
   // purpose.
   static scoped_refptr<ExternalMetrics> CreateForTesting(
       const std::string& filename);
+
+  // Synchronously executes one collection run for testing purposes. Does not
+  // schedule any followup runs.
+  void CollectNowForTesting() { CollectEvents(); }
 
  private:
   friend class base::RefCountedThreadSafe<ExternalMetrics>;
