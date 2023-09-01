@@ -352,6 +352,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_ios) {
+    deps += [ "//components/test:performance_manager_test_bundle_data" ]
+  }
+
   # The site data database isn't supported on Android.
   if (!is_android) {
     sources += [
