@@ -10,19 +10,14 @@
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
 
 namespace ash {
 
@@ -33,7 +28,8 @@ class WallpaperImageDownloader;
 class ASH_EXPORT GooglePhotosWallpaperManager {
  public:
   explicit GooglePhotosWallpaperManager(
-      WallpaperImageDownloader* wallpaper_image_downloader);
+      WallpaperImageDownloader* wallpaper_image_downloader,
+      WallpaperFileManager* wallpaper_file_manager);
 
   GooglePhotosWallpaperManager(const GooglePhotosWallpaperManager&) = delete;
   GooglePhotosWallpaperManager& operator=(const GooglePhotosWallpaperManager&) =
@@ -43,22 +39,11 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
 
   void SetClient(WallpaperControllerClient* client);
 
-  // Loads a previously saved google photos wallpaper from disk
-  // as a gfx::ImageSkia to the caller. The `callback` is run when the image has
-  // been loaded. A null gfx::ImageSkia instance may be returned if loading the
-  // Google Photos wallpaper failed; this usually means the requested Google
-  // Photos wallpaper does not exist on disk.
   using LoadGooglePhotosWallpaperCallback =
       base::OnceCallback<void(const gfx::ImageSkia&)>;
-  void LoadGooglePhotosWallpaper(const base::FilePath& file_path,
-                                 LoadGooglePhotosWallpaperCallback callback);
 
-  // Attempts to load the Google Photos wallpaper from disk by calling
-  // LoadGooglePhotosWallpaper() first. If loading the wallpaper is
-  // unsuccessful, it tries to download the wallpaper
-  // DownloadGooglePhotosWallpaper(). Assuming the Google Photos wallpaper is
-  // downloaded and saving to disk successfully, the single wallpaper image is
-  // returned to the caller via the `callback`.
+  // Attempts to load the Google Photos wallpaper from disk. If loading the
+  // wallpaper is unsuccessful, it tries to download the wallpaper.
   void GetGooglePhotosWallpaper(
       const base::FilePath& wallpaper_dir,
       const GooglePhotosWallpaperParams& params,
@@ -66,10 +51,6 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
       LoadGooglePhotosWallpaperCallback callback);
 
  private:
-  void LoadFromDisk(const base::FilePath& file_path,
-                    LoadGooglePhotosWallpaperCallback callback,
-                    bool file_path_exists);
-
   void DownloadGooglePhotosWallpaper(
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
       const AccountId& account_id,
@@ -82,6 +63,7 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
       const absl::optional<std::string>& access_token);
 
   void OnGooglePhotosWallpaperDownloaded(
+      const WallpaperType type,
       const base::FilePath& wallpaper_dir,
       const std::string& photo_id,
       const WallpaperLayout layout,
@@ -100,8 +82,7 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
   raw_ptr<WallpaperControllerClient, ExperimentalAsh>
       wallpaper_controller_client_;
 
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  SEQUENCE_CHECKER(sequence_checker_);
+  raw_ptr<WallpaperFileManager> wallpaper_file_manager_;
 
   base::WeakPtrFactory<GooglePhotosWallpaperManager> weak_factory_{this};
 };

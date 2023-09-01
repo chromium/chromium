@@ -4,10 +4,7 @@
 
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 
-#include <cmath>
 #include <cstdlib>
-#include <memory>
-#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -39,6 +36,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -231,16 +229,13 @@ void WaitUntilCustomWallpapersDeleted(const AccountId& account_id) {
   const std::string wallpaper_file_id = GetDummyFileId(account_id);
 
   base::FilePath small_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(
-          WallpaperControllerImpl::kSmallWallpaperSubDir)
+      WallpaperControllerImpl::GetCustomWallpaperDir(kSmallWallpaperSubDir)
           .Append(wallpaper_file_id);
   base::FilePath large_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(
-          WallpaperControllerImpl::kLargeWallpaperSubDir)
+      WallpaperControllerImpl::GetCustomWallpaperDir(kLargeWallpaperSubDir)
           .Append(wallpaper_file_id);
   base::FilePath original_wallpaper_dir =
-      WallpaperControllerImpl::GetCustomWallpaperDir(
-          WallpaperControllerImpl::kOriginalWallpaperSubDir)
+      WallpaperControllerImpl::GetCustomWallpaperDir(kOriginalWallpaperSubDir)
           .Append(wallpaper_file_id);
 
   while (base::PathExists(small_wallpaper_dir) ||
@@ -582,12 +577,10 @@ class WallpaperControllerTestBase : public AshTestBase {
     std::string wallpaper_files_id = GetDummyFileId(account_id);
 
     std::string file_name = GetDummyFileName(account_id);
-    base::FilePath small_wallpaper_path =
-        GetCustomWallpaperPath(WallpaperControllerImpl::kSmallWallpaperSubDir,
-                               wallpaper_files_id, file_name);
-    base::FilePath large_wallpaper_path =
-        GetCustomWallpaperPath(WallpaperControllerImpl::kLargeWallpaperSubDir,
-                               wallpaper_files_id, file_name);
+    base::FilePath small_wallpaper_path = GetCustomWallpaperPath(
+        kSmallWallpaperSubDir, wallpaper_files_id, file_name);
+    base::FilePath large_wallpaper_path = GetCustomWallpaperPath(
+        kLargeWallpaperSubDir, wallpaper_files_id, file_name);
 
     // Saves the small/large resolution wallpapers to small/large custom
     // wallpaper paths.
@@ -1659,17 +1652,20 @@ TEST_P(WallpaperControllerTest,
 
   // Keep OOBE state.
   SetSessionState(SessionState::OOBE);
-  WallpaperInfo synced_info = WallpaperInfo(OnlineWallpaperParams(
-      kAccountId1, kAssetId, GURL(kDummyUrl),
-      TestWallpaperControllerClient::kDummyCollectionId,
-      WALLPAPER_LAYOUT_CENTER, /*preview_mode=*/false, /*from_user=*/false,
-      /*daily_refresh_enabled=*/false, kUnitId,
-      std::vector<OnlineWallpaperVariant>()));
+  WallpaperInfo synced_info = WallpaperInfo(
+      OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
+                            TestWallpaperControllerClient::kDummyCollectionId,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
+                            /*preview_mode=*/false, /*from_user=*/false,
+                            /*daily_refresh_enabled=*/false, kUnitId,
+                            std::vector<OnlineWallpaperVariant>()));
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
   EXPECT_EQ(TestWallpaperControllerClient::kDummyCollectionId,
             actual_info.collection_id);
+  EXPECT_TRUE(base::PathExists(online_wallpaper_dir_.GetPath().Append(
+      GURL(kDummyUrl).ExtractFileName())));
 }
 
 TEST_P(WallpaperControllerTest,
@@ -2458,7 +2454,7 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
   controller_->SetOnlineWallpaper(
       OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
                             /*collection_id=*/std::string(),
-                            WALLPAPER_LAYOUT_CENTER,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
                             /*preview_mode=*/false, /*from_user=*/false,
                             /*daily_refresh_enabled=*/false, kUnitId,
                             /*variants=*/std::vector<OnlineWallpaperVariant>()),
@@ -2502,12 +2498,10 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
 // Tests that the appropriate wallpaper (large vs. small) is shown depending
 // on the desktop resolution.
 TEST_P(WallpaperControllerTest, ShowCustomWallpaperWithCorrectResolution) {
-  const base::FilePath small_custom_wallpaper_path =
-      GetCustomWallpaperPath(WallpaperControllerImpl::kSmallWallpaperSubDir,
-                             kWallpaperFilesId1, kFileName1);
-  const base::FilePath large_custom_wallpaper_path =
-      GetCustomWallpaperPath(WallpaperControllerImpl::kLargeWallpaperSubDir,
-                             kWallpaperFilesId1, kFileName1);
+  const base::FilePath small_custom_wallpaper_path = GetCustomWallpaperPath(
+      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
+  const base::FilePath large_custom_wallpaper_path = GetCustomWallpaperPath(
+      kLargeWallpaperSubDir, kWallpaperFilesId1, kFileName1);
 
   CreateAndSaveWallpapers(kAccountId1);
   ClearWallpaperCount();
@@ -2747,9 +2741,8 @@ TEST_P(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
 // The other user's custom wallpaper is not affected.
 TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
   SimulateUserLogin(kAccountId1);
-  base::FilePath small_wallpaper_path_1 =
-      GetCustomWallpaperPath(WallpaperControllerImpl::kSmallWallpaperSubDir,
-                             kWallpaperFilesId1, kFileName1);
+  base::FilePath small_wallpaper_path_1 = GetCustomWallpaperPath(
+      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
 
   // Set a custom wallpaper for |kUser1| and verify the wallpaper exists.
   CreateAndSaveWallpapers(kAccountId1);
@@ -2757,9 +2750,8 @@ TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
 
   // Now login another user and set a custom wallpaper for the user.
   SimulateUserLogin(kAccountId2);
-  base::FilePath small_wallpaper_path_2 =
-      GetCustomWallpaperPath(WallpaperControllerImpl::kSmallWallpaperSubDir,
-                             kWallpaperFilesId2, GetDummyFileName(kAccountId2));
+  base::FilePath small_wallpaper_path_2 = GetCustomWallpaperPath(
+      kSmallWallpaperSubDir, kWallpaperFilesId2, GetDummyFileName(kAccountId2));
   CreateAndSaveWallpapers(kAccountId2);
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_2));
 
@@ -2778,9 +2770,8 @@ TEST_P(WallpaperControllerTest, RemoveUserWithCustomWallpaper) {
 // the other user's custom wallpaper is not affected.
 TEST_P(WallpaperControllerTest, RemoveUserWithDefaultWallpaper) {
   SimulateUserLogin(kAccountId1);
-  base::FilePath small_wallpaper_path_1 =
-      GetCustomWallpaperPath(WallpaperControllerImpl::kSmallWallpaperSubDir,
-                             kWallpaperFilesId1, kFileName1);
+  base::FilePath small_wallpaper_path_1 = GetCustomWallpaperPath(
+      kSmallWallpaperSubDir, kWallpaperFilesId1, kFileName1);
   // Set a custom wallpaper for |kUser1| and verify the wallpaper exists.
   CreateAndSaveWallpapers(kAccountId1);
   EXPECT_TRUE(base::PathExists(small_wallpaper_path_1));
@@ -4721,7 +4712,7 @@ TEST_P(WallpaperControllerTest,
   WallpaperInfo local_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &local_info));
   std::vector<OnlineWallpaperVariant> updated_variants;
-  const std::string updated_light_url = "https://new_light_url.jpg";
+  const std::string updated_light_url = "https://light/new_light_url.jpg";
   updated_variants.emplace_back(kAssetId, GURL(kDummyUrl),
                                 backdrop::Image::IMAGE_TYPE_DARK_MODE);
   updated_variants.emplace_back(kAssetId2, GURL(updated_light_url),
@@ -4786,7 +4777,7 @@ TEST_P(WallpaperControllerTest,
   WallpaperInfo local_info;
   EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &local_info));
   std::vector<OnlineWallpaperVariant> updated_variants;
-  const std::string updated_light_url = "https://new_light_url.jpg";
+  const std::string updated_light_url = "https://light/new_light_url.jpg";
   updated_variants.emplace_back(kAssetId, GURL(kDummyUrl),
                                 backdrop::Image::IMAGE_TYPE_DARK_MODE);
   updated_variants.emplace_back(kAssetId2, GURL(updated_light_url),
@@ -5079,7 +5070,7 @@ TEST_P(WallpaperControllerTest, WallpaperCustomization_UnusedForNonDefault) {
   controller_->SetOnlineWallpaper(
       OnlineWallpaperParams(kAccountId1, kAssetId, GURL(kDummyUrl),
                             /*collection_id=*/std::string(),
-                            WALLPAPER_LAYOUT_CENTER,
+                            WALLPAPER_LAYOUT_CENTER_CROPPED,
                             /*preview_mode=*/false, /*from_user=*/false,
                             /*daily_refresh_enabled=*/false, kUnitId,
                             /*variants=*/std::vector<OnlineWallpaperVariant>()),

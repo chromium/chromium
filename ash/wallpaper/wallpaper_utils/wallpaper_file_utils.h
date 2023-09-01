@@ -18,6 +18,11 @@ class ImageSkia;
 
 namespace ash {
 
+// Directory names of custom wallpapers.
+constexpr char kSmallWallpaperSubDir[] = "small";
+constexpr char kLargeWallpaperSubDir[] = "large";
+constexpr char kOriginalWallpaperSubDir[] = "original";
+
 // Saves the wallpaper |image| to disc at the given file |path|. Returns true
 // if successfully saved and false otherwise. This function is not specific to
 // any one WallpaperType.

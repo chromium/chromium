@@ -30,6 +30,7 @@
 #include "ash/wallpaper/online_wallpaper_manager.h"
 #include "ash/wallpaper/online_wallpaper_variant_info_fetcher.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
+#include "ash/wallpaper/wallpaper_file_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -94,11 +95,6 @@ class ASH_EXPORT WallpaperControllerImpl
       public ui::NativeThemeObserver,
       public ScheduledFeature::CheckpointObserver {
  public:
-  // Directory names of custom wallpapers.
-  static const char kSmallWallpaperSubDir[];
-  static const char kLargeWallpaperSubDir[];
-  static const char kOriginalWallpaperSubDir[];
-
   static std::unique_ptr<WallpaperControllerImpl> Create(
       PrefService* local_state);
 
@@ -537,19 +533,11 @@ class ASH_EXPORT WallpaperControllerImpl
                                       const gfx::ImageSkia& image);
 
   // Implementation of setting wallpapers. Shows the wallpaper on screen if
-  // |show_wallpaper| is true. TODO(b/290376494): reuse this function for other
-  // wallpaper types instead of using a separate implementation functions for
-  // each type (ex: SetOnlineWallpaperImpl)
+  // |show_wallpaper| is true.
   void SetWallpaperImpl(const AccountId& account_id,
                         const WallpaperInfo& wallpaper_info,
                         const gfx::ImageSkia& image,
                         bool show_wallpaper);
-
-  // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
-  // |show_wallpaper| is true.
-  void SetOnlineWallpaperImpl(const OnlineWallpaperParams& params,
-                              bool show_wallpaper,
-                              const gfx::ImageSkia& image);
 
   // Loads the `account_id`'s wallpaper by using `info.location`.
   // Guaranteed to work offline.
@@ -847,6 +835,8 @@ class ASH_EXPORT WallpaperControllerImpl
   bool is_override_wallpaper_ = false;
 
   const std::unique_ptr<WallpaperImageDownloader> wallpaper_image_downloader_;
+
+  const std::unique_ptr<WallpaperFileManager> wallpaper_file_manager_;
 
   // A utility class that handles file operations for online wallpapers, which
   // include downloading and saving wallpapers to disk, or loading the
