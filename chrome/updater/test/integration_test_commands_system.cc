@@ -349,8 +349,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }
 
-  void InstallAppViaService(const std::string& app_id) const override {
-    RunCommand("install_app_via_service", {Param("app_id", app_id)});
+  void InstallAppViaService(
+      const std::string& app_id,
+      const base::Value::Dict& expected_final_values) const override {
+    RunCommand(
+        "install_app_via_service",
+        {Param("app_id", app_id),
+         Param("expected_final_values",
+               StringFromValue(base::Value(expected_final_values.Clone())))});
   }
 #endif  // BUILDFLAG(IS_WIN)
 

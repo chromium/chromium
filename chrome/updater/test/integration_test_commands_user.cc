@@ -307,8 +307,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunHandoff(updater_scope_, app_id);
   }
 
-  void InstallAppViaService(const std::string& app_id) const override {
-    updater::test::InstallAppViaService(updater_scope_, app_id);
+  void InstallAppViaService(
+      const std::string& app_id,
+      const base::Value::Dict& expected_final_values) const override {
+    updater::test::InstallAppViaService(updater_scope_, app_id,
+                                        expected_final_values);
   }
 #endif  // BUILDFLAG(IS_WIN)
 

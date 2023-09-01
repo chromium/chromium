@@ -269,8 +269,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunHandoff(app_id);
   }
 
-  void InstallAppViaService(const std::string& app_id) {
-    test_commands_->InstallAppViaService(app_id);
+  void InstallAppViaService(
+      const std::string& app_id,
+      const base::Value::Dict& expected_final_values = {}) {
+    test_commands_->InstallAppViaService(app_id, expected_final_values);
   }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -2063,7 +2065,15 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
-  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
+  int64_t crx_file_size = 0;
+  {
+    base::FilePath exe_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+    const base::FilePath crx_path = exe_path.Append(crx_relative_path);
+    EXPECT_TRUE(base::GetFileSize(crx_path, &crx_file_size));
+  }
+
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       {
@@ -2072,7 +2082,7 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
               "INSTALLER_ERROR=1603",
               kMsiAppId, base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
               /*is_install=*/true,
-              /*should_update=*/false, false, "", crx_path,
+              /*should_update=*/false, false, "", crx_relative_path,
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
               1603, /*EVENT_INSTALL_COMPLETE=*/2),
       });
@@ -2081,7 +2091,27 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
   // install, and there are now no apps to manage.
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
-  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
+      kMsiAppId,
+      base::Value::Dict()
+          .Set(
+              "expected_update_state",
+              base::Value::Dict()
+                  .Set("app_id", kMsiAppId)
+                  .Set("state",
+                       static_cast<int>(
+                           UpdateService::UpdateState::State::kUpdateError))
+                  .Set("next_version", kMsiUpdatedVersion.GetString())
+                  .Set("downloaded_bytes", static_cast<int>(crx_file_size))
+                  .Set("total_bytes", static_cast<int>(crx_file_size))
+                  .Set("install_progress", -1)
+                  .Set("error_category",
+                       static_cast<int>(UpdateService::ErrorCategory::kInstall))
+                  .Set("error_code", 1603)
+                  .Set("extra_code1", 0)
+                  .Set("installer_text", "")
+                  .Set("installer_cmd_line", ""))
+          .Set("expected_result", 0)));
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
 
   ASSERT_TRUE(WaitForUpdaterExit());

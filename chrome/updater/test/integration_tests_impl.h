@@ -182,7 +182,9 @@ void UpdateAll(UpdaterScope scope);
 
 // Invokes the active instance's UpdateService::Install (via RPC) for an
 // app.
-void InstallAppViaService(UpdaterScope scope, const std::string& app_id);
+void InstallAppViaService(UpdaterScope scope,
+                          const std::string& app_id,
+                          const base::Value::Dict& expected_final_values);
 
 void GetAppStates(UpdaterScope updater_scope,
                   const base::Value::Dict& expected_app_states);

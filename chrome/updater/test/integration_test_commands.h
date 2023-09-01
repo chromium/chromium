@@ -128,7 +128,9 @@ class IntegrationTestCommands
   virtual void ExpectLegacyPolicyStatusSucceeds() const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void RunHandoff(const std::string& app_id) const = 0;
-  virtual void InstallAppViaService(const std::string& app_id) const = 0;
+  virtual void InstallAppViaService(
+      const std::string& app_id,
+      const base::Value::Dict& expected_final_values) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void StressUpdateService() const = 0;
   virtual void CallServiceUpdate(const std::string& app_id,

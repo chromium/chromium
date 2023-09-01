@@ -653,18 +653,73 @@ void UpdateAll(UpdaterScope scope) {
   loop.Run();
 }
 
-void InstallAppViaService(UpdaterScope scope, const std::string& app_id) {
+void InstallAppViaService(UpdaterScope scope,
+                          const std::string& appid,
+                          const base::Value::Dict& expected_final_values) {
   RegistrationRequest registration;
-  registration.app_id = app_id;
+  registration.app_id = appid;
   registration.version = base::Version({0, 0, 0, 0});
   scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
+  UpdateService::UpdateState final_update_state;
+  UpdateService::Result final_result;
   base::RunLoop loop;
   update_service->Install(
       registration, /*client_install_data=*/"", /*install_data_index=*/"",
-      UpdateService::Priority::kForeground, base::DoNothing(),
+      UpdateService::Priority::kForeground,
       base::BindLambdaForTesting(
-          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
+          [&](const UpdateService::UpdateState& update_state) {
+            final_update_state = update_state;
+          }),
+      base::BindLambdaForTesting([&](UpdateService::Result result) {
+        final_result = result;
+        loop.Quit();
+      }));
   loop.Run();
+
+  const base::Value::Dict* expected_update_state =
+      expected_final_values.FindDict("expected_update_state");
+  if (expected_update_state) {
+#define CHECK_STATE_MEMBER_STRING(p)                 \
+  if (const std::string* _state_member =             \
+          expected_update_state->FindString(#p);     \
+      _state_member) {                               \
+    EXPECT_EQ(final_update_state.p, *_state_member); \
+  }
+#define CHECK_STATE_MEMBER_INT(p)                                      \
+  if (const absl::optional<int> _state_member =                        \
+          expected_update_state->FindInt(#p);                          \
+      _state_member) {                                                 \
+    EXPECT_EQ(static_cast<int>(final_update_state.p), *_state_member); \
+  }
+#define CHECK_STATE_MEMBER_VERSION(p)                            \
+  if (const std::string* _state_member =                         \
+          expected_update_state->FindString(#p);                 \
+      _state_member) {                                           \
+    EXPECT_EQ(final_update_state.p.GetString(), *_state_member); \
+  }
+
+    CHECK_STATE_MEMBER_STRING(app_id);
+    CHECK_STATE_MEMBER_INT(state);
+    CHECK_STATE_MEMBER_VERSION(next_version);
+    CHECK_STATE_MEMBER_INT(downloaded_bytes);
+    CHECK_STATE_MEMBER_INT(total_bytes);
+    CHECK_STATE_MEMBER_INT(install_progress);
+    CHECK_STATE_MEMBER_INT(error_category);
+    CHECK_STATE_MEMBER_INT(error_code);
+    CHECK_STATE_MEMBER_INT(extra_code1);
+    CHECK_STATE_MEMBER_STRING(installer_text);
+    CHECK_STATE_MEMBER_STRING(installer_cmd_line);
+
+#undef CHECK_STATE_MEMBER_VERSION
+#undef CHECK_STATE_MEMBER_INT
+#undef CHECK_STATE_MEMBER_STRING
+  }
+
+  if (const absl::optional<int> expected_result =
+          expected_final_values.FindInt("expected_result");
+      expected_result) {
+    EXPECT_EQ(static_cast<int>(final_result), *expected_result);
+  }
 }
 
 void GetAppStates(UpdaterScope updater_scope,

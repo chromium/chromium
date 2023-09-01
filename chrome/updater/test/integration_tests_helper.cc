@@ -357,7 +357,9 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("version",
                 WithSwitch("app_id", WithSystemScope(Wrap(&InstallApp))))},
     {"install_app_via_service",
-     WithSwitch("app_id", WithSystemScope(Wrap(&InstallAppViaService)))},
+     WithSwitch(
+         "expected_final_values",
+         WithSwitch("app_id", WithSystemScope(Wrap(&InstallAppViaService))))},
     {"uninstall_app",
      WithSwitch("app_id", WithSystemScope(Wrap(&UninstallApp)))},
     {"set_existence_checker_path",
