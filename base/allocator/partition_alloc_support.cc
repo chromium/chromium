@@ -415,6 +415,9 @@ std::string ExtractDanglingPtrSignature(std::string stacktrace) {
       "internal::RawPtrBackupRefImpl<false, false>::ReleaseInternal",
       "internal::RawPtrBackupRefImpl<false, true>::ReleaseInternal",
 
+      // ChromeOS signatures
+      "base::allocator::dispatcher::internal::DispatcherImpl<>::FreeFn()",
+
       // Task traces are prefixed with "Task trace:" in
       // |TaskTrace::OutputToStream|
       "Task trace:",
