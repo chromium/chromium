@@ -52,6 +52,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
@@ -161,11 +162,14 @@ constexpr char kLacrosCannotLaunchNotificationID[] =
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
 base::FilePath LacrosLogDirectory() {
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // When pre-launching Lacros at login screen is enabled:
   // - In test images, we always save Lacros logs in /var/log/lacros.
   // - In non-test images, we save Lacros logs in /var/log/lacros
   //   only when Lacros is running at login screen. Lacros will
   //   redirect user-specific logs to the cryptohome after login.
+  // - In gLinux, there's no /var/log/lacros, so we stick with the
+  //   default path.
   if (base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen) &&
       (base::CommandLine::ForCurrentProcess()->HasSwitch(
            switches::kDisableLoggingRedirect) ||
@@ -173,6 +177,7 @@ base::FilePath LacrosLogDirectory() {
            session_manager::SessionState::LOGIN_PRIMARY)) {
     return base::FilePath("/var/log/lacros");
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
   return browser_util::GetUserDataDir();
 }
 
