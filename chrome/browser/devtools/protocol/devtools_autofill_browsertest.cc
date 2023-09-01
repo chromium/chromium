@@ -330,7 +330,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   EXPECT_EQ(GetFilledOutForm(unique_context_id), GetTestCreditCard());
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInOOPIFIframe) {
+// Disabled due to nullptr deref; see https://crbug.com/1477600.
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       DISABLED_TriggerCreditCardInOOPIFIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
