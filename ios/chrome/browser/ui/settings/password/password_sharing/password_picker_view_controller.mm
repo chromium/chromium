@@ -6,11 +6,6 @@
 
 @implementation PasswordPickerViewController
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
