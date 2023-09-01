@@ -210,9 +210,6 @@ void GlanceablesTasksClientImpl::OnGlanceablesBubbleClosed(
   }
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(num_tasks_completed, std::move(callback));
-  base::UmaHistogramCounts100(
-      "Ash.Glanceables.Api.Tasks.SimultaneousMarkAsCompletedRequestsCount",
-      num_tasks_completed);
 
   for (const auto& [task_list_ids, task_ids] : pending_completed_tasks_) {
     for (const auto& task_id : task_ids) {
@@ -280,8 +277,6 @@ void GlanceablesTasksClientImpl::OnTaskListsPageFetched(
   if (result.value()->next_page_token().empty()) {
     base::UmaHistogramCounts100(
         "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.TaskListsCount",
-                                task_lists_.item_count());
     RunGetTaskListsCallbacks(FetchStatus::kFresh);
   } else {
     FetchTaskListsPage(result.value()->next_page_token(), page_number + 1);
@@ -334,13 +329,9 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
   if (result.value()->next_page_token().empty()) {
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
                                 page_number);
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.RawTasksCount",
-                                accumulated_raw_tasks.size());
     for (auto& item : ConvertTasks(accumulated_raw_tasks)) {
       iter->second.Add(std::move(item));
     }
-    base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
-                                iter->second.item_count());
     RunGetTasksCallbacks(task_list_id, FetchStatus::kFresh, &iter->second);
   } else {
     FetchTasksPage(task_list_id, result.value()->next_page_token(),

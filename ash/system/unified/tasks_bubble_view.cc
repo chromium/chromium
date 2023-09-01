@@ -221,12 +221,6 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
                                       const std::string& task_list_title,
                                       bool initial_update,
                                       ui::ListModel<GlanceablesTask>* tasks) {
-  if (initial_update) {
-    base::UmaHistogramCounts100(
-        "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
-        tasks->item_count());
-  }
-
   const gfx::Size old_preferred_size = GetPreferredSize();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
 
