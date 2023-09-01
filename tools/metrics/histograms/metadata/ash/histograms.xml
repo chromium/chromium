@@ -3706,6 +3706,41 @@ chromium-metrics-reviews@google.com.
   <summary>Record the floating workspace template upload status.</summary>
 </histogram>
 
+<histogram
+    name="Ash.Glanceables.Api.Classroom.CourseWorkItemsPerStudentCourseCount"
+    units="course work items" expires_after="2024-03-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the number of course work items fetched for a
+    course, where the current user is enrolled as a student.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.Api.Classroom.IsStudentRoleActiveResult"
+    enum="BooleanEnabled" expires_after="2024-03-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates whether the current user is enrolled in at least
+    one classroom course.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.Glanceables.Api.Classroom.StudentSubmissionsPerStudentCourseCount"
+    units="student submissions" expires_after="2024-03-01">
+  <owner>amitrokhin@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded whenever glanceables UI fetches data from Google Classroom API. The
+    recorded value indicates the number of student submissions fetched for a
+    course, where the current user is enrolled as a student.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.Api.Classroom.{Role}CoursesCount"
     units="courses" expires_after="2024-01-01">
   <owner>amitrokhin@google.com</owner>

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <utility>
 #include <vector>
@@ -252,7 +253,11 @@ void GlanceablesClassroomClientImpl::IsStudentRoleActive(
   FetchStudentCourses(base::BindOnce(
       [](IsRoleEnabledCallback callback, bool success,
          const CourseList& courses) {
-        std::move(callback).Run(!courses.empty());
+        const bool is_active = !courses.empty();
+        base::UmaHistogramBoolean(
+            "Ash.Glanceables.Api.Classroom.IsStudentRoleActiveResult",
+            is_active);
+        std::move(callback).Run(is_active);
       },
       std::move(callback)));
 }
@@ -1020,6 +1025,26 @@ void GlanceablesClassroomClientImpl::OnStudentDataFetched(
   }
 
   PruneInvalidCourseWork(student_courses_.courses(), student_course_work_);
+
+  if (!student_data_fetch_had_failure_) {
+    for (const auto& course : student_courses_.courses()) {
+      const auto iter = student_course_work_.find(course->id);
+      if (iter == student_course_work_.end()) {
+        continue;
+      }
+
+      base::UmaHistogramCounts1000(
+          "Ash.Glanceables.Api.Classroom.CourseWorkItemsPerStudentCourseCount",
+          iter->second.size());
+      base::UmaHistogramCounts1000(
+          "Ash.Glanceables.Api.Classroom."
+          "StudentSubmissionsPerStudentCourseCount",
+          std::accumulate(iter->second.begin(), iter->second.end(), 0,
+                          [](int count, const auto& x) {
+                            return count + x.second.total_submissions();
+                          }));
+    }
+  }
 
   std::list<DataFetchCallback> callbacks;
   callbacks_waiting_for_student_data_.swap(callbacks);
