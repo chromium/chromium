@@ -351,6 +351,31 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
   session_observation_.Reset();
 
   if (!features::IsWelcomeTourForceUserEligibilityEnabled()) {
+    // Welcome Tour is supported for regular users only.
+    const auto* const session_controller = Shell::Get()->session_controller();
+    if (const auto user_type = session_controller->GetUserType();
+        user_type != user_manager::UserType::USER_TYPE_REGULAR) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
+      return;
+    }
+
+    // Welcome Tour is not supported for managed accounts.
+    if (session_controller->IsActiveAccountManaged()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kManagedAccount);
+      return;
+    }
+
+    // The cross-device proxy for whether the user is "new" or "existing" is
+    // untested out in the wild. For sanity, confirm that the user is also
+    // considered "new" locally in case the proxy check proves to be erroneous.
+    if (!session_controller->IsUserFirstLogin()) {
+      welcome_tour_metrics::RecordTourPrevented(
+          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
+      return;
+    }
+
     const absl::optional<bool>& is_new_user =
         UserEducationController::Get()->IsNewUser(UserEducationPrivateApiKey());
 
@@ -367,31 +392,6 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     if (!is_new_user.value()) {
       welcome_tour_metrics::RecordTourPrevented(
           welcome_tour_metrics::PreventedReason::kUserNotNewCrossDevice);
-      return;
-    }
-
-    // The cross-device proxy for whether the user is "new" or "existing" is
-    // untested out in the wild. For sanity, confirm that the user is also
-    // considered "new" locally in case the proxy check proves to be erroneous.
-    const auto* const session_controller = Shell::Get()->session_controller();
-    if (session_controller && !session_controller->IsUserFirstLogin()) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserNotNewLocally);
-      return;
-    }
-
-    // Welcome Tour is not supported for managed accounts.
-    if (session_controller && session_controller->IsActiveAccountManaged()) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kManagedAccount);
-      return;
-    }
-
-    // Welcome Tour is supported for regular users only.
-    if (const auto user_type = session_controller->GetUserType();
-        user_type != user_manager::UserType::USER_TYPE_REGULAR) {
-      welcome_tour_metrics::RecordTourPrevented(
-          welcome_tour_metrics::PreventedReason::kUserTypeNotRegular);
       return;
     }
   }

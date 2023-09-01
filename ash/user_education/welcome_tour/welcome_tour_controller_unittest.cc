@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -34,6 +35,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_accelerator_handler.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
+#include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
@@ -42,6 +44,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
@@ -64,6 +67,7 @@ namespace ash {
 namespace {
 
 // Aliases.
+using ::ash::welcome_tour_metrics::PreventedReason;
 using ::base::test::RunOnceClosure;
 using ::session_manager::SessionState;
 using ::testing::_;
@@ -721,9 +725,34 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(0);
 
+  base::HistogramTester histogram_tester;
+
   // Activate the user session and verify expectations.
   GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
+
+  // Verify histograms.
+  // NOTE: Order is important. For users not going through OOBE, it is expected
+  // that cross-device newness be unavailable. To ensure that the most specific
+  // prevention reason is emitted to histograms, cross-device newness checks
+  // should be last.
+  std::vector<base::Bucket> buckets;
+  if (!ForceUserEligibility()) {
+    if (GetUserType() != user_manager::USER_TYPE_REGULAR) {
+      buckets.emplace_back(PreventedReason::kUserTypeNotRegular, 1);
+    } else if (IsManagedUser()) {
+      buckets.emplace_back(PreventedReason::kManagedAccount, 1);
+    } else if (!IsNewUserLocally()) {
+      buckets.emplace_back(PreventedReason::kUserNotNewLocally, 1);
+    } else if (!IsNewUserCrossDevice().has_value()) {
+      buckets.emplace_back(PreventedReason::kUserNewnessNotAvailable, 1);
+    } else if (!IsNewUserCrossDevice().value()) {
+      buckets.emplace_back(PreventedReason::kUserNotNewCrossDevice, 1);
+    }
+  }
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Ash.WelcomeTour.Prevented.Reason"),
+      base::BucketsAreArray(buckets));
 }
 
 // WelcomeTourControllerRunTest ------------------------------------------------
