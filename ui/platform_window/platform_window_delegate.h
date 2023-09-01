@@ -178,6 +178,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual absl::optional<gfx::Size> GetMinimumSizeForWindow();
   virtual absl::optional<gfx::Size> GetMaximumSizeForWindow();
 
+  virtual bool CanMaximize();
+  virtual bool CanFullscreen();
+
   // Returns a mask to be used to clip the window for the size of
   // |WindowTreeHost::GetBoundsInPixels|.
   // This is used to create the non-rectangular window shape.

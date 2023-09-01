@@ -52,6 +52,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
+  MOCK_METHOD0(CanMaximize, bool());
+  MOCK_METHOD0(CanFullscreen, bool());
 };
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& a,

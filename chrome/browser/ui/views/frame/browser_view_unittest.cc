@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -447,6 +448,50 @@ TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
   EXPECT_FALSE(browser_view()->RotatePaneFocusFromView(nullptr, true, false));
   EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
 }
+
+//  Macs do not have fullscreen policy.
+#if !BUILDFLAG(IS_MAC)
+
+TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
+  auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
+  EXPECT_TRUE(browser_view()->CanFullscreen());
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
+                                                       false);
+  EXPECT_FALSE(browser_view()->CanFullscreen());
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
+                                                       true);
+  EXPECT_TRUE(browser_view()->CanFullscreen());
+}
+
+class BrowserViewPipTest : public TestWithBrowserView {
+ public:
+  BrowserViewPipTest()
+      : TestWithBrowserView(Browser::TYPE_PICTURE_IN_PICTURE) {}
+
+  BrowserViewPipTest(const BrowserViewPipTest&) = delete;
+  BrowserViewPipTest& operator=(const BrowserViewPipTest&) = delete;
+
+  ~BrowserViewPipTest() override = default;
+};
+
+// Pip is used to test reverting back to not allowed to fullscreen state.
+TEST_F(BrowserViewPipTest, CanFullscreenPolicyDoesNotEnableFullscreen) {
+  auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
+  EXPECT_FALSE(browser_view()->CanFullscreen());
+
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
+                                                       false);
+  EXPECT_FALSE(browser_view()->CanFullscreen());
+
+  // This should have no effect, because pip is not allowed to enter fullscreen.
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(fullscreen_pref_path,
+                                                       true);
+  EXPECT_FALSE(browser_view()->CanFullscreen());
+}
+
+#endif  // !BUILDFLAG(IS_MAC)
 
 class BrowserViewHostedAppTest : public TestWithBrowserView {
  public:

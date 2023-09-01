@@ -448,4 +448,28 @@ TEST_F(DesktopWindowTreeHostPlatformTest, OnRotateFocus) {
   EXPECT_EQ(views[1], focus_manager->GetFocusedView());
 }
 
+TEST_F(DesktopWindowTreeHostPlatformTest, CanMaximize) {
+  auto widget = CreateWidgetWithNativeWidget();
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+
+  widget->widget_delegate()->SetCanMaximize(true);
+  EXPECT_TRUE(host_platform->CanMaximize());
+
+  widget->widget_delegate()->SetCanMaximize(false);
+  EXPECT_FALSE(host_platform->CanMaximize());
+}
+
+TEST_F(DesktopWindowTreeHostPlatformTest, CanFullscreen) {
+  auto widget = CreateWidgetWithNativeWidget();
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+
+  widget->widget_delegate()->SetCanFullscreen(true);
+  EXPECT_TRUE(host_platform->CanFullscreen());
+
+  widget->widget_delegate()->SetCanFullscreen(false);
+  EXPECT_FALSE(host_platform->CanFullscreen());
+}
+
 }  // namespace views

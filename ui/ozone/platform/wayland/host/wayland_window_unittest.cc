@@ -1455,6 +1455,66 @@ TEST_P(WaylandWindowTest, RestoreBoundsAfterMaximizeAndFullscreen) {
   EXPECT_EQ(restored_bounds, gfx::Rect());
 }
 
+TEST_P(WaylandWindowTest, SetCanMaximize) {
+  if (GetParam().enable_aura_shell != wl::EnableAuraShellProtocol::kEnabled) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_CALL(delegate_, CanMaximize).WillOnce(Return(true));
+  window_->SizeConstraintsChanged();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_TRUE(zaura_toplevel->can_maximize());
+  });
+
+  EXPECT_CALL(delegate_, CanMaximize).WillOnce(Return(false));
+  window_->SizeConstraintsChanged();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_FALSE(zaura_toplevel->can_maximize());
+  });
+}
+
+TEST_P(WaylandWindowTest, SetCanFullscreen) {
+  if (GetParam().enable_aura_shell != wl::EnableAuraShellProtocol::kEnabled) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_CALL(delegate_, CanFullscreen).WillOnce(Return(true));
+  window_->SizeConstraintsChanged();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_TRUE(zaura_toplevel->can_fullscreen());
+  });
+
+  EXPECT_CALL(delegate_, CanFullscreen).WillOnce(Return(false));
+  window_->SizeConstraintsChanged();
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
+    ASSERT_TRUE(surface);
+
+    wl::TestZAuraToplevel* zaura_toplevel =
+        surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
+    ASSERT_TRUE(zaura_toplevel);
+    EXPECT_FALSE(zaura_toplevel->can_fullscreen());
+  });
+}
+
 TEST_P(WaylandWindowTest, SendsBoundsOnRequest) {
   const gfx::Rect initial_bounds = window_->GetBoundsInDIP();
 

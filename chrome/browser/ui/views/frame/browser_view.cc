@@ -1003,6 +1003,13 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // High Efficiency mode is default off but is available to turn on
   high_efficiency_opt_in_iph_controller_ =
       std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
+
+  registrar_.Init(GetProfile()->GetPrefs());
+  registrar_.Add(
+      prefs::kFullscreenAllowed,
+      base::BindRepeating(&BrowserView::UpdateFullscreenAllowedFromPolicy,
+                          base::Unretained(this), CanFullscreen()));
+  UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 }
 
 BrowserView::~BrowserView() {
@@ -5080,6 +5087,16 @@ void BrowserView::FrameColorsChanged() {
         BrowserFrameActiveState::kUseCurrent);
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
+  }
+}
+
+void BrowserView::UpdateFullscreenAllowedFromPolicy(
+    bool allowed_without_policy) {
+  auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
+  if (GetProfile()->GetPrefs()->HasPrefPath(fullscreen_pref_path)) {
+    SetCanFullscreen(
+        allowed_without_policy &&
+        GetProfile()->GetPrefs()->GetBoolean(fullscreen_pref_path));
   }
 }
 

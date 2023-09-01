@@ -97,6 +97,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
+  bool CanMaximize() override;
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
@@ -120,6 +121,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
+  bool CanFullscreen() override;
   void SetFullscreen(bool fullscreen, int64_t display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;

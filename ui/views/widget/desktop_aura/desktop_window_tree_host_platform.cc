@@ -38,6 +38,7 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_aura_utils.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/native_frame_view.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/window_util.h"
@@ -583,6 +584,10 @@ bool DesktopWindowTreeHostPlatform::IsActive() const {
   return is_active_;
 }
 
+bool DesktopWindowTreeHostPlatform::CanMaximize() {
+  return GetWidget()->widget_delegate()->CanMaximize();
+}
+
 void DesktopWindowTreeHostPlatform::Maximize() {
   platform_window()->Maximize();
   if (IsMinimized())
@@ -716,6 +721,10 @@ void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
   // the button assets don't update otherwise.
   if (GetWidget()->non_client_view())
     GetWidget()->non_client_view()->UpdateFrame();
+}
+
+bool DesktopWindowTreeHostPlatform::CanFullscreen() {
+  return GetWidget()->widget_delegate()->CanFullscreen();
 }
 
 void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,

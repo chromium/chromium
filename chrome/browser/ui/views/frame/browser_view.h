@@ -1003,6 +1003,12 @@ class BrowserView : public BrowserWindow,
   void PaintAsActiveChanged();
   void FrameColorsChanged();
 
+  // |allowed_without_policy| represents whether or not the browser is allowed
+  // to enter fullscreen, irrespective of policy. This is is necessary to
+  // prevent policy from incorrectly allowing the browser to enter fullscreen
+  // when it should not be able to.
+  void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
+
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;
 
@@ -1269,6 +1275,8 @@ class BrowserView : public BrowserWindow,
 
   DevToolsDockedPlacement current_devtools_docked_placement_ =
       DevToolsDockedPlacement::kNone;
+
+  PrefChangeRegistrar registrar_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

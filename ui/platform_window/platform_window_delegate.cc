@@ -49,6 +49,14 @@ absl::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
   return absl::nullopt;
 }
 
+bool PlatformWindowDelegate::CanMaximize() {
+  return false;
+}
+
+bool PlatformWindowDelegate::CanFullscreen() {
+  return false;
+}
+
 SkPath PlatformWindowDelegate::GetWindowMaskForWindowShapeInPixels() {
   return SkPath();
 }
