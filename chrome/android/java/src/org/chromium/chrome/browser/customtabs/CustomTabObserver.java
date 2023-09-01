@@ -285,7 +285,7 @@ public class CustomTabObserver extends EmptyTabObserver {
         }
         if (histogram != null) {
             RecordHistogram.recordCustomTimesHistogram(
-                    histogram, duration, 20, DateUtils.SECOND_IN_MILLIS * 20, 50);
+                    histogram, duration, 50, DateUtils.MINUTE_IN_MILLIS, 50);
         }
     }
 
