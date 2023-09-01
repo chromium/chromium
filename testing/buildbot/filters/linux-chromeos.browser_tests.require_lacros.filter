@@ -23,7 +23,6 @@ WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
 WebKioskLacrosTest*
 CrosapiSystemLogSourceTest*
-TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
 -ChromeVoxBackgroundTest.TextSelectionAndLiveRegion
@@ -123,19 +122,7 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -DictationUIE2ETest.HintsTimeoutWithChromeVox
 # TODO(b/262789941): Flaky
 -MagnifierE2ETest.IgnoresRootNodeFocus
-# TODO(accessibility): these are native C++ tests that need investigation.
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxNextTabRecovery*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ChromeVoxStickyModeRawKeys*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ClipboardCopySpeech*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.LandmarkNavigation*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.NextGraphic*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.OverviewMode*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfBlockedAppIconBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfNotificationBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfPausedAppIconBadgeAnnouncement*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.SpeakingTextUnderMouseForShelfItem*
--TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
+
 # The following tests have no dependency on Lacros browser, do not run these tests
 # as browser_tests_require_lacros.
 # TODO(b/290096429): Audit these tests, re-work to run these tests against Lacros
