@@ -6911,6 +6911,12 @@ const char kTimeOfDayWallpaperName[] = "Time of Day Wallpaper";
 const char kTimeOfDayWallpaperDescription[] =
     "Enables Time of Day Wallpaper feature on supported devices.";
 
+const char kTimeOfDayDlcName[] = "Time of Day Dlc";
+const char kTimeOfDayDlcDescription[] =
+    "Enables downloading Time of Day Screen Saver assets from DLC rather than "
+    "using ones built into rootfs. This should have little to no user-visible "
+    "impact. Requires Time of Day Screen Saver to be enabled.";
+
 const char kTouchscreenCalibrationName[] =
     "Enable/disable touchscreen calibration option in material design settings";
 const char kTouchscreenCalibrationDescription[] =

@@ -3970,6 +3970,9 @@ extern const char kTimeOfDayScreenSaverDescription[];
 extern const char kTimeOfDayWallpaperName[];
 extern const char kTimeOfDayWallpaperDescription[];
 
+extern const char kTimeOfDayDlcName[];
+extern const char kTimeOfDayDlcDescription[];
+
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 

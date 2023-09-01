@@ -2544,6 +2544,10 @@ BASE_FEATURE(kTimeOfDayWallpaper,
              "TimeOfDayWallpaper",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables retrieving time of day screen saver assets from DLC, rather than from
+// rootfs.
+BASE_FEATURE(kTimeOfDayDlc, "TimeOfDayDlc", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
 // and shows Data Usage in the Celluar Settings UI.
 BASE_FEATURE(kTrafficCountersEnabled,
@@ -4002,6 +4006,11 @@ bool IsTimeOfDayScreenSaverEnabled() {
 bool IsTimeOfDayWallpaperEnabled() {
   return base::FeatureList::IsEnabled(kTimeOfDayWallpaper) &&
          base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
+}
+
+bool IsTimeOfDayDlcEnabled() {
+  return IsTimeOfDayScreenSaverEnabled() &&
+         base::FeatureList::IsEnabled(kTimeOfDayDlc);
 }
 
 bool IsTabClusterUIEnabled() {

@@ -7924,6 +7924,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "time-of-day-dlc",
+    "owners": [ "esum", "assistive-eng@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "time-of-day-screen-saver",
     "owners": [ "esum", "jasontt", "assistive-eng@google.com" ],
     "expiry_milestone": 120
