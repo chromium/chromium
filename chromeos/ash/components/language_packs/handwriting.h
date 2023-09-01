@@ -24,7 +24,7 @@ namespace ash::language_packs {
 // Example `id_to_handwriting_locale` for engine IDs:
 // ```
 // base::BindRepeating(
-//     EngineIdToHandwritingLocale,
+//     MapEngineIdToHandwritingLocale,
 //     input_method::InputMethodManager::Get()->GetInputMethodUtil());
 // ```
 base::flat_set<std::string> MapIdsToHandwritingLocales(
@@ -38,7 +38,7 @@ base::flat_set<std::string> MapIdsToHandwritingLocales(
 //
 // Intended to be used with `base::BindRepeating` to be passed into
 // `MapIdsToHandwritingLocales`.
-absl::optional<std::string> EngineIdToHandwritingLocale(
+absl::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id);
 

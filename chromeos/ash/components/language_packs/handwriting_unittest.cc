@@ -125,47 +125,56 @@ class DelegateUtil {
   }
 };
 
-TEST_F(HandwritingTest, EngineIdToHandwritingLocaleNoInputMethods) {
+TEST_F(HandwritingTest, MapEngineIdToHandwritingLocaleNoInputMethods) {
   DelegateUtil delegate_util({});
   input_method::InputMethodUtil* util = delegate_util.util();
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"), absl::nullopt);
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
+              absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
+              absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
+              absl::nullopt);
 }
 
 TEST_F(HandwritingTest,
-       EngineIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
+       MapEngineIdToHandwritingLocaleInputMethodsWithoutHandwriting) {
   DelegateUtil delegate_util(
       {{{"xkb:us::eng", absl::nullopt}, {"xkb:fr::fra", absl::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"), absl::nullopt);
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
+              absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
+              absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
+              absl::nullopt);
 }
 
 TEST_F(HandwritingTest,
-       EngineIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
+       MapEngineIdToHandwritingLocaleSomeInputMethodsWithHandwriting) {
   DelegateUtil delegate_util(
       {{{"xkb:us::eng", "en"}, {"xkb:fr::fra", absl::nullopt}}});
   input_method::InputMethodUtil* util = delegate_util.util();
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"),
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
               Optional(Eq("en")));
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"), absl::nullopt);
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
+              absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
+              absl::nullopt);
 }
 
 TEST_F(HandwritingTest,
-       EngineIdToHandwritingLocaleInputMethodsWithHandwriting) {
+       MapEngineIdToHandwritingLocaleInputMethodsWithHandwriting) {
   DelegateUtil delegate_util({{{"xkb:us::eng", "en"}, {"xkb:fr::fra", "fr"}}});
   input_method::InputMethodUtil* util = delegate_util.util();
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:us::eng"),
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:us::eng"),
               Optional(Eq("en")));
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:fr::fra"),
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:fr::fra"),
               Optional(Eq("fr")));
-  EXPECT_THAT(EngineIdToHandwritingLocale(util, "xkb:de::ger"), absl::nullopt);
+  EXPECT_THAT(MapEngineIdToHandwritingLocale(util, "xkb:de::ger"),
+              absl::nullopt);
 }
 
-TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesIntegration) {
+TEST_F(HandwritingTest, MapEngineIdsToHandwritingLocalesIntegration) {
   DelegateUtil delegate_util({{{"xkb:us::eng", "en"},
                                {"xkb:gb:extd:eng", "en"},
                                {"xkb:fr::fra", "fr"}}});
@@ -174,7 +183,7 @@ TEST_F(HandwritingTest, EngineIdsToHandwritingLocalesIntegration) {
   EXPECT_THAT(
       MapIdsToHandwritingLocales(
           {{"xkb:de::ger", "xkb:us::eng", "xkb:gb:extd:eng", "xkb:fr::fra"}},
-          base::BindRepeating(EngineIdToHandwritingLocale, util)),
+          base::BindRepeating(MapEngineIdToHandwritingLocale, util)),
       UnorderedElementsAre("en", "fr"));
 }
 

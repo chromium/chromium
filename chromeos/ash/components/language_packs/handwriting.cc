@@ -38,7 +38,7 @@ base::flat_set<std::string> MapIdsToHandwritingLocales(
   return handwriting_locales;
 }
 
-absl::optional<std::string> EngineIdToHandwritingLocale(
+absl::optional<std::string> MapEngineIdToHandwritingLocale(
     input_method::InputMethodUtil* const util,
     const std::string& engine_id) {
   const std::string input_method_id =
