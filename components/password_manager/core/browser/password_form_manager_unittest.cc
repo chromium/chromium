@@ -2499,6 +2499,52 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 }
 
+// Tests that no UFF vote can be sent on the username field when it is in the
+// submitted password form.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUsernameFirstFlowFallbackCrowdsourcing},
+      /*disabled_features=*/{});
+
+  CreateFormManager(observed_form_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data for a username field from `observed_form_`.
+  autofill::FieldRendererId kUsernameFieldRendererId =
+      observed_form_.fields[1].unique_renderer_id;
+  std::u16string possible_username = u"possible_username";
+  PossibleUsernameData possible_username_data(
+      GetSignonRealm(observed_form_.url), kUsernameFieldRendererId,
+      possible_username, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  FormPredictions predictions;
+  predictions.form_signature = CalculateFormSignature(observed_form_);
+  PasswordFieldPrediction field_prediction;
+  field_prediction.renderer_id = kUsernameFieldRendererId;
+  field_prediction.signature =
+      CalculateFieldSignatureForField(observed_form_.fields[0]);
+  field_prediction.type = autofill::UNKNOWN_TYPE;
+  predictions.fields.push_back(field_prediction);
+  possible_username_data.form_predictions = predictions;
+
+  // Simulate submitting the form.
+  FormData submitted_form = observed_form_;
+  submitted_form.fields[1].value = possible_username;
+  submitted_form.fields[2].value = u"strongpassword";
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               &possible_username_data));
+
+  // Check that no SINGLE_USERNAME vote is sent (PASSWORD != SINGLE_USERNAME).
+  auto expected_votes = ServerFieldTypeSet{autofill::PASSWORD};
+  EXPECT_CALL(
+      mock_autofill_download_manager_,
+      StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
+                         expected_votes, _, _, _, _));
+  form_manager_->Save();
+}
+
 // Tests that username is taken and votes are uploaded during username first
 // flow both on password saving and updating.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {

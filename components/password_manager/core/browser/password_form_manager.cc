@@ -946,7 +946,7 @@ void PasswordFormManager::OnGeneratedPasswordAccepted(
 
 bool PasswordFormManager::ObservedFormHasField(int driver_id,
                                                FieldRendererId field_id) const {
-  if (driver_id == driver_id_) {
+  if (driver_id != driver_id_) {
     return false;
   }
   CHECK(observed_form());
