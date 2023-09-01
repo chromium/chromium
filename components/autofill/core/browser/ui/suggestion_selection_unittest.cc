@@ -384,7 +384,7 @@ TEST_F(
   AutofillProfile profile = test::GetFullProfile();
   // Update the profile to have house number and street name information in
   // different address lines.
-  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway");
+  profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway, Brookling");
   profile.SetRawInfo(ADDRESS_HOME_LINE2, u"1600 Apartment 1");
   profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Amphitheatre Parkway");
   profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");

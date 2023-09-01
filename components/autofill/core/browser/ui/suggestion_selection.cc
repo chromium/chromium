@@ -195,7 +195,7 @@ bool CheckIfTypeContainsSubtype(ServerFieldType type,
 
   std::u16string value = profile.GetInfo(type, app_locale);
   std::u16string sub_value = profile.GetInfo(sub_type, app_locale);
-  return value.find(sub_value) != std::u16string::npos;
+  return value != sub_value && value.find(sub_value) != std::u16string::npos;
 }
 
 // Adds name related child suggestions to build autofill popup submenu.
