@@ -568,8 +568,14 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
 
   auto additional_data_characteristics = GetCharacteristicsByUUIDs(
       kAdditionalDataCharacteristicUuidV1, kAdditionalDataCharacteristicUuidV2);
+
+  // Failure not returned on failure to discover Additional Data characteristic
+  // because it shouldn't interrupt the pairing flow. This achieves parity with
+  // Android.
   if (additional_data_characteristics.empty()) {
-    return PairFailure::kAdditionalDataCharacteristicDiscovery;
+    QP_LOG(WARNING) << __func__
+                    << ": Failed to discover Additional Data Characteristic.";
+    return absl::nullopt;
   }
   additional_data_characteristic_ = additional_data_characteristics[0];
 
@@ -887,6 +893,8 @@ void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
   // |this| may be destroyed after this line.
 }
 
+// TODO(b/297104920): ensure this is not called if
+// `additional_data_characteristic_` is not discovered.
 void FastPairGattServiceClientImpl::WritePersonalizedName(
     const std::string& name,
     const std::string& provider_address,
