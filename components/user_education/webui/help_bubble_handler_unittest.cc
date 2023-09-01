@@ -325,6 +325,39 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
   EXPECT_FALSE(help_bubble->is_open());
 }
 
+// Regression test for possible cause of crbug.com/1474307.
+TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleTwice) {
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+  ASSERT_NE(nullptr, element);
+
+  auto get_params = []() {
+    HelpBubbleParams params;
+    params.body_text = u"Help bubble body.";
+    params.close_button_alt_text = u"Close button alt text.";
+    params.body_icon = &vector_icons::kCelebrationIcon;
+    params.body_icon_alt_text = u"Celebration";
+    params.arrow = HelpBubbleArrow::kTopCenter;
+    return params;
+  };
+
+  EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
+  auto help_bubble =
+      help_bubble_factory_registry_.CreateHelpBubble(element, get_params());
+  EXPECT_CALL(test_handler_->mock(), HideHelpBubble(testing::_));
+  EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
+  auto help_bubble2 =
+      help_bubble_factory_registry_.CreateHelpBubble(element, get_params());
+  EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_)).Times(0);
+  EXPECT_CALL(test_handler_->mock(), HideHelpBubble(testing::_));
+
+  EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_TRUE(help_bubble2->is_open());
+}
+
 TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
   handler()->HelpBubbleAnchorVisibilityChanged(
       kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);

@@ -191,16 +191,18 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
 
   auto& data = it->second;
   if (data.has_webui_help_bubble()) {
-    NOTREACHED() << "A help bubble is already being shown for " << identifier;
+    LOG(WARNING) << "A help bubble is already being shown for " << identifier;
     auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
     if (data.help_bubble) {
       data.help_bubble->Close();
-      if (!weak_ptr)
+      if (!weak_ptr) {
         return nullptr;
+      }
     }
   }
   data.params = std::make_unique<HelpBubbleParams>(std::move(params));
   auto result = base::WrapUnique(new HelpBubbleWebUI(this, identifier));
+  data.help_bubble = result.get();
 
   auto mojom_params = help_bubble::mojom::HelpBubbleParams::New();
   mojom_params->native_identifier = identifier.GetName();
@@ -232,7 +234,6 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
 
   GetClient()->ShowHelpBubble(std::move(mojom_params));
-  it->second.help_bubble = result.get();
   return result;
 }
 
