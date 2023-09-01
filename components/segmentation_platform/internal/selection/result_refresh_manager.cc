@@ -115,6 +115,10 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
     return;
   }
 
+  // Recording this even for success case.
+  stats::RecordSegmentSelectionFailure(
+      *config, stats::GetSuccessOrFailureReason(result_state));
+
   proto::PredictionResult pred_result = result->result;
   stats::RecordClassificationResultComputed(*config, pred_result);
 
