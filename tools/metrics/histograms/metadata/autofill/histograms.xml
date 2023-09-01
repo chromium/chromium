@@ -1617,23 +1617,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ErrorDialogShown" enum="AutofillErrorDialogType"
-    expires_after="2023-09-01">
+    expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
     Log when an autofill error dialog is shown to the user along with its type.
+    The type here denotes the flows in which the dialog is shown. Such flows
+    include virtual card retrieval, masked server card risk based authentication
+    and etc. See &quot;AutofillErrorDialogType&quot; for details.
   </summary>
 </histogram>
 
 <histogram name="Autofill.ErrorDialogShown.WithServerText"
-    enum="AutofillErrorDialogType" expires_after="2023-09-01">
+    enum="AutofillErrorDialogType" expires_after="2024-07-01">
   <owner>vinnypersky@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Logs when an autofill error dialog is shown to the user with server returned
-    text, along with its type.
+    Logs when an autofill error dialog is shown along with its type. The type
+    here denotes the flows in which the dialog is shown. Such flows include
+    virtual card retrieval, masked server card risk based authentication and
+    etc. See &quot;AutofillErrorDialogType&quot; for details. This is a
+    secondary histogram to the &quot;Autofill.ErrorDialogShown&quot; and it is
+    logged when server side returns text to override the static client-side
+    error messages to be shown in the dialog.
   </summary>
 </histogram>
 
@@ -2070,7 +2078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
-    enum="AutofillFormEvent" expires_after="2023-09-01">
+    enum="AutofillFormEvent" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2693,7 +2701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
-    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2023-09-01">
+    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2704,7 +2712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationBubbleResult.{ShowType}"
-    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2023-09-01">
+    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2716,14 +2724,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"
     enum="AutofillLocalCardMigrationBubbleUserInteraction"
-    expires_after="2023-09-01">
+    expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>Record how bubble is closed by different user interactions.</summary>
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDecision"
-    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2024-01-21">
+    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2024-03-01">
   <owner>sujiezhu@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2735,7 +2743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationDialogActiveDuration{AutofillLocalCardMigrationDialogDurationWithCloseEvent}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2757,7 +2765,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogOffer"
-    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2023-09-01">
+    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2767,7 +2775,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.LocalCardMigrationDialogUserInteraction"
     enum="AutofillLocalCardMigrationDialogUserInteraction"
-    expires_after="2024-01-14">
+    expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2776,7 +2784,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogUserSelectionPercentage"
-    units="%" expires_after="2023-09-01">
+    units="%" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2786,7 +2794,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationOrigin{AutofillLocalCardMigrationOrigin}"
-    enum="LocalCardMigrationPrompt" expires_after="2023-09-01">
+    enum="LocalCardMigrationPrompt" expires_after="2024-03-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -5255,7 +5263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCard.MetadataSynced" enum="BooleanExists"
-    expires_after="2023-09-03">
+    expires_after="2024-06-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
