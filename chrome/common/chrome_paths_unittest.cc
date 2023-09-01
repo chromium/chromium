@@ -100,7 +100,9 @@ TEST(ChromePaths, DefaultUserDataDir) {
   base::PathService::Get(base::DIR_HOME, &home_dir);
 
   std::string expected_branding;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  std::string data_dir_basename = "google-chrome-for-testing";
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(skobes): Test channel suffixes with $CHROME_VERSION_EXTRA.
   expected_branding = "google-chrome";
 #else
