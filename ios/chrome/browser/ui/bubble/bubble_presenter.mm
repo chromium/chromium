@@ -569,8 +569,9 @@
     // the feature engagement tracker will remain pointing to invalid memory if
     // its owner (the ChromeBrowserState) is deallocated.
     __weak BubblePresenter* weakSelf = self;
-    ProceduralBlockWithSnoozeAction dismissalCallbackWithSnoozeAction =
-        ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+    CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
+        ^(IPHDismissalReasonType IPHDismissalReasonType,
+          feature_engagement::Tracker::SnoozeAction snoozeAction) {
           if (dismissAction) {
             dismissAction();
           }

@@ -25,21 +25,6 @@ const NSTimeInterval kBubbleEngagementDuration = 30.0;
 // Delay before posting the VoiceOver notification.
 const CGFloat kVoiceOverAnnouncementDelay = 1;
 
-// Possible types of dismissal reasons.
-// These enums are persisted as histogram entries, so this enum should be
-// treated as append-only and kept in sync with InProductHelpDismissalReason in
-// enums.xml.
-enum class IPHDismissalReasonType {
-  kUnknown = 0,
-  kTimedOut = 1,
-  kOnKeyboardHide = 2,
-  kTappedIPH = 3,
-  kTappedOutside = 4,
-  kTappedClose = 5,
-  kTappedSnooze = 6,
-  kMaxValue = kTappedSnooze,
-};
-
 }  // namespace
 
 // Implements BubbleViewDelegate to handle BubbleView's close and snooze buttons
@@ -47,6 +32,13 @@ enum class IPHDismissalReasonType {
 @interface BubbleViewControllerPresenter () <UIGestureRecognizerDelegate,
                                              BubbleViewDelegate>
 
+// The `parentView` of the underlying BubbleView, passed in
+// -presentInViewController:view:anchorPoint.
+@property(nonatomic, strong) UIView* parentView;
+// The frame of the view the underlying BubbleView anchored to, can be
+// CGRectZero if un-provided or inapplicable. Passed in
+// -presentInViewController:view:anchorPoint:anchorViewFrame.
+@property(nonatomic, assign) CGRect anchorViewFrame;
 // Redeclared as readwrite so the value can be changed internally.
 @property(nonatomic, assign, readwrite, getter=isUserEngaged) BOOL userEngaged;
 // The tap gesture recognizer intercepting tap gestures occurring inside the
@@ -72,7 +64,8 @@ enum class IPHDismissalReasonType {
 @property(nonatomic, assign, getter=isPresenting) BOOL presenting;
 // The block invoked when the bubble is dismissed (both via timer and via tap).
 // Is optional.
-@property(nonatomic, strong) ProceduralBlockWithSnoozeAction dismissalCallback;
+@property(nonatomic, strong)
+    CallbackWithIPHDismissalReasonType dismissalCallback;
 
 @end
 
@@ -98,7 +91,7 @@ enum class IPHDismissalReasonType {
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
            dismissalCallback:
-               (ProceduralBlockWithSnoozeAction)dismissalCallback {
+               (CallbackWithIPHDismissalReasonType)dismissalCallback {
   self = [super init];
   if (self) {
     _bubbleViewController =
@@ -142,8 +135,8 @@ enum class IPHDismissalReasonType {
                            arrowDirection:(BubbleArrowDirection)arrowDirection
                                 alignment:(BubbleAlignment)alignment
                      isLongDurationBubble:(BOOL)isLongDurationBubble
-                        dismissalCallback:
-                            (ProceduralBlockWithSnoozeAction)dismissalCallback {
+                        dismissalCallback:(CallbackWithIPHDismissalReasonType)
+                                              dismissalCallback {
   self.isLongDurationBubble = isLongDurationBubble;
   return [self initWithText:text
                       title:nil
@@ -164,6 +157,18 @@ enum class IPHDismissalReasonType {
 - (void)presentInViewController:(UIViewController*)parentViewController
                            view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint {
+  [self presentInViewController:parentViewController
+                           view:parentView
+                    anchorPoint:anchorPoint
+                anchorViewFrame:CGRectZero];
+}
+
+- (void)presentInViewController:(UIViewController*)parentViewController
+                           view:(UIView*)parentView
+                    anchorPoint:(CGPoint)anchorPoint
+                anchorViewFrame:(CGRect)anchorViewFrame {
+  _parentView = parentView;
+  _anchorViewFrame = anchorViewFrame;
   CGPoint anchorPointInParent =
       [parentView.window convertPoint:anchorPoint toView:parentView];
   self.bubbleViewController.view.frame =
@@ -256,7 +261,7 @@ enum class IPHDismissalReasonType {
   self.presenting = NO;
 
   if (self.dismissalCallback) {
-    self.dismissalCallback(action);
+    self.dismissalCallback(reason, action);
   }
 }
 
@@ -337,8 +342,15 @@ enum class IPHDismissalReasonType {
 }
 
 // Invoked by tapping outside the bubble. Dismisses the bubble.
-- (void)tapOutsideBubbleRecognized:(id)sender {
-  [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedOutside];
+- (void)tapOutsideBubbleRecognized:(UITapGestureRecognizer*)sender {
+  CGPoint touchLocation = [sender locationOfTouch:0 inView:self.parentView];
+  IPHDismissalReasonType reasonType = IPHDismissalReasonType::kUnknown;
+  if (CGRectContainsPoint(_anchorViewFrame, touchLocation)) {
+    reasonType = IPHDismissalReasonType::kTappedAnchorView;
+  } else {
+    reasonType = IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView;
+  }
+  [self dismissAnimated:YES reason:reasonType];
 }
 
 // Automatically dismisses the bubble view when `bubbleDismissalTimer` fires.

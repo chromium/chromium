@@ -11,10 +11,28 @@
 #include "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 
-// Procedural block with a snoozeAction argument, used for the bubble's
-// dismissal callback.
-typedef void (^ProceduralBlockWithSnoozeAction)(
-    feature_engagement::Tracker::SnoozeAction);
+// Possible types of dismissal reasons.
+// These enums are persisted as histogram entries, so this enum should be
+// treated as append-only and kept in sync with InProductHelpDismissalReason in
+// enums.xml.
+enum class IPHDismissalReasonType {
+  kUnknown = 0,
+  kTimedOut = 1,
+  kOnKeyboardHide = 2,
+  kTappedIPH = 3,
+  // kTappedOutside = 4 // Removed, split into kTappedOutsideIPHAndAnchorView
+  // and kTappedAnchorView.
+  kTappedClose = 5,
+  kTappedSnooze = 6,
+  kTappedOutsideIPHAndAnchorView = 7,
+  kTappedAnchorView = 8,
+  kMaxValue = kTappedAnchorView,
+};
+
+// Used for the bubble's dismissal callback.
+using CallbackWithIPHDismissalReasonType =
+    void (^)(IPHDismissalReasonType IPHDismissalReasonType,
+             feature_engagement::Tracker::SnoozeAction snoozeAction);
 
 @class BubbleViewController;
 
@@ -59,7 +77,8 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
               arrowDirection:(BubbleArrowDirection)arrowDirection
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
-           dismissalCallback:(ProceduralBlockWithSnoozeAction)dismissalCallback
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes the presenter with a Default BubbleViewType. `text` is the text
@@ -72,8 +91,8 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
                            arrowDirection:(BubbleArrowDirection)arrowDirection
                                 alignment:(BubbleAlignment)alignment
                      isLongDurationBubble:(BOOL)isLongDurationBubble
-                        dismissalCallback:
-                            (ProceduralBlockWithSnoozeAction)dismissalCallback;
+                        dismissalCallback:(CallbackWithIPHDismissalReasonType)
+                                              dismissalCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -84,9 +103,23 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
 // Presents the bubble in `parentView`. The underlying BubbleViewController is
 // added as a child view controller of `parentViewController`. `anchorPoint`
 // determines where the bubble is anchored in window coordinates.
+// Has the same effect as
+// -presentInViewController:view:anchorPoint:anchorViewFrame: with
+// `anchorViewFrame` == CGRectZero.
 - (void)presentInViewController:(UIViewController*)parentViewController
                            view:(UIView*)parentView
                     anchorPoint:(CGPoint)anchorPoint;
+
+// Presents the bubble in `parentView`. The underlying BubbleViewController is
+// added as a child view controller of `parentViewController`. `anchorPoint`
+// determines where the bubble is anchored in window coordinates.
+// `anchorViewFrame` is the frame of the anchored view, in the coordinate system
+// of the `parentView`, used for determining whether the user acts on the IPH by
+// touching inside the frame.
+- (void)presentInViewController:(UIViewController*)parentViewController
+                           view:(UIView*)parentView
+                    anchorPoint:(CGPoint)anchorPoint
+                anchorViewFrame:(CGRect)anchorViewFrame;
 
 // Removes the bubble from the screen and removes the BubbleViewController from
 // its parent. If the bubble is not visible, has no effect. Can be animated or

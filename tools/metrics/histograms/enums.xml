@@ -54381,9 +54381,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Timed Out"/>
   <int value="2" label="On Keyboard Hide"/>
   <int value="3" label="Tapped IPH"/>
-  <int value="4" label="Tapped Outside"/>
+  <int value="4" label="Tapped Outside (deprecated)"/>
   <int value="5" label="Tapped Close"/>
   <int value="6" label="Tapped Snooze"/>
+  <int value="7" label="Tapped Outside IPH And Anchor View"/>
+  <int value="8" label="Tapped Anchor View"/>
 </enum>
 
 <enum name="InProductHelpSnoozeAction">

@@ -172,9 +172,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlockWithSnoozeAction dismissalCallback =
-      ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf popupMenuIPHDidDismissWithSnoozeAction:snoozeAction];
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+        [weakSelf popupMenuIPHDidDismissWithReasonType:IPHDismissalReasonType
+                                          SnoozeAction:snoozeAction];
       };
 
   // Create the BubbleViewControllerPresenter.
@@ -192,8 +194,14 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
   return bubbleViewControllerPresenter;
 }
 
-- (void)popupMenuIPHDidDismissWithSnoozeAction:
-    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+- (void)popupMenuIPHDidDismissWithReasonType:
+            (IPHDismissalReasonType)IPHDismissalReasonType
+                                SnoozeAction:
+                                    (feature_engagement::Tracker::SnoozeAction)
+                                        snoozeAction {
+  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView) {
+    self.inSessionWithHistoryMenuItemIPH = YES;
+  }
   [self trackerIPHDidDismissWithSnoozeAction:snoozeAction];
   [self.UIUpdater updateUIForIPHDismissed];
   self.popupMenuBubblePresenter = nil;
@@ -263,11 +271,11 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
   // Present the bubble after the delay.
   self.popupMenuBubblePresenter = bubblePresenter;
-  self.inSessionWithHistoryMenuItemIPH = YES;
   [self.popupMenuBubblePresenter
       presentInViewController:self.baseViewController
                          view:self.baseViewController.view
-                  anchorPoint:anchorPoint];
+                  anchorPoint:anchorPoint
+              anchorViewFrame:anchorFrame];
   [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
 }
 
@@ -281,8 +289,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlockWithSnoozeAction dismissalCallback =
-      ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType,
+        feature_engagement::Tracker::SnoozeAction snoozeAction) {
         [weakSelf overflowMenuIPHDidDismissWithSnoozeAction:snoozeAction];
       };
 

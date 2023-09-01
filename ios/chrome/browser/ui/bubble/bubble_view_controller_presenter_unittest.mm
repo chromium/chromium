@@ -26,6 +26,7 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
                     alignment:BubbleAlignmentCenter
                    bubbleType:BubbleViewTypeRichWithSnooze
             dismissalCallback:^(
+                IPHDismissalReasonType reason,
                 feature_engagement::Tracker::SnoozeAction action) {
               dismissalCallbackCount_++;
               dismissalCallbackAction_ = action;
