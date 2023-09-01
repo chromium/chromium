@@ -155,9 +155,9 @@ void GlanceableTrayBubbleView::InitializeContents() {
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
-  // TODO(b:286941809): Setting rounded corners here, can break the background
-  // blur applied to child bubble views.
-  scroll_view_->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(24));
+  // TODO(b/286941809): Apply rounded corners. Temporary removed because they
+  // make the background blur to disappear and this requires further
+  // investigation.
 
   // Adjusts the calendar sliding surface bounds (`UpNextView`) with the
   // glanceable view's scrolling.
