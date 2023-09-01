@@ -377,6 +377,42 @@ void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     prefs->SetValue(pref_path_, value->Clone());
 }
 
+// SimplePolicyHandler implementation ------------------------------------------
+
+PolicyWithDependencyHandler::PolicyWithDependencyHandler(
+    const char* required_policy_name,
+    std::unique_ptr<NamedPolicyHandler> handler)
+    : NamedPolicyHandler(handler->policy_name()),
+      required_policy_name_(required_policy_name),
+      handler_(std::move(handler)) {}
+
+PolicyWithDependencyHandler::~PolicyWithDependencyHandler() = default;
+
+bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
+                                                      PolicyErrorMap* errors) {
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
+  const base::Value* required_value =
+      policies.GetValueUnsafe(required_policy_name_);
+  if (!required_value) {
+    errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+                     required_policy_name_);
+    return false;
+  }
+  return handler_->CheckPolicySettings(policies, errors);
+}
+
+void PolicyWithDependencyHandler::ApplyPolicySettingsWithParameters(
+    const policy::PolicyMap& policies,
+    const policy::PolicyHandlerParameters& parameters,
+    PrefValueMap* prefs) {
+  handler_->ApplyPolicySettingsWithParameters(policies, parameters, prefs);
+}
+
+void PolicyWithDependencyHandler::ApplyPolicySettings(
+    const policy::PolicyMap& /* policies */,
+    PrefValueMap* /* prefs */) {
+  NOTREACHED();
+}
 // SchemaValidatingPolicyHandler implementation --------------------------------
 
 SchemaValidatingPolicyHandler::SchemaValidatingPolicyHandler(

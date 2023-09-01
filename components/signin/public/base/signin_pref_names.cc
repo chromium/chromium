@@ -110,4 +110,18 @@ const char kSigninAllowedOnNextStartup[] = "signin.allowed_on_next_startup";
 const char kSigninInterceptionIDPCookiesUrl[] =
     "signin.interception.idp_cookies.url";
 
+// Integer which indicates whether enterprise profile separation is enforced or
+// disabled.
+const char kProfileSeparationSettings[] = "profile_separation.settings";
+
+// Integer which indicates which options users have for their existing data when
+// creating a new profile via the enterprise profile separation flow.
+const char kProfileSeparationDataMigrationSettings[] =
+    "profile_separation.data_migration_settings";
+
+// List of domains that are not required to create a new profile after a content
+// area signin.
+const char kProfileSeparationDomainExceptionList[] =
+    "profile_separation.domain_exception_list";
+
 }  // namespace prefs

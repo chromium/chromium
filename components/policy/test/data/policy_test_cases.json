@@ -24594,5 +24594,166 @@
         }
       }
     ]
+  },
+  "ProfileSeparationSettings": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.settings": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 0
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 2
+        },
+        "prefs": {
+          "profile_separation.settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "ManagedAccountsSigninRestriction": "primary_account",
+          "ProfileSeparationSettings": 2
+        },
+        "prefs": {
+          "profile.managed_accounts.restriction.value": {
+            "default_value": ""
+          },
+          "profile.managed_accounts.restriction.all_managed_accounts": {
+            "default_value": false
+          },
+          "profile_separation.settings": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  },
+  "ProfileSeparationDataMigrationSettings": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDataMigrationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "default_value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 1,
+          "ProfileSeparationDataMigrationSettings": 1
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 1,
+          "ProfileSeparationDataMigrationSettings": 2
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationSettings": 1,
+          "ProfileSeparationDataMigrationSettings": 3
+        },
+        "prefs": {
+          "profile_separation.data_migration_settings": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  },
+  "ProfileSeparationDomainExceptionList": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDomainExceptionList": []
+        },
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDomainExceptionList": ["domain", "otherdomain"]
+        },
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "value": ["domain", "otherdomain"]
+          }
+        }
+      }
+    ]
   }
 }

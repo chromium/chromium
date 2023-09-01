@@ -1150,6 +1150,9 @@ policies:
   1149: ExtensionOAuthRedirectUrls
   1150: CreatePasskeysInICloudKeychain
   1151: QuickOfficeForceFileDownloadEnabled
+  1152: ProfileSeparationSettings
+  1153: ProfileSeparationDataMigrationSettings
+  1154: ProfileSeparationDomainExceptionList
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1199,3 +1202,4 @@ atomic_groups:
   46: KerberosPrefilledConfig
   47: ThirdPartyStoragePartitioningSettings
   48: MidiSettings
+  49: ProfileSeparation

@@ -33897,6 +33897,9 @@ Called by update_document_policy_enum.py.-->
   <int value="1149" label="ExtensionOAuthRedirectUrls"/>
   <int value="1150" label="CreatePasskeysInICloudKeychain"/>
   <int value="1151" label="QuickOfficeForceFileDownloadEnabled"/>
+  <int value="1152" label="ProfileSeparationSettings"/>
+  <int value="1153" label="ProfileSeparationDataMigrationSettings"/>
+  <int value="1154" label="ProfileSeparationDomainExceptionList"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -85824,6 +85827,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="46" label="KerberosPrefilledConfig"/>
   <int value="47" label="ThirdPartyStoragePartitioningSettings"/>
   <int value="48" label="MidiSettings"/>
+  <int value="49" label="ProfileSeparation"/>
 </enum>
 
 <enum name="PolicyLoadStatus">

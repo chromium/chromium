@@ -1,0 +1,30 @@
+owners:
+- ydago@chromium.org
+- file://components/policy/OWNERS
+
+caption: Enterprise profile separation secondary domain allowlist
+
+desc: |-
+  If this policy is unset, account logins will be not required to create a new separate profile.
+
+  If this policy is set, account logins from the listed domains will be not required to create a new separate profile.
+
+  This policy can be set to an empty string so that all account logins are required to create a new separate profile.
+
+future_on:
+- chrome.*
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: list
+
+schema:
+  items:
+    type: string
+  type: array
+
+default: null
+example_value: ["domain.com", "otherdomain.com"]
+tags: []

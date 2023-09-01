@@ -121,6 +121,10 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
                                std::string());
   registry->RegisterBooleanPref(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, false);
+  registry->RegisterIntegerPref(prefs::kProfileSeparationSettings, 0);
+  registry->RegisterIntegerPref(prefs::kProfileSeparationDataMigrationSettings,
+                                1);
+  registry->RegisterListPref(prefs::kProfileSeparationDomainExceptionList);
 }
 
 absl::optional<SigninInterceptionHeuristicOutcome>

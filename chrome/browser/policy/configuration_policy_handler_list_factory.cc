@@ -1612,6 +1612,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUnmanagedDeviceSignalsConsentFlowEnabled,
     device_signals::prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kProfileSeparationDomainExceptionList,
+    prefs::kProfileSeparationDomainExceptionList,
+    base::Value::Type::LIST },
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) \
     || BUILDFLAG(IS_FUCHSIA)
@@ -2165,8 +2168,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       chrome_schema, SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-  handlers->AddHandler(
-      std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));
 
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kManagedConfigurationPerOrigin,
@@ -2362,6 +2363,21 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kBrowserContextAwareAccessSignalsAllowlist,
           enterprise_connectors::kBrowserContextAwareAccessSignalsAllowlistPref,
           chrome_schema));
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema),
+      std::make_unique<SimplePolicyHandler>(key::kProfileSeparationSettings,
+                                            prefs::kProfileSeparationSettings,
+                                            base::Value::Type::INTEGER)));
+
+  handlers->AddHandler(std::make_unique<PolicyWithDependencyHandler>(
+      key::kProfileSeparationSettings,
+      std::make_unique<SimplePolicyHandler>(
+          key::kProfileSeparationDataMigrationSettings,
+          prefs::kProfileSeparationDataMigrationSettings,
+          base::Value::Type::INTEGER)));
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+  handlers->AddHandler(
+      std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

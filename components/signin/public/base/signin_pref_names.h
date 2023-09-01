@@ -34,6 +34,9 @@ extern const char kSigninAllowed[];
 extern const char kGaiaCookieLastListAccountsData[];
 extern const char kSigninAllowedOnNextStartup[];
 extern const char kSigninInterceptionIDPCookiesUrl[];
+extern const char kProfileSeparationSettings[];
+extern const char kProfileSeparationDataMigrationSettings[];
+extern const char kProfileSeparationDomainExceptionList[];
 
 }  // namespace prefs
 
