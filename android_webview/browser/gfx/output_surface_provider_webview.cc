@@ -17,6 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -81,6 +83,10 @@ void OnContextLost(std::unique_ptr<bool> expect_loss,
                    gpu::error::ContextLostReason context_lost_reason) {
   if (expect_loss && *expect_loss)
     return;
+
+  static ::crash_reporter::CrashKeyString<10> reason_key("context-loss-reason");
+  reason_key.Set(base::NumberToString(static_cast<int>(context_lost_reason)));
+
   // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will
   // intentionally crash in HardwareRenderer::OnViz::DisplayOutputSurface
   // that will happen after this callback. That crash happens on viz thread and
