@@ -5,7 +5,6 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util_ts.js';
-import {loadTestModule} from './test_loader_util.js';
 
 /**
  * Local variable where we maintain a count of the invalidations received
@@ -194,7 +193,7 @@ function updateDetailedStatus(newDetails) {
  * Function that notifies the InvalidationsMessageHandler that the UI is
  * ready to receive real-time notifications.
  */
-async function onLoadWork() {
+function onLoadWork() {
   addWebUiListener('handlers-updated', handlers => updateHandlers(handlers));
   addWebUiListener(
       'state-updated',
@@ -211,9 +210,12 @@ async function onLoadWork() {
     chrome.send('requestDetailedStatus');
   };
 
-  if (await loadTestModule()) {
+  const params = new URLSearchParams(window.location.search);
+  const isTest = params.has('isTest');
+  if (isTest) {
     return;
   }
+
   chrome.send('doneLoading');
 }
 

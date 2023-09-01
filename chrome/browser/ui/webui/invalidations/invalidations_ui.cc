@@ -16,7 +16,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/resources/grit/webui_resources.h"
 
 void CreateAndAddInvalidationsHTMLSource(Profile* profile) {
   // This is done once per opening of the page
@@ -27,8 +26,6 @@ void CreateAndAddInvalidationsHTMLSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self' "
       "'unsafe-eval';");
-  source->AddResourcePath("test_loader_util.js",
-                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate webui-test-script;");

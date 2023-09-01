@@ -7,21 +7,9 @@ import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
 
-const invalidations_test = {
-  TestNames: {
-    RegisterNewInvalidation: 'register new invalidation',
-    ChangeInvalidationsState: 'change invalidations state',
-    RegisterNewIds: 'register new ids',
-    UpdateRegisteredHandlers: 'update registered handlers',
-    UpdateInternalDisplay: 'update internal display',
-  },
-};
-
-Object.assign(window, {invalidations_test});
-
-suite('invalidations_test', function() {
+suite('InvalidationsTest', function() {
   // Test that registering an invalidations appears properly on the textarea.
-  test(invalidations_test.TestNames.RegisterNewInvalidation, function() {
+  test('RegisterNewInvalidation', function() {
     const invalidationsLog =
         getRequiredElement<HTMLTextAreaElement>('invalidations-log');
     const invalidation = [
@@ -38,7 +26,7 @@ suite('invalidations_test', function() {
 
   // Test that changing the Invalidations Service state appears both in the
   // span and in the textarea.
-  test(invalidations_test.TestNames.ChangeInvalidationsState, function() {
+  test('ChangeInvalidationsState', function() {
     const invalidationsState =
         getRequiredElement<HTMLElement>('invalidations-state');
     const invalidationsLog =
@@ -63,7 +51,7 @@ suite('invalidations_test', function() {
   });
 
   // Test that objects ids appear on the table.
-  test(invalidations_test.TestNames.RegisterNewIds, function() {
+  test('RegisterNewIds', function() {
     interface DataType {
       name: string;
       source: number;
@@ -118,7 +106,7 @@ suite('invalidations_test', function() {
   });
 
   // Test that registering new handlers appear on the website.
-  test(invalidations_test.TestNames.UpdateRegisteredHandlers, function() {
+  test('UpdateRegisteredHandlers', function() {
     function text() {
       return getRequiredElement<HTMLElement>('registered-handlers').textContent!
           ;
@@ -133,7 +121,7 @@ suite('invalidations_test', function() {
   });
 
   // Test that an object showing internal state is correctly displayed.
-  test(invalidations_test.TestNames.UpdateInternalDisplay, function() {
+  test('UpdateInternalDisplay', function() {
     const newDetailedStatus = {MessagesSent: 1};
     webUIListenerCallback('detailed-status-updated', newDetailedStatus);
     assertEquals(
