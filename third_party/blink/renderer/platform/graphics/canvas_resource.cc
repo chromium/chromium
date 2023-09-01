@@ -55,6 +55,14 @@
 
 namespace blink {
 
+namespace {
+
+BASE_FEATURE(kAlwaysUseMappableSIForSoftwareCanvas,
+             "AlwaysUseMappableSIForSoftwareCanvas",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                const SkColorInfo& info)
@@ -436,10 +444,18 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
-                                 .supports_oop_raster) {
+                                 .supports_oop_raster),
+      sii_(base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)
+               ? context_provider_wrapper_->ContextProvider()
+                     ->SharedImageInterface()
+               : nullptr) {
   auto* gpu_memory_buffer_manager =
       SharedGpuContext::GetGpuMemoryBufferManager();
-  if (!is_accelerated_) {
+
+  // Note that we create |gpu_memory_buffer_| only when MappableSI is not used
+  // and disabled.
+  if (!is_accelerated_ &&
+      !base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
     DCHECK(gpu_memory_buffer_manager);
     DCHECK(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 
@@ -452,6 +468,11 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     gpu_memory_buffer_->SetColorSpace(GetColorSpace());
   }
 
+  // Note that we should be using |context_provider_wrapper_| below to access
+  // SharedImageInterface everywhere except in
+  // CanvasResourceRasterSharedImage::Bitmap() when MappableSI is used to ensure
+  // that this interface is accessed only on owning thread. |sii_| should be
+  // used for special case. see header file for more comments.
   auto* shared_image_interface =
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(shared_image_interface);
@@ -477,7 +498,22 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                                        : kBottomLeft_GrSurfaceOrigin;
   SkAlphaType surface_alpha_type = GetSkColorInfo().alphaType();
   gpu::Mailbox shared_image_mailbox;
-  if (gpu_memory_buffer_) {
+
+  if (!is_accelerated_ &&
+      base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
+    CHECK(!gpu_memory_buffer_);
+    // Using the new SII to create CPU mappable mailbox when this feature is
+    // enabled. Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE to the
+    // shared image usage flag here since mailbox will be used for CPU writes
+    // by the client. But doing that stops us from using CompoundImagebacking as
+    // many backings do not support SHARED_IMAGE_USAGE_CPU_WRITE.
+    // TODO(crbug.com/1478238): Add that usage flag back here once the issue is
+    // resolved.
+    shared_image_mailbox = shared_image_interface->CreateSharedImage(
+        GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
+        surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+  } else if (gpu_memory_buffer_) {
     shared_image_mailbox = shared_image_interface->CreateSharedImage(
         GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
         surface_alpha_type, shared_image_usage_flags, "CanvasResourceRasterGmb",
@@ -666,13 +702,37 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
 
   SkImageInfo image_info = CreateSkImageInfo();
   if (!is_accelerated_) {
-    if (!gpu_memory_buffer_->Map())
-      return nullptr;
-
-    SkPixmap pixmap(CreateSkImageInfo(), gpu_memory_buffer_->memory(0),
-                    gpu_memory_buffer_->stride(0));
+    std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+    void* memory = nullptr;
+    size_t stride = 0;
+    if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
+      // Note that |sii_| can only be used as a special case here on non-owning
+      // thread. Otherwise this interface is prohibited to be accessed from
+      // non-owning thread in order to avoid modifying the mailbox on non
+      // owning thread by mistake.
+      CHECK(sii_);
+      mapping = sii_->MapSharedImage(mailbox());
+      if (!mapping) {
+        LOG(ERROR) << "MapSharedImage Failed.";
+        return nullptr;
+      }
+      memory = mapping->Memory(0);
+      stride = mapping->Stride(0);
+    } else {
+      if (!gpu_memory_buffer_->Map()) {
+        LOG(ERROR) << "Unable to map gpu_memory_buffer_";
+        return nullptr;
+      }
+      memory = gpu_memory_buffer_->memory(0);
+      stride = gpu_memory_buffer_->stride(0);
+    }
+    SkPixmap pixmap(CreateSkImageInfo(), memory, stride);
     auto sk_image = SkImages::RasterFromPixmapCopy(pixmap);
-    gpu_memory_buffer_->Unmap();
+
+    // Unmap the underlying buffer.
+    base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)
+        ? mapping.reset()
+        : gpu_memory_buffer_->Unmap();
     return sk_image ? UnacceleratedStaticBitmapImage::Create(sk_image)
                     : nullptr;
   }
@@ -730,18 +790,40 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
     const sk_sp<SkImage>& image) {
   DCHECK(!is_cross_thread());
 
-  if (!ContextProviderWrapper() || !gpu_memory_buffer_->Map())
+  if (!ContextProviderWrapper()) {
     return;
+  }
+  auto* sii =
+      ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
+  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  void* memory = nullptr;
+  size_t stride = 0;
+  if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
+    mapping = sii->MapSharedImage(mailbox());
+    if (!mapping) {
+      LOG(ERROR) << "MapSharedImage failed.";
+      return;
+    }
+    memory = mapping->Memory(0);
+    stride = mapping->Stride(0);
+  } else {
+    if (!gpu_memory_buffer_->Map()) {
+      LOG(ERROR) << "Unable to map gpu_memory_buffer_.";
+      return;
+    }
+    memory = gpu_memory_buffer_->memory(0);
+    stride = gpu_memory_buffer_->stride(0);
+  }
 
-  auto surface =
-      SkSurfaces::WrapPixels(CreateSkImageInfo(), gpu_memory_buffer_->memory(0),
-                             gpu_memory_buffer_->stride(0));
+  auto surface = SkSurfaces::WrapPixels(CreateSkImageInfo(), memory, stride);
   SkPixmap pixmap;
   image->peekPixels(&pixmap);
   surface->writePixels(pixmap, 0, 0);
-  auto* sii =
-      ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
-  gpu_memory_buffer_->Unmap();
+
+  // Unmap the underlying buffer.
+  base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)
+      ? mapping.reset()
+      : gpu_memory_buffer_->Unmap();
   sii->UpdateSharedImage(gpu::SyncToken(), mailbox());
   owning_thread_data().sync_token = sii->GenUnverifiedSyncToken();
 }

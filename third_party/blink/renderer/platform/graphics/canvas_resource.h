@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "skia/buildflags.h"
@@ -475,6 +476,19 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const bool supports_display_compositing_;
   const GLenum texture_target_;
   const bool use_oop_rasterization_;
+
+  // Note that SharedImageInterface is supposed to be used via
+  // |context_provider_wrapper_| to ensure that only owning thread can access
+  // this interface to modify the owning thread data like mailbox and non owning
+  // thread can only read the mailbox.
+  // With MappableSI, we added a new interface MapSharedImage() which provides
+  // CPU mapped memory to client and hence replacing use of GpuMemoryBuffer
+  // directly. As a result, CanvasResourceRasterSharedImage::Bitmap() will need
+  // to use the SharedImageInterface on non-owning thread to call
+  // MapSharedImage() which should be fine since we are preserving legacy
+  // behavior of not modifying the CPU mapped memory content on non owning
+  // thread. Note that this will be only used when MappableSI is enabled.
+  gpu::SharedImageInterface* const sii_;
 
   OwningThreadData owning_thread_data_;
 };
