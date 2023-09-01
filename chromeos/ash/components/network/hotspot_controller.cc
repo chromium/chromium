@@ -270,6 +270,7 @@ void HotspotController::SetPolicyAllowHotspot(bool allow_hotspot) {
     return;
   }
 
+  allow_hotspot_ = allow_hotspot;
   hotspot_capabilities_provider_->SetPolicyAllowed(allow_hotspot);
   if (!allow_hotspot && hotspot_state_handler_->GetHotspotState() !=
                             hotspot_config::mojom::HotspotState::kDisabled) {

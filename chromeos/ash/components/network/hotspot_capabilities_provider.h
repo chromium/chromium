@@ -90,6 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
  private:
   friend class HotspotMetricsHelperTest;
   friend class HotspotFeatureUsageMetricsTest;
+  friend class HotspotControllerTest;
 
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,
