@@ -205,6 +205,7 @@ body > header {
   width: 100%;
   line-height: 185%;
   -webkit-font-smoothing: antialiased;
+  -webkit-appearance: none;
 }
 
 .show-unset-checkbox > label {
