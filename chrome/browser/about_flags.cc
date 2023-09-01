@@ -9752,6 +9752,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillUpstreamAllowAllEmailDomains)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"safe-browsing-hash-prefix",
+     flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsName,
+     flag_descriptions::kSafeBrowsingHashPrefixRealTimeLookupsDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(safe_browsing::kHashPrefixRealTimeLookups)},
+
     {"safe-mode-for-cached-flags",
      flag_descriptions::kSafeModeForCachedFlagsName,
      flag_descriptions::kSafeModeForCachedFlagsDescription, kOsAndroid,

@@ -7167,6 +7167,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "safe-browsing-hash-prefix",
+    "owners": ["xinghuilu", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "safe-mode-for-cached-flags",
     "owners": ["hnakashima"],
     "expiry_milestone": 130

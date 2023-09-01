@@ -2504,6 +2504,9 @@ extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
     kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[];
 
+extern const char kSafeBrowsingHashPrefixRealTimeLookupsName[];
+extern const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[];
+
 extern const char kSafeModeForCachedFlagsName[];
 extern const char kSafeModeForCachedFlagsDescription[];
 

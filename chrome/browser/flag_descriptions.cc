@@ -4263,6 +4263,12 @@ const char kRevokeNotificationsPermissionIfDisabledOnAppLevelDescription[] =
     "Allow revoking site-level notification permission if Chrome has no "
     "app-level notification permission on Android.";
 
+const char kSafeBrowsingHashPrefixRealTimeLookupsName[] =
+    "Safe Browsing Hash Prefix Real Time Lookups";
+const char kSafeBrowsingHashPrefixRealTimeLookupsDescription[] =
+    "Enable checking URLs through Safe Browsing hash-prefix real time "
+    "protocol.";
+
 const char kSafeModeForCachedFlagsName[] = "Safe Mode for Cached Flags";
 const char kSafeModeForCachedFlagsDescription[] =
     "Attempts recovery from startup crash loops caused by a bad field trial "

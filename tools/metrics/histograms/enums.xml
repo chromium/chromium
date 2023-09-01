@@ -65306,6 +65306,7 @@ from previous Chrome versions.
   <int value="342960463" label="SharingQRCodeGenerator:enabled"/>
   <int value="343286828" label="IgnoreUiGains:disabled"/>
   <int value="343445783" label="AllowScrollSettings:enabled"/>
+  <int value="343815157" label="SafeBrowsingHashPrefixRealTimeLookups:enabled"/>
   <int value="345430155" label="CrOSDspBasedAgcAllowed:enabled"/>
   <int value="345611669"
       label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
@@ -66217,6 +66218,8 @@ from previous Chrome versions.
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
+  <int value="802588165"
+      label="SafeBrowsingHashPrefixRealTimeLookups:disabled"/>
   <int value="802930463" label="ThrottleForegroundTimers:disabled"/>
   <int value="803085289" label="CCTPreventTouches:disabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
