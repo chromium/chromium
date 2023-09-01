@@ -32,6 +32,7 @@ WEBSOCKET_JAVASCRIPT_TIMEOUT_S = 5
 HEARTBEAT_TIMEOUT_S = 15
 ASAN_MULTIPLIER = 2
 SLOW_MULTIPLIER = 4
+WEBENGINE_MULTIPLIER = 4
 
 # Non-standard timeouts that can't be handled by a Slow expectation, likely due
 # to being particularly long or not specific to a configuration. Try to use
@@ -368,6 +369,8 @@ class WebGLConformanceIntegrationTestBase(
       multiplier *= ASAN_MULTIPLIER
     if self._IsSlowTest():
       multiplier *= SLOW_MULTIPLIER
+    if self._finder_options.browser_type == 'web-engine-shell':
+      multiplier *= WEBENGINE_MULTIPLIER
     return multiplier
 
   def _IsSlowTest(self) -> bool:
