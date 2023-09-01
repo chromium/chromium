@@ -10,7 +10,7 @@ create {
       extension: ".zip"
     }
     unpack_archive: true
-    patch_version: "cr2"
+    patch_version: "cr3"
   }
 
   # This will execute the `install.sh` script in 3pp dir after the source CIPD
