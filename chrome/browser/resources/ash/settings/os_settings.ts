@@ -226,6 +226,7 @@ export {createRouter as createRouterForTesting, Route, Router, routes} from './r
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './search/personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './search/settings_search_handler.js';
 export {SettingsSchedulerSliderElement} from './settings_scheduler_slider/settings_scheduler_slider.js';
+export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
 
 // TODO(b/257329722) After the Jelly experiment is launched, add the CSS link

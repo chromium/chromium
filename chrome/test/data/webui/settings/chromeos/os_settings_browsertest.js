@@ -878,6 +878,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_search_page/search_and_assistant_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ [
+   'SystemPreferencesPageStorageAndPowerSettingsCard',
+   'system_preferences_page/storage_and_power_settings_card_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {

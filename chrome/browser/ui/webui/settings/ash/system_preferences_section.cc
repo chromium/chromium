@@ -41,6 +41,8 @@ void SystemPreferencesSection::AddLoadTimeData(
   search_subsection_.AddLoadTimeData(html_source);
 
   webui::LocalizedString kLocalizedStrings[] = {
+      {"storageAndPowerTitle",
+       IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE},
       {"systemPreferencesTitle", IDS_OS_SETTINGS_SYSTEM_PREFERENCES_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
