@@ -837,7 +837,7 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the details page of a credential that is both weak and compromised when
-// openend from the weak issues page.
+// opened from the weak issues page.
 - (void)testCompromisedAndWeakPasswordOpenedInWeakContext {
   SaveCompromisedPasswordForm(/*password=*/@"1");
 
@@ -865,7 +865,7 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the details page of a credential that is both reused and compromised
-// when openend from the reused issues page.
+// when opened from the reused issues page.
 - (void)testCompromisedAndReusedPasswordOpenedInReusedContext {
   SaveCompromisedPasswordForm(/*password=*/@"reused password");
   SaveReusedPasswordForms();

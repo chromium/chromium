@@ -413,6 +413,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         FROM_HERE, base::BindOnce(^{
           [weakSearchBar becomeFirstResponder];
         }));
+
+    _shouldOpenInSearchMode = NO;
   }
 }
 

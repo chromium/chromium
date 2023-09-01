@@ -3337,6 +3337,8 @@ void CheckPasswordManagerVisitMetricCount(int count) {
   CheckReauthenticationUIEventMetricTotalCount(0);
 }
 
+// Tests that the Password Manager is opened is search mode when opened from the
+// Search Passwords widget.
 - (void)testOpenSearchPasswordsWidget {
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordForm();
@@ -3364,6 +3366,43 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests that the indication to open the Password Manager in search mode does
+// not persist after it was first opened. For example, the search bar shouldn't
+// get automatically enabled when going back to the Password Manager when the
+// Password Manager was initially opened with the Search Passwords widget.
+- (void)testGoingBackAfterOpeningInSearchMode {
+  // Add a saved password to not get the Password Manager's empty state.
+  SavePasswordForm();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  // Open the Password Manager in search mode with the  Search Passwords widget.
+  [ChromeEarlGrey
+      sceneOpenURL:
+          GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
+
+  // The search bar should be enabled.
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      assertWithMatcher:grey_userInteractionEnabled()];
+
+  // Dismiss the search controller.
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
+      performAction:grey_tap()];
+
+  // Open password details.
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  // Navigate back to the Password Manager. The search bar should not be
+  // enabled.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      assertWithMatcher:grey_userInteractionEnabled()];
 }
 
 @end
