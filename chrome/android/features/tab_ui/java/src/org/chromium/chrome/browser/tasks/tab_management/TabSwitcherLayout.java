@@ -164,16 +164,13 @@ public class TabSwitcherLayout extends Layout {
                     mFinishedShowingRunnable = () -> {
                         Tab currentTab = mTabModelSelector.getCurrentTab();
                         if (currentTab != null) mTabContentManager.cacheTabThumbnail(currentTab);
-                        mLayoutTabs = null;
+                        resetLayoutTabs();
                         mFinishedShowingRunnable = null;
                     };
                     mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
                 } else {
-                    // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
-                    // post delay handler to avoid creating a new pending surface in native, which
-                    // will hold the thumbnail capturing task.
                     mFinishedShowingRunnable = () -> {
-                        mLayoutTabs = null;
+                        resetLayoutTabs();
                         mFinishedShowingRunnable = null;
                     };
                     mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
@@ -199,6 +196,17 @@ public class TabSwitcherLayout extends Layout {
                 // version of the GTS overview in the background while expanding the thumbnail to
                 // the viewport.
                 expandTab(getThumbnailLocationOfCurrentTab());
+            }
+
+            private void resetLayoutTabs() {
+                // Clear the visible IDs. Once mLayoutTabs is empty, tabs will no longer be
+                // captureable and this prevents a thumbnailing request from waiting indefinitely.
+                updateCacheVisibleIds(Collections.emptyList());
+
+                // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
+                // post delay handler to avoid creating a new pending surface in native, which
+                // will hold the thumbnail capturing task.
+                mLayoutTabs = null;
             }
         };
 

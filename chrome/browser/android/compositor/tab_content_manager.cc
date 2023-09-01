@@ -541,8 +541,8 @@ void TabContentManager::SetCaptureMinRequestTimeForTesting(JNIEnv* env,
   thumbnail_cache_->SetCaptureMinRequestTimeForTesting(timeMs);
 }
 
-jint TabContentManager::GetPendingReadbacksForTesting(JNIEnv* env) {
-  return pending_tab_readbacks_.size();
+jint TabContentManager::GetInFlightCapturesForTesting(JNIEnv* env) {
+  return in_flight_captures_.size();
 }
 
 // ----------------------------------------------------------------------------

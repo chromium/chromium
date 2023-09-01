@@ -283,7 +283,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
             boolean fixPendingReadbacks = mActivityTestRule.getActivity()
                                                   .getTabContentManager()
-                                                  .getPendingReadbacksForTesting()
+                                                  .getInFlightCapturesForTesting()
                     != 0;
 
             // When there are pending readbacks due to detached Tabs, try to fix it by switching
@@ -316,7 +316,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityTestRule.getActivity()
                                        .getTabContentManager()
-                                       .getPendingReadbacksForTesting(),
+                                       .getInFlightCapturesForTesting(),
                     Matchers.is(0));
         });
     }

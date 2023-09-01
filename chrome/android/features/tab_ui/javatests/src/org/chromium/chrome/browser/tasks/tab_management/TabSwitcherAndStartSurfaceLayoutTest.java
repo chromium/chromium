@@ -630,7 +630,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             mActivityTestRule.loadUrl(mUrl);
             // Hopefully we are in a state where some pending readbacks are stuck because their tab
             // is not attached to the view.
-            if (cta.getTabContentManager().getPendingReadbacksForTesting() > 0) {
+            if (cta.getTabContentManager().getInFlightCapturesForTesting() > 0) {
                 break;
             }
 
@@ -643,7 +643,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             assertEquals(1, mActivityTestRule.tabsCount(false));
         }
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertNotEquals(0, cta.getTabContentManager().getPendingReadbacksForTesting());
+        assertNotEquals(0, cta.getTabContentManager().getInFlightCapturesForTesting());
         assertEquals(1, cta.getCurrentTabModel().index());
 
         // The last tab should still get thumbnail even though readbacks for other tabs are stuck.

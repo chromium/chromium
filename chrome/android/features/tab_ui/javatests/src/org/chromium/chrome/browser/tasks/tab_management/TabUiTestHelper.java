@@ -531,7 +531,7 @@ public class TabUiTestHelper {
             int currentTabIndex = currentTabModel.index();
 
             boolean fixPendingReadbacks =
-                    rule.getActivity().getTabContentManager().getPendingReadbacksForTesting() != 0;
+                    rule.getActivity().getTabContentManager().getInFlightCapturesForTesting() != 0;
 
             // When there are pending readbacks due to detached Tabs, try to fix it by switching
             // back to that tab.
@@ -563,7 +563,7 @@ public class TabUiTestHelper {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
-                    rule.getActivity().getTabContentManager().getPendingReadbacksForTesting(),
+                    rule.getActivity().getTabContentManager().getInFlightCapturesForTesting(),
                     is(0));
         });
     }

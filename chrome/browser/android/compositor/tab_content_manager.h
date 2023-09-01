@@ -119,7 +119,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       jdouble aspect_ratio,
       const base::android::JavaParamRef<jobject>& j_callback);
   void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
-  jint GetPendingReadbacksForTesting(JNIEnv* env);
+  jint GetInFlightCapturesForTesting(JNIEnv* env);
 
   // ThumbnailCacheObserver implementation;
   void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;
