@@ -21,7 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
-import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningUserActions;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -58,14 +58,30 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
                 return;
             }
             assert mDismissHandler != null;
-            if (!mSetFragmentWasCalled) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
-                        PasswordMigrationWarningUserActions.DISMISS_EMPTY_SHEET,
-                        PasswordMigrationWarningUserActions.COUNT);
-            }
+            RecordHistogram.recordEnumeratedHistogram(
+                    PasswordMetricsUtil.PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                    getSheetStateAtClosingBucket(reason),
+                    PasswordMigrationWarningSheetStateAtClosing.COUNT);
             mDismissHandler.onResult(reason);
             mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+
+        int getSheetStateAtClosingBucket(@BottomSheetController.StateChangeReason int reason) {
+            if (mSetFragmentWasCalled) {
+                return PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED;
+            }
+            switch (reason) {
+                case StateChangeReason.SWIPE:
+                case StateChangeReason.BACK_PRESS:
+                case StateChangeReason.TAP_SCRIM:
+                case StateChangeReason.NAVIGATION:
+                case StateChangeReason.OMNIBOX_FOCUS:
+                    return PasswordMigrationWarningSheetStateAtClosing
+                            .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION;
+                default:
+                    return PasswordMigrationWarningSheetStateAtClosing
+                            .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION;
+            }
         }
 
         @Override

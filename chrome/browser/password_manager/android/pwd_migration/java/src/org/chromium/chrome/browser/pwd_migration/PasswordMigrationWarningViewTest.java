@@ -28,6 +28,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.view.View;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -44,7 +45,10 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil;
+import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PasswordMigrationWarningSheetStateAtClosing;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -314,6 +318,68 @@ public class PasswordMigrationWarningViewTest {
                                         R.id.password_migration_next_button)
                         != null);
         onView(withText(TEST_EMAIL)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptySheetClosedWithoutUserInteractionIsLogged() {
+        var histogram = HistogramWatcher.newBuilder()
+                                .expectIntRecords(
+                                        PasswordMetricsUtil
+                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                        PasswordMigrationWarningSheetStateAtClosing
+                                                .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION)
+                                .build();
+
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testEmptySheetClosedByUserInteractionIsLogged() {
+        var histogram = HistogramWatcher.newBuilder()
+                                .expectIntRecords(
+                                        PasswordMetricsUtil
+                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                        PasswordMigrationWarningSheetStateAtClosing
+                                                .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION)
+                                .build();
+
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        Espresso.pressBack();
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testClosingTheSheetWithFullContentIsLogged() {
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                PasswordMetricsUtil
+                                        .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED)
+                        .build();
+
+        runOnUiThreadBlocking(() -> mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN));
+        runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        pollUiThread(()
+                             -> mActivityTestRule.getActivity().findViewById(
+                                        R.id.acknowledge_password_migration_button)
+                        != null);
+        Espresso.pressBack();
+        BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+
+        histogram.assertExpected();
     }
 
     private @SheetState int getBottomSheetState() {

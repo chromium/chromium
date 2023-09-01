@@ -23,7 +23,7 @@ public class PasswordMetricsUtil {
             PasswordMigrationWarningUserActions.CANCEL,
             PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION,
             PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS,
-            PasswordMigrationWarningUserActions.DISMISS_EMPTY_SHEET,
+            PasswordMigrationWarningUserActions.DISMISS_EMPTY_SHEET_OBSOLETE,
             PasswordMigrationWarningUserActions.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PasswordMigrationWarningUserActions {
@@ -34,11 +34,27 @@ public class PasswordMetricsUtil {
         int CANCEL = 4;
         int DISMISS_INTRODUCTION = 5;
         int DISMISS_MORE_OPTIONS = 6;
-        int DISMISS_EMPTY_SHEET = 7;
+        int DISMISS_EMPTY_SHEET_OBSOLETE = 7;
         int COUNT = 8;
     }
     public static final String PASSWORD_MIGRATION_WARNING_USER_ACTIONS =
             "PasswordManager.PasswordMigrationWarning.UserAction";
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({PasswordMigrationWarningSheetStateAtClosing.FULL_SHEET_CLOSED,
+            PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_BY_USER_INTERACTION,
+            PasswordMigrationWarningSheetStateAtClosing.EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION,
+            PasswordMigrationWarningSheetStateAtClosing.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PasswordMigrationWarningSheetStateAtClosing {
+        int FULL_SHEET_CLOSED = 0;
+        int EMPTY_SHEET_CLOSED_BY_USER_INTERACTION = 1;
+        int EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION = 2;
+        int COUNT = 3;
+    }
+    public static final String PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING =
+            "PasswordManager.PasswordMigrationWarning.SheetStateAtClosing";
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

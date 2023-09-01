@@ -2384,6 +2384,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordMigrationWarning.SheetStateAtClosing"
+    enum="PasswordMigrationWarningTriggers" expires_after="2024-01-29">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    This histogram logs the state of the local passwords migration warning
+    bottom sheet. Recorded when the sheet is closing. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordMigrationWarning.Trigger"
     enum="PasswordMigrationWarningTriggers" expires_after="2024-01-29">
   <owner>izuzic@google.com</owner>

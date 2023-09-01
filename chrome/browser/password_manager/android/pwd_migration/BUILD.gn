@@ -109,6 +109,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
