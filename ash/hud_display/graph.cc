@@ -46,10 +46,10 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
   const float scale_y = graph_bounds.height();
 
   // Let every graph to occupy at least given amount of pixels.
-  const int pixel_adjust = (baseline_ == Baseline::BASELINE_BOTTOM) ? -1 : 1;
+  const int pixel_adjust = (baseline_ == Baseline::kBaselineBottom) ? -1 : 1;
 
   // Bottom path is always base. So it's visually below the current line when
-  // BASELINE_BOTTOM and above current graph when BASELINE_TOP.
+  // kBaselineBottom and above current graph when BASELINE_TOP.
   // top_path_ is similarly inverted.
   bottom_path_.resize(0);
   if (base) {
@@ -68,13 +68,13 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
 
     float x = graph_bounds.x() + (max_data_points_ - i) * scale_x;
     float y =
-        (baseline_ == Baseline::BASELINE_BOTTOM ? -1 : 1) * value * scale_y;
+        (baseline_ == Baseline::kBaselineBottom ? -1 : 1) * value * scale_y;
     if (bottom_path_.size()) {
       CHECK_LT(i, bottom_path_.size());
       // Adjust to the single pixel line added above.
       y = bottom_path_[i].y() - pixel_adjust + y;
     } else {
-      y = (baseline_ == Baseline::BASELINE_BOTTOM ? graph_bounds.bottom()
+      y = (baseline_ == Baseline::kBaselineBottom ? graph_bounds.bottom()
                                                   : graph_bounds.y()) +
           y;
     }
@@ -85,9 +85,9 @@ void Graph::Layout(const gfx::Rect& graph_bounds, const Graph* base) {
   }
 
   // This is the first layer from the start and it is filled and is non-empty.
-  if (!base && fill_ != Graph::Fill::NONE && !top_path_.empty()) {
+  if (!base && fill_ != Graph::Fill::kNone && !top_path_.empty()) {
     gfx::RectF graph_bounds_f(graph_bounds);
-    if (baseline_ == Baseline::BASELINE_BOTTOM) {
+    if (baseline_ == Baseline::kBaselineBottom) {
       bottom_path_.push_back({graph_bounds_f.right(), graph_bounds_f.bottom()});
       bottom_path_.push_back({top_path_.back().x(), graph_bounds_f.bottom()});
     } else {
@@ -128,11 +128,11 @@ void Graph::Draw(gfx::Canvas* canvas) const {
     }
   };
 
-  // This is used to draw both top and bottom Style::LINES paths.
+  // This is used to draw both top and bottom Style::kLines paths.
   const auto draw_lines_point =
       [](const SkPoint& point, const SkPoint& /*previous_point*/,
          SkPath& out_path) { out_path.lineTo(point); };
-  // Top and bottom Style::SKYLINE drawing functions are symmetric.
+  // Top and bottom Style::kSkyline drawing functions are symmetric.
   const auto draw_skyline_point =
       [](const SkPoint& point, SkPoint& previous_point, SkPath& out_path) {
         out_path.lineTo(SkPoint::Make(point.x(), previous_point.y()));
@@ -146,19 +146,19 @@ void Graph::Draw(gfx::Canvas* canvas) const {
         previous_point = point;
       };
   switch (style_) {
-    case Style::LINES:
+    case Style::kLines:
       draw_top_line(top_path_, draw_lines_point, path);
       break;
-    case Style::SKYLINE:
+    case Style::kSkyline:
       draw_top_line(top_path_, draw_skyline_point, path);
       break;
   }
-  if (fill_ == Graph::Fill::SOLID) {
+  if (fill_ == Graph::Fill::kSolid) {
     switch (bottom_path_style_) {
-      case Style::LINES:
+      case Style::kLines:
         draw_bottom_line(bottom_path_, draw_lines_point, path);
         break;
-      case Style::SKYLINE:
+      case Style::kSkyline:
         draw_bottom_line(bottom_path_, draw_bottom_skyline_point, path);
         break;
     }
@@ -166,7 +166,7 @@ void Graph::Draw(gfx::Canvas* canvas) const {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setBlendMode(SkBlendMode::kSrc);
-  const cc::PaintFlags::Style style = (fill_ == Graph::Fill::NONE)
+  const cc::PaintFlags::Style style = (fill_ == Graph::Fill::kNone)
                                           ? cc::PaintFlags::kStroke_Style
                                           : cc::PaintFlags::kFill_Style;
   flags.setStyle(style);
@@ -230,7 +230,7 @@ std::string Graph::DebugDump(const std::string& name) const {
       os << "\t" << name << ": ...";
       i = topsize - 5;
     }
-    if (fill_ == Graph::Fill::SOLID) {
+    if (fill_ == Graph::Fill::kSolid) {
       // Print filled graph as a set of vertical lines.
       if (top_path_.size() == bottom_path_.size()) {
         // Each point on the top has matching point on the bottom.

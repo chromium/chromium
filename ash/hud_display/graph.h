@@ -30,20 +30,20 @@ class Graph {
   using Data = base::RingBuffer<float, kHUDGraphWidth + 1>;
 
   enum class Baseline {
-    BASELINE_BOTTOM,  // Positive values will be drawn from the bottom border
+    kBaselineBottom,  // Positive values will be drawn from the bottom border
                       // up.
-    BASELINE_TOP,     // Positive values will be drawn from the top border down.
+    kBaselineTop,     // Positive values will be drawn from the top border down.
   };
 
   // Whether to draw the graph as a filled polygon.
   enum class Fill {
-    NONE,
-    SOLID,
+    kNone,
+    kSolid,
   };
 
   enum class Style {
-    LINES,
-    SKYLINE,
+    kLines,
+    kSkyline,
   };
 
   // |max_data_points| must be less than the ring buffer size.
@@ -103,13 +103,13 @@ class Graph {
 
   // Paths are measured from the top left corner.
   // Partial graph is assumed to be right-justified.
-  // For BASELINE_BOTTOM |top_path_| has y values that are less than
-  // |bottom_path_|. (And opposite for the BASELINE_TOP.)
+  // For kBaselineBottom |top_path_| has y values that are less than
+  // |bottom_path_|. (And opposite for the kBaselineTop.)
   // Paths are calculated by Layout() from the |data_|.
   std::vector<SkPoint> top_path_;
   std::vector<SkPoint> bottom_path_;
   // Bottom path style should follow base graph style.
-  Style bottom_path_style_ = Style::LINES;
+  Style bottom_path_style_ = Style::kLines;
 
   Data data_;
   Data unscaled_data_;
