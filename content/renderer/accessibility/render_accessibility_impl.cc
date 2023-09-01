@@ -150,6 +150,15 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   settings->SetAccessibilityIncludeSvgGElement(true);
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1477047): WebSemanticsTest expects the events to be posted
+  // on a different thread.
+  // https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/src/ui/a11y/lib/semantics/tests/web_semantics_tests.cc#232
+  // The test facility needs to be updated, but we need sometime to make the
+  // change.
+  serialize_post_lifecycle_ = false;
+#endif
+
   // Optionally disable AXMenuList, which makes the internal pop-up menu
   // UI for a select element directly accessible. Disable by default on
   // Chrome OS, but some tests may override.
