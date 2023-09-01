@@ -122,11 +122,11 @@ TEST_F(
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
-var OSSettingsOsBluetoothSavedDevicesListTest =
+var OSSettingsOsBluetoothPageOsBluetoothSavedDevicesListTest =
     class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_list_tests.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_saved_devices_list_test.js';
   }
 
   /** @override */
@@ -141,9 +141,11 @@ var OSSettingsOsBluetoothSavedDevicesListTest =
   }
 };
 
-TEST_F('OSSettingsOsBluetoothSavedDevicesListTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsOsBluetoothPageOsBluetoothSavedDevicesListTest', 'AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');

@@ -29,7 +29,7 @@ declare global {
 const SettingsSavedDevicesListElementBase =
     CrScrollableMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
-class SettingsSavedDevicesListElement extends
+export class SettingsSavedDevicesListElement extends
     SettingsSavedDevicesListElementBase {
   static get is() {
     return 'os-settings-saved-devices-list' as const;

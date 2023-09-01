@@ -206,6 +206,7 @@ export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_pag
 export {SettingsBluetoothSavedDevicesSubpageElement} from './os_bluetooth_page/os_bluetooth_saved_devices_subpage.js';
 export {SettingsPairedBluetoothListElement} from './os_bluetooth_page/os_paired_bluetooth_list.js';
 export {SettingsPairedBluetoothListItemElement} from './os_bluetooth_page/os_paired_bluetooth_list_item.js';
+export {SettingsSavedDevicesListElement} from './os_bluetooth_page/os_saved_devices_list.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';

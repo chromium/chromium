@@ -53,7 +53,6 @@ build_webui_tests("build") {
     "onc_mojo_test.ts",
     "os_about_page_tests.js",
     "os_page_availability_test.ts",
-    "os_saved_devices_list_tests.js",
     "os_settings_main_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
@@ -209,6 +208,7 @@ build_webui_tests("build") {
     "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js",
     "os_bluetooth_page/os_paired_bluetooth_list_test.ts",
     "os_bluetooth_page/os_paired_bluetooth_list_item_test.ts",
+    "os_bluetooth_page/os_saved_devices_list_test.ts",
     "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",
 
     "os_files_page/google_drive_page_test.ts",
