@@ -6,9 +6,7 @@
  * @fileoverview Root element of the OOBE UI Debugger.
  */
 
-import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
 import {MessageType, ProblemType} from '//resources/ash/common/quick_unlock/setup_pin_keyboard.js';
-import { QuickStartUIState } from '../screens/oobe/quick_start.js';
 import {$} from '//resources/ash/common/util.js';
 
 import {AssistantNativeIconType} from '../../assistant_optin/utils.js';
@@ -2169,8 +2167,8 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.currentScreenId_ = screenId;
       this.lastScreenState_ = stateId;
       /** @suppress {visibility} */
-      const displayManager = Oobe.instance_;
-      Oobe.instance_.showScreen({id: screen.id, data: data});
+      const displayManager = Oobe.getInstance();
+      displayManager.showScreen({id: screen.id, data: data});
       if (state.trigger) {
         state.trigger(displayManager.currentScreen);
       }
@@ -2184,7 +2182,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       this.knownScreens = [];
       this.screenButtons = {};
       /** @suppress {visibility} */
-      for (var id of Oobe.instance_.screens_) {
+      for (var id of Oobe.getInstance().screens_) {
         if (id in this.screenMap) {
           const screenDef = this.screenMap[id];
           const screenElement = $(id);
@@ -2255,7 +2253,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
         this.createScreensList();
       }
       /** @suppress {visibility} */
-      const displayManager = Oobe.instance_;
+      const displayManager = Oobe.getInstance();
       if (this.stateCachedFor_) {
         this.screenButtons[this.stateCachedFor_].element.classList.remove(
             'debug-button-selected');
@@ -2348,6 +2346,12 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       element.appendChild(this.debuggerButton_);
       element.appendChild(this.debuggerOverlay_);
     }
+
+    /** @return {!DebuggerUI} */
+    static getInstance() {
+      return instance || (instance = new DebuggerUI());
+    }
   }
 
-  addSingletonGetter(DebuggerUI);
+  /** @type {?DebuggerUI} */
+  let instance = null;

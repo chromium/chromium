@@ -8,22 +8,28 @@
  * shared between all *two* screens here.
  */
 
+import '//resources/js/cr.js';
+
 import {assert} from '//resources/ash/common/assert.js';
-import {sendWithPromise} from '//resources/ash/common/cr.m.js';
-import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
 import {$} from '//resources/ash/common/util.js';
 
-import {DISPLAY_TYPE} from './components/display_manager_types.js';
 import {OobeTypes} from './components/oobe_types.js';
 import {DisplayManager} from './display_manager.js';
 import {loadTimeData} from './i18n_setup.js';
 
+/** @type {?Oobe} */
+let instance = null;
 
 /**
  * Out of box controller. It manages initialization of screens,
  * transitions, error messages display.
  */
 export class Oobe extends DisplayManager {
+  /** @return {!Oobe} */
+  static getInstance() {
+    return instance || (instance = new Oobe());
+  }
+
   /**
    * Handle the cancel accelerator.
    */
@@ -254,7 +260,7 @@ export class Oobe extends DisplayManager {
 
   /**
    * Updates "device in tablet mode" state when tablet mode is changed.
-   * @param {Boolean} isInTabletMode True when in tablet mode.
+   * @param {boolean} isInTabletMode True when in tablet mode.
    */
   static setTabletModeState(isInTabletMode) {
     Oobe.getInstance().setTabletModeState_(isInTabletMode);
@@ -279,5 +285,3 @@ export class Oobe extends DisplayManager {
  * @type {boolean}
  */
 Oobe.readyForTesting = false;
-
-addSingletonGetter(Oobe);
