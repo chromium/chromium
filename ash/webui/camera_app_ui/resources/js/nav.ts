@@ -162,7 +162,9 @@ export function onKeyPressed(event: KeyboardEvent): void {
     case 'BrowserBack':
       // Only works for non-intent instance.
       if (!state.get(state.State.INTENT)) {
-        windowController.minimize();
+        // This is used in keypress event handler, and we don't wait for the
+        // window to minimize here.
+        void windowController.minimize();
       }
       break;
     case 'Alt--':
