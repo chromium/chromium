@@ -1636,6 +1636,8 @@ TEST_F(ResourceFetcherTest, StrongReferenceThreshold) {
   // returns whether the memory cache has a strong reference to the resource.
   auto perform_fetch = base::BindLambdaForTesting([&](const KURL& url) {
     ResourceResponse response(url);
+    response.SetHttpHeaderField(http_names::kCacheControl,
+                                AtomicString("max-age=3600"));
     platform_->GetURLLoaderMockFactory()->RegisterURL(
         url, WrappedResourceResponse(response),
         test::PlatformTestDataPath(kTestResourceFilename));
