@@ -67,6 +67,30 @@
       <array>
         <dict>
           <key>output</key>
+          <string>tItg79</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_RUN_SAFETY_CHECK_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>JHLR2Y</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_RUN_SAFETY_CHECK_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>WhLIra</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_RUN_SAFETY_CHECK_DESCRIPTION</string>
+        </dict>
+        <dict>
+          <key>output</key>
+          <string>oKO3WH</string>
+          <key>input</key>
+          <string>IDS_IOS_INTENTS_RUN_SAFETY_CHECK_TITLE</string>
+        </dict>
+        <dict>
+          <key>output</key>
           <string>44ubBt</string>
           <key>input</key>
           <string>IDS_IOS_INTENTS_MANAGE_PAYMENT_METHODS_TITLE</string>

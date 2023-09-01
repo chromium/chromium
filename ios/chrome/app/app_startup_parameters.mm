@@ -106,6 +106,9 @@
     case OPEN_PAYMENT_METHODS:
       [description appendString:@", should open payment methods"];
       break;
+    case RUN_SAFETY_CHECK:
+      [description appendString:@", should run safety check"];
+      break;
     default:
       break;
   }

@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -1011,6 +1010,70 @@
       <string>Custom</string>
       <key>INIntentVerb</key>
       <string>Do</string>
+    </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>information</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>WhLIra</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Run Chrome Safety Check</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>JHLR2Y</string>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>RunSafetyCheck</string>
+      <key>INIntentParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationIsPrimary</key>
+          <true/>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Run Chrome Safety Check</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>tItg79</string>
+        </dict>
+      </dict>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Run Chrome Safety Check</string>
+      <key>INIntentTitleID</key>
+      <string>oKO3WH</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Open</string>
     </dict>
   </array>
   <key>INTypes</key>

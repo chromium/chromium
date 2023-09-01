@@ -16,6 +16,7 @@
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/PlayDinoGameIntent.h"
+#import "ios/chrome/common/intents/RunSafetyCheckIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
@@ -34,7 +35,8 @@
                                     SetChromeDefaultBrowserIntentHandling,
                                     ViewHistoryIntentHandling,
                                     OpenNewIncognitoTabIntentHandling,
-                                    ManagePaymentMethodsIntentHandling>
+                                    ManagePaymentMethodsIntentHandling,
+                                    RunSafetyCheckIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -296,6 +298,21 @@
       [[ManagePaymentMethodsIntentResponse alloc]
           initWithCode:ManagePaymentMethodsIntentResponseCodeContinueInApp
           userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - RunSafetyCheckIntentHandling
+
+- (void)handleRunSafetyCheck:(RunSafetyCheckIntent*)intent
+                  completion:
+                      (void (^)(RunSafetyCheckIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([RunSafetyCheckIntent class])];
+
+  RunSafetyCheckIntentResponse* response = [[RunSafetyCheckIntentResponse alloc]
+      initWithCode:RunSafetyCheckIntentResponseCodeContinueInApp
+      userActivity:activity];
 
   completion(response);
 }

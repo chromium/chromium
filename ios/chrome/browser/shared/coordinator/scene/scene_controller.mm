@@ -2518,6 +2518,10 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf openPaymentMethods];
       };
+    case RUN_SAFETY_CHECK:
+      return ^{
+        [weakSelf showAndStartSafetyCheckInHalfSheet:NO];
+      };
     default:
       return nil;
   }

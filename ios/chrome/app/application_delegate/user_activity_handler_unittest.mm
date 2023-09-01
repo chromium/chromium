@@ -45,6 +45,7 @@
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
+#import "ios/chrome/common/intents/RunSafetyCheckIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
@@ -1147,5 +1148,35 @@ TEST_F(UserActivityHandlerTest,
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(OPEN_PAYMENT_METHODS,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to run safety check intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentRunSafetyCheck) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"RunSafetyCheckIntent"];
+
+  RunSafetyCheckIntent* intent = [[RunSafetyCheckIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(RUN_SAFETY_CHECK,
             [connectionInformationMock startupParameters].postOpeningAction);
 }
