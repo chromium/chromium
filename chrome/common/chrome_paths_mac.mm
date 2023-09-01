@@ -55,7 +55,9 @@ char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
     product_dir_name = [product_dir_name_ns fileSystemRepresentation];
 
     if (!product_dir_name) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+      product_dir_name = "Google/Chrome for Testing";
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
       product_dir_name = "Google/Chrome";
 #else
       product_dir_name = "Chromium";
