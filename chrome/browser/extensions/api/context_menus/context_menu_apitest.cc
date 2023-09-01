@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -77,6 +78,50 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
   ASSERT_TRUE(RunExtensionTest("context_menus/event_page")) << message_;
+}
+
+class ExtensionContextMenuApiCountTest
+    : public ExtensionContextMenuApiTestWithContextType {
+ public:
+  ExtensionContextMenuApiCountTest() = default;
+  ~ExtensionContextMenuApiCountTest() override = default;
+  ExtensionContextMenuApiCountTest& operator=(
+      const ExtensionContextMenuApiCountTest&) = delete;
+  ExtensionContextMenuApiCountTest(const ExtensionContextMenuApiCountTest&) =
+      delete;
+
+  void SetUp() override {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    ExtensionContextMenuApiTestWithContextType::SetUp();
+  }
+
+  void TearDown() override {
+    histogram_tester_.release();
+    ExtensionContextMenuApiTestWithContextType::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         ExtensionContextMenuApiCountTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionContextMenuApiCountTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiCountTest, PRE_Count) {
+  // This part of the test creates the menu items for the extension.
+  ASSERT_TRUE(RunExtensionTest("context_menus/count")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiCountTest, Count) {
+  // The histogram will be updated when the extension is loaded during
+  // startup. This will happen before we enter the test, so just check
+  // that the update is present.
+  histogram_tester_->ExpectUniqueSample("Extensions.MenuManager.MenuItemsCount",
+                                        6, 1);
 }
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
