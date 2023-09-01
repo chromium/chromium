@@ -103,6 +103,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
         type: String,
         computed: 'getAriaDescribedByForHeading_(isCardStart, isCardEnd)',
       },
+
+      ariaDescribedByForActions_: {
+        type: String,
+        computed: 'getAriaDescribedByForActions_(isCardStart, isCardEnd)',
+      },
     };
   }
 
@@ -231,6 +236,16 @@ export class HistoryItemElement extends HistoryItemElementBase {
    */
   private getAriaDescribedByForHeading_(): string {
     return this.isCardStart || this.isCardEnd ? 'date-accessed' : '';
+  }
+
+  /**
+   * Actions menu is described by the title and domain of the row and may
+   * include the date to make sure users know if they have jumped between dates.
+   */
+  private getAriaDescribedByForActions_(): string {
+    return this.isCardStart || this.isCardEnd ?
+        'title-and-domain date-accessed' :
+        'title-and-domain';
   }
 
   private getAriaChecked_(selected: boolean): string {
