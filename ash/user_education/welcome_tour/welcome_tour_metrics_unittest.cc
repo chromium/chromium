@@ -201,6 +201,7 @@ TEST_F(WelcomeTourMetricsEnumTest, AllInteractions) {
     bool should_exist_in_all_set = false;
 
     switch (interaction) {
+      case Interaction::kExploreApp:
       case Interaction::kFilesApp:
       case Interaction::kLauncher:
       case Interaction::kQuickSettings:

@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Completion" variants="Completion"/>
   <token key="Interaction">
+    <variant name="ExploreApp" summary="the Explore app"/>
     <variant name="FilesApp" summary="the Files app"/>
     <variant name="Launcher" summary="the Launcher"/>
     <variant name="QuickSettings" summary="Quick Settings"/>

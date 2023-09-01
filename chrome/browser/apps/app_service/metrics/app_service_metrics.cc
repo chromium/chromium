@@ -163,15 +163,26 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name) {
+void RecordWelcomeTourInteraction(apps::DefaultAppName default_app_name,
+                                  apps::LaunchSource launch_source) {
+  // This metric is intended to capture user actions. Do not log automatically
+  // launched apps.
+  if (launch_source == apps::LaunchSource::kFromChromeInternal) {
+    return;
+  }
+
   switch (default_app_name) {
-    case apps::DefaultAppName::kSettings:
-      ash::welcome_tour_metrics::RecordInteraction(
-          ash::welcome_tour_metrics::Interaction::kSettingsApp);
-      break;
     case apps::DefaultAppName::kFiles:
       ash::welcome_tour_metrics::RecordInteraction(
           ash::welcome_tour_metrics::Interaction::kFilesApp);
+      break;
+    case apps::DefaultAppName::kHelpApp:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kExploreApp);
+      break;
+    case apps::DefaultAppName::kSettings:
+      ash::welcome_tour_metrics::RecordInteraction(
+          ash::welcome_tour_metrics::Interaction::kSettingsApp);
       break;
     default:
       break;
@@ -197,7 +208,7 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(app_name.value(), launch_source);
 
     if (ash::features::IsWelcomeTourEnabled()) {
-      RecordWelcomeTourInteraction(app_name.value());
+      RecordWelcomeTourInteraction(app_name.value(), launch_source);
     }
 
     return;

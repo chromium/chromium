@@ -90,11 +90,13 @@ enum class Interaction {
   kQuickSettings = 2,
   kSearch = 3,
   kSettingsApp = 4,
-  kMaxValue = kSettingsApp,
+  kExploreApp = 5,
+  kMaxValue = kExploreApp,
 };
 
 static constexpr auto kAllInteractionsSet =
     base::EnumSet<Interaction, Interaction::kMinValue, Interaction::kMaxValue>({
+        Interaction::kExploreApp,
         Interaction::kFilesApp,
         Interaction::kLauncher,
         Interaction::kQuickSettings,

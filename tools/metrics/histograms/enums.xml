@@ -115084,6 +115084,7 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="kQuickSettings"/>
   <int value="3" label="kSearch"/>
   <int value="4" label="kSettingsApp"/>
+  <int value="5" label="kExploreApp"/>
 </enum>
 
 <enum name="WelcomeTourPreventedReason">

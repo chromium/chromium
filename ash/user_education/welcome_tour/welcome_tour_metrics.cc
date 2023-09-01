@@ -128,6 +128,8 @@ void RecordTourPrevented(PreventedReason reason) {
 // changed or reused. Any values added to `Interaction` must be added here.
 std::string ToString(Interaction interaction) {
   switch (interaction) {
+    case Interaction::kExploreApp:
+      return "ExploreApp";
     case Interaction::kFilesApp:
       return "FilesApp";
     case Interaction::kLauncher:
