@@ -601,6 +601,8 @@ export class OncMojo {
           simLockEnabled: false,
           simLocked: false,
           simLockType: '',
+          hasNickName: false,
+          networkOperator: '',
         };
         break;
       case NetworkType.kEthernet:

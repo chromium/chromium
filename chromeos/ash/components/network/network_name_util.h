@@ -34,6 +34,14 @@ std::string GetNetworkName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state);
 
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool HasNickName(CellularESimProfileHandler* cellular_esim_profile_handler,
+                 const NetworkState* network_state);
+
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::string GetServiceProvider(
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    const NetworkState* network_state);
 }  // namespace network_name_util
 }  // namespace ash
 
