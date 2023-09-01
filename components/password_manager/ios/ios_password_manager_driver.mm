@@ -12,7 +12,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
-#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
