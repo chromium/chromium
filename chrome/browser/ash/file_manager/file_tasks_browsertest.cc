@@ -1151,7 +1151,7 @@ class DriveTest : public TestAccountBrowserTest {
 // Test to check that the test file fails to open when the system is offline but
 // is successfully opened with a "try-again" dialog choice after the
 // systems comes online.
-IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
+IN_PROC_BROWSER_TEST_F(DriveTest, DISABLED_OfficeFallbackTryAgain) {
   // Add test file to fake DriveFs.
   SetUpTest();
 

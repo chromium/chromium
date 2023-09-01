@@ -463,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
+IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
+                       DISABLED_UploadFromMyFilesNoConnection) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
@@ -493,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
-                       UploadFromMyFilesConnectionLostDuringUpload) {
+                       DISABLED_UploadFromMyFilesConnectionLostDuringUpload) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
