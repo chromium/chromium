@@ -161,6 +161,7 @@ static_library("performance_manager") {
     "public/render_process_host_id.h",
     "public/render_process_host_proxy.h",
     "public/resource_attribution/attribution_helpers.h",
+    "public/resource_attribution/page_context_registry.h",
     "public/resource_attribution/process_context_registry.h",
     "public/resource_attribution/resource_contexts.h",
     "public/resource_attribution/type_helpers.h",
@@ -176,6 +177,7 @@ static_library("performance_manager") {
     "render_process_user_data.cc",
     "render_process_user_data.h",
     "resource_attribution/attribution_impl_helpers.h",
+    "resource_attribution/page_context_registry.cc",
     "resource_attribution/process_context_registry.cc",
     "resource_attribution/resource_context_registry_storage.cc",
     "resource_attribution/resource_context_registry_storage.h",
@@ -398,6 +400,7 @@ source_set("browser_tests") {
     "performance_manager_browsertest.cc",
     "prerendering_browsertest.cc",
     "render_process_host_proxy_browsertest.cc",
+    "resource_attribution/page_context_registry_browsertest.cc",
     "resource_attribution/process_context_registry_browsertest.cc",
     "v8_memory/v8_context_tracker_browsertest.cc",
   ]
