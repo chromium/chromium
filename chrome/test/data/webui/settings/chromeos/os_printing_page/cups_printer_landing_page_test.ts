@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS, PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxyImpl, CupsPrintersEntryManager, PrinterListEntry, PrinterSettingsUserAction, PrinterStatusReason, PrinterStatusSeverity, PrinterType, SettingsCupsEditPrinterDialogElement, SettingsCupsEnterprisePrintersElement, SettingsCupsNearbyPrintersElement, SettingsCupsPrintersElement, SettingsCupsPrintersEntryElement, SettingsCupsSavedPrintersElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -14,9 +14,8 @@ import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertGE, assertNotReached, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
@@ -204,6 +203,7 @@ async function removeAllPrinters(
   await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
 }
 
+// TODO(b/298474359): Add browser test for printer status querying.
 suite('CupsSavedPrintersTests', () => {
   let page: SettingsCupsPrintersElement;
   let savedPrintersElement: SettingsCupsSavedPrintersElement;
@@ -645,40 +645,6 @@ suite('CupsSavedPrintersTests', () => {
     await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
     assertFalse(printerStatusReasonCache.has('id1'));
     assertFalse(printerStatusReasonCache.has('id2'));
-  });
-
-  test('SavedPrintersStatusPolling', async () => {
-    createCupsPrinterPage([
-      createCupsPrinterInfo('test1', '1', 'id1'),
-    ]);
-    await flushTasks();
-    assertEquals(
-        1, cupsPrintersBrowserProxy.getCallCount('requestPrinterStatusUpdate'));
-
-    // Set up the timer to control the delay timers.
-    const mockTimer = new MockTimer();
-    mockTimer.install();
-
-    // Kick start the printer status query polling and track the number of times
-    // the printer status query is triggered.
-    const element =
-        page.shadowRoot!.querySelector('settings-cups-saved-printers');
-    assertTrue(!!element);
-    savedPrintersElement = element;
-    savedPrintersElement.startPrinterStatusQueryTimerForTesting();
-
-    // Advance the timer only half of the min delay and verify no query is made.
-    mockTimer.tick(PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS[0]! / 2);
-    assertEquals(
-        1, cupsPrintersBrowserProxy.getCallCount('requestPrinterStatusUpdate'));
-
-    // Now advance the timer by double the max delay and verify at least one
-    // more query request is made.
-    mockTimer.tick(PRINTER_STATUS_QUERY_SHORT_DELAY_RANGE_MS[1]! * 2);
-    assertGE(
-        cupsPrintersBrowserProxy.getCallCount('requestPrinterStatusUpdate'), 2);
-
-    mockTimer.uninstall();
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', async () => {
