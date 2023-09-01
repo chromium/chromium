@@ -187,8 +187,6 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
 
   EXPECT_EQ(settings->attestation_for_content_protection_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
-  EXPECT_EQ(settings->deprecated_device_ephemeral_users_enabled,
-            crosapi::mojom::DeviceSettings::OptionalBool::kFalse);
   EXPECT_EQ(settings->device_restricted_managed_guest_session_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
   ASSERT_EQ(settings->usb_detachable_allow_list->usb_device_ids.size(), 1u);

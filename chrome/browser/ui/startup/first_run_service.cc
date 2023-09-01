@@ -148,17 +148,6 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   if (chromeos::BrowserParamsProxy::Get()->IsCurrentUserEphemeral()) {
     return PolicyEffect::kSilenced;
   }
-
-  // TODO(b/273237511): Remove direct usage of DeviceEphemeralUsersEnabled
-  // policy in branch M118 in favor of newly added function
-  // `BrowserParamsProxy::Get()->IsCurrentUserEphemeral()`.
-  crosapi::mojom::DeviceSettings* device_settings =
-      g_browser_process->browser_policy_connector()->GetDeviceSettings();
-  if (device_settings->deprecated_device_ephemeral_users_enabled ==
-      crosapi::mojom::DeviceSettings::OptionalBool::kTrue) {
-    // Corresponding policy: DeviceEphemeralUsersEnabled=true
-    return PolicyEffect::kSilenced;
-  }
 #endif
 
   return PolicyEffect::kNone;

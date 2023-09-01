@@ -318,41 +318,6 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
-
-IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
-                       FinishedSilentlyDeviceEphemeralUsersEnabled) {
-  signin::IdentityManager* identity_manager =
-      identity_test_env()->identity_manager();
-  base::HistogramTester histogram_tester;
-
-  // The `DeviceEphemeralUsersEnabled` is read through DeviceSettings provided
-  // on startup.
-  auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->device_settings->deprecated_device_ephemeral_users_enabled =
-      crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
-  auto device_settings = init_params->device_settings.Clone();
-
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-  // TODO(crbug.com/1330310): Ideally this should be done as part of
-  // `SetInitParamsForTests()`.
-  g_browser_process->browser_policy_connector()
-      ->device_settings_lacros()
-      ->UpdateDeviceSettings(std::move(device_settings));
-
-  ASSERT_TRUE(profile()->IsMainProfile());
-  EXPECT_TRUE(ShouldOpenFirstRun(profile()));
-
-  ASSERT_TRUE(fre_service());
-
-  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
-  EXPECT_FALSE(ShouldOpenFirstRun(profile()));
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  histogram_tester.ExpectUniqueSample(
-      "Profile.LacrosPrimaryProfileFirstRunOutcome",
-      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
