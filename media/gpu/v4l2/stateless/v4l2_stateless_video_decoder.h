@@ -17,6 +17,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/waiting.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/gpu/v4l2/stateless/stateless_device.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -70,10 +71,17 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   V4L2StatelessVideoDecoder(
       std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<VideoDecoderMixin::Client> client);
+      base::WeakPtr<VideoDecoderMixin::Client> client,
+      scoped_refptr<StatelessDevice> device);
   ~V4L2StatelessVideoDecoder() override;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
+
+  const scoped_refptr<StatelessDevice> device_;
+
+  // Callback obtained from Initialize() to be called after every frame
+  // has finished decoding and is ready for the client to display.
+  OutputCB output_cb_;
 };
 
 }  // namespace media

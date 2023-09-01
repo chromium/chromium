@@ -5,6 +5,10 @@
 #include "media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.h"
 
 #include "base/notreached.h"
+#include "media/gpu/gpu_video_decode_accelerator_helpers.h"
+#include "media/gpu/macros.h"
+#include "media/gpu/v4l2/stateless/utils.h"
+#include "media/gpu/v4l2/v4l2_status.h"
 
 namespace media {
 
@@ -14,16 +18,19 @@ std::unique_ptr<VideoDecoderMixin> V4L2StatelessVideoDecoder::Create(
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
     base::WeakPtr<VideoDecoderMixin::Client> client) {
   return base::WrapUnique<VideoDecoderMixin>(new V4L2StatelessVideoDecoder(
-      std::move(media_log), std::move(decoder_task_runner), std::move(client)));
+      std::move(media_log), std::move(decoder_task_runner), std::move(client),
+      new StatelessDevice()));
 }
 
 V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<VideoDecoderMixin::Client> client)
+    base::WeakPtr<VideoDecoderMixin::Client> client,
+    scoped_refptr<StatelessDevice> device)
     : VideoDecoderMixin(std::move(media_log),
                         std::move(decoder_task_runner),
-                        std::move(client)) {
+                        std::move(client)),
+      device_(std::move(device)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 }
 
@@ -34,7 +41,17 @@ V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
 // static
 absl::optional<SupportedVideoDecoderConfigs>
 V4L2StatelessVideoDecoder::GetSupportedConfigs() {
-  NOTIMPLEMENTED();
+  const scoped_refptr<StatelessDevice> device =
+      base::MakeRefCounted<StatelessDevice>();
+  if (device->Open()) {
+    const auto configs = GetSupportedDecodeProfiles(device.get());
+    if (configs.empty()) {
+      return absl::nullopt;
+    }
+
+    return ConvertFromSupportedProfiles(configs, false);
+  }
+
   return absl::nullopt;
 }
 
@@ -45,7 +62,36 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                            const OutputCB& output_cb,
                                            const WaitingCB& waiting_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
+  DCHECK(config.IsValidConfig());
+  DVLOGF(3);
+
+  if (config.is_encrypted()) {
+    VLOGF(1) << "Decoder does not support encrypted stream";
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
+  device_->Close();
+  if (!device_->Open()) {
+    DVLOGF(1) << "Failed to open device device.";
+    std::move(init_cb).Run(
+        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+            .AddCause(V4L2Status(V4L2Status::Codes::kNoDevice)));
+    return;
+  }
+
+  if (!device_->CheckCapabilities(
+          VideoCodecProfileToVideoCodec(config.profile()))) {
+    DVLOGF(1) << "Device does not have sufficient capabilities.";
+    std::move(init_cb).Run(
+        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+            .AddCause(
+                V4L2Status(V4L2Status::Codes::kFailedFileCapabilitiesCheck)));
+    return;
+  }
+
+  output_cb_ = std::move(output_cb);
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
