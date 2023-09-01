@@ -12,6 +12,7 @@ include_rules = [
   "+services/service_manager/public",
   "+third_party/openscreen/src/cast/common/certificate/proto",
   "+third_party/openscreen/src/cast/common/channel/proto",
+  "+third_party/openscreen/src/platform/base",
 ]
 
 specific_include_rules = {
