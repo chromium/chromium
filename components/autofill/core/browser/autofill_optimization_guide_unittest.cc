@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -127,6 +128,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_,
@@ -149,6 +151,7 @@ TEST_F(AutofillOptimizationGuideTest,
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   test_api(*personal_data_manager_->GetCreditCards()[0])
       .set_network_for_virtual_card(kMasterCard);
@@ -171,6 +174,7 @@ TEST_F(AutofillOptimizationGuideTest,
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]->set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kIssuer);
@@ -193,6 +197,7 @@ TEST_F(AutofillOptimizationGuideTest,
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_->GetCreditCards()[0]
       ->set_virtual_card_enrollment_state(
@@ -216,6 +221,7 @@ TEST_F(AutofillOptimizationGuideTest,
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
@@ -236,6 +242,7 @@ TEST_F(AutofillOptimizationGuideTest,
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(
+      GeoIpCountryCode(""),
       /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
   personal_data_manager_.reset();
 

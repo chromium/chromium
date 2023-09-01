@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -175,8 +176,9 @@ void AutofillManager::OnLanguageDetermined(
 
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
     for (auto& [form_id, form_structure] : form_structures_) {
-      form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
-                                              log_manager_);
+      form_structure->DetermineHeuristicTypes(
+          client().GetVariationConfigCountryCode(),
+          form_interactions_ukm_logger(), log_manager_);
       NotifyObservers(&Observer::OnFieldTypesDetermined, form_id,
                       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
     }
@@ -187,12 +189,15 @@ void AutofillManager::OnLanguageDetermined(
   struct AsyncContext {
     AsyncContext(
         std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures,
+        GeoIpCountryCode country_code,
         LogManager* log_manager)
         : form_structures(std::move(form_structures)),
+          country_code(std::move(country_code)),
           log_manager(IsLoggingActive(log_manager)
                           ? LogManager::CreateBuffering()
                           : nullptr) {}
     std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures;
+    GeoIpCountryCode country_code;
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
@@ -205,6 +210,7 @@ void AutofillManager::OnLanguageDetermined(
         "Autofill.Timing.OnLanguageDetermined.RunHeuristics");
     for (auto& [id, form_structure] : context.form_structures) {
       form_structure->DetermineHeuristicTypes(
+          context.country_code,
           /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
     }
     return context;
@@ -236,8 +242,10 @@ void AutofillManager::OnLanguageDetermined(
   auto form_structures = std::exchange(form_structures_, {});
   parsing_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(RunHeuristics,
-                     AsyncContext(std::move(form_structures), log_manager_)),
+      base::BindOnce(
+          RunHeuristics,
+          AsyncContext(std::move(form_structures),
+                       client().GetVariationConfigCountryCode(), log_manager_)),
       base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -747,12 +755,15 @@ void AutofillManager::ParseFormsAsync(
 
   struct AsyncContext {
     AsyncContext(std::vector<std::unique_ptr<FormStructure>> form_structures,
+                 GeoIpCountryCode country_code,
                  LogManager* log_manager)
         : form_structures(std::move(form_structures)),
+          country_code(std::move(country_code)),
           log_manager(IsLoggingActive(log_manager)
                           ? LogManager::CreateBuffering()
                           : nullptr) {}
     std::vector<std::unique_ptr<FormStructure>> form_structures;
+    GeoIpCountryCode country_code;
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
@@ -764,6 +775,7 @@ void AutofillManager::ParseFormsAsync(
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
       form_structure->DetermineHeuristicTypes(
+          context.country_code,
           /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
     }
     return context;
@@ -795,8 +807,10 @@ void AutofillManager::ParseFormsAsync(
 
   parsing_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(RunHeuristics,
-                     AsyncContext(std::move(form_structures), log_manager_)),
+      base::BindOnce(
+          RunHeuristics,
+          AsyncContext(std::move(form_structures),
+                       client().GetVariationConfigCountryCode(), log_manager_)),
       base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), parsed_forms));
 }
@@ -842,12 +856,15 @@ void AutofillManager::ParseFormAsync(
 
   struct AsyncContext {
     AsyncContext(std::unique_ptr<FormStructure> form_structure,
+                 GeoIpCountryCode country_code,
                  LogManager* log_manager)
         : form_structure(std::move(form_structure)),
+          country_code(std::move(country_code)),
           log_manager(IsLoggingActive(log_manager)
                           ? LogManager::CreateBuffering()
                           : nullptr) {}
     std::unique_ptr<FormStructure> form_structure;
+    GeoIpCountryCode country_code;
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
@@ -858,6 +875,7 @@ void AutofillManager::ParseFormAsync(
   auto RunHeuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormAsync.RunHeuristics");
     context.form_structure->DetermineHeuristicTypes(
+        context.country_code,
         /*form_interactions_ukm_logger=*/nullptr, context.log_manager.get());
     return context;
   };
@@ -891,8 +909,10 @@ void AutofillManager::ParseFormAsync(
 
   parsing_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(RunHeuristics,
-                     AsyncContext(std::move(form_structure), log_manager_)),
+      base::BindOnce(
+          RunHeuristics,
+          AsyncContext(std::move(form_structure),
+                       client().GetVariationConfigCountryCode(), log_manager_)),
       base::BindOnce(UpdateCache, parsing_weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback), form_data));
 }
@@ -923,8 +943,9 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
 
   form_structure->set_current_page_language(GetCurrentPageLanguage());
 
-  form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
-                                          log_manager_);
+  form_structure->DetermineHeuristicTypes(
+      client().GetVariationConfigCountryCode(), form_interactions_ukm_logger(),
+      log_manager_);
 
   // Hold the parsed_form_structure we intend to return. We can use this to
   // reference the form_signature when transferring ownership below.

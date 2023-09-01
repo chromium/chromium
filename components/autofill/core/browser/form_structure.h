@@ -18,6 +18,7 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -75,6 +76,7 @@ class FormStructure {
   // Runs several heuristics against the form fields to determine their possible
   // types.
   void DetermineHeuristicTypes(
+      const GeoIpCountryCode& client_country,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 

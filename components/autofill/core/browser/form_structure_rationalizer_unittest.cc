@@ -139,7 +139,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   auto form_structure = std::make_unique<FormStructure>(form);
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
-    form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                            nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
       form_structure->field(i)->set_heuristic_type(PatternSource::kLegacy,

@@ -411,6 +411,7 @@ void FormStructure::DetermineFieldRanks() {
 }
 
 void FormStructure::DetermineHeuristicTypes(
+    const GeoIpCountryCode& client_country,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");

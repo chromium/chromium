@@ -6111,7 +6111,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   browser_autofill_manager_->AddSeenFormStructure(
       std::move(form_structure_instance));
 
@@ -6169,7 +6170,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   browser_autofill_manager_->AddSeenFormStructure(
       std::move(form_structure_instance));
 
@@ -6279,7 +6281,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   browser_autofill_manager_->AddSeenFormStructure(
       std::move(form_structure_instance));
 
@@ -6597,7 +6600,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   browser_autofill_manager_->AddSeenFormStructure(
       std::move(form_structure_instance));
 
@@ -6614,7 +6618,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance2 = std::make_unique<FormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure2 = form_structure_instance2.get();
-  form_structure2->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure2->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                           nullptr);
   browser_autofill_manager_->AddSeenFormStructure(
       std::move(form_structure_instance2));
 
@@ -6684,7 +6689,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |browser_autofill_manager_|.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
@@ -6734,7 +6740,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   FormStructure* form_structure = [&] {
     auto form_structure = std::make_unique<FormStructure>(form);
     FormStructure* ptr = form_structure.get();
-    form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                            nullptr);
     browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
     return ptr;
   }();
@@ -8497,7 +8504,8 @@ TEST_F(BrowserAutofillManagerTest,
                  CreateTestFormField("Field 3", "field3", "", "text")};
 
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   // Make sure the form can not be autofilled now.
   ASSERT_EQ(0u, form_structure->autofill_count());
   for (size_t idx = 0; idx < form_structure->field_count(); ++idx) {
@@ -9425,7 +9433,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   }
   // Override the types and simulate seeing the form on page load.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                          nullptr);
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
 

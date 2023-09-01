@@ -422,7 +422,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     }
     FormStructure form_structure(form_data);
     form_structure.set_current_page_language(page_language);
-    form_structure.DetermineHeuristicTypes(nullptr, log_manager);
+    form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                           log_manager);
     result_analyzer.AnalyzeClassification(form_structure, form.GetDict());
   }
   return AssertionSuccess();
