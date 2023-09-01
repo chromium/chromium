@@ -39,6 +39,7 @@ constexpr int kBackgroundRadiusDip = 8;
 constexpr gfx::Insets kContainerInsets = gfx::Insets::TLBR(0, 16, 0, 6);
 constexpr int kTextIconSpacingDip = 8;
 constexpr int kButtonSizeDip = 32;
+constexpr int kBorderThicknessDip = 1;
 
 }  // namespace
 
@@ -85,6 +86,9 @@ void EditorMenuTextfieldView::InitLayout() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated),
       kBackgroundRadiusDip));
+  SetBorder(views::CreateThemedRoundedRectBorder(
+      kBorderThicknessDip, kBackgroundRadiusDip, ui::kColorSysNeutralOutline));
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kContainerInsets,
       kTextIconSpacingDip));
@@ -100,21 +104,20 @@ void EditorMenuTextfieldView::InitLayout() {
   textfield_->SetPlaceholderText(kContainerTitle);
   layout->SetFlexForView(textfield_, 1, /*use_min_size=*/true);
 
-  auto* button_container =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  button_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  button_container->SetPreferredSize(gfx::Size(kButtonSizeDip, kButtonSizeDip));
-
-  arrow_button_ = button_container->AddChildView(
-      std::make_unique<views::ImageButton>(base::BindRepeating(
+  arrow_button_ =
+      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
           &EditorMenuTextfieldView::OnTextfieldArrowButtonPressed,
           weak_factory_.GetWeakPtr())));
   arrow_button_->SetAccessibleName(kContainerTitle);
   arrow_button_->SetTooltipText(kContainerTitle);
   arrow_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kProductIcon));
+      ui::ImageModel::FromVectorIcon(vector_icons::kForwardArrowIcon));
+  arrow_button_->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
+  arrow_button_->SetImageVerticalAlignment(
+      views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  arrow_button_->SetPreferredSize(gfx::Size(kButtonSizeDip, kButtonSizeDip));
   arrow_button_->SetVisible(false);
   views::InkDrop::Get(arrow_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
