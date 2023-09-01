@@ -184,12 +184,12 @@ class SCTAuditingReporterTest : public testing::Test {
 };
 
 TEST_F(SCTAuditingReporterTest, SCTHashdanceMetadataFromValue) {
-  base::Value::Dict valid_value_dict;
-  valid_value_dict.Set("leaf_hash", kLeafHashBase64);
-  valid_value_dict.Set("issued", kIssuedSerialized);
-  valid_value_dict.Set("log_id", kLogIdBase64);
-  valid_value_dict.Set("log_mmd", kLogMMDSerialized);
-  valid_value_dict.Set("cert_expiry", kCertExpirySerialized);
+  auto valid_value_dict = base::Value::Dict()
+                              .Set("leaf_hash", kLeafHashBase64)
+                              .Set("issued", kIssuedSerialized)
+                              .Set("log_id", kLogIdBase64)
+                              .Set("log_mmd", kLogMMDSerialized)
+                              .Set("cert_expiry", kCertExpirySerialized);
   base::Value valid_value(std::move(valid_value_dict));
 
   auto metadata =

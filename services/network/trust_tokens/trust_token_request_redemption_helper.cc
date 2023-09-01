@@ -28,9 +28,7 @@ namespace network {
 namespace {
 
 base::Value::Dict CreateLogValue(base::StringPiece outcome) {
-  base::Value::Dict ret;
-  ret.Set("outcome", outcome);
-  return ret;
+  return base::Value::Dict().Set("outcome", outcome);
 }
 
 // Define convenience aliases for the NetLogEventTypes for brevity.

@@ -1158,15 +1158,14 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-        base::Value::Dict dict;
-        dict.Set("client_address_space",
+        return base::Value::Dict()
+            .Set("client_address_space",
                  IPAddressSpaceToStringPiece(
-                     private_network_access_checker_.ClientAddressSpace()));
-        dict.Set("resource_address_space",
-                 IPAddressSpaceToStringPiece(response_address_space));
-        dict.Set("result",
+                     private_network_access_checker_.ClientAddressSpace()))
+            .Set("resource_address_space",
+                 IPAddressSpaceToStringPiece(response_address_space))
+            .Set("result",
                  PrivateNetworkAccessCheckResultToStringPiece(result));
-        return dict;
       });
 
   bool is_warning = false;

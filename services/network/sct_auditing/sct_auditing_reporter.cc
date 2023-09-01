@@ -187,14 +187,15 @@ SCTAuditingReporter::SCTHashdanceMetadata::operator=(SCTHashdanceMetadata&&) =
     default;
 
 base::Value SCTAuditingReporter::SCTHashdanceMetadata::ToValue() const {
-  base::Value::Dict dict;
-  dict.Set(kLeafHashKey,
-           base::Base64Encode(base::as_bytes(base::make_span(leaf_hash))));
-  dict.Set(kIssuedKey, base::TimeToValue(issued));
-  dict.Set(kLogIdKey,
-           base::Base64Encode(base::as_bytes(base::make_span(log_id))));
-  dict.Set(kLogMMDKey, base::TimeDeltaToValue(log_mmd));
-  dict.Set(kCertificateExpiry, base::TimeToValue(certificate_expiry));
+  auto dict =
+      base::Value::Dict()
+          .Set(kLeafHashKey,
+               base::Base64Encode(base::as_bytes(base::make_span(leaf_hash))))
+          .Set(kIssuedKey, base::TimeToValue(issued))
+          .Set(kLogIdKey,
+               base::Base64Encode(base::as_bytes(base::make_span(log_id))))
+          .Set(kLogMMDKey, base::TimeDeltaToValue(log_mmd))
+          .Set(kCertificateExpiry, base::TimeToValue(certificate_expiry));
   return base::Value(std::move(dict));
 }
 

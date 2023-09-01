@@ -193,26 +193,23 @@ absl::optional<std::string> SCTAuditingHandler::SerializeData() {
     auto reporter_key = kv.first;
     auto* reporter = kv.second.get();
 
-    base::Value::Dict report_entry;
+    std::string serialized_report;
+    reporter->report()->SerializeToString(&serialized_report);
+    base::Base64Encode(serialized_report, &serialized_report);
 
-    report_entry.Set(kReporterKeyKey, reporter_key.ToString());
+    auto report_entry =
+        base::Value::Dict()
+            .Set(kReporterKeyKey, reporter_key.ToString())
+            .Set(kBackoffEntryKey,
+                 net::BackoffEntrySerializer::SerializeToList(
+                     *reporter->backoff_entry(), base::Time::Now()))
+            .Set(kAlreadyCountedKey, reporter->counted_towards_report_limit())
+            .Set(kReportKey, serialized_report);
 
     if (reporter->sct_hashdance_metadata()) {
       report_entry.Set(kSCTHashdanceMetadataKey,
                        reporter->sct_hashdance_metadata()->ToValue());
     }
-
-    base::Value::List backoff_entry_value =
-        net::BackoffEntrySerializer::SerializeToList(*reporter->backoff_entry(),
-                                                     base::Time::Now());
-    report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
-    report_entry.Set(kAlreadyCountedKey,
-                     reporter->counted_towards_report_limit());
-
-    std::string serialized_report;
-    reporter->report()->SerializeToString(&serialized_report);
-    base::Base64Encode(serialized_report, &serialized_report);
-    report_entry.Set(kReportKey, serialized_report);
 
     reports.Append(std::move(report_entry));
   }

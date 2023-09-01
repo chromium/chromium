@@ -71,9 +71,7 @@ ConfirmIssuanceOnPostedSequence(std::unique_ptr<Cryptographer> cryptographer,
 }
 
 base::Value::Dict CreateLogValue(base::StringPiece outcome) {
-  base::Value::Dict ret;
-  ret.Set("outcome", outcome);
-  return ret;
+  return base::Value::Dict().Set("outcome", outcome);
 }
 
 // Define convenience aliases for the NetLogEventTypes for brevity.
@@ -321,9 +319,8 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
   net_log_.EndEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE,
       [num_obtained_tokens = *num_obtained_tokens_]() {
-        base::Value::Dict ret = CreateLogValue("Success");
-        ret.Set("# tokens obtained", static_cast<int>(num_obtained_tokens));
-        return ret;
+        return CreateLogValue("Success").Set(
+            "# tokens obtained", static_cast<int>(num_obtained_tokens));
       });
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
   return;

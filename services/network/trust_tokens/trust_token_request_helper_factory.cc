@@ -63,12 +63,10 @@ void LogOutcome(const net::NetLogWithSource& log,
       base::StrCat({"Net.TrustTokens.RequestHelperFactoryOutcome.",
                     internal::TrustTokenOperationTypeToString(operation)}),
       outcome);
-  log.EndEvent(net::NetLogEventType::TRUST_TOKEN_OPERATION_REQUESTED,
-               [outcome]() {
-                 base::Value::Dict ret;
-                 ret.Set("outcome", OutcomeToString(outcome));
-                 return ret;
-               });
+  log.EndEvent(
+      net::NetLogEventType::TRUST_TOKEN_OPERATION_REQUESTED, [outcome]() {
+        return base::Value::Dict().Set("outcome", OutcomeToString(outcome));
+      });
 }
 
 }  // namespace

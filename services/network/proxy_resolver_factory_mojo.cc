@@ -51,10 +51,9 @@ namespace {
 
 base::Value::Dict NetLogErrorParams(int line_number,
                                     const std::string& message) {
-  base::Value::Dict dict;
-  dict.Set("line_number", line_number);
-  dict.Set("message", message);
-  return dict;
+  return base::Value::Dict()
+      .Set("line_number", line_number)
+      .Set("message", message);
 }
 
 // A mixin that forwards logging to (Bound)NetLog and ProxyResolverErrorObserver

@@ -288,10 +288,9 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
 }
 
 base::Value::Dict PreflightResult::NetLogParams() const {
-  base::Value::Dict dict;
-  dict.Set("access-control-allow-methods", JoinSet(methods_));
-  dict.Set("access-control-allow-headers", JoinSet(headers_));
-  return dict;
+  return base::Value::Dict()
+      .Set("access-control-allow-methods", JoinSet(methods_))
+      .Set("access-control-allow-headers", JoinSet(headers_));
 }
 
 }  // namespace network::cors

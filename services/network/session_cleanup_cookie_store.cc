@@ -29,12 +29,10 @@ base::Value::Dict CookieStoreOriginFiltered(
     const std::string& origin,
     bool is_https,
     net::NetLogCaptureMode capture_mode) {
-  if (!net::NetLogCaptureIncludesSensitive(capture_mode))
+  if (!net::NetLogCaptureIncludesSensitive(capture_mode)) {
     return base::Value::Dict();
-  base::Value::Dict dict;
-  dict.Set("origin", origin);
-  dict.Set("is_https", is_https);
-  return dict;
+  }
+  return base::Value::Dict().Set("origin", origin).Set("is_https", is_https);
 }
 
 }  // namespace

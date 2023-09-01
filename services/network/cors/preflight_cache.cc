@@ -38,7 +38,6 @@ enum class CacheMetric {
 };
 
 base::Value::Dict NetLogCacheStatusParams(const CacheMetric metric) {
-  base::Value::Dict dict;
   std::string cache_status;
   switch (metric) {
     case CacheMetric::kHitAndPass:
@@ -54,8 +53,8 @@ base::Value::Dict NetLogCacheStatusParams(const CacheMetric metric) {
       cache_status = "stale";
       break;
   }
-  dict.Set("status", cache_status);
-  return dict;
+
+  return base::Value::Dict().Set("status", cache_status);
 }
 
 void RecordCacheMetricNetLog(CacheMetric metric,

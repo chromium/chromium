@@ -139,9 +139,10 @@ SerializeTrustTokenParametersAndConstructExpectation(
     const TrustTokenTestParameters& input) {
   auto trust_token_params = mojom::TrustTokenParams::New();
 
-  base::Value::Dict parameters;
-  parameters.Set("version", TrustTokenEnumToInt(input.version));
-  parameters.Set("operation", TrustTokenEnumToString(input.operation));
+  auto parameters =
+      base::Value::Dict()
+          .Set("version", TrustTokenEnumToInt(input.version))
+          .Set("operation", TrustTokenEnumToString(input.operation));
   trust_token_params->version = input.version;
   trust_token_params->operation = input.operation;
 

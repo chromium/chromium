@@ -1171,14 +1171,12 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   base::FilePath log_dir = temp_dir.GetPath();
   base::FilePath log_path = log_dir.Append(FILE_PATH_LITERAL("test_log.json"));
 
-  base::Value::Dict dict;
-  dict.Set("amiatest", "iamatest");
-
   base::File log_file(log_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
-      net::NetLogCaptureMode::kDefault, std::move(dict));
+      net::NetLogCaptureMode::kDefault,
+      base::Value::Dict().Set("amiatest", "iamatest"));
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1205,14 +1203,11 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
   // For testing, have a max log size of 1 MB. 1024*1024 == 2^20 == left shift
   // by 20 bits
   const uint64_t kMaxSizeBytes = 1 << 20;
-
-  base::Value::Dict dict;
-
   base::File log_file(log_path,
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
                                 net::NetLogCaptureMode::kEverything,
-                                std::move(dict));
+                                base::Value::Dict());
   CreateNetworkContext();
 
   // Through trial and error it was found that this looping navigation results
