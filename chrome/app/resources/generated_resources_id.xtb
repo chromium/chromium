@@ -702,6 +702,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Lanjutkan transmisi ke <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Kami sedang dalam proses memeriksa ruang penyimpanan…</translation>
 <translation id="1562119309884184621">Begitu kontak ini ditambahkan, sistem akan mengingatnya saat berbagi pada waktu berikutnya</translation>
 <translation id="1563137369682381456">Tanggal habis masa berlaku</translation>
 <translation id="1563702743503072935">Sandi dari Akun Google Anda juga akan tersedia di perangkat ini saat Anda login</translation>
@@ -6676,6 +6677,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6436778875248895551">Ekstensi "<ph name="EXTENSION_NAME" />" diblokir oleh administrator Anda</translation>
 <translation id="6438234780621650381">Reset setelan</translation>
 <translation id="6438475350605608554">Anda sudah mengimpor sandi di tab lain</translation>
+<translation id="6438480100790416671">Memeriksa ruang penyimpanan…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Pemutaran audio</translation>
 <translation id="6441377161852435370">Tambahkan tab ke daftar bacaan</translation>
 <translation id="6442187272350399447">Si Keren</translation>
@@ -8460,6 +8462,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7893008570150657497">Mengakses foto, musik, dan media lain dari komputer Anda</translation>
 <translation id="7893153962594818789">Bluetooth di <ph name="DEVICE_TYPE" /> dinonaktifkan. Masukkan sandi dan aktifkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
+<translation id="7894382333736164977">Kami sedang dalam proses memeriksa ruang penyimpanan. <ph name="ITEMS_FOUND" /> item ditemukan.</translation>
 <translation id="7896292361319775586">Simpan <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Jangan izinkan situs mendownload beberapa file secara otomatis</translation>
 <translation id="7897900149154324287">Di masa mendatang, pastikan untuk mengeluarkan perangkat yang dapat dilepas di aplikasi File sebelum mencabutnya. Jika tidak, Anda mungkin kehilangan data.</translation>

@@ -700,6 +700,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1558391695376153246">Închide filele incognito</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Reia proiectarea pe <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Încă se verifică spațiul de stocare…</translation>
 <translation id="1562119309884184621">Dacă adaugi persoana de contact, aceasta va fi recunoscută data viitoare când trimite fișiere</translation>
 <translation id="1563137369682381456">Data expirării</translation>
 <translation id="1563702743503072935">Parolele din Contul tău Google vor fi disponibile și pe acest dispozitiv după ce te conectezi</translation>
@@ -6661,6 +6662,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6436778875248895551">Extensia <ph name="EXTENSION_NAME" /> a fost blocată de administrator</translation>
 <translation id="6438234780621650381">Restabilește setările</translation>
 <translation id="6438475350605608554">Imporți deja parole într-o altă filă</translation>
+<translation id="6438480100790416671">Se verifică spațiul de stocare…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – se redă sunet</translation>
 <translation id="6441377161852435370">Adaugă fila în lista de lectură</translation>
 <translation id="6442187272350399447">Extraordinar</translation>
@@ -8448,6 +8450,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7893008570150657497">să acceseze fotografii, muzică și alte tipuri de conținut media de pe computer;</translation>
 <translation id="7893153962594818789">Conexiunea Bluetooth este dezactivată pe acest dispozitiv <ph name="DEVICE_TYPE" />. Introdu parola și activează Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Prestabilit)</translation>
+<translation id="7894382333736164977">Încă se verifică spațiul de stocare. S-au găsit <ph name="ITEMS_FOUND" /> elemente.</translation>
 <translation id="7896292361319775586">Salvezi <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Nu permite site-urilor să descarce automat mai multe fișiere</translation>
 <translation id="7897900149154324287">Pe viitor, asigurați-vă că eliminați dispozitivul amovibil din aplicația Fișiere înainte să îl deconectați. În caz contrar, este posibil să pierdeți date.</translation>

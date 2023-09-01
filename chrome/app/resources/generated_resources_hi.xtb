@@ -703,6 +703,7 @@
 <translation id="1558391695376153246">गुप्त टैब बंद करें</translation>
 <translation id="155865706765934889">टचपैड</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> पर, कास्ट करना फिर से शुरू करें</translation>
+<translation id="1561329796773556980">हम स्टोरेज के लिए बची जगह की जांच कर रहे हैं…</translation>
 <translation id="1562119309884184621">इस संपर्क को जोड़ने पर, अगली बार शेयर करते समय याद रखा जाएगा</translation>
 <translation id="1563137369682381456">सदस्यता खत्म होने की तारीख</translation>
 <translation id="1563702743503072935">साइन इन होने के दौरान, आपके Google खाते में सेव किए गए पासवर्ड, इस डिवाइस पर भी उपलब्ध होंगे</translation>
@@ -6676,6 +6677,7 @@
 <translation id="6436778875248895551">आपके एडमिन ने इस एक्सटेंशन "<ph name="EXTENSION_NAME" />" को ब्लॉक किया है</translation>
 <translation id="6438234780621650381">सेटिंग रीसेट करें</translation>
 <translation id="6438475350605608554">दूसरे टैब में पहले से पासवर्ड इंपोर्ट हो रहे हैं</translation>
+<translation id="6438480100790416671">स्टोरेज के लिए बची जगह की जांच की जा रही है…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ऑडियो चलाया जा रहा है</translation>
 <translation id="6441377161852435370">रीडिंग लिस्ट में टैब जोड़ें</translation>
 <translation id="6442187272350399447">अद्भुत</translation>
@@ -8461,6 +8463,7 @@
 <translation id="7893008570150657497">आपके कंप्यूटर के फ़ोटो, संगीत, और दूसरे मीडिया को एक्सेस करने दें</translation>
 <translation id="7893153962594818789">इस <ph name="DEVICE_TYPE" /> पर ब्लूटूथ बंद है. अपना पासवर्ड डालें और ब्लूटूथ चालू करें.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (सामान्य)</translation>
+<translation id="7894382333736164977">हम स्टोरेज के लिए बची जगह की जांच कर रहे हैं. <ph name="ITEMS_FOUND" /> आइटम मिले.</translation>
 <translation id="7896292361319775586">क्या आपको <ph name="FILE" /> को सेव करना है?</translation>
 <translation id="789722939441020330">साइटों को अपने-आप कई फ़ाइलें डाउनलोड करने की अनुमति न दें</translation>
 <translation id="7897900149154324287">भविष्य में, अपने निकाले जाने योग्य डिवाइस को अनप्लग करने से पहले उसे Files ऐप्लिकेशन से निकालना न भूलें, नहीं तो, आपका डेटा खो सकता है.</translation>

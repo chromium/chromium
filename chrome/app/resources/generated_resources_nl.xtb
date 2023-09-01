@@ -699,6 +699,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1558391695376153246">Incognitotabbladen sluiten</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
+<translation id="1561329796773556980">De opslagruimte wordt gecheckt…</translation>
 <translation id="1562119309884184621">Als je dit contact toevoegt, wordt hij of zij onthouden voor de volgende keer dat het contact content deelt</translation>
 <translation id="1563137369682381456">Vervaldatum</translation>
 <translation id="1563702743503072935">Wachtwoorden uit je Google-account zijn ook beschikbaar voor gebruik op dit apparaat als je bent ingelogd</translation>
@@ -6654,6 +6655,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6436778875248895551">De extensie <ph name="EXTENSION_NAME" /> is geblokkeerd door je beheerder</translation>
 <translation id="6438234780621650381">Instellingen resetten</translation>
 <translation id="6438475350605608554">Je importeert al wachtwoorden op een ander tabblad.</translation>
+<translation id="6438480100790416671">Opslagruimte checken…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: audio wordt afgespeeld</translation>
 <translation id="6441377161852435370">Tabblad toevoegen aan leeslijst</translation>
 <translation id="6442187272350399447">Supercool</translation>
@@ -8435,6 +8437,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7893008570150657497">Foto's, muziek en andere media van je computer openen</translation>
 <translation id="7893153962594818789">Bluetooth staat uit op deze <ph name="DEVICE_TYPE" />. Geef je wachtwoord op en zet Bluetooth aan.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (standaard)</translation>
+<translation id="7894382333736164977">De opslagruimte wordt gecheckt. <ph name="ITEMS_FOUND" /> items gevonden.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> opslaan?</translation>
 <translation id="789722939441020330">Niet toestaan dat sites automatisch meerdere bestanden downloaden</translation>
 <translation id="7897900149154324287">Zorg ervoor dat je je verwijderbare apparaat voortaan in de app Bestanden uitwerpt voordat je deze loskoppelt, anders kun je gegevens verliezen.</translation>

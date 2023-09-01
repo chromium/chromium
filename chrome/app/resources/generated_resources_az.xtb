@@ -697,6 +697,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1558391695376153246">Anonim tabları qapadın</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> cihazında yayımı bərpa edin</translation>
+<translation id="1561329796773556980">Yaddaş yerini yoxlayırıq…</translation>
 <translation id="1562119309884184621">Bu kontaktı əlavə etdikdə, onun növbəti dəfə paylaşımı yadda saxlanacaq</translation>
 <translation id="1563137369682381456">Bitmə tarixi</translation>
 <translation id="1563702743503072935">Google Hesabınızdakı parollar da daxil olduğunuz halda bu cihazda əlçatan olacaq</translation>
@@ -6655,6 +6656,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" artırması administratorunuz tərəfindən bloklanıb</translation>
 <translation id="6438234780621650381">Ayarları sıfırlayın</translation>
 <translation id="6438475350605608554">Artıq başqa tabda parolları import edirsiniz</translation>
+<translation id="6438480100790416671">Yaddaş yeri yoxlanır…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio oxudulur</translation>
 <translation id="6441377161852435370">Oxu siyahısına tab əlavə edin</translation>
 <translation id="6442187272350399447">Heybətli</translation>
@@ -8439,6 +8441,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7893008570150657497">Kompüterinizdə foto, musiqi və digər medianı əldə edin</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> cihazında Bluetooth deaktivdir. Parolu daxil edərək Bluetooth'u aktiv edin.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Defolt)</translation>
+<translation id="7894382333736164977">Yaddaş yerini yoxlayırıq. <ph name="ITEMS_FOUND" /> element tapıldı.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> yadda saxlanılsın?</translation>
 <translation id="789722939441020330">Saytlara çoxsaylı faylları avtomatik endirmək icazəsi verməyin</translation>
 <translation id="7897900149154324287">Gələcəkdə, Fayllar tətbiqindəki çıxarıla bilən cihazınızı ayırmadan öncə əlaqəsini kəsin. Əks halda data itirə bilərsiniz.</translation>

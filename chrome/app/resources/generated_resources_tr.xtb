@@ -699,6 +699,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1558391695376153246">Gizli sekmeleri kapat</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> adlı cihazda yayınlamaya devam edin</translation>
+<translation id="1561329796773556980">Depolama alanını kontrol etme işlemi devam ediyor…</translation>
 <translation id="1562119309884184621">Bu kişinin eklenmesi bir sonraki paylaşımında hatırlanmasını sağlar</translation>
 <translation id="1563137369682381456">Son kullanma tarihi</translation>
 <translation id="1563702743503072935">Oturum açtığınızda Google Hesabınızdaki şifrelerinize bu cihazdan da erişebilirsiniz</translation>
@@ -1055,7 +1056,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="18245044880483936">Yedekleme verileri, çocuğunuzun Drive depolama alanı kotasından düşülmez.</translation>
 <translation id="1825565032302550710">Bağlantı noktası 1024 ile 65535 arasında olmalıdır.</translation>
 <translation id="182577151972096764">son görüntülenen tarifler</translation>
-<translation id="18260074040409954">Kayıtlı şifrelerinizi herhangi bir cihazda kullanabilirsiniz. <ph name="EMAIL" /> için <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilir.</translation>
+<translation id="18260074040409954">Kayıtlı şifrelerinizi herhangi bir cihazda kullanabilirsiniz. <ph name="EMAIL" /> için <ph name="GOOGLE_PASSWORD_MANAGER" /> uygulamasına kaydedilirler.</translation>
 <translation id="1826192255355608658">Chrome tarayıcınızdaki yer işaretleriniz, şifreleriniz, geçmişiniz ve daha fazlasını senkronize edin</translation>
 <translation id="1826516787628120939">Kontrol ediliyor</translation>
 <translation id="1826657447823925402">Ters kaydırma devre dışı bırakıldı</translation>
@@ -6659,6 +6660,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" uzantısı yöneticiniz tarafından engellendi</translation>
 <translation id="6438234780621650381">Ayarları sıfırlayın</translation>
 <translation id="6438475350605608554">Şifreleri zaten başka bir sekmede içe aktarıyorsunuz</translation>
+<translation id="6438480100790416671">Depolama alanı kontrol ediliyor…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Ses çalıyor</translation>
 <translation id="6441377161852435370">Sekmeyi okuma listesine ekle</translation>
 <translation id="6442187272350399447">Harika!</translation>
@@ -8443,6 +8445,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7893008570150657497">Bilgisayarınızdan fotoğraf, müzik ve diğer medyalara erişme</translation>
 <translation id="7893153962594818789">Bu <ph name="DEVICE_TYPE" /> cihazında Bluetooth kapalı. Şifrenizi girip Bluetooth'u açın.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Varsayılan)</translation>
+<translation id="7894382333736164977">Depolama alanını kontrol etme işlemi devam ediyor. <ph name="ITEMS_FOUND" /> öğe bulundu.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> kaydedilsin mi?</translation>
 <translation id="789722939441020330">Sitelerin birden fazla dosyayı otomatik olarak indirmesine izin verme</translation>
 <translation id="7897900149154324287">Gelecekte, kaldırılabilir cihazınızı yerinden sökmeden önce cihazı Dosyalar uygulamasından çıkardığınızdan emin olun. Aksi halde veri kaybedebilirsiniz.</translation>

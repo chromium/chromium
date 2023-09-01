@@ -699,6 +699,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1558671750917454373">Fortsett å caste til <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Vi sjekker lagringsplassen …</translation>
 <translation id="1562119309884184621">Hvis du legger til denne kontakten, blir den husket neste gang vedkommende deler</translation>
 <translation id="1563137369682381456">Utløpsdato</translation>
 <translation id="1563702743503072935">Passordene fra Google-kontoen din blir også tilgjengelige på denne enheten mens du er pålogget</translation>
@@ -6667,6 +6668,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6436778875248895551">Administratoren din har blokkert utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6438234780621650381">Tilbakestill innstillingene</translation>
 <translation id="6438475350605608554">Du importerer allerede passord på en annen fane</translation>
+<translation id="6438480100790416671">Kontrollerer lagringsplass …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – lyd spilles av</translation>
 <translation id="6441377161852435370">Legg fanen til på leselisten</translation>
 <translation id="6442187272350399447">Mega</translation>
@@ -8452,6 +8454,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7893008570150657497">Åpne bilder, musikk og andre mediefiler fra datamaskinen din</translation>
 <translation id="7893153962594818789">Bluetooth er slått av på denne <ph name="DEVICE_TYPE" />-enheten. Skriv inn passordet ditt, og slå på Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
+<translation id="7894382333736164977">Vi sjekker lagringsplassen. Vi har funnet <ph name="ITEMS_FOUND" /> elementer.</translation>
 <translation id="7896292361319775586">Vil du lagre <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
 <translation id="7897900149154324287">I fremtiden må du sørge for å løse ut den flyttbare enheten i Filer-appen, før du kobler den fra. Ellers kan du miste data.</translation>

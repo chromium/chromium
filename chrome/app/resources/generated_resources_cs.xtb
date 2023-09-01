@@ -701,6 +701,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1558391695376153246">Zavřít anonymní karty</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Obnovit odesílání do zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Právě kontrolujeme úložný prostor…</translation>
 <translation id="1562119309884184621">Přidaný kontakt bude zapamatován pro případ příštího sdílení</translation>
 <translation id="1563137369682381456">Datum vypršení platnosti</translation>
 <translation id="1563702743503072935">Když budete přihlášeni, budou hesla z účtu Google k dispozici i na tomto zařízení</translation>
@@ -6658,6 +6659,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6436778875248895551">Rozšíření <ph name="EXTENSION_NAME" /> váš administrátor zablokoval:</translation>
 <translation id="6438234780621650381">Reset nastavení</translation>
 <translation id="6438475350605608554">Hesla už importujete na jiné kartě</translation>
+<translation id="6438480100790416671">Kontrola úložného prostoru…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – přehrává se zvuk</translation>
 <translation id="6441377161852435370">Přidat kartu do seznamu četby</translation>
 <translation id="6442187272350399447">Paráda</translation>
@@ -8446,6 +8448,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7893008570150657497">Přistupovat k fotografiím, hudbě a dalším médiím z vašeho počítače</translation>
 <translation id="7893153962594818789">V tomto zařízení <ph name="DEVICE_TYPE" /> je vypnut Bluetooth. Zadejte heslo a zapněte Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Předvolba)</translation>
+<translation id="7894382333736164977">Právě kontrolujeme úložný prostor. Byl nalezen tento počet položek: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Uložit <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Nepovolovat webům stahovat automaticky několik souborů</translation>
 <translation id="7897900149154324287">V budoucnu vyměnitelné zařízení nezapomínejte před vyjmutím odpojit v aplikaci Soubory. Jinak byste mohli přijít o data.</translation>

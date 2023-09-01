@@ -702,6 +702,7 @@
 <translation id="1558391695376153246">Жашыруун өтмөктөрдү жабуу</translation>
 <translation id="155865706765934889">Тийме такта</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну улантуу</translation>
+<translation id="1561329796773556980">Сактагыч текшерилүүдө…</translation>
 <translation id="1562119309884184621">Бул байланыш кошулса, ал кийинки бөлүшүү үчүн да сакталып калат</translation>
 <translation id="1563137369682381456">Мөөнөтү аяктай турган күн</translation>
 <translation id="1563702743503072935">Аккаунтуңузга кирип турганда, анда сакталган сырсөздөр түзмөктө жеткиликтүү болот</translation>
@@ -6676,6 +6677,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" кеңейтүүсүн администраторуңуз бөгөттөп койду</translation>
 <translation id="6438234780621650381">Параметрлерди кайра коюу</translation>
 <translation id="6438475350605608554">Сырсөздөрдү башка өтмөктө импорттоп жатасыз</translation>
+<translation id="6438480100790416671">Сактагыч текшерилүүдө…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Аудио файл ойнотулууда</translation>
 <translation id="6441377161852435370">Өтмөктү окуу тизмесине кошуу</translation>
 <translation id="6442187272350399447">Укмуш</translation>
@@ -8460,6 +8462,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7893008570150657497">Сүрөттөрдү, музыканы жана башка медиа файлдарын компьютериңиз аркылуу колдонуу мүмкүнчүлүгүн алыңыз</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> түзмөгүндөгү Bluetooth өчүк. Сырсөзүңүздү киргизип туруп, Bluetooth'ду күйгүзүңүз.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Демейки)</translation>
+<translation id="7894382333736164977">Сактагыч текшерилүүдө. <ph name="ITEMS_FOUND" /> нерсе табылды.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> файлы сакталсынбы?</translation>
 <translation id="789722939441020330">Сайттар бир нече файлды автоматтык түрдө жүктөп ала албасын</translation>
 <translation id="7897900149154324287">Кийинки жолу тышкы дискти түзмөктөн сууруп алаардан мурун, аны Файлдар колдонмосунан чыгарыңыз. Болбосо, дайындарды жоготуп алышыңыз мүмкүн.</translation>

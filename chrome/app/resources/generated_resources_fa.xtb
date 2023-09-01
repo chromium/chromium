@@ -700,6 +700,7 @@
 <translation id="1558391695376153246">بستن «برگه‌های ناشناس»</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
 <translation id="1558671750917454373">ازسر گرفتن پخش محتوا در <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">درحال بررسی فضای ذخیره‌سازی هستیم…</translation>
 <translation id="1562119309884184621">افزودن این مخاطب باعث می‌شود برای هم‌رسانی بعدی‌اش در حافظه ذخیره شود</translation>
 <translation id="1563137369682381456">تاریخ انقضا</translation>
 <translation id="1563702743503072935">‏وقتی به سیستم وارد شده باشید، گذرواژه‌های ذخیره‌شده در «حساب Google» شما در این دستگاه هم دردسترس خواهد بود</translation>
@@ -6673,6 +6674,7 @@
 <translation id="6436778875248895551">سرپرستتان افزونه «<ph name="EXTENSION_NAME" />» را مسدود کرده است</translation>
 <translation id="6438234780621650381">بازنشانی تنظیمات</translation>
 <translation id="6438475350605608554">درحال وارد کردن گذرواژه‌ها در برگه دیگری هستید</translation>
+<translation id="6438480100790416671">درحال بررسی فضای ذخیره‌سازی…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - پخش خودکار</translation>
 <translation id="6441377161852435370">افزودن برگه به فهرست خواندن</translation>
 <translation id="6442187272350399447">معرکه</translation>
@@ -8459,6 +8461,7 @@
 <translation id="7893008570150657497">دسترسی به عکس‌ها، موسیقی، و دیگر رسانه‌ها از رایانه شما</translation>
 <translation id="7893153962594818789">بلوتوث در این <ph name="DEVICE_TYPE" /> خاموش است. گذرواژه‌تان را وارد و بلوتوث را روشن کنید.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (پیش‌فرض)</translation>
+<translation id="7894382333736164977">درحال بررسی فضای ذخیره‌سازی هستیم. <ph name="ITEMS_FOUND" /> مورد پیدا شد.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> ذخیره شود؟</translation>
 <translation id="789722939441020330">به سایت‌ها اجازه داده نشود چند فایل را به‌طور خودکار بارگیری کنند</translation>
 <translation id="7897900149154324287">‏در آینده، مطمئن شوید که قبل از جدا کردن دستگاه قابل حملتان، آن را در برنامه Files خارج کنید. در غیر این صورت ممکن است داده‌هایتان را از دست بدهید.</translation>

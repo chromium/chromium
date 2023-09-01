@@ -703,6 +703,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1558391695376153246">Loka huliðsflipum</translation>
 <translation id="155865706765934889">Snertiflötur</translation>
 <translation id="1558671750917454373">Halda áfram að varpa yfir í <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Við erum að kanna geymslurýmið…</translation>
 <translation id="1562119309884184621">Ef þessum tengilið er bætt við mun tækið vera sýnilegt honum næst þegar hann deilir efni</translation>
 <translation id="1563137369682381456">Lokadagsetning</translation>
 <translation id="1563702743503072935">Aðgangsorðin þín á Google reikningnum verða einnig aðgengileg í þessu tæki þegar þú ert skráð(ur) inn</translation>
@@ -6677,6 +6678,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6436778875248895551">Kerfisstjórinn setti viðbótina „<ph name="EXTENSION_NAME" />“ á bannlista</translation>
 <translation id="6438234780621650381">Núllstilla</translation>
 <translation id="6438475350605608554">Þú ert nú þegar að flytja inn aðgangsorð í öðrum flipa</translation>
+<translation id="6438480100790416671">Athugar geymslurými…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – hljóð í spilun</translation>
 <translation id="6441377161852435370">Bæta flipa við leslista</translation>
 <translation id="6442187272350399447">Hressi</translation>
@@ -8463,6 +8465,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7893008570150657497">Fá aðgang að myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
 <translation id="7893153962594818789">Slökkt er á Bluetooth í þessu <ph name="DEVICE_TYPE" />. Færðu inn aðgangsorðið þitt og kveiktu á Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (sjálfgefin)</translation>
+<translation id="7894382333736164977">Við erum að kanna geymslurýmið. <ph name="ITEMS_FOUND" /> atriði fundust.</translation>
 <translation id="7896292361319775586">Vista <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ekki leyfa vefsvæðum að hlaða mörgum skrám niður sjálfkrafa</translation>
 <translation id="7897900149154324287">Framvegis skaltu gæta þess að aftengja lausa tækið í forritinu Skrár áður en þú tekur það úr sambandi. Að öðrum kosti gætirðu tapað gögnum.</translation>

@@ -696,6 +696,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="155865706765934889">Blloku me prekje</translation>
 <translation id="1558671750917454373">Vazhdo transmetimin te <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Jemi në procesin e kontrollit të hapësirës ruajtëse…</translation>
 <translation id="1562119309884184621">Shtimi i këtij kontakti do ta kujtojë atë herën tjetër që do të ndajë</translation>
 <translation id="1563137369682381456">Data e skadimit</translation>
 <translation id="1563702743503072935">Fjalëkalimet nga "Llogaria jote e Google" do të jenë të disponueshme gjithashtu në pajisjen tënde ndërsa je i identifikuar</translation>
@@ -6658,6 +6659,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6436778875248895551">Shtesa "<ph name="EXTENSION_NAME" />" u bllokua nga administratori yt</translation>
 <translation id="6438234780621650381">Rivendosi cilësimet</translation>
 <translation id="6438475350605608554">Po i importon tashmë fjalëkalimet në një skedë tjetër</translation>
+<translation id="6438480100790416671">Po kontrollon hapësirën ruajtëse…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - po luhet audioja</translation>
 <translation id="6441377161852435370">Shtoje skedën te lista e leximit</translation>
 <translation id="6442187272350399447">I mrekullueshëm</translation>
@@ -8441,6 +8443,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7893008570150657497">Qasu në fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
 <translation id="7893153962594818789">"Bluetooth-i" është i çaktivizuar në këtë pajisje <ph name="DEVICE_TYPE" />. Fut fjalëkalimin dhe aktivizo "Bluetooth-in".</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (e parazgjedhur)</translation>
+<translation id="7894382333736164977">Jemi në procesin e kontrollit të hapësirës ruajtëse. <ph name="ITEMS_FOUND" /> artikuj të gjetur.</translation>
 <translation id="7896292361319775586">Të ruhet <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Mos lejo që sajtet të shkarkojnë automatikisht disa skedarë</translation>
 <translation id="7897900149154324287">Në të ardhmen, sigurohu që ta nxjerrësh pajisjen e lëvizshme në aplikacionin "Skedarët" para se ta heqësh. Në rast të kundërt, mund të humbasësh të dhëna.</translation>

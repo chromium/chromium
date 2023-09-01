@@ -705,6 +705,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
 <translation id="1558671750917454373">Nadaljuj predvajanje v napravi <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Trenutno pregledujemo prostor za shranjevanje …</translation>
 <translation id="1562119309884184621">Če dodate ta stik, se bo nastavitev shranila za naslednjič, ko bo ta oseba delila</translation>
 <translation id="1563137369682381456">Datum poteka</translation>
 <translation id="1563702743503072935">Gesla v računu Google bodo na voljo tudi v tej napravi, ko ste prijavljeni</translation>
@@ -6681,6 +6682,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6436778875248895551">Razširitev »<ph name="EXTENSION_NAME" />« je blokiral skrbnik.</translation>
 <translation id="6438234780621650381">Ponastavitev nastavitev</translation>
 <translation id="6438475350605608554">Gesla že uvažate na drugem zavihku.</translation>
+<translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – zvok se predvaja</translation>
 <translation id="6441377161852435370">Dodaj zavihek na bralni seznam</translation>
 <translation id="6442187272350399447">Navdušenec</translation>
@@ -8472,6 +8474,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7893008570150657497">Dostop do fotografij, glasbe in druge predstavnosti v računalniku</translation>
 <translation id="7893153962594818789">Bluetooth je izklopljen v tej napravi: <ph name="DEVICE_TYPE" />. Vnesite geslo in vklopite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (privzeto)</translation>
+<translation id="7894382333736164977">Trenutno pregledujemo prostor za shranjevanje. Št. najdenih elementov: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Želite shraniti datoteko <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Spletnim mestom ni dovoljeno samodejno prenašanje več datotek.</translation>
 <translation id="7897900149154324287">Preden odklopite izmenljive naprave, jih v aplikaciji Datoteke izvrzite, sicer lahko izgubite podatke.</translation>

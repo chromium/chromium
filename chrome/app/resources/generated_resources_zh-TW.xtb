@@ -699,6 +699,7 @@
 <translation id="1558391695376153246">關閉無痕分頁</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1558671750917454373">繼續投放到「<ph name="DEVICE_NAME" />」</translation>
+<translation id="1561329796773556980">我們正在檢查儲存空間…</translation>
 <translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
 <translation id="1563137369682381456">到期日</translation>
 <translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上使用 Google 帳戶中的密碼</translation>
@@ -1055,7 +1056,7 @@
 <translation id="18245044880483936">備份資料不會計入貴子女的雲端硬碟儲存空間配額。</translation>
 <translation id="1825565032302550710">連接埠必須介於 1024 與 65535 之間</translation>
 <translation id="182577151972096764">最近瀏覽過的食譜</translation>
-<translation id="18260074040409954">你可以在任何裝置上使用儲存的密碼，這些密碼會儲存在 <ph name="EMAIL" /> 的<ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
+<translation id="18260074040409954">你可以在任何裝置上使用儲存的密碼，這些密碼會儲存在 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
 <translation id="1826192255355608658">同步處理 Chrome 瀏覽器的書籤、密碼和歷史記錄等資料</translation>
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1826657447823925402">已停用反向捲動功能</translation>
@@ -6655,6 +6656,7 @@
 <translation id="6436778875248895551">系統管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充功能</translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">你已在其他分頁中匯入密碼</translation>
+<translation id="6438480100790416671">正在檢查儲存空間…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 音訊播放中</translation>
 <translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
 <translation id="6442187272350399447">真正讚</translation>
@@ -8440,6 +8442,7 @@
 <translation id="7893008570150657497">存取你電腦中的相片、音樂及其他媒體</translation>
 <translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 的藍牙已關閉。請輸入你的密碼，然後開啟藍牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (預設)</translation>
+<translation id="7894382333736164977">我們正在檢查儲存空間，目前找到 <ph name="ITEMS_FOUND" /> 個項目。</translation>
 <translation id="7896292361319775586">要儲存 <ph name="FILE" /> 嗎？</translation>
 <translation id="789722939441020330">禁止網站自動下載多個檔案</translation>
 <translation id="7897900149154324287">往後請務必先從「檔案」應用程式中退出卸除式裝置再拔出，以免遺失資料。</translation>

@@ -699,6 +699,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1558671750917454373">Reprèn l'emissió a <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Estem comprovant l'espai d'emmagatzematge…</translation>
 <translation id="1562119309884184621">Si afegeixes aquest contacte, es recordarà la pròxima vegada que comparteixi</translation>
 <translation id="1563137369682381456">Data de caducitat</translation>
 <translation id="1563702743503072935">Les contrasenyes del Compte de Google també estaran disponibles en aquest dispositiu mentre tinguis la sessió iniciada</translation>
@@ -4183,7 +4184,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Per oferir la millor experiència possible, <ph name="DEVICE_OS" /> recull dades de maquinari dels dispositius i les comparteix amb Google per determinar quines actualitzacions cal fer. De manera opcional, pots permetre que Google utilitzi aquestes dades per a finalitats addicionals, com ara oferir assistència i millores a l'experiència i el servei de <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar la sessió en aquest dispositiu i visitar la secció CHROMEOSFLEX_HARDWARE_INFO a chrome://system per veure les dades que s'han enviat a Google per filtrar actualitzacions, així com qualsevol altra vegada que hagis triat compartir dades amb Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Per obtenir més detalls sobre les dades que <ph name="DEVICE_OS" /> pot compartir amb Google i com s'utilitzen, visita g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="435185728237714178">Ves a l'aplicació <ph name="APP_NAME" /> per gestionar les aplicacions instal·lades i les aplicacions de reproducció en continu</translation>
+<translation id="435185728237714178">Ves a l'aplicació <ph name="APP_NAME" /> per gestionar les aplicacions instal·lades i reproduïdes en continu</translation>
 <translation id="4354073718307267720">Pregunta'm quan un lloc web vulgui crear un mapa en 3D del meu entorn o fer un seguiment de la posició de la càmera</translation>
 <translation id="4354344420232759511">Els llocs web que visitis es mostraran aquí</translation>
 <translation id="435527878592612277">Selecciona la teva foto</translation>
@@ -6658,6 +6659,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6436778875248895551">L'administrador ha bloquejat l'extensió "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">Restablir la configuració</translation>
 <translation id="6438475350605608554">Ja estàs important contrasenyes en una altra pestanya</translation>
+<translation id="6438480100790416671">S'està comprovant l'espai d'emmagatzematge…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: s'està reproduint àudio</translation>
 <translation id="6441377161852435370">Afegeix una pestanya a la llista de lectura</translation>
 <translation id="6442187272350399447">Content</translation>
@@ -8443,6 +8445,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7893008570150657497">Accedir a fotos, a música i a d'altres elements multimèdia de l'equip</translation>
 <translation id="7893153962594818789">El Bluetooth està desactivat en aquest <ph name="DEVICE_TYPE" />. Introdueix la contrasenya i activa el Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Predeterminada)</translation>
+<translation id="7894382333736164977">Estem comprovant l'espai d'emmagatzematge. S'han trobat <ph name="ITEMS_FOUND" /> elements.</translation>
 <translation id="7896292361319775586">Vols desar <ph name="FILE" />?</translation>
 <translation id="789722939441020330">No permetis que els llocs web baixin automàticament diversos fitxers</translation>
 <translation id="7897900149154324287">La propera vegada, assegureu-vos d'expulsar el dispositiu extraïble des de l'aplicació Fitxers abans de desconnectar-lo si no en voleu perdre les dades.</translation>

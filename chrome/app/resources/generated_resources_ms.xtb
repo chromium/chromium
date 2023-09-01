@@ -702,6 +702,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1558671750917454373">Sambung semula penghantaran pada <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Kami dalam proses menyemak ruang storan…</translation>
 <translation id="1562119309884184621">Tindakan menambah kenalan ini akan membuatkan peranti mengingat kali seterusnya mereka membuat perkongsian</translation>
 <translation id="1563137369682381456">Tarikh tamat tempoh</translation>
 <translation id="1563702743503072935">Kata laluan daripada Akaun Google anda juga akan tersedia pada peranti ini semasa anda log masuk</translation>
@@ -6676,6 +6677,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6436778875248895551">Sambungan "<ph name="EXTENSION_NAME" />" disekat oleh pentadbir anda</translation>
 <translation id="6438234780621650381">Tetapkan semula tetapan</translation>
 <translation id="6438475350605608554">Anda sudah mengimport kata laluan dalam tab lain</translation>
+<translation id="6438480100790416671">Menyemak ruang storan…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio sedang dimainkan</translation>
 <translation id="6441377161852435370">Tambahkan tab pada senarai bacaan</translation>
 <translation id="6442187272350399447">Hebat</translation>
@@ -8461,6 +8463,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7893008570150657497">Akses foto, muzik dan media lain dari komputer anda</translation>
 <translation id="7893153962594818789">Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> ini. Masukkan kata laluan anda dan hidupkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Lalai)</translation>
+<translation id="7894382333736164977">Kami dalam proses menyemak ruang storan. <ph name="ITEMS_FOUND" /> item ditemukan.</translation>
 <translation id="7896292361319775586">Simpan <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Jangan benarkan laman memuat turun berbilang fail secara automatik</translation>
 <translation id="7897900149154324287">Pada masa hadapan, pastikan anda melentingkan peranti boleh dialih keluar anda dalam apl Fail sebelum mencabutnya. Jika tidak, anda mungkin kehilangan data.</translation>

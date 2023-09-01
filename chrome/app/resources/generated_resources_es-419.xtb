@@ -696,6 +696,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1558671750917454373">Reanudar la transmisión a <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Estamos en proceso de revisar el espacio de almacenamiento…</translation>
 <translation id="1562119309884184621">Si agregas este contacto, se recordará la próxima vez que se desee compartir contenido.</translation>
 <translation id="1563137369682381456">Fecha de vencimiento</translation>
 <translation id="1563702743503072935">Las contraseñas de tu Cuenta de Google también estarán disponibles en este dispositivo cuando accedas.</translation>
@@ -6657,6 +6658,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6436778875248895551">Tu administrador bloqueó la extensión "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="6438234780621650381">Restablecer la configuración</translation>
 <translation id="6438475350605608554">Ya estás importando contraseñas en otra pestaña.</translation>
+<translation id="6438480100790416671">Comprobando el espacio de almacenamiento…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: Reproducción de audio</translation>
 <translation id="6441377161852435370">Agregar pestaña a la lista de lectura</translation>
 <translation id="6442187272350399447">Impresionante</translation>
@@ -8442,6 +8444,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7893008570150657497">Acceder a fotos, música y otros medios desde tu computadora</translation>
 <translation id="7893153962594818789">Bluetooth está desactivado en esta <ph name="DEVICE_TYPE" />. Ingresa tu contraseña y activa Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predeterminado)</translation>
+<translation id="7894382333736164977">Estamos en proceso de revisar el espacio de almacenamiento. Se encontraron <ph name="ITEMS_FOUND" /> elementos.</translation>
 <translation id="7896292361319775586">¿Quieres guardar <ph name="FILE" />?</translation>
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de quitar el dispositivo extraíble desde la aplicación Archivos antes de desconectarlo. De lo contario, es posible que pierdas datos.</translation>

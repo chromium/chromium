@@ -702,6 +702,7 @@
 <translation id="1558391695376153246">गुप्त टॅब बंद करा</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> वर कास्ट करणे पुन्हा सुरू करा</translation>
+<translation id="1561329796773556980">स्टोरेज जागा तपासण्याची प्रक्रिया करत आहोत…</translation>
 <translation id="1562119309884184621">हा संपर्क जोडल्याने पुढील वेळी त्यांनी काही शेअर केल्यास, लक्षात ठेवले जाईल</translation>
 <translation id="1563137369682381456">एक्स्पायरीची तारीख</translation>
 <translation id="1563702743503072935">तुमच्या Google खाते मधील तुमचे पासवर्ड तुम्ही साइन इन केलेले असताना या डिव्हाइसवरदेखील उपलब्ध असतील</translation>
@@ -6674,6 +6675,7 @@
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" हे एक्स्टेंशन तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केले आहे</translation>
 <translation id="6438234780621650381">सेटिंग्ज रीसेट करा</translation>
 <translation id="6438475350605608554">तुम्ही आधीच दुसऱ्या टॅबमध्ये पासवर्ड इंपोर्ट करत आहात</translation>
+<translation id="6438480100790416671">स्टोरेज जागा तपासत आहे…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ऑडिओ प्ले करीत आहे</translation>
 <translation id="6441377161852435370">वाचन सूचीवर टॅब जोडा</translation>
 <translation id="6442187272350399447">अप्रतिम</translation>
@@ -8457,6 +8459,7 @@
 <translation id="7893008570150657497">तुमच्या कॉंप्युटरवरील फोटो, संगीत आणि इतर माध्यमे ॲक्सेस करा</translation>
 <translation id="7893153962594818789">या <ph name="DEVICE_TYPE" /> वर ब्लूटूथ बंद आहे. तुमचा पासवर्ड टाका आणि ब्लूटूथ सुरू करा.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (डीफॉल्ट)</translation>
+<translation id="7894382333736164977">स्टोरेज जागा तपासण्याची प्रक्रिया करत आहोत. <ph name="ITEMS_FOUND" /> आयटम आढळले आहेत.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> सेव्ह करायची आहे का?</translation>
 <translation id="789722939441020330">साइटना एकाहून अधिक फाइल आपोआप डाउनलोड करण्याची अनुमती देऊ नका</translation>
 <translation id="7897900149154324287">भविष्यात, तुम्ही फाइल ॲप मधील तुमचा काढण्यायोग्य डिव्हाइस अनप्लग करण्यापूर्वी तो निष्कासित करण्याचे सुनिश्चित करा. अन्यथा, तुम्ही डेटा गमावू शकता.</translation>

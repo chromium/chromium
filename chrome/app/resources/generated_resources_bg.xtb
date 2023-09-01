@@ -699,6 +699,7 @@
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1558671750917454373">Възобновяване на предаването към „<ph name="DEVICE_NAME" />“</translation>
+<translation id="1561329796773556980">Понастоящем проверяваме мястото в хранилището…</translation>
 <translation id="1562119309884184621">Добавянето на този контакт ще се запомни за следващия път, когато той споделя с вас</translation>
 <translation id="1563137369682381456">Срок на валидност</translation>
 <translation id="1563702743503072935">Паролите от профила ви в Google ще бъдат достъпни на това устройство, когато сте влезли в профила си на него</translation>
@@ -6674,6 +6675,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6436778875248895551">Разширението „<ph name="EXTENSION_NAME" />“ е блокирано от администратора ви</translation>
 <translation id="6438234780621650381">Нулиране на настройките</translation>
 <translation id="6438475350605608554">Вече импортирате пароли в друг раздел</translation>
+<translation id="6438480100790416671">Мястото в хранилището се проверява…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – възпроизвежда се звук</translation>
 <translation id="6441377161852435370">Добавяне на раздела към списъка за четене</translation>
 <translation id="6442187272350399447">Щастливец</translation>
@@ -8459,6 +8461,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7893008570150657497">Да осъществява достъп до снимки, музика и друга медия от компютъра ви.</translation>
 <translation id="7893153962594818789">Функцията за Bluetooth е изключена на този <ph name="DEVICE_TYPE" />. Въведете паролата си и включете Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (по подразбиране)</translation>
+<translation id="7894382333736164977">Понастоящем проверяваме мястото в хранилището. Намерени бяха <ph name="ITEMS_FOUND" /> елемента.</translation>
 <translation id="7896292361319775586">Да се запази ли <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Да не се разрешава на сайтовете да изтеглят автоматично няколко файла</translation>
 <translation id="7897900149154324287">В бъдеще изваждайте премахващото се устройство от приложението Файлове, преди да го изключите. В противен случай може да загубите данни.</translation>

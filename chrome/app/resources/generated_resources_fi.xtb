@@ -702,6 +702,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1558671750917454373">Jatka striimausta: <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Tarkistamme parhaillaan tallennustilaa…</translation>
 <translation id="1562119309884184621">Tämän kontaktin lisääminen muistetaan ensi kerralla, kun hän jakaa</translation>
 <translation id="1563137369682381456">Vanhenemispäivä</translation>
 <translation id="1563702743503072935">Google-tilisi salasanat ovat saatavilla myös tällä laitteella, kun olet kirjautuneena sisään</translation>
@@ -6672,6 +6673,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6436778875248895551">Järjestelmänvalvojasi on estänyt laajennuksen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">Asetusten palauttaminen</translation>
 <translation id="6438475350605608554">Tuot jo salasanoja toisella välilehdellä</translation>
+<translation id="6438480100790416671">Tarkistetaan tallennustilaa…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – toistaa ääntä</translation>
 <translation id="6441377161852435370">Lisää välilehti lukulistalle</translation>
 <translation id="6442187272350399447">Hymiöinen</translation>
@@ -8456,6 +8458,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7893008570150657497">käyttää kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ei käytä Bluetoothia tällä hetkellä. Lisää salasana ja laita Bluetooth päälle.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Oletus)</translation>
+<translation id="7894382333736164977">Tarkistamme parhaillaan tallennustilaa. <ph name="ITEMS_FOUND" /> kohdetta löytyi.</translation>
 <translation id="7896292361319775586">Tallennetaanko <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Älä salli sivustojen ladata automaattisesti useita tiedostoja</translation>
 <translation id="7897900149154324287">Muista seuraavilla kerroilla poistaa ulkoinen laitteesi käytöstä Tiedostot-sovelluksessa ennen kuin irrotat sen laitteesta. Muutoin voit menettää tietoja.</translation>

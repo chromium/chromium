@@ -700,6 +700,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1558671750917454373">Reprendre la diffusion sur <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Nous vérifions actuellement l'espace de stockage…</translation>
 <translation id="1562119309884184621">L'ajout de ce contact sera mémorisé pour leur prochain partage</translation>
 <translation id="1563137369682381456">Date d'expiration</translation>
 <translation id="1563702743503072935">Les mots de passe enregistrés dans votre compte Google seront également disponibles sur cet appareil lorsque vous serez connecté</translation>
@@ -6662,6 +6663,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6436778875248895551">L'extension <ph name="EXTENSION_NAME" /> a été bloquée par votre administrateur</translation>
 <translation id="6438234780621650381">Réinitialiser les paramètres</translation>
 <translation id="6438475350605608554">Vous importez déjà des mots de passe dans un autre onglet</translation>
+<translation id="6438480100790416671">Vérification de l'espace de stockage…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Lecture audio</translation>
 <translation id="6441377161852435370">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="6442187272350399447">Super</translation>
@@ -8449,6 +8451,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7893008570150657497">accéder aux photos, titres et autres médias de votre ordinateur ;</translation>
 <translation id="7893153962594818789">Le Bluetooth est désactivé sur ce <ph name="DEVICE_TYPE" />. Saisissez votre mot de passe et activez le Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (par défaut)</translation>
+<translation id="7894382333736164977">Nous vérifions actuellement l'espace de stockage. <ph name="ITEMS_FOUND" /> éléments trouvés.</translation>
 <translation id="7896292361319775586">Enregistrer <ph name="FILE" /> ?</translation>
 <translation id="789722939441020330">Ne pas autoriser les sites à télécharger automatiquement plusieurs fichiers</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre appareil amovible via l'application Fichiers avant de le retirer afin d'éviter toute perte de données.</translation>
@@ -9146,7 +9149,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8458627787104127436">Tout ouvrir (<ph name="URL_COUNT" />) dans une nouvelle fenêtre</translation>
 <translation id="8459023460357294721">Ouvrir <ph name="FILE_NAME" /> quand même</translation>
 <translation id="8459333762072051247">État de connexion</translation>
-<translation id="8460448946170646641">Examinez les paramètres clés de confidentialité et de sécurité</translation>
+<translation id="8460448946170646641">Examiner les paramètres clés de confidentialité et de sécurité</translation>
 <translation id="8460490661223303637">Chrome a supprimé certains contenus afin de libérer de la mémoire</translation>
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche sur les sites</translation>
 <translation id="84613761564611563">Demande d'interface utilisateur en cours pour la configuration réseau. Merci de patienter…</translation>

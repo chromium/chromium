@@ -698,6 +698,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1558391695376153246">Zatvori kartice bez arhiv.</translation>
 <translation id="155865706765934889">Dodirna tabla</translation>
 <translation id="1558671750917454373">Nastavite prebacivanje na <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Trenutno proveravamo memorijski prostor...</translation>
 <translation id="1562119309884184621">Ako dodate kontakt, biće zapamćen za sledeće deljenje</translation>
 <translation id="1563137369682381456">Datum isteka</translation>
 <translation id="1563702743503072935">Lozinke sa Google naloga biće dostupne i na ovom uređaju dok ste prijavljeni</translation>
@@ -6659,6 +6660,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6436778875248895551">Administrator je blokirao dodatak <ph name="EXTENSION_NAME" /></translation>
 <translation id="6438234780621650381">Resetujte podešavanja</translation>
 <translation id="6438475350605608554">Već uvozite lozinke na drugoj kartici</translation>
+<translation id="6438480100790416671">Proverava se memorijski prostor…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Pušta se audio sadržaj</translation>
 <translation id="6441377161852435370">Dodaj karticu na listu za čitanje</translation>
 <translation id="6442187272350399447">Izuzetni</translation>
@@ -8448,6 +8450,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7893008570150657497">da pristupa slikama, muzici i drugim medijima sa računara</translation>
 <translation id="7893153962594818789">Bluetooth je isključen na ovom <ph name="DEVICE_TYPE" />-u. Unesite lozinku i uključite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (podrazumevano)</translation>
+<translation id="7894382333736164977">Trenutno proveravamo memorijski prostor. Pronađenih stavki: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Želite da sačuvate <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ne dozvoljavaj sajtovima da automatski preuzimaju više fajlova</translation>
 <translation id="7897900149154324287">Ubuduće obavezno izbacite prenosivi uređaj u aplikaciji Datoteke pre nego što ga isključite. U suprotnom, možete da izgubite podatke.</translation>

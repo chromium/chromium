@@ -694,6 +694,7 @@
 <translation id="1558391695376153246">关闭无痕式标签页</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1558671750917454373">继续投放到“<ph name="DEVICE_NAME" />”</translation>
+<translation id="1561329796773556980">正在检查存储空间…</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1563137369682381456">失效日期</translation>
 <translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 账号中保存的密码</translation>
@@ -6646,6 +6647,7 @@
 <translation id="6436778875248895551">您的管理员已屏蔽扩展程序“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6438234780621650381">重置设置</translation>
 <translation id="6438475350605608554">您已在另一个标签页中启动密码导入流程</translation>
+<translation id="6438480100790416671">正在检查存储空间…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音频</translation>
 <translation id="6441377161852435370">向阅读清单中添加标签页</translation>
 <translation id="6442187272350399447">棒极了</translation>
@@ -8431,6 +8433,7 @@
 <translation id="7893008570150657497">通过计算机访问照片、音乐和其他媒体</translation>
 <translation id="7893153962594818789">此 <ph name="DEVICE_TYPE" /> 上的蓝牙处于关闭状态。请输入您的密码，然后开启蓝牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />（默认）</translation>
+<translation id="7894382333736164977">正在检查存储空间。已找到 <ph name="ITEMS_FOUND" /> 项。</translation>
 <translation id="7896292361319775586">保存“<ph name="FILE" />”？</translation>
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7897900149154324287">日后在拔下您的可移动设备之前，请务必先使用“文件”菜单将其弹出。否则，您的数据可能会丢失。</translation>

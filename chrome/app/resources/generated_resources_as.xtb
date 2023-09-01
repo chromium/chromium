@@ -700,6 +700,7 @@
 <translation id="1558391695376153246">ইনক’গনিট’ টেবসমূহ বন্ধ কৰক</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" />লৈ কাষ্ট কৰাটো পুনৰ আৰম্ভ কৰক</translation>
+<translation id="1561329796773556980">আমি ষ্ট’ৰেজৰ খালী ঠাই পৰীক্ষা কৰি আছোঁ…</translation>
 <translation id="1562119309884184621">এই সম্পৰ্কটো যোগ দিলে পৰৱৰ্তী সময়ত সেইটোৱে শ্বেয়াৰ কৰিলে মনত ৰাখিব</translation>
 <translation id="1563137369682381456">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="1563702743503072935">আপুনি ছাইন ইন হৈ থাকোঁতে আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ডসমূহো এই ডিভাইচটোত উপলব্ধ হ’ব</translation>
@@ -6673,6 +6674,7 @@
 <translation id="6436778875248895551">আপোনাৰ প্ৰশাসকে "<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটো অৱৰোধ কৰিছে</translation>
 <translation id="6438234780621650381">ছেটিং ৰিছেট কৰক</translation>
 <translation id="6438475350605608554">আপুনি ইতিমধ্যে পাছৱৰ্ড অন্য এটা টেবলৈ আমদানি কৰি আছে</translation>
+<translation id="6438480100790416671">ষ্ট’ৰেজৰ ঠাই পৰীক্ষা কৰি থকা হৈছে…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - অডিঅ' প্লে' কৰি থকা হৈছে</translation>
 <translation id="6441377161852435370">পঢ়াৰ সূচীত টেব যোগ দিয়ক</translation>
 <translation id="6442187272350399447">অতি উত্তম</translation>
@@ -8459,6 +8461,7 @@
 <translation id="7893008570150657497">আপোনাৰ কম্পিউটাৰৰ ফট’, সংগীত আৰু অন্য মিডিয়া এক্সেছ কৰক</translation>
 <translation id="7893153962594818789">এই <ph name="DEVICE_TYPE" />ত ব্লুটুথ অফ আছে। আপোনাৰ পাছৱৰ্ড দিয়ক আৰু ব্লুটুথ অন কৰক।</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ডিফ'ল্ট)</translation>
+<translation id="7894382333736164977">আমি ষ্ট’ৰেজৰ খালী ঠাই পৰীক্ষা কৰি আছোঁ। <ph name="ITEMS_FOUND" /> টা বস্তু বিচাৰি পোৱা গৈছে।</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> ছেভ কৰিবনে?</translation>
 <translation id="789722939441020330">ছাইটক স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ অনুমতি নিদিব</translation>
 <translation id="7897900149154324287">আপোনাৰ আঁতৰাব পৰা ডিভাইচ ভৱিষ্যতে আনপ্লাগ কৰাৰ পূর্বে ফাইল এপৰ পৰা বাহিৰ কৰাটো নিশ্চিত হ'ব। অন্যথা, আপুনি ডেটা হেৰুৱাব পাৰে।</translation>

@@ -699,6 +699,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1558391695376153246">Funga vichupo fiche</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Endelea kutuma maudhui kwenye <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Tunaendelea na mchakato wa kuangalia nafasi ya kuhifadhi…</translation>
 <translation id="1562119309884184621">Ukiongeza anwani hii, itakumbukwa wakati mwingine atakaposhiriki</translation>
 <translation id="1563137369682381456">Tarehe ya mwisho wa matumizi</translation>
 <translation id="1563702743503072935">Manenosiri yaliyo kwenye Akaunti yako ya Google yatapatikana pia kwenye kifaa hiki utakapokuwa umeingia katika akaunti</translation>
@@ -6671,6 +6672,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6436778875248895551">Kiendelezi kiitwacho "<ph name="EXTENSION_NAME" />" kimezuiwa na msimamizi wako</translation>
 <translation id="6438234780621650381">Weka upya mipangilio</translation>
 <translation id="6438475350605608554">Tayari unapakia manenosiri kwenye kichupo kingine</translation>
+<translation id="6438480100790416671">Inakagua nafasi ya kuhifadhi…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Kucheza sauti</translation>
 <translation id="6441377161852435370">Weka kichupo kwenye orodha ya kusoma</translation>
 <translation id="6442187272350399447">Safi</translation>
@@ -8457,6 +8459,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7893008570150657497">Fikia picha, muziki, na faili zingine kwenye kompyuta yako</translation>
 <translation id="7893153962594818789">Bluetooth imezimwa kwenye kifaa hiki cha <ph name="DEVICE_TYPE" />. Weka nenosiri lako, na uwashe Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Chaguo-Msingi)</translation>
+<translation id="7894382333736164977">Tunaendelea na mchakato wa kuangalia nafasi ya kuhifadhi. Vipengee <ph name="ITEMS_FOUND" /> vimepatikana.</translation>
 <translation id="7896292361319775586">Je, ungependa kuhifadhi <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Usiruhusu tovuti zipakue faili nyingi kiotomatiki</translation>
 <translation id="7897900149154324287">Siku zijazo, hakikisha kuwa umeondoa kifaa chako kinachoweza kuondolewa katika programu ya Faili kabla ya kukichomoa. Vinginevyo, huenda ukapoteza data.</translation>

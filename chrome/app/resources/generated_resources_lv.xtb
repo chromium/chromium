@@ -701,6 +701,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1558391695376153246">Aizvērt inkognito cilnes</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
 <translation id="1558671750917454373">Atsākt apraidi ierīcē <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Notiek krātuves vietas pārbaude…</translation>
 <translation id="1562119309884184621">Ja pievienosiet šo kontaktpersonu, tā tiks iegaumēta un varēs skatīt jūsu ierīci nākamreiz, kad vēlēsies ar jums kopīgot saturu</translation>
 <translation id="1563137369682381456">Termiņa beigu datums</translation>
 <translation id="1563702743503072935">Ja būsiet pierakstījies, jūsu Google konta paroles būs pieejamas arī šajā ierīcē</translation>
@@ -6659,6 +6660,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6436778875248895551">Jūsu administrators bloķēja paplašinājumu “<ph name="EXTENSION_NAME" />”.</translation>
 <translation id="6438234780621650381">Iestatījumu atiestatīšana</translation>
 <translation id="6438475350605608554">Jūs citā cilnē jau importējat paroles</translation>
+<translation id="6438480100790416671">Notiek krātuves vietas pārbaude…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> — audio atskaņošana</translation>
 <translation id="6441377161852435370">Pievienot cilni lasīšanas sarakstam</translation>
 <translation id="6442187272350399447">Smaidiņš</translation>
@@ -8447,6 +8449,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7893008570150657497">Piekļūt fotoattēliem, mūzikai un citam multivides saturam no sava datora</translation>
 <translation id="7893153962594818789">Šajā ierīcē (<ph name="DEVICE_TYPE" />) Bluetooth savienojums ir izslēgts. Ievadiet paroli un ieslēdziet Bluetooth savienojumu.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Noklusējums)</translation>
+<translation id="7894382333736164977">Notiek krātuves vietas pārbaude. Atrasto vienumu skaits: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Vai saglabāt failu <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Neļaut vietnēm automātiski lejupielādēt vairākus failus</translation>
 <translation id="7897900149154324287">Turpmāk noteikti atvienojiet noņemamo ierīci lietotnē Faili, pirms to noņemat. Pretējā gadījumā varat zaudēt datus.</translation>

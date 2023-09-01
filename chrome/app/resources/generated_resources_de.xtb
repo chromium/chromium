@@ -696,6 +696,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Streamen an „<ph name="DEVICE_NAME" />“ fortsetzen</translation>
+<translation id="1561329796773556980">Speicherplatz wird noch geprüft…</translation>
 <translation id="1562119309884184621">Wenn dieser Kontakt hinzugefügt wird, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
 <translation id="1563137369682381456">Ablaufdatum</translation>
 <translation id="1563702743503072935">Die Passwörter aus deinem Google-Konto sind auch auf diesem Gerät verfügbar, solange du angemeldet bist</translation>
@@ -4327,7 +4328,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4463530025936541315">Wenn du fortfährst, können Dritte Informationen zur Identifizierung dieses Geräts im Netzwerk prüfen</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> wurde als Zeitbeschränkung für <ph name="APP_NAME" /> festgelegt</translation>
 <translation id="4466839823729730432">Deine Erinnerungen hier ansehen</translation>
-<translation id="4469324811108161144">Die Notiz kann bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
+<translation id="4469324811108161144">Notizen können bis zu <ph name="CHARACTER_LIMIT" /> Zeichen enthalten.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kann Dateien in "<ph name="FOLDERNAME" />" bearbeiten</translation>
 <translation id="4470957202018033307">Einstellungen für externe Speichergeräte</translation>
 <translation id="4471354919263203780">Spracherkennungsdateien werden heruntergeladen... <ph name="PERCENT" /> %</translation>
@@ -6654,6 +6655,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6436778875248895551">Die Erweiterung „<ph name="EXTENSION_NAME" />“ wurde von deinem Administrator blockiert</translation>
 <translation id="6438234780621650381">Einstellungen zurücksetzen</translation>
 <translation id="6438475350605608554">Du importierst Passwörter bereits auf einem anderen Tab</translation>
+<translation id="6438480100790416671">Speicherplatz wird geprüft…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audiowiedergabe</translation>
 <translation id="6441377161852435370">Tab zur Leseliste hinzufügen</translation>
 <translation id="6442187272350399447">Smiley</translation>
@@ -8439,6 +8441,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7893008570150657497">Auf Fotos, Musik und andere Medien auf deinem Computer zugreifen</translation>
 <translation id="7893153962594818789">Bluetooth ist auf diesem <ph name="DEVICE_TYPE" /> deaktiviert. Gib dein Passwort ein und aktiviere Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
+<translation id="7894382333736164977">Der Speicherplatz wird noch geprüft. <ph name="ITEMS_FOUND" /> Elemente gefunden.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> speichern?</translation>
 <translation id="789722939441020330">Websites dürfen nicht automatisch mehrere Dateien herunterladen</translation>
 <translation id="7897900149154324287">Wirf dein externes Gerät in Zukunft über die Dateien-App aus, bevor du die Verbindung trennst. Sonst könnte es zu einem Datenverlust kommen.</translation>
@@ -8585,7 +8588,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8005600846065423578"><ph name="HOST" /> darf die Zwischenablage immer aufrufen</translation>
 <translation id="8006630792898017994">Leertaste oder Tabulatortaste</translation>
 <translation id="8008356846765065031">Du hast keine Verbindung mit dem Internet. Bitte überprüfe deine Internetverbindung.</translation>
-<translation id="8009225694047762179">Passwort verwalten</translation>
+<translation id="8009225694047762179">Passwörter verwalten</translation>
 <translation id="8011372169388649948">„<ph name="BOOKMARK_TITLE" />“ verschoben.</translation>
 <translation id="8012188750847319132">Feststelltaste</translation>
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>

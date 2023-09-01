@@ -702,6 +702,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1558391695376153246">Sule inkognito vahelehed</translation>
 <translation id="155865706765934889">Puuteplaat</translation>
 <translation id="1558671750917454373">Jätka ülekandmist seadmesse <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Kontrollime praegu salvestusruumi …</translation>
 <translation id="1562119309884184621">Selle kontakti lisamisel mäletatakse teda, kui ta järgmisel korral jagab</translation>
 <translation id="1563137369682381456">Aegumiskuupäev</translation>
 <translation id="1563702743503072935">Paroolid teie Google'i kontolt on saadaval ka selles seadmes, kui olete sisse logitud</translation>
@@ -6666,6 +6667,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6436778875248895551">Administraator blokeeris laienduse „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6438234780621650381">Seadete lähtestamine</translation>
 <translation id="6438475350605608554">Impordite paroole juba teisel vahelehel</translation>
+<translation id="6438480100790416671">Salvestusruumi kontrollimine …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – heli esitatakse</translation>
 <translation id="6441377161852435370">Vahelehe lisamine lugemisloendisse</translation>
 <translation id="6442187272350399447">Vägev!</translation>
@@ -8451,6 +8453,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7893008570150657497">Pääseda juurde fotodele, muusikale ja muule meediale teie arvutist</translation>
 <translation id="7893153962594818789">Bluetooth on seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Sisestage parool ja lülitage Bluetooth sisse.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (vaikimisi)</translation>
+<translation id="7894382333736164977">Kontrollime praegu salvestusruumi. Leitud on <ph name="ITEMS_FOUND" /> üksust.</translation>
 <translation id="7896292361319775586">Kas salvestada <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ära luba saitidel automaatselt mitut faili alla laadida</translation>
 <translation id="7897900149154324287">Edaspidi eraldage eemaldatav seade kõigepealt rakenduses Failid ja alles seejärel eemaldage seade ise. Muidu võivad andmed kaduma minna.</translation>

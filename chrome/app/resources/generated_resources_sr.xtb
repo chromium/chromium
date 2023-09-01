@@ -698,6 +698,7 @@
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="155865706765934889">Додирна табла</translation>
 <translation id="1558671750917454373">Наставите пребацивање на <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Тренутно проверавамо меморијски простор...</translation>
 <translation id="1562119309884184621">Ако додате контакт, биће запамћен за следеће дељење</translation>
 <translation id="1563137369682381456">Датум истека</translation>
 <translation id="1563702743503072935">Лозинке са Google налога биће доступне и на овом уређају док сте пријављени</translation>
@@ -6659,6 +6660,7 @@
 <translation id="6436778875248895551">Администратор је блокирао додатак <ph name="EXTENSION_NAME" /></translation>
 <translation id="6438234780621650381">Ресетујте подешавања</translation>
 <translation id="6438475350605608554">Већ увозите лозинке на другој картици</translation>
+<translation id="6438480100790416671">Проверава се меморијски простор…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Пушта се аудио садржај</translation>
 <translation id="6441377161852435370">Додај картицу на листу за читање</translation>
 <translation id="6442187272350399447">Изузетни</translation>
@@ -8448,6 +8450,7 @@
 <translation id="7893008570150657497">да приступа сликама, музици и другим медијима са рачунара</translation>
 <translation id="7893153962594818789">Bluetooth је искључен на овом <ph name="DEVICE_TYPE" />-у. Унесите лозинку и укључите Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (подразумевано)</translation>
+<translation id="7894382333736164977">Тренутно проверавамо меморијски простор. Пронађених ставки: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Желите да сачувате <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Не дозвољавај сајтовима да аутоматски преузимају више фајлова</translation>
 <translation id="7897900149154324287">Убудуће обавезно избаците преносиви уређај у апликацији Датотеке пре него што га искључите. У супротном, можете да изгубите податке.</translation>

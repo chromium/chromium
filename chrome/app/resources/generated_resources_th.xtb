@@ -699,6 +699,7 @@
 <translation id="1558391695376153246">ปิดแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1558671750917454373">แคสต์ไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
+<translation id="1561329796773556980">เรากำลังดำเนินการตรวจสอบพื้นที่เก็บข้อมูล…</translation>
 <translation id="1562119309884184621">การเพิ่มรายชื่อติดต่อนี้จะทำให้ระบบจำได้เมื่อรายชื่อนี้แชร์ครั้งถัดไป</translation>
 <translation id="1563137369682381456">วันที่หมดอายุ</translation>
 <translation id="1563702743503072935">รหัสผ่านจากบัญชี Google จะพร้อมใช้งานในอุปกรณ์นี้ด้วยในระหว่างที่คุณลงชื่อเข้าใช้</translation>
@@ -6657,6 +6658,7 @@
 <translation id="6436778875248895551">ผู้ดูแลระบบได้บล็อกส่วนขยาย "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">รีเซ็ตการตั้งค่า</translation>
 <translation id="6438475350605608554">คุณนำเข้ารหัสผ่านในแท็บอื่นแล้ว</translation>
+<translation id="6438480100790416671">กําลังตรวจสอบพื้นที่เก็บข้อมูล…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - เล่นอัตโนมัติ</translation>
 <translation id="6441377161852435370">เพิ่มแท็บไปยังเรื่องรออ่าน</translation>
 <translation id="6442187272350399447">ออซั่ม</translation>
@@ -8441,6 +8443,7 @@
 <translation id="7893008570150657497">เข้าถึงรูปภาพ เพลง และสื่ออื่นๆ จากคอมพิวเตอร์ของคุณ</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ปิดบลูทูธอยู่ โปรดป้อนรหัสผ่านแล้วเปิดบลูทูธ</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ค่าเริ่มต้น)</translation>
+<translation id="7894382333736164977">เรากำลังดำเนินการตรวจสอบพื้นที่เก็บข้อมูล พบ <ph name="ITEMS_FOUND" /> รายการ</translation>
 <translation id="7896292361319775586">บันทึก <ph name="FILE" /> ไหม</translation>
 <translation id="789722939441020330">ไม่อนุญาตให้เว็บไซต์ดาวน์โหลดหลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="7897900149154324287">ในอนาคต โปรดตรวจสอบว่าได้ยกเลิกการเชื่อมต่ออุปกรณ์แบบถอดออกได้ในแอป Files ก่อนที่จะถอดปลั๊ก มิฉะนั้นคุณอาจสูญเสียข้อมูล</translation>

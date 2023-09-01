@@ -700,6 +700,7 @@
 <translation id="1558391695376153246">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="155865706765934889">ແຜ່ນສໍາຜັດ</translation>
 <translation id="1558671750917454373">ສົ່ງສັນຍານໄປຫາ <ph name="DEVICE_NAME" /> ຕໍ່</translation>
+<translation id="1561329796773556980">ພວກເຮົາກຳລັງດຳເນີນການກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ…</translation>
 <translation id="1562119309884184621">ການເພີ່ມລາຍຊື່ຜູ້ຕິດຕໍ່ນີ້ຈະຈື່ຄັ້ງຕໍ່ໄປທີ່ພວກເຂົາແບ່ງປັນ</translation>
 <translation id="1563137369682381456">ວັນທີໝົດອາຍຸ</translation>
 <translation id="1563702743503072935">ລະຫັດຜ່ານຈາກບັນຊີ Google ຂອງທ່ານຈະມີໃຫ້ນຳໃຊ້ໃນອຸປະກອນນີ້ໃນຂະນະທີ່ທ່ານເຂົ້າສູ່ລະບົບ</translation>
@@ -6674,6 +6675,7 @@
 <translation id="6436778875248895551">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6438234780621650381">ຕັ້ງການຕັ້ງຄ່າ​ຄືນໃໝ່</translation>
 <translation id="6438475350605608554">ທ່ານໄດ້ນຳເຂົ້າລະຫັດຜ່ານໃນແຖບອື່ນແລ້ວ</translation>
+<translation id="6438480100790416671">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ກຳລັງຫຼິ້ນສຽງ</translation>
 <translation id="6441377161852435370">ເພີ່ມແຖບໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="6442187272350399447">ພິລຶກແທ້</translation>
@@ -8456,6 +8458,7 @@
 <translation id="7893008570150657497">ເຂົ້າຫາຮູບ, ເພງ, ແລະມີເດຍອື່ນໆຈາກຄອມພິວເຕີຂອງທ່ານ</translation>
 <translation id="7893153962594818789">Bluetooth ຖືກປິດຢູ່ໃນ <ph name="DEVICE_TYPE" /> ນີ້. ກະລຸນາປ້ອນລະຫັດຜ່ານຂອງທ່ານ ແລະ ເປີດ Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ມາດຕະຖານ)</translation>
+<translation id="7894382333736164977">ພວກເຮົາກຳລັງດຳເນີນການກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ. ພົບ <ph name="ITEMS_FOUND" /> ລາຍການ.</translation>
 <translation id="7896292361319775586">ບັນທຶກ <ph name="FILE" /> ບໍ?</translation>
 <translation id="789722939441020330">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7897900149154324287">ໃນ​ອະ​ນາ​ຄົດ​, ໃຫ້​ແນ່​ໃຈຕ້ອງຕັດອຸປະກອນທີ່ຖອດອອກໄດ້ຂອງທ່ານຢູ່ໃນແອັບໄຟລ໌ອອກ ກ່ອນທີ່​ຈະຖອດມັນອອກ. ຖ້າ​ບໍ່​ດັ່ງ​ນັ້ນ​, ທ່ານ​ອາດ​ຈະ​​ເສຍ​ຂໍ້​ມູນໄປ​.</translation>

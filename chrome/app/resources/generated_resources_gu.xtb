@@ -697,6 +697,7 @@
 <translation id="1558391695376153246">છૂપી ટૅબ બંધ કરો</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> પર કાસ્ટ કરવાનું ફરી શરૂ કરો</translation>
+<translation id="1561329796773556980">અમે સ્ટોરેજ સ્પેસ ચેક કરવાની પ્રક્રિયા કરી રહ્યાં છીએ…</translation>
 <translation id="1562119309884184621">આ સંપર્કને ઉમેરવાથી, આગલી વખતે તેઓ શેર કરતી વખતે સિસ્ટમ આ યાદ રાખી શકશે</translation>
 <translation id="1563137369682381456">સમય સમાપ્તિની તારીખ</translation>
 <translation id="1563702743503072935">તમે સાઇન ઇન કરેલું હશે ત્યારે તમારા Google એકાઉન્ટમાં રહેલા પાસવર્ડ આ ડિવાઇસ પર પણ ઉપલબ્ધ થશે</translation>
@@ -6660,6 +6661,7 @@ USB ડિવાઇસ</translation>
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શનને તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="6438234780621650381">સેટિંગ રીસેટ કરો</translation>
 <translation id="6438475350605608554">તમે પહેલેથી જ અન્ય ટૅબમાં પાસવર્ડ આયાત કરી રહ્યાં છો</translation>
+<translation id="6438480100790416671">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યું છે…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ઑડિઓ ચલાવવું</translation>
 <translation id="6441377161852435370">વાંચન સૂચિમાં ટૅબ ઉમેરો</translation>
 <translation id="6442187272350399447">અદ્ભુત</translation>
@@ -8446,6 +8448,7 @@ USB ડિવાઇસ</translation>
 <translation id="7893008570150657497">તમારા કમ્પ્યુટર પરથી ફોટો, સંગીત અને અન્ય મીડિયા ઍક્સેસ કરો</translation>
 <translation id="7893153962594818789">આ <ph name="DEVICE_TYPE" />માં Bluetooth બંધ છે. તમારો પાસવર્ડ દાખલ કરો અને Bluetooth ચાલુ કરો.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ડિફૉલ્ટ)</translation>
+<translation id="7894382333736164977">અમે સ્ટોરેજ સ્પેસ ચેક કરવાની પ્રક્રિયા કરી રહ્યાં છીએ. <ph name="ITEMS_FOUND" /> આઇટમ મળી.</translation>
 <translation id="7896292361319775586"><ph name="FILE" />ને સાચવીએ?</translation>
 <translation id="789722939441020330">સાઇટને ઑટોમૅટિક રીતે એક કરતાં વધુ ફાઇલો ડાઉનલોડ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7897900149154324287">ભવિષ્યમાં, તમારા કાઢવા યોગ્ય ડિવાઇસને અનપ્લગ કરતાં પહેલાં Files ઍપમાંથી તેને કાઢવાનું યાદ રાખો. અન્યથા, તમે ડેટા ગુમાવી શકો છો.</translation>

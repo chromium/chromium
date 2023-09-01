@@ -702,6 +702,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1558391695376153246">Inkognitó lapok bezárása</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1558671750917454373">A következőre való átküldés folytatása: <ph name="DEVICE_NAME" /></translation>
+<translation id="1561329796773556980">Folyamatban van a tárhely ellenőrzése…</translation>
 <translation id="1562119309884184621">E névjegyre a hozzáadása után az eszköze emlékszik majd a legközelebbi megosztáskor</translation>
 <translation id="1563137369682381456">Lejárat dátuma</translation>
 <translation id="1563702743503072935">Az eszközön a Google-fiókjában található jelszavak is hozzáférhetők lesznek, miközben be van jelentkezve</translation>
@@ -6676,6 +6677,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6436778875248895551">A következő bővítményt letiltotta a rendszergazda: „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6438234780621650381">A beállítások visszaállítása</translation>
 <translation id="6438475350605608554">Már importál jelszavakat egy másik lapon</translation>
+<translation id="6438480100790416671">Tárhely ellenőrzése…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Hanglejátszás</translation>
 <translation id="6441377161852435370">Lap hozzáadása az olvasólistához</translation>
 <translation id="6442187272350399447">Remek!</translation>
@@ -8460,6 +8462,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7893008570150657497">Fényképek, zene és egyéb multimédiás anyagok elérése a számítógépről</translation>
 <translation id="7893153962594818789">A Bluetooth ki van kapcsolva ezen a(z) <ph name="DEVICE_TYPE" /> eszközön. Adja meg jelszavát, és kapcsolja be a Bluetooth-t.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Alapértelmezett)</translation>
+<translation id="7894382333736164977">Folyamatban van a tárhely ellenőrzése. <ph name="ITEMS_FOUND" /> elemet találtunk.</translation>
 <translation id="7896292361319775586">Menti ezt: <ph name="FILE" />?</translation>
 <translation id="789722939441020330">A webhelyek nem kérhetnek engedélyt több fájl automatikus letöltésére</translation>
 <translation id="7897900149154324287">A jövőben mindenképpen adja ki az eltávolítható eszközt a Fájlok alkalmazásban, mielőtt kihúzná, máskülönben adatvesztés történhet.</translation>
