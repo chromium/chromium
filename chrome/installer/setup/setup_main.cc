@@ -19,6 +19,8 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/dcheck_is_on.h"
+#include "base/debug/handle_hooks_win.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -43,6 +45,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/current_module.h"
 #include "base/win/process_startup_helper.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -1556,10 +1559,18 @@ int SetupMain() {
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(cmd_line);
 
-#if defined(ARCH_CPU_64_BITS) || defined(NDEBUG)
-  // Disable the handle verifier for all but 32-bit debug builds.
+  // HandleVerifier detects and reports incorrect handle manipulations. It
+  // tracks handle operations on builds that support DCHECK only.
+#if !DCHECK_IS_ON()
   base::win::DisableHandleVerifier();
-#endif
+#elif !defined(COMPONENT_BUILD)
+  // Patch the main EXE on non-component builds when DCHECKs are enabled. This
+  // allows detection of third party code that might attempt to meddle with the
+  // process's handles. This must be done when single-threaded to avoid other
+  // threads attempting to make calls through the hooks while they are being
+  // emplaced.
+  base::debug::HandleHooks::AddIATPatch(CURRENT_MODULE());
+#endif  // !defined(COMPONENT_BUILD)
 
   const bool is_uninstall = cmd_line.HasSwitch(installer::switches::kUninstall);
 
