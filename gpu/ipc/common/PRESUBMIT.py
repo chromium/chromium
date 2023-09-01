@@ -9,6 +9,7 @@ for more details on the presubmit API built into depot_tools.
 """
 
 import os.path
+import tempfile
 
 
 def CommonChecks(input_api, output_api):
@@ -33,7 +34,7 @@ def CommonChecks(input_api, output_api):
           'Vulkan types generated files changed but the generator '
           'did not.', long_text=long_text))
 
-  with input_api.temporary_directory() as temp_dir:
+  with tempfile.TemporaryDirectory() as temp_dir:
     commands = []
     if generating_files:
       commands.append(input_api.Command(name='generate_vulkan_types',
