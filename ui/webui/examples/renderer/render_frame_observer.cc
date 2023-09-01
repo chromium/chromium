@@ -5,11 +5,15 @@
 #include "ui/webui/examples/renderer/render_frame_observer.h"
 
 #include "base/check.h"
-
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "components/guest_view/common/guest_view.mojom.h"
+#include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "content/public/renderer/render_thread.h"
+#include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-external.h"
@@ -21,6 +25,18 @@ namespace webui_examples {
 
 namespace {
 
+guest_view::mojom::GuestViewHost* GetGuestViewHost() {
+  static base::NoDestructor<
+      mojo::AssociatedRemote<guest_view::mojom::GuestViewHost>>
+      guest_view_host;
+  if (!*guest_view_host) {
+    content::RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
+        guest_view_host.get());
+  }
+
+  return guest_view_host->get();
+}
+
 void AllowCustomElementNameRegistration(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(args.Length(), 1);
@@ -31,6 +47,20 @@ void AllowCustomElementNameRegistration(
   v8::Local<v8::Function> callback = v8::Local<v8::Function>::Cast(args[0]);
   blink::WebCustomElement::EmbedderNamesAllowedScope embedder_names_scope;
   callback->Call(context, context->Global(), 0, nullptr).ToLocalChecked();
+}
+
+void GetNextId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  static int32_t current_id = 0;
+  args.GetReturnValue().Set(++current_id);
+}
+
+void RegisterWebView(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1);
+  CHECK(args[0]->IsInt32());
+  int view_instance_id = args[0].As<v8::Int32>()->Value();
+  CHECK_NE(view_instance_id, guest_view::kInstanceIDNone);
+  GetGuestViewHost()->ViewCreated(view_instance_id, "BrowserWebView");
+  args.GetReturnValue().SetUndefined();
 }
 
 // Helper to manage the various V8 required scopes and variables.
@@ -172,6 +202,10 @@ void RenderFrameObserver::ReadyToCommitNavigation(
   binder_context.AddCallbackToWebshellObject(
       "allowWebviewElementRegistration",
       base::BindRepeating(&AllowCustomElementNameRegistration));
+  binder_context.AddCallbackToWebshellObject("getNextId",
+                                             base::BindRepeating(&GetNextId));
+  binder_context.AddCallbackToWebshellObject(
+      "registerWebView", base::BindRepeating(&RegisterWebView));
 }
 
 }  // namespace webui_examples
