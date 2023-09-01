@@ -40,9 +40,8 @@ import java.util.concurrent.Callable;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
 // failures has been fixed.
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=WebXR,LogJsConsoleMessages",
-        "allow-pre-commit-input", "force-webxr-runtime=gvr"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+        "enable-features=WebXR,LogJsConsoleMessages", "allow-pre-commit-input"})
 @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
         message = "Flaky on android-10-arm64-rel, crbug.com/1455244")
 public class WebXrGvrPermissionTest {
