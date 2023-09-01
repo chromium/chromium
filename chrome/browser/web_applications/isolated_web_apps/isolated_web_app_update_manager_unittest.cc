@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/to_vector.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -57,6 +58,7 @@ namespace web_app {
 namespace {
 
 using base::test::DictionaryHasValue;
+using base::test::ToVector;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
@@ -430,7 +432,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(base::ranges::is_sorted(
                   times, {},
                   [](base::Value* value) { return *base::ValueToTime(value); }),
-              IsTrue());
+              IsTrue())
+      << base::JoinString(ToVector(times, &base::Value::DebugString), ", ");
 
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
                   iwa_info1_->url_info.app_id()),

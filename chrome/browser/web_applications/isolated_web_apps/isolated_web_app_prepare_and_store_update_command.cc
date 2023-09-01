@@ -267,6 +267,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(bool success) {
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::OnShutdown() {
+  // Stop any potential ongoing operations by destroying the `command_helper_`.
+  command_helper_.reset();
+
   // TODO(cmfcmf): Test cancellation of pending update during system
   // shutdown.
   ReportFailure("System is shutting down.");

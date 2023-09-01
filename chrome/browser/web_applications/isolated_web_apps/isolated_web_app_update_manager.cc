@@ -70,7 +70,7 @@ void IsolatedWebAppUpdateManager::Start() {
   }
   install_manager_observation_.Observe(&provider_->install_manager());
 
-  if (!IsAnyIWAInstalled()) {
+  if (!IsAnyIwaInstalled()) {
     // If no IWA is installed, then we do not need to regularly check for
     // updates and can therefore be a little more efficient.
     // `install_manager_observation_` will take care of starting the timer once
@@ -85,6 +85,8 @@ void IsolatedWebAppUpdateManager::Start() {
     }
     auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
     if (!url_info.has_value()) {
+      LOG(ERROR) << "Unable to calculate IsolatedWebAppUrlInfo from "
+                 << web_app.start_url();
       continue;
     }
     CreateUpdateApplyWaiter(*url_info);
@@ -92,12 +94,18 @@ void IsolatedWebAppUpdateManager::Start() {
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
-                 base::BindOnce(
-                     &IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks,
-                     weak_factory_.GetWeakPtr()));
-  update_discovery_timer_.Start(
-      FROM_HERE, update_discovery_frequency_, this,
-      &IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks);
+                 base::BindOnce(&IsolatedWebAppUpdateManager::DelayedStart,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void IsolatedWebAppUpdateManager::DelayedStart() {
+  // Kick-off task processing. The task queue can already contain
+  // `IsolatedWebAppUpdateApplyTask`s for updates that are pending from the last
+  // browser session and were created in `IsolatedWebAppUpdateManager::Start`.
+  MaybeStartNextTask();
+
+  QueueUpdateDiscoveryTasks();
+  MaybeStartUpdateDiscoveryTimer();
 }
 
 void IsolatedWebAppUpdateManager::Shutdown() {
@@ -112,10 +120,10 @@ void IsolatedWebAppUpdateManager::Shutdown() {
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
-  base::TimeDelta next_update_check_delta =
+  base::TimeDelta next_update_check =
       update_discovery_timer_.desired_run_time() - base::TimeTicks::Now();
-  double next_update_check_delta_in_minutes =
-      next_update_check_delta.InSecondsF() / base::Time::kSecondsPerMinute;
+  double next_update_check_in_minutes =
+      next_update_check.InSecondsF() / base::Time::kSecondsPerMinute;
 
   base::Value::List update_discovery_tasks;
   for (const auto& task : update_discovery_tasks_) {
@@ -136,12 +144,13 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
       base::Value::Dict()
           .Set("automatic_updates_enabled", automatic_updates_enabled_)
           .Set("update_discovery_frequency_in_minutes",
-               update_discovery_frequency_.InMinutes())
+               update_discovery_frequency_.InSecondsF() /
+                   base::Time::kSecondsPerMinute)
           .Set("update_discovery_timer",
                base::Value::Dict()
                    .Set("running", update_discovery_timer_.IsRunning())
                    .Set("next_update_check_in_minutes",
-                        next_update_check_delta_in_minutes))
+                        next_update_check_in_minutes))
           .Set("update_discovery_tasks", std::move(update_discovery_tasks))
           .Set("update_discovery_log", update_discovery_results_log_.Clone())
           .Set("update_apply_waiters", std::move(update_apply_waiters))
@@ -156,27 +165,21 @@ void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
 }
 
 void IsolatedWebAppUpdateManager::OnWebAppInstalled(const AppId& app_id) {
-  if (!update_discovery_timer_.IsRunning() && IsAnyIWAInstalled()) {
-    update_discovery_timer_.Start(
-        FROM_HERE, update_discovery_frequency_, this,
-        &IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks);
-  }
+  MaybeStartUpdateDiscoveryTimer();
 }
 
 void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   update_apply_waiters_.erase(app_id);
-  if (update_discovery_timer_.IsRunning() && !IsAnyIWAInstalled()) {
-    update_discovery_timer_.Stop();
-  }
+  MaybeStopUpdateDiscoveryTimer();
 }
 
 void IsolatedWebAppUpdateManager::DiscoverUpdatesNowForTesting() {
   QueueUpdateDiscoveryTasks();
 }
 
-bool IsolatedWebAppUpdateManager::IsAnyIWAInstalled() {
+bool IsolatedWebAppUpdateManager::IsAnyIwaInstalled() {
   for (const WebApp& app : provider_->registrar_unsafe().GetApps()) {
     if (app.isolation_data().has_value()) {
       return true;
@@ -241,19 +244,13 @@ void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       continue;
     }
 
-    QueueUpdateDiscoveryTask(url_info, update_manifest_url);
+    update_discovery_tasks_.push_back(
+        std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
+            update_manifest_url, url_info, provider_->scheduler(),
+            provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
   }
 
   MaybeStartNextTask();
-}
-
-void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTask(
-    const IsolatedWebAppUrlInfo& url_info,
-    const GURL& update_manifest_url) {
-  update_discovery_tasks_.push_back(
-      std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-          update_manifest_url, url_info, provider_->scheduler(),
-          provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
 }
 
 void IsolatedWebAppUpdateManager::MaybeStartNextTask() {
@@ -277,6 +274,20 @@ void IsolatedWebAppUpdateManager::MaybeStartNextTask() {
         // `update_discovery_tasks_`.
         base::Unretained(this)));
     return;
+  }
+}
+
+void IsolatedWebAppUpdateManager::MaybeStartUpdateDiscoveryTimer() {
+  if (!update_discovery_timer_.IsRunning() && IsAnyIwaInstalled()) {
+    update_discovery_timer_.Start(
+        FROM_HERE, update_discovery_frequency_, this,
+        &IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks);
+  }
+}
+
+void IsolatedWebAppUpdateManager::MaybeStopUpdateDiscoveryTimer() {
+  if (update_discovery_timer_.IsRunning() && !IsAnyIwaInstalled()) {
+    update_discovery_timer_.Stop();
   }
 }
 

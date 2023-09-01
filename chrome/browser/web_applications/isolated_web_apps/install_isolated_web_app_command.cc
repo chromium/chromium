@@ -19,7 +19,6 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -217,8 +216,8 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
     ReportSuccess();
   } else {
     std::stringstream os;
-    os << install_result_code;
-    ReportFailure(base::StrCat({"Error during finalization: ", os.str()}));
+    os << "Error during finalization: " << install_result_code;
+    ReportFailure(os.str());
   }
 }
 
@@ -226,7 +225,7 @@ void InstallIsolatedWebAppCommand::OnShutdown() {
   // Stop any potential ongoing operations by destroying the `command_helper_`.
   command_helper_.reset();
 
-  // TODO(kuragin): Test cancellation of pending installation during system
+  // TODO(cmfcmf): Test cancellation of pending installation during system
   // shutdown.
   ReportFailure("System is shutting down.");
 }

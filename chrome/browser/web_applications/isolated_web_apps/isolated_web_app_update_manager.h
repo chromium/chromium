@@ -61,6 +61,10 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   void Start();
 
+  // Called using `BEST_EFFORT` priority from `Start`. This is done so that we
+  // don't overload the browser with update tasks during its startup process.
+  void DelayedStart();
+
   void Shutdown();
 
   base::Value AsDebugValue() const;
@@ -80,15 +84,15 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   void DiscoverUpdatesNowForTesting();
 
  private:
-  bool IsAnyIWAInstalled();
+  bool IsAnyIwaInstalled();
 
   void QueueUpdateDiscoveryTasks();
 
   base::flat_map<web_package::SignedWebBundleId, GURL>
   GetForceInstalledBundleIdToUpdateManifestUrlMap();
 
-  void QueueUpdateDiscoveryTask(const IsolatedWebAppUrlInfo& url_info,
-                                const GURL& update_manifest_url);
+  void MaybeStartUpdateDiscoveryTimer();
+  void MaybeStopUpdateDiscoveryTimer();
 
   void CreateUpdateApplyWaiter(const IsolatedWebAppUrlInfo& url_info);
 
