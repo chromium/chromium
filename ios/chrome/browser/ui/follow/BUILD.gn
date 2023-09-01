@@ -63,6 +63,7 @@ source_set("first_follow_ui") {
     ":follow",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/follow/first_follow_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/follow/followed_web_channel.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -51,19 +52,45 @@ constexpr CGFloat customSpacingAfterImage = 24;
 
   self.titleString =
       l10n_util::GetNSStringF(IDS_IOS_FIRST_FOLLOW_TITLE, _webSiteTitle);
-  self.subtitleString = l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_BODY);
+
+  if (IsFollowUIUpdateEnabled()) {
+    // The `secondaryTitleString` is blank with the Follow UI update.
+    if (_webSiteHasActiveContent) {
+      self.subtitleString =
+          [NSString stringWithFormat:@"%@ %@",
+                                     l10n_util::GetNSStringF(
+                                         IDS_IOS_FIRST_FOLLOW_SUBTITLE_UPDATE,
+                                         _webSiteTitle),
+                                     l10n_util::GetNSString(
+                                         IDS_IOS_FIRST_FOLLOW_BODY_UPDATE)];
+    } else {
+      self.subtitleString = [NSString
+          stringWithFormat:@"%@ %@",
+                           l10n_util::GetNSStringF(
+                               IDS_IOS_FIRST_FOLLOW_SUBTITLE_NO_CONTENT_UPDATE,
+                               _webSiteTitle),
+                           l10n_util::GetNSString(
+                               IDS_IOS_FIRST_FOLLOW_BODY_UPDATE)];
+    }
+  } else {
+    self.subtitleString = l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_BODY);
+
+    if (_webSiteHasActiveContent) {
+      self.secondaryTitleString =
+          l10n_util::GetNSStringF(IDS_IOS_FIRST_FOLLOW_SUBTITLE, _webSiteTitle);
+    } else {
+      self.secondaryTitleString = l10n_util::GetNSStringF(
+          IDS_IOS_FIRST_FOLLOW_SUBTITLE_NO_CONTENT, _webSiteTitle);
+    }
+  }
 
   if (_webSiteHasActiveContent) {
-    self.secondaryTitleString =
-        l10n_util::GetNSStringF(IDS_IOS_FIRST_FOLLOW_SUBTITLE, _webSiteTitle);
     // Go To Feed button is only displayed if the web channel is available.
     self.primaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GO_TO_FEED);
     self.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_FIRST_FOLLOW_GOT_IT);
   } else {
-    self.secondaryTitleString = l10n_util::GetNSStringF(
-        IDS_IOS_FIRST_FOLLOW_SUBTITLE_NO_CONTENT, _webSiteTitle);
     // Only one button is visible, and it is a primary action button (with a
     // solid background color).
     self.primaryActionString =
