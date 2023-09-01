@@ -22,7 +22,6 @@
 #include "services/accessibility/android/ax_tree_source_android.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-forward.h"
 
-class PrefService;
 class Profile;
 
 namespace content {
@@ -44,9 +43,6 @@ class AXTreeSourceAndroid;
 namespace arc {
 
 class ArcBridgeService;
-
-ax::android::mojom::CaptionStylePtr GetCaptionStyleFromPrefs(
-    PrefService* prefs);
 
 // ArcAccessibilityHelperBridge is an instance to receive converted Android
 // accessibility events and info via mojo interface and dispatch them to Chrome
@@ -127,7 +123,6 @@ class ArcAccessibilityHelperBridge
   virtual ax::android::mojom::AccessibilityFilterType GetFilterType();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  void UpdateCaptionSettings() const;
 
   void OnActionResult(const ui::AXActionData& data, bool result) const;
   void OnGetTextLocationDataResult(

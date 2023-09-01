@@ -520,38 +520,6 @@ struct AccessibilityActionData {
   [MinVersion=25] map<ActionFloatArgumentType,float>? float_parameters;
 };
 
-// The type of shadow used for Chrome captions.
-// https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle
-[Extensible]
-enum CaptionTextShadowType {
-  // Edge type value specifying no character edges.
-  NONE = 0,
-
-  // Edge type value specifying uniformly outlined character edges.
-  UNIFORM = 1,
-
-  // Edge type value specifying drop-shadowed character edges.
-  DROP_SHADOW = 2,
-
-  // Edge type value specifying raised bevel character edges.
-  RAISED = 3,
-
-  // Edge type value specifying depressed bevel character edges.
-  DEPRESSED = 4,
-
-  [Default] INVALID_ENUM_VALUE = -1,
-};
-
-// Encapsulates settings to stylize captions.
-// https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle.html
-struct CaptionStyle {
-  string user_locale;
-  string text_size;
-  string text_color;
-  string background_color;
-  CaptionTextShadowType text_shadow_type;
-};
-
 // Information used to identify AccessibilityWindow.
 // In P or before, task_id is used. In Q or later, window_id is used.
 union AccessibilityWindowKey {
@@ -592,7 +560,7 @@ enum SetNativeChromeVoxResponse {
 };
 
 // Interface for communicating to Android.
-// Deprecated method IDs: 0, 1, 3, 5
+// Deprecated method IDs: 0, 1, 3, 5, 10
 // Next method ID: 13
 interface AccessibilityHelperInstance {
   // Establishes full-duplex communication with the host.
@@ -618,9 +586,6 @@ interface AccessibilityHelperInstance {
   // Returns Rect specifying location, or null if textLocation is not available.
   [MinVersion=13] RefreshWithExtraData@9(AccessibilityActionData refresh_data)
       => (Rect? text_location);
-
-  // Requests the service to set the caption style.
-  [MinVersion=16] SetCaptionStyle@10(CaptionStyle style);
 
   // Requests the whole accessibility tree with the specified window.
   [MinVersion=17] RequestSendAccessibilityTree@11(

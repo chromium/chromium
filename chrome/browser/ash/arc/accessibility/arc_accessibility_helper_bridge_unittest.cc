@@ -30,8 +30,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "extensions/browser/event_router.h"
@@ -555,69 +553,6 @@ TEST_F(ArcAccessibilityHelperBridgeTest, TextSelectionChangedFocusContentView) {
 
   // Remove surface cleanly before it's destructed.
   arc_notification_surface_manager_->RemoveSurface(surface.get());
-}
-
-class GetCaptionStyleFromPrefsTests : public ::testing::Test {
- public:
-  void SetUp() override {
-    prefs_.registry()->RegisterStringPref(prefs::kAccessibilityCaptionsTextSize,
-                                          "");
-    prefs_.registry()->RegisterStringPref(
-        prefs::kAccessibilityCaptionsTextColor, "");
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kAccessibilityCaptionsTextOpacity, 100);
-    prefs_.registry()->RegisterStringPref(
-        prefs::kAccessibilityCaptionsBackgroundColor, "");
-    prefs_.registry()->RegisterIntegerPref(
-        prefs::kAccessibilityCaptionsBackgroundOpacity, 100);
-    prefs_.registry()->RegisterStringPref(
-        prefs::kAccessibilityCaptionsTextShadow, "");
-    prefs_.registry()->RegisterStringPref(language::prefs::kApplicationLocale,
-                                          "");
-  }
-
- protected:
-  TestingPrefServiceSimple prefs_;
-};
-
-TEST_F(GetCaptionStyleFromPrefsTests, ValidValues) {
-  prefs_.SetUserPref(prefs::kAccessibilityCaptionsTextSize,
-                     std::make_unique<base::Value>("200%"));
-  prefs_.SetUserPref(prefs::kAccessibilityCaptionsTextColor,
-                     std::make_unique<base::Value>("10,20,30"));
-  prefs_.SetUserPref(prefs::kAccessibilityCaptionsTextOpacity,
-                     std::make_unique<base::Value>(90));
-  prefs_.SetUserPref(prefs::kAccessibilityCaptionsBackgroundColor,
-                     std::make_unique<base::Value>("40,50,60"));
-  prefs_.SetUserPref(prefs::kAccessibilityCaptionsBackgroundOpacity,
-                     std::make_unique<base::Value>(80));
-  prefs_.SetUserPref(
-      prefs::kAccessibilityCaptionsTextShadow,
-      std::make_unique<base::Value>("-2px -2px 4px rgba(0, 0, 0, 0.5)"));
-  prefs_.SetUserPref(language::prefs::kApplicationLocale,
-                     std::make_unique<base::Value>("my_locale"));
-
-  auto style = GetCaptionStyleFromPrefs(&prefs_);
-
-  ASSERT_TRUE(style);
-  EXPECT_EQ("200%", style->text_size);
-  EXPECT_EQ("rgba(10,20,30,0.9)", style->text_color);
-  EXPECT_EQ("rgba(40,50,60,0.8)", style->background_color);
-  EXPECT_EQ("my_locale", style->user_locale);
-  EXPECT_EQ(ax::android::mojom::CaptionTextShadowType::RAISED,
-            style->text_shadow_type);
-}
-
-TEST_F(GetCaptionStyleFromPrefsTests, EmptyValues) {
-  auto style = GetCaptionStyleFromPrefs(&prefs_);
-
-  ASSERT_TRUE(style);
-  EXPECT_EQ("", style->text_size);
-  EXPECT_EQ("", style->text_color);
-  EXPECT_EQ("", style->background_color);
-  EXPECT_EQ("", style->user_locale);
-  EXPECT_EQ(ax::android::mojom::CaptionTextShadowType::NONE,
-            style->text_shadow_type);
 }
 
 }  // namespace arc

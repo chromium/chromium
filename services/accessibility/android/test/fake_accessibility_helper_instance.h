@@ -41,7 +41,6 @@ class FakeAccessibilityHelperInstance
   void RefreshWithExtraData(
       ax::android::mojom::AccessibilityActionDataPtr action_data_ptr,
       RefreshWithExtraDataCallback callback) override;
-  void SetCaptionStyle(ax::android::mojom::CaptionStylePtr style_ptr) override;
   void RequestSendAccessibilityTree(
       ax::android::mojom::AccessibilityWindowKeyPtr window_ptr) override;
 

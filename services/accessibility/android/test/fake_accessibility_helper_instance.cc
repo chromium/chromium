@@ -60,9 +60,6 @@ void FakeAccessibilityHelperInstance::RefreshWithExtraData(
   refresh_with_extra_data_callback_ = std::move(callback);
 }
 
-void FakeAccessibilityHelperInstance::SetCaptionStyle(
-    ax::android::mojom::CaptionStylePtr style_ptr) {}
-
 void FakeAccessibilityHelperInstance::RequestSendAccessibilityTree(
     ax::android::mojom::AccessibilityWindowKeyPtr window_ptr) {
   last_requested_tree_window_key_ = std::move(window_ptr);
