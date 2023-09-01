@@ -109,9 +109,10 @@ void FileChooserChromeOs::Core::RunCallback(const FileChooser::Result& result) {
 }
 
 void FileChooserChromeOs::Core::Show() {
-  // Restrict file access to the native volumes on the device. This will prevent
-  // the remote user from selecting files from virtual drives like a USB drive
-  // or mapped network drive. See b/297183388 for more information.
+  // Restrict file access to the native volumes on the device and USB drives.
+  // This will prevent the remote user from selecting files from mapped network
+  // drives and other url paths (for eg. Google Drive). See b/297183388 for more
+  // information.
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.allowed_paths =
       ui::SelectFileDialog::FileTypeInfo::AllowedPaths::NATIVE_PATH;
