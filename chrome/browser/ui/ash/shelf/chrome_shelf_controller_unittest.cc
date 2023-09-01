@@ -6500,6 +6500,27 @@ TEST_F(ChromeShelfControllerShortcutTest, UpdateTitle) {
   EXPECT_EQ(item_after_update->title, std::u16string(u"NewName"));
 }
 
+TEST_F(ChromeShelfControllerShortcutTest, ShortcutRemoved) {
+  apps::ShortcutPtr shortcut =
+      std::make_unique<apps::Shortcut>("app_id", "local_id");
+  apps::ShortcutId shortcut_id = shortcut->shortcut_id;
+  shortcut->name = "Name";
+  cache()->UpdateShortcut(std::move(shortcut));
+
+  // Create a shelf item for the shortcut.
+  InitShelfController();
+  PinAppWithIDToShelf(shortcut_id.value());
+
+  // Verify the details of the shelf item.
+  ASSERT_TRUE(model_->IsAppPinned(shortcut_id.value()));
+  ash::ShelfID id(shortcut_id.value());
+  ASSERT_TRUE(shelf_controller_->GetItem(id));
+
+  cache()->RemoveShortcut(shortcut_id);
+  EXPECT_FALSE(model_->IsAppPinned(shortcut_id.value()));
+  EXPECT_FALSE(shelf_controller_->GetItem(id));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeShelfControllerPlayStoreAvailabilityTest,
                          ::testing::Values(false, true));

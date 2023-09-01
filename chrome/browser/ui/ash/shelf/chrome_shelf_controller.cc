@@ -105,6 +105,7 @@
 #include "components/app_constants/constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -1103,6 +1104,13 @@ void ChromeShelfController::OnShortcutUpdated(
 
   // TODO(crbug.com/1412708): Update pinned apps from sync here, need to update
   // this code to make it work with shortcut items as well.
+}
+
+void ChromeShelfController::OnShortcutRemoved(const apps::ShortcutId& id) {
+  ash::ShelfID shelf_id(id.value());
+  if (model_->ItemByID(shelf_id)) {
+    UnpinShelfItemInternal(shelf_id);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

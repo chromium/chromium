@@ -27,6 +27,12 @@ void ShelfAppServiceShortcutUpdater::OnShortcutUpdated(
   delegate()->OnShortcutUpdated(update);
 }
 
+void ShelfAppServiceShortcutUpdater::OnShortcutRemoved(
+    const apps::ShortcutId& id) {
+  CHECK(delegate());
+  delegate()->OnShortcutRemoved(id);
+}
+
 void ShelfAppServiceShortcutUpdater::OnShortcutRegistryCacheWillBeDestroyed(
     apps::ShortcutRegistryCache* cache) {
   shortcut_registry_cache_observation_.Reset();
