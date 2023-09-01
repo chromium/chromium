@@ -5,17 +5,17 @@ owners:
 caption: Profile separation data migration settings
 
 desc: |-
-  This policy controls the behavior if users are allowed to bring existing browsing data into a managed profile created as after a managed account login in the content area.
+  This policy controls whether users are allowed to bring existing browsing data into a managed profile created after a managed account signs into the content area.
 
-  If this policy is set to UserOptInData or unset, the user has the choice to bring existing browsing data or not in the managed profile, the checkbox in the profile creation dialog will be visible and unchecked by default.
+  If this policy is unset or set to UserOptInData, the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and unchecked by default.
 
-  If this policy is set to UserOptOutData, the user has the choice to bring existing browsing data or not in the managed profile, the checkbox in the profile creation dialog will be visible and checked by default. This option is only allowed on managed devices.
+  If this policy is set to UserOptOutData, the user can choose whether to bring existing browsing data into the managed profile. The checkbox in the profile creation dialog will be visible and checked by default. This option is only allowed on managed devices.
 
-  If this policy is set to AlwaysSeparateData, the user cannot bring any existing browsing data or not, the checkbox in the profile creation dialog will not be visible.
+  If this policy is set to AlwaysSeparateData, the user cannot bring any existing browsing data into the managed profile. The checkbox in the profile creation dialog will not be visible.
 
-  Bringing existing browsing data in the managed profile means that the current profile will become managed, no new profile will be created.
+  Bringing existing browsing data into the managed profile means that the current profile will become managed. No new profile will be created.
 
-  Not bringing existing browsing data in the managed profile means that a new clean profile will be created, and the existing browsing data will stay in an unmanaged profile which will still be accessible to the user via the profile picker.
+  Not bringing existing browsing data into the managed profile means that a new clean profile will be created. The existing browsing data will stay in an unmanaged profile which will still be accessible to the user via the profile picker.
 
   This policy requires the <ph name="PROFILE_SEPARATION_SETTINGS_POLICY_NAME">ProfileSeparationSettings</ph> policy to be set to take effect.
 
