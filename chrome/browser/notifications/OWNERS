@@ -1,5 +1,6 @@
 dewittj@chromium.org
 dimich@chromium.org
+finnur@chromium.org
 peter@chromium.org
 yoshiki@chromium.org
 
@@ -8,9 +9,6 @@ per-file *_linux*=thomasanderson@chromium.org
 
 # Mac files
 per-file *_mac*=rsesek@chromium.org
-
-# Windows files
-per-file *_win*=finnur@chromium.org
 
 per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
 
