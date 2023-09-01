@@ -249,14 +249,15 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   syncService->GetTypesWithUnsyncedData(std::move(callback));
 }
 
-// Displays the sign-out confirmation dialog if `set` is not empty, otherwise
-// the signed out is triggered without dialog.
+// Displays the sign-out confirmation dialog if `set` contains an "interesting"
+// data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
   [self.delegate signoutActionSheetCoordinatorAllowUserInteraction:self];
-  if (set.Empty()) {
-    [self handleSignOutWithForceClearData:NO];
-  } else {
+  if (set.HasAny({syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
+                  syncer::CONTACT_INFO})) {
     [self startActionSheetCoordinatorForSignout];
+  } else {
+    [self handleSignOutWithForceClearData:NO];
   }
 }
 
