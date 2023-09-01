@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/power/power_status.h"
@@ -99,8 +100,15 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
 
   // Paint the badge over top of the battery, if applicable.
   if (info_.icon_badge) {
-    const SkColor badge_color = use_alert_color ? resolved_colors_.alert_color
-                                                : resolved_colors_.badge_color;
+    SkColor badge_color;
+    if (use_alert_color) {
+      badge_color = resolved_colors_.alert_color;
+    } else if (features::IsBatterySaverAvailable()) {
+      badge_color = resolved_colors_.badge_color;
+    } else {
+      badge_color = resolved_colors_.foreground_color;
+    }
+
     PaintVectorIcon(canvas, *info_.icon_badge, size().height(), badge_color);
   }
 }
