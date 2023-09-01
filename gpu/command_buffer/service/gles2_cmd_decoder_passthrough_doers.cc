@@ -5570,5 +5570,25 @@ error::Error GLES2DecoderPassthroughImpl::DoProvokingVertexANGLE(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoClipControlEXT(GLenum origin,
+                                                           GLenum depth) {
+  api()->glClipControlEXTFn(origin, depth);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoPolygonModeANGLE(GLenum face,
+                                                             GLenum mode) {
+  api()->glPolygonModeANGLEFn(face, mode);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::DoPolygonOffsetClampEXT(
+    GLfloat factor,
+    GLfloat units,
+    GLfloat clamp) {
+  api()->glPolygonOffsetClampEXTFn(factor, units, clamp);
+  return error::kNoError;
+}
+
 }  // namespace gles2
 }  // namespace gpu

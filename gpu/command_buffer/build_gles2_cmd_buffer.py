@@ -1838,6 +1838,11 @@ _FUNCTION_INFO = {
     'result': ['GLenum'],
     'trace_level': 2,
   },
+  'ClipControlEXT': {
+    'extension_flag': 'ext_clip_control',
+    'unit_test': False,
+    'extension': 'EXT_clip_control',
+  },
   'ColorMask': {
     'type': 'StateSet',
     'state': 'ColorMask',
@@ -2041,9 +2046,19 @@ _FUNCTION_INFO = {
       '0': '2.0f'
     },
   },
+  'PolygonModeANGLE': {
+    'extension_flag': 'angle_polygon_mode',
+    'unit_test': False,
+    'extension': 'ANGLE_polygon_mode',
+  },
   'PolygonOffset': {
     'type': 'StateSet',
     'state': 'PolygonOffset',
+  },
+  'PolygonOffsetClampEXT': {
+    'extension_flag': 'ext_polygon_offset_clamp',
+    'unit_test': False,
+    'extension': 'EXT_polygon_offset_clamp',
   },
   'DeleteBuffers': {
     'type': 'DELn',

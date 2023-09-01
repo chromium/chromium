@@ -252,6 +252,7 @@ static GLenum GL_BINDING_CALL Mock_glClientWaitSync(GLsync sync,
 static GLenum GL_BINDING_CALL Mock_glClientWaitSyncAPPLE(GLsync sync,
                                                          GLbitfield flags,
                                                          GLuint64 timeout);
+static void GL_BINDING_CALL Mock_glClipControlEXT(GLenum origin, GLenum depth);
 static void GL_BINDING_CALL Mock_glColorMask(GLboolean red,
                                              GLboolean green,
                                              GLboolean blue,
@@ -1559,7 +1560,11 @@ static void GL_BINDING_CALL Mock_glPixelLocalStorageBarrierANGLE();
 static void GL_BINDING_CALL Mock_glPixelStorei(GLenum pname, GLint param);
 static void GL_BINDING_CALL Mock_glPointParameteri(GLenum pname, GLint param);
 static void GL_BINDING_CALL Mock_glPolygonMode(GLenum face, GLenum mode);
+static void GL_BINDING_CALL Mock_glPolygonModeANGLE(GLenum face, GLenum mode);
 static void GL_BINDING_CALL Mock_glPolygonOffset(GLfloat factor, GLfloat units);
+static void GL_BINDING_CALL Mock_glPolygonOffsetClampEXT(GLfloat factor,
+                                                         GLfloat units,
+                                                         GLfloat clamp);
 static void GL_BINDING_CALL Mock_glPopDebugGroup();
 static void GL_BINDING_CALL Mock_glPopDebugGroupKHR();
 static void GL_BINDING_CALL Mock_glPopGroupMarkerEXT(void);

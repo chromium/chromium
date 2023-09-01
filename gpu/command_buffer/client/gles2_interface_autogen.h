@@ -963,4 +963,9 @@ virtual void GetFramebufferPixelLocalStorageParameterfvANGLE(
 virtual void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                              GLenum pname,
                                                              GLint* params) = 0;
+virtual void ClipControlEXT(GLenum origin, GLenum depth) = 0;
+virtual void PolygonModeANGLE(GLenum face, GLenum mode) = 0;
+virtual void PolygonOffsetClampEXT(GLfloat factor,
+                                   GLfloat units,
+                                   GLfloat clamp) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_AUTOGEN_H_

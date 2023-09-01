@@ -1288,4 +1288,12 @@ void GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                      GLenum pname,
                                                      GLint* params) override;
 
+void ClipControlEXT(GLenum origin, GLenum depth) override;
+
+void PolygonModeANGLE(GLenum face, GLenum mode) override;
+
+void PolygonOffsetClampEXT(GLfloat factor,
+                           GLfloat units,
+                           GLfloat clamp) override;
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_AUTOGEN_H_

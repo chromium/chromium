@@ -37,14 +37,18 @@ namespace blink {
 class ANGLEInstancedArrays;
 class CanvasContextCreationAttributesCore;
 class EXTBlendMinMax;
+class EXTClipControl;
 class EXTColorBufferHalfFloat;
+class EXTDepthClamp;
 class EXTFloatBlend;
 class EXTFragDepth;
+class EXTPolygonOffsetClamp;
 class EXTShaderTextureLOD;
 class EXTsRGB;
 class EXTTextureCompressionBPTC;
 class EXTTextureCompressionRGTC;
 class EXTTextureFilterAnisotropic;
+class EXTTextureMirrorClampToEdge;
 class KHRParallelShaderCompile;
 class OESElementIndexUint;
 class OESFboRenderMipmap;
@@ -58,6 +62,7 @@ class WebGLDebugRendererInfo;
 class WebGLDepthTexture;
 class WebGLLoseContext;
 class WebGLMultiDraw;
+class WebGLPolygonMode;
 class WebGLVideoTexture;
 
 class WebGLRenderingContext final : public WebGLRenderingContextBase {
@@ -101,14 +106,18 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   // Enabled extension objects.
   Member<ANGLEInstancedArrays> angle_instanced_arrays_;
   Member<EXTBlendMinMax> ext_blend_min_max_;
+  Member<EXTClipControl> ext_clip_control_;
   Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;
+  Member<EXTDepthClamp> ext_depth_clamp_;
   Member<EXTDisjointTimerQuery> ext_disjoint_timer_query_;
   Member<EXTFloatBlend> ext_float_blend_;
   Member<EXTFragDepth> ext_frag_depth_;
+  Member<EXTPolygonOffsetClamp> ext_polygon_offset_clamp_;
   Member<EXTShaderTextureLOD> ext_shader_texture_lod_;
   Member<EXTTextureCompressionBPTC> ext_texture_compression_bptc_;
   Member<EXTTextureCompressionRGTC> ext_texture_compression_rgtc_;
   Member<EXTTextureFilterAnisotropic> ext_texture_filter_anisotropic_;
+  Member<EXTTextureMirrorClampToEdge> ext_texture_mirror_clamp_to_edge_;
   Member<EXTsRGB> exts_rgb_;
   Member<KHRParallelShaderCompile> khr_parallel_shader_compile_;
   Member<OESElementIndexUint> oes_element_index_uint_;
@@ -132,6 +141,7 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   Member<WebGLDrawBuffers> webgl_draw_buffers_;
   Member<WebGLLoseContext> webgl_lose_context_;
   Member<WebGLMultiDraw> webgl_multi_draw_;
+  Member<WebGLPolygonMode> webgl_polygon_mode_;
   Member<WebGLVideoTexture> webgl_video_texture_;
 };
 

@@ -150,16 +150,35 @@ crbug.com/1099955 [ angle-swiftshader linux ] WebglExtension_EXT_texture_compres
 crbug.com/1099955 [ angle-swiftshader win   ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 
 # Extensions not available under D3D9
-crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
-[ win amd angle-d3d9 ] WebglExtension_WEBGL_depth_texture [ Skip ]
-[ win angle-d3d9 ] WebglExtension_WEBGL_draw_buffers [ Skip ]
-[ win angle-d3d9 ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-[ win angle-d3d9 ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_clip_control [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_depth_clamp [ Skip ]
+crbug.com/867718 [ win passthrough angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
+[ win passthrough amd angle-d3d9 ] WebglExtension_WEBGL_depth_texture [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_WEBGL_draw_buffers [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
+[ win passthrough angle-d3d9 ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+
+# Extensions only available via passthrough decoder
+[ no-passthrough ] WebglExtension_EXT_clip_control [ Skip ]
+[ no-passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
+[ no-passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
+[ no-passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+[ no-passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+
+# Extensions not available under macOS OpenGL
+[ mac passthrough angle-opengl ] WebglExtension_EXT_clip_control [ Skip ]
+[ mac passthrough angle-opengl ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
 
 # Android general
 [ android ] WebglExtension_EXT_frag_depth [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
 [ android ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_polygon_offset_clamp [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+crbug.com/1473838 [ android passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 
 # Android hardware-specific
 [ android nvidia ] WebglExtension_EXT_float_blend [ Skip ]
@@ -191,6 +210,8 @@ crbug.com/957807 [ chromeos ] WebglExtension_EXT_sRGB [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_EXT_texture_filter_anisotropic [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
+crbug.com/1473838 [ chromeos passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+crbug.com/1473838 [ chromeos passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 
 # Extensions not available on Fuchsia
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]

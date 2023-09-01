@@ -5234,5 +5234,61 @@ error::Error GLES2DecoderPassthroughImpl::
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleClipControlEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ClipControlEXT& c =
+      *static_cast<const volatile gles2::cmds::ClipControlEXT*>(cmd_data);
+  if (!features().ext_clip_control) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum origin = static_cast<GLenum>(c.origin);
+  GLenum depth = static_cast<GLenum>(c.depth);
+  error::Error error = DoClipControlEXT(origin, depth);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandlePolygonModeANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonModeANGLE& c =
+      *static_cast<const volatile gles2::cmds::PolygonModeANGLE*>(cmd_data);
+  if (!features().angle_polygon_mode) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum face = static_cast<GLenum>(c.face);
+  GLenum mode = static_cast<GLenum>(c.mode);
+  error::Error error = DoPolygonModeANGLE(face, mode);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderPassthroughImpl::HandlePolygonOffsetClampEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonOffsetClampEXT& c =
+      *static_cast<const volatile gles2::cmds::PolygonOffsetClampEXT*>(
+          cmd_data);
+  if (!features().ext_polygon_offset_clamp) {
+    return error::kUnknownCommand;
+  }
+
+  GLfloat factor = static_cast<GLfloat>(c.factor);
+  GLfloat units = static_cast<GLfloat>(c.units);
+  GLfloat clamp = static_cast<GLfloat>(c.clamp);
+  error::Error error = DoPolygonOffsetClampEXT(factor, units, clamp);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 }  // namespace gles2
 }  // namespace gpu

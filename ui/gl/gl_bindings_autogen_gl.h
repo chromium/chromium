@@ -169,6 +169,8 @@ typedef GLenum(GL_BINDING_CALL* glClientWaitSyncProc)(GLsync sync,
 typedef GLenum(GL_BINDING_CALL* glClientWaitSyncAPPLEProc)(GLsync sync,
                                                            GLbitfield flags,
                                                            GLuint64 timeout);
+typedef void(GL_BINDING_CALL* glClipControlEXTProc)(GLenum origin,
+                                                    GLenum depth);
 typedef void(GL_BINDING_CALL* glColorMaskProc)(GLboolean red,
                                                GLboolean green,
                                                GLboolean blue,
@@ -1255,8 +1257,12 @@ typedef void(GL_BINDING_CALL* glPixelLocalStorageBarrierANGLEProc)();
 typedef void(GL_BINDING_CALL* glPixelStoreiProc)(GLenum pname, GLint param);
 typedef void(GL_BINDING_CALL* glPointParameteriProc)(GLenum pname, GLint param);
 typedef void(GL_BINDING_CALL* glPolygonModeProc)(GLenum face, GLenum mode);
+typedef void(GL_BINDING_CALL* glPolygonModeANGLEProc)(GLenum face, GLenum mode);
 typedef void(GL_BINDING_CALL* glPolygonOffsetProc)(GLfloat factor,
                                                    GLfloat units);
+typedef void(GL_BINDING_CALL* glPolygonOffsetClampEXTProc)(GLfloat factor,
+                                                           GLfloat units,
+                                                           GLfloat clamp);
 typedef void(GL_BINDING_CALL* glPopDebugGroupProc)();
 typedef void(GL_BINDING_CALL* glPopGroupMarkerEXTProc)(void);
 typedef void(GL_BINDING_CALL* glPrimitiveRestartIndexProc)(GLuint index);
@@ -2021,6 +2027,7 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_memory_object_flags;
   bool b_GL_ANGLE_memory_object_fuchsia;
   bool b_GL_ANGLE_multi_draw;
+  bool b_GL_ANGLE_polygon_mode;
   bool b_GL_ANGLE_provoking_vertex;
   bool b_GL_ANGLE_renderability_validation;
   bool b_GL_ANGLE_request_extension;
@@ -2067,6 +2074,7 @@ struct ExtensionsGL {
   bool b_GL_EXT_base_instance;
   bool b_GL_EXT_blend_func_extended;
   bool b_GL_EXT_clear_texture;
+  bool b_GL_EXT_clip_control;
   bool b_GL_EXT_debug_marker;
   bool b_GL_EXT_direct_state_access;
   bool b_GL_EXT_discard_framebuffer;
@@ -2083,6 +2091,7 @@ struct ExtensionsGL {
   bool b_GL_EXT_memory_object_win32;
   bool b_GL_EXT_multisampled_render_to_texture;
   bool b_GL_EXT_occlusion_query_boolean;
+  bool b_GL_EXT_polygon_offset_clamp;
   bool b_GL_EXT_robustness;
   bool b_GL_EXT_semaphore;
   bool b_GL_EXT_semaphore_fd;
@@ -2172,6 +2181,7 @@ struct ProcsGL {
   glClearTexSubImageProc glClearTexSubImageFn;
   glClientWaitSyncProc glClientWaitSyncFn;
   glClientWaitSyncAPPLEProc glClientWaitSyncAPPLEFn;
+  glClipControlEXTProc glClipControlEXTFn;
   glColorMaskProc glColorMaskFn;
   glColorMaskiOESProc glColorMaskiOESFn;
   glCompileShaderProc glCompileShaderFn;
@@ -2489,7 +2499,9 @@ struct ProcsGL {
   glPixelStoreiProc glPixelStoreiFn;
   glPointParameteriProc glPointParameteriFn;
   glPolygonModeProc glPolygonModeFn;
+  glPolygonModeANGLEProc glPolygonModeANGLEFn;
   glPolygonOffsetProc glPolygonOffsetFn;
+  glPolygonOffsetClampEXTProc glPolygonOffsetClampEXTFn;
   glPopDebugGroupProc glPopDebugGroupFn;
   glPopGroupMarkerEXTProc glPopGroupMarkerEXTFn;
   glPrimitiveRestartIndexProc glPrimitiveRestartIndexFn;
@@ -2817,6 +2829,7 @@ class GL_EXPORT GLApi {
   virtual GLenum glClientWaitSyncAPPLEFn(GLsync sync,
                                          GLbitfield flags,
                                          GLuint64 timeout) = 0;
+  virtual void glClipControlEXTFn(GLenum origin, GLenum depth) = 0;
   virtual void glColorMaskFn(GLboolean red,
                              GLboolean green,
                              GLboolean blue,
@@ -3765,7 +3778,11 @@ class GL_EXPORT GLApi {
   virtual void glPixelStoreiFn(GLenum pname, GLint param) = 0;
   virtual void glPointParameteriFn(GLenum pname, GLint param) = 0;
   virtual void glPolygonModeFn(GLenum face, GLenum mode) = 0;
+  virtual void glPolygonModeANGLEFn(GLenum face, GLenum mode) = 0;
   virtual void glPolygonOffsetFn(GLfloat factor, GLfloat units) = 0;
+  virtual void glPolygonOffsetClampEXTFn(GLfloat factor,
+                                         GLfloat units,
+                                         GLfloat clamp) = 0;
   virtual void glPopDebugGroupFn() = 0;
   virtual void glPopGroupMarkerEXTFn(void) = 0;
   virtual void glPrimitiveRestartIndexFn(GLuint index) = 0;
@@ -4529,6 +4546,7 @@ class GL_EXPORT GLApi {
 #define glClientWaitSync ::gl::g_current_gl_context->glClientWaitSyncFn
 #define glClientWaitSyncAPPLE \
   ::gl::g_current_gl_context->glClientWaitSyncAPPLEFn
+#define glClipControlEXT ::gl::g_current_gl_context->glClipControlEXTFn
 #define glColorMask ::gl::g_current_gl_context->glColorMaskFn
 #define glColorMaskiOES ::gl::g_current_gl_context->glColorMaskiOESFn
 #define glCompileShader ::gl::g_current_gl_context->glCompileShaderFn
@@ -4980,7 +4998,10 @@ class GL_EXPORT GLApi {
 #define glPixelStorei ::gl::g_current_gl_context->glPixelStoreiFn
 #define glPointParameteri ::gl::g_current_gl_context->glPointParameteriFn
 #define glPolygonMode ::gl::g_current_gl_context->glPolygonModeFn
+#define glPolygonModeANGLE ::gl::g_current_gl_context->glPolygonModeANGLEFn
 #define glPolygonOffset ::gl::g_current_gl_context->glPolygonOffsetFn
+#define glPolygonOffsetClampEXT \
+  ::gl::g_current_gl_context->glPolygonOffsetClampEXTFn
 #define glPopDebugGroup ::gl::g_current_gl_context->glPopDebugGroupFn
 #define glPopGroupMarkerEXT ::gl::g_current_gl_context->glPopGroupMarkerEXTFn
 #define glPrimitiveRestartIndex \

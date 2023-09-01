@@ -5919,6 +5919,53 @@ GLES2DecoderImpl::HandleGetFramebufferPixelLocalStorageParameterivANGLE(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleClipControlEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ClipControlEXT& c =
+      *static_cast<const volatile gles2::cmds::ClipControlEXT*>(cmd_data);
+  if (!features().ext_clip_control) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum origin = static_cast<GLenum>(c.origin);
+  GLenum depth = static_cast<GLenum>(c.depth);
+  api()->glClipControlEXTFn(origin, depth);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandlePolygonModeANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonModeANGLE& c =
+      *static_cast<const volatile gles2::cmds::PolygonModeANGLE*>(cmd_data);
+  if (!features().angle_polygon_mode) {
+    return error::kUnknownCommand;
+  }
+
+  GLenum face = static_cast<GLenum>(c.face);
+  GLenum mode = static_cast<GLenum>(c.mode);
+  api()->glPolygonModeANGLEFn(face, mode);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandlePolygonOffsetClampEXT(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::PolygonOffsetClampEXT& c =
+      *static_cast<const volatile gles2::cmds::PolygonOffsetClampEXT*>(
+          cmd_data);
+  if (!features().ext_polygon_offset_clamp) {
+    return error::kUnknownCommand;
+  }
+
+  GLfloat factor = static_cast<GLfloat>(c.factor);
+  GLfloat units = static_cast<GLfloat>(c.units);
+  GLfloat clamp = static_cast<GLfloat>(c.clamp);
+  api()->glPolygonOffsetClampEXTFn(factor, units, clamp);
+  return error::kNoError;
+}
+
 bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
   switch (cap) {
     case GL_BLEND:

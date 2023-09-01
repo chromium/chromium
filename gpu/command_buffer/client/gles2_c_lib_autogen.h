@@ -1835,6 +1835,17 @@ GLES2GetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
   gles2::GetGLContext()->GetFramebufferPixelLocalStorageParameterivANGLE(
       plane, pname, params);
 }
+void GL_APIENTRY GLES2ClipControlEXT(GLenum origin, GLenum depth) {
+  gles2::GetGLContext()->ClipControlEXT(origin, depth);
+}
+void GL_APIENTRY GLES2PolygonModeANGLE(GLenum face, GLenum mode) {
+  gles2::GetGLContext()->PolygonModeANGLE(face, mode);
+}
+void GL_APIENTRY GLES2PolygonOffsetClampEXT(GLfloat factor,
+                                            GLfloat units,
+                                            GLfloat clamp) {
+  gles2::GetGLContext()->PolygonOffsetClampEXT(factor, units, clamp);
+}
 
 namespace gles2 {
 
@@ -3295,6 +3306,18 @@ extern const NameToFunc g_gles2_function_table[] = {
         "glGetFramebufferPixelLocalStorageParameterivANGLE",
         reinterpret_cast<GLES2FunctionPointer>(
             glGetFramebufferPixelLocalStorageParameterivANGLE),
+    },
+    {
+        "glClipControlEXT",
+        reinterpret_cast<GLES2FunctionPointer>(glClipControlEXT),
+    },
+    {
+        "glPolygonModeANGLE",
+        reinterpret_cast<GLES2FunctionPointer>(glPolygonModeANGLE),
+    },
+    {
+        "glPolygonOffsetClampEXT",
+        reinterpret_cast<GLES2FunctionPointer>(glPolygonOffsetClampEXT),
     },
     {
         nullptr,

@@ -1252,4 +1252,11 @@ void GLES2InterfaceStub::GetFramebufferPixelLocalStorageParameterivANGLE(
     GLint /* plane */,
     GLenum /* pname */,
     GLint* /* params */) {}
+void GLES2InterfaceStub::ClipControlEXT(GLenum /* origin */,
+                                        GLenum /* depth */) {}
+void GLES2InterfaceStub::PolygonModeANGLE(GLenum /* face */,
+                                          GLenum /* mode */) {}
+void GLES2InterfaceStub::PolygonOffsetClampEXT(GLfloat /* factor */,
+                                               GLfloat /* units */,
+                                               GLfloat /* clamp */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_INTERFACE_STUB_IMPL_AUTOGEN_H_

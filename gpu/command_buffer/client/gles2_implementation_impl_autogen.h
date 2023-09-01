@@ -3874,4 +3874,32 @@ void GLES2Implementation::GetFramebufferPixelLocalStorageParameterivANGLE(
   });
   CheckGLError();
 }
+void GLES2Implementation::ClipControlEXT(GLenum origin, GLenum depth) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glClipControlEXT("
+                     << GLES2Util::GetStringEnum(origin) << ", "
+                     << GLES2Util::GetStringEnum(depth) << ")");
+  helper_->ClipControlEXT(origin, depth);
+  CheckGLError();
+}
+
+void GLES2Implementation::PolygonModeANGLE(GLenum face, GLenum mode) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glPolygonModeANGLE("
+                     << GLES2Util::GetStringEnum(face) << ", "
+                     << GLES2Util::GetStringEnum(mode) << ")");
+  helper_->PolygonModeANGLE(face, mode);
+  CheckGLError();
+}
+
+void GLES2Implementation::PolygonOffsetClampEXT(GLfloat factor,
+                                                GLfloat units,
+                                                GLfloat clamp) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glPolygonOffsetClampEXT(" << factor
+                     << ", " << units << ", " << clamp << ")");
+  helper_->PolygonOffsetClampEXT(factor, units, clamp);
+  CheckGLError();
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_IMPLEMENTATION_IMPL_AUTOGEN_H_

@@ -17082,4 +17082,119 @@ static_assert(offsetof(GetFramebufferPixelLocalStorageParameterivANGLE,
               "offset of GetFramebufferPixelLocalStorageParameterivANGLE "
               "params_shm_offset should be 16");
 
+struct ClipControlEXT {
+  typedef ClipControlEXT ValueType;
+  static const CommandId kCmdId = kClipControlEXT;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _origin, GLenum _depth) {
+    SetHeader();
+    origin = _origin;
+    depth = _depth;
+  }
+
+  void* Set(void* cmd, GLenum _origin, GLenum _depth) {
+    static_cast<ValueType*>(cmd)->Init(_origin, _depth);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t origin;
+  uint32_t depth;
+};
+
+static_assert(sizeof(ClipControlEXT) == 12,
+              "size of ClipControlEXT should be 12");
+static_assert(offsetof(ClipControlEXT, header) == 0,
+              "offset of ClipControlEXT header should be 0");
+static_assert(offsetof(ClipControlEXT, origin) == 4,
+              "offset of ClipControlEXT origin should be 4");
+static_assert(offsetof(ClipControlEXT, depth) == 8,
+              "offset of ClipControlEXT depth should be 8");
+
+struct PolygonModeANGLE {
+  typedef PolygonModeANGLE ValueType;
+  static const CommandId kCmdId = kPolygonModeANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _face, GLenum _mode) {
+    SetHeader();
+    face = _face;
+    mode = _mode;
+  }
+
+  void* Set(void* cmd, GLenum _face, GLenum _mode) {
+    static_cast<ValueType*>(cmd)->Init(_face, _mode);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t face;
+  uint32_t mode;
+};
+
+static_assert(sizeof(PolygonModeANGLE) == 12,
+              "size of PolygonModeANGLE should be 12");
+static_assert(offsetof(PolygonModeANGLE, header) == 0,
+              "offset of PolygonModeANGLE header should be 0");
+static_assert(offsetof(PolygonModeANGLE, face) == 4,
+              "offset of PolygonModeANGLE face should be 4");
+static_assert(offsetof(PolygonModeANGLE, mode) == 8,
+              "offset of PolygonModeANGLE mode should be 8");
+
+struct PolygonOffsetClampEXT {
+  typedef PolygonOffsetClampEXT ValueType;
+  static const CommandId kCmdId = kPolygonOffsetClampEXT;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLfloat _factor, GLfloat _units, GLfloat _clamp) {
+    SetHeader();
+    factor = _factor;
+    units = _units;
+    clamp = _clamp;
+  }
+
+  void* Set(void* cmd, GLfloat _factor, GLfloat _units, GLfloat _clamp) {
+    static_cast<ValueType*>(cmd)->Init(_factor, _units, _clamp);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  float factor;
+  float units;
+  float clamp;
+};
+
+static_assert(sizeof(PolygonOffsetClampEXT) == 16,
+              "size of PolygonOffsetClampEXT should be 16");
+static_assert(offsetof(PolygonOffsetClampEXT, header) == 0,
+              "offset of PolygonOffsetClampEXT header should be 0");
+static_assert(offsetof(PolygonOffsetClampEXT, factor) == 4,
+              "offset of PolygonOffsetClampEXT factor should be 4");
+static_assert(offsetof(PolygonOffsetClampEXT, units) == 8,
+              "offset of PolygonOffsetClampEXT units should be 8");
+static_assert(offsetof(PolygonOffsetClampEXT, clamp) == 12,
+              "offset of PolygonOffsetClampEXT clamp should be 12");
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_AUTOGEN_H_

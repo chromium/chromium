@@ -411,3 +411,12 @@ GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE
 GL_APICALL void         GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE (void);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterfvANGLE (GLint plane, GLenum pname, GLfloat* params);
 GL_APICALL void         GL_APIENTRY glGetFramebufferPixelLocalStorageParameterivANGLE (GLint plane, GLenum pname, GLint* params);
+
+// Extension EXT_clip_control
+GL_APICALL void         GL_APIENTRY glClipControlEXT (GLenum origin, GLenum depth);
+
+// Extension ANGLE_polygon_mode
+GL_APICALL void         GL_APIENTRY glPolygonModeANGLE (GLenum face, GLenum mode);
+
+// Extension EXT_polygon_offset_clamp
+GL_APICALL void         GL_APIENTRY glPolygonOffsetClampEXT (GLfloat factor, GLfloat units, GLfloat clamp);

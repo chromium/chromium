@@ -3861,6 +3861,41 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
           GL_INVALID_ENUM, "getParameter",
           "invalid parameter name, EXT_texture_filter_anisotropic not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_DEPTH_CLAMP_EXT:  // EXT_depth_clamp
+      if (ExtensionEnabled(kEXTDepthClampName)) {
+        return GetBooleanParameter(script_state, pname);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, EXT_depth_clamp not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_POLYGON_MODE_ANGLE:  // WEBGL_polygon_mode
+    case GL_POLYGON_OFFSET_LINE_ANGLE:
+      if (ExtensionEnabled(kWebGLPolygonModeName)) {
+        if (pname == GL_POLYGON_OFFSET_LINE_ANGLE) {
+          return GetBooleanParameter(script_state, pname);
+        }
+        return GetUnsignedIntParameter(script_state, pname);
+      }
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "getParameter",
+          "invalid parameter name, WEBGL_polygon_mode not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_POLYGON_OFFSET_CLAMP_EXT:  // EXT_polygon_offset_clamp
+      if (ExtensionEnabled(kEXTPolygonOffsetClampName)) {
+        return GetFloatParameter(script_state, pname);
+      }
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "getParameter",
+          "invalid parameter name, EXT_polygon_offset_clamp not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_CLIP_ORIGIN_EXT:  // EXT_clip_control
+    case GL_CLIP_DEPTH_MODE_EXT:
+      if (ExtensionEnabled(kEXTClipControlName)) {
+        return GetUnsignedIntParameter(script_state, pname);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, EXT_clip_control not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_COLOR_ATTACHMENTS_EXT:  // EXT_draw_buffers BEGIN
       if (ExtensionEnabled(kWebGLDrawBuffersName) || IsWebGL2())
         return WebGLAny(script_state, MaxColorAttachments());
@@ -6465,6 +6500,16 @@ void WebGLRenderingContextBase::TexParameter(GLenum target,
       [[fallthrough]];
     case GL_TEXTURE_WRAP_S:
     case GL_TEXTURE_WRAP_T:
+      if (paramf == GL_MIRROR_CLAMP_TO_EDGE_EXT ||
+          parami == GL_MIRROR_CLAMP_TO_EDGE_EXT) {
+        if (!ExtensionEnabled(kEXTTextureMirrorClampToEdgeName)) {
+          SynthesizeGLError(GL_INVALID_ENUM, "texParameter",
+                            "invalid parameter, "
+                            "EXT_texture_mirror_clamp_to_edge not enabled");
+          return;
+        }
+        break;
+      }
       if ((is_float && paramf != GL_CLAMP_TO_EDGE &&
            paramf != GL_MIRRORED_REPEAT && paramf != GL_REPEAT) ||
           (!is_float && parami != GL_CLAMP_TO_EDGE &&
@@ -6499,6 +6544,14 @@ void WebGLRenderingContextBase::TexParameter(GLenum target,
       if (!IsWebGL2()) {
         SynthesizeGLError(GL_INVALID_ENUM, "texParameter",
                           "invalid parameter name");
+        return;
+      }
+      break;
+    case GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE:
+      if (!ExtensionEnabled(kWebGLStencilTexturingName)) {
+        SynthesizeGLError(
+            GL_INVALID_ENUM, "texParameter",
+            "invalid parameter name, WEBGL_stencil_texturing not enabled");
         return;
       }
       break;
@@ -8414,6 +8467,20 @@ bool WebGLRenderingContextBase::ValidateCapability(const char* function_name,
     case GL_SCISSOR_TEST:
     case GL_STENCIL_TEST:
       return true;
+    case GL_POLYGON_OFFSET_LINE_ANGLE:
+      if (ExtensionEnabled(kWebGLPolygonModeName)) {
+        return true;
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                        "invalid capability, WEBGL_polygon_mode not enabled");
+      return false;
+    case GL_DEPTH_CLAMP_EXT:
+      if (ExtensionEnabled(kEXTDepthClampName)) {
+        return true;
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                        "invalid capability, EXT_depth_clamp not enabled");
+      return false;
     default:
       SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid capability");
       return false;

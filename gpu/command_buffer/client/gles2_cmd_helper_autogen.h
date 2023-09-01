@@ -3484,4 +3484,27 @@ void GetFramebufferPixelLocalStorageParameterivANGLE(
   }
 }
 
+void ClipControlEXT(GLenum origin, GLenum depth) {
+  gles2::cmds::ClipControlEXT* c = GetCmdSpace<gles2::cmds::ClipControlEXT>();
+  if (c) {
+    c->Init(origin, depth);
+  }
+}
+
+void PolygonModeANGLE(GLenum face, GLenum mode) {
+  gles2::cmds::PolygonModeANGLE* c =
+      GetCmdSpace<gles2::cmds::PolygonModeANGLE>();
+  if (c) {
+    c->Init(face, mode);
+  }
+}
+
+void PolygonOffsetClampEXT(GLfloat factor, GLfloat units, GLfloat clamp) {
+  gles2::cmds::PolygonOffsetClampEXT* c =
+      GetCmdSpace<gles2::cmds::PolygonOffsetClampEXT>();
+  if (c) {
+    c->Init(factor, units, clamp);
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_GLES2_CMD_HELPER_AUTOGEN_H_

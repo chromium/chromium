@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/WEBGL_polygon_mode/
+
+[
+    LegacyNoInterfaceObject
+] interface WebGLPolygonMode {
+    const unsigned long POLYGON_MODE_WEBGL = 0x0B40;
+
+    const unsigned long POLYGON_OFFSET_LINE_WEBGL = 0x2A02;
+
+    const unsigned long LINE_WEBGL = 0x1B01;
+    const unsigned long FILL_WEBGL = 0x1B02;
+
+    void polygonModeWEBGL(GLenum face, GLenum mode);
+};

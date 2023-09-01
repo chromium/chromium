@@ -1136,4 +1136,9 @@ error::Error DoGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                                GLsizei* length,
                                                                GLint* params);
 error::Error DoProvokingVertexANGLE(GLenum provokeMode);
+error::Error DoClipControlEXT(GLenum origin, GLenum depth);
+error::Error DoPolygonModeANGLE(GLenum face, GLenum mode);
+error::Error DoPolygonOffsetClampEXT(GLfloat factor,
+                                     GLfloat units,
+                                     GLfloat clamp);
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_PASSTHROUGH_DOER_PROTOTYPES_H_

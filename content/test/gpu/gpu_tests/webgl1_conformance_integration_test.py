@@ -36,15 +36,19 @@ class WebGL1ConformanceIntegrationTest(
     return [
         'ANGLE_instanced_arrays',
         'EXT_blend_minmax',
+        'EXT_clip_control',
         'EXT_color_buffer_half_float',
+        'EXT_depth_clamp',
         'EXT_disjoint_timer_query',
         'EXT_float_blend',
         'EXT_frag_depth',
+        'EXT_polygon_offset_clamp',
         'EXT_shader_texture_lod',
         'EXT_sRGB',
         'EXT_texture_compression_bptc',
         'EXT_texture_compression_rgtc',
         'EXT_texture_filter_anisotropic',
+        'EXT_texture_mirror_clamp_to_edge',
         'KHR_parallel_shader_compile',
         'OES_element_index_uint',
         'OES_fbo_render_mipmap',
@@ -67,6 +71,7 @@ class WebGL1ConformanceIntegrationTest(
         'WEBGL_draw_buffers',
         'WEBGL_lose_context',
         'WEBGL_multi_draw',
+        'WEBGL_polygon_mode',
         'WEBGL_video_texture',
     ]
 

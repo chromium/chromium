@@ -1042,12 +1042,44 @@ void WebGL2RenderingContextBase::RenderbufferStorageImpl(
       RenderbufferStorageHelper(target, samples, internalformat, width, height,
                                 function_name);
       break;
+    case GL_RGB9_E5:
+      if (!ExtensionEnabled(kWebGLRenderSharedExponentName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "WEBGL_render_shared_exponent not enabled");
+        return;
+      }
+      RenderbufferStorageHelper(target, samples, internalformat, width, height,
+                                function_name);
+      break;
     case GL_R16_EXT:
     case GL_RG16_EXT:
     case GL_RGBA16_EXT:
       if (!ExtensionEnabled(kEXTTextureNorm16Name)) {
         SynthesizeGLError(GL_INVALID_ENUM, function_name,
                           "EXT_texture_norm16 not enabled");
+        return;
+      }
+      RenderbufferStorageHelper(target, samples, internalformat, width, height,
+                                function_name);
+      break;
+    case GL_R8_SNORM:
+    case GL_RG8_SNORM:
+    case GL_RGBA8_SNORM:
+      if (!ExtensionEnabled(kEXTRenderSnormName)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "EXT_render_snorm not enabled");
+        return;
+      }
+      RenderbufferStorageHelper(target, samples, internalformat, width, height,
+                                function_name);
+      break;
+    case GL_R16_SNORM_EXT:
+    case GL_RG16_SNORM_EXT:
+    case GL_RGBA16_SNORM_EXT:
+      if (!ExtensionEnabled(kEXTRenderSnormName) ||
+          !ExtensionEnabled(kEXTTextureNorm16Name)) {
+        SynthesizeGLError(GL_INVALID_ENUM, function_name,
+                          "EXT_render_snorm or EXT_texture_norm16 not enabled");
         return;
       }
       RenderbufferStorageHelper(target, samples, internalformat, width, height,
@@ -4338,6 +4370,14 @@ void WebGL2RenderingContextBase::SamplerParameter(WebGLSampler* sampler,
         case GL_MIRRORED_REPEAT:
         case GL_REPEAT:
           break;
+        case GL_MIRROR_CLAMP_TO_EDGE_EXT:
+          if (!ExtensionEnabled(kEXTTextureMirrorClampToEdgeName)) {
+            SynthesizeGLError(GL_INVALID_ENUM, "samplerParameter",
+                              "invalid parameter, "
+                              "EXT_texture_mirror_clamp_to_edge not enabled");
+            return;
+          }
+          break;
         default:
           SynthesizeGLError(GL_INVALID_ENUM, "samplerParameter",
                             "invalid parameter");
@@ -5443,6 +5483,19 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
                         "invalid parameter name, "
                         "WEBGL_clip_cull_distance not enabled");
       return ScriptValue::CreateNull(script_state->GetIsolate());
+    case GL_MIN_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_MAX_FRAGMENT_INTERPOLATION_OFFSET_OES:
+    case GL_FRAGMENT_INTERPOLATION_OFFSET_BITS_OES:
+      if (ExtensionEnabled(kOESShaderMultisampleInterpolationName)) {
+        if (pname == GL_FRAGMENT_INTERPOLATION_OFFSET_BITS_OES) {
+          return GetIntParameter(script_state, pname);
+        }
+        return GetFloatParameter(script_state, pname);
+      }
+      SynthesizeGLError(GL_INVALID_ENUM, "getParameter",
+                        "invalid parameter name, "
+                        "OES_shader_multisample_interpolation not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     case GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
     case GL_MAX_COLOR_ATTACHMENTS_WITH_ACTIVE_PIXEL_LOCAL_STORAGE_ANGLE:
     case GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE:
@@ -5745,7 +5798,7 @@ bool WebGL2RenderingContextBase::ValidateReadPixelsFormatAndType(
       if (format == GL_RGBA) {
         if (!ExtensionEnabled(kEXTTextureNorm16Name)) {
           SynthesizeGLError(
-              GL_INVALID_ENUM, "readPixels",
+              GL_INVALID_OPERATION, "readPixels",
               "invalid format/type combination RGBA/UNSIGNED_SHORT without "
               "EXT_texture_norm16 support");
           return false;
@@ -6103,6 +6156,16 @@ ScriptValue WebGL2RenderingContextBase::getTexParameter(
       ContextGL()->GetTexParameterfv(target, pname, &value);
       return WebGLAny(script_state, value);
     }
+    case GL_DEPTH_STENCIL_TEXTURE_MODE_ANGLE:
+      if (ExtensionEnabled(kWebGLStencilTexturingName)) {
+        GLint value = 0;
+        ContextGL()->GetTexParameteriv(target, pname, &value);
+        return WebGLAny(script_state, value);
+      }
+      SynthesizeGLError(
+          GL_INVALID_ENUM, "getTexParameter",
+          "invalid parameter name, WEBGL_stencil_texturing not enabled");
+      return ScriptValue::CreateNull(script_state->GetIsolate());
     default:
       return WebGLRenderingContextBase::getTexParameter(script_state, target,
                                                         pname);
