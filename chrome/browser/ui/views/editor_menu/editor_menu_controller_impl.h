@@ -8,9 +8,15 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chromeos/components/editor_menu/public/cpp/editor_menu_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos::editor_menu {
 
@@ -19,12 +25,6 @@ namespace chromeos::editor_menu {
 class EditorMenuControllerImpl : public EditorMenuController,
                                  public EditorMenuViewDelegate {
  public:
-  enum class ConsentStatus {
-    kPending = 0,
-    kAccepted,
-    kRejected,
-  };
-
   EditorMenuControllerImpl();
   EditorMenuControllerImpl(const EditorMenuControllerImpl&) = delete;
   EditorMenuControllerImpl& operator=(const EditorMenuControllerImpl&) = delete;
@@ -47,6 +47,13 @@ class EditorMenuControllerImpl : public EditorMenuController,
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using EditorPanelContext = ash::input_method::EditorPanelContext;
+
+  void OnGetEditorPanelContextResult(gfx::Rect anchor_bounds,
+                                     const EditorPanelContext& context);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   views::UniqueWidgetPtr editor_menu_widget_;
 
   base::WeakPtrFactory<EditorMenuControllerImpl> weak_factory_{this};

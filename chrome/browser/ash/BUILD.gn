@@ -1466,6 +1466,8 @@ source_set("ash") {
     "input_method/editor_instance_impl.h",
     "input_method/editor_mediator.cc",
     "input_method/editor_mediator.h",
+    "input_method/editor_panel_manager.cc",
+    "input_method/editor_panel_manager.h",
     "input_method/editor_switch.cc",
     "input_method/editor_switch.h",
     "input_method/editor_text_actuator.cc",

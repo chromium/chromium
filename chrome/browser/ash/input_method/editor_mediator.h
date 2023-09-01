@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
+#include "chrome/browser/ash/input_method/editor_panel_manager.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
@@ -68,6 +69,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // ProfileObserver overrides:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  EditorPanelManager& panel_manager() { return panel_manager_; }
+
  private:
   void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
 
@@ -79,6 +82,7 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
 
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
+  EditorPanelManager panel_manager_;
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;
 
