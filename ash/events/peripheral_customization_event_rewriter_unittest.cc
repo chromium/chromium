@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
 #include "base/notreached.h"
@@ -98,6 +101,30 @@ class TestObserver : public PeripheralCustomizationEventRewriter::Observer {
   base::flat_map<int, std::vector<mojom::ButtonPtr>> pressed_mouse_buttons_;
   base::flat_map<int, std::vector<mojom::ButtonPtr>>
       pressed_graphics_tablet_buttons_;
+};
+
+class TestAcceleratorObserver : public AcceleratorController::Observer {
+ public:
+  TestAcceleratorObserver() {
+    Shell::Get()->accelerator_controller()->AddObserver(this);
+  }
+
+  ~TestAcceleratorObserver() override {
+    Shell::Get()->accelerator_controller()->RemoveObserver(this);
+  }
+
+  void OnActionPerformed(AcceleratorAction action) override {
+    action_performed_ = action;
+  }
+
+  bool has_action_performed() const { return action_performed_.has_value(); }
+
+  AcceleratorAction action_performed() const { return *action_performed_; }
+
+  void reset() { action_performed_.reset(); }
+
+ private:
+  absl::optional<AcceleratorAction> action_performed_;
 };
 
 using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent>;
@@ -226,7 +253,7 @@ mojom::Button GetButton(mojom::CustomizableButton customizable_button) {
 
 }  // namespace
 
-class PeripheralCustomizationEventRewriterTest : public testing::Test {
+class PeripheralCustomizationEventRewriterTest : public AshTestBase {
  public:
   PeripheralCustomizationEventRewriterTest() {
     CreateLayoutEngine(/*disable_permanently=*/true);
@@ -242,7 +269,7 @@ class PeripheralCustomizationEventRewriterTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization,
                                            features::kInputDeviceSettingsSplit},
                                           {});
-
+    AshTestBase::SetUp();
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>();
     observer_ = std::make_unique<TestObserver>();
     rewriter_->AddObserver(observer_.get());
@@ -252,6 +279,7 @@ class PeripheralCustomizationEventRewriterTest : public testing::Test {
     rewriter_->RemoveObserver(observer_.get());
     observer_.reset();
     rewriter_.reset();
+    AshTestBase::TearDown();
     scoped_feature_list_.Reset();
   }
 
@@ -289,6 +317,57 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
   ASSERT_TRUE(continuation.passthrough_event->IsMouseEvent());
   EXPECT_EQ(ConvertToString(event),
             ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest, KeyEventActionRewriting) {
+  TestAcceleratorObserver accelerator_observer;
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->SetRemappingActionForTesting(
+      kDeviceId, mojom::Button::NewVkey(ui::VKEY_A),
+      mojom::RemappingAction::NewAction(AcceleratorAction::kBrightnessDown));
+
+  rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A),
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  EXPECT_TRUE(continuation.discarded());
+  ASSERT_TRUE(accelerator_observer.has_action_performed());
+  EXPECT_EQ(AcceleratorAction::kBrightnessDown,
+            accelerator_observer.action_performed());
+
+  continuation.reset();
+  accelerator_observer.reset();
+  rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  EXPECT_TRUE(continuation.discarded());
+  ASSERT_FALSE(accelerator_observer.has_action_performed());
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest, MouseEventActionRewriting) {
+  TestAcceleratorObserver accelerator_observer;
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->SetRemappingActionForTesting(
+      kDeviceId,
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      mojom::RemappingAction::NewAction(AcceleratorAction::kLaunchApp0));
+
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_MIDDLE_MOUSE_BUTTON,
+                             ui::EF_MIDDLE_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  EXPECT_TRUE(continuation.discarded());
+  ASSERT_TRUE(accelerator_observer.has_action_performed());
+  EXPECT_EQ(AcceleratorAction::kLaunchApp0,
+            accelerator_observer.action_performed());
+
+  continuation.reset();
+  accelerator_observer.reset();
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED, ui::EF_MIDDLE_MOUSE_BUTTON,
+                             ui::EF_MIDDLE_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  EXPECT_TRUE(continuation.discarded());
+  ASSERT_FALSE(accelerator_observer.has_action_performed());
 }
 
 class MouseButtonObserverTest

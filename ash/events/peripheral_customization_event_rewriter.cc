@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -226,7 +228,15 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
   }
 
   if (remapping_action->is_action()) {
-    // TODO(dpad): Implement action rewriting from button presses.
+    if (event.type() == ui::ET_KEY_PRESSED ||
+        event.type() == ui::ET_MOUSE_PRESSED) {
+      // Every accelerator supported by peripheral customization is not impacted
+      // by the accelerator passed. Therefore, passing an empty accelerator will
+      // cause no issues.
+      Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+          remapping_action->get_action(), /*accelerator=*/{});
+    }
+
     return true;
   }
 
