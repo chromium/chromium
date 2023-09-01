@@ -266,7 +266,9 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             mModel.set(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE, false);
         } else if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
                 && mode == BookmarkUiMode.SEARCHING) {
-            mModel.set(BookmarkToolbarProperties.TITLE, mContext.getString(R.string.bookmarks));
+            mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, NavigationButton.BACK);
+            mModel.set(BookmarkToolbarProperties.TITLE,
+                    mContext.getString(R.string.bookmark_toolbar_search_title));
         } else {
             // All modes besides LOADING require a folder to be set. If there's none available,
             // then the button visibilities will be updated accordingly. Additionally, it's

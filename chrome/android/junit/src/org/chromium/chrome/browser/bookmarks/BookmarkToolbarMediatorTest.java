@@ -503,14 +503,16 @@ public class BookmarkToolbarMediatorTest {
     }
 
     @Test
-    public void testTitleWhenSearching() {
+    public void testTitleAndNavWhenSearching() {
         String folderName = "test folder";
         doReturn(folderName).when(mBookmarkItem).getTitle();
         mMediator.onFolderStateSet(mBookmarkId);
         assertEquals(folderName, mModel.get(BookmarkToolbarProperties.TITLE));
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
-        assertEquals("Bookmarks", mModel.get(BookmarkToolbarProperties.TITLE));
+        assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
+        assertEquals(NavigationButton.BACK,
+                (long) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
     }
 
     @Test
