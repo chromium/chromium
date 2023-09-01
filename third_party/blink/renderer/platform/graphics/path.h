@@ -135,6 +135,7 @@ class PLATFORM_EXPORT Path {
   void Clear();
   bool IsEmpty() const;
   bool IsClosed() const;
+  bool IsLine() const;
 
   // Specify whether this path is volatile. Temporary paths that are discarded
   // or modified after use should be marked as volatile. This is a hint to the

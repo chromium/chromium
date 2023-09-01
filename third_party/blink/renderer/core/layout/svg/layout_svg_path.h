@@ -49,11 +49,11 @@ class LayoutSVGPath final : public LayoutSVGShape {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
 
-  void UpdateShapeFromElement() override;
+  gfx::RectF UpdateShapeFromElement() override;
 
   const StylePath* GetStylePath() const;
   void UpdateMarkerPositions();
-  void UpdateMarkerBounds();
+  void UpdateMarkerBounds() override;
 
   Vector<MarkerPosition> marker_positions_;
 };

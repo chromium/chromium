@@ -38,12 +38,6 @@ namespace blink {
 class PointerEventsHitRules;
 class SVGGeometryElement;
 
-enum ShapeGeometryCodePath {
-  kPathGeometry,
-  kRectGeometryFastPath,
-  kEllipseGeometryFastPath
-};
-
 struct LayoutSVGShapeRareData {
   USING_FAST_MALLOC(LayoutSVGShapeRareData);
 
@@ -83,14 +77,25 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   }
   float DashScaleFactor() const;
 
-  // This method is sometimes (rarely) called with a null path and crashes. The
-  // code managing the path enforces the necessary invariants to ensure a valid
-  // path but somehow that fails. The assert and check for hasPath() are
-  // intended to detect and prevent crashes.
-  virtual bool IsShapeEmpty() const {
+  enum class GeometryType : uint8_t {
+    kEmpty,
+
+    kPath,
+    kLine,
+
+    kRectangle,
+    kRoundedRectangle,
+
+    kEllipse,
+    kCircle,
+  };
+  GeometryType GetGeometryType() const {
     NOT_DESTROYED();
-    DCHECK(path_);
-    return !HasPath() || GetPath().IsEmpty();
+    return geometry_type_;
+  }
+  bool IsShapeEmpty() const {
+    NOT_DESTROYED();
+    return GetGeometryType() == GeometryType::kEmpty;
   }
 
   bool HasNonScalingStroke() const {
@@ -125,11 +130,6 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   float StrokeWidth() const;
   float StrokeWidthForMarkerUnits() const;
 
-  virtual ShapeGeometryCodePath GeometryCodePath() const {
-    NOT_DESTROYED();
-    return kPathGeometry;
-  }
-
   gfx::RectF ObjectBoundingBox() const final {
     NOT_DESTROYED();
     return fill_bounding_box_;
@@ -141,19 +141,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   }
 
  protected:
-  // Description of the geometry of the shape for stroking.
-  enum StrokeGeometryClass : uint8_t {
-    kComplex,   // We don't know anything about the geometry => use the generic
-                // approximation.
-    kNoMiters,  // We know that the shape will not have any joins, so no miters
-                // will be generated. This means we can use an approximation
-                // that does not factor in miters (and thus get tighter
-                // approximated bounds.)
-    kSimple,    // We know that the geometry is convex and has no acute angles
-                // (rect, rounded rect, circle, ellipse) => use the simple
-                // approximation.
-  };
-  LayoutSVGShape(SVGGeometryElement*, StrokeGeometryClass);
+  explicit LayoutSVGShape(SVGGeometryElement*);
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;
@@ -162,16 +150,29 @@ class LayoutSVGShape : public LayoutSVGModelObject {
 
   void ClearPath();
   void CreatePath();
+  const Path& EnsurePath() {
+    NOT_DESTROYED();
+    if (!HasPath()) {
+      CreatePath();
+    }
+    return GetPath();
+  }
+
+  void SetGeometryType(GeometryType geometry_type) {
+    NOT_DESTROYED();
+    geometry_type_ = geometry_type;
+  }
 
   // Update (cached) shape data and the (object) bounding box.
-  virtual void UpdateShapeFromElement();
-  gfx::RectF CalculateStrokeBoundingBox() const;
+  virtual gfx::RectF UpdateShapeFromElement() = 0;
+  virtual void UpdateMarkerBounds() { NOT_DESTROYED(); }
   virtual bool ShapeDependentStrokeContains(const HitTestLocation&);
   virtual bool ShapeDependentFillContains(const HitTestLocation&,
                                           const WindRule) const;
 
   gfx::RectF fill_bounding_box_;
   gfx::RectF decorated_bounding_box_;
+  AffineTransform local_transform_;
 
   LayoutSVGShapeRareData& EnsureRareData() const;
 
@@ -218,11 +219,11 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   // Compute an approximation of the bounding box that this stroke geometry
   // would generate when applied to the shape.
   gfx::RectF ApproximateStrokeBoundingBox(const gfx::RectF& shape_bounds) const;
+  gfx::RectF CalculateStrokeBoundingBox() const;
   gfx::RectF CalculateNonScalingStrokeBoundingBox() const;
   void UpdateNonScalingStrokeData();
 
  private:
-  AffineTransform local_transform_;
   // TODO(fmalita): the Path is now cached in SVGPath; while this additional
   // cache is just a shallow copy, it certainly has a complexity/state
   // management cost (plus allocation & storage overhead) - so we should look
@@ -231,7 +232,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
   mutable std::unique_ptr<LayoutSVGShapeRareData> rare_data_;
   std::unique_ptr<Path> stroke_path_cache_;
 
-  StrokeGeometryClass geometry_class_;
+  GeometryType geometry_type_;
   bool needs_boundaries_update_ : 1;
   bool needs_shape_update_ : 1;
   bool needs_transform_update_ : 1;

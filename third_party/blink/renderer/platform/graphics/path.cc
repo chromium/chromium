@@ -279,6 +279,11 @@ bool Path::IsClosed() const {
   return path_.isLastContourClosed();
 }
 
+bool Path::IsLine() const {
+  SkPoint dummy_line[2];
+  return path_.isLine(dummy_line);
+}
+
 void Path::SetIsVolatile(bool is_volatile) {
   path_.setIsVolatile(is_volatile);
 }
