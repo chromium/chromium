@@ -111,13 +111,8 @@ content::WebContents* WebAppLaunchProcess::Run() {
   const apps::ShareTarget* share_target = MaybeGetShareTarget();
   auto [launch_url, is_file_handling] = GetLaunchUrl(share_target);
 
-  // TODO(crbug.com/1265381): URL Handlers allows web apps to be opened with
-  // associated origin URLs. There's no utility function to test whether a URL
-  // is in a web app's extended scope at the moment.
-  // Because URL Handlers is not implemented for Chrome OS we can perform this
-  // DCHECK on the basic scope.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_url_in_system_web_app_sccope =
+  bool is_url_in_system_web_app_scope =
       ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id) &&
       ash::SystemWebAppManager::Get(&*profile_)
           ->GetSystemApp(
@@ -126,10 +121,17 @@ content::WebContents* WebAppLaunchProcess::Run() {
           ->GetSystemApp(
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
-  CHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) ||
-        is_url_in_system_web_app_sccope)
-      << "Url " << launch_url.spec() << " not in scope for app "
-      << params_->app_id;
+
+  // TODO(crbug.com/1477991): Figure out why this is getting hit.
+  if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) &&
+      !is_url_in_system_web_app_scope) {
+    SCOPED_CRASH_KEY_STRING256("crbug1477991", "launch_url", launch_url.spec());
+    SCOPED_CRASH_KEY_STRING256("crbug1477991", "app_scope",
+                               web_app_->scope().spec());
+    base::debug::DumpWithoutCrashing();
+    DCHECK(false) << "Url " << launch_url.spec() << " not in scope for app "
+                  << params_->app_id;
+  }
 #else
   CHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id));
 #endif
