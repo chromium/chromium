@@ -18,6 +18,7 @@ source_set("push_notification_browser_state_service") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/web/public/thread",
   ]
 }
 

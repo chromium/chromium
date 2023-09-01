@@ -40,6 +40,8 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 namespace {
 // The time delay after firstSceneWillEnterForeground: before checking for main
@@ -230,7 +232,19 @@ const int kMainIntentCheckDelay = 1;
   _didRegisterDeviceWithAPNS = YES;
   base::UmaHistogramBoolean("IOS.PushNotification.APNSDeviceRegistration",
                             true);
-  [_pushNotificationDelegate applicationDidRegisterWithAPNS:deviceToken];
+
+  // TODO(crbug.com/1478263) Move PushNotificationDelegate to
+  // property and this should avoid the need to use strongSelf.
+  __weak MainApplicationDelegate* weakSelf = self;
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        MainApplicationDelegate* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf->_pushNotificationDelegate
+            applicationDidRegisterWithAPNS:deviceToken];
+      }));
 }
 
 - (void)application:(UIApplication*)application
