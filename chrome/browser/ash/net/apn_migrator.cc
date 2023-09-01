@@ -359,14 +359,21 @@ void ApnMigrator::OnGetManagedProperties(
   absl::optional<ApnPropertiesPtr> last_connected_attach_apn =
       GetPreRevampApnFromDict(cellular_dict,
                               ::onc::cellular::kLastConnectedAttachApnProperty);
+  NET_LOG(EVENT) << "last_connected_attach_apn: "
+                 << (last_connected_attach_apn.has_value()
+                         ? (*last_connected_attach_apn)->access_point_name
+                         : "none");
 
   absl::optional<ApnPropertiesPtr> last_connected_default_apn =
       GetPreRevampApnFromDict(
           cellular_dict, ::onc::cellular::kLastConnectedDefaultApnProperty);
+  NET_LOG(EVENT) << "last_connected_default_apn: "
+                 << (last_connected_default_apn.has_value()
+                         ? (*last_connected_default_apn)->access_point_name
+                         : "none");
 
   const bool is_network_managed = network->IsManagedByPolicy();
-  if (is_network_managed &&
-      !(last_connected_default_apn || last_connected_attach_apn)) {
+  if (is_network_managed && !last_connected_default_apn) {
     ManagedApnPropertiesPtr selected_apn =
         chromeos::network_config::GetManagedApnProperties(
             cellular_dict, ::onc::cellular::kAPN);
