@@ -104,7 +104,11 @@ export class Photo extends ModeBase {
       const callbackId = videoEl.requestVideoFrameCallback(() => {
         onReady.signal(true);
       });
-      (async () => {
+      // This is indirectly waited by onReady.wait().
+      // TODO(pihsun): To avoid memory leak, we should have a callback list for
+      // things need to be done when video.onExpired, and remove the callback
+      // after onReady.wait().
+      void (async () => {
         await this.video.onExpired.wait();
         videoEl.cancelVideoFrameCallback(callbackId);
         onReady.signal(false);
