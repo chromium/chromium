@@ -741,7 +741,8 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
 
   std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
   bool success = false;
-  if (file.created()) {
+  const bool file_created = file.created();
+  if (file_created) {
     success = mmfile->Initialize(std::move(file), {0, size},
                                  MemoryMappedFile::READ_WRITE_EXTEND);
   } else {
@@ -749,6 +750,12 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
   }
   if (!success ||
       !FilePersistentMemoryAllocator::IsFileAcceptable(*mmfile, true)) {
+    if (file_created) {
+      // If we created the file, but it couldn't be used, delete it.
+      // This could happen if we were able to create a file of all-zeroes, but
+      // couldn't write to it due to lack of disk space.
+      base::DeleteFile(file_path);
+    }
     return false;
   }
 
