@@ -175,10 +175,10 @@ crbug.com/1421437 [ no-passthrough ] WebglExtension_WEBGL_shader_pixel_local_sto
 [ passthrough angle-opengl ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Not supported on D3D11
-[ passthrough angle-d3d11 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
+[ win passthrough angle-d3d11 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Not supported on Intel Macs
-[ passthrough angle-metal mac-x86_64 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
+[ mac passthrough angle-metal mac-x86_64 ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
@@ -193,7 +193,8 @@ crbug.com/angleproject/3031 [ win angle-opengl passthrough ] WebglExtension_KHR_
 [ android passthrough angle-opengles ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 
 # Not available on Mesa older than 21.3.0
-[ linux intel passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
+crbug.com/1473838 [ linux intel passthrough ] WebglExtension_EXT_render_snorm [ Skip ]
+crbug.com/1473838 [ linux amd-0x7340 angle-opengl passthrough ] WebglExtension_EXT_render_snorm [ Failure ]
 
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
@@ -212,6 +213,13 @@ crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_r
 crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-clean-conformance-offscreencanvas.html [ Skip ]
 crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
 crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
+
+# Unsupported on ChromeOS VM
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_EXT_conservative_depth [ Skip ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_EXT_texture_mirror_clamp_to_edge [ Skip ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_NV_shader_noperspective_interpolation [ Skip ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic angle-opengles passthrough ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
 # Unsupported on this config.
 crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
@@ -420,6 +428,10 @@ crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fbomultis
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
+
+# New extensions failing on Win/AMD
+crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/ext-clip-control.html [ Failure ]
+crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 
 # D3D11 / AMD RX 5500 XT / Passthrough command decoder
 crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gles3/fborender/recreate_color_* [ RetryOnFailure ]
@@ -723,6 +735,7 @@ crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conform
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1276186 [ android android-pixel-2 ] conformance2/glsl3/array-equality.html [ Failure ]
 crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/renderbuffers/invalidate-framebuffer.html [ Failure ]
+crbug.com/1473838 [ android android-pixel-2 passthrough ] conformance/extensions/ext-clip-control.html [ Failure ]
 
 
 ## Pixel 4 ##
@@ -790,6 +803,11 @@ crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
+
+# New extension tests failing on ChromeOS VM
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/oes-shader-multisample-interpolation.html [ Failure ]
+crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-stencil-texturing.html [ Failure ]
 
 #####################
 # Lacros failures #

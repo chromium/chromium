@@ -190,6 +190,7 @@ crbug.com/1473838 [ android passthrough ] WebglExtension_WEBGL_polygon_mode [ Sk
 [ android qualcomm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 [ android android-nexus-5x ] WebglExtension_WEBGL_depth_texture [ Skip ]
 [ android android-nexus-5x ] WebglExtension_EXT_sRGB [ Skip ]
+crbug.com/1473838 [ android android-nexus-5x passthrough ] WebglExtension_EXT_clip_control [ Skip ]
 crbug.com/1286830 [ android arm ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 crbug.com/1286830 [ android arm ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 
@@ -470,6 +471,10 @@ crbug.com/956134 [ angle-d3d9 intel-0x9bc5 release-x64 target-cpu-64 win ] confo
 crbug.com/1409858 [ win amd-0x7340 angle-d3d11 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/1152597 [ win amd-0x7340 angle-d3d11 ] conformance/renderbuffers/framebuffer-state-restoration.html [ Failure ]
 crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-offset.html [ Failure ]
+
+# New extensions failing on Win/AMD
+crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/ext-clip-control.html [ Failure ]
+crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
