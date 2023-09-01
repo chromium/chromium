@@ -150,7 +150,13 @@ void DlpFilesController::RequestCopyAccess(
       MapFilePathToPolicyComponent(profile, source_file.path());
 
   // Copy from external is not limited by DLP.
-  if (src_component.has_value()) {
+  // TODO(b/297190245): currently there is no component for mounted archives and
+  // they are considered as not in the local file system so we end up in the if
+  // below when a file is copied from a mounted archive. When mounting of
+  // restricted archives is supported, we however need to apply the restriction
+  // of the source archive to the copied files and not just always allow as
+  // below.
+  if (src_component.has_value() || !IsInLocalFileSystem(source_file.path())) {
     std::move(result_callback)
         .Run(std::make_unique<file_access::ScopedFileAccess>(
             file_access::ScopedFileAccess::Allowed()));
@@ -168,14 +174,19 @@ void DlpFilesController::RequestCopyAccess(
   if (!dst_component.has_value()) {
     // We allow internal copy, we still have to get the scopedFS
     // and we might need to copy the source URL information.
-    if (IsInLocalFileSystem(source_file.path())) {
+    if (IsInLocalFileSystem(destination.path())) {
       ::dlp::GetFilesSourcesRequest request;
       request.add_files_paths(source_file.path().value());
       chromeos::DlpClient::Get()->GetFilesSources(
           request,
           base::BindOnce(&GotFilesSourcesOfCopy, destination,
                          file_access_request, std::move(result_callback)));
+    } else {
+      std::move(result_callback)
+          .Run(std::make_unique<file_access::ScopedFileAccess>(
+              /*allowed=*/false, base::ScopedFD()));
     }
+
     return;
   }
 

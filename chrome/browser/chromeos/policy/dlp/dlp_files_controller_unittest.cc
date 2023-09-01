@@ -260,9 +260,9 @@ TEST_F(DlpFilesControllerTest, FileCopyFromExternalTest) {
 }
 
 TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
-  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
-  auto destination = storage::FileSystemURL::CreateForTest(
-      kTestStorageKey, storage::kFileSystemTypeLocal, dest_file);
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("source"));
+  auto source = storage::FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
 
   base::MockRepeatingCallback<void(
       ::dlp::RequestFileAccessRequest request,
@@ -296,15 +296,15 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
 
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->RequestCopyAccess(storage::FileSystemURL(), destination,
+  files_controller_->RequestCopyAccess(source, storage::FileSystemURL(),
                                        future.GetCallback());
   EXPECT_TRUE(future.Get()->is_allowed());
 }
 
 TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
-  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
-  auto destination = storage::FileSystemURL::CreateForTest(
-      kTestStorageKey, storage::kFileSystemTypeLocal, dest_file);
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("source"));
+  auto source = storage::FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
 
   base::MockRepeatingCallback<void(
       ::dlp::RequestFileAccessRequest request,
@@ -338,7 +338,40 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
 
   base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
   ASSERT_TRUE(files_controller_);
-  files_controller_->RequestCopyAccess(storage::FileSystemURL(), destination,
+  files_controller_->RequestCopyAccess(source, storage::FileSystemURL(),
+                                       future.GetCallback());
+  EXPECT_FALSE(future.Get()->is_allowed());
+}
+
+TEST_F(DlpFilesControllerTest, FileCopyToUnknownComponent) {
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("source"));
+  auto source = storage::FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
+  auto destination = storage::FileSystemURL();
+
+  EXPECT_CALL(*files_controller_, MapFilePathToPolicyComponent)
+      .WillOnce(testing::Return(absl::nullopt))   // destination component
+      .WillOnce(testing::Return(absl::nullopt));  // source component
+
+  base::MockRepeatingCallback<void(
+      ::dlp::RequestFileAccessRequest request,
+      chromeos::DlpClient::RequestFileAccessCallback callback)>
+      request_file_access_call;
+  EXPECT_CALL(request_file_access_call, Run).Times(0);
+  chromeos::DlpClient::Get()->GetTestInterface()->SetRequestFileAccessMock(
+      request_file_access_call.Get());
+
+  base::MockRepeatingCallback<void(
+      const ::dlp::AddFilesRequest request,
+      chromeos::DlpClient::AddFilesCallback callback)>
+      add_files_call;
+  EXPECT_CALL(add_files_call, Run).Times(0);
+  chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
+      add_files_call.Get());
+
+  base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->RequestCopyAccess(source, destination,
                                        future.GetCallback());
   EXPECT_FALSE(future.Get()->is_allowed());
 }
