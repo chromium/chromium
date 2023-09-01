@@ -30,10 +30,10 @@ namespace message_center {
 
 namespace {
 
-// Animation duration for FADE_IN and FADE_OUT.
+// Animation duration for kFadeIn and kFadeOut.
 constexpr base::TimeDelta kFadeInFadeOutDuration = base::Milliseconds(200);
 
-// Animation duration for MOVE_DOWN.
+// Animation duration for kMoveDown.
 constexpr base::TimeDelta kMoveDownDuration = base::Milliseconds(120);
 
 }  // namespace
@@ -68,18 +68,18 @@ void MessagePopupCollection::Update() {
     return;
   }
 
-  if (state_ != State::IDLE)
+  if (state_ != State::kIdle)
     TransitionFromAnimation();
 
-  if (state_ == State::IDLE)
+  if (state_ == State::kIdle)
     TransitionToAnimation();
 
   UpdatePopupTimers();
 
-  if (state_ != State::IDLE) {
-    // If not in IDLE state, start animation.
+  if (state_ != State::kIdle) {
+    // If not in kIdle state, start animation.
     base::TimeDelta animation_duration;
-    if (state_ == State::MOVE_DOWN) {
+    if (state_ == State::kMoveDown) {
       animation_duration = kMoveDownDuration;
     } else {
       animation_duration = kFadeInFadeOutDuration;
@@ -92,7 +92,7 @@ void MessagePopupCollection::Update() {
     UpdateByAnimation();
   }
 
-  DCHECK(state_ == State::IDLE || animation_->is_animating());
+  DCHECK(state_ == State::kIdle || animation_->is_animating());
 }
 
 void MessagePopupCollection::ResetBounds() {
@@ -102,7 +102,7 @@ void MessagePopupCollection::ResetBounds() {
     base::AutoReset<bool> reset(&is_updating_, true);
 
     RemoveClosedPopupItems();
-    state_ = State::IDLE;
+    state_ = State::kIdle;
     animation_->End();
 
     CalculateAndUpdateBounds();
@@ -334,52 +334,52 @@ void MessagePopupCollection::CloseAllPopupsNow() {
   }
   CloseAnimatingPopups();
 
-  state_ = State::IDLE;
+  state_ = State::kIdle;
   animation_->End();
 }
 
 void MessagePopupCollection::TransitionFromAnimation() {
-  DCHECK_NE(state_, State::IDLE);
+  DCHECK_NE(state_, State::kIdle);
   DCHECK(!animation_->is_animating());
 
   // The animation of type |state_| is now finished.
   UpdateByAnimation();
 
-  // If FADE_OUT animation is finished, remove the animated popup.
-  if (state_ == State::FADE_OUT) {
+  // If kFadeOut animation is finished, remove the animated popup.
+  if (state_ == State::kFadeOut) {
     CloseAnimatingPopups();
   }
 
-  if (state_ == State::FADE_IN || state_ == State::MOVE_DOWN ||
-      (state_ == State::FADE_OUT && popup_items_.empty())) {
-    // If the animation is finished, transition to IDLE.
-    state_ = State::IDLE;
-  } else if (state_ == State::FADE_OUT && !popup_items_.empty()) {
+  if (state_ == State::kFadeIn || state_ == State::kMoveDown ||
+      (state_ == State::kFadeOut && popup_items_.empty())) {
+    // If the animation is finished, transition to kIdle.
+    state_ = State::kIdle;
+  } else if (state_ == State::kFadeOut && !popup_items_.empty()) {
     if (HasAddedPopup()) {
       CollapseAllPopups();
     }
-    // If FADE_OUT animation is finished and we still have remaining popups,
-    // we have to MOVE_DOWN them.
-    // If we're going to add a new popup after this MOVE_DOWN, do the collapse
-    // animation at the same time. Otherwise it will take another MOVE_DOWN.
-    state_ = State::MOVE_DOWN;
+    // If kFadeOut animation is finished and we still have remaining popups,
+    // we have to kMoveDown them.
+    // If we're going to add a new popup after this kMoveDown, do the collapse
+    // animation at the same time. Otherwise it will take another kMoveDown.
+    state_ = State::kMoveDown;
     MoveDownPopups();
   }
 }
 
 void MessagePopupCollection::TransitionToAnimation() {
-  DCHECK_EQ(state_, State::IDLE);
+  DCHECK_EQ(state_, State::kIdle);
   DCHECK(!animation_->is_animating());
 
   if (HasRemovedPopup()) {
     MarkRemovedPopup();
 
     if (CloseTransparentPopups()) {
-      // If the popup is already transparent, skip FADE_OUT.
-      state_ = State::MOVE_DOWN;
+      // If the popup is already transparent, skip kFadeOut.
+      state_ = State::kMoveDown;
       MoveDownPopups();
     } else {
-      state_ = State::FADE_OUT;
+      state_ = State::kFadeOut;
     }
     return;
   }
@@ -388,12 +388,12 @@ void MessagePopupCollection::TransitionToAnimation() {
     if (CollapseAllPopups()) {
       // If we had existing popups that weren't collapsed, first show collapsing
       // animation.
-      state_ = State::MOVE_DOWN;
+      state_ = State::kMoveDown;
       MoveDownPopups();
       return;
     } else if (AddPopup()) {
-      // A popup is actually added. Show FADE_IN animation.
-      state_ = State::FADE_IN;
+      // A popup is actually added. Show kFadein animation.
+      state_ = State::kFadeIn;
       return;
     }
   }
@@ -401,7 +401,7 @@ void MessagePopupCollection::TransitionToAnimation() {
   if (resize_requested_) {
     // Resize is requested e.g. a user manually expanded notification.
     resize_requested_ = false;
-    state_ = State::MOVE_DOWN;
+    state_ = State::kMoveDown;
     MoveDownPopups();
 
     // This function may be called by a child MessageView when a notification is
@@ -416,16 +416,16 @@ void MessagePopupCollection::TransitionToAnimation() {
 }
 
 void MessagePopupCollection::UpdatePopupTimers() {
-  if (state_ == State::IDLE) {
+  if (state_ == State::kIdle) {
     if (IsAnyPopupHovered() || IsAnyPopupFocused()) {
       // If any popup is hovered or focused, pause popup timer.
       PausePopupTimers();
     } else {
-      // If in IDLE state, restart popup timer.
+      // If in kIdle state, restart popup timer.
       RestartPopupTimers();
     }
   } else {
-    // If not in IDLE state, pause popup timer.
+    // If not in kIdle state, pause popup timer.
     PausePopupTimers();
   }
 }
@@ -482,22 +482,22 @@ void MessagePopupCollection::CalculateAndUpdateBounds() {
 }
 
 void MessagePopupCollection::UpdateByAnimation() {
-  DCHECK_NE(state_, State::IDLE);
+  DCHECK_NE(state_, State::kIdle);
 
   for (auto& item : popup_items_) {
     if (!item.is_animating)
       continue;
 
     double value = gfx::Tween::CalculateValue(
-        state_ == State::FADE_OUT ? gfx::Tween::EASE_IN : gfx::Tween::EASE_OUT,
+        state_ == State::kFadeOut ? gfx::Tween::EASE_IN : gfx::Tween::EASE_OUT,
         animation_->GetCurrentValue());
 
-    if (state_ == State::FADE_IN)
+    if (state_ == State::kFadeIn)
       item.popup->SetOpacity(gfx::Tween::FloatValueBetween(value, 0.0f, 1.0f));
-    else if (state_ == State::FADE_OUT)
+    else if (state_ == State::kFadeOut)
       item.popup->SetOpacity(gfx::Tween::FloatValueBetween(value, 1.0f, 0.0f));
 
-    if (state_ == State::FADE_IN || state_ == State::MOVE_DOWN) {
+    if (state_ == State::kFadeIn || state_ == State::kMoveDown) {
       item.popup->SetPopupBounds(
           gfx::Tween::RectValueBetween(value, item.start_bounds, item.bounds));
     }
