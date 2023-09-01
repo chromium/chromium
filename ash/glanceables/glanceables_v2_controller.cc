@@ -9,6 +9,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
+#include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -33,6 +34,7 @@ void GlanceablesV2Controller::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
   ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
+  TasksComboboxModel::RegisterUserProfilePrefs(registry);
 }
 
 void GlanceablesV2Controller::OnActiveUserSessionChanged(

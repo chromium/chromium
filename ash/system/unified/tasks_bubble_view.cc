@@ -160,7 +160,6 @@ TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate,
   task_list_combo_box_view_->SetAccessibleDescription(u"");
   task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
-  task_list_combo_box_view_->SetSelectedIndex(0);
 
   list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
       l10n_util::GetStringUTF16(
@@ -210,6 +209,7 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
 
   GlanceablesTaskList* active_task_list = tasks_combobox_model_->GetTaskListAt(
       task_list_combo_box_view_->GetSelectedIndex().value());
+  tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTasks(
       active_task_list->id,
       base::BindOnce(&TasksBubbleView::UpdateTasksList,

@@ -7,36 +7,46 @@
 
 #include <string>
 
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/ash_export.h"
 #include "ui/base/models/combobox_model.h"
-#include "ui/base/models/list_model.h"
+
+class PrefRegistrySimple;
+
+namespace ui {
+template <class ItemType>
+class ListModel;
+}
 
 namespace ash {
 
+struct GlanceablesTaskList;
+
 // A simple data model for the glanceables tasks combobox. This is used to
 // switch between different available tasks lists in the glanceable.
-class TasksComboboxModel : public ui::ComboboxModel {
+class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
  public:
-  explicit TasksComboboxModel(ui::ListModel<GlanceablesTaskList>* tasks_list);
-
+  explicit TasksComboboxModel(ui::ListModel<GlanceablesTaskList>* tasks_lists);
   TasksComboboxModel(const TasksComboboxModel&) = delete;
   TasksComboboxModel& operator=(const TasksComboboxModel&) = delete;
-
   ~TasksComboboxModel() override;
 
-  GlanceablesTaskList* GetTaskListAt(size_t index) const;
+  // Registers syncable user profile prefs with the specified `registry`.
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
- private:
-  void SetTaskLists();
-
-  // Overridden from ui::ComboboxModel:
+  // ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
+  GlanceablesTaskList* GetTaskListAt(size_t index) const;
+
+  // Saves the last selected `task_list_id` in user profile prefs.
+  void SaveLastSelectedTaskList(const std::string& task_list_id);
+
  private:
   // Owned by `GlanceableTasksClientImpl`.
-  const raw_ptr<ui::ListModel<GlanceablesTaskList>, ExperimentalAsh> task_list_;
+  const raw_ptr<ui::ListModel<GlanceablesTaskList>, ExperimentalAsh>
+      task_lists_;
 };
 
 }  // namespace ash
