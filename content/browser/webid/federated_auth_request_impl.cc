@@ -639,7 +639,9 @@ void FederatedAuthRequestImpl::RequestToken(
   request_dialog_controller_ = CreateDialogController();
   start_time_ = base::TimeTicks::Now();
 
-  FederatedApiPermissionStatus permission_status = GetApiPermissionStatus();
+  FederatedApiPermissionStatus permission_status =
+      GetApiPermissionStatus(url::Origin::Create(
+          idp_get_params_ptrs[0]->providers[0]->get_federated()->config_url));
 
   absl::optional<TokenStatus> error_token_status;
   FederatedAuthRequestResult request_result =
@@ -697,8 +699,9 @@ void FederatedAuthRequestImpl::RequestToken(
         return;
       }
 
-      if (!network::IsOriginPotentiallyTrustworthy(
-              url::Origin::Create(idp_ptr->get_federated()->config_url))) {
+      url::Origin idp_origin =
+          url::Origin::Create(idp_ptr->get_federated()->config_url);
+      if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kIdpNotPotentiallyTrustworthy,
                                  /*should_delay_callback=*/false);
@@ -714,7 +717,7 @@ void FederatedAuthRequestImpl::RequestToken(
               permission_delegate_);
 
       if (has_failing_idp_signin_status &&
-          webid::GetIdpSigninStatusMode(render_frame_host()) ==
+          webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
               FedCmIdpSigninStatusMode::ENABLED) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
                                  TokenStatus::kNotSignedInWithIdp,
@@ -847,7 +850,8 @@ void FederatedAuthRequestImpl::LogoutRps(
     return;
   }
 
-  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+  if (GetApiPermissionStatus(origin()) !=
+      FederatedApiPermissionStatus::GRANTED) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
     return;
   }
@@ -1009,7 +1013,9 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
             render_frame_host(), identity_provider_config_url,
             permission_delegate_);
     if (idp_info->has_failing_idp_signin_status &&
-        webid::GetIdpSigninStatusMode(render_frame_host()) ==
+        webid::GetIdpSigninStatusMode(
+            render_frame_host(),
+            url::Origin::Create(identity_provider_config_url)) ==
             FedCmIdpSigninStatusMode::ENABLED) {
       // Do not send metrics for IDP where the user is not signed-in in order
       // to prevent IDP from using the user IP to make a probabilistic model
@@ -1314,15 +1320,14 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     absl::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status) {
+  url::Origin idp_origin = url::Origin::Create(idp_info->provider->config_url);
   FedCmIdpSigninStatusMode signin_status_mode =
-      webid::GetIdpSigninStatusMode(render_frame_host());
+      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin);
   if (signin_status_mode == FedCmIdpSigninStatusMode::DISABLED) {
     OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
                             /*should_delay_callback=*/true);
     return;
   }
-
-  url::Origin idp_origin = url::Origin::Create(idp_info->provider->config_url);
 
   if (!old_idp_signin_status.has_value() ||
       signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
@@ -1568,7 +1573,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
   // should enforce this check before all requests but users typically won't
   // have time to disable the FedCM API in other types of requests.
-  if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+  url::Origin idp_origin = url::Origin::Create(idp_config_url);
+  if (GetApiPermissionStatus(idp_origin) !=
+      FederatedApiPermissionStatus::GRANTED) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorDisabledInSettings,
         TokenStatus::kDisabledInSettings,
@@ -2155,8 +2162,8 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
   }
 }
 
-FederatedApiPermissionStatus
-FederatedAuthRequestImpl::GetApiPermissionStatus() {
+FederatedApiPermissionStatus FederatedAuthRequestImpl::GetApiPermissionStatus(
+    const url::Origin& idp_origin) {
   DCHECK(api_permission_delegate_);
   FederatedApiPermissionStatus status =
       api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
@@ -2164,7 +2171,7 @@ FederatedAuthRequestImpl::GetApiPermissionStatus() {
   // status API is enabled, in general or through OT.
   if (status ==
           FederatedApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED &&
-      webid::GetIdpSigninStatusMode(render_frame_host()) ==
+      webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin) ==
           FedCmIdpSigninStatusMode::ENABLED) {
     status = FederatedApiPermissionStatus::GRANTED;
   }

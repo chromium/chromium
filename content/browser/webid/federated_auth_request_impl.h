@@ -109,7 +109,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // This wrapper around FederatedIdentityApiPermissionContextDelegate ensures
   // that we handle BLOCKED_THIRD_PARTY_COOKIES_BLOCKED correctly.
   FederatedIdentityApiPermissionContextDelegate::PermissionStatus
-  GetApiPermissionStatus();
+  GetApiPermissionStatus(const url::Origin& idp_origin);
 
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,
