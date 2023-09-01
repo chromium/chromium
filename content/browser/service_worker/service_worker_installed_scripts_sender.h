@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"
@@ -61,6 +62,9 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
     return last_finished_reason_;
   }
 
+  // Set a callback function to callback when all the update finished.
+  void SetFinishCallback(base::OnceClosure callback);
+
  private:
   enum class State {
     kNotStarted,
@@ -96,6 +100,7 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
   const GURL main_script_url_;
   const int64_t main_script_id_;
   bool sent_main_script_;
+  base::OnceClosure finish_callback_;
 
   mojo::Receiver<blink::mojom::ServiceWorkerInstalledScriptsManagerHost>
       receiver_{this};

@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
+#include "content/browser/service_worker/service_worker_cache_storage_matcher.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/content_export.h"
 #include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
@@ -252,6 +253,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   const int frame_tree_node_id_;
 
   std::unique_ptr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
+  std::unique_ptr<ServiceWorkerCacheStorageMatcher> cache_matcher_;
   std::unique_ptr<StreamWaiter> stream_waiter_;
   // The blob needs to be held while it's read to keep it alive.
   mojo::Remote<blink::mojom::Blob> body_as_blob_;

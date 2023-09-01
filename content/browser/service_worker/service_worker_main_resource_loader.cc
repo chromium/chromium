@@ -314,8 +314,15 @@ void ServiceWorkerMainResourceLoader::StartRequest(
           race_network_request_mode = RaceNetworkRequestMode::kSkipped;
           break;
         case blink::ServiceWorkerRouterSource::SourceType::kCache:
-          NOTIMPLEMENTED();
-          break;
+          cache_matcher_ = std::make_unique<ServiceWorkerCacheStorageMatcher>(
+              sources[0].cache_source->cache_name,
+              blink::mojom::FetchAPIRequest::From(resource_request_),
+              active_worker,
+              base::BindOnce(
+                  &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
+                  weak_factory_.GetWeakPtr()));
+          cache_matcher_->Run();
+          return;
       }
     }
   }

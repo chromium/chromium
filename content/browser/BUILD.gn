@@ -2023,6 +2023,8 @@ source_set("browser") {
     "service_worker/payment_handler_support.cc",
     "service_worker/payment_handler_support.h",
     "service_worker/service_worker_accessed_callback.h",
+    "service_worker/service_worker_cache_storage_matcher.cc",
+    "service_worker/service_worker_cache_storage_matcher.h",
     "service_worker/service_worker_cache_writer.cc",
     "service_worker/service_worker_cache_writer.h",
     "service_worker/service_worker_client_utils.cc",
