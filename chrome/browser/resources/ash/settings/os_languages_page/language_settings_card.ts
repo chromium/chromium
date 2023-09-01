@@ -74,18 +74,14 @@ export class LanguageSettingsCardElement extends
   languageHelper: LanguageHelper|undefined;
 
   // Internal state.
-  private isRevampWayfindingEnabled_: boolean;
+  private isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
   private smartInputsEnabled_: boolean;
 
-  constructor() {
-    super();
-
-    this.isRevampWayfindingEnabled_ = isRevampWayfindingEnabled();
-
-    /** RouteOriginMixin override */
-    this.route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                   routes.OS_LANGUAGES;
-  }
+  // Internal properties for mixins.
+  // From RouteOriginMixin. This needs to be defined after
+  // `isRevampWayfindingEnabled_`.
+  override route = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
+                                                     routes.OS_LANGUAGES;
 
   override ready(): void {
     super.ready();

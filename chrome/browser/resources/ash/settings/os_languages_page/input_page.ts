@@ -159,6 +159,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     Setting.kAddInputMethod,
     Setting.kSpellCheck,
   ]);
+  // From RouteOriginMixin.
+  override route = routes.OS_LANGUAGES_INPUT;
 
   // Internal state.
   private showAddSpellcheckLanguagesDialog_: boolean;
@@ -174,13 +176,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private showLastUsedImeShortcutReminder_: boolean;
   private showNextImeShortcutReminder_: boolean;
   private shortcutReminderBody_: TrustedHTML[];
-
-  constructor() {
-    super();
-
-    /** RouteOriginMixin override */
-    this.route = routes.OS_LANGUAGES_INPUT;
-  }
 
   override ready(): void {
     super.ready();
