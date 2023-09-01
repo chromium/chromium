@@ -54,8 +54,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
 
 @interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate>
 
-// The type of this container.
-@property(nonatomic, assign) ContentSuggestionsModuleType type;
+// Redefined as ReadWrite.
+@property(nonatomic, assign, readwrite) ContentSuggestionsModuleType type;
 
 @end
 

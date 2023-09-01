@@ -541,19 +541,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                  type:ContentSuggestionsModuleType::
                                           kCompactedSetUpList
                              delegate:self];
-          [_magicStack
-              insertArrangedSubview:setUpListCompactedModule
-                            atIndex:[self indexForMagicStackModule:
-                                              ContentSuggestionsModuleType::
-                                                  kCompactedSetUpList]];
+          [self insertModuleIntoMagicStack:setUpListCompactedModule];
         } else {
           MagicStackModuleContainer* setUpListModule =
               [[MagicStackModuleContainer alloc] initWithContentView:view
                                                                 type:type
                                                             delegate:self];
-          [_magicStack
-              insertArrangedSubview:setUpListModule
-                            atIndex:[self indexForMagicStackModule:type]];
+          [self insertModuleIntoMagicStack:setUpListModule];
         }
       }
     }
@@ -670,29 +664,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)showSafetyCheck:(SafetyCheckState*)state {
   _safetyCheckState = state;
 
-  if (!self.viewLoaded) {
+  if (!_magicStack) {
     return;
   }
 
-  if (self.safetyCheckModuleContainer) {
     [self.safetyCheckModuleContainer removeFromSuperview];
-  }
 
   [self createSafetyCheck:state];
 
-  int checkIssuesCount = CheckIssuesCount(state);
-
-  ContentSuggestionsModuleType type =
-      ContentSuggestionsModuleType::kSafetyCheck;
-
-  if (checkIssuesCount > 2) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
-  } else if (checkIssuesCount > 1) {
-    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
-  }
-
-  [_magicStack insertArrangedSubview:self.safetyCheckModuleContainer
-                             atIndex:[self indexForMagicStackModule:type]];
+  [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
 }
 
 - (CGFloat)contentSuggestionsHeight {
@@ -735,11 +715,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                      type:ContentSuggestionsModuleType::kTabResumption
                  delegate:self];
 
-  if (self.viewLoaded) {
-    [_magicStack insertArrangedSubview:_tabResumptionModuleContainer
-                               atIndex:[self indexForMagicStackModule:
-                                                 ContentSuggestionsModuleType::
-                                                     kTabResumption]];
+  if (_magicStack) {
+    [self insertModuleIntoMagicStack:self.tabResumptionModuleContainer];
   }
 }
 
@@ -953,11 +930,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
       if (_magicStack) {
-        [_magicStack
-            insertArrangedSubview:self.mostVisitedModuleContainer
-                          atIndex:[self indexForMagicStackModule:
-                                            ContentSuggestionsModuleType::
-                                                kMostVisited]];
+        [self insertModuleIntoMagicStack:self.mostVisitedModuleContainer];
       }
     } else {
       [self.verticalStackView
@@ -1074,6 +1047,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStack.axis = UILayoutConstraintAxisHorizontal;
   _magicStack.distribution = UIStackViewDistributionEqualSpacing;
   _magicStack.spacing = kMagicStackSpacing;
+  _magicStack.accessibilityIdentifier = kMagicStackViewAccessibilityIdentifier;
   // Ensures modules take up entire height of the Magic Stack.
   _magicStack.alignment = UIStackViewAlignmentFill;
   [_magicStackScrollView addSubview:_magicStack];
@@ -1199,6 +1173,33 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     index++;
   }
   NOTREACHED_NORETURN();
+}
+
+// This method should be the one used to insert a module into the Magic Stack
+// after the latter has been already created. This logic is necessary to handle
+// situations where modules can become available to show in the Magic Stack
+// after initial view construction in no predictable order.
+- (void)insertModuleIntoMagicStack:(MagicStackModuleContainer*)moduleToInsert {
+  NSUInteger insertingModuleOrderIndex =
+      [self indexForMagicStackModule:moduleToInsert.type];
+
+  NSUInteger magicStackIndex = 0;
+  for (UIView* view in _magicStack.arrangedSubviews) {
+    MagicStackModuleContainer* moduleContainer =
+        base::apple::ObjCCastStrict<MagicStackModuleContainer>(view);
+    if ([self indexForMagicStackModule:moduleContainer.type] >
+        insertingModuleOrderIndex) {
+      // `moduleToInsert` should be inserted right in front of the first module
+      // found with a rank position higher than it.
+      break;
+    }
+    magicStackIndex++;
+  }
+
+  // `magicStackIndex` here either represents the position right before the
+  // first found module with a rank higher than `moduleToInsert` or the end of
+  // the array.
+  [_magicStack insertArrangedSubview:moduleToInsert atIndex:magicStackIndex];
 }
 
 // Returns the `ContentSuggestionsModuleType` type of the module being currently

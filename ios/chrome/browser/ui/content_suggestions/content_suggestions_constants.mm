@@ -20,6 +20,8 @@ NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
 NSString* const kMagicStackScrollViewAccessibilityIdentifier =
     @"MagicStackScrollViewAccessibilityIdentifier";
 
+NSString* const kMagicStackViewAccessibilityIdentifier = @"kMagicStack";
+
 const CGFloat kMagicStackWideWidth = 430;
 
 const CGFloat kMostVisitedBottomMargin = 13;

@@ -47,6 +47,9 @@ extern NSString* const
 // Represents the Magic Stack ScrollView.
 extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
 
+// Represents the Magic Stack UIStackView.
+extern NSString* const kMagicStackViewAccessibilityIdentifier;
+
 // Represents the width of the Magic Stack ScrollView for the unique wide
 // layout.
 extern const CGFloat kMagicStackWideWidth;
