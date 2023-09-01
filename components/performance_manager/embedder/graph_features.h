@@ -48,6 +48,7 @@ class GraphFeatures {
       bool node_impl_describers : 1;
       bool page_load_tracker_decorator : 1;
       bool process_hosted_content_types_aggregator : 1;
+      bool resource_attribution_registries : 1;
       bool site_data_recorder : 1;
       bool tab_properties_decorator : 1;
       bool v8_context_tracker : 1;
@@ -100,6 +101,11 @@ class GraphFeatures {
     return *this;
   }
 
+  constexpr GraphFeatures& EnableResourceAttributionRegistries() {
+    flags_.resource_attribution_registries = true;
+    return *this;
+  }
+
   // This is a nop on the Android platform, as the feature isn't available
   // there.
   constexpr GraphFeatures& EnableSiteDataRecorder() {
@@ -136,6 +142,7 @@ class GraphFeatures {
     EnableNodeImplDescribers();
     EnablePageLoadTrackerDecorator();
     EnableProcessHostedContentTypesAggregator();
+    EnableResourceAttributionRegistries();
     EnableSiteDataRecorder();
     EnableTabPropertiesDecorator();
     EnableV8ContextTracker();

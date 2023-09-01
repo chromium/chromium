@@ -64,6 +64,8 @@ source_set("browsertest_support") {
   sources = [
     "performance_manager_browsertest_harness.cc",
     "performance_manager_browsertest_harness.h",
+    "resource_attribution/registry_browsertest_harness.cc",
+    "resource_attribution/registry_browsertest_harness.h",
   ]
 
   deps = [

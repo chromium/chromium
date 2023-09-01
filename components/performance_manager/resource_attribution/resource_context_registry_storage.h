@@ -1,0 +1,96 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXT_REGISTRY_STORAGE_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXT_REGISTRY_STORAGE_H_
+
+#include <map>
+#include <memory>
+
+#include "base/sequence_checker.h"
+#include "components/performance_manager/public/browser_child_process_host_id.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/resource_attribution/process_context_registry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class BrowserChildProcessHost;
+class RenderProcessHost;
+}  // namespace content
+
+namespace performance_manager::resource_attribution {
+
+// Storage to map all types of ResourceContext tokens to content and
+// PerformanceManager objects. Public access is through a set of facade classes,
+// one for each context type (ProcessContextRegistry, etc.)
+class ResourceContextRegistryStorage final
+    : public ProcessNode::ObserverDefaultImpl,
+      public GraphOwned {
+ public:
+  // Storage used from the UI thread.
+  class UIThreadStorage;
+
+  ResourceContextRegistryStorage();
+  ~ResourceContextRegistryStorage() final;
+
+  ResourceContextRegistryStorage(const ResourceContextRegistryStorage&) =
+      delete;
+  ResourceContextRegistryStorage& operator=(
+      const ResourceContextRegistryStorage&) = delete;
+
+  // Static UI thread accessors.
+
+  static absl::optional<ProcessContext> BrowserProcessContext();
+  static absl::optional<ProcessContext> ProcessContextForId(
+      RenderProcessHostId id);
+  static absl::optional<ProcessContext> ProcessContextForId(
+      BrowserChildProcessHostId id);
+
+  static bool IsBrowserProcessContext(const ProcessContext& context);
+  static bool IsRenderProcessContext(const ProcessContext& context);
+  static bool IsBrowserChildProcessContext(const ProcessContext& context);
+  static content::RenderProcessHost* RenderProcessHostFromContext(
+      const ProcessContext& context);
+  static content::BrowserChildProcessHost* BrowserChildProcessHostFromContext(
+      const ProcessContext& context);
+
+  // PM sequence accessors.
+  const ProcessNode* GetProcessNodeForContext(
+      const ProcessContext& context) const;
+
+  // ProcessNodeObserver overrides:
+  void OnProcessNodeAdded(const ProcessNode* process_node) final;
+  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) final;
+
+  // GraphOwned overrides:
+  void OnPassedToGraph(Graph* graph) final;
+  void OnTakenFromGraph(Graph* graph) final;
+
+ private:
+  static void RegisterUIThreadStorage(UIThreadStorage* storage);
+  static void DeleteUIThreadStorage(std::unique_ptr<UIThreadStorage> storage);
+
+  // Validates that non-static methods are called on the PM sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Storage used only from the PM sequence.
+  std::map<ProcessContext, const ProcessNode*> process_nodes_by_context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<UIThreadStorage> ui_thread_storage_;
+
+  // Pointer through which static methods access UIThreadStorage on the UI
+  // thread.
+  static UIThreadStorage* static_ui_thread_storage_;
+
+  // Public accessors for the storage. ResourceContextRegistryStorage registers
+  // these with the graph in OnPassedToGraph().
+  ProcessContextRegistry process_registry_{*this};
+};
+
+}  // namespace performance_manager::resource_attribution
+
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXT_REGISTRY_STORAGE_H_
