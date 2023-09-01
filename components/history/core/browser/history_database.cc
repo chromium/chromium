@@ -174,6 +174,14 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     return;
   UMA_HISTOGRAM_COUNTS_1M("History.VisitTableCount", visit_count.ColumnInt(0));
 
+  sql::Statement visited_link_count(
+      db_.GetUniqueStatement("SELECT count(*) FROM visited_links"));
+  if (!visited_link_count.Step()) {
+    return;
+  }
+  UMA_HISTOGRAM_COUNTS_1M("History.VisitedLinkTableCount",
+                          visited_link_count.ColumnInt(0));
+
   UMA_HISTOGRAM_TIMES("History.DatabaseBasicMetricsTime",
                       base::TimeTicks::Now() - start_time);
 

@@ -2669,6 +2669,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitedLinkTableCount" units="VisitedLinks"
+    expires_after="2024-09-01">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <component>Blink&gt;History&gt;VisitedLinks</component>
+  <summary>
+    Number of rows in visited_links table in History DB. Metrics are logged on
+    initialization of the History DB on 1% of starts.
+  </summary>
+</histogram>
+
 <histogram name="History.VisitTableCount" units="visits"
     expires_after="2024-02-25">
   <owner>mpearson@chromium.org</owner>
