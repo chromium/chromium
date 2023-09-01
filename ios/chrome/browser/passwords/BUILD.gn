@@ -209,6 +209,21 @@ source_set("password_checkup_utils") {
   ]
 }
 
+source_set("sharing_factory") {
+  sources = [
+    "ios_chrome_password_sender_service_factory.cc",
+    "ios_chrome_password_sender_service_factory.h",
+  ]
+  deps = [
+    "//components/keyed_service/ios",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/sync:model_type_store_service_factory",
+    "//ios/chrome/common",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

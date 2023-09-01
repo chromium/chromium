@@ -71,6 +71,7 @@ source_set("sync") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/invalidation",
     "//ios/chrome/browser/metrics:google_groups_updater",
+    "//ios/chrome/browser/passwords:sharing_factory",
     "//ios/chrome/browser/passwords:store_factory",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/reading_list",
