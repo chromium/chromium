@@ -21,10 +21,15 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+namespace {
+const char kURL[] = "https://chromium.org/";
+}
 
 class ContentSuggestionsViewControllerTest : public PlatformTest {
  public:
@@ -187,4 +192,76 @@ TEST_F(ContentSuggestionsViewControllerTest, TestInsertModuleIntoMagicStack) {
   MagicStackModuleContainer* safetyCheckModule =
       (MagicStackModuleContainer*)subviews[2];
   EXPECT_EQ(ContentSuggestionsModuleType::kSafetyCheck, safetyCheckModule.type);
+}
+
+// Tests that updates to the Magic Stack module order result in the correct
+// order of modules in the Magic Stack.
+TEST_F(ContentSuggestionsViewControllerTest, TestUpdateMagicStackOrder) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
+       {kSafetyCheckMagicStack, {}},
+       {kTabResumption, {}}},
+      {});
+  [view_controller_ setMagicStackOrder:@[
+    @(int(ContentSuggestionsModuleType::kMostVisited)),
+    @(int(ContentSuggestionsModuleType::kSafetyCheck)),
+    @(int(ContentSuggestionsModuleType::kShortcuts))
+  ]];
+
+  [view_controller_ setShortcutTilesWithConfigs:@[ BookmarkActionItem() ]];
+  // Trigger -viewDidLoad for initial Magic Stack construction.
+  // TODO(crbug.com/1477476): This view get should ideally happen before
+  // setShortcutTilesWithConfigs: to ensure Shortcuts is inserted correctly as
+  // well.
+  [view_controller_ loadViewIfNeeded];
+  SafetyCheckState* defaultSafetyCheckState = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
+                  passwordState:PasswordSafetyCheckState::kDefault
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+  [view_controller_ showSafetyCheck:defaultSafetyCheckState];
+  [view_controller_ setMostVisitedTilesWithConfigs:@[
+    [[ContentSuggestionsMostVisitedItem alloc] init]
+  ]];
+
+  // Verify Removing kSafetyCheck works.
+  MagicStackOrderChange change;
+  change.type = MagicStackOrderChange::Type::kRemove;
+  change.old_module = ContentSuggestionsModuleType::kSafetyCheck;
+  change.index = 1;
+  [view_controller_ updateMagicStackOrder:change];
+  UIStackView* magicStack = FindMagicStack();
+  // Assert order is correct.
+  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
+  ASSERT_EQ(2u, [subviews count]);
+  MagicStackModuleContainer* mostVisitedModule =
+      (MagicStackModuleContainer*)subviews[0];
+  EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
+  MagicStackModuleContainer* shortcutsModule =
+      (MagicStackModuleContainer*)subviews[1];
+  EXPECT_EQ(ContentSuggestionsModuleType::kShortcuts, shortcutsModule.type);
+
+  // Verify Inserting kTabResumption works.
+  change.type = MagicStackOrderChange::Type::kInsert;
+  change.new_module = ContentSuggestionsModuleType::kTabResumption;
+  change.index = 1;
+  [view_controller_ updateMagicStackOrder:change];
+  TabResumptionItem* item = [[TabResumptionItem alloc]
+      initWithItemType:TabResumptionItemType::kMostRecentTab];
+  item.tabTitle = @"Some Title";
+  item.syncedTime = base::Time::Now();
+  item.tabURL = GURL(kURL);
+  [view_controller_ showTabResumptionWithItem:item];
+  magicStack = FindMagicStack();
+  // Assert order is correct.
+  subviews = magicStack.arrangedSubviews;
+  ASSERT_EQ(3u, [subviews count]);
+  mostVisitedModule = (MagicStackModuleContainer*)subviews[0];
+  EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
+  shortcutsModule = (MagicStackModuleContainer*)subviews[1];
+  EXPECT_EQ(ContentSuggestionsModuleType::kTabResumption, shortcutsModule.type);
+  MagicStackModuleContainer* tabResumptionModule =
+      (MagicStackModuleContainer*)subviews[2];
+  EXPECT_EQ(ContentSuggestionsModuleType::kShortcuts, tabResumptionModule.type);
 }

@@ -457,6 +457,33 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+- (void)updateMagicStackOrder:(MagicStackOrderChange)change {
+  switch (change.type) {
+    case MagicStackOrderChange::Type::kInsert:
+      [_magicStackModuleOrder insertObject:@(int(change.new_module))
+                                   atIndex:change.index];
+      break;
+    case MagicStackOrderChange::Type::kRemove: {
+      ContentSuggestionsModuleType moduleType = (ContentSuggestionsModuleType)
+          [_magicStackModuleOrder[change.index] intValue];
+      CHECK(moduleType == change.old_module);
+      [_magicStackModuleOrder removeObjectAtIndex:change.index];
+      UIView* moduleToRemove = _magicStack.arrangedSubviews[change.index];
+      [moduleToRemove removeFromSuperview];
+      CHECK_EQ(_magicStackModuleOrder.count,
+               _magicStack.arrangedSubviews.count);
+      break;
+    }
+    case MagicStackOrderChange::Type::kReplace: {
+      ContentSuggestionsModuleType moduleType = (ContentSuggestionsModuleType)
+          [_magicStackModuleOrder[change.index] intValue];
+      CHECK(moduleType == change.old_module);
+      _magicStackModuleOrder[change.index] = @(int(change.new_module));
+      break;
+    }
+  }
+}
+
 - (void)scrollToNextMagicStackModuleForCompletedModule:
     (ContentSuggestionsModuleType)moduleType {
   ContentSuggestionsModuleType currentModule = [self currentlyShownModule];

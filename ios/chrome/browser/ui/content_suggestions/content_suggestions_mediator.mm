@@ -240,6 +240,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   std::unique_ptr<TabResumptionHelper> _tabResumptionHelper;
   // Item displayed in the tab resumption tile.
   TabResumptionItem* _tabResumptionItem;
+  // The latest module ranking returned from the SegmentationService.
+  NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
+  // The latest Magic Stack module order sent up to the consumer. This includes
+  // any omissions due to filtering from `_magicStackOrderFromSegmentation` (or
+  // `magicStackOrder:` if kSegmentationPlatformIosModuleRanker is disabled) and
+  // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
+  NSArray<NSNumber*>* _latestMagicStackOrder;
 }
 
 #pragma mark - Public
@@ -827,7 +834,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                 kSegmentationPlatformIosModuleRanker)) {
       [self fetchMagicStackModuleRankingFromSegmentationPlatform];
     } else {
-      [self.consumer setMagicStackOrder:[self magicStackOrder]];
+      _latestMagicStackOrder = [self magicStackOrder];
+      [self.consumer setMagicStackOrder:_latestMagicStackOrder];
     }
     if (IsTabResumptionEnabled()) {
       [self showTabResumptionTile];
@@ -1034,6 +1042,34 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return magicStackModules;
 }
 
+// Construct the Magic Stack module order from fetched results from
+// Segmentation. This method adds on modules not included on the Segmentation
+// side (e.g. Set Up List) and also filters out modules not ready or should not
+// be presented.
+- (NSArray<NSNumber*>*)segmentationMagicStackOrder {
+  NSMutableArray<NSNumber*>* magicStackOrder = [NSMutableArray array];
+  if ([self shouldShowSetUpList]) {
+    [self addSetUpListToMagicStackOrder:magicStackOrder];
+  }
+  for (NSNumber* moduleNumber : _magicStackOrderFromSegmentation) {
+    ContentSuggestionsModuleType moduleType =
+        (ContentSuggestionsModuleType)[moduleNumber intValue];
+    if (moduleType == ContentSuggestionsModuleType::kSafetyCheck) {
+      if (!IsSafetyCheckMagicStackEnabled()) {
+        continue;
+      }
+      // If ShouldHideIrrelevantModules() is enabled and it is not the first
+      // ranked module, do not add it to the Magic Stack.
+      if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
+        [self addSafetyCheckToMagicStackOrder:magicStackOrder];
+      }
+    } else {
+      [magicStackOrder addObject:moduleNumber];
+    }
+  }
+  return magicStackOrder;
+}
+
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   auto input_context =
       base::MakeRefCounted<segmentation_platform::InputContext>();
@@ -1093,14 +1129,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
     } else if (label == segmentation_platform::kSafetyCheck) {
-      // If ShouldHideIrrelevantModules() is enabled and it is not the first
-      // ranked module, do not add it to the Magic Stack.
-      if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
-        [self addSafetyCheckToMagicStackOrder:magicStackOrder];
-      }
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
     }
   }
-  [self.consumer setMagicStackOrder:magicStackOrder];
+  _magicStackOrderFromSegmentation = magicStackOrder;
+  _latestMagicStackOrder = [self segmentationMagicStackOrder];
+  [self.consumer setMagicStackOrder:_latestMagicStackOrder];
   [self.feedDelegate contentSuggestionsWasUpdated];
 }
 
@@ -1247,7 +1282,16 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   _tabResumptionItem = item;
-  [self.consumer setMagicStackOrder:[self magicStackOrder]];
+  MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert,
+                               ContentSuggestionsModuleType::kTabResumption};
+  _latestMagicStackOrder =
+      base::FeatureList::IsEnabled(
+          segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
+          ? [self segmentationMagicStackOrder]
+          : [self magicStackOrder];
+  change.index = [self
+      indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+  [self.consumer updateMagicStackOrder:change];
   [self.consumer showTabResumptionWithItem:_tabResumptionItem];
 }
 
@@ -1255,6 +1299,14 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)hideTabResumption {
   [self.consumer hideTabResumption];
   _tabResumptionItem = nil;
+}
+
+// Returns the index rank of `moduleType`.
+- (NSUInteger)indexForMagicStackModule:
+    (ContentSuggestionsModuleType)moduleType {
+  NSUInteger index = [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
+  CHECK(index != NSNotFound);
+  return index;
 }
 
 #pragma mark - Properties

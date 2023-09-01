@@ -372,8 +372,50 @@ TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
 
 // Tests that the -setMagicStackOrder: consumer call is executed with the
 // correct order when fetching from the SegmentationPlatformService.
+// NOTE: do not add new module features to this test, this one ensures the
+// mediator can handle the fetched module order and filter out any extra modules
+// that aren't enabled/valid for a client. Add new modules to
+// TestMagicStackOrderSegmentationServiceCallWithNewFeatures.
 TEST_F(ContentSuggestionsMediatorTest,
        TestMagicStackOrderSegmentationServiceCall) {
+  consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
+  mediator_.segmentationService =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetForBrowserState(chrome_browser_state_.get());
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {
+          {segmentation_platform::features::kSegmentationPlatformFeature, {}},
+          {segmentation_platform::features::
+               kSegmentationPlatformIosModuleRanker,
+           {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
+          {kMagicStack, {}},
+      },
+      {});
+  OCMExpect(
+      [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
+                   NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
+                   // Ensure MVT and Shortcuts are returned in that order.
+                   return [magicStackOrder count] == 2 &&
+                          0 == [magicStackOrder[0] intValue] &&
+                          1 == [magicStackOrder[1] intValue];
+                 }]]);
+  mediator_.consumer = consumer_;
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return mediator_.hasReceivedMagicStackResponse;
+      }));
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the -setMagicStackOrder: consumer call is executed with the
+// correct order INCLUDING new modules when fetching from the
+// SegmentationPlatformService.
+TEST_F(ContentSuggestionsMediatorTest,
+       TestMagicStackOrderSegmentationServiceCallWithNewFeatures) {
   consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
   mediator_.segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::

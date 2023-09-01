@@ -18,6 +18,23 @@ enum class SetUpListItemType;
 @class SetUpListItemViewData;
 @class TabResumptionItem;
 
+// MagicStackOrderChange is used in `updateMagicStackOrder:withStatus:` to
+// indicate what module has changed and how it needs to be updated.
+struct MagicStackOrderChange {
+  enum class Type {
+    kInsert = 1,
+    kRemove,
+    kReplace,
+  };
+  Type type;
+  // New Module. Will be set for kReplace and kInsert.
+  ContentSuggestionsModuleType new_module;
+  // Old Module. Will be set for kReplace and kRemove.
+  ContentSuggestionsModuleType old_module;
+  // The index of `newModule`, applies to `oldModule` for kRemove.
+  NSInteger index;
+};
+
 // Supports adding/removing/updating UI elements to the ContentSuggestions
 // UIViewController.
 @protocol ContentSuggestionsConsumer
@@ -55,6 +72,12 @@ enum class SetUpListItemType;
 // Indicates to the consumer to set the Magic Stack module order as listed in
 // `order`.
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order;
+
+// Indicates to the consumer to update the Magic Stack module order for a given
+// module `type` with the latest `status` change.
+// TODO(crbug.com/1477962) Also pass the view configs through this API instead
+// of having to call the feature-specific calls in this protocol.
+- (void)updateMagicStackOrder:(MagicStackOrderChange)change;
 
 // Indicates to the consumer to scroll to the next module because `moduleType`
 // is completed.
