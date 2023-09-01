@@ -33,6 +33,10 @@ class ModelStoreMetadataEntry {
       proto::OptimizationTarget optimization_target,
       const proto::ModelCacheKey& model_cache_key);
 
+  // Returns the valid model dirs in the model store base dir, that were in sync
+  // with the `local_state`.
+  static std::set<base::FilePath> GetValidModelDirs(PrefService* local_state);
+
   ModelStoreMetadataEntry& operator=(const ModelStoreMetadataEntry&) = delete;
   ~ModelStoreMetadataEntry();
 

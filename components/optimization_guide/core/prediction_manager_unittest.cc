@@ -643,6 +643,7 @@ class PredictionManagerTest : public testing::WithParamInterface<bool>,
       prediction_model_store_ =
           PredictionModelStore::CreatePredictionModelStoreForTesting(
               local_state_prefs_.get(), temp_dir());
+      RunUntilIdle();
     }
   }
 

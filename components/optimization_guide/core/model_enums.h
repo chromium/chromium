@@ -76,9 +76,11 @@ enum class PredictionModelStoreModelRemovalReason {
   kModelInKillSwitchList = 8,
   // Old model was removed due to new model update.
   kNewModelUpdate = 9,
+  // Model dir was inconsistent with local_state and removed at startup.
+  kInconsistentModelDir = 10,
 
   // Add new values above this line.
-  kMaxValue = kNewModelUpdate,
+  kMaxValue = kInconsistentModelDir,
 };
 
 }  // namespace optimization_guide

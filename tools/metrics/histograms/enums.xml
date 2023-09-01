@@ -80006,6 +80006,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="NewModelUpdate">
     Old model was removed due to new model update.
   </int>
+  <int value="10" label="InconsistentModelDir">
+    Model dir was inconsistent with local_state and removed at startup.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideProcessHintsResult">
