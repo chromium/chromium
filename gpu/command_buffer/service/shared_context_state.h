@@ -114,6 +114,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool GrContextIsVulkan() const {
     return gr_context_type_ == GrContextType::kVulkan;
   }
+  bool IsGraphiteDawnVulkan() const;
 
   bool InitializeGL(const GpuPreferences& gpu_preferences,
                     scoped_refptr<gles2::FeatureInfo> feature_info);

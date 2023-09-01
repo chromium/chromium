@@ -258,6 +258,15 @@ SharedContextState::~SharedContextState() {
       this);
 }
 
+bool SharedContextState::IsGraphiteDawnVulkan() const {
+#if BUILDFLAG(SKIA_USE_DAWN)
+  return gr_context_type_ == GrContextType::kGraphiteDawn &&
+         dawn_context_provider_->backend_type() == wgpu::BackendType::Vulkan;
+#else
+  return false;
+#endif
+}
+
 bool SharedContextState::InitializeSkia(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,

@@ -409,7 +409,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool use_blocklist() const;
 
   scoped_refptr<SharedContextState> shared_context_state_;
-  const GrContextType gr_context_type_;
 
   std::unique_ptr<SharedImageRepresentationFactory>
       shared_image_representation_factory_;
@@ -1043,7 +1042,6 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     IsolationKeyProvider* isolation_key_provider)
     : WebGPUDecoder(client, command_buffer_service, outputter),
       shared_context_state_(std::move(shared_context_state)),
-      gr_context_type_(gpu_preferences.gr_context_type),
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
@@ -1196,16 +1194,18 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
     force_fallback_adapter = true;
   }
 
-  if (gr_context_type_ != GrContextType::kVulkan &&
-      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
 #if BUILDFLAG(IS_LINUX)
+  if (!shared_context_state_->GrContextIsVulkan() &&
+      !shared_context_state_->IsGraphiteDawnVulkan() &&
+      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
     callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-             "WebGPU on Linux requires command-line flag "
-             "--enable-features=Vulkan",
+             "WebGPU on Linux requires GLES compat, or command-line flag "
+             "--enable-features=Vulkan, or command-line flag "
+             "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)",
              userdata);
     return;
-#endif  // BUILDFLAG(IS_LINUX)
   }
+#endif  // BUILDFLAG(IS_LINUX)
 
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),

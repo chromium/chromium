@@ -13,6 +13,7 @@
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
@@ -58,12 +59,26 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
+  bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
  protected:
   std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  std::unique_ptr<GLTexturePassthroughImageRepresentation>
+  ProduceGLTexturePassthrough(SharedImageManager* manager,
+                              MemoryTypeTracker* tracker) override;
+
+  std::unique_ptr<DawnImageRepresentation> ProduceDawn(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      const wgpu::Device& device,
+      wgpu::BackendType backend_type,
+      std::vector<wgpu::TextureFormat> view_formats) override;
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  private:
   class SkiaGraphiteImageRepresentationImpl;

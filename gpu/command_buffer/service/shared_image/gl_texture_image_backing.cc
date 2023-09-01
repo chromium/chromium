@@ -497,13 +497,7 @@ void GLTextureImageBacking::InitializeGLTexture(
     gl::ProgressReporter* progress_reporter,
     bool framebuffer_attachment_angle,
     std::string debug_label_from_client) {
-  // If the extension does not exist, pass an empty debug label to avoid
-  // subsequent crashes.
-  std::string debug_label;
-  if (gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
-    debug_label = "GLSharedImage_" + debug_label_from_client;
-  }
-
+  const std::string debug_label = "GLSharedImage_" + debug_label_from_client;
   int num_planes = format().NumberOfPlanes();
   textures_.reserve(num_planes);
   for (int plane = 0; plane < num_planes; ++plane) {

@@ -6,6 +6,7 @@
 
 #include <EGL/egl.h>
 #import <Metal/Metal.h>
+#include <dawn/native/MetalBackend.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsobject.h"
@@ -18,6 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/dawn_fallback_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
@@ -38,12 +40,6 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
-
-// Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
-// ui/gl/buildflags.h
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/MetalBackend.h>
-#endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {
 
@@ -1049,7 +1045,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   }
 
   CHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
-  return std::make_unique<DawnImageRepresentationFallback>(
+  return std::make_unique<DawnFallbackImageRepresentation>(
       manager, this, tracker, wgpu::Device(device), wgpu_format,
       std::move(view_formats));
 #else

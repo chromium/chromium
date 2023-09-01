@@ -33,9 +33,12 @@ class GLTextureHolder {
   GLTextureHolder& operator=(GLTextureHolder&& other);
   ~GLTextureHolder();
 
+  const gfx::Size& size() const { return size_; }
+  viz::SharedImageFormat format() const { return format_; }
+  const GLFormatDesc& format_desc() const { return format_desc_; }
   gles2::Texture* texture() { return texture_; }
-  gles2::TexturePassthrough* passthrough_texture() {
-    return passthrough_texture_.get();
+  const scoped_refptr<gles2::TexturePassthrough>& passthrough_texture() {
+    return passthrough_texture_;
   }
 
   // Returns the service GL texture id.

@@ -209,7 +209,8 @@ void GLTextureHolder::Initialize(
     texture_->SetCompatibilitySwizzle(format_info.swizzle);
   }
 
-  if (!debug_label.empty()) {
+  // If the extension does not exist, do not pass debug label to avoid crashes.
+  if (!debug_label.empty() && gl::g_current_gl_driver->ext.b_GL_KHR_debug) {
     api->glObjectLabelFn(GL_TEXTURE, GetServiceId(), -1, debug_label.c_str());
   }
 }
