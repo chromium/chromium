@@ -100,6 +100,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   static constexpr base::TimeDelta kMetricsDelayTimerInterval =
       base::Seconds(2);
+  static constexpr char kForceRespectUiGainsHistogramName[] =
+      "Cras.ForceRespectUiGains";
   static constexpr char kInputGainChangedSourceHistogramName[] =
       "Cras.InputGainChangedSource";
   static constexpr char kInputGainChangedHistogramName[] =

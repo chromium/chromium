@@ -333,6 +333,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.ForceRespectUiGains" enum="BooleanEnabled"
+    expires_after="2024-07-11">
+  <owner>eddyhsu@chromium.org</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <summary>
+    Records the user enables or not the force respect UI gains. This value is
+    recorded for each change to the force respect ui gains setting.
+  </summary>
+</histogram>
+
 <histogram name="Cras.HfpBatteryIndicatorSupported"
     enum="CrasHfpBatteryIndicator" expires_after="2024-02-04">
   <owner>enshuo@chromium.org</owner>

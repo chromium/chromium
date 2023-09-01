@@ -616,6 +616,8 @@ void CrasAudioHandler::RefreshForceRespectUiGainsState() {
 }
 
 void CrasAudioHandler::SetForceRespectUiGainsState(bool state) {
+  base::UmaHistogramBoolean(CrasAudioHandler::kForceRespectUiGainsHistogramName,
+                            state);
   CrasAudioClient::Get()->SetForceRespectUiGains(state);
   audio_pref_handler_->SetForceRespectUiGainsState(state);
 
