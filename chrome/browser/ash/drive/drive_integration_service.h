@@ -152,7 +152,7 @@ class DriveIntegrationService : public KeyedService,
   void SetEnabled(bool enabled);
   bool is_enabled() const { return enabled_; }
 
-  bool IsOnline() const;
+  bool IsOnline() const { return is_online_; }
 
   bool IsMounted() const;
 
@@ -337,9 +337,9 @@ class DriveIntegrationService : public KeyedService,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
-  void UpdateNetworkState(bool pause_syncing, bool is_offline);
-
  private:
+  void UpdateNetworkState();
+
   enum State {
     NOT_INITIALIZED,
     INITIALIZING,
@@ -487,6 +487,7 @@ class DriveIntegrationService : public KeyedService,
   std::unique_ptr<BulkPinningPrefUpdater> bulk_pinning_pref_updater_;
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
+  bool is_online_ = true;
   bool remount_when_online_ = false;
 
   // Used to fetch authentication and refresh tokens from Drive.
