@@ -356,12 +356,6 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   PrintOutQueueStatesForVLOG(FROM_HERE);
 
-  if (!DrainOUTPUTQueue()) {
-    PLOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
-    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
-    return;
-  }
-
   decoder_buffer_and_callbacks_.emplace(std::move(buffer),
                                         std::move(decode_cb));
   if (!TryAndEnqueueOUTPUTQueueBuffers()) {
@@ -599,6 +593,9 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
 
   // We need to "enqueue" allocated buffers in the driver in order to use them.
   TryAndEnqueueCAPTUREQueueBuffers();
+
+  TryAndEnqueueOUTPUTQueueBuffers();
+
   return true;
 }
 
@@ -904,6 +901,12 @@ bool V4L2StatefulVideoDecoder::VerifyDecoderBufferHasOnlyWholeNALUs(
 bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized()) << "V4L2StatefulVideoDecoder must be Initialize()d";
+
+  // First try to recover some free slots in |OUTPUT_queue_|.
+  if (!DrainOUTPUTQueue()) {
+    PLOG(ERROR) << "Failed to drain resources from |OUTPUT_queue_|.";
+    return false;
+  }
 
   for (absl::optional<V4L2WritableBufferRef> v4l2_buffer =
            OUTPUT_queue_->GetFreeBuffer();
