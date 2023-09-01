@@ -217,6 +217,7 @@ source_set("unit_tests") {
     "session_window_ios_unittest.mm",
   ]
   deps = [
+    ":resources_unit_tests",
     ":restoration_agent",
     ":restoration_observer",
     ":serialisation",
