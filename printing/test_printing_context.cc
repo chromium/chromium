@@ -20,6 +20,10 @@
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "printing/printing_features.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
 #endif
@@ -179,6 +183,15 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
 mojom::ResultCode TestPrintingContext::NewDocument(
     const std::u16string& document_name) {
   DCHECK(!in_print_job_);
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (!skip_system_calls() && features::kEnableOopPrintDriversJobPrint.Get() &&
+      !settings_->system_print_dialog_data().empty()) {
+    // Mimic the update when system print dialog settings are provided to
+    // Print Backend service from the browser process.
+    applied_settings_ = *settings_;
+  }
+#endif
 
   if (on_new_document_callback_) {
     on_new_document_callback_.Run(

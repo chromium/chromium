@@ -1734,15 +1734,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
     EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
     EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
               *document_print_settings());
-#else
-    // TODO(crbug.com/1414968):  Update the expectation once system print
-    // settings are properly reflected at start of job print.
-    EXPECT_NE(*test::MakeUserModifiedPrintSettings("printer1"),
-              *document_print_settings());
-#endif
   }
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
@@ -1830,16 +1823,12 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
-  EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
-            *document_print_settings());
 #else
   EXPECT_TRUE(did_use_default_settings());
   EXPECT_TRUE(did_get_settings_with_ui());
-  // TODO(crbug.com/1414968):  Update the expectation once system print
-  // settings are properly reflected at start of job print.
-  EXPECT_NE(*test::MakeUserModifiedPrintSettings("printer1"),
-            *document_print_settings());
 #endif
+  EXPECT_EQ(*test::MakeUserModifiedPrintSettings("printer1"),
+            *document_print_settings());
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of

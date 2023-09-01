@@ -7,12 +7,19 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context_linux.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gtk/gtk_compat.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include <utility>
+
+#include "base/values.h"
+#endif
 
 gfx::Size GetPdfPaperSizeDeviceUnitsGtk(
     printing::PrintingContextLinux* context) {
@@ -71,4 +78,31 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
   DCHECK_EQ(print_settings->device_units_per_inch(), dpi);
   print_settings->SetPrinterPrintableArea(physical_size_device_units,
                                           printable_area_device_units, true);
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (printer_name) {
+    // Capture the system dialog settings for this printer, to be used by the
+    // Print Backend service.
+    base::Value::Dict dialog_data;
+
+    dialog_data.Set(printing::kLinuxSystemPrintDialogDataPrinter, printer_name);
+
+    ScopedGKeyFile print_settings_key_file(g_key_file_new());
+    gtk_print_settings_to_key_file(settings, print_settings_key_file.get(),
+                                   /*group_name=*/nullptr);
+
+    dialog_data.Set(printing::kLinuxSystemPrintDialogDataPrintSettings,
+                    g_key_file_to_data(print_settings_key_file.get(),
+                                       /*length=*/nullptr, /*error=*/nullptr));
+
+    ScopedGKeyFile page_setup_key_file(g_key_file_new());
+    gtk_page_setup_to_key_file(page_setup, page_setup_key_file.get(),
+                               /*group_name=*/nullptr);
+    dialog_data.Set(printing::kLinuxSystemPrintDialogDataPageSetup,
+                    g_key_file_to_data(page_setup_key_file.get(),
+                                       /*length=*/nullptr, /*error=*/nullptr));
+
+    print_settings->set_system_print_dialog_data(std::move(dialog_data));
+  }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 }

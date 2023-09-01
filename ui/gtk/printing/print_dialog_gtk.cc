@@ -174,6 +174,21 @@ class GtkPrinterList {
   raw_ptr<GtkPrinter> default_printer_ = nullptr;
 };
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
+                                   base::StringPiece key) {
+  const std::string* data_string = data.FindString(key);
+  CHECK(data_string);
+
+  ScopedGKeyFile key_file = ScopedGKeyFile(g_key_file_new());
+  GError* error = nullptr;
+  CHECK(g_key_file_load_from_data(key_file.get(), data_string->c_str(),
+                                  data_string->size(), G_KEY_FILE_NONE, &error))
+      << error->message;
+  return key_file;
+}
+#endif
+
 }  // namespace
 
 // static
@@ -364,6 +379,42 @@ void PrintDialogGtk::UpdateSettings(
 
   InitPrintSettings(std::move(settings));
 }
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
+  const std::string* printer_name =
+      settings.system_print_dialog_data().FindString(
+          printing::kLinuxSystemPrintDialogDataPrinter);
+  CHECK(printer_name);
+
+  GError* error = nullptr;
+  auto printer_list = std::make_unique<GtkPrinterList>();
+  printer_ = printer_list->GetPrinterWithName(*printer_name);
+  CHECK(printer_);
+  g_object_ref(printer_);
+
+  if (!gtk_settings_) {
+    gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
+  }
+  if (!page_setup_) {
+    page_setup_ = gtk_page_setup_new();
+  }
+
+  ScopedGKeyFile settings_key_file =
+      GetGKeyFileFromDict(settings.system_print_dialog_data(),
+                          printing::kLinuxSystemPrintDialogDataPrintSettings);
+  CHECK(gtk_print_settings_load_key_file(gtk_settings_, settings_key_file.get(),
+                                         /*group_name=*/nullptr, &error))
+      << error->message;
+
+  ScopedGKeyFile page_setup_key_file =
+      GetGKeyFileFromDict(settings.system_print_dialog_data(),
+                          printing::kLinuxSystemPrintDialogDataPageSetup);
+  CHECK(gtk_page_setup_load_key_file(page_setup_, page_setup_key_file.get(),
+                                     /*group_name=*/nullptr, &error))
+      << error->message;
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
 void PrintDialogGtk::ShowDialog(
     gfx::NativeView parent_view,

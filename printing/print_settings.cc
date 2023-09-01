@@ -331,6 +331,9 @@ PrintSettings& PrintSettings::operator=(const PrintSettings& settings) {
   pin_value_ = settings.pin_value_;
   client_infos_ = settings.client_infos_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  system_print_dialog_data_ = settings.system_print_dialog_data_.Clone();
+#endif
   return *this;
 }
 
@@ -421,6 +424,9 @@ void PrintSettings::Clear() {
   pin_value_.clear();
   client_infos_.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  system_print_dialog_data_.clear();
+#endif
 }
 
 void PrintSettings::SetPrinterPrintableArea(

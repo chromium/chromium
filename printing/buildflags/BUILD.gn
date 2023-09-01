@@ -18,6 +18,7 @@ buildflag_header("buildflags") {
     "ENABLE_BASIC_PRINT_DIALOG=$enable_basic_print_dialog",
     "ENABLE_CONCURRENT_BASIC_PRINT_DIALOGS=$enable_concurrent_basic_print_dialogs",
     "ENABLE_OOP_BASIC_PRINT_DIALOG=$enable_oop_basic_print_dialog",
+    "ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG=$enable_oop_printing_no_oop_basic_print_dialog",
     "ENABLE_OOP_PRINTING=$enable_oop_printing",
     "ENABLE_PRINT_CONTENT_ANALYSIS=$enable_print_content_analysis",
     "USE_CUPS=$use_cups",

@@ -749,7 +749,7 @@ void PrintBackendServiceImpl::StartPrinting(
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   if (settings) {
     // Apply the settings from the in-browser system dialog to the context.
-    context_container->context->ApplyPrintSettings(*settings);
+    context_container->context->SetPrintSettings(*settings);
   }
 #endif
 

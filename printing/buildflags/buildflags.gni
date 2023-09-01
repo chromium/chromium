@@ -60,6 +60,12 @@ declare_args() {
   # TODO(crbug.com/809738)  Determine if Linux Wayland can be made to have a
   # system dialog be modal against an application window in the browser process.
   enable_oop_basic_print_dialog = enable_oop_printing && is_win
+
+  # Enables out-of-process print handling for platforms which support a system
+  # print dialog but are unable to invoke that dialog from the Print Backend
+  # service.
+  enable_oop_printing_no_oop_basic_print_dialog =
+      enable_oop_printing && (is_linux || is_mac)
 }
 
 declare_args() {

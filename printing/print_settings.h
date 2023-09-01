@@ -21,6 +21,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "base/values.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <map>
 
@@ -32,6 +36,29 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace printing {
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
+#if BUILDFLAG(IS_MAC)
+inline constexpr char kMacSystemPrintDialogDataDestinationType[] =
+    "destination_type";
+inline constexpr char kMacSystemPrintDialogDataDestinationFormat[] =
+    "destination_format";
+inline constexpr char kMacSystemPrintDialogDataDestinationLocation[] =
+    "destination_location";
+inline constexpr char kMacSystemPrintDialogDataPageFormat[] = "page_format";
+inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =
+    "print_settings";
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+inline constexpr char kLinuxSystemPrintDialogDataPrinter[] = "printer_name";
+inline constexpr char kLinuxSystemPrintDialogDataPrintSettings[] =
+    "print_settings";
+inline constexpr char kLinuxSystemPrintDialogDataPageSetup[] = "page_setup";
+#endif  // BUILDFLAG(IS_LINUX)
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
 // Convert from `color_mode` into a `color_model`.  An invalid `color_mode`
 // will give a result of `mojom::ColorModel::kUnknownColorModel`.
@@ -295,6 +322,14 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  void set_system_print_dialog_data(base::Value::Dict data) {
+    system_print_dialog_data_ = std::move(data);
+  }
+  const base::Value::Dict& system_print_dialog_data() const {
+    return system_print_dialog_data_;
+  }
+#endif
   // Cookie generator. It is used to initialize `PrintedDocument` with its
   // associated `PrintSettings`, to be sure that each generated `PrintedPage`
   // is correctly associated with its corresponding `PrintedDocument`.
@@ -343,6 +378,13 @@ class COMPONENT_EXPORT(PRINTING) PrintSettings {
 
   // Printer device name as opened by the OS.
   std::u16string device_name_;
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  // Platform-specific print settings captured from a system print dialog.
+  // The settings are captured in the browser process for transmission to
+  // the Print Backend service for OOP printing.
+  base::Value::Dict system_print_dialog_data_;
+#endif
 
   // Media requested by the user.
   RequestedMedia requested_media_;

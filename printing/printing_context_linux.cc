@@ -18,6 +18,10 @@
 #include "printing/print_job_constants.h"
 #include "printing/units.h"
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "printing/printing_features.h"
+#endif
+
 // Avoid using LinuxUi on Fuchsia.
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -127,10 +131,22 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
-  // If this implementation is expanded to include system calls then such calls
-  // should be gated upon `skip_system_calls()`.
-
   document_name_ = document_name;
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (skip_system_calls()) {
+    return mojom::ResultCode::kSuccess;
+  }
+
+  if (features::kEnableOopPrintDriversJobPrint.Get() &&
+      !settings_->system_print_dialog_data().empty()) {
+    CHECK(ui::LinuxUi::instance());
+    if (!print_dialog_) {
+      print_dialog_ = ui::LinuxUi::instance()->CreatePrintDialog(this);
+    }
+    print_dialog_->LoadPrintSettings(*settings_);
+  }
+#endif
 
   return mojom::ResultCode::kSuccess;
 }

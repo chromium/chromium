@@ -112,10 +112,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Sets the print settings to `settings`.
   void SetPrintSettings(const PrintSettings& settings);
 
-  // Applies the print settings to this context.  Intended to be used only by
-  // the Print Backend service process.
-  void ApplyPrintSettings(const PrintSettings& settings);
-
   // Set the printable area in print settings to be the default printable area.
   // Intended to be used only for virtual printers.
   void SetDefaultPrintableAreaForVirtualPrinters();

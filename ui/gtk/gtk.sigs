@@ -121,8 +121,10 @@ gdouble gtk_page_setup_get_paper_height(GtkPageSetup* setup, GtkUnit unit);
 GtkPaperSize* gtk_page_setup_get_paper_size(GtkPageSetup* setup);
 gdouble gtk_page_setup_get_paper_width(GtkPageSetup* setup, GtkUnit unit);
 gdouble gtk_page_setup_get_top_margin(GtkPageSetup* setup, GtkUnit unit);
+gboolean gtk_page_setup_load_key_file (GtkPageSetup* setup, GKeyFile* key_file, const char* group_name, GError** error);
 GtkPageSetup* gtk_page_setup_new(void);
 void gtk_page_setup_set_paper_size(GtkPageSetup* setup, GtkPaperSize* size);
+void gtk_page_setup_to_key_file (GtkPageSetup* setup, GKeyFile* key_file, const gchar* group_name);
 void gtk_paper_size_free(GtkPaperSize* size);
 gdouble gtk_paper_size_get_height(GtkPaperSize* size, GtkUnit unit);
 GList* gtk_paper_size_get_paper_sizes(gboolean include_custom);
@@ -141,6 +143,7 @@ GtkPageRange* gtk_print_settings_get_page_ranges(GtkPrintSettings* settings, gin
 const gchar* gtk_print_settings_get_printer(GtkPrintSettings* settings);
 GtkPrintPages gtk_print_settings_get_print_pages(GtkPrintSettings* settings);
 gint gtk_print_settings_get_resolution(GtkPrintSettings* settings);
+gboolean gtk_print_settings_load_key_file(GtkPrintSettings* settings, GKeyFile* key_file, const gchar* group_name, GError** error);
 GtkPrintSettings* gtk_print_settings_new(void);
 void gtk_print_settings_set(GtkPrintSettings* settings, const gchar* key, const gchar* value);
 void gtk_print_settings_set_collate(GtkPrintSettings* settings, gboolean collate);
@@ -149,6 +152,7 @@ void gtk_print_settings_set_orientation(GtkPrintSettings* settings, GtkPageOrien
 void gtk_print_settings_set_printer_lpi(GtkPrintSettings* settings, gdouble lpi);
 void gtk_print_settings_set_print_pages(GtkPrintSettings* settings, GtkPrintPages pages);
 void gtk_print_settings_set_resolution_xy(GtkPrintSettings* settings, gint resolution_x, gint resolution_y);
+void gtk_print_settings_to_key_file(GtkPrintSettings* settings, GKeyFile* key_file, const gchar* group_name);
 GtkPageSetup* gtk_print_unix_dialog_get_page_setup(GtkPrintUnixDialog* dialog);
 GtkPrinter* gtk_print_unix_dialog_get_selected_printer(GtkPrintUnixDialog* dialog);
 GtkPrintSettings* gtk_print_unix_dialog_get_settings(GtkPrintUnixDialog* dialog);

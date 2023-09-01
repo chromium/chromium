@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/print_dialog_linux_interface.h"
 #include "printing/printing_context_linux.h"
 #include "ui/aura/window_observer.h"
@@ -39,6 +40,9 @@ class PrintDialogGtk : public printing::PrintDialogLinuxInterface,
   void UseDefaultSettings() override;
   void UpdateSettings(
       std::unique_ptr<printing::PrintSettings> settings) override;
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  void LoadPrintSettings(const printing::PrintSettings& settings) override;
+#endif
   void ShowDialog(
       gfx::NativeView parent_view,
       bool has_selection,

@@ -28,6 +28,11 @@ class PrintDialogLinuxInterface {
   // system print dialog. E.g. for Print Preview.
   virtual void UpdateSettings(std::unique_ptr<PrintSettings> settings) = 0;
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  // Updates the dialog to use system print dialog settings saved in `settings`.
+  virtual void LoadPrintSettings(const printing::PrintSettings& settings) = 0;
+#endif
+
   // Shows the dialog and handles the response with `callback`. Only used when
   // printing with the native print dialog.
   virtual void ShowDialog(

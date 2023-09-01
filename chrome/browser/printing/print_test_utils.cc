@@ -12,8 +12,13 @@
 #include "base/values.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+#include "printing/printing_features.h"
+#endif
 
 namespace printing::test {
 
@@ -110,6 +115,32 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
   std::unique_ptr<PrintSettings> settings =
       MakeDefaultPrintSettings(printer_name);
   settings->set_copies(kPrintSettingsCopies + 1);
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+  if (features::kEnableOopPrintDriversJobPrint.Get()) {
+    // Supply fake data to mimic what might be collected from the system print
+    // dialog.  Platform-specific since the fake data still has to be able to
+    // pass mojom data validation.
+    base::Value::Dict data;
+
+#if BUILDFLAG(IS_MAC)
+    data.Set(kMacSystemPrintDialogDataDestinationType, 2);
+    data.Set(kMacSystemPrintDialogDataPageFormat,
+             base::Value::BlobStorage({0xF1}));
+    data.Set(kMacSystemPrintDialogDataPrintSettings,
+             base::Value::BlobStorage({0xB2}));
+
+#elif BUILDFLAG(IS_LINUX)
+    data.Set(kLinuxSystemPrintDialogDataPrinter, printer_name);
+    data.Set(kLinuxSystemPrintDialogDataPrintSettings, "print-settings");
+    data.Set(kLinuxSystemPrintDialogDataPageSetup, "page-setup");
+
+#else
+#error "Missing fake system print dialog data for this platform."
+#endif
+
+    settings->set_system_print_dialog_data(std::move(data));
+  }
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
   return settings;
 }
 

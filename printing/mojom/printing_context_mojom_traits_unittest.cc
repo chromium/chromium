@@ -60,6 +60,38 @@ PrintSettings::RequestedMedia GenerateSampleRequestedMedia() {
   return media;
 }
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+base::Value::Dict GenerateSampleSystemPrintDialogData(
+#if BUILDFLAG(IS_MAC)
+    bool include_optional_data
+#endif
+) {
+  base::Value::Dict data;
+
+#if BUILDFLAG(IS_MAC)
+  data.Set(kMacSystemPrintDialogDataDestinationType, 4);
+  data.Set(kMacSystemPrintDialogDataPageFormat,
+           base::Value::BlobStorage({0xA0, 0xA1, 0xA2}));
+  data.Set(kMacSystemPrintDialogDataPrintSettings,
+           base::Value::BlobStorage({0x00, 0x01}));
+  if (include_optional_data) {
+    data.Set(kMacSystemPrintDialogDataDestinationFormat, "application/pdf");
+    data.Set(kMacSystemPrintDialogDataDestinationLocation, "/foo/bar.pdf");
+  }
+
+#elif BUILDFLAG(IS_LINUX)
+  data.Set(kLinuxSystemPrintDialogDataPrinter, "printer-name");
+  data.Set(kLinuxSystemPrintDialogDataPrintSettings, "print-settings-foo");
+  data.Set(kLinuxSystemPrintDialogDataPageSetup, "page-setup-bar");
+
+#else
+#error "System print dialog support not implemented for this platform."
+#endif
+
+  return data;
+}
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+
 // Support two possible sample `PrintSettings`, to ensure that certain fields
 // get definitively tested for coverage (e.g., booleans).  Note that not all
 // fields need distinct values between the two.  A key difference between them
@@ -620,5 +652,242 @@ TEST(PrintingContextMojomTraitsTest,
   EXPECT_TRUE(output.advanced_settings().empty());
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogData) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data, including all optional data.
+  input.set_system_print_dialog_data(GenerateSampleSystemPrintDialogData(
+#if BUILDFLAG(IS_MAC)
+      /*include_optional_data=*/true
+#endif
+      ));
+
+  {
+    PrintSettings output;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
+        input, output));
+
+    EXPECT_EQ(output.system_print_dialog_data(),
+              input.system_print_dialog_data());
+  }
+
+#if BUILDFLAG(IS_MAC)
+  // Generate some system print dialog data, excluding optional data
+  input.set_system_print_dialog_data(
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false));
+
+  {
+    PrintSettings output;
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(
+        input, output));
+
+    EXPECT_EQ(output.system_print_dialog_data(),
+              input.system_print_dialog_data());
+  }
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataInvalid) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data which is invalid.
+  base::Value::Dict data;
+  data.Set("foo", "bar");
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataExtraKey) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data = GenerateSampleSystemPrintDialogData(
+#if BUILDFLAG(IS_MAC)
+      /*include_optional_data=*/true
+#endif
+  );
+
+  // Erroneously include an extra key/value pair.
+  data.Set("foo", "bar");
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataDestTypeOutOfRange) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with out-of-range destination type.
+  data.Set(kMacSystemPrintDialogDataDestinationType, 0x10000);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataDestTypeInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with invalid data type for destination type.
+  data.Set(kMacSystemPrintDialogDataDestinationType, "supposed to be an int");
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogPageFormatInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with invalid data type for page format.
+  data.Set(kMacSystemPrintDialogDataPageFormat, "supposed to be a BlobStorage");
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogPrintSettingsInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with invalid data type for print settings.
+  data.Set(kMacSystemPrintDialogDataPrintSettings,
+           "supposed to be a BlobStorage");
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogDestinationFormatInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with invalid data type for destination format.
+  data.Set(kMacSystemPrintDialogDataPageFormat, 0xBAD);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogDestinationLocationInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data =
+      GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
+
+  // Override with invalid data type for destination location.
+  data.Set(kMacSystemPrintDialogDataDestinationLocation, 0xBAD);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_LINUX)
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogPrinterInvalidDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+
+  // Override with invalid data type for printer.
+  data.Set(kLinuxSystemPrintDialogDataPrinter, 0xBAD);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogPrintSettingsDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+
+  // Override with invalid data type for printer.
+  data.Set(kLinuxSystemPrintDialogDataPrintSettings, 0xBAD);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
+TEST(
+    PrintingContextMojomTraitsTest,
+    TestSerializeAndDeserializePrintSettingsSystemPrintDialogPageSetupDataType) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+
+  // Generate some system print dialog data.
+  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+
+  // Override with invalid data type for printer.
+  data.Set(kLinuxSystemPrintDialogDataPageSetup, 0xBAD);
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
 }  // namespace printing
