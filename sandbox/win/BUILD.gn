@@ -210,6 +210,7 @@ test("sbox_integration_tests") {
     "src/process_policy_test.cc",
     "src/restricted_token_test.cc",
     "src/unload_dll_test.cc",
+    "src/zero_appshim_unittest.cc",
     "tests/common/controller.cc",
     "tests/common/test_utils.cc",
     "tests/common/test_utils.h",

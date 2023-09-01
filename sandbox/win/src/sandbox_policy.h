@@ -251,6 +251,9 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Obtains whether or not the environment for this target should be filtered.
   // See above for the variables that are allowed.
   virtual bool GetEnvironmentFiltered() = 0;
+
+  // Zeroes pShimData in the child's PEB.
+  virtual void SetZeroAppShim() = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are

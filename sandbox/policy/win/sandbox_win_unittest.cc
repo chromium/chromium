@@ -121,6 +121,7 @@ class TestTargetConfig : public TargetConfig {
   void SetDesktop(Desktop desktop) override {}
   void SetFilterEnvironment(bool env) override {}
   bool GetEnvironmentFiltered() override { return false; }
+  void SetZeroAppShim() override {}
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;

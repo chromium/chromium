@@ -84,6 +84,7 @@ class ConfigBase final : public TargetConfig {
   void SetDesktop(Desktop desktop) override;
   void SetFilterEnvironment(bool filter) override;
   bool GetEnvironmentFiltered() override;
+  void SetZeroAppShim() override;
 
  private:
   // Can call Freeze()
@@ -127,6 +128,7 @@ class ConfigBase final : public TargetConfig {
   Desktop desktop() { return desktop_; }
   // nullptr if no objects have been added via AddKernelObjectToClose().
   HandleCloser* handle_closer() { return handle_closer_.get(); }
+  bool zero_appshim() { return zero_appshim_; }
 
   TokenLevel lockdown_level_;
   TokenLevel initial_level_;
@@ -142,6 +144,7 @@ class ConfigBase final : public TargetConfig {
   uint32_t ui_exceptions_;
   Desktop desktop_;
   bool filter_environment_;
+  bool zero_appshim_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.

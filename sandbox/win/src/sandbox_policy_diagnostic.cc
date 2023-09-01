@@ -47,6 +47,7 @@ const char kPlatformMitigations[] = "platformMitigations";
 const char kPolicyRules[] = "policyRules";
 const char kProcessId[] = "processId";
 const char kTag[] = "tag";
+const char kZeroAppShim[] = "zeroAppShim";
 
 // Values in snapshots of Policies.
 const char kDisabled[] = "disabled";
@@ -407,6 +408,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     }
   }
   is_csrss_connected_ = config->is_csrss_connected();
+  zero_appshim_ = config->zero_appshim();
   auto* handle_closer = config->handle_closer();
   if (handle_closer) {
     handles_to_close_.insert(handle_closer->handles_to_close_.begin(),
@@ -462,6 +464,7 @@ const char* PolicyDiagnostic::JsonString() {
     dict.Set(kPolicyRules, GetPolicyRules(policy_rules_.get()));
 
   dict.Set(kDisconnectCsrss, is_csrss_connected_ ? kDisabled : kEnabled);
+  dict.Set(kZeroAppShim, zero_appshim_);
   if (!handles_to_close_.empty())
     dict.Set(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 

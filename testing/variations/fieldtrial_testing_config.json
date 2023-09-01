@@ -18732,6 +18732,21 @@
             ]
         }
     ],
+    "WinSboxZeroAppShim": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WinSboxZeroAppShim"
+                    ]
+                }
+            ]
+        }
+    ],
     "WindowLayoutMenu": [
         {
             "platforms": [

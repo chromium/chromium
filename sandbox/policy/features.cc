@@ -96,6 +96,12 @@ BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
              "WinSboxForceRendererCodeIntegrity",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, modifies the child's PEB to stop further application of
+// appcompat in the child. Does not affect the browser or unsandboxed
+// processes.
+BASE_FEATURE(kWinSboxZeroAppShim,
+             "WinSboxZeroAppShim",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

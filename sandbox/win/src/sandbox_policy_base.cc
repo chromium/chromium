@@ -49,6 +49,14 @@ constexpr size_t kOneMemPage = 4096;
 constexpr size_t kIPCMemSize = kOneMemPage * 2;
 constexpr size_t kPolMemSize = kOneMemPage * 6;
 
+// Offset of pShimData in ntdll!_PEB.
+#if defined(_WIN64)
+// This is the same on x64 and arm64.
+constexpr ptrdiff_t kShimDataOffset = 0x2d8;
+#else
+constexpr ptrdiff_t kShimDataOffset = 0x1e8;
+#endif
+
 // Helper function to allocate space (on the heap) for policy.
 sandbox::PolicyGlobal* MakeBrokerPolicyMemory() {
   const size_t kTotalPolicySz = kPolMemSize;
@@ -94,6 +102,30 @@ bool ReplacePackageSidInDacl(HANDLE token,
                            DACL_SECURITY_INFORMATION);
 }
 
+bool ApplyZeroAppShimToSuspendedProcess(HANDLE process) {
+  PROCESS_BASIC_INFORMATION proc_info{};
+  ULONG bytes_returned = 0;
+  NTSTATUS ret = GetNtExports()->QueryInformationProcess(
+      process, ProcessBasicInformation, &proc_info, sizeof(proc_info),
+      &bytes_returned);
+  if (!NT_SUCCESS(ret) || sizeof(proc_info) != bytes_returned) {
+    return false;
+  }
+
+  void* address = reinterpret_cast<void*>(
+      reinterpret_cast<uintptr_t>(proc_info.PebBaseAddress) + kShimDataOffset);
+  size_t zero = 0;
+  SIZE_T written;
+  if (!::WriteProcessMemory(process, const_cast<void*>(address), &zero,
+                            sizeof(zero), &written)) {
+    return false;
+  }
+  if (written != sizeof(zero)) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 SANDBOX_INTERCEPT IntegrityLevel g_shared_delayed_integrity_level =
@@ -121,6 +153,7 @@ ConfigBase::ConfigBase() noexcept
       ui_exceptions_(0),
       desktop_(Desktop::kDefault),
       filter_environment_(false),
+      zero_appshim_(false),
       policy_maker_(nullptr),
       policy_(nullptr) {
 }
@@ -438,6 +471,10 @@ bool ConfigBase::GetEnvironmentFiltered() {
   return filter_environment_;
 }
 
+void ConfigBase::SetZeroAppShim() {
+  zero_appshim_ = true;
+}
+
 PolicyBase::PolicyBase(base::StringPiece tag)
     : tag_(tag),
       config_(),
@@ -613,6 +650,12 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
     return SBOX_ERROR_UNEXPECTED_CALL;
   // Policy rules are compiled when the underlying ConfigBase is frozen.
   DCHECK(config()->IsConfigured());
+
+  if (config()->zero_appshim()) {
+    if (!ApplyZeroAppShimToSuspendedProcess(target->Process())) {
+      return SBOX_ERROR_DISABLING_APPHELP;
+    }
+  }
 
   if (!ApplyProcessMitigationsToSuspendedProcess(
           target->Process(), config()->GetProcessMitigations())) {

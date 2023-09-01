@@ -329,6 +329,12 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
     return result;
 
   config->SetDesktop(Desktop::kAlternateWinstation);
+
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxZeroAppShim)) {
+    config->SetZeroAppShim();
+  }
+
   return SBOX_ALL_OK;
 }
 

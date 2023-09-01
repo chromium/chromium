@@ -58578,6 +58578,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="68" label="SBOX_ERROR_MISMATCH_SENTINEL_VALUE"/>
   <int value="69" label="SBOX_ERROR_FAILED_TO_FREEZE_CONFIG"/>
   <int value="70" label="SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT"/>
+  <int value="71" label="SBOX_ERROR_DELEGATE_INITIALIZE_CONFIG"/>
+  <int value="72" label="SBOX_ERROR_DISABLING_APPHELP"/>
   <int value="1002" label="LAUNCH_RESULT_SUCCESS"/>
   <int value="1003" label="LAUNCH_RESULT_FAILURE"/>
 </enum>
