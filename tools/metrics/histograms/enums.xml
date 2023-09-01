@@ -22511,6 +22511,13 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="6" label="UPDATE_IN_PROGRESS"/>
 </enum>
 
+<enum name="CrosCrashCollectorAddWeightResult">
+  <int value="0" label="Good value"/>
+  <int value="1" label="Bad value"/>
+  <int value="2" label="Added weight twice"/>
+  <int value="3" label="Added in wrong method"/>
+</enum>
+
 <enum name="CrosCrashSenderRemoveReason">
 <!-- TotalRemoval should be the total of other values -->
 

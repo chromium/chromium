@@ -200,6 +200,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.CrashCollector.AddWeightResult"
+    enum="CrosCrashCollectorAddWeightResult" expires_after="2024-09-01">
+  <owner>mutexlox@google.com</owner>
+  <owner>kendraketsui@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    (ChromeOS only) An enum indicating the reasons why adding a weight to crash
+    reports succeeded or failed. This is recorded after each crash with
+    client-side weighting -- most commonly, those detected by anomaly_detector.
+    Specifically, these metrics are recorded in
+    CrashCollector::AddCrashMetaWeight() and
+    CrashCollector::AddCrashMetaUploadData().
+  </summary>
+</histogram>
+
 <histogram name="Platform.CrOS.CrashSenderRemoveReason"
     enum="CrosCrashSenderRemoveReason" expires_after="2024-07-10">
   <owner>iby@chromium.org</owner>
