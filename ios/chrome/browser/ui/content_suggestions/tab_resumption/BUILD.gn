@@ -65,6 +65,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//base/test:test_support",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

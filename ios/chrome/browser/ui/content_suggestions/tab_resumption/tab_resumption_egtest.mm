@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -55,6 +57,21 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   } else {
     GREYAssertFalse(success, @"Tile appeared.");
   }
+}
+
+// Returns a GREYMatcher for the given label.
+id<GREYMatcher> TabResumptionLabelMatcher(NSString* label) {
+  return grey_allOf(
+      grey_ancestor(grey_accessibilityID(kTabResumptionViewIdentifier)),
+      grey_text(label), nil);
+}
+
+// Returns the hostname from the given `URL`.
+NSString* HostnameFromGURL(GURL URL) {
+  return base::SysUTF16ToNSString(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              URL));
 }
 
 }  // namespace
@@ -124,6 +141,17 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
+  [[EarlGrey
+      selectElementWithMatcher:TabResumptionLabelMatcher(@"FROM \"DESKTOP\"")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(@"Tab 3")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  NSString* footerLabel =
+      [NSString stringWithFormat:@"%@ • %@",
+                                 HostnameFromGURL(self.testServer->base_url()),
+                                 @"5 mins ago"];
+  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(footerLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on the tab resumption item.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -149,6 +177,14 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
   // Check that the tile is displayed when there is a local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
+  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(@"ponies")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  NSString* footerLabel =
+      [NSString stringWithFormat:@"%@ • %@",
+                                 HostnameFromGURL(self.testServer->base_url()),
+                                 @"just now"];
+  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(footerLabel)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on the tab resumption item.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
