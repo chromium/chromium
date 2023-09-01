@@ -29,6 +29,8 @@ TEST_F(ResourceContextTest, NodeContexts) {
   // they use different constructors.
 
   // Ensure the public and private accessors return the same value.
+  EXPECT_EQ(ToPublic<FrameNode>(mock_graph.frame)->GetResourceContext(),
+            mock_graph.frame->resource_context());
   EXPECT_EQ(ToPublic<PageNode>(mock_graph.page)->GetResourceContext(),
             mock_graph.page->resource_context());
   EXPECT_EQ(
@@ -41,6 +43,12 @@ TEST_F(ResourceContextTest, NodeContexts) {
       mock_graph.utility_process->resource_context());
 
   // Ensure each node gets a fresh token.
+  const std::set<FrameContext> frame_contexts{
+      mock_graph.frame->resource_context(),
+      mock_graph.other_frame->resource_context(),
+      mock_graph.child_frame->resource_context(),
+  };
+  EXPECT_EQ(frame_contexts.size(), 3u);
   EXPECT_NE(mock_graph.page->resource_context(),
             mock_graph.other_page->resource_context());
   const std::set<ProcessContext> process_contexts{

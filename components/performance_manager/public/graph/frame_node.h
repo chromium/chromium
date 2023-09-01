@@ -13,6 +13,7 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -113,6 +114,10 @@ class FrameNode : public Node {
   // Gets the ID of the site instance to which this frame belongs. This is a
   // constant over the lifetime of the frame.
   virtual content::SiteInstanceId GetSiteInstanceId() const = 0;
+
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::FrameContext GetResourceContext() const = 0;
 
   // A frame is a main frame if it has no parent FrameNode. This can be
   // called from any thread.

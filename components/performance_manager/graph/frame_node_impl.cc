@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 
 namespace performance_manager {
@@ -155,6 +156,12 @@ content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
 content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
+}
+
+resource_attribution::FrameContext FrameNodeImpl::resource_context() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Re-use the LocalFrameToken as the ResourceContext token.
+  return resource_attribution::FrameContext(frame_token_);
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
@@ -476,6 +483,11 @@ content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
 content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id();
+}
+
+resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_context();
 }
 
 bool FrameNodeImpl::VisitChildFrameNodes(

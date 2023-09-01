@@ -56,6 +56,10 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   UIThreadStorage(const UIThreadStorage&) = delete;
   UIThreadStorage& operator=(const UIThreadStorage&) = delete;
 
+  // FrameContext accessors.
+  content::RenderFrameHost* GetRenderFrameHostFromContext(
+      const FrameContext& context) const;
+
   // PageContext accessors.
   absl::optional<PageContext> GetPageContextForId(
       const content::GlobalRenderFrameHostId& id) const;
@@ -82,16 +86,18 @@ class ResourceContextRegistryStorage::UIThreadStorage {
 
   // Update storage based on changes in the PM graph.
 
-  // Called when a FrameNode belonging to the page `page_context` is added to
-  // the PM graph.
-  void OnFrameNodeAdded(const PageContext& page_context,
+  // Called when the FrameNode with context `frame_context`, belonging to the
+  // page `page_context`, is added to the PM graph.
+  void OnFrameNodeAdded(const FrameContext& frame_context,
+                        const PageContext& page_context,
                         const RenderFrameHostProxy& rfh_proxy,
                         bool is_main_frame,
                         bool is_current);
 
-  // Called when a FrameNode belonging to the page `page_context` is removed
-  // from the PM graph.
-  void OnFrameNodeRemoved(const PageContext& page_context,
+  // Called when the FrameNode with context `frame_context`, belonging to the
+  // page `page_context`, is removed from the PM graph.
+  void OnFrameNodeRemoved(const FrameContext& frame_context,
+                          const PageContext& page_context,
                           const RenderFrameHostProxy& rfh_proxy,
                           bool is_main_frame);
 
@@ -124,6 +130,11 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   // Asserts that `context` isn't in any map.
   void CheckProcessContextUnregistered(const ProcessContext& context) const;
 
+  // FrameContext storage
+
+  std::map<FrameContext, content::GlobalRenderFrameHostId>
+      rfh_ids_by_frame_context_;
+
   // PageContext storage
 
   std::map<PageContext, WebContentsProxy> web_contents_by_page_context_;
@@ -155,6 +166,15 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   std::map<ProcessContext, BrowserChildProcessHostId>
       bcph_ids_by_process_context_;
 };
+
+content::RenderFrameHost* UIThreadStorage::GetRenderFrameHostFromContext(
+    const FrameContext& context) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const auto it = rfh_ids_by_frame_context_.find(context);
+  return it == rfh_ids_by_frame_context_.end()
+             ? nullptr
+             : content::RenderFrameHost::FromID(it->second);
+}
 
 absl::optional<PageContext> UIThreadStorage::GetPageContextForId(
     const content::GlobalRenderFrameHostId& id) const {
@@ -280,11 +300,16 @@ UIThreadStorage::GetBrowserChildProcessHostFromContext(
                    it->second.GetUnsafeValue());
 }
 
-void UIThreadStorage::OnFrameNodeAdded(const PageContext& page_context,
+void UIThreadStorage::OnFrameNodeAdded(const FrameContext& frame_context,
+                                       const PageContext& page_context,
                                        const RenderFrameHostProxy& rfh_proxy,
                                        bool is_main_frame,
                                        bool is_current) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const auto [_, inserted] = rfh_ids_by_frame_context_.emplace(
+      frame_context, rfh_proxy.global_frame_routing_id());
+  CHECK(inserted);
+
   // Check OnPageNodeAdded() has recorded `page_context`. If not, PM is sending
   // FrameNode notifications before the containing PageNode notifications.
   CHECK(base::Contains(web_contents_by_page_context_, page_context));
@@ -301,10 +326,14 @@ void UIThreadStorage::OnFrameNodeAdded(const PageContext& page_context,
   }
 }
 
-void UIThreadStorage::OnFrameNodeRemoved(const PageContext& page_context,
+void UIThreadStorage::OnFrameNodeRemoved(const FrameContext& frame_context,
+                                         const PageContext& page_context,
                                          const RenderFrameHostProxy& rfh_proxy,
                                          bool is_main_frame) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const size_t erased = rfh_ids_by_frame_context_.erase(frame_context);
+  CHECK_EQ(erased, 1u);
+
   if (is_main_frame) {
     const auto main_rfh_id_iter =
         main_rfh_ids_by_page_context_.find(page_context);
@@ -452,6 +481,32 @@ ResourceContextRegistryStorage::~ResourceContextRegistryStorage() {
 }
 
 // static
+absl::optional<FrameContext>
+ResourceContextRegistryStorage::FrameContextForRenderFrameHost(
+    content::RenderFrameHost* host) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (static_ui_thread_storage_ && host) {
+    // Re-use the LocalFrameToken as a ResourceContext token. There's no need to
+    // check if the token is in storage since `host` is a live frame.
+    return FrameContext(host->GetFrameToken());
+  }
+  return absl::nullopt;
+}
+
+// static
+content::RenderFrameHost*
+ResourceContextRegistryStorage::RenderFrameHostFromContext(
+    const FrameContext& context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // The ResourceContext token is a converted LocalFrameToken, but
+  // RenderFrameHost::FromToken() also needs a process ID, so a map from
+  // context->RenderFrameHost needs to be stored in the registry.
+  return static_ui_thread_storage_
+             ? static_ui_thread_storage_->GetRenderFrameHostFromContext(context)
+             : nullptr;
+}
+
+// static
 absl::optional<PageContext> ResourceContextRegistryStorage::PageContextForId(
     const content::GlobalRenderFrameHostId& id) {
   if (static_ui_thread_storage_) {
@@ -571,6 +626,13 @@ ResourceContextRegistryStorage::BrowserChildProcessHostFromContext(
              : nullptr;
 }
 
+const FrameNode* ResourceContextRegistryStorage::GetFrameNodeForContext(
+    const FrameContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto it = frame_nodes_by_context_.find(context);
+  return it != frame_nodes_by_context_.end() ? it->second : nullptr;
+}
+
 const PageNode* ResourceContextRegistryStorage::GetPageNodeForContext(
     const PageContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -595,20 +657,28 @@ void ResourceContextRegistryStorage::OnFrameNodeAdded(
       FROM_HERE,
       base::BindOnce(&UIThreadStorage::OnFrameNodeAdded,
                      base::Unretained(ui_thread_storage_.get()),
+                     frame_node->GetResourceContext(),
                      frame_node->GetPageNode()->GetResourceContext(),
                      frame_node->GetRenderFrameHostProxy(),
                      frame_node->IsMainFrame(), frame_node->IsCurrent()));
+  const auto [_, inserted] = frame_nodes_by_context_.emplace(
+      frame_node->GetResourceContext(), frame_node);
+  CHECK(inserted);
 }
 
 void ResourceContextRegistryStorage::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const size_t erased =
+      frame_nodes_by_context_.erase(frame_node->GetResourceContext());
+  CHECK_EQ(erased, 1u);
   CHECK(ui_thread_storage_);
   // Unretained is safe because `ui_thread_storage_` is passed to the UI thread
   // to delete.
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&UIThreadStorage::OnFrameNodeRemoved,
                                 base::Unretained(ui_thread_storage_.get()),
+                                frame_node->GetResourceContext(),
                                 frame_node->GetPageNode()->GetResourceContext(),
                                 frame_node->GetRenderFrameHostProxy(),
                                 frame_node->IsMainFrame()));
@@ -735,6 +805,7 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
 
 void ResourceContextRegistryStorage::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  graph->RegisterObject(&frame_registry_);
   graph->RegisterObject(&page_registry_);
   graph->RegisterObject(&process_registry_);
   graph->AddFrameNodeObserver(this);
@@ -747,6 +818,7 @@ void ResourceContextRegistryStorage::OnTakenFromGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
   graph->RemoveProcessNodeObserver(this);
+  graph->UnregisterObject(&frame_registry_);
   graph->UnregisterObject(&page_registry_);
   graph->UnregisterObject(&process_registry_);
 }
