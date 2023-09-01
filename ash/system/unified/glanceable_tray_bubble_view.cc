@@ -48,7 +48,6 @@ class ContainerView : public views::FlexLayoutView,
         height_change_callback_(height_change_callback) {
     SetOrientation(views::LayoutOrientation::kVertical);
     SetCollapseMargins(true);
-    SetDefault(views::kMarginsKey, gfx::Insets::VH(8, 0));
   }
 
   ContainerView(const ContainerView&) = delete;
@@ -69,6 +68,17 @@ class ContainerView : public views::FlexLayoutView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override {
     views::FlexLayoutView::ViewHierarchyChanged(details);
+
+    const int kDefaultMargin = 8;
+    for (size_t i = 0; i < children().size(); ++i) {
+      views::View* child = children()[i];
+      child->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(i == 0u ? 0 : kDefaultMargin, 0,
+                            i == children().size() - 1 ? 0 : kDefaultMargin,
+                            0));
+    }
+
     if (details.parent == this && details.child->GetVisible()) {
       preferred_size_change_callback_.Run();
     }
