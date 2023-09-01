@@ -5,6 +5,7 @@
 #include "extensions/renderer/extension_localization_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_thread.h"
@@ -52,8 +53,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
 
     data_drainer_ =
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-    data_producer_ =
-        std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
+    producer_handle_ = std::move(producer_handle);
     return true;
   }
 
@@ -135,18 +135,31 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
       ReplaceMessages();
     }
 
-    // Safe to use Unretained(this) because `this` owns `data_producer_`.
-    data_producer_->Write(
-        std::make_unique<mojo::StringDataSource>(
-            base::StringPiece(data_), mojo::StringDataSource::AsyncWritingMode::
-                                          STRING_STAYS_VALID_UNTIL_COMPLETION),
-        base::BindOnce(&ExtensionLocalizationURLLoader::OnDataWritten,
-                       base::Unretained(this)));
+    auto data_producer =
+        std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle_));
+    auto data = std::make_unique<std::string>(std::move(data_));
+    // To avoid unnecessary string copy, use STRING_STAYS_VALID_UNTIL_COMPLETION
+    // here, and keep the original data hold in the closure below.
+    auto source = std::make_unique<mojo::StringDataSource>(
+        *data, mojo::StringDataSource::AsyncWritingMode::
+                   STRING_STAYS_VALID_UNTIL_COMPLETION);
+    mojo::DataPipeProducer* data_producer_ptr = data_producer.get();
+    data_producer_ptr->Write(
+        std::move(source),
+        base::BindOnce(
+            [](std::unique_ptr<mojo::DataPipeProducer> data_producer,
+               std::unique_ptr<std::string> data,
+               base::OnceCallback<void(MojoResult)> on_data_written_callback,
+               MojoResult result) {
+              std::move(on_data_written_callback).Run(result);
+            },
+            std::move(data_producer), std::move(data),
+            base::BindOnce(&ExtensionLocalizationURLLoader::OnDataWritten,
+                           weak_factory_.GetWeakPtr())));
   }
 
  private:
   void OnDataWritten(MojoResult result) {
-    data_producer_.reset();
     data_write_result_ = result;
     MaybeSendOnComplete();
   }
@@ -171,7 +184,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
 
   const ExtensionId extension_id_;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
-  std::unique_ptr<mojo::DataPipeProducer> data_producer_;
+  mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::string data_;
 
   absl::optional<network::URLLoaderCompletionStatus> original_complete_status_;
@@ -181,6 +194,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
       this};
   mojo::Remote<network::mojom::URLLoader> source_url_loader_;
   mojo::Remote<network::mojom::URLLoaderClient> destination_url_loader_client_;
+  base::WeakPtrFactory<ExtensionLocalizationURLLoader> weak_factory_{this};
 };
 
 }  // namespace
