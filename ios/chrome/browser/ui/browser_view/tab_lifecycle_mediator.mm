@@ -77,10 +77,8 @@
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  DCHECK(_baseViewController);
   DCHECK(_passwordControllerDelegate);
   DCHECK(_commandDispatcher);
-  passwordTabHelper->SetBaseViewController(_baseViewController);
   passwordTabHelper->SetPasswordControllerDelegate(_passwordControllerDelegate);
   passwordTabHelper->SetDispatcher(_commandDispatcher);
 
@@ -159,7 +157,6 @@
 
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
-  passwordTabHelper->SetBaseViewController(nil);
   passwordTabHelper->SetPasswordControllerDelegate(nil);
   passwordTabHelper->SetDispatcher(nil);
 

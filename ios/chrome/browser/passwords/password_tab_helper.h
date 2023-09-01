@@ -16,7 +16,6 @@
 @protocol PasswordControllerDelegate;
 @protocol PasswordGenerationProvider;
 @protocol PasswordsUiDelegate;
-@class UIViewController;
 
 namespace password_manager {
 class PasswordGenerationFrameHelper;
@@ -34,9 +33,6 @@ class PasswordTabHelper : public web::WebStateObserver,
   PasswordTabHelper& operator=(const PasswordTabHelper&) = delete;
 
   ~PasswordTabHelper() override;
-
-  // Sets the BaseViewController from which to present UI.
-  void SetBaseViewController(UIViewController* baseViewController);
 
   // Sets the PasswordController delegate.
   void SetPasswordControllerDelegate(id<PasswordControllerDelegate> delegate);

@@ -62,9 +62,6 @@ class PasswordReuseDetectionManagerClient;
 @property(nonatomic, readonly)
     password_manager::PasswordManagerDriver* passwordManagerDriver;
 
-// The base view controller from which to present UI.
-@property(nonatomic, readwrite, weak) UIViewController* baseViewController;
-
 // Delegate used by this PasswordController to show UI on BVC.
 @property(weak, nonatomic) id<PasswordControllerDelegate> delegate;
 

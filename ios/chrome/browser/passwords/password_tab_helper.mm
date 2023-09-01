@@ -16,11 +16,6 @@
 
 PasswordTabHelper::~PasswordTabHelper() = default;
 
-void PasswordTabHelper::SetBaseViewController(
-    UIViewController* baseViewController) {
-  controller_.baseViewController = baseViewController;
-}
-
 void PasswordTabHelper::SetPasswordControllerDelegate(
     id<PasswordControllerDelegate> delegate) {
   controller_.delegate = delegate;
