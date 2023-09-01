@@ -219,7 +219,7 @@ bool CanHandleToggleAppList(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
     const std::set<ui::KeyboardCode>& currently_pressed_keys,
-    const AcceleratorLauncherStateMachine& launcher_state_machine) {
+    const AcceleratorLauncherStateMachine* launcher_state_machine) {
   // Check if the accelerator pressed is a RWIN/LWIN, if so perform a
   // secondary check.
   if (accelerator.key_code() != ui::VKEY_LWIN &&
@@ -228,7 +228,8 @@ bool CanHandleToggleAppList(
   }
 
   if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
-    return launcher_state_machine.CanHandleLauncher();
+    CHECK(launcher_state_machine);
+    return launcher_state_machine->CanHandleLauncher();
   }
 
   for (auto key : currently_pressed_keys) {
@@ -425,8 +426,11 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
   // interferes with Accelerator processing. See https://crbug.com/1174603.
   aura::Env::GetInstance()->AddPreTargetHandler(
       accelerator_history_.get(), ui::EventTarget::Priority::kAccessibility);
-  aura::Env::GetInstance()->AddPreTargetHandler(
-      launcher_state_machine_.get(), ui::EventTarget::Priority::kAccessibility);
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        launcher_state_machine_.get(),
+        ui::EventTarget::Priority::kAccessibility);
+  }
 }
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
@@ -443,8 +447,10 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
     Shell::Get()->accelerator_prefs()->RemoveObserver(this);
   }
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
-  aura::Env::GetInstance()->RemovePreTargetHandler(
-      launcher_state_machine_.get());
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    aura::Env::GetInstance()->RemovePreTargetHandler(
+        launcher_state_machine_.get());
+  }
 }
 
 void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
@@ -773,7 +779,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys(),
-          *launcher_state_machine_);
+          launcher_state_machine_.get());
     case AcceleratorAction::kToggleCalendar:
       return true;
     case AcceleratorAction::kToggleCapsLock:
