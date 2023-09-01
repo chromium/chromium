@@ -4065,6 +4065,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto& node = Node();
   const auto& container_style = Style();
   const auto& placement_data = node.CachedPlacementData();
+  const bool is_absolute_container = node.IsAbsoluteContainer();
+  const bool is_fixed_container = node.IsAbsoluteContainer();
 
   const LayoutUnit previous_consumed_block_size =
       BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
@@ -4081,17 +4083,11 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     GridItemData out_of_flow_item(child, container_style,
                                   container_style.GetFontBaseline());
 
-    // TODO(layout-dev): If the below ends up being removed (as a result of
-    // [1]), we could likely implement some of the same optimizations as OOFs in
-    // flex [2] (i.e. checking `should_process_block_end` and
-    // `should_process_block_center` earlier on). However, given that with
-    // grid-area, the static position can be in any fragment, these
-    // optimizations would overcomplicate the logic.
-    //
-    // [1] https://github.com/w3c/csswg-drafts/issues/7661
-    // [2] https://chromium-review.googlesource.com/c/chromium/src/+/3927797
-    if (!RuntimeEnabledFeatures::LayoutNewGridStaticPositionEnabled() &&
-        out_of_flow_item.IsGridContainingBlock()) {
+    // If the current grid is also the containing-block for the OOF-positioned
+    // item, pick up the static-position from the grid-area.
+    const EPosition position = child.Style().GetPosition();
+    if ((is_absolute_container && position == EPosition::kAbsolute) ||
+        (is_fixed_container && position == EPosition::kFixed)) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
           container_builder_.Borders(), total_fragment_size, &out_of_flow_item);

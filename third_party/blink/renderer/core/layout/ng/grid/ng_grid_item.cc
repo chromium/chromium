@@ -346,14 +346,9 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
   auto& end_offset = is_for_columns ? column_placement.offset_in_range.end
                                     : row_placement.offset_in_range.end;
 
-  if (IsGridContainingBlock()) {
-    NGGridPlacement::ResolveOutOfFlowItemGridLines(
-        track_collection, placement_data, grid_style, node.Style(),
-        &start_offset, &end_offset);
-  } else {
-    start_offset = kNotFound;
-    end_offset = kNotFound;
-  }
+  NGGridPlacement::ResolveOutOfFlowItemGridLines(
+      track_collection, placement_data, grid_style, node.Style(), &start_offset,
+      &end_offset);
 
 #if DCHECK_IS_ON()
   if (start_offset != kNotFound && end_offset != kNotFound) {

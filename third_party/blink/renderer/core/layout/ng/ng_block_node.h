@@ -132,9 +132,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   bool IsNGTableCell() const { return box_->IsTableCell(); }
 
-  bool IsContainingBlockNGGrid() const {
-    return box_->ContainingBlock()->IsLayoutNGGrid();
-  }
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
   bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }

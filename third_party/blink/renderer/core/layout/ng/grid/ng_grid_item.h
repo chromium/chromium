@@ -182,7 +182,6 @@ struct CORE_EXPORT GridItemData {
                : must_consider_grid_items_for_row_sizing;
   }
 
-  bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
 
   const TrackSpanProperties& GetTrackSpanProperties(
