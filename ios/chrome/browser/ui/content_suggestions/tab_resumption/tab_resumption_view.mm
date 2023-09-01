@@ -72,7 +72,6 @@ const CGFloat kLabelStackSpacing = 6.0;
   self.accessibilityIdentifier = kTabResumptionViewIdentifier;
   self.isAccessibilityElement = YES;
   self.accessibilityTraits = UIAccessibilityTraitButton;
-  // TODO(crbug.com/1464185): Add the accessibilityLabel.
 
   _containerStackView = [self configuredContainerStackView];
 
@@ -82,14 +81,25 @@ const CGFloat kLabelStackSpacing = 6.0;
   UIStackView* labelStackView = [self configuredLabelStackView];
   [_containerStackView addArrangedSubview:labelStackView];
 
+  UILabel* sessionLabel;
   if (_item.itemType == TabResumptionItemType::kLastSyncedTab) {
-    UILabel* sessionLabel = [self configuredSessionLabel];
+    sessionLabel = [self configuredSessionLabel];
     [labelStackView addArrangedSubview:sessionLabel];
   }
   UILabel* tabTitleLabel = [self configuredTabTitleLabel];
   [labelStackView addArrangedSubview:tabTitleLabel];
   UILabel* hostnameAndSyncTimeLabel = [self configuredHostNameAndSyncTimeLabel];
   [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
+
+  if (_item.itemType == TabResumptionItemType::kLastSyncedTab) {
+    self.accessibilityLabel = [NSString
+        stringWithFormat:@"%@,%@,%@", sessionLabel.text, tabTitleLabel.text,
+                         hostnameAndSyncTimeLabel.text];
+  } else {
+    self.accessibilityLabel =
+        [NSString stringWithFormat:@"%@,%@", tabTitleLabel.text,
+                                   hostnameAndSyncTimeLabel.text];
+  }
 
   [self addSubview:_containerStackView];
   AddSameConstraints(_containerStackView, self);
