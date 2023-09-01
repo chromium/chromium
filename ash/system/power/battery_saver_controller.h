@@ -80,8 +80,6 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   bool threshold_crossed_ = false;
 
-  bool low_power_crossed_ = false;
-
   absl::optional<EnableRecord> enable_record_{absl::nullopt};
 
   base::WeakPtrFactory<BatterySaverController> weak_ptr_factory_{this};

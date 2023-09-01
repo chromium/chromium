@@ -63,8 +63,6 @@ void BatterySaverController::OnPowerStatusChanged() {
   const auto* power_status = PowerStatus::Get();
   const bool active = power_status->IsBatterySaverActive();
   const bool on_AC_power = power_status->IsMainsChargerConnected();
-  const bool on_USB_power = power_status->IsUsbChargerConnected();
-  const bool on_line_power = power_status->IsLinePowerConnected();
 
   // The preference is the source of truth for battery saver state. If we see
   // Power Manager disagree, update its state and return.
@@ -78,85 +76,11 @@ void BatterySaverController::OnPowerStatusChanged() {
     return;
   }
 
-  const absl::optional<int> remaining_minutes =
-      GetRemainingMinutes(power_status);
-
-  const double battery_percent = power_status->GetBatteryPercent();
-
-  const bool percent_breached_threshold =
-      battery_percent <= activation_charge_percent_;
-  const bool minutes_breached_threshold =
-      remaining_minutes ? (*remaining_minutes <=
-                           PowerNotificationController::kLowPowerMinutes)
-                        : false;
-
-  // If we are charging and we go above any of the thresholds, we reset them.
-  if (on_AC_power || on_USB_power || on_line_power) {
-    if (remaining_minutes &&
-        remaining_minutes.value() >
-            PowerNotificationController::kLowPowerMinutes) {
-      low_power_crossed_ = false;
-    }
-
-    if (battery_percent > activation_charge_percent_) {
-      threshold_crossed_ = false;
-    }
-  }
-
   // Should we turn off battery saver?
   if (active && on_AC_power) {
     SetState(false, UpdateReason::kCharging);
     return;
   }
-
-  const bool charger_unplugged = previously_plugged_in_ && !on_AC_power;
-
-  const bool threshold_conditions_met =
-      !on_AC_power && percent_breached_threshold &&
-      !minutes_breached_threshold && (!threshold_crossed_ || charger_unplugged);
-
-  const bool low_power_conditions_met =
-      !on_AC_power && minutes_breached_threshold &&
-      (!low_power_crossed_ || charger_unplugged);
-
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
-      // Auto Enable when either the battery percentage is at or below
-      // 20%/15mins.
-      if (threshold_conditions_met) {
-        threshold_crossed_ = true;
-        if (!active) {
-          SetState(true, UpdateReason::kThreshold);
-        }
-      }
-
-      if (low_power_conditions_met) {
-        low_power_crossed_ = true;
-        if (!active) {
-          SetState(true, UpdateReason::kLowPower);
-        }
-      }
-      break;
-    case features::kOptInThenAutoEnable:
-      // In this case, we don't do anything when we get to
-      // activation_charge_percent_. However, when we get to 15 minutes
-      // remaining, we auto enable.
-      if (low_power_conditions_met) {
-        low_power_crossed_ = true;
-        if (!active) {
-          SetState(true, UpdateReason::kLowPower);
-        }
-      }
-      break;
-    case features::kFullyOptIn:
-      // In this case, we never auto-enable battery saver mode. Enabling
-      // battery saver mode is handled either power notification buttons, or
-      // manually toggling battery saver in the settings.
-    default:
-      break;
-  }
-
-  previously_plugged_in_ = on_AC_power;
 }
 
 void BatterySaverController::OnSettingsPrefChanged() {
@@ -296,24 +220,6 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     request.set_enabled(active);
     chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
   }
-}
-
-absl::optional<int> BatterySaverController::GetRemainingMinutes(
-    const PowerStatus* status) {
-  if (status->IsBatteryTimeBeingCalculated()) {
-    return absl::nullopt;
-  }
-
-  const absl::optional<base::TimeDelta> remaining_time =
-      status->GetBatteryTimeToEmpty();
-
-  // Check that powerd actually provided an estimate. It doesn't if the battery
-  // current is so close to zero that the estimate would be huge.
-  if (!remaining_time) {
-    return absl::nullopt;
-  }
-
-  return base::ClampRound(*remaining_time / base::Minutes(1));
 }
 
 bool BatterySaverController::IsBatterySaverSupported() const {

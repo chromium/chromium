@@ -192,23 +192,6 @@ TEST_F(BatterySaverControllerTest, EnsureThresholdsCrossed) {
   // When we get to percent_threshold-1, it should still be disabled.
   UpdatePowerStatus(GetActivationPercent() - 1, eight_hours_, false);
   EXPECT_FALSE(IsBatterySaverActive());
-
-  // Discharge to the low power notification, turn on bsm.
-  UpdatePowerStatus(
-      GetActivationPercent() - 1,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
-  EXPECT_TRUE(IsBatterySaverActive());
-
-  // Disable battery saver mode.
-  battery_saver_controller()->SetState(
-      false, BatterySaverController::UpdateReason::kSettings);
-
-  // Expect it to still be disabled since we already crossed the low power
-  // threshold when it was active.
-  UpdatePowerStatus(
-      GetActivationPercent() - 1,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes - 1), false);
-  EXPECT_FALSE(IsBatterySaverActive());
 }
 
 // Metrics always logged on enable.
@@ -399,11 +382,10 @@ TEST_P(BatterySaverControllerNotificationTest,
   // Start the test at percent threshold with no charging.
   UpdatePowerStatus(GetActivationPercent(), eight_hours_, false);
   switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
+    case features::kBSMAutoEnable:
       EXPECT_TRUE(IsBatterySaverActive());
       break;
-    case features::kOptInThenAutoEnable:
-    case features::kFullyOptIn:
+    case features::kBSMOptIn:
       EXPECT_FALSE(IsBatterySaverActive());
       break;
     default:
@@ -418,48 +400,10 @@ TEST_P(BatterySaverControllerNotificationTest,
   // state.
   UpdatePowerStatus(GetActivationPercent(), eight_hours_, false);
   switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
+    case features::kBSMAutoEnable:
       EXPECT_TRUE(IsBatterySaverActive());
       break;
-    case features::kOptInThenAutoEnable:
-    case features::kFullyOptIn:
-      EXPECT_FALSE(IsBatterySaverActive());
-      break;
-    default:
-      FAIL();
-  }
-
-  // Same thing but for low-power
-  UpdatePowerStatus(
-      15.0, base::Minutes(PowerNotificationController::kLowPowerMinutes),
-      false);
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
-    case features::kOptInThenAutoEnable:
-      EXPECT_TRUE(IsBatterySaverActive());
-      break;
-    case features::kFullyOptIn:
-      EXPECT_FALSE(IsBatterySaverActive());
-      break;
-    default:
-      FAIL();
-  }
-
-  // Plug in the charger
-  UpdatePowerStatus(
-      15.0, base::Minutes(PowerNotificationController::kLowPowerMinutes), true);
-  EXPECT_FALSE(IsBatterySaverActive());
-
-  // Unplug the charger, and expect BSM to turn back on in an auto-enable state.
-  UpdatePowerStatus(
-      15.0, base::Minutes(PowerNotificationController::kLowPowerMinutes),
-      false);
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
-    case features::kOptInThenAutoEnable:
-      EXPECT_TRUE(IsBatterySaverActive());
-      break;
-    case features::kFullyOptIn:
+    case features::kBSMOptIn:
       EXPECT_FALSE(IsBatterySaverActive());
       break;
     default:
@@ -491,11 +435,10 @@ TEST_P(BatterySaverControllerNotificationTest,
   // Battery read jumps (not smoothly) from above threshold to below threshold.
   UpdatePowerStatus(GetActivationPercent() - 1, eight_hours_, false);
   switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
+    case features::kBSMAutoEnable:
       EXPECT_TRUE(IsBatterySaverActive());
       break;
-    case features::kOptInThenAutoEnable:
-    case features::kFullyOptIn:
+    case features::kBSMOptIn:
       EXPECT_FALSE(IsBatterySaverActive());
       break;
     default:
@@ -510,31 +453,6 @@ TEST_P(BatterySaverControllerNotificationTest,
   // Check to make sure that the notification doesn't reappear after it's been
   // dismissed.
   UpdatePowerStatus(GetActivationPercent() - 2, eight_hours_, false);
-  NotificationNotPresent();
-
-  // Fast forward to the low minutes threshold, and check the low_power
-  // notification appears.
-  UpdatePowerStatus(
-      GetActivationPercent() - 2,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
-  switch (features::kBatterySaverNotificationBehavior.Get()) {
-    case features::kFullyAutoEnable:
-    case features::kOptInThenAutoEnable:
-      EXPECT_TRUE(IsBatterySaverActive());
-      break;
-    case features::kFullyOptIn:
-      EXPECT_FALSE(IsBatterySaverActive());
-      break;
-    default:
-      FAIL();
-  }
-  NotificationPresent();
-  DismissNotification();
-
-  // Check to make sure the notification doesn't appear again at 14 minutes.
-  UpdatePowerStatus(
-      GetActivationPercent() - 2,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes - 1), false);
   NotificationNotPresent();
 }
 
@@ -553,30 +471,6 @@ TEST_P(BatterySaverControllerNotificationTest,
   NotificationPresent();
   DismissNotification();
 
-  // Battery same percent, battery hits low power.
-  UpdatePowerStatus(
-      GetActivationPercent() - 2,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
-
-  // Notification for low power should appear.
-  NotificationPresent();
-  DismissNotification();
-
-  // Charging, battery goes above low power.
-  UpdatePowerStatus(
-      GetActivationPercent() - 2,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes + 1), true);
-  NotificationNotPresent();
-
-  // Discharging, battery goes back below low power.
-  UpdatePowerStatus(
-      GetActivationPercent() - 2,
-      base::Minutes(PowerNotificationController::kLowPowerMinutes), false);
-
-  // Notification should reappear.
-  NotificationPresent();
-  DismissNotification();
-
   // Charging, battery goes above threshold.
   UpdatePowerStatus(GetActivationPercent() + 1, eight_hours_, true);
   NotificationNotPresent();
@@ -592,9 +486,7 @@ TEST_P(BatterySaverControllerNotificationTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     BatterySaverControllerNotificationTest,
-    testing::Values(
-        features::BatterySaverNotificationBehavior::kFullyAutoEnable,
-        features::BatterySaverNotificationBehavior::kOptInThenAutoEnable,
-        features::BatterySaverNotificationBehavior::kFullyOptIn));
+    testing::Values(features::BatterySaverNotificationBehavior::kBSMAutoEnable,
+                    features::BatterySaverNotificationBehavior::kBSMOptIn));
 
 }  // namespace ash

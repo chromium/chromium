@@ -20,8 +20,7 @@ class ASH_EXPORT BatteryNotification {
  public:
   BatteryNotification(
       message_center::MessageCenter* message_center,
-      PowerNotificationController::NotificationState notification_state,
-      bool battery_saver_previously_active);
+      PowerNotificationController::NotificationState notification_state);
 
   BatteryNotification(const BatteryNotification&) = delete;
   BatteryNotification& operator=(const BatteryNotification&) = delete;
@@ -31,8 +30,8 @@ class ASH_EXPORT BatteryNotification {
   static const char kNotificationId[];
 
   // Updates the notification if it still exists.
-  void Update(PowerNotificationController::NotificationState notification_state,
-              bool battery_saver_previously_active);
+  void Update(
+      PowerNotificationController::NotificationState notification_state);
 
  private:
   raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;

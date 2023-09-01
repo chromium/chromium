@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,15 +28,12 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   enum NotificationState {
     NOTIFICATION_NONE,
 
-    // Battery Saver Notification States.
+    // Low battery charge, different battery saver notification behavior.
+    // Note: When battery saver is not available, both of these act like the
+    // original low power notification.
     NOTIFICATION_BSM_THRESHOLD_OPT_OUT,
 
     NOTIFICATION_BSM_THRESHOLD_OPT_IN,
-
-    NOTIFICATION_BSM_LOW_POWER_OPT_IN,
-
-    // Low battery charge.
-    NOTIFICATION_LOW_POWER,
 
     // Critically low battery charge.
     NOTIFICATION_CRITICAL,
@@ -84,17 +82,11 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // branches were triggered.
   absl::optional<bool> HandleBatterySaverNotifications();
 
-  // Resets the notifications for battery saver mode when we go above each
-  // set threshold.
-  void MaybeResetNotificationAvailability(
-      features::BatterySaverNotificationBehavior experiment,
-      const double battery_percent,
-      const int battery_remaining_minutes);
-
   // Sets |notification_state_|. Returns true if a notification should be shown.
   bool UpdateNotificationState();
   bool UpdateNotificationStateForRemainingTime();
   bool UpdateNotificationStateForRemainingPercentage();
+  bool UpdateNotificationStateForRemainingPercentageBatterySaver();
 
   static const char kUsbNotificationId[];
 
@@ -118,17 +110,18 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // back to false when all power sources are disconnected.
   bool usb_notification_dismissed_ = false;
 
-  // Based on the last OnPowerStatusChanged() callback, was battery saver mode
-  // active?
-  bool battery_saver_previously_active_ = false;
-
-  // Has the battery saver threshold been crossed?
-  bool threshold_crossed_ = false;
-
-  // Has the low power notification been crossed?
-  bool low_power_crossed_ = false;
+  // Has the battery saver threshold been crossed? Also gets reset to false when
+  // an AC charger is plugged in.
+  bool battery_saver_triggered_ = false;
 
   const double battery_saver_activation_charge_percent_;
+
+  // Percentage-based notification thresholds for battery saver.
+  // TODO(mwoj): Replace the static constexpr once data is collected from the
+  // experiment.
+  const int critical_percentage_;
+  const int low_power_percentage_;
+  const int no_warning_percentage_;
 };
 
 }  // namespace ash

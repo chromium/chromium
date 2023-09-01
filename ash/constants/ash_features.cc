@@ -287,16 +287,13 @@ BASE_FEATURE(kBatterySaver,
 // and notification timing.
 const base::FeatureParam<BatterySaverNotificationBehavior>::Option
     battery_saver_notification_options[] = {
-        {BatterySaverNotificationBehavior::kFullyAutoEnable,
-         "kFullyAutoEnable"},
-        {BatterySaverNotificationBehavior::kOptInThenAutoEnable,
-         "kOptInThenAutoEnable"},
-        {BatterySaverNotificationBehavior::kFullyOptIn, "kFullyOptIn"},
+        {BatterySaverNotificationBehavior::kBSMAutoEnable, "kBSMAutoEnable"},
+        {BatterySaverNotificationBehavior::kBSMOptIn, "kBSMOptIn"},
 };
 const base::FeatureParam<BatterySaverNotificationBehavior>
     kBatterySaverNotificationBehavior{
         &kBatterySaver, "BatterySaverNotificationBehavior",
-        BatterySaverNotificationBehavior::kFullyAutoEnable,
+        BatterySaverNotificationBehavior::kBSMAutoEnable,
         &battery_saver_notification_options};
 
 // Determines the charge percent of when we will activate Battery Saver
