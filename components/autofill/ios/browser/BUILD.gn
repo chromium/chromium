@@ -18,6 +18,8 @@ source_set("browser") {
     "autofill_driver_ios_factory.mm",
     "autofill_java_script_feature.h",
     "autofill_java_script_feature.mm",
+    "autofill_manager_observer_bridge.h",
+    "autofill_manager_observer_bridge.mm",
     "autofill_switches.cc",
     "autofill_switches.h",
     "child_frame_registration_java_script_feature.h",
