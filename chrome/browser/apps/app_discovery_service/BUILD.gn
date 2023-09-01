@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 
 source_set("app_discovery_service") {
   sources = [
+    "almanac_fetcher.cc",
+    "almanac_fetcher.h",
     "app_discovery_service.cc",
     "app_discovery_service.h",
     "app_discovery_service_factory.cc",
@@ -56,6 +58,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "almanac_fetcher_unittest.cc",
     "app_discovery_service_unittest.cc",
     "game_fetcher_unittest.cc",
     "launcher_app_almanac_connector_unittest.cc",
@@ -65,7 +68,10 @@ source_set("unit_tests") {
   deps = [
     ":app_discovery_service",
     "//base",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:launcher_app_descriptor",
+    "//chrome/browser/apps/app_discovery_service/almanac_api:proto",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:unit_tests",
     "//chrome/browser/apps/app_provisioning_service/proto",
     "//chrome/browser/profiles:profile",
@@ -74,4 +80,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  data = [ "$root_gen_dir/chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.descriptor" ]
 }
