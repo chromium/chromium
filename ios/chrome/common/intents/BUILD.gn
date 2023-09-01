@@ -19,5 +19,6 @@ intent_definition("intents") {
     "PlayDinoGameIntent",
     "SetChromeDefaultBrowserIntent",
     "ViewHistoryIntent",
+    "OpenNewIncognitoTabIntent",
   ]
 }

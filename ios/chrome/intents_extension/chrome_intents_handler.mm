@@ -9,6 +9,7 @@
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
+#import "ios/chrome/common/intents/OpenNewIncognitoTabIntent.h"
 #import "ios/chrome/common/intents/OpenNewTabIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
@@ -30,7 +31,8 @@
                                     OpenNewTabIntentHandling,
                                     PlayDinoGameIntentHandling,
                                     SetChromeDefaultBrowserIntentHandling,
-                                    ViewHistoryIntentHandling>
+                                    ViewHistoryIntentHandling,
+                                    OpenNewIncognitoTabIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -257,6 +259,23 @@
   ViewHistoryIntentResponse* response = [[ViewHistoryIntentResponse alloc]
       initWithCode:ViewHistoryIntentResponseCodeContinueInApp
       userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - OpenNewIncognitoTabIntentHandling
+
+- (void)handleOpenNewIncognito:(OpenNewIncognitoTabIntent*)intent
+                    completion:(void (^)(OpenNewIncognitoTabIntentResponse*))
+                                   completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass(
+                               [OpenNewIncognitoTabIntent class])];
+
+  OpenNewIncognitoTabIntentResponse* response =
+      [[OpenNewIncognitoTabIntentResponse alloc]
+          initWithCode:OpenNewIncognitoTabIntentResponseCodeContinueInApp
+          userActivity:activity];
 
   completion(response);
 }

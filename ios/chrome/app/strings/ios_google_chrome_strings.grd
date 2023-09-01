@@ -776,6 +776,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_DESCRIPTION" desc="Siri Shortcut description to view Chrome history [iOS only]">
         Opens your Chrome History Page.
       </message>
+      <message name="IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_TITLE" desc="Siri Shortcut for open chrome incognito tab title [iOS only]">
+        Open Chrome Incognito Tab
+      </message>
+      <message name="IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_DESCRIPTION" desc="Siri Shortcut description to open chrome incognito tab [iOS only]">
+        Opens a New Chrome Incognito Tab.
+      </message>
     </messages>
   </release>
 </grit>

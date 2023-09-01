@@ -67,6 +67,30 @@
 			<array>
 				<dict>
 					<key>output</key>
+					<string>7kOtAx</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>gBOiVo</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>94Uty1</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_DESCRIPTION</string>
+				</dict>
+				<dict>
+					<key>output</key>
+					<string>pWKZaJ</string>
+					<key>input</key>
+					<string>IDS_IOS_INTENTS_OPEN_CHROME_INCOGNITO_TAB_TITLE</string>
+				</dict>
+				<dict>
+					<key>output</key>
 					<string>GDSnft</string>
 					<key>input</key>
 					<string>IDS_IOS_INTENTS_VIEW_CHROME_HISTORY_TITLE</string>
