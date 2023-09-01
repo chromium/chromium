@@ -31,6 +31,9 @@ class ASH_EXPORT SearchNotifierController {
   // Gets the number of times that the privacy notice has been shown.
   static int GetPrivacyNoticeShownCount(PrefService* prefs);
 
+  // Enables the image search category in launcher search.
+  void EnableImageSearch();
+
   // Returns true if the privacy notice should be shown.
   bool ShouldShowPrivacyNotice() const;
 

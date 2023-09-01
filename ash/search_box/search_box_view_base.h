@@ -100,6 +100,9 @@ class SearchBoxViewBase : public views::View,
   virtual void HandleQueryChange(const std::u16string& query,
                                  bool initiated_by_user) = 0;
 
+  // Explicitly triggers the search while keeping the same query.
+  void TriggerSearch();
+
   // Sets contents for the title and category labels used for ghost text
   // autocomplete.
   void MaybeSetAutocompleteGhostText(const std::u16string& title,

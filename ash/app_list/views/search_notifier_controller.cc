@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -55,6 +56,19 @@ int SearchNotifierController::GetPrivacyNoticeShownCount(PrefService* prefs) {
   return dictionary.FindInt(kPrivacyNoticeShownCount).value_or(0);
 }
 
+void SearchNotifierController::EnableImageSearch() {
+  PrefService* prefs = GetPrefs();
+  if (!prefs) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(prefs,
+                              prefs::kLauncherSearchCategoryControlStatus);
+  update->Set(
+      GetAppListControlCategoryName(AppListSearchControlCategory::kImages),
+      true);
+}
+
 bool SearchNotifierController::ShouldShowPrivacyNotice() const {
   PrefService* prefs = GetPrefs();
   if (!prefs) {
@@ -65,7 +79,7 @@ bool SearchNotifierController::ShouldShowPrivacyNotice() const {
     return false;
   }
 
-  return GetPrivacyNoticeShownCount(prefs) < kMaxShowCount;
+  return GetPrivacyNoticeShownCount(prefs) <= kMaxShowCount;
 }
 
 void SearchNotifierController::SetPrivacyNoticeAcceptedPref() {
@@ -77,6 +91,9 @@ void SearchNotifierController::SetPrivacyNoticeAcceptedPref() {
   ScopedDictPrefUpdate privacy_pref_update(prefs,
                                            prefs::kImageSearchPrivacyNotice);
   privacy_pref_update->Set(kPrivacyNoticeAccepted, true);
+
+  // Enable the image search as the privacy notice is accepted.
+  EnableImageSearch();
 }
 
 bool SearchNotifierController::IsPrivacyNoticeAccepted() const {

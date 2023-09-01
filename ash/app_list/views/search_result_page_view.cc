@@ -129,6 +129,11 @@ void SearchResultPageView::VisibilityChanged(View* starting_from,
   auto* notifier_controller = search_view_->search_notifier_controller();
   if (starting_from == this && notifier_controller) {
     notifier_controller->UpdateNotifierVisibility(is_visible);
+    if (search_view_->search_notifier_view() &&
+        !notifier_controller->ShouldShowPrivacyNotice()) {
+      search_view_->RemoveSearchNotifierView();
+      notifier_controller->EnableImageSearch();
+    }
   }
 }
 

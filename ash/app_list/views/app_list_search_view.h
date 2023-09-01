@@ -20,6 +20,7 @@
 
 namespace ash {
 
+class AppListToastView;
 class AppListViewDelegate;
 class ResultSelectionController;
 class SearchBoxView;
@@ -71,6 +72,10 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // is an implementation detail.
   ui::Layer* GetPageAnimationLayer() const;
 
+  // Removes `search_notifer_` from the view hierarchy. This is called when
+  // `search_notifier_` is either accepted or timeout.
+  void RemoveSearchNotifierView();
+
   std::vector<SearchResultContainerView*> result_container_views_for_test() {
     return result_container_views_;
   }
@@ -80,6 +85,12 @@ class ASH_EXPORT AppListSearchView : public views::View,
   }
 
   SearchBoxView* search_box_view() { return search_box_view_.get(); }
+
+  SearchResultImageListView* image_search_container() {
+    return image_search_container_;
+  }
+
+  AppListToastView* search_notifier_view() { return search_notifier_; }
 
   SearchNotifierController* search_notifier_controller() const {
     return search_notifier_controller_.get();
@@ -121,6 +132,10 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // result view unless overridden by |ignore_result_changes_for_a11y_|.
   void MaybeNotifySelectedResultChanged();
 
+  // A callback that is triggered when the toast button of the search notifier
+  // is pressed.
+  void OnSearchNotifierButtonPressed();
+
   const raw_ptr<SearchResultPageDialogController,
                 DanglingUntriaged | ExperimentalAsh>
       dialog_controller_;
@@ -138,6 +153,9 @@ class ASH_EXPORT AppListSearchView : public views::View,
   // Containers for search result views. The contained views are owned by the
   // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
+
+  // The notifier that shows the search privacy notice or educational nudge.
+  raw_ptr<AppListToastView, ExperimentalAsh> search_notifier_ = nullptr;
 
   // The container of the image search results. This is owned by the views
   // hierarchy and is an element in result_container_views_;
@@ -162,6 +180,8 @@ class ASH_EXPORT AppListSearchView : public views::View,
 
   // The last reported number of search results shown by all containers.
   int last_search_result_count_ = 0;
+
+  base::WeakPtrFactory<AppListSearchView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -534,6 +534,10 @@ void SearchBoxViewBase::DeleteIphView() {
   main_container_->RemoveChildViewT(iph_view());
 }
 
+void SearchBoxViewBase::TriggerSearch() {
+  HandleQueryChange(search_box_->GetText(), /*initiated_by_user=*/false);
+}
+
 void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
     const std::u16string& title,
     const std::u16string& category) {
