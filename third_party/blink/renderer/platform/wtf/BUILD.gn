@@ -292,7 +292,6 @@ source_set("wtf_unittests_sources") {
   sources = [
     "allocator/allocator_test.cc",
     "allocator/partitions_test.cc",
-    "ascii_ctype_test.cc",
     "assertions_test.cc",
     "atomic_operations_test.cc",
     "bit_field_test.cc",
@@ -318,6 +317,7 @@ source_set("wtf_unittests_sources") {
     "sequence_bound_test.cc",
     "shared_buffer_test.cc",
     "testing/run_all_tests.cc",
+    "text/ascii_ctype_test.cc",
     "text/atomic_string_table_test.cc",
     "text/atomic_string_test.cc",
     "text/base64_test.cc",
