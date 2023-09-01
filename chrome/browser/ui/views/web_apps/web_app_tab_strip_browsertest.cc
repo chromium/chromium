@@ -1159,12 +1159,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
 }
 
 // Tests the page title, which is used for accessibility.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PageTitle DISABLED_PageTitle
-#else
-#define MAYBE_PageTitle PageTitle
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MAYBE_PageTitle) {
+// Disabled due to conflict with memory usage; https://crbug.com/1477857.
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_PageTitle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
