@@ -100,15 +100,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         [VideoCaptureDeviceAVFoundation FourCCToChromiumPixelFormat:fourcc];
     CMVideoDimensions dimensions =
         CMVideoFormatDescriptionGetDimensions(captureFormat.formatDescription);
-    Float64 maxFrameRate = 0;
-    bool matchesFrameRate = false;
-    for (AVFrameRateRange* frameRateRange in captureFormat
-             .videoSupportedFrameRateRanges) {
-      maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
-      matchesFrameRate |=
-          frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
-          frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
-    }
 
     // If the pixel format is unsupported by our code, then it is not useful.
     if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
@@ -121,6 +112,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
       continue;
     }
 
+    Float64 maxFrameRate = 0;
+    bool matchesFrameRate = false;
+    for (AVFrameRateRange* frameRateRange in captureFormat
+             .videoSupportedFrameRateRanges) {
+      maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
+      matchesFrameRate |=
+          frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
+          frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
+    }
     // Prefer a capture format that handles the requested framerate to one
     // that doesn't.
     if (bestCaptureFormat) {
