@@ -41,6 +41,7 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -267,8 +268,8 @@ class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
     // TODO(bsalomon): Determine whether it makes sense to attempt to reuse this
     // if the vk_info stays the same on subsequent calls.
     promise_texture_ = GrPromiseImageTexture::Make(
-        GrBackendTexture(size().width(), size().height(),
-                         CreateGrVkImageInfo(vulkan_image_.get())));
+        GrBackendTextures::MakeVk(size().width(), size().height(),
+                                  CreateGrVkImageInfo(vulkan_image_.get())));
     DCHECK(promise_texture_);
   }
 };

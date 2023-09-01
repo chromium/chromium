@@ -1491,7 +1491,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     return GrBackendFormats::MakeVk(gr_ycbcr_info,
                                     /*willUseDRMFormatModifiers=*/true);
 #else
-    return GrBackendFormat::MakeVk(gr_ycbcr_info);
+    return GrBackendFormats::MakeVk(gr_ycbcr_info);
 #endif  // BUILDFLAG(IS_LINUX)
   } else {
 #else
