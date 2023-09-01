@@ -13,7 +13,7 @@ import '../os_languages_page/language_settings_card.js';
 import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../os_reset_page/reset_card.js';
+import '../os_reset_page/reset_settings_card.js';
 import '../os_search_page/search_and_assistant_card.js';
 import '../settings_shared.css.js';
 
@@ -75,7 +75,7 @@ export class SettingsSystemPreferencesPageElement extends
         value: loadTimeData.getString('timeZoneName'),
       },
 
-      shouldShowResetCard_: {
+      shouldShowResetSettingsCard_: {
         type: Boolean,
         value: () => {
           return isPowerwashAllowed();
@@ -110,7 +110,7 @@ export class SettingsSystemPreferencesPageElement extends
   private activeTimeZoneDisplayName_: string;
 
   // Reset subsection
-  private shouldShowResetCard_: boolean;
+  private shouldShowResetSettingsCard_: boolean;
 
   // Search and Assistant subsection
   private shouldShowQuickAnswersSettings_: boolean;

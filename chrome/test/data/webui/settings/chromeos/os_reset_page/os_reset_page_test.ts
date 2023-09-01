@@ -49,9 +49,9 @@ suite('<os-settings-reset-page>', () => {
     resetPageBrowserProxy.reset();
   });
 
-  test('Reset card should be visible', () => {
-    const resetCard =
-        resetPage.shadowRoot!.querySelector('settings-reset-card');
-    assertTrue(isVisible(resetCard));
+  test('Reset settings card should be visible', () => {
+    const resetSettingsCard =
+        resetPage.shadowRoot!.querySelector('reset-settings-card');
+    assertTrue(isVisible(resetSettingsCard));
   });
 });

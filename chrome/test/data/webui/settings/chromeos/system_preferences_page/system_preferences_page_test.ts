@@ -140,21 +140,29 @@ suite('<settings-system-preferences-page>', () => {
   });
 
   suite('Reset subsection', () => {
-    test('Reset card is visible if powerwash is allowed', async () => {
+    test('Reset settings card is visible if powerwash is allowed', async () => {
       loadTimeData.overrideValues({allowPowerwash: true});
       await createPage();
 
-      const resetCard = page.shadowRoot!.querySelector('settings-reset-card');
-      assertTrue(isVisible(resetCard), 'Reset card should be visible.');
+      const resetSettingsCard =
+          page.shadowRoot!.querySelector('reset-settings-card');
+      assertTrue(
+          isVisible(resetSettingsCard),
+          'Reset settings card should be visible.');
     });
 
-    test('Reset card is not visible if powerwash is disallowed', async () => {
-      loadTimeData.overrideValues({allowPowerwash: false});
-      await createPage();
+    test(
+        'Reset settings card is not visible if powerwash is disallowed',
+        async () => {
+          loadTimeData.overrideValues({allowPowerwash: false});
+          await createPage();
 
-      const resetCard = page.shadowRoot!.querySelector('settings-reset-card');
-      assertFalse(isVisible(resetCard), 'Reset card should not be visible.');
-    });
+          const resetSettingsCard =
+              page.shadowRoot!.querySelector('reset-settings-card');
+          assertFalse(
+              isVisible(resetSettingsCard),
+              'Reset settings card should not be visible.');
+        });
   });
 
   suite('Search & Assistant subsection', () => {

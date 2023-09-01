@@ -4,8 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-reset-card' is the OS settings page containing reset
- * settings.
+ * 'reset-settings-card' is the card element containing reset settings.
  */
 import '../settings_shared.css.js';
 import '../os_settings_page/settings_card.js';
@@ -23,20 +22,20 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
-import {getTemplate} from './reset_card.html.js';
+import {getTemplate} from './reset_settings_card.html.js';
 
-export interface SettingsResetCardElement {
+export interface ResetSettingsCardElement {
   $: {
     powerwashButton: CrButtonElement,
   };
 }
 
-const SettingsResetCardElementBase =
+const ResetSettingsCardElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-export class SettingsResetCardElement extends SettingsResetCardElementBase {
+export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   static get is() {
-    return 'settings-reset-card' as const;
+    return 'reset-settings-card' as const;
   }
 
   static get template() {
@@ -110,8 +109,8 @@ export class SettingsResetCardElement extends SettingsResetCardElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsResetCardElement.is]: SettingsResetCardElement;
+    [ResetSettingsCardElement.is]: ResetSettingsCardElement;
   }
 }
 
-customElements.define(SettingsResetCardElement.is, SettingsResetCardElement);
+customElements.define(ResetSettingsCardElement.is, ResetSettingsCardElement);

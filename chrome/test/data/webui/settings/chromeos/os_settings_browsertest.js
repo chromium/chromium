@@ -760,8 +760,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['OsResetPage', 'os_reset_page/os_reset_page_test.js'],
  [
-   'OsResetPageResetCard',
-   'os_reset_page/reset_card_test.js',
+   'OsResetPageResetSettingsCard',
+   'os_reset_page/reset_settings_card_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  ['OsSearchPage', 'os_search_page/os_search_page_test.js'],
@@ -869,8 +869,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [
-   'SystemPreferencesPageResetCard',
-   'os_reset_page/reset_card_test.js',
+   'SystemPreferencesPageResetSettingsCard',
+   'os_reset_page/reset_settings_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
  [

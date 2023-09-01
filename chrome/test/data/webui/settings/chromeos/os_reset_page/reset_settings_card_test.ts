@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, SettingsResetCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, LifetimeBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -19,13 +19,13 @@ import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 
 import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
-suite('<reset-card>', () => {
+suite('<reset-settings-card>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
   const route =
       isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.OS_RESET;
 
-  let resetCard: SettingsResetCardElement;
+  let resetSettingsCard: ResetSettingsCardElement;
   let resetPageBrowserProxy: TestOsResetBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
   let eSimManagerRemote: FakeESimManagerRemote;
@@ -44,29 +44,29 @@ suite('<reset-card>', () => {
         eSimManagerRemote as unknown as ESimManagerRemote);
 
     Router.getInstance().navigateTo(route);
-    resetCard = document.createElement('settings-reset-card');
-    document.body.appendChild(resetCard);
+    resetSettingsCard = document.createElement('reset-settings-card');
+    document.body.appendChild(resetSettingsCard);
     flush();
   });
 
   teardown(() => {
     Router.getInstance().resetRouteForTesting();
-    resetCard.remove();
+    resetSettingsCard.remove();
     lifetimeBrowserProxy.reset();
     resetPageBrowserProxy.reset();
   });
 
   function getPowerwashButton(): HTMLElement {
     const powerwashButton =
-        resetCard.shadowRoot!.querySelector<CrButtonElement>(
+        resetSettingsCard.shadowRoot!.querySelector<CrButtonElement>(
             '#powerwashButton');
     assertTrue(!!powerwashButton);
     return powerwashButton;
   }
 
   function getPowerwashDialog(): OsSettingsPowerwashDialogElement {
-    const powerwashDialog =
-        resetCard.shadowRoot!.querySelector('os-settings-powerwash-dialog');
+    const powerwashDialog = resetSettingsCard.shadowRoot!.querySelector(
+        'os-settings-powerwash-dialog');
     assertTrue(!!powerwashDialog);
     return powerwashDialog;
   }

@@ -260,7 +260,7 @@ export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpa
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsResetPageElement} from './os_reset_page/os_reset_page.js';
-export {SettingsResetCardElement} from './os_reset_page/reset_card.js';
+export {ResetSettingsCardElement} from './os_reset_page/reset_settings_card.js';
 export {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState, SettingsGoogleAssistantSubpageElement} from './os_search_page/google_assistant_subpage.js';
 export {SettingsSearchSubpageElement} from './os_search_page/search_subpage.js';

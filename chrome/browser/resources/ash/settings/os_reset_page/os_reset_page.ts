@@ -8,7 +8,7 @@
  */
 
 import '../os_settings_page/os_settings_animated_pages.js';
-import './reset_card.js';
+import './reset_settings_card.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
