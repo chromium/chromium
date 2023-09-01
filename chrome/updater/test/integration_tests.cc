@@ -2061,7 +2061,38 @@ TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
+struct IntegrationInstallerResultsTestCase {
+  const std::string command_line_args;
+  const int error_code;
+  const std::string installer_text;
+  const std::string installer_cmd_line;
+};
+
+class IntegrationInstallerResultsTest
+    : public ::testing::WithParamInterface<IntegrationInstallerResultsTestCase>,
+      public IntegrationTestMsi {};
+
+INSTANTIATE_TEST_SUITE_P(
+    IntegrationInstallerResultsTestCases,
+    IntegrationInstallerResultsTest,
+    ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
+        // InstallerResult::kMsiError, explicit error code.
+        {"INSTALLER_RESULT=2 INSTALLER_ERROR=1603", 1603, {}, {}},
+
+        // `InstallerResult::kCustomError`, implicit error code
+        // `kErrorApplicationInstallerFailed`.
+        // TODO(crbug.com/1478305): test the results for `installer_text`. It
+        // needs to match `INSTALLER_RESULT_UI_STRING`.
+        {"INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
+         kErrorApplicationInstallerFailed,
+         {},
+         {}},
+
+        // InstallerResult::kSystemError, explicit error code.
+        {"INSTALLER_RESULT=3 INSTALLER_ERROR=99", 99, {}, {}},
+    }));
+
+TEST_P(IntegrationInstallerResultsTest, TestCases) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2078,13 +2109,12 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
       UpdaterScope::kSystem, test_server_.get(),
       {
           AppUpdateExpectation(
-              "INSTALLER_RESULT=2 "  // `InstallerResult::kMsiError`
-              "INSTALLER_ERROR=1603",
-              kMsiAppId, base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
+              GetParam().command_line_args, kMsiAppId,
+              base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
               /*is_install=*/true,
               /*should_update=*/false, false, "", crx_relative_path,
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
-              1603, /*EVENT_INSTALL_COMPLETE=*/2),
+              GetParam().error_code, /*EVENT_INSTALL_COMPLETE=*/2),
       });
 
   // The updater should uninstall itself automatically since the app failed to
@@ -2107,10 +2137,10 @@ TEST_F(IntegrationTestMsi, InstallerResultMsiError) {
                   .Set("install_progress", -1)
                   .Set("error_category",
                        static_cast<int>(UpdateService::ErrorCategory::kInstall))
-                  .Set("error_code", 1603)
+                  .Set("error_code", GetParam().error_code)
                   .Set("extra_code1", 0)
-                  .Set("installer_text", "")
-                  .Set("installer_cmd_line", ""))
+                  .Set("installer_text", GetParam().installer_text)
+                  .Set("installer_cmd_line", GetParam().installer_cmd_line))
           .Set("expected_result", 0)));
   ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
 
