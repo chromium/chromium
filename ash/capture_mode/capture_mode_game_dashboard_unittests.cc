@@ -17,7 +17,10 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/game_dashboard/game_dashboard_context_test_api.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -29,6 +32,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace message_center {
@@ -46,8 +50,13 @@ using ButtonInfo = message_center::ButtonInfo;
 
 class GameDashboardCaptureModeTest : public AshTestBase {
  public:
-  GameDashboardCaptureModeTest()
-      : scoped_feature_list_(features::kGameDashboard) {}
+  GameDashboardCaptureModeTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGameDashboard,
+                              features::
+                                  kFeatureManagementGameDashboardRecordGame},
+        /*disabled_features=*/{});
+  }
   GameDashboardCaptureModeTest(const GameDashboardCaptureModeTest&) = delete;
   GameDashboardCaptureModeTest& operator=(const GameDashboardCaptureModeTest&) =
       delete;
@@ -61,8 +70,9 @@ class GameDashboardCaptureModeTest : public AshTestBase {
     AshTestBase::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
 
-    game_window_ = CreateAppWindow(gfx::Rect(0, 100, 100, 100));
-    game_window_->SetProperty(chromeos::kIsGameKey, true);
+    game_window_ = CreateAppWindow(gfx::Rect(0, 100, 200, 200));
+    game_window_->SetProperty(kAppIDKey,
+                              std::string(extension_misc::kGeForceNowAppId));
   }
 
   void TearDown() override {
@@ -693,6 +703,40 @@ TEST_F(GameDashboardCaptureModeTest, GameCaptureModeRecordInstantlyTest) {
   // Verify that the configs in `CaptureModeController` are restored.
   EXPECT_EQ(controller->audio_recording_mode(), AudioRecordingMode::kOff);
   EXPECT_FALSE(controller->enable_demo_tools());
+}
+
+TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
+  auto* controller = CaptureModeController::Get();
+  controller->StartRecordingInstantlyForGameDashboard(game_window());
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  auto* recording_watcher = controller->video_recording_watcher_for_testing();
+  ASSERT_EQ(game_window(), recording_watcher->window_being_recorded());
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(game_window()));
+
+  // The window that hosts the game dashboard button should not be dimmed.
+  GameDashboardContextTestApi context_test_api{
+      GameDashboardController::Get()->GetGameDashboardContext(game_window()),
+      GetEventGenerator()};
+  auto* game_dashboard_button_widget =
+      context_test_api.GetMainMenuButtonWidget();
+  ASSERT_TRUE(game_dashboard_button_widget);
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
+      game_dashboard_button_widget->GetNativeWindow()));
+
+  // Open the game dashboard menu, and expect that the window hosting the menu
+  // is not dimmed either.
+  context_test_api.OpenTheMainMenu();
+  auto* game_dashboard_menu_widget = context_test_api.GetMainMenuWidget();
+  ASSERT_TRUE(game_dashboard_menu_widget);
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
+      game_dashboard_menu_widget->GetNativeWindow()));
+
+  // Finally, the toolbar widget should also not be dimmed.
+  context_test_api.OpenTheToolbar();
+  auto* game_dashboard_toolbar_widget = context_test_api.GetToolbarWidget();
+  ASSERT_TRUE(game_dashboard_toolbar_widget);
+  EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
+      game_dashboard_toolbar_widget->GetNativeWindow()));
 }
 
 // -----------------------------------------------------------------------------

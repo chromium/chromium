@@ -46,6 +46,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -748,9 +749,11 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
     }
 
     // No need to dim windows that are below the window being recorded in
-    // z-order, or those on other displays, or other desks.
+    // z-order, or those on other displays, or other desks, or transient
+    // descendants of the window being recorded.
     if (did_find_recorded_window || window->GetRootWindow() != current_root_ ||
-        !AreWindowsOnSameDesk(window, window_being_recorded_)) {
+        !AreWindowsOnSameDesk(window, window_being_recorded_) ||
+        wm::HasTransientAncestor(window, window_being_recorded_)) {
       dimmers_.erase(window);
       continue;
     }
