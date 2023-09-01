@@ -365,8 +365,8 @@ void HeadlessCommandHandler::OnTargetCrashed(const base::Value::Dict&) {
 }
 
 void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
-  if (absl::optional<bool> timeout =
-          result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")) {
+  if (result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")
+          .value_or(false)) {
     result_ = Result::kPageLoadTimeout;
     LOG(ERROR) << "Page load timed out.";
   }
