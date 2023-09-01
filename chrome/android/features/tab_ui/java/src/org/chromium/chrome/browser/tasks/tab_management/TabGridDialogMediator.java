@@ -297,9 +297,9 @@ public class TabGridDialogMediator
                 }
             }
 
-                if (result == R.id.edit_group_name) {
-                    mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
-                }
+            if (result == R.id.edit_group_name) {
+                mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
+            }
         };
 
         setupToolbarClickHandlers();
@@ -421,17 +421,17 @@ public class TabGridDialogMediator
             Tab currentTab = mTabModelSelector.getTabById(mCurrentTabId);
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(getRootId(currentTab));
             if (storedTitle != null && tabsCount > 1) {
-                    mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                            mContext.getResources().getQuantityString(
-                                    R.plurals.accessibility_dialog_back_button_with_group_name,
-                                    tabsCount, storedTitle, tabsCount));
+                mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                        mContext.getResources().getQuantityString(
+                                R.plurals.accessibility_dialog_back_button_with_group_name,
+                                tabsCount, storedTitle, tabsCount));
                 mModel.set(TabGridPanelProperties.HEADER_TITLE, storedTitle);
                 return;
             }
         }
-            mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
-                    mContext.getResources().getQuantityString(
-                            R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
+        mModel.set(TabGridPanelProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,
+                mContext.getResources().getQuantityString(
+                        R.plurals.accessibility_dialog_back_button, tabsCount, tabsCount));
         mModel.set(TabGridPanelProperties.HEADER_TITLE,
                 TabGroupTitleEditor.getDefaultTitle(mContext, tabsCount));
     }
