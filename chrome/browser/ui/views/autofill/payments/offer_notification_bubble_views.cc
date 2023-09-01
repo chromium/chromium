@@ -80,7 +80,6 @@ void OfferNotificationBubbleViews::AddedToWidget() {
   DCHECK(offer);
 
   if (controller_->GetOffer()->IsFreeListingCouponOffer()) {
-    int image_resource_id = IDR_AUTOFILL_OFFERS;
     if (::features::IsChromeRefresh2023()) {
       auto title_label = std::make_unique<views::Label>(
           base::ASCIIToUTF16(offer->GetDisplayStrings().value_prop_text),
@@ -88,7 +87,6 @@ void OfferNotificationBubbleViews::AddedToWidget() {
       title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label->SetMultiLine(true);
       GetBubbleFrameView()->SetTitleView(std::move(title_label));
-      image_resource_id = IDR_AUTOFILL_OFFERS_CHROME_REFRESH_2023;
     } else {
       GetBubbleFrameView()->SetTitleView(
           std::make_unique<TitleWithIconAndSeparatorView>(
@@ -97,9 +95,15 @@ void OfferNotificationBubbleViews::AddedToWidget() {
 
     // Set the header image.
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    auto* autofill_offers_banner = bundle.GetImageSkiaNamed(image_resource_id);
     auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-        *autofill_offers_banner, *autofill_offers_banner,
+        ::features::IsChromeRefresh2023()
+            ? *bundle.GetImageSkiaNamed(
+                  IDR_AUTOFILL_OFFERS_LIGHT_CHROME_REFRESH_2023)
+            : *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS),
+        ::features::IsChromeRefresh2023()
+            ? *bundle.GetImageSkiaNamed(
+                  IDR_AUTOFILL_OFFERS_DARK_CHROME_REFRESH_2023)
+            : *bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS),
         base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                             base::Unretained(this)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
