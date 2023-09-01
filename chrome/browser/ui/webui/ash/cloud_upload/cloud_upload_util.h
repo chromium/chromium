@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -144,6 +145,11 @@ SourceType GetSourceType(Profile* profile,
 UploadType GetUploadType(Profile* profile,
                          const storage::FileSystemURL& source_path);
 
+// Request ODFS be mounted. If there is an existing mount, ODFS will unmount
+// that one after authentication of the new mount.
+void RequestODFSMount(Profile* profile,
+                      file_system_provider::RequestMountCallback callback);
+
 // Get information of the currently provided ODFS. Expect there to be exactly
 // one ODFS.
 absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
@@ -151,6 +157,9 @@ absl::optional<file_system_provider::ProvidedFileSystemInfo> GetODFSInfo(
 
 // Get currently provided ODFS, or null if not mounted.
 file_system_provider::ProvidedFileSystemInterface* GetODFS(Profile* profile);
+
+bool IsODFSMounted(Profile* profile);
+bool IsOfficeWebAppInstalled(Profile* profile);
 
 // Get ODFS metadata as actions by doing a special GetActions request (for the
 // root directory) and return the actions to |OnODFSMetadataActions| which will

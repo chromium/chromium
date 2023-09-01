@@ -47,7 +47,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
@@ -206,7 +205,7 @@ void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
   if (button_index) {
     // TODO(b/282619291) decide what callback should be.
     // Request an ODFS mount which will trigger reauthentication.
-    CloudUploadDialog::RequestODFSMount(profile, base::DoNothing());
+    RequestODFSMount(profile, base::DoNothing());
   }
   NotificationDisplayService* notification_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
@@ -448,10 +447,10 @@ void RecordMicrosoft365Availability(const char* metric, Profile* profile) {
   base::EnumSet<Microsoft365Availability, Microsoft365Availability::kMinValue,
                 Microsoft365Availability::kMaxValue>
       ms365_state;
-  if (CloudUploadDialog::IsOfficeWebAppInstalled(profile)) {
+  if (IsOfficeWebAppInstalled(profile)) {
     ms365_state.Put(Microsoft365Availability::kPWA);
   }
-  if (CloudUploadDialog::IsODFSMounted(profile)) {
+  if (IsODFSMounted(profile)) {
     ms365_state.Put(Microsoft365Availability::kODFS);
   }
   base::UmaHistogramExactLinear(
@@ -668,8 +667,7 @@ void CloudOpenTask::ConfirmMoveOrStartUpload() {
 
 bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {
   return cloud_provider == CloudProvider::kOneDrive &&
-         !(CloudUploadDialog::IsODFSMounted(profile) &&
-           CloudUploadDialog::IsOfficeWebAppInstalled(profile));
+         !(IsODFSMounted(profile) && IsOfficeWebAppInstalled(profile));
 }
 
 bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
@@ -1239,42 +1237,6 @@ void CloudOpenTask::ConstructEntriesAndFindTasks(
 void CloudOpenTask::SetTasksForTest(
     const std::vector<fm_tasks::TaskDescriptor>& tasks) {
   local_tasks_ = tasks;
-}
-
-void CloudUploadDialog::RequestODFSMount(
-    Profile* profile,
-    file_system_provider::RequestMountCallback callback) {
-  Service* service = Service::Get(profile);
-  ProviderId provider_id =
-      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
-  auto logging_callback = base::BindOnce(
-      [](file_system_provider::RequestMountCallback callback,
-         base::File::Error error) {
-        if (error != base::File::FILE_OK) {
-          LOG(ERROR) << "RequestMount: " << base::File::ErrorToString(error);
-        }
-        std::move(callback).Run(error);
-      },
-      std::move(callback));
-  service->RequestMount(provider_id, std::move(logging_callback));
-}
-
-bool CloudUploadDialog::IsODFSMounted(Profile* profile) {
-  // Assume any file system mounted by ODFS is the correct one.
-  return GetODFSInfo(profile).has_value();
-}
-
-bool CloudUploadDialog::IsOfficeWebAppInstalled(Profile* profile) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    return false;
-  }
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  bool installed = false;
-  proxy->AppRegistryCache().ForOneApp(
-      web_app::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
-        installed = apps_util::IsInstalled(update.Readiness());
-      });
-  return installed;
 }
 
 void CloudUploadDialog::OnDialogShown(content::WebUI* webui) {

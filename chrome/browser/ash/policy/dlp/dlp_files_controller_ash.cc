@@ -51,7 +51,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -960,7 +960,7 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
     return data_controls::Component::kDrive;
   }
 
-  if (ash::cloud_upload::CloudUploadDialog::IsODFSMounted(profile)) {
+  if (ash::cloud_upload::IsODFSMounted(profile)) {
     auto* service = ash::file_system_provider::Service::Get(profile);
     auto provider_id =
         ash::file_system_provider::ProviderId::CreateFromExtensionId(

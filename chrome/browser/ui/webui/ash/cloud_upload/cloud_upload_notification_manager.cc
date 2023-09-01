@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -308,7 +307,7 @@ void CloudUploadNotificationManager::HandleErrorNotificationClick(
   // else in the notification.
   if (button_index) {
     // Request an ODFS mount which will trigger reauthentication.
-    CloudUploadDialog::RequestODFSMount(profile_, base::DoNothing());
+    RequestODFSMount(profile_, base::DoNothing());
   }
 
   CloseNotification();

@@ -284,14 +284,6 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
                     const mojom::DialogPage dialog_page,
                     bool office_move_confirmation_shown);
 
-  // Request ODFS be mounted. If there is an existing mount, ODFS will unmount
-  // that one after authentication of the new mount.
-  static void RequestODFSMount(
-      Profile* profile,
-      file_system_provider::RequestMountCallback callback);
-  static bool IsODFSMounted(Profile* profile);
-  static bool IsOfficeWebAppInstalled(Profile* profile);
-
   void OnDialogShown(content::WebUI* webui) override;
   void OnDialogClosed(const std::string& json_retval) override;
 

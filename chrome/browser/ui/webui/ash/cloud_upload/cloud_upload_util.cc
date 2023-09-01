@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume.h"
@@ -12,9 +14,11 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -106,6 +110,23 @@ UploadType GetUploadType(Profile* profile,
                                           : UploadType::kCopy;
 }
 
+void RequestODFSMount(Profile* profile,
+                      file_system_provider::RequestMountCallback callback) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id =
+      ProviderId::CreateFromExtensionId(extension_misc::kODFSExtensionId);
+  auto logging_callback = base::BindOnce(
+      [](file_system_provider::RequestMountCallback callback,
+         base::File::Error error) {
+        if (error != base::File::FILE_OK) {
+          LOG(ERROR) << "RequestMount: " << base::File::ErrorToString(error);
+        }
+        std::move(callback).Run(error);
+      },
+      std::move(callback));
+  service->RequestMount(provider_id, std::move(logging_callback));
+}
+
 absl::optional<ProvidedFileSystemInfo> GetODFSInfo(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id =
@@ -135,6 +156,24 @@ ProvidedFileSystemInterface* GetODFS(Profile* profile) {
   }
   return service->GetProvidedFileSystem(provider_id,
                                         odfs_info->file_system_id());
+}
+
+bool IsODFSMounted(Profile* profile) {
+  // Assume any file system mounted by ODFS is the correct one.
+  return GetODFSInfo(profile).has_value();
+}
+
+bool IsOfficeWebAppInstalled(Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      web_app::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
+        installed = apps_util::IsInstalled(update.Readiness());
+      });
+  return installed;
 }
 
 // Convert |actions| to |ODFSMetadata| and pass the result to |callback|.
