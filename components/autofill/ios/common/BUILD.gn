@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  sources = [
+    "features.h",
+    "features.mm",
+    "javascript_feature_util.h",
+    "javascript_feature_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+}

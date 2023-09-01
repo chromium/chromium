@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/autofill/ios/common",
   "+components/ukm/ios",
   "+ios/web/common",
   "+ios/web/public",

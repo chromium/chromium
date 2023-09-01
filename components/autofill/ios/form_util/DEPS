@@ -1,3 +1,4 @@
 include_rules = [
+  "+components/autofill/ios/common",
   "+components/password_manager/ios",
 ]

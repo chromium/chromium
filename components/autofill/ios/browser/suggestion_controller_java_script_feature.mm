@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 
 namespace autofill {
 
@@ -63,7 +64,7 @@ SuggestionControllerJavaScriptFeature::GetInstance() {
 
 SuggestionControllerJavaScriptFeature::SuggestionControllerJavaScriptFeature()
     : web::JavaScriptFeature(
-          web::ContentWorld::kIsolatedWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

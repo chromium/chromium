@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/values.h"
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #include "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
@@ -26,7 +27,7 @@ FormHandlersJavaScriptFeature* FormHandlersJavaScriptFeature::GetInstance() {
 
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
     : web::JavaScriptFeature(
-          web::ContentWorld::kIsolatedWorld,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
