@@ -24,7 +24,18 @@ enum class ConsentOutcome {
   kUserDeclined = 3,
   kUserOpenedSettings = 4,
   kUserDismissed = 5,
-  kMaxValue = kUserDismissed,
+  kConsentIPH = 6,
+  kMaxValue = kConsentIPH,
+};
+
+// Enum representing the different outcomes of the Mini Map flow.
+// Reported in histogram, do not change order.
+enum class MiniMapOutcome {
+  kNormalOutcome = 0,
+  kOpenedURL = 1,
+  kReportedAnIssue = 2,
+  kOpenedSettings = 3,
+  kMaxValue = kOpenedSettings,
 };
 
 }  // namespace
@@ -66,14 +77,23 @@ enum class ConsentOutcome {
     [self.delegate showConsentInterstitial];
     return;
   }
+  BOOL shouldPresentIPH =
+      consentRequired && ShouldPresentConsentIPH(self.prefService);
   if (consentRequired) {
-    base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
-                                  ConsentOutcome::kConsentSkipped);
+    if (shouldPresentIPH) {
+      base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                    ConsentOutcome::kConsentIPH);
+      // Now that the IPH has been presented, set the flag.
+      self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
+    } else {
+      base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
+                                    ConsentOutcome::kConsentSkipped);
+    }
   } else {
     base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
                                   ConsentOutcome::kConsentNotRequired);
   }
-  [self.delegate showMap];
+  [self.delegate showMapWithIPH:shouldPresentIPH];
 }
 
 - (void)userConsented {
@@ -83,7 +103,7 @@ enum class ConsentOutcome {
   base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
                                 ConsentOutcome::kUserAccepted);
   self.prefService->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  [self.delegate showMap];
+  [self.delegate showMapWithIPH:NO];
 }
 
 - (void)userDeclined {
@@ -110,9 +130,29 @@ enum class ConsentOutcome {
                                 ConsentOutcome::kUserDismissed);
 }
 
-- (void)userOpenedSettings {
+- (void)userOpenedSettingsInConsent {
   base::UmaHistogramEnumeration("IOS.MiniMap.ConsentOutcome",
                                 ConsentOutcome::kUserOpenedSettings);
+}
+
+- (void)userOpenedSettingsFromMiniMap {
+  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+                                MiniMapOutcome::kOpenedSettings);
+}
+
+- (void)userReportedAnIssueFromMiniMap {
+  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+                                MiniMapOutcome::kReportedAnIssue);
+}
+
+- (void)userOpenedURLFromMiniMap {
+  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+                                MiniMapOutcome::kOpenedURL);
+}
+
+- (void)userClosedMiniMap {
+  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+                                MiniMapOutcome::kNormalOutcome);
 }
 
 @end

@@ -21,6 +21,9 @@ bool IsAddressAutomaticDetectionAccepted(PrefService* prefs);
 // Whether the consent screen should be presented to the user.
 bool ShouldPresentConsentScreen(PrefService* prefs);
 
+// Whether the IPH screen for consent should be presented to the user.
+bool ShouldPresentConsentIPH(PrefService* prefs);
+
 // Returns whether the long press detection is enabled.
 // Note: If one-tap-address is disabled, the setting
 // is not present and default to true.

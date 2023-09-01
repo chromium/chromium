@@ -59,6 +59,7 @@ source_set("mini_map_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "mini_map_coordinator_unittest.mm",
     "mini_map_interstitial_view_controller_unittest.mm",
     "mini_map_mediator_unittest.mm",
   ]
@@ -67,10 +68,13 @@ source_set("unit_tests") {
     ":mini_map_ui",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/providers/mini_map",
     "//ios/web/common:features",
     "//ios/web/public/test",
     "//testing/gtest",

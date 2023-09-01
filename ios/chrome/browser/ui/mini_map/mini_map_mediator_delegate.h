@@ -15,8 +15,8 @@
 // Dismiss the consent screen.
 - (void)dismissConsentInterstitialWithCompletion:(ProceduralBlock)completion;
 
-// Show the map.
-- (void)showMap;
+// Show the map. If `showIPH` is YES, add the IPH bubble info to the screen.
+- (void)showMapWithIPH:(BOOL)showIPH;
 
 @end
 

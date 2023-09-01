@@ -24,6 +24,19 @@ bool IsAddressAutomaticDetectionAccepted(PrefService* prefs) {
          prefs->GetBoolean(prefs::kDetectAddressesAccepted);
 }
 
+bool ShouldPresentConsentIPH(PrefService* prefs) {
+  std::string param = base::GetFieldTrialParamValueByFeature(
+      web::features::kOneTapForMaps,
+      web::features::kOneTapForMapsConsentModeParamTitle);
+  if (param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
+    return true;
+  }
+  if (param == web::features::kOneTapForMapsConsentModeIPHParam) {
+    return !IsAddressAutomaticDetectionAccepted(prefs);
+  }
+  return false;
+}
+
 bool ShouldPresentConsentScreen(PrefService* prefs) {
   std::string param = base::GetFieldTrialParamValueByFeature(
       web::features::kOneTapForMaps,
@@ -31,7 +44,9 @@ bool ShouldPresentConsentScreen(PrefService* prefs) {
   if (param == web::features::kOneTapForMapsConsentModeForcedParam) {
     return true;
   }
-  if (param == web::features::kOneTapForMapsConsentModeDisabledParam) {
+  if (param == web::features::kOneTapForMapsConsentModeDisabledParam ||
+      param == web::features::kOneTapForMapsConsentModeIPHParam ||
+      param == web::features::kOneTapForMapsConsentModeIPHForcedParam) {
     return false;
   }
   return !IsAddressAutomaticDetectionAccepted(prefs);

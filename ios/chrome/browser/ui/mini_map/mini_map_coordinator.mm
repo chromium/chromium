@@ -16,9 +16,14 @@
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/web/annotations/annotations_util.h"
+#import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @interface MiniMapCoordinator () <MiniMapActionHandler, MiniMapMediatorDelegate>
 
@@ -111,53 +116,16 @@
   self.consentViewController = nil;
 }
 
-- (void)showMap {
+- (void)showMapWithIPH:(BOOL)showIPH {
   _showingMap = YES;
   if (!self.consentViewController) {
-    [self actualShowMap];
+    [self doShowMapWithIPH:showIPH];
     return;
   }
   __weak __typeof(self) weakSelf = self;
   [self dismissConsentInterstitialWithCompletion:^{
-    [weakSelf actualShowMap];
+    [weakSelf doShowMapWithIPH:showIPH];
   }];
-}
-
-- (void)mapDismissedRequestingURL:(NSURL*)url {
-  _showingMap = NO;
-  if (url) {
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
-    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
-    [applicationHandler openURLInNewTab:command];
-  }
-  [self workFlowEnded];
-}
-
-- (void)actualShowMap {
-  __weak __typeof(self) weakSelf = self;
-  self.miniMapController =
-      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
-        [weakSelf mapDismissedRequestingURL:url];
-      });
-  if (self.mode == MiniMapMode::kDirections) {
-    [self.miniMapController
-        presentDirectionsWithPresentingViewController:self.baseViewController];
-  } else {
-    [self.miniMapController
-        presentMapsWithPresentingViewController:self.baseViewController];
-  }
-}
-
-- (void)workFlowEnded {
-  if (!_stopCalled) {
-    id<MiniMapCommands> miniMapHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), MiniMapCommands);
-    [miniMapHandler hideMiniMap];
-  }
 }
 
 #pragma mark - MiniMapActionHandler
@@ -174,19 +142,72 @@
 - (void)dismissed {
   if (!_showingMap) {
     [self.mediator userDismissed];
-    [self workFlowEnded];
+    [self workflowEnded];
   }
 }
 
 - (void)userPressedContentSettings {
-  [self.mediator userOpenedSettings];
-  id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
+  [self.mediator userOpenedSettingsInConsent];
+  id<ApplicationSettingsCommands> settingsCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
-  [settings_command_handler
+  [settingsCommandHandler
       showContentsSettingsFromViewController:self.consentViewController];
 }
 
 #pragma mark - Private methods
+
+- (void)doShowMapWithIPH:(BOOL)showIPH {
+  __weak __typeof(self) weakSelf = self;
+  self.miniMapController =
+      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
+        [weakSelf mapDismissedRequestingURL:url];
+      });
+  [self.miniMapController
+      configureFooterWithText:l10n_util::GetNSString(
+                                  IDS_IOS_MINI_MAP_FOOTER_STRING)
+      leadingButtonText:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
+      trailingButtonText:l10n_util::GetNSString(IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
+      leadingButtonAction:^{
+        [weakSelf showContentSettingsFromMiniMap];
+      }
+      trailingButtonAction:^{
+        [weakSelf reportAnIssueFromMiniMap];
+      }];
+
+  if (showIPH) {
+    NSString* iphTitle = l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_TITLE);
+    NSString* iphSubtitle =
+        l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_SUBTITLE);
+    NSDictionary* textAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+    };
+
+    NSDictionary* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+      NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings")),
+    };
+    NSAttributedString* attrSubtitle = AttributedStringFromStringWithLink(
+        iphSubtitle, textAttributes, linkAttributes);
+
+    [self.miniMapController configureIPHWithTitle:[[NSAttributedString alloc]
+                                                      initWithString:iphTitle]
+                                         subtitle:attrSubtitle
+                                    actionHandler:^(NSURL*) {
+                                      [weakSelf showContentSettingsFromMiniMap];
+                                    }];
+  }
+  if (self.mode == MiniMapMode::kDirections) {
+    [self.miniMapController
+        presentDirectionsWithPresentingViewController:self.baseViewController];
+  } else {
+    [self.miniMapController
+        presentMapsWithPresentingViewController:self.baseViewController];
+  }
+}
 
 // Called at the end of the minimap workflow.
 - (void)workflowEnded {
@@ -195,6 +216,52 @@
         self.browser->GetCommandDispatcher(), MiniMapCommands);
     [miniMapHandler hideMiniMap];
   }
+}
+
+- (void)showContentSettingsFromMiniMap {
+  [self.mediator userOpenedSettingsFromMiniMap];
+  // The command is comming from the minimap which is currently presented.
+  // The contents settings screen must be presented on top of it.
+  UIViewController* presentingViewController = self.baseViewController;
+  while (presentingViewController.presentedViewController) {
+    presentingViewController = presentingViewController.presentedViewController;
+  }
+  id<ApplicationSettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  [settingsCommandHandler
+      showContentsSettingsFromViewController:presentingViewController];
+}
+
+- (void)reportAnIssueFromMiniMap {
+  [self.mediator userReportedAnIssueFromMiniMap];
+  // The command is comming from the minimap which is currently presented.
+  // The contents settings screen must be presented on top of it.
+  UIViewController* presentingViewController = self.baseViewController;
+  while (presentingViewController.presentedViewController) {
+    presentingViewController = presentingViewController.presentedViewController;
+  }
+  id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [applicationCommandHandler
+      showReportAnIssueFromViewController:presentingViewController
+                                   sender:UserFeedbackSender::MiniMap];
+}
+
+- (void)mapDismissedRequestingURL:(NSURL*)url {
+  _showingMap = NO;
+  if (url) {
+    [self.mediator userOpenedURLFromMiniMap];
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:net::GURLWithNSURL(url)
+                     inIncognito:self.browser->GetBrowserState()
+                                     ->IsOffTheRecord()];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+  } else {
+    [self.mediator userClosedMiniMap];
+  }
+  [self workflowEnded];
 }
 
 @end
