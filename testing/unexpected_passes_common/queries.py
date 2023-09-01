@@ -11,7 +11,7 @@ import os
 import subprocess
 import threading
 import time
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Collection, Dict, Iterable, List, Optional, Tuple, Union
 
 import six
 
@@ -100,7 +100,7 @@ class BigQueryQuerier(object):
 
   def FillExpectationMapForBuilders(
       self, expectation_map: data_types.TestExpectationMap,
-      builders: Iterable[data_types.BuilderEntry]
+      builders: Collection[data_types.BuilderEntry]
   ) -> Dict[str, data_types.ResultListType]:
     """Fills |expectation_map| with results from |builders|.
 
@@ -121,6 +121,9 @@ class BigQueryQuerier(object):
         ],
       }
     """
+    start_time = time.time()
+    logging.debug('Starting to fill expectation map for %d builders',
+                  len(builders))
     assert isinstance(expectation_map, data_types.TestExpectationMap)
     # Ensure that all the builders are of the same type since we make some
     # assumptions about that later on.
@@ -159,6 +162,7 @@ class BigQueryQuerier(object):
     expectation_map.clear()
     expectation_map.update(tmp_expectation_map)
 
+    logging.debug('Filling expectation map took %f', time.time() - start_time)
     return all_unmatched_results
 
   def _FilterOutInactiveBuilders(self,
@@ -220,14 +224,22 @@ class BigQueryQuerier(object):
     Returns:
       The output of data_types.TestExpectationMap.AddResultList().
     """
+    start_time = time.time()
     builder, expectation_map = inputs
+    logging.debug('Starting query for builder %s', builder.name)
     results, expectation_files = self.QueryBuilder(builder)
+    logging.debug('Query for builder %s took %f', builder.name,
+                  time.time() - start_time)
 
+    start_time = time.time()
     prefixed_builder_name = '%s/%s:%s' % (builder.project, builder.builder_type,
                                           builder.name)
+    logging.debug('Starting data processing for builder %s', builder.name)
     unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
                                                       results,
                                                       expectation_files)
+    logging.debug('Data processing for builder %s took %f', builder.name,
+                  time.time() - start_time)
 
     return unmatched_results, prefixed_builder_name, expectation_map
 
