@@ -148,10 +148,6 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (*cache_item != key.result_.GetMatchedProperties()) {
     return nullptr;
   }
-  if (cache_item->computed_style->InsideLink() !=
-      style_resolver_state.InsideLink()) {
-    return nullptr;
-  }
   if (IsAtShadowBoundary(&style_resolver_state.GetElement()) &&
       cache_item->parent_computed_style->UserModify() !=
           ComputedStyleInitialValues::InitialUserModify()) {
