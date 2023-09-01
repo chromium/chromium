@@ -6,6 +6,9 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
@@ -128,6 +131,43 @@ id<GREYMatcher> ModalEditButtonMatcher() {
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
+}
+
+// Ensures that the profile is saved to Account after submitting the form.
+- (void)testUserData_AccountSave {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                                enableSync:YES];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+
+  // Ensure there are no saved profiles.
+  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
+                  @"There should be no saved profile.");
+
+  [self fillAndSubmitForm];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  id<GREYMatcher> footerMatcher = grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER, u"foo1@gmail.com"));
+
+  [[EarlGrey selectElementWithMatcher:footerMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
 }
 
 @end
