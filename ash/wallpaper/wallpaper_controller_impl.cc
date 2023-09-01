@@ -2773,11 +2773,10 @@ void WallpaperControllerImpl::OnDailyRefreshWallpaperUpdated(
     RefreshWallpaperCallback callback,
     bool success) {
   if (success) {
-    // Updates the check times based on when the daily wallpaper is refreshed to
-    // prevent hotspotting. First check time is roughly 24 hours from now and
-    // the second check (retry) time is roughly 25 hours (or 1 hour) from now.";
-    auto first_check_time =
-        base::Time::Now() + base::Minutes(base::RandInt(1, 30));
+    // Updates the check times based on when the daily wallpaper is refreshed.
+    // First check time is roughly 24 hours from now and the second check
+    // (retry) time is 25 hours (or 1 hour) from now.";
+    auto first_check_time = base::Time::Now();
     auto second_check_time = first_check_time + base::Hours(1);
     if (features::IsWallpaperFastRefreshEnabled()) {
       first_check_time = base::Time::Now() + base::Minutes(1);
