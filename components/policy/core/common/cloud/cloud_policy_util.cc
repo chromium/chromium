@@ -66,6 +66,10 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/system/sys_info.h"
+#endif
+
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
@@ -108,16 +112,16 @@ std::string GetMachineName() {
 
   // If all else fails, return to using a slightly nicer version of the
   // hardware model.
-  char modelBuffer[256];
-  size_t length = sizeof(modelBuffer);
-  if (!sysctlbyname("hw.model", modelBuffer, &length, NULL, 0)) {
-    for (size_t i = 0; i < length; i++) {
-      if (base::IsAsciiDigit(modelBuffer[i]))
-        return std::string(modelBuffer, 0, i);
-    }
-    return std::string(modelBuffer, 0, length);
+  std::string model = base::SysInfo::HardwareModelName();
+  if (model.empty()) {
+    return std::string();
   }
-  return std::string();
+  for (size_t i = 0; i < model.size(); i++) {
+    if (base::IsAsciiDigit(model[i])) {
+      return model.substr(0, i);
+    }
+  }
+  return model;
 #elif BUILDFLAG(IS_WIN)
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
   DWORD size = std::size(computer_name);

@@ -4,20 +4,20 @@
 
 #import <SystemConfiguration/SystemConfiguration.h>
 #include <stddef.h>
-#include <sys/sysctl.h>
 
 #include <string>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/system/sys_info.h"
 
 namespace syncer {
 
-// Returns the Hardware model name, without trailing numbers, if
-// possible.  See http://www.cocoadev.com/index.pl?MacintoshModels for
-// an example list of models. If an error occurs trying to read the
-// model, this simply returns "Unknown".
+// Returns the Hardware model name, without trailing numbers, if possible. See
+// https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
+// for example. If an error occurs trying to read the model, this simply returns
+// "Unknown".
 std::string GetPersonalizableDeviceNameInternal() {
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0};
@@ -39,17 +39,16 @@ std::string GetPersonalizableDeviceNameInternal() {
 
   // If all else fails, return to using a slightly nicer version of the
   // hardware model.
-  char model_buffer[256];
-  size_t length = sizeof(model_buffer);
-  if (!sysctlbyname("hw.model", model_buffer, &length, nullptr, 0)) {
-    for (size_t i = 0; i < length; i++) {
-      if (base::IsAsciiDigit(model_buffer[i])) {
-        return std::string(model_buffer, 0, i);
-      }
-    }
-    return std::string(model_buffer, 0, length);
+  std::string model = base::SysInfo::HardwareModelName();
+  if (model.empty()) {
+    return "Unknown";
   }
-  return "Unknown";
+  for (size_t i = 0; i < model.size(); i++) {
+    if (base::IsAsciiDigit(model[i])) {
+      return model.substr(0, i);
+    }
+  }
+  return model;
 }
 
 }  // namespace syncer
