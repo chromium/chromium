@@ -413,9 +413,11 @@ void VideoConferenceTray::UpdateTrayAndIconsState() {
 
   camera_icon_->SetVisible(controller->GetHasCameraPermissions());
   camera_icon_->SetIsCapturing(controller->IsCapturingCamera());
+  camera_icon_->SetToggled(/*toggled=*/controller->GetCameraMuted());
 
   audio_icon_->SetVisible(controller->GetHasMicrophonePermissions());
   audio_icon_->SetIsCapturing(controller->IsCapturingMicrophone());
+  audio_icon_->SetToggled(/*toggled=*/controller->GetMicrophoneMuted());
 
   bool is_capturing_screen = controller->IsCapturingScreen();
   screen_share_icon_->SetVisible(is_capturing_screen);

@@ -773,16 +773,46 @@ TEST_F(VideoConferenceTrayTest, AutoHiddenShelfTwoDisplays) {
 }
 
 // Tests that the `VideoConferenceTray` is visible when a display is connected
-// after a session begins.
+// after a session begins. All the icons should have correct states.
 TEST_F(VideoConferenceTrayTest, MultiDisplayVideoConferenceTrayVisibility) {
-  SetTrayAndButtonsVisible();
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  state.has_camera_permission = true;
+  state.has_microphone_permission = true;
+  state.is_capturing_microphone = true;
+  state.is_capturing_screen = true;
+  controller()->UpdateWithMediaState(state);
+
   ASSERT_TRUE(video_conference_tray()->GetVisible());
+
+  // Mute the camera by clicking on the icon.
+  LeftClickOn(camera_icon());
+  ASSERT_TRUE(camera_icon()->toggled());
 
   // Attach a second display, the VideoConferenceTray on the second display
   // should be visible.
   UpdateDisplay("800x700,800x700");
 
   EXPECT_TRUE(GetSecondaryVideoConferenceTray()->GetVisible());
+
+  // All the icons should have correct states.
+  auto* secondary_camera_icon =
+      GetSecondaryVideoConferenceTray()->camera_icon();
+  EXPECT_TRUE(secondary_camera_icon);
+  EXPECT_FALSE(secondary_camera_icon->is_capturing());
+  EXPECT_TRUE(secondary_camera_icon->toggled());
+
+  auto* secondary_microphone_icon =
+      GetSecondaryVideoConferenceTray()->audio_icon();
+  EXPECT_TRUE(secondary_microphone_icon);
+  EXPECT_TRUE(secondary_microphone_icon->is_capturing());
+  EXPECT_FALSE(secondary_microphone_icon->toggled());
+
+  auto* secondary_screen_share_icon =
+      GetSecondaryVideoConferenceTray()->screen_share_icon();
+  EXPECT_TRUE(secondary_screen_share_icon);
+  EXPECT_TRUE(secondary_screen_share_icon->is_capturing());
+  EXPECT_FALSE(secondary_screen_share_icon->toggled());
 }
 
 // Tests that privacy indicators update on secondary displays when a capture
