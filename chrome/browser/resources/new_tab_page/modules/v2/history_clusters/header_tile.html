@@ -4,13 +4,10 @@
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
     flex-direction: column;
+    position: relative;
   }
 
-  :host([suggestion-chip-header-enabled_]) {
-    background: transparent;
-    border: none;
-  }
-
+  :host([suggestion-chip-header-enabled_]),
   :host([suggestion-chip-header-enabled_]) ntp-module-header-v2 {
     background: transparent;
     border: none;
@@ -24,25 +21,50 @@
     }
   }
 
-  #label-container {
+  .label-container {
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     font-size: 20px;
     height: 48px;
     line-height: 24px;
+    margin-top: 8px;
     padding: 0 16px;
   }
 
-  :host([suggestion-chip-header-enabled_]) #label-container {
-    background: var(--color-new-tab-page-module-item-background);
-    border-radius: var(--ntp-module-item-border-radius);
-    height: 100%;
+  :host(:not([suggestion-chip-header-enabled_]):hover) {
+    cursor: pointer;
   }
 
-  :host([suggestion-chip-header-enabled_][format='wide']:not([show-related-searches])) #label-container {
-    align-items: start;
-    padding: 16px;
+  :host(:not([suggestion-chip-header-enabled_]):hover) .hover-layer,
+  #suggestion-chip:hover .hover-layer {
+    background: var(--color-new-tab-page-module-item-background-hovered);
+    display: block;
+    inset: 0;
+    position: absolute;
   }
+
+  .hover-layer {
+    border-radius: var(--ntp-module-item-border-radius);
+    display: none;
+    pointer-events: none;
+  }
+
+  :host([suggestion-chip-header-enabled_]) .label-container {
+    background: var(--color-new-tab-page-module-item-background);
+    border-radius: var(--ntp-module-item-border-radius);
+  }
+
+  :host([suggestion-chip-header-enabled_][format='wide']:not([show-related-searches]))
+      .label-container {
+    align-items: start;
+  }
+
+  :host([suggestion-chip-header-enabled_][format='wide']
+      :not([show-related-searches])) #suggestion-chip {
+    height: 116px;
+  }
+
+
 
   h2 {
     -webkit-line-clamp: 2;
@@ -62,13 +84,21 @@
   #suggestion-chip {
     display: flex;
     font-size: var(--ntp-module-text-size);
+    position: relative;
+    text-decoration: none;
+  }
+
+  #suggestion-chip:focus, #suggestion-chip:focus-visible {
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
   }
 
   #suggestion-chip-icon {
     --cr-icon-ripple-size: 16px;
     --cr-icon-image: url(chrome://resources/images/icon_history.svg);
+    align-self: center;
     background-color: var(--color-new-tab-page-primary-foreground);
-    margin: auto;
+    margin: 16px 0;
   }
 
   #suggestion-chip-label {
@@ -77,6 +107,7 @@
     line-height: 20px;
   }
 </style>
+<div class="hover-layer" hidden="[[suggestionChipHeaderEnabled_]]"></div>
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
     header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
@@ -84,12 +115,13 @@
     menu-item-groups="[[getMenuItemGroups_()]]"
     more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
 </ntp-module-header-v2>
-<div id="label-container">
-  <h2 id="label" hidden="[[suggestionChipHeaderEnabled_]]">
-    [[clusterLabel]]
-  </h2>
-  <div id="suggestion-chip" hidden="[[!suggestionChipHeaderEnabled_]]">
-    <div id="suggestion-chip-icon" class="cr-icon"></div>
-    <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
-  </div>
-</div>
+<h2 id="label" class="label-container"
+    hidden="[[suggestionChipHeaderEnabled_]]">
+[[clusterLabel]]
+</h2>
+<a id="suggestion-chip" class="label-container" href="[[normalizedUrl.url]]"
+    hidden="[[!suggestionChipHeaderEnabled_]]" on-click="onSuggestClick_">
+  <div class="hover-layer"></div>
+  <div id="suggestion-chip-icon" class="cr-icon"></div>
+  <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
+</a>

@@ -71,7 +71,7 @@ export class HistoryClustersModuleElement extends I18nMixin
 
       showRelatedSearches: {
         type: Boolean,
-        computed: `computeShowRelatedSearches()`,
+        computed: `computeShowRelatedSearches(cluster)`,
         reflectToAttribute: true,
       },
     };
@@ -176,10 +176,16 @@ export class HistoryClustersModuleElement extends I18nMixin
     this.$.infoDialogRender.get().showModal();
   }
 
+  private onSuggestClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+  }
+
   private onShowAllButtonClick_() {
-    assert(this.cluster.label.length >= 2);
+    assert(this.cluster.label.length >= 2, 'Unexpected cluster label length');
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
         this.cluster.label.substring(1, this.cluster.label.length - 1));
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   private shouldShowCartTile_(cart: Object): boolean {

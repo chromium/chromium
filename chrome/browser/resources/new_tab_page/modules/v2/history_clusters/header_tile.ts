@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
@@ -39,17 +41,51 @@ export class HistoryClustersHeaderElementV2 extends I18nMixin
       /** Whether suggestion chip header will show. */
       suggestionChipHeaderEnabled_: {
         type: Boolean,
+        reflectToAttribute: true,
         value: () => loadTimeData.getBoolean(
             'historyClustersSuggestionChipHeaderEnabled'),
-        reflectToAttribute: true,
       },
     };
   }
 
-  clusterLabel: string;
-  private suggestionChipHeaderEnabled_: boolean;
+clusterId:
+  number;
+clusterLabel:
+  string;
+normalizedUrl:
+  Url;
+private suggestionChipHeaderEnabled_:
+  boolean;
+private eventTracker_:
+  EventTracker = new EventTracker();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (!this.suggestionChipHeaderEnabled_) {
+      this.eventTracker_.add(this, 'click', this.onClick_);
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
+
+  private onClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent(
+        'show-all-button-click', {bubbles: true, composed: true}));
+  }
+
+  private onSuggestClick_(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(
+        new CustomEvent('suggest-click', {bubbles: true, composed: true}));
+  }
 
   private onMenuButtonClick_(e: Event) {
+    e.stopPropagation();
     this.$.moduleHeaderElementV2.showAt(e);
   }
 

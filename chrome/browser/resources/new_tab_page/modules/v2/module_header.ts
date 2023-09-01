@@ -68,7 +68,8 @@ export class ModuleHeaderElementV2 extends I18nMixin
     }
   }
 
-  private onMenuButtonClick_() {
+  private onMenuButtonClick_(e: Event) {
+    e.stopPropagation();
     this.dispatchEvent(new Event('menu-button-click', {bubbles: true}));
   }
 
