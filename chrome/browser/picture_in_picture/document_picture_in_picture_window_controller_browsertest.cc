@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 // allowed minimum size.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        MinimumWindowInnerBounds) {
-  LoadTabAndEnterPictureInPicture(browser(), gfx::Size(100, 200));
+  LoadTabAndEnterPictureInPicture(browser(), gfx::Size(100, 20));
 
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);

@@ -116,7 +116,7 @@ TEST_F(PictureInPictureWindowManagerTest, RespectsMinAndMaxSize) {
   // minimum height.
   pip_options.initial_aspect_ratio = 100000;
   EXPECT_EQ(
-      gfx::Size(800, 300),
+      gfx::Size(800, 52),
       PictureInPictureWindowManager::
           CalculateInitialPictureInPictureWindowBounds(pip_options, display)
               .size());
