@@ -55,6 +55,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
                              base::span<const uint8_t> user_id,
                              base::span<const uint8_t> credential_id);
 
+  // SetMakeCredentialError configures the `NSError` that will be returned
+  // from the next `GetAssertion` call.
+  void SetGetAssertionError(int code, std::string msg);
+
   // SetCredentials causes `GetPlatformCredentials` to simulate that the given
   // credentials are on the system. (Note that `GetPlatformCredentials` ignores
   // the requested RP ID so all credentials specified here will be returned.)
@@ -97,6 +101,7 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
       make_credential_attestation_object_bytes_;
   absl::optional<std::vector<uint8_t>> make_credential_credential_id_;
 
+  absl::optional<std::pair<int, std::string>> get_assertion_error_;
   absl::optional<std::vector<uint8_t>> get_assertion_authenticator_data_;
   absl::optional<std::vector<uint8_t>> get_assertion_signature_;
   absl::optional<std::vector<uint8_t>> get_assertion_user_id_;

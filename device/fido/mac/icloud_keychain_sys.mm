@@ -40,6 +40,10 @@ API_AVAILABLE(macos(13.3))
 }
 @end
 
+@interface ASAuthorizationPlatformPublicKeyCredentialAssertionRequest (Extras)
+@property(nonatomic) BOOL shouldShowHybridTransport;
+@end
+
 // ICloudKeychainDelegate receives callbacks when an `ASAuthorizationController`
 // operation completes (successfully or otherwise) and bridges to a
 // `OnceCallback`.
@@ -318,6 +322,7 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
                         alloc] initWithCredentialID:ToNSData(cred.id)]];
     }
     get_request.allowedCredentials = allowedCredentials;
+    [get_request setShouldShowHybridTransport:false];
     get_request.userVerificationPreference = Convert(request.user_verification);
     get_controller_ = [[ICloudKeychainGetController alloc]
         initWithAuthorizationRequests:@[ get_request ]];

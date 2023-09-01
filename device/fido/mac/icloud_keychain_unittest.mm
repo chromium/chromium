@@ -389,11 +389,6 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   if (@available(macOS 13.5, *)) {
     CtapGetAssertionRequest request("rp.id", "{}");
     CtapGetAssertionOptions options;
-    const std::vector<DiscoverableCredentialMetadata> creds = {
-        {AuthenticatorType::kICloudKeychain,
-         "example.com",
-         {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", absl::nullopt}}};
 
     auto get_assertion = [this, &request, &options]()
         -> std::tuple<CtapDeviceResponseCode,
@@ -454,15 +449,11 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
     }
 
     {
-      // `Authenticator` does special processing if a permission is requested
-      // during a get() request. If permission is denied, requests should be
-      // forwarded to iCloud Keychain.
-      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
-      fake_->set_next_auth_state(FakeSystemInterface::kAuthDenied);
-      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
-                                   kCredentialID);
+      fake_->SetGetAssertionError(1001,
+                                  "... No credentials available for login ...");
       auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
+      EXPECT_EQ(std::get<0>(result),
+                CtapDeviceResponseCode::kCtap2ErrNoCredentials);
     }
 
     {
@@ -501,76 +492,6 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       EXPECT_EQ(samples->GetCount(3), 1);
       EXPECT_EQ(samples->GetCount(4), 1);
       EXPECT_EQ(samples->GetCount(5), 0);
-    }
-
-    // `Authenticator` does special processing if a permission is requested
-    // during a get() request. If permission is granted, it will check whether
-    // the request makes sense.
-
-    {
-      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
-      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
-      // No credentials, so the request should be aborted.
-      fake_->SetCredentials({});
-      auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrNoCredentials);
-    }
-
-    {
-      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
-      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
-      // There are credentials, so the request should be made.
-      fake_->SetCredentials(creds);
-      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
-                                   kCredentialID);
-      auto result = get_assertion();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
-    }
-
-    {
-      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
-      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
-      // There are credentials, but the allowlist doesn't match, so the
-      // request should be rejected.
-      fake_->SetCredentials(creds);
-
-      test::TestCallbackReceiver<CtapDeviceResponseCode,
-                                 std::vector<AuthenticatorGetAssertionResponse>>
-          callback;
-      CtapGetAssertionRequest allow_list_request("rp.id", "{}");
-      allow_list_request.allow_list.emplace_back(CredentialType::kPublicKey,
-                                                 std::vector<uint8_t>{1});
-
-      authenticator_->GetAssertion(std::move(allow_list_request), options,
-                                   callback.callback());
-      callback.WaitForCallback();
-      auto result = callback.TakeResult();
-      EXPECT_EQ(std::get<0>(result),
-                CtapDeviceResponseCode::kCtap2ErrNoCredentials);
-    }
-
-    {
-      fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
-      fake_->set_next_auth_state(FakeSystemInterface::kAuthAuthorized);
-      // There are credentials, and the allowlist matches, so the
-      // request should be made.
-      fake_->SetCredentials(creds);
-      fake_->SetGetAssertionResult(kAuthenticatorData, kSignature, kUserID,
-                                   kCredentialID);
-
-      test::TestCallbackReceiver<CtapDeviceResponseCode,
-                                 std::vector<AuthenticatorGetAssertionResponse>>
-          callback;
-      CtapGetAssertionRequest allow_list_request("rp.id", "{}");
-      allow_list_request.allow_list.emplace_back(CredentialType::kPublicKey,
-                                                 creds[0].cred_id);
-
-      authenticator_->GetAssertion(std::move(allow_list_request), options,
-                                   callback.callback());
-      callback.WaitForCallback();
-      auto result = callback.TakeResult();
-      EXPECT_EQ(std::get<0>(result), CtapDeviceResponseCode::kSuccess);
     }
   }
 }

@@ -153,6 +153,10 @@ void FakeSystemInterface::SetGetAssertionResult(
   get_assertion_credential_id_ = fido_parsing_utils::Materialize(credential_id);
 }
 
+void FakeSystemInterface::SetGetAssertionError(int code, std::string msg) {
+  get_assertion_error_ = std::make_pair(code, std::move(msg));
+}
+
 void FakeSystemInterface::SetCredentials(
     std::vector<DiscoverableCredentialMetadata> creds) {
   creds_ = std::move(creds);
@@ -234,6 +238,19 @@ void FakeSystemInterface::GetAssertion(
     NSWindow* window,
     CtapGetAssertionRequest request,
     base::OnceCallback<void(ASAuthorization*, NSError*)> callback) {
+  if (get_assertion_error_) {
+    NSError* error = [[NSError alloc]
+        initWithDomain:@""
+                  code:get_assertion_error_->first
+              userInfo:@{
+                NSLocalizedDescriptionKey : base::SysUTF8ToNSString(
+                    get_assertion_error_->second.c_str())
+              }];
+    get_assertion_error_.reset();
+    std::move(callback).Run(nullptr, error);
+    return;
+  }
+
   if (!get_assertion_authenticator_data_) {
     std::move(callback).Run(nullptr, [[NSError alloc] initWithDomain:@""
                                                                 code:1001
