@@ -367,7 +367,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
   if (!identity_manager)
     return AccountInfo();
   return identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
 safe_browsing::ChromeUserPopulation::UserPopulation
@@ -464,10 +464,12 @@ bool ChromePasswordProtectionService::IsExtendedReporting() {
   return false;
 }
 
-bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
+bool ChromePasswordProtectionService::IsPrimaryAccountSyncingHistory() const {
   syncer::SyncService* sync =
       SyncServiceFactory::GetForBrowserState(browser_state_);
-  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled();
+  return sync &&
+         sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES) &&
+         !sync->IsLocalSyncEnabled();
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {

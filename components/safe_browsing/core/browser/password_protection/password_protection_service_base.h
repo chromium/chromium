@@ -324,8 +324,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       LoginReputationClientRequest::TriggerType trigger_type,
       ReusedPasswordAccountType password_type) = 0;
 
-  // If primary account is syncing.
-  virtual bool IsPrimaryAccountSyncing() const = 0;
+  // If primary account is syncing history.
+  virtual bool IsPrimaryAccountSyncingHistory() const = 0;
 
   // If primary account is signed in.
   virtual bool IsPrimaryAccountSignedIn() const = 0;

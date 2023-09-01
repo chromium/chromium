@@ -1171,7 +1171,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
                          GURL(kTargetUrl).host());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
-  EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSyncing())
+  EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSyncingHistory())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSignedIn())
       .WillRepeatedly(Return(true));

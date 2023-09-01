@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/safe_browsing/features.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "url/gurl.h"
 
@@ -70,11 +71,19 @@ IOSChromePasswordReuseDetectionManagerClient::GetPasswordProtectionService()
       bridge_.browserState);
 }
 
-bool IOSChromePasswordReuseDetectionManagerClient::IsSyncAccountEmail(
+bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     const std::string& username) {
+  // Password reuse detection is tied to history sync.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForBrowserState(bridge_.browserState);
+  if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
+                           syncer::HISTORY_DELETE_DIRECTIVES)) {
+    return false;
+  }
   return password_manager::sync_util::IsSyncAccountEmail(
       username,
-      IdentityManagerFactory::GetForBrowserState(bridge_.browserState));
+      IdentityManagerFactory::GetForBrowserState(bridge_.browserState),
+      signin::ConsentLevel::kSignin);
 }
 
 bool IOSChromePasswordReuseDetectionManagerClient::

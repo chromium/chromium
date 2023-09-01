@@ -14,10 +14,12 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "password_sync_util.h"
 
 namespace password_manager {
 
@@ -101,7 +103,10 @@ bool SyncCredentialsFilter::ShouldSaveEnterprisePasswordHash(
 
 bool SyncCredentialsFilter::IsSyncAccountEmail(
     const std::string& username) const {
-  return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager());
+  // TODO(https://crbug.com/1464264): `signin::ConsentLevel::kSync` is
+  // deprecated. Remove this usage.
+  return sync_util::IsSyncAccountEmail(username, client_->GetIdentityManager(),
+                                       signin::ConsentLevel::kSync);
 }
 
 void SyncCredentialsFilter::ReportFormLoginSuccess(

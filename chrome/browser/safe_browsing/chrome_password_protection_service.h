@@ -327,8 +327,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   void FillUserPopulation(const GURL& main_frame_url,
                           LoginReputationClientRequest* request_proto) override;
 
-  // If primary account is syncing.
-  bool IsPrimaryAccountSyncing() const override;
+  // If primary account is syncing history.
+  bool IsPrimaryAccountSyncingHistory() const override;
 
   // If primary account is signed in.
   bool IsPrimaryAccountSignedIn() const override;

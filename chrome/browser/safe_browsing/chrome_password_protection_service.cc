@@ -1511,9 +1511,11 @@ void ChromePasswordProtectionService::FillUserPopulation(
       &token);
 }
 
-bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
+bool ChromePasswordProtectionService::IsPrimaryAccountSyncingHistory() const {
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile_);
-  return sync && sync->IsSyncFeatureActive() && !sync->IsLocalSyncEnabled();
+  return sync &&
+         sync->GetActiveDataTypes().Has(syncer::HISTORY_DELETE_DIRECTIVES) &&
+         !sync->IsLocalSyncEnabled();
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
@@ -1621,7 +1623,7 @@ AccountInfo ChromePasswordProtectionService::GetAccountInfo() const {
     return AccountInfo();
 
   return identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
 ChromeUserPopulation::UserPopulation

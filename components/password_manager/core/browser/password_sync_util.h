@@ -11,6 +11,7 @@
 #include "components/sync/service/sync_service.h"
 
 namespace signin {
+enum class ConsentLevel;
 class IdentityManager;
 }
 
@@ -37,9 +38,10 @@ bool IsSyncAccountCredential(const GURL& url,
                              const syncer::SyncService* sync_service,
                              const signin::IdentityManager* identity_manager);
 
-// If |username| matches sync account.
+// If |username| matches the signed-in account.
 bool IsSyncAccountEmail(const std::string& username,
-                        const signin::IdentityManager* identity_manager);
+                        const signin::IdentityManager* identity_manager,
+                        signin::ConsentLevel consent_level);
 
 // If |signon_realm| matches Gaia signon realm.
 bool IsGaiaCredentialPage(const std::string& signon_realm);

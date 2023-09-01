@@ -64,7 +64,7 @@ class IOSChromePasswordReuseDetectionManagerClient
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const;
 
-  bool IsSyncAccountEmail(const std::string& username) override;
+  bool IsHistorySyncAccountEmail(const std::string& username) override;
 
   bool IsPasswordFieldDetectedOnPage() override;
 

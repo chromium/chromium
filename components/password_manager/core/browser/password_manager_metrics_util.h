@@ -317,7 +317,8 @@ enum class PasswordType {
   // Passwords used for Chrome sign-in and is closest ("blessed") to be set to
   // sync when signed into multiple profiles if user wants to set up sync.
   // The primary account is equivalent to the "sync account" if this profile has
-  // enabled sync.
+  // enabled history sync. Note: if sync is enabled, but the history datatype
+  // is not enabled, the account is not considered as primary.
   PRIMARY_ACCOUNT_PASSWORD = 1,
   // Other Gaia passwords used in Chrome other than the sync password.
   OTHER_GAIA_PASSWORD = 2,

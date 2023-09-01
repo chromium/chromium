@@ -124,13 +124,15 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     if (kTestCases[i].fake_sync_email.empty()) {
       EXPECT_EQ(kTestCases[i].expected_result,
-                IsSyncAccountEmail(kTestCases[i].input_username, nullptr));
+                IsSyncAccountEmail(kTestCases[i].input_username, nullptr,
+                                   signin::ConsentLevel::kSignin));
       continue;
     }
     FakeSigninAs(kTestCases[i].fake_sync_email);
     EXPECT_EQ(
         kTestCases[i].expected_result,
-        IsSyncAccountEmail(kTestCases[i].input_username, identity_manager()));
+        IsSyncAccountEmail(kTestCases[i].input_username, identity_manager(),
+                           signin::ConsentLevel::kSignin));
   }
 }
 

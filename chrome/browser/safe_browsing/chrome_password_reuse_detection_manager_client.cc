@@ -19,9 +19,12 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/service/sync_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -150,11 +153,19 @@ void ChromePasswordReuseDetectionManagerClient::
   }
 }
 
-bool ChromePasswordReuseDetectionManagerClient::IsSyncAccountEmail(
+bool ChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     const std::string& username) {
+  Profile* original_profile = profile_->GetOriginalProfile();
+  // Password reuse detection is tied to history sync.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(original_profile);
+  if (!sync_service || !sync_service->GetPreferredDataTypes().Has(
+                           syncer::HISTORY_DELETE_DIRECTIVES)) {
+    return false;
+  }
   return password_manager::sync_util::IsSyncAccountEmail(
-      username,
-      IdentityManagerFactory::GetForProfile(profile_->GetOriginalProfile()));
+      username, IdentityManagerFactory::GetForProfile(original_profile),
+      signin::ConsentLevel::kSignin);
 }
 
 bool ChromePasswordReuseDetectionManagerClient::

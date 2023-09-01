@@ -177,7 +177,7 @@ class MockChromePasswordProtectionService
         is_account_signed_in_(false) {}
   bool IsExtendedReporting() override { return is_extended_reporting_; }
   bool IsIncognito() override { return is_incognito_; }
-  bool IsPrimaryAccountSyncing() const override { return is_syncing_; }
+  bool IsPrimaryAccountSyncingHistory() const override { return is_syncing_; }
   bool IsPrimaryAccountSignedIn() const override {
     return is_account_signed_in_;
   }
@@ -383,8 +383,8 @@ class ChromePasswordProtectionServiceTest
 
   CoreAccountInfo SetPrimaryAccount(const std::string& email) {
     identity_test_env()->MakeAccountAvailable(email);
-    return identity_test_env()->SetPrimaryAccount(email,
-                                                  signin::ConsentLevel::kSync);
+    return identity_test_env()->SetPrimaryAccount(
+        email, signin::ConsentLevel::kSignin);
   }
 
   void SetUpSyncAccount(const std::string& hosted_domain,
@@ -801,7 +801,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPasswordReuseDetectedSecurityEventRecorded) {
   identity_test_env()->SetPrimaryAccount(kTestEmail,
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   service_->set_username_for_last_shown_warning(kTestEmail);
   EXPECT_CALL(*security_event_recorder_, RecordGaiaPasswordReuse(_))
       .WillOnce(WithArg<0>([&](const auto& message) {

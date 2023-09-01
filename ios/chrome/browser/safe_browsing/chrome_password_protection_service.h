@@ -172,7 +172,7 @@ class ChromePasswordProtectionService
 
   bool IsExtendedReporting() override;
 
-  bool IsPrimaryAccountSyncing() const override;
+  bool IsPrimaryAccountSyncingHistory() const override;
 
   bool IsPrimaryAccountSignedIn() const override;
 

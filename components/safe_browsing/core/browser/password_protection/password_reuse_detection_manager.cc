@@ -194,7 +194,7 @@ PasswordReuseDetectionManager::GetReusedPasswordType(
   if (!reused_protected_password_hash->is_gaia_password) {
     reused_password_type =
         password_manager::metrics_util::PasswordType::ENTERPRISE_PASSWORD;
-  } else if (client_->IsSyncAccountEmail(
+  } else if (client_->IsHistorySyncAccountEmail(
                  reused_protected_password_hash->username)) {
     reused_password_type =
         password_manager::metrics_util::PasswordType::PRIMARY_ACCOUNT_PASSWORD;
