@@ -518,6 +518,9 @@ public final class ProductionSupportedFlagList {
                     "Enables support for CSS vertical writing mode on text-based form controls."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CHECK_PAK_FILE_DESCRIPTORS,
                     "Crash on failing to load pak file fds."),
+            Flag.baseFeature(BlinkFeatures.LOADING_PHASE_BUFFER_TIME_AFTER_FIRST_MEANINGFUL_PAINT,
+                    "Enables extending the loading phase by some buffer time after "
+                            + "First Meaningful Paint is signaled."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
