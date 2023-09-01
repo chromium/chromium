@@ -1978,8 +1978,6 @@ class UkmServiceTestWithIndependentAppKM
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-
-    scoped_feature_list_.InitAndEnableFeature({kAppMetricsOnlyRelyOnAppSync});
   }
 
   int GetPersistedLogCount() { return ukm::GetPersistedLogCount(prefs_); }
@@ -1992,7 +1990,6 @@ class UkmServiceTestWithIndependentAppKM
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -2073,8 +2070,6 @@ class UkmServiceTestWithIndependentAppKMFullConsent
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
-
-    scoped_feature_list_.InitAndEnableFeature({kAppMetricsOnlyRelyOnAppSync});
   }
 
   int GetPersistedLogCount() { return ukm::GetPersistedLogCount(prefs_); }
@@ -2087,7 +2082,6 @@ class UkmServiceTestWithIndependentAppKMFullConsent
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

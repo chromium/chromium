@@ -49,10 +49,6 @@ bool CanUploadUkmForType(syncer::SyncService* sync_service,
 }
 }  // namespace
 
-BASE_FEATURE(kAppMetricsOnlyRelyOnAppSync,
-             "AppMetricsOnlyRelyOnAppSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 UkmConsentStateObserver::UkmConsentStateObserver() = default;
 
 UkmConsentStateObserver::~UkmConsentStateObserver() {
@@ -95,9 +91,6 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS allows for AppSync to be enabled without MSBB consent.
-  const bool msbb_status = msbb_consent || base::FeatureList::IsEnabled(
-                                               kAppMetricsOnlyRelyOnAppSync);
   const bool app_sync_consent =
       CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
                           msbb_consent) ||
@@ -105,7 +98,7 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
       // AppKM. To support AppKM an exception needs to be made within UKM.
       IsDeviceInDemoMode();
 
-  if (msbb_status && app_sync_consent) {
+  if (app_sync_consent) {
     state.SetConsentType(APPS);
   }
 #else

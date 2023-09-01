@@ -20,9 +20,6 @@ class PrefService;
 
 namespace ukm {
 
-// This feature controls whether App Sync relies on MSBB to be enabled.
-BASE_DECLARE_FEATURE(kAppMetricsOnlyRelyOnAppSync);
-
 // Observer that monitors whether UKM is allowed for all profiles.
 //
 // For one profile, UKM is allowed iff URL-keyed anonymized data collection is

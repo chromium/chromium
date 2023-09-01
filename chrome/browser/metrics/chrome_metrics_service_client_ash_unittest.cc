@@ -201,9 +201,8 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
         &prefs_, &enabled_state_provider_, std::wstring(), base::FilePath());
     metrics_state_manager_->InstantiateFieldTrialList();
     ASSERT_TRUE(profile_manager_->SetUp());
-    scoped_feature_list_.InitWithFeatures(
-        {features::kUmaStorageDimensions, ukm::kAppMetricsOnlyRelyOnAppSync},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);
+
     // ChromeOs Metrics Provider require g_login_state and power manager client
     // initialized before they can be instantiated.
     chromeos::PowerManagerClient::InitializeFake();
