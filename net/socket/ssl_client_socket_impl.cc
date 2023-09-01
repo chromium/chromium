@@ -81,8 +81,15 @@ const int kSSLClientSocketNoPendingResult = 1;
 // overlap with any value of the net::Error range, including net::OK).
 const int kCertVerifyPending = 1;
 
+BASE_FEATURE(kDefaultOpenSSLBufferSizeFeature,
+             "DefaultOpenSSLBufferSizeFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Default size of the internal BoringSSL buffers.
-const int kDefaultOpenSSLBufferSize = 17 * 1024;
+constexpr base::FeatureParam<int> kDefaultOpenSSLBufferSize(
+    &kDefaultOpenSSLBufferSizeFeature,
+    "DefaultOpenSSLBufferSize",
+    17 * 1024);
 
 base::Value::Dict NetLogPrivateKeyOperationParams(uint16_t algorithm,
                                                   SSLPrivateKey* key) {
@@ -771,9 +778,9 @@ int SSLClientSocketImpl::Init() {
       SSL_set_session(ssl_.get(), session.get());
   }
 
+  const int kBufferSize = kDefaultOpenSSLBufferSize.Get();
   transport_adapter_ = std::make_unique<SocketBIOAdapter>(
-      stream_socket_.get(), kDefaultOpenSSLBufferSize,
-      kDefaultOpenSSLBufferSize, this);
+      stream_socket_.get(), kBufferSize, kBufferSize, this);
   BIO* transport_bio = transport_adapter_->bio();
 
   BIO_up_ref(transport_bio);  // SSL_set0_rbio takes ownership.
