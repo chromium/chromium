@@ -384,106 +384,94 @@ void RecordBulkPinningMountFailureReason(const Profile* profile,
 
 }  // namespace
 
-// Observes drive disable Preference's change.
-class DriveIntegrationService::PreferenceWatcher
-    : ash::NetworkStateHandlerObserver {
+// Observes changes in Drive's Preferences and network connections.
+class DriveIntegrationService::PrefWatcher : ash::NetworkStateHandlerObserver {
  public:
   using NetworkHandler = ash::NetworkHandler;
   using NetworkState = ash::NetworkState;
   using NetworkStateHandler = ash::NetworkStateHandler;
 
-  explicit PreferenceWatcher(Profile* const profile)
-      : profile_(profile), pref_service_(profile->GetPrefs()) {
-    DCHECK(pref_service_);
-    pref_change_registrar_.Init(pref_service_);
+  explicit PrefWatcher(DriveIntegrationService* const service)
+      : service_(service) {
+    DCHECK(service_);
+    pref_change_registrar_.Init(service_->GetPrefs());
     pref_change_registrar_.Add(
         prefs::kDisableDrive,
-        base::BindRepeating(&PreferenceWatcher::OnPreferenceChanged,
+        base::BindRepeating(&PrefWatcher::ToggleDrive,
                             weak_ptr_factory_.GetWeakPtr()));
     pref_change_registrar_.Add(
         prefs::kDisableDriveOverCellular,
-        base::BindRepeating(&PreferenceWatcher::UpdateSyncPauseState,
+        base::BindRepeating(&PrefWatcher::ToggleMetered,
                             weak_ptr_factory_.GetWeakPtr()));
     if (ash::features::IsDriveFsMirroringEnabled()) {
       pref_change_registrar_.Add(
           prefs::kDriveFsEnableMirrorSync,
-          base::BindRepeating(&PreferenceWatcher::ToggleLocalMirroring,
+          base::BindRepeating(&PrefWatcher::ToggleMirroring,
                               weak_ptr_factory_.GetWeakPtr()));
     }
 
-    if (util::IsDriveFsBulkPinningEnabled(profile_)) {
+    if (util::IsDriveFsBulkPinningEnabled(service_->profile_)) {
       pref_change_registrar_.Add(
           kDriveFsBulkPinningEnabled,
-          base::BindRepeating(&PreferenceWatcher::ToggleBulkPinning,
+          base::BindRepeating(&PrefWatcher::ToggleBulkPinning,
                               weak_ptr_factory_.GetWeakPtr()));
     }
+
+    DCHECK(!network_state_handler_);
+    if (!NetworkHandler::IsInitialized()) {
+      return;  // Test environment.
+    }
+
+    network_state_handler_ = NetworkHandler::Get()->network_state_handler();
+    DCHECK(network_state_handler_);
+    network_state_handler_->AddObserver(this);
   }
 
-  PreferenceWatcher(const PreferenceWatcher&) = delete;
-  PreferenceWatcher& operator=(const PreferenceWatcher&) = delete;
-
-  ~PreferenceWatcher() override {
+  ~PrefWatcher() override {
     if (network_state_handler_) {
       network_state_handler_->RemoveObserver(this);
     }
   }
 
-  void SetIntegrationService(DriveIntegrationService* const service) {
-    DCHECK(!integration_service_);
-    integration_service_ = service;
-    DCHECK(integration_service_);
-
-    if (!NetworkHandler::IsInitialized()) {
-      return;  // Test environment.
-    }
-
-    DCHECK(!network_state_handler_);
-    network_state_handler_ = NetworkHandler::Get()->network_state_handler();
-    DCHECK(network_state_handler_);
-    network_state_handler_->AddObserver(this);
-
-    UpdateSyncPauseState();
-  }
-
  private:
-  void UpdateSyncPauseState() {
-    DCHECK(integration_service_);
-    integration_service_->UpdateNetworkState();
+  void ToggleMetered() {
+    VLOG(1) << "ToggleMetered";
+    service_->UpdateNetworkState();
   }
 
-  void OnPreferenceChanged() {
-    DCHECK(integration_service_);
-    integration_service_->SetEnabled(
-        !pref_service_->GetBoolean(prefs::kDisableDrive));
+  void ToggleDrive() {
+    VLOG(1) << "ToggleDrive";
+    service_->SetEnabled(
+        !service_->GetPrefs()->GetBoolean(prefs::kDisableDrive));
   }
 
-  void ToggleLocalMirroring() {
-    DCHECK(integration_service_);
+  void ToggleMirroring() {
+    VLOG(1) << "ToggleMirroring";
     if (!ash::features::IsDriveFsMirroringEnabled()) {
       return;
     }
 
-    if (pref_service_->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
-      integration_service_->ToggleMirroring(
+    if (service_->GetPrefs()->GetBoolean(prefs::kDriveFsEnableMirrorSync)) {
+      service_->ToggleMirroring(
           true, base::BindOnce(
                     &DriveIntegrationService::OnEnableMirroringStatusUpdate,
-                    integration_service_->weak_ptr_factory_.GetWeakPtr()));
+                    service_->weak_ptr_factory_.GetWeakPtr()));
     } else {
-      integration_service_->ToggleMirroring(
+      service_->ToggleMirroring(
           false, base::BindOnce(
                      &DriveIntegrationService::OnDisableMirroringStatusUpdate,
-                     integration_service_->weak_ptr_factory_.GetWeakPtr()));
+                     service_->weak_ptr_factory_.GetWeakPtr()));
     }
   }
 
   void ToggleBulkPinning() {
-    DCHECK(integration_service_);
-    integration_service_->ToggleBulkPinning();
+    VLOG(1) << "ToggleBulkPinning";
+    service_->ToggleBulkPinning();
   }
 
   void DefaultNetworkChanged(const NetworkState*) override {
     VLOG(1) << "DefaultNetworkChanged";
-    UpdateSyncPauseState();
+    service_->UpdateNetworkState();
   }
 
   void OnShuttingDown() override {
@@ -494,15 +482,12 @@ class DriveIntegrationService::PreferenceWatcher
     }
   }
 
-  const raw_ptr<const Profile, ExperimentalAsh> profile_;
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<DriveIntegrationService, ExperimentalAsh> service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<DriveIntegrationService, ExperimentalAsh> integration_service_ =
-      nullptr;
   raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
 
-  base::WeakPtrFactory<PreferenceWatcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PrefWatcher> weak_ptr_factory_{this};
 };
 
 class DriveIntegrationService::DriveFsHolder
@@ -742,8 +727,7 @@ DriveIntegrationService::DriveIntegrationService(
        base::WithBaseSyncPrimitives()});
 
   if (util::IsDriveAvailableForProfile(profile)) {
-    preference_watcher_ = std::make_unique<PreferenceWatcher>(profile);
-    preference_watcher_->SetIntegrationService(this);
+    pref_watcher_ = std::make_unique<PrefWatcher>(this);
   }
 
   bool migrated_to_drivefs =
