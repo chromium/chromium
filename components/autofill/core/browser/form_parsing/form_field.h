@@ -203,6 +203,17 @@ class FormField {
       PatternSource pattern_source,
       LogManager* log_manager);
 
+  // Removes entries from `field_candidates` in case
+  // - not enough fields were classified by local heuristics.
+  // - fields were not explicitly allow-listed because they appear in
+  //   contexts that don't contain enough fields (e.g. forms with only an
+  //   email address).
+  static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
+      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      FieldCandidatesMap& field_candidates,
+      bool is_form_tag,
+      LogManager* log_manager);
+
   static bool ParseFieldSpecificsWithNewPatterns(
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
