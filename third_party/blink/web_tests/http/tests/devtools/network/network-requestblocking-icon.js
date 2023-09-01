@@ -19,7 +19,7 @@ import {TestRunner} from 'test_runner';
   dumpIconResult();
 
   TestRunner.addResult('Loading Network Module');
-  await TestRunner.loadLegacyModule('network');
+  await import('devtools/panels/network/network.js');
   TestRunner.addResult('Network Module Loaded');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(false);
