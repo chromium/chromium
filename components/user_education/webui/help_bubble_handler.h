@@ -54,6 +54,9 @@ class HelpBubbleHandlerBase : public help_bubble::mojom::HelpBubbleHandler {
   // it is probably good to check for null.
   content::WebContents* GetWebContents();
 
+  // Returns whether a help bubble is showing for a given element.
+  bool IsHelpBubbleShowingForTesting(ui::ElementIdentifier id) const;
+
  protected:
   // Provides reliable access to a HelpBubbleClient. Derived classes should
   // create a ClientProvider and pass it to the HelpBubbleHandlerBase

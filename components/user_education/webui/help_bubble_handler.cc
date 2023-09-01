@@ -166,6 +166,12 @@ content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
   return GetController()->web_ui()->GetWebContents();
 }
 
+bool HelpBubbleHandlerBase::IsHelpBubbleShowingForTesting(
+    ui::ElementIdentifier id) const {
+  const auto it = element_data_.find(id);
+  return it != element_data_.end() && it->second.has_webui_help_bubble();
+}
+
 help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
   return client_provider_->GetClient();
 }

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +29,8 @@
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/webui/help_bubble_handler.h"
+#include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -69,7 +73,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   auto ShowHelpBubble(ElementSpecifier element) {
-    StepBuilder step = std::move(
+    return InAnyContext(std::move(
         AfterShow(
             element,
             base::BindLambdaForTesting(
@@ -81,17 +85,27 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
                     seq->FailForTesting();
                   }
                 }))
-            .SetDescription("ShowHelpBubble"));
-
-    // A WebUI anchor will not be in the same context as the browser. However,
-    // InAnyContext is not compatible with named elements.
-    return absl::holds_alternative<ui::ElementIdentifier>(element)
-               ? InAnyContext(step)
-               : std::move(step);
+            .SetDescription("ShowHelpBubble")));
   }
 
   auto CloseHelpBubble() {
     return Do(base::BindLambdaForTesting([this]() { help_bubble_->Close(); }));
+  }
+
+  auto CheckHandlerHasHelpBubble(ElementSpecifier anchor,
+                                 bool has_help_bubble) {
+    return InAnyContext(
+        std::move(CheckElement(
+                      anchor,
+                      [](ui::TrackedElement* el) {
+                        return el->AsA<user_education::TrackedElementWebUI>()
+                            ->handler()
+                            ->IsHelpBubbleShowingForTesting(el->identifier());
+                      },
+                      has_help_bubble)
+                      .SetDescription(base::StringPrintf(
+                          "CheckHandlerHasHelpBubble(%s)",
+                          has_help_bubble ? "true" : "false"))));
   }
 
  protected:
@@ -125,6 +139,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
       OpenReadingListSidePanel(),
       ShowHelpBubble(kAddCurrentTabToReadingListElementId),
 
+      // Verify that the handler does not believe a WebUI help bubble is
+      // present.
+      CheckHandlerHasHelpBubble(kAddCurrentTabToReadingListElementId, false),
+
       // Verify that the anchor element is marked.
       CheckJsResultAt(
           kReadLaterWebContentsElementId, kPathToAddCurrentTabElement,
@@ -151,26 +169,63 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
                     },
                     browser()->window()->GetElementContext())),
 
-      // Verify that the anchor element is no longer marked.
       CloseHelpBubble(),
+
+      // Verify that the anchor element is no longer marked.
       CheckJsResultAt(
           kReadLaterWebContentsElementId, kPathToAddCurrentTabElement,
           "el => el.classList.contains('help-anchor-highlight')", false));
 }
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
-                       ShowEmbeddedHelpBubble) {
+                       ShowEmbeddedHelpBubbleAndCloseViaExternalApi) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
   static const DeepQuery kPathToHelpBubbleBody = {"user-education-internals",
                                                   "#IPH_WebUiHelpBubbleTest",
                                                   "help-bubble", "#topBody"};
-  RunTestSequence(InstrumentTab(kBrowserTabId),
-                  NavigateWebContents(
-                      kBrowserTabId, GURL("chrome://internals/user-education")),
-                  ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
-                  CheckJsResultAt(kBrowserTabId, kPathToHelpBubbleBody,
-                                  "(el) => el.innerText",
-                                  base::UTF16ToUTF8(kBubbleBodyText)));
+  RunTestSequence(
+      InstrumentTab(kBrowserTabId),
+      NavigateWebContents(kBrowserTabId,
+                          GURL("chrome://internals/user-education")),
+      ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
+
+      // Verify that the handler believes that the anchor has a help bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, true),
+
+      CheckJsResultAt(kBrowserTabId, kPathToHelpBubbleBody,
+                      "el => el.innerText", base::UTF16ToUTF8(kBubbleBodyText)),
+      CloseHelpBubble(),
+
+      // Verify that the handler no longer believes that the anchor has a help
+      // bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false));
+}
+
+IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,
+                       ShowEmbeddedHelpBubbleAndCloseViaClick) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kHelpBubbleHiddenEvent);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBrowserTabId);
+  static const DeepQuery kPathToHelpBubbleCloseButton = {
+      "user-education-internals", "#IPH_WebUiHelpBubbleTest", "help-bubble",
+      "#close"};
+  StateChange bubble_hidden;
+  bubble_hidden.type = StateChange::Type::kDoesNotExist;
+  bubble_hidden.where = kPathToHelpBubbleCloseButton;
+  bubble_hidden.event = kHelpBubbleHiddenEvent;
+
+  RunTestSequence(
+      InstrumentTab(kBrowserTabId),
+      NavigateWebContents(kBrowserTabId,
+                          GURL("chrome://internals/user-education")),
+      ShowHelpBubble(kWebUIIPHDemoElementIdentifier),
+
+      ExecuteJsAt(kBrowserTabId, kPathToHelpBubbleCloseButton,
+                  "el => el.click()"),
+      WaitForStateChange(kBrowserTabId, bubble_hidden), FlushEvents(),
+
+      // Verify that the handler no longer believes that the anchor has a help
+      // bubble.
+      CheckHandlerHasHelpBubble(kWebUIIPHDemoElementIdentifier, false));
 }
 
 // Regression test for item (1) in crbug.com/1422875.

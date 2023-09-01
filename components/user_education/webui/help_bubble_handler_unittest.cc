@@ -461,6 +461,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenVisibilityChanges) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   // This should have no effect since it's the wrong element.
   handler()->HelpBubbleAnchorVisibilityChanged(
@@ -470,6 +472,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenVisibilityChanges) {
   handler()->HelpBubbleAnchorVisibilityChanged(
       kHelpBubbleHandlerTestElementIdentifier.GetName(), false, gfx::RectF());
   EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 }
 
 TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
@@ -489,6 +493,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
   auto subscription = help_bubble->AddOnCloseCallback(closed.Get());
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   EXPECT_CALL_IN_SCOPE(
       closed, Run,
@@ -496,6 +502,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedRemotely) {
           kHelpBubbleHandlerTestElementIdentifier.GetName(),
           help_bubble::mojom::HelpBubbleClosedReason::kPageChanged));
   EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 }
 
 TEST_F(HelpBubbleHandlerTest, DestroyHandlerCleansUpElement) {
@@ -551,6 +559,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedByUserCallsDismiss) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   EXPECT_CALL_IN_SCOPE(
       dismissed, Run,
@@ -558,6 +568,8 @@ TEST_F(HelpBubbleHandlerTest, HelpBubbleClosedWhenClosedByUserCallsDismiss) {
           kHelpBubbleHandlerTestElementIdentifier.GetName(),
           help_bubble::mojom::HelpBubbleClosedReason::kDismissedByUser));
   EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 }
 
 TEST_F(HelpBubbleHandlerTest, ButtonPressedCallsCallback) {
@@ -590,12 +602,16 @@ TEST_F(HelpBubbleHandlerTest, ButtonPressedCallsCallback) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   EXPECT_CALL_IN_SCOPE(
       button2_pressed, Run,
       handler()->HelpBubbleButtonPressed(
           kHelpBubbleHandlerTestElementIdentifier.GetName(), 1));
   EXPECT_FALSE(help_bubble->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 }
 
 TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaVisibility) {
@@ -619,6 +635,8 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaVisibility) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   HelpBubbleParams params2;
   params2.body_text = u"Help bubble body 2.";
@@ -626,6 +644,8 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaVisibility) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble2 = help_bubble_factory_registry_.CreateHelpBubble(
       element2, std::move(params2));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element2->identifier()));
 
   EXPECT_TRUE(help_bubble->is_open());
   EXPECT_TRUE(help_bubble2->is_open());
@@ -635,6 +655,10 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaVisibility) {
       kHelpBubbleHandlerTestElementIdentifier.GetName(), false, gfx::RectF());
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_TRUE(help_bubble2->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element2->identifier()));
 
   // When the second bubble goes away, it will attempt to close the bubble on
   // the remote.
@@ -664,6 +688,8 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaCallback) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
       element, std::move(params));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
 
   HelpBubbleParams params2;
   params2.body_text = u"Help bubble body 2.";
@@ -671,6 +697,8 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaCallback) {
   EXPECT_CALL(test_handler_->mock(), ShowHelpBubble(testing::_));
   auto help_bubble2 = help_bubble_factory_registry_.CreateHelpBubble(
       element2, std::move(params2));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element2->identifier()));
 
   EXPECT_TRUE(help_bubble->is_open());
   EXPECT_TRUE(help_bubble2->is_open());
@@ -681,6 +709,10 @@ TEST_F(HelpBubbleHandlerTest, ShowMultipleBubblesAndCloseOneViaCallback) {
       help_bubble::mojom::HelpBubbleClosedReason::kPageChanged);
   EXPECT_FALSE(help_bubble->is_open());
   EXPECT_TRUE(help_bubble2->is_open());
+  EXPECT_FALSE(
+      test_handler_->IsHelpBubbleShowingForTesting(element->identifier()));
+  EXPECT_TRUE(
+      test_handler_->IsHelpBubbleShowingForTesting(element2->identifier()));
 
   // When the second bubble goes away, it will attempt to close the bubble on
   // the remote.
