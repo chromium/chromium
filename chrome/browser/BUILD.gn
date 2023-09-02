@@ -6109,6 +6109,8 @@ static_library("browser") {
       "media/webrtc/system_media_capture_permissions_mac.mm",
       "media/webrtc/system_media_capture_permissions_stats_mac.h",
       "media/webrtc/system_media_capture_permissions_stats_mac.mm",
+      "media/webrtc/thumbnail_capturer_mac.h",
+      "media/webrtc/thumbnail_capturer_mac.mm",
       "media/webrtc/window_icon_util_mac.mm",
       "media_galleries/mac/mtp_device_delegate_impl_mac.h",
       "media_galleries/mac/mtp_device_delegate_impl_mac.mm",
@@ -6181,6 +6183,7 @@ static_library("browser") {
       "UserNotifications.framework",
     ]
     weak_frameworks = [
+      "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
       "UniformTypeIdentifiers.framework",  # macOS 11
     ]
     public_deps += [ "//chrome/browser/mac:keystone_glue" ]

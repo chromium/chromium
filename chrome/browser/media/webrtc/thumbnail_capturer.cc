@@ -20,9 +20,9 @@ void ThumbnailCapturer::CaptureFrame() {
 }
 
 bool ThumbnailCapturer::SelectSource(SourceId id) {
-  return SelectSources({id});
+  NOTREACHED_NORETURN();
 }
 
-bool ThumbnailCapturer::SelectSources(const std::vector<SourceId>& ids) {
+void ThumbnailCapturer::SelectSources(const std::vector<SourceId>& ids) {
   NOTREACHED_NORETURN();
 }

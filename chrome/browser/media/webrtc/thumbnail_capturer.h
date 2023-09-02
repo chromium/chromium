@@ -100,14 +100,13 @@ class ThumbnailCapturer {
   //
   // Note that some capturers with delegated source lists may also support
   // selecting a SourceID that is not in the returned source list as a form of
-  // restore token.
+  // restore token. Can only be invoked if the frame delivery method is
+  // kOnRequest.
   virtual bool SelectSource(SourceId id);
 
   // Selects sources to be captured simultaneously. Multiple sources can only be
   // selected if the frame delivery method is kMultipleSourcesRecurrent.
-  // Returns false in case of a failure (e.g. if there is no source with the
-  // specified type and id.)
-  virtual bool SelectSources(const std::vector<SourceId>& ids);
+  virtual void SelectSources(const std::vector<SourceId>& ids);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_THUMBNAIL_CAPTURER_H_
