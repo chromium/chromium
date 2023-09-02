@@ -53,8 +53,7 @@ class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
 
   std::unique_ptr<Canvas2DLayerBridge> MakeCanvas2DLayerBridge(
       const gfx::Size& size) {
-    return std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU,
-                                                 kNonOpaque);
+    return std::make_unique<Canvas2DLayerBridge>(size, kNonOpaque);
   }
 
  private:
@@ -73,6 +72,7 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
       element->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size(300, 200);
   std::unique_ptr<Canvas2DLayerBridge> bridge = MakeCanvas2DLayerBridge(size);
+  element->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   element->SetResourceProviderForTesting(nullptr, std::move(bridge), size);
   ASSERT_EQ(context, element->RenderingContext());
 

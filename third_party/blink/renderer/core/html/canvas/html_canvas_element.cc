@@ -685,11 +685,12 @@ void HTMLCanvasElement::DisableAcceleration(
         .IncrementDisabledCount();
   }
   // Create and configure an unaccelerated Canvas2DLayerBridge.
+  SetPreferred2DRasterMode(RasterModeHint::kPreferCPU);
   std::unique_ptr<Canvas2DLayerBridge> bridge;
   if (unaccelerated_bridge_used_for_testing)
     bridge = std::move(unaccelerated_bridge_used_for_testing);
   else
-    bridge = Create2DLayerBridge(RasterMode::kCPU);
+    bridge = Create2DLayerBridge();
 
   if (bridge && canvas2d_bridge_)
     ReplaceExisting2dLayerBridge(std::move(bridge));
@@ -1400,10 +1401,9 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
   return false;
 }
 
-std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge(
-    RasterMode raster_mode) {
+std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
   auto surface = std::make_unique<Canvas2DLayerBridge>(
-      Size(), raster_mode,
+      Size(),
       GetRenderingContextSkColorInfo().isOpaque() ? kOpaque : kNonOpaque);
   if (!surface->IsValid())
     return nullptr;
@@ -1438,12 +1438,12 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
     bool will_read_frequently =
         context_->CreationAttributes().will_read_frequently ==
         CanvasContextCreationAttributesCore::WillReadFrequently::kTrue;
-    if (ShouldAccelerate() && context_ && !will_read_frequently) {
-      canvas2d_bridge_ = Create2DLayerBridge(RasterMode::kGPU);
-    }
-    if (!canvas2d_bridge_) {
-      canvas2d_bridge_ = Create2DLayerBridge(RasterMode::kCPU);
-    }
+    RasterModeHint hint =
+        ShouldAccelerate() && context_ && !will_read_frequently
+            ? RasterModeHint::kPreferGPU
+            : RasterModeHint::kPreferCPU;
+    SetPreferred2DRasterMode(hint);
+    canvas2d_bridge_ = Create2DLayerBridge();
   }
 
   if (!canvas2d_bridge_)
@@ -1590,8 +1590,8 @@ void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
   if (SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() &&
       source->IsAccelerated() && GetOrCreateCanvas2DLayerBridge() &&
       !canvas2d_bridge_->IsAccelerated() && ShouldAccelerate()) {
-    std::unique_ptr<Canvas2DLayerBridge> surface =
-        Create2DLayerBridge(RasterMode::kGPU);
+    SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+    std::unique_ptr<Canvas2DLayerBridge> surface = Create2DLayerBridge();
     if (surface) {
       ReplaceExisting2dLayerBridge(std::move(surface));
       SetNeedsCompositingUpdate();

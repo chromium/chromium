@@ -184,7 +184,7 @@ class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
  public:
-  Canvas2DLayerBridge(const gfx::Size&, RasterMode, OpacityMode opacity_mode);
+  Canvas2DLayerBridge(const gfx::Size&, OpacityMode opacity_mode);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -318,7 +318,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   // WritePixels, the recording is now missing that information.
   bool last_record_tainted_by_write_pixels_ = false;
 
-  const RasterMode raster_mode_;
   const OpacityMode opacity_mode_;
   const gfx::Size size_;
 

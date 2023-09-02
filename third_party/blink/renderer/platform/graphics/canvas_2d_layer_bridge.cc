@@ -328,13 +328,11 @@ HibernatedCanvasMemoryDumpProvider::HibernatedCanvasMemoryDumpProvider() {
 }
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,
-                                         RasterMode raster_mode,
                                          OpacityMode opacity_mode)
     : logger_(std::make_unique<Logger>()),
       have_recorded_draw_commands_(false),
       is_hidden_(false),
       is_being_displayed_(false),
-      raster_mode_(raster_mode),
       opacity_mode_(opacity_mode),
       size_(size),
       snapshot_state_(kInitialSnapshotState),
@@ -353,7 +351,7 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (!layer_)
     return;
 
-  if (raster_mode_ == RasterMode::kGPU) {
+  if (IsAccelerated()) {
     layer_->ClearTexture();
     // Orphaning the layer is required to trigger the recreation of a new layer
     // in the case where destruction is caused by a canvas resize. Test:
@@ -374,7 +372,8 @@ void Canvas2DLayerBridge::ResetResourceProvider() {
 }
 
 bool Canvas2DLayerBridge::ShouldAccelerate() const {
-  bool use_gpu = raster_mode_ == RasterMode::kGPU;
+  bool use_gpu = resource_host_ && resource_host_->preferred_2d_raster_mode() ==
+                                       RasterModeHint::kPreferGPU;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
@@ -387,8 +386,10 @@ bool Canvas2DLayerBridge::ShouldAccelerate() const {
 }
 
 bool Canvas2DLayerBridge::IsAccelerated() const {
-  if (raster_mode_ == RasterMode::kCPU)
+  if (resource_host_ && resource_host_->preferred_2d_raster_mode() ==
+                            RasterModeHint::kPreferCPU) {
     return false;
+  }
   if (IsHibernating())
     return false;
   if (resource_host_ && resource_host_->ResourceProvider())
@@ -884,7 +885,9 @@ bool Canvas2DLayerBridge::CheckResourceProviderValid() {
   if (IsHibernating()) {
     return true;
   }
-  if (!layer_ || raster_mode_ == RasterMode::kCPU) {
+  if (!layer_ ||
+      (resource_host_ && resource_host_->preferred_2d_raster_mode() ==
+                             RasterModeHint::kPreferCPU)) {
     return true;
   }
   if (context_lost_) {

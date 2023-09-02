@@ -50,4 +50,10 @@ void CanvasResourceHost::SetFilterQuality(
   filter_quality_ = filter_quality;
 }
 
+void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
+  // TODO(junov): move code that switches between CPU and GPU rasterization
+  // to here.
+  preferred_2d_raster_mode_ = hint;
+}
+
 }  // namespace blink

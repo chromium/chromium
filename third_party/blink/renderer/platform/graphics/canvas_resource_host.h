@@ -53,6 +53,11 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual bool IsPrinting() const { return false; }
   virtual bool PrintedInCurrentTask() const = 0;
 
+  RasterModeHint preferred_2d_raster_mode() const {
+    return preferred_2d_raster_mode_;
+  }
+  void SetPreferred2DRasterMode(RasterModeHint);
+
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);
 
@@ -60,6 +65,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   gfx::HDRMetadata hdr_metadata_;
+  RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
 };
 
 }  // namespace blink
