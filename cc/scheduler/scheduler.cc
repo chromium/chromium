@@ -840,6 +840,10 @@ void Scheduler::SetPauseRendering(bool pause_rendering) {
     TRACE_EVENT1("cc", "Scheduler::SetPauseRendering", "pause_rendering",
                  pause_rendering);
     state_machine_.SetPauseRendering(pause_rendering);
+    if (!pause_rendering && begin_frame_source_) {
+      // This is needed for BackToBackBeginFrameSource to resume pumping frames.
+      begin_frame_source_->DidFinishFrame(this);
+    }
   }
   ProcessScheduledActions();
 }

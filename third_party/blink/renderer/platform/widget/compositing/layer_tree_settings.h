@@ -20,6 +20,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     bool has_compositor,
     bool is_for_embedded_frame,
     bool is_for_scalable_page,
+    bool is_for_web_test,
     const gfx::Size& initial_screen_size,
     float initial_device_scale_factor);
 

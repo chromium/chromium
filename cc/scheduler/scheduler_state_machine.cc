@@ -1362,6 +1362,12 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (active_tree_needs_first_draw_)
     return true;
 
+  // When running web tests with threaded compositing, we service main frames at
+  // the maximum possible frame rate.
+  if (settings_.is_threaded_web_test && needs_begin_main_frame_) {
+    return true;
+  }
+
   if (!needs_redraw_)
     return false;
 

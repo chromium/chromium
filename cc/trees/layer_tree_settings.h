@@ -218,6 +218,9 @@ class CC_EXPORT LayerTreeSettings {
   // TODO(crbug.com/1378251): not ready to be used by renderer cc instance yet.
   bool enable_shared_image_cache_for_gpu = false;
 
+  // True if we are running a web test using threaded compositing.
+  bool is_threaded_web_test = false;
+
   // Maximum size for buffers allocated for rendering when GPU compositing is
   // disabled. This size is equivalent to the max texture size in GPU mode.
   // This is an arbitrary limit here similar to what hardware might have.
