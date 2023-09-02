@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
+<translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータおよび Cookie が削除されます。</translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">サードパーティ以外は許可</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1994173015038366702">サイトの URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{あと 1 日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2025115093177348061">拡張現実（AR）</translation>
 <translation id="2030769033451695672">タップして <ph name="URL_OF_THE_CURRENT_TAB" /> に戻る</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">サイトに現在地の認識を許可する前に確認する（推奨）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">サードパーティ Cookie がブロックされています</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{明日、Chrome で Cookie を再びブロックします}other{Chrome で Cookie を再びブロックするまであと # 日}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> のサイト</translation>
 <translation id="3538390592868664640">サイトによる周囲の 3D マップの作成またはカメラ位置の追跡をブロックします</translation>
 <translation id="3544058026430919413">企業は、Cookie を使用してグループ内のアクティビティを共有できるサイトのグループを定義できます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">電話番号</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
+<translation id="3843916486309149084">今日、Chrome で Cookie を再びブロックします</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3859306556332390985">前方にシーク再生</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
 <translation id="6388207532828177975">データを削除してリセット</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
+<translation id="640163077447496506">今日で期限切れ</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">確認</translation>
 <translation id="8154912474061769055">多くのサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
+<translation id="8186479265534291036">サイトが動作していない場合 サードパーティ Cookie がブロックされています</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />を許可</translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8206354486702514201">この設定は管理者によって制御されています。</translation>
