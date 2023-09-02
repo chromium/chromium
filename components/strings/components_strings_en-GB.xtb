@@ -3172,7 +3172,7 @@ Additional details:
 <translation id="8002230960325005199">See related sites in a new tab</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8009225694047762179">Manage Passwords</translation>
+<translation id="8009225694047762179">Manage passwords</translation>
 <translation id="8009843239480947060">10 in x 11 in</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
 <translation id="8012647001091218357">We could not reach your parents at the moment. Please try again.</translation>
