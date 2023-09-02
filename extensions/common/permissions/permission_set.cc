@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/url_pattern.h"
@@ -147,7 +148,7 @@ bool PermissionSet::IsEmpty() const {
 }
 
 bool PermissionSet::HasAPIPermission(APIPermissionID id) const {
-  return apis().find(id) != apis().end();
+  return base::Contains(apis(), id);
 }
 
 bool PermissionSet::HasAPIPermission(const std::string& permission_name) const {

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -190,8 +191,9 @@ bool isNonWildcardTLD(const std::string& url,
 
   std::string host(url, start_of_host, end_of_host - start_of_host);
   // Global wildcards are not allowed.
-  if (host.empty() || host.find("*") != std::string::npos)
+  if (host.empty() || base::Contains(host, "*")) {
     return false;
+  }
 
   if (!is_wildcard_subdomain || !should_check_rcd)
     return true;

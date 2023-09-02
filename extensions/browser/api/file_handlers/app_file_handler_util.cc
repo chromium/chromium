@@ -197,7 +197,7 @@ WritableFileChecker::WritableFileChecker(
 void WritableFileChecker::Check() {
   outstanding_tasks_ = paths_.size();
   for (const auto& path : paths_) {
-    bool is_directory = directory_paths_.find(path) != directory_paths_.end();
+    bool is_directory = base::Contains(directory_paths_, path);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     NonNativeFileSystemDelegate* delegate =
         ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();

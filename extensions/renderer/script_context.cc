@@ -5,6 +5,7 @@
 #include "extensions/renderer/script_context.h"
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -425,8 +426,7 @@ bool ScriptContext::HasAPIPermission(mojom::APIPermissionID permission) const {
     // Only web page contexts may be granted content capabilities. Other
     // contexts are either privileged WebUI or extensions with their own set of
     // permissions.
-    if (content_capabilities_.find(permission) != content_capabilities_.end())
-      return true;
+    return base::Contains(content_capabilities_, permission);
   }
   return false;
 }

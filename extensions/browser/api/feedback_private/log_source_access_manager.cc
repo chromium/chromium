@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
@@ -208,8 +209,9 @@ LogSourceAccessManager::ResourceId LogSourceAccessManager::CreateResource(
   if (resource_id == kInvalidResourceId)
     return kInvalidResourceId;
 
-  if (open_handles_.find(resource_id) != open_handles_.end())
+  if (base::Contains(open_handles_, resource_id)) {
     return kInvalidResourceId;
+  }
 
   // Now that |resource_id| has been determined to be valid, release ownership
   // of the LogSourceResource, which is now owned by the API resource manager.

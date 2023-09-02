@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -288,8 +289,7 @@ std::string ExtensionAPI::GetAPINameFromFullName(const std::string& full_name,
 bool ExtensionAPI::IsKnownAPI(const std::string& name,
                               ExtensionsClient* client) {
   lock_.AssertAcquired();
-  return schemas_.find(name) != schemas_.end() ||
-         client->IsAPISchemaGenerated(name);
+  return base::Contains(schemas_, name) || client->IsAPISchemaGenerated(name);
 }
 
 Feature::Availability ExtensionAPI::IsAliasAvailable(

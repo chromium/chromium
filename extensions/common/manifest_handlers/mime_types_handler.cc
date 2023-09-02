@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -95,7 +96,7 @@ void MimeTypesHandler::AddMIMEType(const std::string& mime_type) {
 }
 
 bool MimeTypesHandler::CanHandleMIMEType(const std::string& mime_type) const {
-  return mime_type_set_.find(mime_type) != mime_type_set_.end();
+  return base::Contains(mime_type_set_, mime_type);
 }
 
 bool MimeTypesHandler::HasPlugin() const {

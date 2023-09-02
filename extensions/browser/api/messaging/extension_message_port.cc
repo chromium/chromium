@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -252,7 +253,7 @@ void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
 
 bool ExtensionMessagePort::HasFrame(
     content::RenderFrameHost* render_frame_host) const {
-  return frames_.find(render_frame_host) != frames_.end();
+  return base::Contains(frames_, render_frame_host);
 }
 
 bool ExtensionMessagePort::IsValidPort() {

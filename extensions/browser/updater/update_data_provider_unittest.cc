@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,7 +49,7 @@ class UpdateDataProviderExtensionsBrowserClient
 
   bool IsExtensionEnabled(const std::string& id,
                           content::BrowserContext* context) const override {
-    return enabled_ids_.find(id) != enabled_ids_.end();
+    return base::Contains(enabled_ids_, id);
   }
 
   void AddEnabledExtension(const std::string& id) { enabled_ids_.insert(id); }

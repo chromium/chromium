@@ -423,7 +423,7 @@ bool HeaderMatcher::StringMatchTest::Matches(
                                     CaseInsensitiveCompareASCII<char>()) !=
                str.end();
       } else {
-        return str.find(data_) != std::string::npos;
+        return base::Contains(str, data_);
       }
   }
   // We never get past the "switch", but the compiler worries about no return.

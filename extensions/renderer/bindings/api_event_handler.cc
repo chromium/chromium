@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -317,7 +318,7 @@ void APIEventHandler::RegisterArgumentMassager(
     v8::Local<v8::Function> massager) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kCreateIfMissing);
-  DCHECK(data->massagers.find(event_name) == data->massagers.end());
+  DCHECK(!base::Contains(data->massagers, event_name));
   data->massagers[event_name].Reset(context->GetIsolate(), massager);
 }
 

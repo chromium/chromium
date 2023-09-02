@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -55,8 +56,7 @@ absl::optional<base::Value::Dict> LoadManifestFile(
   // localize them, since their manifests don't have a default_locale key.
   // Only localize manifests that indicate they want to be localized.
   // Calling LocalizeExtension at this point mirrors file_util::LoadExtension.
-  if (manifest_path.value().find(FILE_PATH_LITERAL("localized")) !=
-      std::string::npos) {
+  if (base::Contains(manifest_path.value(), FILE_PATH_LITERAL("localized"))) {
     extension_l10n_util::LocalizeExtension(
         extension_path, manifest->GetIfDict(),
         extension_l10n_util::GzippedMessagesPermission::kDisallow, error);

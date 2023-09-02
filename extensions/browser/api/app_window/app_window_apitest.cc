@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -46,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
   while (app_window->custom_app_icon().IsEmpty())
     base::RunLoop().RunUntilIdle();
 
-  EXPECT_NE(std::string::npos,
-            app_window->app_icon_url().spec().find("icon.png"));
+  EXPECT_TRUE(base::Contains(app_window->app_icon_url().spec(), "icon.png"));
 }
 
 // TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.

@@ -385,7 +385,7 @@ bool AddLocale(const std::set<std::string>& chrome_locales,
   // locales.
   if (base::StartsWith(locale_name, ".", base::CompareCase::SENSITIVE))
     return true;
-  if (chrome_locales.find(locale_name) == chrome_locales.end()) {
+  if (!base::Contains(chrome_locales, locale_name)) {
     // Warn if there is an extension locale that's not in the Chrome list,
     // but don't fail.
     DLOG(WARNING) << base::StringPrintf("Supplied locale %s is not supported.",

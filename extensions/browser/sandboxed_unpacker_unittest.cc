@@ -10,6 +10,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -267,7 +268,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
 
   void ExpectInstallErrorContains(const std::string& error) {
     std::string full_error = base::UTF16ToUTF8(client_->unpack_error_message());
-    EXPECT_TRUE(full_error.find(error) != std::string::npos)
+    EXPECT_TRUE(base::Contains(full_error, error))
         << "Error message " << full_error << " does not contain " << error;
   }
 

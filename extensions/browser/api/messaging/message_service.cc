@@ -772,7 +772,7 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChannelId channel_id = receiver_port_id.GetChannelId();
-  CHECK(channels_.find(channel_id) == channels_.end());
+  CHECK(!base::Contains(channels_, channel_id));
   channels_[channel_id] = std::move(channel);
   pending_lazy_context_channels_.erase(channel_id);
 }
