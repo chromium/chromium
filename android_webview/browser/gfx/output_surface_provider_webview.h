@@ -40,7 +40,7 @@ class OutputSurfaceProviderWebView {
   std::unique_ptr<viz::OutputSurface> CreateOutputSurface(
       viz::DisplayCompositorMemoryAndTaskController*
           display_compositor_controller);
-  void MarkExpectContextLoss();
+  void MarkAllowContextLoss();
 
   const viz::RendererSettings& renderer_settings() const {
     return renderer_settings_;

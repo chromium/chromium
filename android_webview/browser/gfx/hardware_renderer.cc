@@ -181,7 +181,7 @@ class HardwareRenderer::OnViz : public viz::DisplayClient {
                         ChildFrame* child_frame);
   void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
   void RemoveOverlaysOnViz();
-  void MarkExpectContextLossOnViz();
+  void MarkAllowContextLossOnViz();
 
   OverlayProcessorWebView* overlay_processor() {
     return overlay_processor_webview_;
@@ -464,7 +464,7 @@ void HardwareRenderer::OnViz::RemoveOverlaysOnViz() {
   }
 }
 
-void HardwareRenderer::OnViz::MarkExpectContextLossOnViz() {
+void HardwareRenderer::OnViz::MarkAllowContextLossOnViz() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   expect_context_loss_ = true;
 }
@@ -596,6 +596,9 @@ void HardwareRenderer::InitializeOnViz(
 
 HardwareRenderer::~HardwareRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
+  // Do not crash for context loss during destruction. It's possible functor is
+  // being destroyed due to an already-detected lost context.
+  MarkAllowContextLoss();
   output_surface_provider_.shared_context_state()->MakeCurrent(nullptr);
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::DoNothingWithBoundArgs(std::move(on_viz_)));
@@ -778,13 +781,19 @@ void HardwareRenderer::MergeTransactionIfNeeded(
 }
 
 void HardwareRenderer::AbandonContext() {
-  VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HardwareRenderer::OnViz::MarkExpectContextLossOnViz,
-                     base::Unretained(on_viz_.get())));
-  output_surface_provider_.MarkExpectContextLoss();
+  MarkAllowContextLoss();
   output_surface_provider_.shared_context_state()->MarkContextLost(
       gpu::error::ContextLostReason::kUnknown);
+}
+
+void HardwareRenderer::MarkAllowContextLoss() {
+  if (on_viz_) {
+    VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HardwareRenderer::OnViz::MarkAllowContextLossOnViz,
+                       base::Unretained(on_viz_.get())));
+  }
+  output_surface_provider_.MarkAllowContextLoss();
 }
 
 void HardwareRenderer::CommitFrame() {
