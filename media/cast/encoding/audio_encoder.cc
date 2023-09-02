@@ -144,13 +144,18 @@ class AudioEncoder::ImplBase
       if (buffer_fill_end_ < samples_per_frame_)
         break;
 
-      std::unique_ptr<SenderEncodedFrame> audio_frame(new SenderEncodedFrame());
+      auto audio_frame = std::make_unique<SenderEncodedFrame>();
       audio_frame->dependency =
           openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
       audio_frame->frame_id = frame_id_;
       audio_frame->referenced_frame_id = frame_id_;
       audio_frame->rtp_timestamp = frame_rtp_timestamp_;
       audio_frame->reference_time = frame_capture_time_;
+
+      // TODO(https://crbug.com/1478375): get accurate timestamps for both
+      // capture begin and capture end.
+      audio_frame->capture_begin_time = frame_capture_time_;
+      audio_frame->capture_end_time = frame_capture_time_;
 
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
           "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),

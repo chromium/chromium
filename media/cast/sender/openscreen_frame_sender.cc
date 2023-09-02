@@ -231,24 +231,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     frame_id_map_.clear();
   }
 
-  auto encode_event = std::make_unique<FrameEvent>();
-  encode_event->timestamp = encoded_frame->encode_completion_time;
-  encode_event->type = FRAME_ENCODED;
-  encode_event->media_type = is_audio_ ? AUDIO_EVENT : VIDEO_EVENT;
-  encode_event->rtp_timestamp = encoded_frame->rtp_timestamp;
-  encode_event->frame_id = encoded_frame->frame_id;
-  encode_event->size = base::checked_cast<uint32_t>(encoded_frame->data.size());
-  encode_event->key_frame =
-      encoded_frame->dependency ==
-      openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
-  encode_event->target_bitrate = encoded_frame->encoder_bitrate;
-  encode_event->encoder_cpu_utilization = encoded_frame->encoder_utilization;
-  encode_event->idealized_bitrate_utilization = encoded_frame->lossiness;
-
-  // This is used specifically for testing and is no longer consumed in
-  // production.
-  cast_environment_->logger()->DispatchFrameEvent(std::move(encode_event));
-
   RecordLatestFrameTimestamps(encoded_frame->frame_id,
                               encoded_frame->reference_time,
                               encoded_frame->rtp_timestamp);

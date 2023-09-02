@@ -363,9 +363,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       auto encoded_frame = std::make_unique<SenderEncodedFrame>();
       encoded_frame->dependency =
           metadata.key_frame
-              ?
-
-              openscreen::cast::EncodedFrame::Dependency::kKeyFrame
+              ? openscreen::cast::EncodedFrame::Dependency::kKeyFrame
               : openscreen::cast::EncodedFrame::Dependency::kDependent;
       encoded_frame->frame_id = next_frame_id_++;
       if (metadata.key_frame) {
@@ -376,6 +374,11 @@ class ExternalVideoEncoder::VEAClientImpl final
       encoded_frame->rtp_timestamp =
           ToRtpTimeTicks(request.video_frame->timestamp(), kVideoFrequency);
       encoded_frame->reference_time = request.reference_time;
+
+      encoded_frame->capture_begin_time =
+          request.video_frame->metadata().capture_begin_time;
+      encoded_frame->capture_end_time =
+          request.video_frame->metadata().capture_end_time;
 
       std::string header = stream_header_.str();
       if (!header.empty()) {

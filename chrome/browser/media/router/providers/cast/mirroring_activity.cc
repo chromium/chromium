@@ -101,6 +101,12 @@ const char kHistogramTypeAudio[] = "Audio";
 const char kHistogramTypeVideo[] = "Video";
 constexpr char kHistogramTransmissionKbps[] =
     "CastStreaming.Sender.%s.TransmissionRate";
+constexpr char kHistogramAverageEncodeTime[] =
+    "CastStreaming.Sender.%s.AverageEncodeTime";
+constexpr char kHistogramAverageCaptureLatency[] =
+    "CastStreaming.Sender.%s.AverageCaptureLatency";
+constexpr char kHistogramAverageEndToEndLatency[] =
+    "CastStreaming.Sender.%s.AverageEndToEndLatency";
 constexpr char kHistogramAverageNetworkLatency[] =
     "CastStreaming.Sender.%s.AverageNetworkLatency";
 constexpr char kHistogramRetransmittedPacketsPercentage[] =
@@ -218,6 +224,32 @@ absl::optional<int> GetExceededPlayoutDelayPacketPercent(
   return absl::nullopt;
 }
 
+absl::optional<double> LookupStat(
+    const base::Value::Dict& mirroring_stats,
+    media::cast::StatsEventSubscriber::CastStat cast_stat) {
+  const std::string key =
+      media::cast::StatsEventSubscriber::CastStatToString(cast_stat);
+  return mirroring_stats.FindDouble(key);
+}
+
+void MaybeRecordLatencyHistogram(const char* fmt,
+                                 const char* streaming_type,
+                                 absl::optional<double> value) {
+  if (value) {
+    const std::string name = base::StringPrintf(fmt, streaming_type);
+    base::UmaHistogramTimes(name, base::Milliseconds(*value));
+  }
+}
+
+void MaybeRecordMemoryHistogram(const char* fmt,
+                                const char* streaming_type,
+                                absl::optional<double> value) {
+  if (value) {
+    const std::string name = base::StringPrintf(fmt, streaming_type);
+    base::UmaHistogramMemoryKB(name, *value);
+  }
+}
+
 void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
                                   base::StringPiece stats_dict_key,
                                   int64_t target_playout_delay) {
@@ -226,34 +258,37 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
   if (!mirroring_stats) {
     return;
   }
-  const char* histogram_type =
+  const char* streaming_type =
       stats_dict_key == media::cast::StatsEventSubscriber::kAudioStatsDictKey
           ? kHistogramTypeAudio
           : kHistogramTypeVideo;
 
-  const std::string transmission_kbps_key =
-      media::cast::StatsEventSubscriber::CastStatToString(
-          media::cast::StatsEventSubscriber::TRANSMISSION_KBPS);
-  const absl::optional<double> transmission_kbps =
-      mirroring_stats->FindDouble(transmission_kbps_key);
-  if (transmission_kbps.has_value()) {
-    const std::string transmission_rate_histogram_name =
-        base::StringPrintf(kHistogramTransmissionKbps, histogram_type);
-    base::UmaHistogramMemoryKB(transmission_rate_histogram_name,
-                               transmission_kbps.value());
-  }
+  const absl::optional<double> transmission_kbps = LookupStat(
+      *mirroring_stats, media::cast::StatsEventSubscriber::TRANSMISSION_KBPS);
+  MaybeRecordMemoryHistogram(kHistogramTransmissionKbps, streaming_type,
+                             transmission_kbps);
 
-  const std::string avg_network_latency_ms_key =
-      media::cast::StatsEventSubscriber::CastStatToString(
-          media::cast::StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
+  const absl::optional<double> avg_encode_time_ms = LookupStat(
+      *mirroring_stats, media::cast::StatsEventSubscriber::AVG_ENCODE_TIME_MS);
+  MaybeRecordLatencyHistogram(kHistogramAverageEncodeTime, streaming_type,
+                              avg_encode_time_ms);
+
+  const absl::optional<double> avg_capture_latency_ms =
+      LookupStat(*mirroring_stats,
+                 media::cast::StatsEventSubscriber::AVG_CAPTURE_LATENCY_MS);
+  MaybeRecordLatencyHistogram(kHistogramAverageCaptureLatency, streaming_type,
+                              avg_capture_latency_ms);
+
+  const absl::optional<double> avg_end_to_end_latency_ms = LookupStat(
+      *mirroring_stats, media::cast::StatsEventSubscriber::AVG_E2E_LATENCY_MS);
+  MaybeRecordLatencyHistogram(kHistogramAverageEndToEndLatency, streaming_type,
+                              avg_end_to_end_latency_ms);
+
   const absl::optional<double> avg_network_latency_ms =
-      mirroring_stats->FindDouble(avg_network_latency_ms_key);
-  if (avg_network_latency_ms.has_value()) {
-    const std::string avg_network_latency_histogram_name =
-        base::StringPrintf(kHistogramAverageNetworkLatency, histogram_type);
-    base::UmaHistogramTimes(avg_network_latency_histogram_name,
-                            base::Milliseconds(avg_network_latency_ms.value()));
-  }
+      LookupStat(*mirroring_stats,
+                 media::cast::StatsEventSubscriber::AVG_NETWORK_LATENCY_MS);
+  MaybeRecordLatencyHistogram(kHistogramAverageNetworkLatency, streaming_type,
+                              avg_network_latency_ms);
 
   const std::string num_packets_sent_key =
       media::cast::StatsEventSubscriber::CastStatToString(
@@ -268,7 +303,7 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
         mirroring_stats->FindDouble(num_packets_retransmitted_key).value_or(0);
     const std::string retransmit_packets_percent_histogram_name =
         base::StringPrintf(kHistogramRetransmittedPacketsPercentage,
-                           histogram_type);
+                           streaming_type);
     base::UmaHistogramPercentage(
         retransmit_packets_percent_histogram_name,
         num_packets_retransmitted * 100 / num_packets_sent);
@@ -285,7 +320,7 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
   if (exceeded_playout_percent.has_value()) {
     const std::string exceeded_playout_delay_packets_percent_histogram_name =
         base::StringPrintf(kHistogramExceededPlayoutDelayPacketsPercentage,
-                           histogram_type);
+                           streaming_type);
     base::UmaHistogramPercentage(
         exceeded_playout_delay_packets_percent_histogram_name,
         exceeded_playout_percent.value());

@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "media/cast/common/encoded_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace cast {
@@ -45,6 +46,12 @@ struct SenderEncodedFrame final : public EncodedFrame {
 
   // The time at which the encode of the frame completed.
   base::TimeTicks encode_completion_time;
+
+  // The time at which capture of the frame started.
+  absl::optional<base::TimeTicks> capture_begin_time;
+
+  // The time at which capture of the frame ended.
+  absl::optional<base::TimeTicks> capture_end_time;
 };
 
 }  // namespace cast

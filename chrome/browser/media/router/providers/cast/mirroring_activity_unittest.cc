@@ -65,6 +65,12 @@ constexpr char kHistogramSessionLengthTab[] =
 
 constexpr char kHistogramAudioTransmissionKbps[] =
     "CastStreaming.Sender.Audio.TransmissionRate";
+constexpr char kHistogramAudioAverageEncodeTime[] =
+    "CastStreaming.Sender.Audio.AverageEncodeTime";
+constexpr char kHistogramAudioAverageCaptureLatency[] =
+    "CastStreaming.Sender.Audio.AverageCaptureLatency";
+constexpr char kHistogramAudioAverageEndToEndLatency[] =
+    "CastStreaming.Sender.Audio.AverageEndToEndLatency";
 constexpr char kHistogramAudioAverageNetworkLatency[] =
     "CastStreaming.Sender.Audio.AverageNetworkLatency";
 constexpr char kHistogramAudioRetransmittedPacketsPercentage[] =
@@ -73,6 +79,12 @@ constexpr char kHistogramAudioExceededPlayoutDelayPacketsPercentage[] =
     "CastStreaming.Sender.Audio.ExceededPlayoutDelayPacketsPercentage";
 constexpr char kHistogramVideoTransmissionKbps[] =
     "CastStreaming.Sender.Video.TransmissionRate";
+constexpr char kHistogramVideoAverageEncodeTime[] =
+    "CastStreaming.Sender.Video.AverageEncodeTime";
+constexpr char kHistogramVideoAverageCaptureLatency[] =
+    "CastStreaming.Sender.Video.AverageCaptureLatency";
+constexpr char kHistogramVideoAverageEndToEndLatency[] =
+    "CastStreaming.Sender.Video.AverageEndToEndLatency";
 constexpr char kHistogramVideoAverageNetworkLatency[] =
     "CastStreaming.Sender.Video.AverageNetworkLatency";
 constexpr char kHistogramVideoRetransmittedPacketsPercentage[] =
@@ -819,6 +831,9 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
   static constexpr char kJsonStats[] = R"({
     "audio": {
       "TRANSMISSION_KBPS": 20.0,
+      "AVG_ENCODE_TIME_MS": 13.4,
+      "AVG_CAPTURE_LATENCY_MS": 23.7,
+      "AVG_E2E_LATENCY_MS": 398.1,
       "AVG_NETWORK_LATENCY_MS": 5.0,
       "NUM_PACKETS_SENT": 500.0,
       "NETWORK_LATENCY_MS_HISTO": [
@@ -831,6 +846,9 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
     },
     "video": {
       "TRANSMISSION_KBPS": 1020.0,
+      "AVG_ENCODE_TIME_MS": 9.7,
+      "AVG_CAPTURE_LATENCY_MS": 11.3,
+      "AVG_E2E_LATENCY_MS": 403.1,
       "AVG_NETWORK_LATENCY_MS": 4.0,
       "NUM_PACKETS_SENT": 500.0,
       "NUM_PACKETS_RETRANSMITTED": 50.0,
@@ -868,10 +886,22 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
 
   activity_.reset();
 
+  // Check audio UMAs.
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioTransmissionKbps), 20);
-  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoTransmissionKbps), 1020);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageEncodeTime), 13);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageCaptureLatency), 23);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageEndToEndLatency),
+            398);
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramAudioAverageNetworkLatency), 5);
+
+  // Check video UMAs.
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoAverageEncodeTime), 9);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoTransmissionKbps), 1020);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoAverageCaptureLatency), 11);
+  EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoAverageEndToEndLatency),
+            403);
   EXPECT_EQ(uma_recorder.GetTotalSum(kHistogramVideoAverageNetworkLatency), 4);
+
   // No audio retransmitted packet.
   EXPECT_EQ(
       uma_recorder.GetTotalSum(kHistogramAudioRetransmittedPacketsPercentage),

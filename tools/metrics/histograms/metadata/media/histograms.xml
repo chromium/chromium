@@ -145,6 +145,58 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageCaptureLatency"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    for capturing frames. Histogram is recorded at the end of the mirroring
+    session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEncodeTime"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average time required to encode {CastStreamingSenderAudioVideo}
+    frames, in milliseconds. Histogram is recorded at the end of the mirroring
+    session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
+    name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEndToEndLatency"
+    units="ms" expires_after="2024-09-01">
+  <owner>anasr@google.com</owner>
+  <owner>bzielinski@google.com</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    end to end, from the beginning of capturing a frame to when the frame is
+    played out on the receiver. Histogram is recorded at the end of the
+    mirroring session.
+  </summary>
+  <token key="CastStreamingSenderAudioVideo"
+      variants="CastStreamingSenderAudioVideo"/>
+</histogram>
+
+<histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageNetworkLatency"
     units="ms" expires_after="2024-09-01">
   <owner>anasr@google.com</owner>
@@ -153,8 +205,9 @@ chromium-metrics-reviews@google.com.
   <owner>mfoltz@chromium.org</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
-    Records the average latency in milliseconds from sender to receiver.
-    Histogram is recorded at the end of the mirroring session.
+    Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
+    from sender to receiver. Histogram is recorded at the end of the mirroring
+    session.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
@@ -169,8 +222,9 @@ chromium-metrics-reviews@google.com.
   <owner>mfoltz@chromium.org</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
-    Records number of packets that exceeded the playout delay as a percentage of
-    all packets. Histogram is recorded at the end of the mirroring session.
+    Records number of {CastStreamingSenderAudioVideo} packets that exceeded the
+    playout delay as a percentage of all packets. Histogram is recorded at the
+    end of the mirroring session.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
@@ -185,9 +239,9 @@ chromium-metrics-reviews@google.com.
   <owner>mfoltz@chromium.org</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
-    Records number of packets that had to be retransmitted as a percentage of
-    number of packets sent. Histogram is recorded at the end of the mirroring
-    session.
+    Records number of {CastStreamingSenderAudioVideo} packets that had to be
+    retransmitted as a percentage of number of packets sent. Histogram is
+    recorded at the end of the mirroring session.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>
@@ -202,8 +256,9 @@ chromium-metrics-reviews@google.com.
   <owner>mfoltz@chromium.org</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
-    Records the packet transmission bitrate in kbps during a Cast Streaming
-    session. Histogram is recorded at the end of the mirroring session.
+    Records the {CastStreamingSenderAudioVideo} packet transmission bitrate in
+    kbps during a Cast Streaming session. Histogram is recorded at the end of
+    the mirroring session.
   </summary>
   <token key="CastStreamingSenderAudioVideo"
       variants="CastStreamingSenderAudioVideo"/>

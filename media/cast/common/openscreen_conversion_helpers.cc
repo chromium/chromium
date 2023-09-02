@@ -3,14 +3,23 @@
 // found in the LICENSE file.
 
 #include "media/cast/common/openscreen_conversion_helpers.h"
-#include "base/strings/string_number_conversions.h"
 
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace media::cast {
+
+openscreen::Clock::time_point ToOpenscreenTimePoint(
+    absl::optional<base::TimeTicks> ticks) {
+  if (!ticks) {
+    return openscreen::Clock::time_point::min();
+  }
+  return ToOpenscreenTimePoint(*ticks);
+}
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(base::TimeTicks ticks) {
   static_assert(sizeof(openscreen::Clock::time_point::rep) >=
@@ -62,6 +71,8 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
       encoded_frame.referenced_frame_id, encoded_frame.rtp_timestamp,
       ToOpenscreenTimePoint(encoded_frame.reference_time),
       std::chrono::milliseconds(encoded_frame.new_playout_delay_ms),
+      ToOpenscreenTimePoint(encoded_frame.capture_begin_time),
+      ToOpenscreenTimePoint(encoded_frame.capture_end_time),
       openscreen::ByteView(
           reinterpret_cast<const uint8_t*>(encoded_frame.data.data()),
           encoded_frame.data.size()));
