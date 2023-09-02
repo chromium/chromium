@@ -2641,8 +2641,14 @@ void NavigationControllerImpl::NotifyUserActivation() {
   // When a user activation occurs, ensure that all adjacent entries for the
   // same document clear their skippable bit, so that the history manipulation
   // intervention does not apply to them.
-
+  const bool can_go_back = CanGoBack();
   SetSkippableForSameDocumentEntries(GetLastCommittedEntryIndex(), false);
+  // If the value of CanGoBack changes as a result of making some entries
+  // non-skippable, then we must let the delegate know to update its UI state.
+  // See https://crbug.com/1477784.
+  if (!can_go_back && CanGoBack()) {
+    delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_ALL);
+  }
 }
 
 bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(

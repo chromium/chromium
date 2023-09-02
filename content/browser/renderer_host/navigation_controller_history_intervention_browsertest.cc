@@ -439,6 +439,34 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 }
 
+namespace {
+
+// WebContentsDelegate that keeps track of CanGoBack state during all
+// NavigationStateChanged notifications.
+class CanGoBackNavigationStateChangedDelegate : public WebContentsDelegate {
+ public:
+  CanGoBackNavigationStateChangedDelegate() = default;
+
+  CanGoBackNavigationStateChangedDelegate(
+      const CanGoBackNavigationStateChangedDelegate&) = delete;
+  CanGoBackNavigationStateChangedDelegate& operator=(
+      const CanGoBackNavigationStateChangedDelegate&) = delete;
+
+  ~CanGoBackNavigationStateChangedDelegate() override = default;
+
+  void NavigationStateChanged(WebContents* source,
+                              InvalidateTypes changed_flags) override {
+    if (changed_flags) {
+      can_go_back_ = source->GetController().CanGoBack();
+    }
+  }
+  bool can_go_back() { return can_go_back_; }
+
+ private:
+  bool can_go_back_ = false;
+};
+}  // namespace
+
 // Tests that if a navigation entry is marked as skippable due to pushState then
 // the flag should be reset if there is a user gesture on this document. All of
 // the adjacent entries belonging to the same document will have their skippable
@@ -521,11 +549,17 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_TRUE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
   EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
   EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.CanGoBack());
 
-  // Simulate a user gesture. ExecJs internally also sends a user
-  // gesture.
+  // Should notify navigation state changed when skippable bit has been reset.
+  CanGoBackNavigationStateChangedDelegate navigation_state_changed_delegate;
+  shell()->web_contents()->SetDelegate(&navigation_state_changed_delegate);
+  EXPECT_FALSE(navigation_state_changed_delegate.can_go_back());
+  // Simulate a user gesture. ExecJs internally also sends a user gesture.
   script = "a=5";
   EXPECT_TRUE(content::ExecJs(shell()->web_contents(), script));
+  EXPECT_TRUE(navigation_state_changed_delegate.can_go_back());
+  EXPECT_TRUE(controller.CanGoBack());
 
   // We now have (After user gesture)
   // [skippable_url(skip), redirected_url, push_state_url1*, push_state_url2,
