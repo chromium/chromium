@@ -244,6 +244,22 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveLocalVisitNonSearch) {
   task_environment_.FastForwardBy(base::Seconds(5));
 }
 
+TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
+  history::VisitID visit_id = 1;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id))
+      .Times(0);
+#endif
+
+  VisitURL(GURL("data:,"), u"test", visit_id,
+           /*local_navigation_id=*/1,
+           /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
 TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsNonSearch) {
   history::VisitID visit_id = 1;
 

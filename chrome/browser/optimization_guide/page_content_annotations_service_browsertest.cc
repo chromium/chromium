@@ -447,6 +447,24 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       NonHttpUrlIgnored) {
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  TestPageContentAnnotator test_annotator;
+  test_annotator.UseVisibilityScores(absl::nullopt, {{std::string(), 0.5}});
+  service()->OverridePageContentAnnotatorForTesting(&test_annotator);
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("data:,")));
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 0);
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        PageVisibilityModel_GoldenData) {

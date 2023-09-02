@@ -793,6 +793,10 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     absl::optional<int64_t> local_navigation_id) {
   DCHECK_EQ(history_service, history_service_);
 
+  if (!url_row.url().SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
