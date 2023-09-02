@@ -43,7 +43,7 @@ class FocusModeTray : public TrayBackgroundView {
   void FocusModeIconActivated(const ui::Event& event);
 
   // Image view of the focus mode lamp.
-  const raw_ptr<views::ImageView, ExperimentalAsh> image_view_;
+  const raw_ptr<views::ImageView> image_view_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

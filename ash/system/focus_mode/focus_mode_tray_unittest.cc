@@ -28,10 +28,14 @@ class FocusModeTrayTest : public AshTestBase {
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->focus_mode_tray();
   }
 
+  void TearDown() override {
+    focus_mode_tray_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
-  raw_ptr<FocusModeTray, DanglingUntriaged | ExperimentalAsh> focus_mode_tray_ =
-      nullptr;
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<FocusModeTray> focus_mode_tray_ = nullptr;
 };
 
 // Tests that the focus mode tray exists and is not visible or active by

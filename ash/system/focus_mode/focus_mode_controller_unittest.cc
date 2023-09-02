@@ -61,6 +61,12 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
                                            std::move(user_2_prefs));
   }
 
+  void TearDown() override {
+    user_1_prefs_ = nullptr;
+    user_2_prefs_ = nullptr;
+    NoSessionAshTestBase::TearDown();
+  }
+
   AccountId GetUser1AccountId() const {
     return AccountId::FromUserEmail(kUser1Email);
   }
@@ -81,10 +87,8 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_1_prefs_ = nullptr;
-  raw_ptr<TestingPrefServiceSimple, DanglingUntriaged | ExperimentalAsh>
-      user_2_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> user_1_prefs_ = nullptr;
+  raw_ptr<TestingPrefServiceSimple> user_2_prefs_ = nullptr;
 };
 
 // Tests that the default Focus Mode prefs are registered, and that they are
