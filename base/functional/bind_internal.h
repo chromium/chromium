@@ -275,8 +275,8 @@ class UnretainedRefWrapperReceiver {
  public:
   // NOLINTNEXTLINE(google-explicit-constructor)
   UnretainedRefWrapperReceiver(
-      UnretainedRefWrapper<T, UnretainedTrait, PtrTraits>&& o)
-      : obj_(std::move(o)) {}
+      UnretainedRefWrapper<T, UnretainedTrait, PtrTraits>&& obj)
+      : obj_(std::move(obj)) {}
   // NOLINTNEXTLINE(google-explicit-constructor)
   T& operator*() const { return obj_.get(); }
 
@@ -550,7 +550,7 @@ using ExtractCallableRunType =
 //   IsCallableObject<void(Foo::*)()>::value is false.
 //
 //   int i = 0;
-//   auto f = [i]() {};
+//   auto f = [i] {};
 //   IsCallableObject<decltype(f)>::value is false.
 template <typename Functor, typename SFINAE = void>
 struct IsCallableObject : std::false_type {};
@@ -590,11 +590,11 @@ struct FunctorTraits;
 // Example:
 //
 //   // Captureless lambdas are allowed.
-//   []() {return 42;};
+//   [] { return 42; };
 //
 //   // Capturing lambdas are *not* allowed.
 //   int x;
-//   [x]() {return x;};
+//   [x] { return x; };
 //
 //   // Any empty class with operator() is allowed.
 //   struct Foo {
@@ -735,37 +735,13 @@ struct FunctorTraits<R (Receiver::*)(Args...) const> {
 
 // For __stdcall methods.
 template <typename R, typename Receiver, typename... Args>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...)> {
-  using RunType = R(Receiver*, Args...);
-  static constexpr bool is_method = true;
-  static constexpr bool is_nullable = true;
-  static constexpr bool is_callback = false;
-  static constexpr bool is_stateless = true;
-
-  template <typename Method, typename ReceiverPtr, typename... RunArgs>
-  static R Invoke(Method method,
-                  ReceiverPtr&& receiver_ptr,
-                  RunArgs&&... args) {
-    return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
-  }
-};
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...)>
+    : public FunctorTraits<R (Receiver::*)(Args...)> {};
 
 // For __stdcall const methods.
 template <typename R, typename Receiver, typename... Args>
-struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const> {
-  using RunType = R(const Receiver*, Args...);
-  static constexpr bool is_method = true;
-  static constexpr bool is_nullable = true;
-  static constexpr bool is_callback = false;
-  static constexpr bool is_stateless = true;
-
-  template <typename Method, typename ReceiverPtr, typename... RunArgs>
-  static R Invoke(Method method,
-                  ReceiverPtr&& receiver_ptr,
-                  RunArgs&&... args) {
-    return ((*receiver_ptr).*method)(std::forward<RunArgs>(args)...);
-  }
-};
+struct FunctorTraits<R (__stdcall Receiver::*)(Args...) const>
+    : public FunctorTraits<R (Receiver::*)(Args...) const> {};
 
 #endif  // BUILDFLAG(IS_WIN) && !defined(ARCH_CPU_64_BITS)
 
@@ -1115,7 +1091,6 @@ BanUnconstructedRefCountedReceiver(const Receiver& receiver, Unused&&...) {
   //   Foo::Foo() {}
   //
   //   scoped_refptr<Foo> oo = Foo::Create();
-  //
   DCHECK(receiver->HasAtLeastOneRef());
 }
 
@@ -1354,7 +1329,7 @@ struct BindArgument {
       static constexpr bool kNotARawPtr = !IsRawPtrV<FunctorParamType>;
 
       static constexpr bool kCanBeForwardedToBoundFunctor =
-          std::is_constructible_v<FunctorParamType, ForwardingType>;
+          std::is_convertible_v<ForwardingType, FunctorParamType>;
 
       // If the bound type can't be forwarded then test if `FunctorParamType` is
       // a non-const lvalue reference and a reference to the unwrapped type
@@ -1371,8 +1346,8 @@ struct BindArgument {
       // forwarded if `Passed()` had been used.
       static constexpr bool kMoveOnlyTypeMustUseBasePassed =
           kCanBeForwardedToBoundFunctor ||
-          !std::is_constructible_v<FunctorParamType,
-                                   std::decay_t<ForwardingType>&&>;
+          !std::is_convertible_v<std::decay_t<ForwardingType>&&,
+                                 FunctorParamType>;
     };
   };
 
@@ -1446,6 +1421,35 @@ template <int i,
           typename Param>
 struct AssertConstructible {
  private:
+  // We forbid callbacks to use raw_ptr as a parameter. However, we allow
+  // MayBeDangling<T> iff the callback argument was created using
+  // `base::UnsafeDangling`.
+  static_assert(
+      BindArgument<i>::template ForwardedAs<
+          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr ||
+          BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
+              Storage>::kMayBeDanglingMustBeUsed,
+      "base::Bind() target functor has a parameter of type raw_ptr<T>. "
+      "raw_ptr<T> should not be used for function parameters, please use T* or "
+      "T& instead.");
+
+  // A bound functor must take a dangling pointer argument (e.g. bound using the
+  // UnsafeDangling helper) as a MayBeDangling<T>, to make it clear that the
+  // pointee's lifetime must be externally validated before using it. For
+  // methods, exempt a bound receiver (i.e. the this pointer) as it is not
+  // passed as a regular function argument.
+  static_assert(
+      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
+          Storage>::template kMayBeDanglingPtrPassedCorrectly<is_method>,
+      "base::UnsafeDangling() pointers must be received by functors with "
+      "MayBeDangling<T> as parameter.");
+
+  static_assert(
+      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
+          Storage>::kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits,
+      "MayBeDangling<T> parameter must receive the same RawPtrTraits as the "
+      "one passed to the corresponding base::UnsafeDangling() call.");
+
   // With `BindRepeating`, there are two decision points for how to handle a
   // move-only type:
   //
@@ -1498,35 +1502,6 @@ struct AssertConstructible {
       BindArgument<i>::template BoundAs<Arg>::template StoredAs<
           Storage>::kBindArgumentCanBeCaptured,
       "Cannot capture argument: is the argument copyable or movable?");
-
-  // We forbid callbacks to use raw_ptr as a parameter. However, we allow
-  // MayBeDangling<T> iff the callback argument was created using
-  // `base::UnsafeDangling`.
-  static_assert(
-      BindArgument<i>::template ForwardedAs<
-          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr ||
-          BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-              Storage>::kMayBeDanglingMustBeUsed,
-      "base::Bind() target functor has a parameter of type raw_ptr<T>. "
-      "raw_ptr<T> should not be used for function parameters, please use T* or "
-      "T& instead.");
-
-  // A bound functor must take a dangling pointer argument (e.g. bound using the
-  // UnsafeDangling helper) as a MayBeDangling<T>, to make it clear that the
-  // pointee's lifetime must be externally validated before using it. For
-  // methods, exempt a bound receiver (i.e. the this pointer) as it is not
-  // passed as a regular function argument.
-  static_assert(
-      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-          Storage>::template kMayBeDanglingPtrPassedCorrectly<is_method>,
-      "base::UnsafeDangling() pointers must be received by functors with "
-      "MayBeDangling<T> as parameter.");
-
-  static_assert(
-      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-          Storage>::kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits,
-      "MayBeDangling<T> parameter must receive the same RawPtrTraits as the "
-      "one passed to the corresponding base::UnsafeDangling() call.");
 };
 
 // Takes three same-length TypeLists, and applies AssertConstructible for each

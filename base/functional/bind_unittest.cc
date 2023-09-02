@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -1490,11 +1491,11 @@ TEST_F(BindTest, CapturelessLambda) {
   EXPECT_FALSE(internal::IsCallableObject<void (*)()>::value);
   EXPECT_FALSE(internal::IsCallableObject<void (NoRef::*)()>::value);
 
-  auto f = []() {};
+  auto f = [] {};
   EXPECT_TRUE(internal::IsCallableObject<decltype(f)>::value);
 
   int i = 0;
-  auto g = [i]() { (void)i; };
+  auto g = [i] { (void)i; };
   EXPECT_TRUE(internal::IsCallableObject<decltype(g)>::value);
 
   auto h = [](int, double) { return 'k'; };
@@ -1777,6 +1778,28 @@ TEST_F(BindTest, BindAndCallbacks) {
   auto callback = base::BindOnce(PingPong, base::Unretained(p));
   int res = std::move(callback).Run();
   EXPECT_EQ(123, res);
+}
+
+TEST_F(BindTest, ConvertibleArgs) {
+  // Create two types S and T, such that you can convert a T to an S, but you
+  // cannot construct an S from a T.
+  struct T;
+  class S {
+    friend struct T;
+    explicit S(const T&) {}
+  };
+  struct T {
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    operator S() const { return S(*this); }
+  };
+  static_assert(!std::is_constructible_v<S, T>);
+  static_assert(std::is_convertible_v<T, S>);
+
+  // Ensure it's possible to pass a T to a function expecting an S.
+  void (*foo)(S) = +[](S) {};
+  const T t;
+  auto callback = base::BindOnce(foo, t);
+  std::move(callback).Run();
 }
 
 }  // namespace
