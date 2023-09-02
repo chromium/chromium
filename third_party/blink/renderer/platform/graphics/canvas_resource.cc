@@ -910,21 +910,17 @@ void CanvasResourceRasterSharedImage::OnMemoryDump(
 // ExternalCanvasResource
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
-    const gpu::Mailbox& mailbox,
+    const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback release_callback,
-    gpu::SyncToken sync_token,
-    const SkImageInfo& info,
-    GLenum texture_target,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
-    bool is_overlay_candidate) {
+    bool is_origin_top_left) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
   auto resource = AdoptRef(new ExternalCanvasResource(
-      mailbox, std::move(release_callback), sync_token, info, texture_target,
+      transferable_resource, std::move(release_callback),
       std::move(context_provider_wrapper), std::move(provider), filter_quality,
-      is_origin_top_left, is_overlay_candidate));
+      is_origin_top_left));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -965,11 +961,13 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
       base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      mailbox_, GetSyncToken(), /*shared_image_texture_id=*/0u,
-      CreateSkImageInfo(), texture_target_, is_origin_top_left_,
+      transferable_resource_.mailbox_holder.mailbox, GetSyncToken(),
+      /*shared_image_texture_id=*/0u, CreateSkImageInfo(),
+      transferable_resource_.mailbox_holder.texture_target, is_origin_top_left_,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
-      std::move(release_callback), /*supports_display_compositing=*/true,
-      is_overlay_candidate_);
+      std::move(release_callback),
+      /*supports_display_compositing=*/true,
+      transferable_resource_.is_overlay_candidate);
 }
 
 void ExternalCanvasResource::TearDown() {
@@ -982,32 +980,37 @@ const gpu::Mailbox& ExternalCanvasResource::GetOrCreateGpuMailbox(
     MailboxSyncMode sync_mode) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::GetOrCreateGpuMailbox");
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
-  return mailbox_;
+  return transferable_resource_.mailbox_holder.mailbox;
 }
 
 bool ExternalCanvasResource::HasGpuMailbox() const {
-  return !mailbox_.IsZero();
+  return !transferable_resource_.mailbox_holder.mailbox.IsZero();
 }
 
 const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
-  TRACE_EVENT0("blink", "ExternalCanvasResource::GetSyncToken");
+  GenOrFlushSyncToken();
+  return transferable_resource_.mailbox_holder.sync_token;
+}
+
+void ExternalCanvasResource::GenOrFlushSyncToken() {
+  TRACE_EVENT0("blink", "ExternalCanvasResource::GenOrFlushSyncToken");
+  auto& sync_token = transferable_resource_.mailbox_holder.sync_token;
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
-  if (!sync_token_.HasData()) {
+  if (!sync_token.HasData()) {
     auto* interface = InterfaceBase();
     if (interface)
-      interface->GenSyncTokenCHROMIUM(sync_token_.GetData());
-  } else if (!sync_token_.verified_flush()) {
+      interface->GenSyncTokenCHROMIUM(sync_token.GetData());
+  } else if (!sync_token.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
     // be able to use it by the compositor.
-    int8_t* token_data = sync_token_.GetData();
+    int8_t* token_data = sync_token.GetData();
     auto* interface = InterfaceBase();
     DCHECK(interface);
     interface->ShallowFlushCHROMIUM();
     interface->VerifySyncTokensCHROMIUM(&token_data, 1);
-    sync_token_.SetVerifyFlush();
+    sync_token.SetVerifyFlush();
   }
-  return sync_token_;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -1017,27 +1020,37 @@ ExternalCanvasResource::ContextProviderWrapper() const {
   return context_provider_wrapper_;
 }
 
+bool ExternalCanvasResource::PrepareAcceleratedTransferableResource(
+    viz::TransferableResource* out_resource,
+    MailboxSyncMode sync_mode) {
+  TRACE_EVENT0(
+      "blink",
+      "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
+  GenOrFlushSyncToken();
+  *out_resource = transferable_resource_;
+  return true;
+}
+
 ExternalCanvasResource::ExternalCanvasResource(
-    const gpu::Mailbox& mailbox,
+    const viz::TransferableResource& transferable_resource,
     viz::ReleaseCallback out_callback,
-    gpu::SyncToken sync_token,
-    const SkImageInfo& info,
-    GLenum texture_target,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
-    bool is_overlay_candidate)
-    : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
+    bool is_origin_top_left)
+    : CanvasResource(
+          std::move(provider),
+          filter_quality,
+          SkColorInfo(viz::ToClosestSkColorType(/*gpu_compositing=*/true,
+                                                transferable_resource.format),
+                      kPremul_SkAlphaType,
+                      transferable_resource.color_space.ToSkColorSpace())),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(info.width(), info.height()),
-      mailbox_(mailbox),
-      texture_target_(texture_target),
+      transferable_resource_(transferable_resource),
       release_callback_(std::move(out_callback)),
-      sync_token_(sync_token),
-      is_origin_top_left_(is_origin_top_left),
-      is_overlay_candidate_(is_overlay_candidate) {
-  DCHECK(!release_callback_ || sync_token_.HasData());
+      is_origin_top_left_(is_origin_top_left) {
+  DCHECK(!release_callback_ ||
+         transferable_resource_.mailbox_holder.sync_token.HasData());
 }
 
 // CanvasResourceSwapChain

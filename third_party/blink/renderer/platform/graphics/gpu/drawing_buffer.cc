@@ -774,23 +774,21 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
 
-  scoped_refptr<ColorBuffer> canvas_resource_buffer =
+  scoped_refptr<ColorBuffer> color_buffer =
       using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
+  viz::TransferableResource resource;
 
-  SkImageInfo resource_info = SkImageInfo::Make(
-      canvas_resource_buffer->size.width(),
-      canvas_resource_buffer->size.height(),
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true,
-                                canvas_resource_buffer->format),
-      kPremul_SkAlphaType);
+  resource.mailbox_holder.mailbox = color_buffer->mailbox;
+  resource.mailbox_holder.texture_target = color_buffer->texture_target;
+  resource.size = color_buffer->size;
+  resource.format = color_buffer->format;
+  resource.is_overlay_candidate = color_buffer->is_overlay_candidate;
+  resource.color_space = color_buffer->color_space;
 
   return ExternalCanvasResource::Create(
-      canvas_resource_buffer->mailbox, viz::ReleaseCallback(), gpu::SyncToken(),
-      resource_info, canvas_resource_buffer->texture_target,
-      context_provider_->GetWeakPtr(), resource_provider,
-      cc::PaintFlags::FilterQuality::kLow,
-      /*is_origin_top_left=*/opengl_flip_y_extension_,
-      /*is_overlay_candidate=*/canvas_resource_buffer->is_overlay_candidate);
+      resource, viz::ReleaseCallback(), context_provider_->GetWeakPtr(),
+      resource_provider, cc::PaintFlags::FilterQuality::kLow,
+      /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
 
 scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
@@ -806,20 +804,11 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
           nullptr, &out_resource, &out_release_callback, force_gpu_result)) {
     return nullptr;
   }
-
-  const SkColorType color_type =
-      viz::ToClosestSkColorType(/*gpu_compositing=*/true, out_resource.format);
-  const SkImageInfo resource_info =
-      SkImageInfo::Make(out_resource.size.width(), out_resource.size.height(),
-                        color_type, kPremul_SkAlphaType);
   return ExternalCanvasResource::Create(
-      out_resource.mailbox_holder.mailbox, std::move(out_release_callback),
-      out_resource.mailbox_holder.sync_token, resource_info,
-      out_resource.mailbox_holder.texture_target,
+      out_resource, std::move(out_release_callback),
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
       cc::PaintFlags::FilterQuality::kLow,
-      /*is_origin_top_left=*/opengl_flip_y_extension_,
-      out_resource.is_overlay_candidate);
+      /*is_origin_top_left=*/opengl_flip_y_extension_);
 }
 
 DrawingBuffer::ColorBuffer::ColorBuffer(

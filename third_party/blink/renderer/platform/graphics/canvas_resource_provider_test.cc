@@ -428,13 +428,18 @@ TEST_F(CanvasResourceProviderTest,
   provider->TryEnableSingleBuffering();
   EXPECT_TRUE(provider->IsSingleBuffered());
 
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  viz::TransferableResource tr;
+  tr.mailbox_holder.mailbox = gpu::Mailbox::GenerateForSharedImage();
+  tr.mailbox_holder.texture_target = GL_TEXTURE_2D;
+  tr.mailbox_holder.sync_token = gpu::SyncToken();
+  tr.size = kSize;
+  tr.is_overlay_candidate = true;
+
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
-          mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kInfo,
-          GL_TEXTURE_2D, SharedGpuContext::ContextProviderWrapper(),
-          provider->CreateWeakPtr(), cc::PaintFlags::FilterQuality::kMedium,
-          true /*is_origin_top_left*/, true /*is_overlay_candidate*/);
+          tr, viz::ReleaseCallback(),
+          SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
+          cc::PaintFlags::FilterQuality::kMedium, true /*is_origin_top_left*/);
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));

@@ -307,7 +307,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
                uv_bottom_right, SkColors::kTransparent, vertex_opacity,
                yflipped, nearest_neighbor, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
-
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||

@@ -228,21 +228,11 @@ bool GPUCanvasContext::PushFrame() {
     return false;
   }
 
-  // Acquires a CanvasResource of type ExternalCanvasResource that will
-  // encapsulate an external mailbox, synctoken and release callback.
-  SkImageInfo resource_info = SkImageInfo::Make(
-      transferable_resource.size.width(), transferable_resource.size.height(),
-      viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, transferable_resource.format),
-      kPremul_SkAlphaType);
   auto canvas_resource = ExternalCanvasResource::Create(
-      transferable_resource.mailbox_holder.mailbox, std::move(release_callback),
-      transferable_resource.mailbox_holder.sync_token, resource_info,
-      transferable_resource.mailbox_holder.texture_target,
+      transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
       cc::PaintFlags::FilterQuality::kLow,
-      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
-      transferable_resource.is_overlay_candidate);
+      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin);
   if (!canvas_resource)
     return false;
 
