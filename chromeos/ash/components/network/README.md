@@ -543,4 +543,71 @@ receive update when:
 * The list of policy-set server and authority certificates changes.
 * The PolicyCertificateProvider is being destroyed.
 
+### Notes on Cellular networks
+
+Unlike Wi-Fi networks (i.e Wi-Fi Shill services), which can be per-Chromebook
+(e.g networks added during OOBE/Login) or per-user as they are generally
+configured. Cellular networks (i.e Cellular Shill services) are per-Chromebook
+and there is no way to configure them as per-user.
+
+In other words, a particular Wi-Fi network may have different GUIDs when logged
+into different accounts on a device if it is configured per-user. However, a
+Cellular network will always have the same GUID when logged into different
+accounts on a device, as it is always configured per-Chromebook in Shill.
+
+#### Examples and Technical Details
+
+##### Auto-Connect
+
+The state of whether auto-connect is enabled or disabled is preserved across any
+logged in account. In other words, if user A logs in to the device and enables
+auto-connect, then the auto-connect Cellular property remains enabled if user B
+were to subsequently log into the device. This is not the case for user-configured
+Wi-Fi, where auto-connect for a specific network X could be disabled for user A and
+enabled for user B, or vice versa.
+
+* In Shill, the auto-connect property is stored in [`kAutoConnectProperty`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/Shill/dbus-constants.h;l=135;drc=6f4c64436342c818aa41e6a5c55034e74ec9c6b6)
+  which is a base service property that is shared across different types of Shill
+  services (i.e Wi-Fi and Cellular ones alike)
+
+##### Roaming
+
+The state of whether roaming is enabled or disabled for a cellular network is
+preserved across any logged in account. In other words, if user A logs in to
+the device and enables roaming, then the roaming property remains enabled if
+user B were to subsequently log into the device. A similar analog to use for
+contrast may be a user-configured Wi-Fi's "Configure IP address automatically"
+property, which can be true for user A but false for user B on a device.
+
+* In Shill, the allow roaming property is stored in [`kCellularAllowRoamingProperty`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/Shill/dbus-constants.h;l=185;drc=6f4c64436342c818aa41e6a5c55034e74ec9c6b6)
+  which is a cellular Shill service property
+* `kCellularAllowRoamingProperty` is used to populate a cellular [`NetworkState's |allow_roaming()|`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state.h;l=170;drc=d83e99de89c0ccc6fee4ced1e450739b142d4b2c)
+  property.
+
+##### Text Messages
+
+SMSes received will be shown regardless of which account is logged on the
+device. Note that users and admins have the ability to configure cellular
+networks at the Chrome layer such that text messages for a cellular network
+of a particular GUID are suppressed. Note that the associated cellular Shill
+service(s) will not know about this Chrome owned configuration (i.e no
+Shill property associated to suppression of text messages).
+
+* The [`SMSObserver`](https://source.chromium.org/chromium/chromium/src/+/main:ash/system/network/sms_observer.h;drc=6f4c64436342c818aa41e6a5c55034e74ec9c6b6)
+  observes for SMSes received by the modem for the active cellular Shill
+  service via [`NetworkSmsDeviceHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_sms_handler.cc;drc=6f4c64436342c818aa41e6a5c55034e74ec9c6b6?q=NetworkSmsDeviceHandler)
+* The SMSObserver is [`instantiated during the System UI initialization`](https://source.chromium.org/chromium/chromium/src/+/main:ash/shell.cc;l=1641;drc=6f4c64436342c818aa41e6a5c55034e74ec9c6b6;bpv=1;bpt=1)
+  and will show the notification regardless of whose logged in.
+
+##### SIM Lock
+
+If a SIM is PIN or PUK locked, it is locked for any user logged into the
+device. Whether the SIM is locked and how many unlock retry attempts left,
+among other SIM lock related cellular properties, is stored in cellular Shill
+Device properties, which a cellular Shill Service is associated with.
+
+* In Shill, SIM lock information is stored in [`kSIMLockStatusProperty`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/cros_system_api/dbus/Shill/dbus-constants.h;l=533-538;drc=d83e99de89c0ccc6fee4ced1e450739b142d4b2c;bpv=0;bpt=1)
+  which is a Cellular device property
+* `kSIMLockStatusProperty` is used to populate cellular-specific [`DeviceState properties`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.cc;l=100-127;drc=d83e99de89c0ccc6fee4ced1e450739b142d4b2c;bpv=1;bpt=1)
+
 TODO: Finish README
