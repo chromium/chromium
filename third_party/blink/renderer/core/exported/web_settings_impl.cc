@@ -163,6 +163,11 @@ void WebSettingsImpl::SetAccessibilityFontScaleFactor(float font_scale_factor) {
   settings_->SetAccessibilityFontScaleFactor(font_scale_factor);
 }
 
+void WebSettingsImpl::SetAccessibilityTextSizeContrastFactor(
+    int text_size_contrast_factor) {
+  settings_->SetAccessibilityTextSizeContrastFactor(text_size_contrast_factor);
+}
+
 void WebSettingsImpl::SetAccessibilityAlwaysShowFocus(bool always_show_focus) {
   settings_->SetAccessibilityAlwaysShowFocus(always_show_focus);
 }

@@ -486,6 +486,13 @@
       type: "int",
     },
 
+    // Text size contrast factor for accessibility, applied as part of page zoom.
+    {
+      name: "accessibilityTextSizeContrastFactor",
+      initial: "0",
+      type: "int",
+    },
+
     // Only used by web tests and inspector emulation.
     {
       name: "mediaTypeOverride",

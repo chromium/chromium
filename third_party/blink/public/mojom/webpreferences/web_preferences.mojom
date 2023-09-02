@@ -281,6 +281,9 @@ struct WebPreferences {
   int32 font_weight_adjustment;
 
   [EnableIf=is_android]
+  int32 text_size_contrast_factor;
+
+  [EnableIf=is_android]
   float device_scale_adjustment;
 
   [EnableIf=is_android]

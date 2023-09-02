@@ -230,6 +230,7 @@ class WebSettings {
   virtual void SetTextAreasAreResizable(bool) = 0;
   virtual void SetTextAutosizingEnabled(bool) = 0;
   virtual void SetAccessibilityFontScaleFactor(float) = 0;
+  virtual void SetAccessibilityTextSizeContrastFactor(int) = 0;
   virtual void SetAccessibilityAlwaysShowFocus(bool) = 0;
   virtual void SetTextTrackKindUserPreference(TextTrackKindUserPreference) = 0;
   virtual void SetTextTrackBackgroundColor(const WebString&) = 0;

@@ -543,6 +543,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.font_weight_adjustment;
   }
 
+  static int text_size_contrast_factor(
+      const blink::web_pref::WebPreferences& r) {
+    return r.text_size_contrast_factor;
+  }
+
   static float device_scale_adjustment(
       const blink::web_pref::WebPreferences& r) {
     return r.device_scale_adjustment;

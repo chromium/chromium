@@ -369,6 +369,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kScrollToTextFragmentEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor, 1.0);
+  registry->RegisterIntegerPref(prefs::kAccessibilityTextSizeContrastFactor, 0);
   registry->RegisterBooleanPref(browser_ui::prefs::kWebKitForceEnableZoom,
                                 pref_defaults.force_enable_zoom);
   registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
