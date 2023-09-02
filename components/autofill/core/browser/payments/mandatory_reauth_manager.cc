@@ -176,19 +176,32 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           // to check that the local card version of this card was the card most
           // recently filled into the form with non-interactive authentication,
           // as we should show the opt-in prompt in this case.
-          // Still use local card for metrics in this case.
-          opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
-              kCheckoutLocalCard;
-          bool is_card_match = LastFilledCardMatchesSubmittedCard(
-              absl::get<FormDataImporter::CardGuid>(
-                  card_identifier_if_non_interactive_authentication_flow_completed
-                      .value()),
-              *local_card);
+          bool is_local_card_last_filled_card =
+              LastFilledCardMatchesSubmittedCard(
+                  absl::get<FormDataImporter::CardGuid>(
+                      card_identifier_if_non_interactive_authentication_flow_completed
+                          .value()),
+                  *local_card);
+
+          // We should only use local card for metrics if the last filled card
+          // was the local card, otherwise the last filled card is a server card
+          // which is not supported.
+          opt_in_source_ =
+              is_local_card_last_filled_card
+                  ? autofill_metrics::MandatoryReauthOptInOrOutSource::
+                        kCheckoutLocalCard
+                  : autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
+
+          // If `is_local_card_last_filled_card` is true, we should offer
+          // re-auth opt-in, so log that and return true. Otherwise we must have
+          // filled the server card (not local card), which is not supported, so
+          // log that and return false. Returning true implies we should offer
+          // re-auth opt-in, returning false implies we should not.
           LogMandatoryReauthOfferOptInDecision(
-              is_card_match ? MandatoryReauthOfferOptInDecision::kOffered
-                            : MandatoryReauthOfferOptInDecision::
-                                  kNoStoredCardForExtractedCard);
-          return is_card_match;
+              is_local_card_last_filled_card
+                  ? MandatoryReauthOfferOptInDecision::kOffered
+                  : MandatoryReauthOfferOptInDecision::kUnsupportedCardType);
+          return is_local_card_last_filled_card;
         }
       }
 
