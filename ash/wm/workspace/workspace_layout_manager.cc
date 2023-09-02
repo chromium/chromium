@@ -474,6 +474,7 @@ void WorkspaceLayoutManager::OnPinnedStateChanged(aura::Window* pinned_window) {
 }
 
 void WorkspaceLayoutManager::OnShellDestroying() {
+  is_shell_destroying_ = true;
   Shell::Get()->app_list_controller()->RemoveObserver(this);
   floating_window_observer_.reset();
 }
@@ -586,7 +587,11 @@ void WorkspaceLayoutManager::NotifySystemUiAreaChanged() const {
 }
 
 void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() const {
-  Shell::Get()->accessibility_controller()->UpdateFloatingPanelBoundsIfNeeded();
+  if (!is_shell_destroying_) {
+    Shell::Get()
+        ->accessibility_controller()
+        ->UpdateFloatingPanelBoundsIfNeeded();
+  }
 }
 
 void WorkspaceLayoutManager::UpdateWindowWorkspace(aura::Window* window) {

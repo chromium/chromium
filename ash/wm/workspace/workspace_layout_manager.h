@@ -215,6 +215,10 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   std::unique_ptr<BackdropController> backdrop_controller_;
 
   std::unique_ptr<FloatingWindowObserver> floating_window_observer_;
+
+  // Indicator that the `Shell` is being destroyed and we should not
+  // `NotifyAccessibilityWorkspaceChanged` in this case.
+  bool is_shell_destroying_ = false;
 };
 
 }  // namespace ash
