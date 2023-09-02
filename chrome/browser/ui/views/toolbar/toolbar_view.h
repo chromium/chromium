@@ -55,6 +55,7 @@ class ReloadButton;
 class SidePanelToolbarContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
+class ToolbarController;
 
 namespace media_router {
 class CastToolbarButton;
@@ -166,6 +167,9 @@ class ToolbarView : public views::AccessiblePaneView,
   HomeButton* home_button() const { return home_; }
   AppMenuIconController* app_menu_icon_controller() {
     return &app_menu_icon_controller_;
+  }
+  const ToolbarController* toolbar_controller() const {
+    return toolbar_controller_.get();
   }
 
   // LocationBarView::Delegate:
@@ -302,6 +306,8 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // The display mode used when laying out the toolbar.
   const DisplayMode display_mode_;
+
+  std::unique_ptr<ToolbarController> toolbar_controller_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
