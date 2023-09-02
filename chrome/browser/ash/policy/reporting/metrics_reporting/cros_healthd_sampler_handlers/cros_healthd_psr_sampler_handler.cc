@@ -84,11 +84,7 @@ void CrosHealthdPsrSamplerHandler::HandleResultImpl(
         DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
         if (!metric_data->has_value() && num_retries_left > 0) {
           // Failed to obtain PSR info, try again in 10 seconds. May be due to
-          // some race condition as specified in the bug below.
-          // TODO(b/280068539): Reevaluate the error handling here when
-          // b/297413010 is fixed.
-          // TODO(b/280068539): Add a unit test for the scenario when the first
-          // try fails and second try succeeds.
+          // some race condition in healthd when reading PSR devices.
           base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
               FROM_HERE,
               base::BindOnce(&CrosHealthdPsrSamplerHandler::Retry, self,
