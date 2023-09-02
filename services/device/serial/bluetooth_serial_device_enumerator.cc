@@ -51,6 +51,8 @@ class BluetoothSerialDeviceEnumerator::AdapterHelper
   void DeviceAdded(BluetoothAdapter* adapter, BluetoothDevice* device) override;
   void DeviceRemoved(BluetoothAdapter* adapter,
                      BluetoothDevice* device) override;
+  void DeviceChanged(BluetoothAdapter* adapter,
+                     BluetoothDevice* device) override;
 
   void OpenPort(const std::string& address,
                 const BluetoothUUID& service_class_id,
@@ -133,6 +135,17 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
   enumerator_runner_->PostTask(
       FROM_HERE, base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceRemoved,
                                 enumerator_, device->GetAddress()));
+}
+
+void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceChanged(
+    BluetoothAdapter* adapter,
+    BluetoothDevice* device) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  enumerator_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAdded, enumerator_,
+                     device->GetAddress(), device->GetNameForDisplay(),
+                     device->GetUUIDs()));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::OpenPort(
@@ -240,6 +253,14 @@ void BluetoothSerialDeviceEnumerator::DeviceAddedForTesting(
     BluetoothDevice* device) {
   // Pass the device to our helper, which will in turn pass it back to me.
   helper_.AsyncCall(&AdapterHelper::DeviceAdded)
+      .WithArgs(base::Unretained(adapter), device);
+}
+
+void BluetoothSerialDeviceEnumerator::DeviceChangedForTesting(
+    BluetoothAdapter* adapter,
+    BluetoothDevice* device) {
+  // Pass the device to our helper, which will in turn pass it back to me.
+  helper_.AsyncCall(&AdapterHelper::DeviceChanged)
       .WithArgs(base::Unretained(adapter), device);
 }
 

@@ -61,6 +61,8 @@ class BluetoothSerialDeviceEnumerator : public SerialDeviceEnumerator {
   void OnGotAdapterForTesting(base::OnceClosure closure);
   void DeviceAddedForTesting(BluetoothAdapter* adapter,
                              BluetoothDevice* device);
+  void DeviceChangedForTesting(BluetoothAdapter* adapter,
+                               BluetoothDevice* device);
   void SynchronouslyResetHelperForTesting();
 
  private:
