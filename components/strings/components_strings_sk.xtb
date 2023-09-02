@@ -221,6 +221,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1413407968866574823">Akčné a platformové hry</translation>
 <translation id="1413809658975081374">Chyba v ochrane osobných údajov</translation>
 <translation id="1414134146594747368">Predškolská výchova</translation>
+<translation id="141826476809826269">Koniec extrahovaného textu</translation>
 <translation id="1419305130220238697">Tlačidlo Spravovať stiahnuté súbory v Chrome, ktorého aktivovaním môžete spravovať súbory, ktoré ste si stiahli v Chrome</translation>
 <translation id="1422930527989633628">Môže žiadať o povolenie objavovať zariadenia s rozhraním Bluetooth v okolí</translation>
 <translation id="1426410128494586442">Áno</translation>
@@ -277,6 +278,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1530707389502320859">Web, ktorý sa pokúšate navštíviť, vyzerá falošne. Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú drobné, ťažko odhaliteľné zmeny.</translation>
 <translation id="1532118530259321453">Táto stránka hovorí</translation>
 <translation id="1536390784834419204">Preložiť stránku</translation>
+<translation id="1537807545287921620">Tento súbor PDF je nedostupný. Otvorte kontextovú ponuku a zapnite možnosť Extrahovať text zo súboru PDF.</translation>
 <translation id="1539840569003678498">Hlásenie bolo odoslané:</translation>
 <translation id="1542105669288201090">Obchodné vzdelanie</translation>
 <translation id="1545757265410828525">História cien</translation>
@@ -864,6 +866,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2803306138276472711">Funkcia Bezpečné prehliadanie Google nedávno <ph name="BEGIN_LINK" />zistila malvér<ph name="END_LINK" /> na stránkach <ph name="SITE" />. Webové stránky, ktoré sú zvyčajne bezpečné, môžu byť niekedy nakazené malvérom.</translation>
 <translation id="2807052079800581569">Poloha obrázka na osi Y</translation>
 <translation id="2808278141522721006">Windows Hello môžete zapnúť alebo vypnúť v sekcii <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Tento súbor PDF je nedostupný. Stlačením klávesa vyhľadávania a klávesa m otvorte kontextovú ponuku a zapnite možnosť Extrahovať text zo súboru PDF.</translation>
 <translation id="2818338148457093657">Salóny krásy a kúpele</translation>
 <translation id="2820957248982571256">Prebieha vyhľadávanie...</translation>
 <translation id="2824775600643448204">Panel s adresou a vyhľadávací panel</translation>
@@ -1104,6 +1107,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3340978935015468852">nastavenia</translation>
 <translation id="3342018947887487892">Neskôr môže web, ktorý navštívite, o tieto údaje požiadať – buď o témy reklamy, alebo reklamy navrhované webmi, ktoré ste navštívili.</translation>
 <translation id="3342366525167526994">Kreslenie na telo</translation>
+<translation id="3344167530090084176">Ak chcete nabudúce platiť rýchlejšie, uložte si kartu a bezpečnostný kód do zariadenia</translation>
 <translation id="334438173029876234">Vybavenie na skejtbord</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Zmeniť nastavenia proxy...</translation>
@@ -1164,6 +1168,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3461266716147554923">Web <ph name="URL" /> chce získať prístup k textu a obrázkom pridaným do schránky</translation>
 <translation id="3461824795358126837">Zvýrazňovač</translation>
 <translation id="3462200631372590220">Skryť rozšírené podrobnosti</translation>
+<translation id="3465972433695735758">Tento súbor PDF je nedostupný. Bol extrahovaný text s využitím umelej inteligencie od Googlu.</translation>
 <translation id="346601286295919445">Chémia</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, aktuálne otvorené, stlačením klávesov Tab a Enter prepnete na otvorenú kartu</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter zavrite všetky okná inkognito, ktoré sú momentálne otvorené</translation>
@@ -1181,6 +1186,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="350069200438440499">Názov súboru:</translation>
 <translation id="3501300228850242680">Metal (hudba)</translation>
 <translation id="350421688684366066">Štítky (vysoký lesk)</translation>
+<translation id="350763432931695541">Na nasledujúcich niekoľkých stránkach sa extrahuje text</translation>
 <translation id="3507869775212388416">Práca v oblasti práva</translation>
 <translation id="3507936815618196901">Vytvorenie 3D mapy vášho okolia a sledovanie umiestnenia kamier</translation>
 <translation id="3512163584740124171">Toto pravidlo sa ignoruje, pretože iné pravidlo z rovnakej skupiny má vyššiu prioritu.</translation>
@@ -1405,6 +1411,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3963721102035795474">Režim čítačky</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Žiadne}=1{Z 1 webu }few{Z # webov }many{Z # webu }other{Z # webov }}</translation>
+<translation id="3966044442021752214">Bezpečnosť služby</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je zablokovaný</translation>
 <translation id="3983340834939868135">Prístupový kľúč zo správcu hesiel <ph name="VENDOR_NAME" /></translation>
@@ -2843,6 +2850,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6973988895180423160">3,5 × 5 palcov</translation>
 <translation id="6978236010531171013">Aj tak zdieľať</translation>
 <translation id="6979158407327259162">Disk Google</translation>
+<translation id="6979332652936434520">Začiatok extrahovaného textu</translation>
 <translation id="6979440798594660689">Ignorovať (predvolené)</translation>
 <translation id="6987806006823772670">Obálka (poťahovaná)</translation>
 <translation id="6989763994942163495">Zobraziť rozšírené nastavenia...</translation>
@@ -2898,6 +2906,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7102760431686146931">Kuchynský a jedálenský riad</translation>
 <translation id="7105998430540165694">Prístupový kľúč z iCloud Kľúčenky</translation>
 <translation id="7106762743910369165">Prehliadač je spravovaný vašou organizáciou</translation>
+<translation id="7107249414147762907">Tento súbor PDF je nedostupný. Nebol extrahovaný žiadny text.</translation>
 <translation id="7108338896283013870">Skryť</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> chce použiť váš fotoaparát</translation>
 <translation id="7108819624672055576">Povolené rozšírením</translation>
@@ -3910,6 +3919,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="917450738466192189">Certifikát servera je neplatný.</translation>
 <translation id="9174623988242579721">Upravené a výkonné vozidlá</translation>
 <translation id="9174917557437862841">Tlačidlo na prepnutie karty, stlačením klávesa Enter prepnite na túto kartu</translation>
+<translation id="9177283544810807743">Tento súbor PDF je nedostupný. Extrahuje sa text s využitím umelej inteligencie od Googlu.</translation>
 <translation id="9179703756951298733">Spravovať platby a informácie o kreditných kartách v nastaveniach Chromu</translation>
 <translation id="9179907736442194268">Dostávajte e‑mailové upozornenia, keď na ľubovoľnom webe klesne cena</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>

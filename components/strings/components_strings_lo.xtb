@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">ຈ່າຍ</translation>
 <translation id="1846432862466000825">ພລາສຕິກ (Archival)</translation>
 <translation id="1848982255014129637">ຮູບພາບ (ມັນວາວຫຼາຍ)</translation>
+<translation id="1853392626017747777">ປິດການລົງທະບຽນບັດສະເໝືອນແລ້ວ</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
 <translation id="1855370856221982654">ຕີມວຍ</translation>
 <translation id="1856713167556118146">ສິ່ງທີ່ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນບໍ່ໄດ້ເຮັດ</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">ໃໝ່</translation>
 <translation id="1935995810530254458">ຢືນຢັນການສຳເນົາ</translation>
 <translation id="1939175642807587452">ສາມາດຂໍສົ່ງການແຈ້ງເຕືອນ</translation>
+<translation id="1940441167050915935">ລຶບລະຫັດຄວາມປອດໄພທີ່ບັນທຶກໄວ້</translation>
 <translation id="1943994668912612445">ການອອກແບບ</translation>
 <translation id="1945968466830820669">ທ່ານອາດຈະສູນເສຍການເຂົ້າເຖິງບັນຊີຂອງອົງການຂອງທ່ານ ຫຼື ປະສົບກັບການລັກໃຊ້ຕົວຕົນ.</translation>
 <translation id="1946849748901605102">12 x 15 ນິ້ວ</translation>
@@ -1726,6 +1728,7 @@
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">ເຊື່ອມໂຍງເງິນຄືນແລ້ວ</translation>
+<translation id="4631881646528206880">ການລົງທະບຽນບັດສະເໝືອນ</translation>
 <translation id="4636930964841734540">ຂໍ້​ມູນ</translation>
 <translation id="4638670630777875591">ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chromium</translation>
 <translation id="464342062220857295">ຄຸນສົມບັດການຊອກຫາ</translation>
@@ -1840,6 +1843,7 @@
 <translation id="4854853140771946034">ສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="485902285759009870">ກຳລັງຢັ້ງຢືນລະຫັດ...</translation>
 <translation id="4862630594858951805">ຕ້ອງການຮັບອີເມວແຈ້ງເມື່ອລາຄາຫຼຸດລົງບໍ?</translation>
+<translation id="4864406669374375262">ສຳເນົາສະຕຣິງເວີຊັນໄປໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="486459320933704969">ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງຕ້ອງເວົ້າວ່າທ່ານສາມາດເຂົ້າເບິ່ງເວັບໄຊນີ້ໄດ້</translation>
 <translation id="4866506163384898554">ກົດ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ</translation>
 <translation id="4873616204573862158">ແວ່ນຕາ</translation>
@@ -3527,6 +3531,7 @@
 <translation id="8339163506404995330">ໜ້າຕ່າງໆໃນ <ph name="LANGUAGE" /> ຈະບໍ່ຖືກແປ</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">ຖ້າທ່ານເຂົ້າໃຈຄວາມສ່ຽງຕໍ່ຄວາມປອດໄພຂອງທ່ານ, ທ່ານອາດຈະ <ph name="BEGIN_LINK" />ເຂົ້າເບິ່ງເວັບໄຊທ໌ນີ້<ph name="END_LINK" /> ກ່ອນໂປຣແກຣມອັນຕະລາຍຈະຖືກຍ້າຍອອກໄປ.</translation>
+<translation id="8344776605855290140">ເປີດການລົງທະບຽນບັດສະເໝືອນແບບເຕັມຄວາມສູງແລ້ວ</translation>
 <translation id="8347658365704983341">ການຮຽນທາງໄກ</translation>
 <translation id="8349305172487531364">ແຖບບຸກມາກສ໌</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>

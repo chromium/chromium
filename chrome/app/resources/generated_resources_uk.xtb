@@ -4956,6 +4956,7 @@
 <translation id="4933484234309072027">вбудовано на сайті <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронізація сповіщень не підтримується для телефонів у робочих профілях</translation>
 <translation id="4937676329899947885">Отримання мережі Wi-Fi</translation>
+<translation id="4938052313977274277">Швидкість</translation>
 <translation id="4938788218358929252">ці ідеї рецептів</translation>
 <translation id="4939805055470675027">Не вдалося з'єднатися з <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Принтерів, які можна зберегти: <ph name="PRINTER_COUNT" />.</translation>
@@ -5202,6 +5203,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />: розширені налаштування</translation>
 <translation id="5154702632169343078">Тема</translation>
+<translation id="5154917547274118687">Пам’ять</translation>
 <translation id="5155327081870541046">В адресному рядку введіть команду для веб-сайту, на якому потрібно шукати, наприклад "@bookmarks". Потім натисніть вибрану комбінацію клавіш і введіть пошуковий термін.</translation>
 <translation id="5156638757840305347">Курсор виділено, коли він з’являється або рухається</translation>
 <translation id="5157250307065481244">Переглянути відомості про сайт</translation>

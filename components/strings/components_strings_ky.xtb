@@ -1107,6 +1107,7 @@
 <translation id="3340978935015468852">жөндөөлөр</translation>
 <translation id="3342018947887487892">Кийинчерээк сиз кирген сайттар башка сайттар сунуштаган жарнамалар же темалар тууралуу маалымат сурашы мүмкүн.</translation>
 <translation id="3342366525167526994">Денеге сүрөт тартуу</translation>
+<translation id="3344167530090084176">Кийинки жолу тезирээк төлөө үчүн картаңызды жана коопсуздук кодун түзмөккө сактаңыз</translation>
 <translation id="334438173029876234">Скейтборд жабдуулары</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Прокси параметрлерин өзгөртүү…</translation>
@@ -1408,6 +1409,7 @@
 <translation id="3962859241508114581">Мурунку трек</translation>
 <translation id="3963721102035795474">Окурман режими</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт }other{# сайт }}</translation>
+<translation id="3966044442021752214">Кызматтын коопсуздугу</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> сайты бөгөттөлгөн</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" киргизүүчү ачкычы</translation>

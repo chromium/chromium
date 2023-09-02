@@ -88,6 +88,7 @@
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1408847409015257906">"رازداری اور سیکیورٹی" پر تھپتھپائیں۔</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
+<translation id="1443958768615272145">براؤز کرنا جاری رکھیں</translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
 <translation id="149095475893949513">یہ ویب سائٹ کنفیگریشن پروفائل کو ڈاؤن لوڈ کرنے کی کوشش کر رہی ہے۔</translation>
@@ -164,6 +165,7 @@
 <translation id="1930989359703290198">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1943478190258551035">مینیو ← ترتیبات</translation>
+<translation id="194449685234099560">آپ یہاں اپنے تمام کھلے ٹیبز تلاش کر سکتے ہیں۔</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
 <translation id="1959441496380398824">کسی تاریخ کو ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
@@ -186,6 +188,7 @@
 <translation id="20485545164632846">نیا آئٹم</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> اکاؤنٹس ایک ہی پاس ورڈ کا استعمال کر رہے ہیں</translation>
 <translation id="2050196510205866090">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ ادائیگی کا طریقہ دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ ادائیگی کے طریقے دستیاب ہیں۔}}</translation>
+<translation id="2055515971416882518">"ترتیبات" کھولیں۔</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
@@ -244,6 +247,7 @@
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2459155039684421202">ایڈریس بار میں، "میری سرگزشت صاف کریں" یا "پاس ورڈز میں ترمیم کریں" جیسا کام درج کریں۔</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
+<translation id="2462736546165239215">آپ یہاں اپنی تمام براؤزنگ کی سرگزشت تلاش کر سکتے ہیں۔</translation>
 <translation id="2469960372084740698">محفوظ براؤزنگ آف کریں؟</translation>
 <translation id="2473876017985765807">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے ایک پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="2476359652512522418">انتخاب نہیں کیا گیا</translation>
@@ -343,6 +347,7 @@
 <translation id="2952278131021475699">لینز کیمرا کے ذریعے تلاش</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
 <translation id="2956733177489514605">‏اپنے پاس ورڈز وغیرہ کو مطابقت پذیر بنانے کیلئے، اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں۔</translation>
+<translation id="2958271635022991876">آپ یہاں ایک نیا ٹیب کھول سکتے ہیں۔</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2961210776189273067">عنوان</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
@@ -449,6 +454,7 @@
 <translation id="3533202363250687977">سبھی پوشیدگی ٹیبز بند کریں</translation>
 <translation id="3533436815740441613">نیا ٹیب</translation>
 <translation id="3540141921715814660">بُک مارکس میں شامل کریں</translation>
+<translation id="355101282835380364">اکاؤنٹ میں محفوظ کریں…</translation>
 <translation id="3551320343578183772">ٹیب بند کریں</translation>
 <translation id="3565207542107370586">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
@@ -462,6 +468,7 @@
 <translation id="3609785682760573515">مطابقت پذیری کی جا رہی ہے…</translation>
 <translation id="3631443864840848029">اس بات کو یقینی بنائیں کہ آپ اس سائٹ کے لیے اپنا موجودہ پاس ورڈ محفوظ کر رہے ہیں۔</translation>
 <translation id="3638472932233958418">ویب صفحات کو پیشگی لوڈ کریں</translation>
+<translation id="3643338347976071250">{count,plural, =1{‏{count} پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="364480321352456989">‏آپ کا Chrome پرانا ہے۔</translation>
 <translation id="3646736009628185125">‏آپ کا فیملی ممبر ابھی پاس ورڈز موصول نہیں کر سکتا۔ ان سے Chrome اپ ڈیٹ کرنے اور پاس ورڈز کو مطابقت پذیر کرنے کے لیے کہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">کنفیگریشن پروفائل دستیاب ہے</translation>
@@ -541,6 +548,7 @@
 <translation id="418156467088430727">نئے ٹیب میں آف لائن ورژن دیکھیں</translation>
 <translation id="4181841719683918333">زبانیں</translation>
 <translation id="4187450337729239226">پیسٹ کریں اور تلاش کریں</translation>
+<translation id="4197456013861852807">{count,plural, =1{‏{count} آئٹم صرف اس آلے پر محفوظ ہے۔ اسے اپنے دیگر آلات پر استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ {email} میں محفوظ کریں۔}other{‏{count} آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="4216918546378735658">منسوخ کریں</translation>
 <translation id="4223967053752765281">آپ کی تنظیم نے سائن ان کو آف کر دیا ہے۔ آپ ابھی بھی اپنے بک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلے پر دیکھ سکتے ہیں۔ اگر آپ تبدیلیاں کرتے ہیں تو وہ آپ کے اکاؤنٹ کے ساتھ مطابقت پذیر نہیں ہوں گی۔</translation>
 <translation id="422474357428465195">آپ کے پاس ورڈ میں مختلف مسائل ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
@@ -1304,6 +1312,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="850600235656508448">پوشیدگی وضع میں کھولیں</translation>
 <translation id="8517375800490286174">اوپن سورس لائسنسز</translation>
+<translation id="8522147671363140027">{count,plural, =1{‏{count} پاس ورڈ اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}other{‏{count} پاس ورڈز اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ انہیں اپنے دیگر آلات پر استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ، {email} میں محفوظ کریں۔}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> ٹیبز <ph name="FIRST_VISIBLE_TAB" /> سے <ph name="LAST_VISIBLE_TAB" /> از <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">پوشیدگی میں دیگر ایپس کے لنکس کھولیں</translation>
 <translation id="8529767659511976195">نئی</translation>
@@ -1412,6 +1421,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9097506547406246598">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> پاسورڈز حذف کریں؟</translation>
 <translation id="9100610230175265781">پاس فریز درکار ہے</translation>
+<translation id="9106655997975673326">منجانب "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">متاثرہ پاس ورڈز کیلئے چیک کریں</translation>
 <translation id="9120217828624527905">مکمل صفحے کے ترجمہ پر سوئچ کریں</translation>
 <translation id="9124387962554796433">‏تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی سرگزشت کا استعمال کر سکتا ہے۔</translation>

@@ -4937,6 +4937,7 @@
 <translation id="4933484234309072027">ฝังตัวใน <ph name="URL" /></translation>
 <translation id="4936042273057045735">การซิงค์การแจ้งเตือนใช้ไม่ได้กับโทรศัพท์ที่ใช้โปรไฟล์งาน</translation>
 <translation id="4937676329899947885">กำลังรับเครือข่าย Wi-Fi</translation>
+<translation id="4938052313977274277">ความเร็ว</translation>
 <translation id="4938788218358929252">ไอเดียสูตรอาหารเหล่านี้</translation>
 <translation id="4939805055470675027">เชื่อมต่อ <ph name="CARRIER_NAME" /> ไม่สำเร็จ</translation>
 <translation id="4940364377601827259">มีเครื่องพิมพ์ <ph name="PRINTER_COUNT" /> เครื่องให้บันทึก</translation>
@@ -5183,6 +5184,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">การตั้งค่าขั้นสูงสำหรับ <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">เรื่อง</translation>
+<translation id="5154917547274118687">หน่วยความจำ</translation>
 <translation id="5155327081870541046">ป้อนทางลัดของเว็บไซต์ที่ต้องการค้นหาในแถบที่อยู่ เช่น @bookmarks จากนั้นกดแป้นพิมพ์ลัดที่ต้องการ แล้วป้อนข้อความค้นหา</translation>
 <translation id="5156638757840305347">ระบบจะไฮไลต์เคอร์เซอร์เมื่อปรากฏขึ้นหรือเคลื่อนที่</translation>
 <translation id="5157250307065481244">ดูรายละเอียดเว็บไซต์</translation>

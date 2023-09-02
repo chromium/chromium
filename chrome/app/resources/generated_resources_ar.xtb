@@ -814,6 +814,7 @@
 <translation id="1630768113285622200">إعادة التشغيل والمواصلة</translation>
 <translation id="1631503405579357839">عَمَى الألوان</translation>
 <translation id="1632278969378690607">مفتاح البحث + النقر</translation>
+<translation id="1632293440289326475">هل تريد تفعيل ميزة "توفير البطارية" لإطالة عمر البطارية؟</translation>
 <translation id="1632756664321977232">أداة الاقتصاص</translation>
 <translation id="163309982320328737">العرض الأولي للحرف هو عرض بالكامل</translation>
 <translation id="1633947793238301227">‏إيقاف خدمة "مساعد Google"</translation>
@@ -1276,6 +1277,7 @@
 <translation id="1988259784461813694">المتطلّبات</translation>
 <translation id="1988733631391393183">‏عرض طلبات لغة برايل في قوائم ChromeVox</translation>
 <translation id="1989112275319619282">تصفّح</translation>
+<translation id="1989601282983766341">إدارة إشعارات التطبيقات وميزة عدم الإزعاج وشارات التطبيقات</translation>
 <translation id="1989903373608997757">الاستخدام دائمًا</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
 <translation id="1990512225220753005">عدم إظهار الاختصارات في هذه الصفحة</translation>
@@ -2262,6 +2264,7 @@
 <translation id="2749756011735116528">تسجيل الدخول إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">‏شريحة SIM</translation>
 <translation id="2749881179542288782">تحقق من التدقيق النحوي مع التدقيق الإملائي</translation>
+<translation id="2750020734439919571">‏المزيد من إعدادات وأذونات تطبيق Chrome</translation>
 <translation id="2750602041558385535">تم حظر عملية تنزيل لم يتم التحقّق منها.</translation>
 <translation id="2754226775788136540">جارٍ البحث عن أجهزة تستخدم ميزة "الإقران السريع" ومحفوظة في <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">‏يمكنك العثور على التطبيقات التي تحتاجها، بدايةً من التطبيقات المخصَّصة للإنتاجية إلى التطبيقات الترفيهية، وذلك من خلال "متجر Google Play". ويمكنك تثبيت أي تطبيقات متى تشاء.</translation>
@@ -2412,6 +2415,7 @@
 <translation id="286674810810214575">جارٍ التحقق من مصادر الطاقة...</translation>
 <translation id="2867768963760577682">فتح كعلامة تبويب مثبتة</translation>
 <translation id="2868746137289129307">تعتبر هذه الإضافة قديمة وغير مفعّلة بواسطة سياسة المؤسسة. وقد تصبح مفعّلة تلقائيًا عندما يتوفر إصدار أحدث.</translation>
+<translation id="2869511363030898130">فتح في تطبيق <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2870909136778269686">جارٍ التحديث...</translation>
 <translation id="2871733351037274014">تحميل الصفحات مُسبقًا</translation>
@@ -4936,6 +4940,7 @@
 <translation id="4933484234309072027">مضمن في <ph name="URL" /></translation>
 <translation id="4936042273057045735">ميزة "مزامنة الإشعارات" غير متاحة للهواتف التي تحتوي على ملف شخصي للعمل.</translation>
 <translation id="4937676329899947885">‏جارٍ استقبال بيانات اعتماد Wi-Fi</translation>
+<translation id="4938052313977274277">السرعة</translation>
 <translation id="4938788218358929252">وصفات الطعام</translation>
 <translation id="4939805055470675027">تعذَّر الاتصال بمشغّل شبكة الجوّال <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">تتوفّر <ph name="PRINTER_COUNT" /> طابعة للحفظ.</translation>
@@ -5182,6 +5187,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">الإعدادات المتقدمة لـ <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">الموضوع</translation>
+<translation id="5154917547274118687">الذاكرة</translation>
 <translation id="5155327081870541046">‏في شريط العناوين، أدخِل اختصار الموقع الإلكتروني الذي تريد البحث فيه، مثل "‎@bookmarks". بعد ذلك، اضغط على اختصار لوحة المفاتيح المفضّل لديك وأدخِل عبارة البحث.</translation>
 <translation id="5156638757840305347">يتم تمييز المؤشر عند ظهوره أو تحريكه.</translation>
 <translation id="5157250307065481244">عرض تفاصيل الموقع الإلكتروني</translation>
@@ -5251,6 +5257,7 @@
 <translation id="5210365745912300556">إغلاق علامة التبويب</translation>
 <translation id="5213114823401215820">إعادة فتح مجموعة تم إغلاقها</translation>
 <translation id="5213481667492808996">خدمة بيانات "<ph name="NAME" />" جاهزة للاستخدام</translation>
+<translation id="5213658238771284310">استعادة الجلسة عند بدء التشغيل</translation>
 <translation id="5213891612754844763">عرض إعدادات الخادم الوكيل</translation>
 <translation id="5214639857958972833">تم إنشاء إشارة مرجعية بعنوان "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">اختيار البلد</translation>
@@ -8443,6 +8450,7 @@
 <translation id="7815680994978050279">تم حظر تنزيل خطير</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">بعد إعادة التشغيل، يمكنك متابعة استخدام التطبيقات والمواقع الإلكترونية والنوافذ المفتوحة حيث توقفت</translation>
 <translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
@@ -8636,6 +8644,7 @@
 <translation id="7964458523224581615">أخضر زبرجدي</translation>
 <translation id="7966241909927244760">&amp;نسخ عنوان الصورة</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{هناك عنصر واحد في قائمة الإشارات المرجعية.}zero{هناك {COUNT} عنصر في قائمة الإشارات المرجعية.}two{هناك عنصران ({COUNT}) في قائمة الإشارات المرجعية.}few{هناك {COUNT} عناصر في قائمة الإشارات المرجعية.}many{هناك {COUNT} عنصرًا في قائمة الإشارات المرجعية.}other{هناك {COUNT} عنصر في قائمة الإشارات المرجعية.}}</translation>
+<translation id="7967776604158229756">المزيد من إعدادات وأذونات تطبيق الويب</translation>
 <translation id="7968072247663421402">خيارات مقدِّم الخدمة</translation>
 <translation id="7968742106503422125">قراءة وتعديل البيانات التي يتم نسخها ولصقها</translation>
 <translation id="7968833647796919681">تفعيل جمع بيانات عن مستوى الأداء</translation>
@@ -8664,6 +8673,7 @@
 <translation id="7987814697832569482">‏الاتِّصال دائمًا من خلال الشبكة الظاهرية الخاصة (VPN) هذه</translation>
 <translation id="7988355189918024273">تفعيل ميزات إمكانية الدخول</translation>
 <translation id="7988805580376093356">‏الإبقاء على نظام التشغيل الحالي وتشغيل <ph name="DEVICE_OS" /> من محرّك أقراص USB</translation>
+<translation id="7988876720343145286">‏المزيد من إعدادات وأذونات Android</translation>
 <translation id="7990863024647916394">صوت <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح التحويل</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
@@ -9397,6 +9407,7 @@
 <translation id="8593450223647418235">‏لن تتمكّن من فتح الملفات في Microsoft 365 إلى أن تكتمل عملية الإعداد.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{موقع إلكتروني واحد محظور}zero{‫# موقع إلكتروني محظور}two{موقعان إلكترونيان محظوران}few{‫# مواقع إلكترونية محظورة}many{‫# موقعًا إلكترونيًا محظورًا}other{‫# موقع إلكتروني محظور}}</translation>
 <translation id="8596540852772265699">ملفات مخصصة</translation>
+<translation id="8597462463725156723">لن تظهر الإشعارات فجأةً على الشاشة. وسيظل بإمكانك الاطّلاع على الإشعارات من خلال النقر على رمز عدم الإزعاج في أسفل يمين الشاشة.</translation>
 <translation id="8597845839771543242">شكل الموقع:</translation>
 <translation id="8599681327221583254">لم يتم ضبط سياسة واحدة أو أكثر بشكل صحيح. يُرجى التواصل مع المشرف.</translation>
 <translation id="8599864823732014237">هل تريد تخطي التسجيل في المؤسسة؟</translation>
@@ -9516,6 +9527,7 @@
 <translation id="8680251145628383637">‏سجّل الدخول للحصول على الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى على جميع أجهزتك. سيتم أيضًا تسجيل دخولك تلقائيًا إلى خدمات Google.</translation>
 <translation id="8681886425883659911">حظر الإعلانات على المواقع الإلكترونية التي تُعرف بعرضها إعلانات مضلِّلة أو متداخلة</translation>
 <translation id="8682730193597992579">تم توصيل <ph name="PRINTER_NAME" /> وهي جاهزة للاستخدام.</translation>
+<translation id="8685540043423825702">‏ملفك الشخصي على Chrome</translation>
 <translation id="8686142379631285985">تم تسجيل الدخول بحساب <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">إلغاء تنزيل "<ph name="FILE_NAME" />"</translation>
 <translation id="8688672835843460752">متوفِّر</translation>

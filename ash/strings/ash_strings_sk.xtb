@@ -90,6 +90,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1293264513303784526">Zariadenie USB-C (port vľavo)</translation>
 <translation id="1293556467332435079">Súbory</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Otvoriť aplikáciu Preskúmať</translation>
 <translation id="1294929383540927798">Zmeňte nastavenia upozornení na uzamknutej obrazovke</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ODPORÚČANÉ APLIKÁCIE</translation>
@@ -387,6 +388,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2612614436418177118">Presunutie ikony aplikácie v mriežke aplikácií</translation>
 <translation id="2620016719323068571">Hľadajte <ph name="CATEGORY" />, súbory, aplikácie a ďalší obsah…</translation>
 <translation id="2620436844016719705">Systém</translation>
+<translation id="2620900772667816510">Superrozlíšenie cez Bluetooth</translation>
 <translation id="2621713457727696555">Zabezpečená</translation>
 <translation id="2624588537172718173">Zvuk a mikrofón zariadenia</translation>
 <translation id="263399434338050016">Vybrať všetko</translation>
@@ -511,6 +513,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3161500364292033097">Zavrieť plochu a okná</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vracia predchádzajúcu verziu vo vašom zariadení <ph name="DEVICE_TYPE" />. Zariadenie bude resetované a všetky údaje odstránené.</translation>
 <translation id="3171170659304083361">Nastavenia metód vstupu</translation>
+<translation id="3176221688814061633">Chromebook alebo zariadenie s rozhraním Bluetooth používa staršiu verziu rozhrania Bluetooth. Ak chcete zlepšiť kvalitu zvuku, zapnite superrozlíšenie cez Bluetooth alebo použite interný mikrofón.</translation>
 <translation id="3181441307743005334">Reštart môže chvíľu trvať</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Pripojené k zariadeniu}few{Pripojené k # zariadeniam}many{Connected to # devices}other{Pripojené k # zariadeniam}}</translation>
 <translation id="320207200541803018">Nastaviť časovač</translation>
@@ -1498,6 +1501,7 @@ Nová inštalácia</translation>
 <translation id="7189412385142492784">Ako ďaleko je Venuša</translation>
 <translation id="7198435252016571249">Kamera bola prichytená do pravého dolného rohu. Konflikt s platformou systému.</translation>
 <translation id="7219573373513695352">Nie sú pripojené žiadne zariadenia</translation>
+<translation id="7229029500464092426">Pamäť: <ph name="AVAILABLE_MEMORY" /> | celková: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tento Chromebook je potrebné reštartovať, aby bola použitá aktualizácia. Môže to trvať až jednu minútu.</translation>
 <translation id="7256634071279256947">Zadný mikrofóm</translation>
 <translation id="7258828758145722155">Upravené včera</translation>
@@ -1523,6 +1527,7 @@ Nová inštalácia</translation>
 <translation id="7360036564632145207">Zmenou ochrany prístupu k údajom pre nastavenie periférií môžete optimalizovať výkonnosť</translation>
 <translation id="736045644501761622">Nastaviť tapety a štýl</translation>
 <translation id="7371404428569700291">Okno nahrávania</translation>
+<translation id="7372069265635026568">Dostupná pamäť z celkovej kapacity <ph name="TOTAL_MEMORY" />: <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">Týmto povolíte prístup k mikrofónu všetkým aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="7377169924702866686">Kláves Caps Lock je zapnutý.</translation>
 <translation id="7377481913241237033">Pripojiť pomocou kódu</translation>

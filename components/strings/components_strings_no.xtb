@@ -221,6 +221,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1413407968866574823">Action- og plattformspill</translation>
 <translation id="1413809658975081374">Personvernfeil</translation>
 <translation id="1414134146594747368">Førskole</translation>
+<translation id="141826476809826269">Slutten av teksten som er hentet ut</translation>
 <translation id="1419305130220238697">Knappen «Administrer nedlastinger i Chrome» – aktiver for å administrere filer du har lastet ned i Chrome</translation>
 <translation id="1422930527989633628">Kan be om å få oppdage Bluetooth-enheter i nærheten</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -277,6 +278,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1530707389502320859">Nettstedet du nettopp prøvde å besøke, ser falskt ut. Noen ganger etterligner angripere nettsteder ved å gjøre små endringer som er vanskelige å se, i nettadressen.</translation>
 <translation id="1532118530259321453">På denne siden står det</translation>
 <translation id="1536390784834419204">Oversett siden</translation>
+<translation id="1537807545287921620">Denne PDF-en er ikke tilgjengelig. Åpne den kontekstuelle menyen, og slå på «Hent ut tekst fra PDF»</translation>
 <translation id="1539840569003678498">Rapporten er sendt:</translation>
 <translation id="1542105669288201090">Bedriftsutdanning</translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
@@ -434,6 +436,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1842969606798536927">Betal</translation>
 <translation id="1846432862466000825">Plast (arkiv)</translation>
 <translation id="1848982255014129637">Foto (høyglans)</translation>
+<translation id="1853392626017747777">Registrering med virtuelt kort er lukket</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
 <translation id="1855370856221982654">Boksing</translation>
 <translation id="1856713167556118146">Dette gjør Inkognito ikke</translation>
@@ -470,6 +473,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1935995810530254458">Kopier likevel</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
+<translation id="1940441167050915935">Slett lagrede sikkerhetskoder</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du kan miste tilgangen til organisasjonskontoen din eller bli utsatt for identitetstyveri. Chromium anbefaler at du endrer passordet ditt nå.</translation>
 <translation id="1946849748901605102">12 x 15 tommer</translation>
@@ -864,6 +868,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2803306138276472711">Google Safe Browsing oppdaget nylig <ph name="BEGIN_LINK" />skadelig programvare<ph name="END_LINK" /> på <ph name="SITE" />. Nettsteder som vanligvis er sikre, kan noen ganger være infisert av skadelig programvare.</translation>
 <translation id="2807052079800581569">Y-posisjon for bilde</translation>
 <translation id="2808278141522721006">Du kan slå Windows Hello av eller på i <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Denne PDF-en er ikke tilgjengelig. Trykk på søketasten + M for å åpne den kontekstuelle menyen, og slå på «Hent ut tekst fra PDF»</translation>
 <translation id="2818338148457093657">Skjønnhet og velvære</translation>
 <translation id="2820957248982571256">Skanner …</translation>
 <translation id="2824775600643448204">Adresse- og søkefelt</translation>
@@ -1168,6 +1173,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3461266716147554923"><ph name="URL" /> ber om å se tekst og bilder som er kopiert til utklippstavlen</translation>
 <translation id="3461824795358126837">Markering</translation>
 <translation id="3462200631372590220">Skjul detaljer</translation>
+<translation id="3465972433695735758">Denne PDF-en er ikke tilgjengelig. Teksten er hentet ut – drevet av Google AI</translation>
 <translation id="346601286295919445">Kjemi</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> – for øyeblikket åpen. Trykk på Tab og deretter Enter for å bytte til den åpne fanen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å lukke alle åpne inkognitovinduer</translation>
@@ -1185,6 +1191,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="350069200438440499">Filnavn:</translation>
 <translation id="3501300228850242680">Metallmusikk</translation>
 <translation id="350421688684366066">Etiketter (høyglans)</translation>
+<translation id="350763432931695541">Henter ut teksten på de neste sidene</translation>
 <translation id="3507869775212388416">Juriststillinger</translation>
 <translation id="3507936815618196901">lage et 3D-kart av omgivelsene dine og spore kameraposisjonen</translation>
 <translation id="3512163584740124171">Denne regelen ignoreres fordi en annen regel i den samme regelgruppen har høyere prioritet.</translation>
@@ -1726,6 +1733,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4628948037717959914">Bilde</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Penger tilbake er tilknyttet</translation>
+<translation id="4631881646528206880">Registrering med virtuelt kort</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4638670630777875591">Inkognito i Chromium</translation>
 <translation id="464342062220857295">Søkefunksjoner</translation>
@@ -1840,6 +1848,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
 <translation id="485902285759009870">Bekrefter koden …</translation>
 <translation id="4862630594858951805">Vil du ha e-poster når prisen går ned?</translation>
+<translation id="4864406669374375262">Versjonsstrengen er kopiert til utklippstavlen</translation>
 <translation id="486459320933704969">En forelder eller foresatt må si at det er greit at du besøker dette nettstedet</translation>
 <translation id="4866506163384898554">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å vise markøren</translation>
 <translation id="4873616204573862158">Briller</translation>
@@ -2850,6 +2859,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6973988895180423160">3,5 x 5 tommer</translation>
 <translation id="6978236010531171013">Del likevel</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6979332652936434520">Begynnelsen av teksten som er hentet ut</translation>
 <translation id="6979440798594660689">Kutt lyden (standard)</translation>
 <translation id="6987806006823772670">Konvolutt (belagt)</translation>
 <translation id="6989763994942163495">Vis avanserte innstillinger</translation>
@@ -2905,6 +2915,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7102760431686146931">Matlagingsutstyr og servise</translation>
 <translation id="7105998430540165694">Passnøkkel fra iCloud-nøkkelring</translation>
 <translation id="7106762743910369165">Nettleseren administreres av organisasjonen din</translation>
+<translation id="7107249414147762907">Denne PDF-en er ikke tilgjengelig. Ingen tekst er hentet ut</translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ber om å bruke kameraet ditt</translation>
 <translation id="7108819624672055576">Tillatt av en utvidelse</translation>
@@ -3526,6 +3537,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8339163506404995330">Sider på <ph name="LANGUAGE" /> oversettes ikke</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Hvis du forstår sikkerhetsrisikoen, kan du <ph name="BEGIN_LINK" />gå til det usikre nettstedet<ph name="END_LINK" /> før de farlige programmene er fjernet.</translation>
+<translation id="8344776605855290140">Registrering med virtuelt kort er åpnet i full høyde</translation>
 <translation id="8347658365704983341">Fjernundervisning</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
 <translation id="8351131234907093545">Opprett et notat</translation>
@@ -3915,6 +3927,7 @@ Mer informasjon:
 <translation id="917450738466192189">Tjenerens sertifikat er ugyldig.</translation>
 <translation id="9174623988242579721">Spesialbygde kjøretøy og prestasjonskjøretøy</translation>
 <translation id="9174917557437862841">Knappen for å bytte fane – trykk på Enter for å bytte til denne fanen</translation>
+<translation id="9177283544810807743">Denne PDF-en er ikke tilgjengelig. Henter ut tekst – drevet av Google AI</translation>
 <translation id="9179703756951298733">Administrer betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
 <translation id="9179907736442194268">Få e-postvarsler hvis prisen settes ned på noe nettsted</translation>
 <translation id="9183302530794969518">Google Dokumenter</translation>

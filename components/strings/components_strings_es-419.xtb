@@ -1108,6 +1108,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3342018947887487892">Luego, un sitio que visites puede solicitar esta información, ya sea sobre los temas de anuncios o sobre los anuncios sugeridos por los sitios que visitaste.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
+<translation id="3344167530090084176">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta y tu código de seguridad en el dispositivo</translation>
 <translation id="334438173029876234">Equipo para skateboarding</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
@@ -1410,6 +1411,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
+<translation id="3966044442021752214">Seguridad del producto</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3983340834939868135">Llave de acceso de "<ph name="VENDOR_NAME" />"</translation>

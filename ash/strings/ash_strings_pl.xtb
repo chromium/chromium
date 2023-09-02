@@ -90,6 +90,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1293264513303784526">Urządzenie USB-C (lewy port)</translation>
 <translation id="1293556467332435079">Pliki</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Otwórz aplikację Odkrywaj</translation>
 <translation id="1294929383540927798">Zmień ustawienia powiadomień na ekranie blokady</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">POLECANE APLIKACJE</translation>
@@ -387,6 +388,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2612614436418177118">Przenieś ikonę aplikacji w siatce aplikacji</translation>
 <translation id="2620016719323068571">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje…</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Superrozdzielczość Bluetooth</translation>
 <translation id="2621713457727696555">Zabezpieczona</translation>
 <translation id="2624588537172718173">Mikrofon i dźwięki z urządzenia</translation>
 <translation id="263399434338050016">„Wybierz wszystko”</translation>
@@ -511,6 +513,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3161500364292033097">Zamknij biurko i okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> przywraca na urządzeniu <ph name="DEVICE_TYPE" /> wcześniejszą wersję systemu operacyjnego. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
 <translation id="3171170659304083361">Ustawienia metod wprowadzania</translation>
+<translation id="3176221688814061633">Na Twoim Chromebooku lub urządzeniu Bluetooth funkcja Bluetooth jest dostępna w starszej wersji. Włącz superrozdzielczość Bluetooth lub użyj mikrofonu wewnętrznego, aby uzyskać lepszą jakość dźwięku.</translation>
 <translation id="3181441307743005334">Ponowne uruchomienie może trochę potrwać</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}many{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
 <translation id="320207200541803018">Ustaw licznik</translation>
@@ -1497,6 +1500,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="7219573373513695352">Brak podłączonych urządzeń</translation>
+<translation id="7229029500464092426">Pamięć: <ph name="AVAILABLE_MEMORY" /> | Łącznie: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="7258828758145722155">Edytowane wczoraj</translation>
@@ -1522,6 +1526,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="736045644501761622">Ustaw tapetę i styl</translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
+<translation id="7372069265635026568">Dostępna pamięć: <ph name="AVAILABLE_MEMORY" /> z <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Zezwala to na dostęp do mikrofonu w przypadku wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>

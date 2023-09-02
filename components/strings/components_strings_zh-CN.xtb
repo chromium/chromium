@@ -1105,6 +1105,7 @@
 <translation id="3340978935015468852">设置</translation>
 <translation id="3342018947887487892">之后，您访问的网站便可请求获取以下信息：您的广告主题，或者您访问过的网站建议的广告。</translation>
 <translation id="3342366525167526994">人体艺术</translation>
+<translation id="3344167530090084176">如果想在下次购物时更快捷地付款，请将您的付款卡信息连同安全码一起保存到设备上</translation>
 <translation id="334438173029876234">滑板装备</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
@@ -1405,6 +1406,7 @@
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963721102035795474">阅读器模式</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
+<translation id="3966044442021752214">产品安全</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3983340834939868135">“<ph name="VENDOR_NAME" />”中的通行密钥</translation>

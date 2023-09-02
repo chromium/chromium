@@ -1113,6 +1113,7 @@
 <translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3342018947887487892">Հետագայում ձեր այցելած ցանկացած կայք կարող է հայցել այս տեղեկությունները՝ կամ գովազդի ձեր թեմաները, կամ ձեր այցելած կայքերի կողմից առաջարկվող գովազդները։</translation>
 <translation id="3342366525167526994">Բոդի-արտ</translation>
+<translation id="3344167530090084176">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք քարտը և անվտանգության կոդը ձեր սարքում</translation>
 <translation id="334438173029876234">Սքեյթբորդինգի պարագաներ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
@@ -1417,6 +1418,7 @@
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{# կայքից }other{# կայքից }}</translation>
+<translation id="3966044442021752214">Պրոդուկտի անվտանգությունը</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-ն արգելափակված է</translation>
 <translation id="3983340834939868135">Անցաբառ <ph name="VENDOR_NAME" /> մատակարարից</translation>

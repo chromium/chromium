@@ -1104,6 +1104,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3340978935015468852">ezarpenak</translation>
 <translation id="3342018947887487892">Geroago, baliteke bisitatzen duzun webguneek informazio hori eskatzea (iragarkien gaiak zein bisitatutako webguneek iradokitako iragarkiak).</translation>
 <translation id="3342366525167526994">Gorputz-artea</translation>
+<translation id="3344167530090084176">Hurrengoan bizkorrago ordaintzeko, gorde txartela eta segurtasun-kodea gailuan</translation>
 <translation id="334438173029876234">Skate-ekipamendua</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Aldatu proxy-ezarpenak…</translation>
@@ -1405,6 +1406,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3962859241508114581">Aurreko pista</translation>
 <translation id="3963721102035795474">Irakurgailu modua</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Bat ere ez}=1{1 webgunetatik }other{# webgunetatik }}</translation>
+<translation id="3966044442021752214">Produktuaren segurtasuna</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="3973234410852337861">Blokeatuta dago <ph name="HOST_NAME" /></translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" zerbitzuko sarbide-gakoa</translation>

@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">‏اپنے ٹیبز، پاس ورڈز اور ادائیگی کی معلومات کو اپنے تمام آلات پر سنک کرنے کیلئے Chrome کو بطور ڈیفالٹ براؤزر سیٹ کریں</translation>
 <translation id="1504372625950710826">‏Chrome اپ ڈیٹس چیک نہیں کر سکا۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1511320244449497906">‏آپ سائن ان ہیں اور اپنے ڈیٹا کو <ph name="DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ مطابقت پذیر بنا رہے ہیں جس کا منتظم اب اس اکاؤنٹ کے لیے مخصوص صارف پالیسیاں ترتیب دے سکتا ہے جو Chromium براؤزر کے رویے کو تبدیل کر سکتی ہیں۔</translation>
+<translation id="1516692594929310090">‏Chrome میں ٹیب گرِڈ کھلتا ہے۔</translation>
 <translation id="1526327845902180576">‏آن ہونے پر:
 <ph name="BEGIN_INDENT" />  • Chrome کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کی طرح استعمال کرتے ہیں۔<ph name="END_INDENT" />
 
@@ -86,6 +87,7 @@
 <translation id="4633328489441962921">‏Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے</translation>
 <translation id="4636900170638246267">‏اس سائٹ اور Chrome پر سائن ان کریں۔</translation>
 <translation id="4698415050768537821">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
+<translation id="4761869838909035636">‏Chrome کا سیفٹی چیک چلائیں</translation>
 <translation id="4819268619367838612">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔
 
@@ -113,6 +115,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">‏آف لائن، Chrome اپ ڈیٹس چیک نہیں کر سکتا ہے۔</translation>
 <translation id="5716154293141027663">‏جب بھی آپ دیگر ایپس میں لنکس پر تھپتھپائیں تو انہیں Chrome میں کھولیں</translation>
+<translation id="5808435672482059465">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
 <translation id="5998675059699164418">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome استعمال کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6054613632208573261">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="6063091872902370735">‏Chrome میں سائن ان کرنے کی اجازت دیں</translation>
@@ -132,6 +135,7 @@
 
 صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="6822673484890854830">‏Chrome سبھی پاس ورڈز چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
+<translation id="6916015246697034114">‏Chrome میں آواز سے تلاش کریں</translation>
 <translation id="6964931465519938134">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر تھپتھپائیں تو آپ Chrome استعمال کر سکتے ہیں۔</translation>
 <translation id="6975725306479268850">‏Chrome برائے آٹو فل کا انتخاب کریں</translation>
 <translation id="7059914902409643750">‏Chrome میں سائن ان کریں</translation>
@@ -148,6 +152,7 @@
 <translation id="7400722733683201933">‏Google Chrome کے بارے میں</translation>
 <translation id="7501046334262221972">‏Chrome کو اپنا ڈیفالٹ براؤزر بنانے کے لئے، ترتیبات کھولیں۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں اور پھر Chrome منتخب کریں۔</translation>
 <translation id="756809126120519699">‏Chrome ڈیٹا صاف کر دیا گیا</translation>
+<translation id="7581063337314642333">‏Chrome میں ٹیب گرِڈ ملاحظہ کریں</translation>
 <translation id="7662994914830945754">‏اپنے ٹیبز کو دیکھنے کے لئے جہاں کہیں بھی آپ Chrome استعمال کرتے ہیں، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="7669869107155339016">‏Chrome کی ترتیبات پر جائیں۔</translation>
 <translation id="7693590760643069321">‏اب جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس کو تھپتھپائیں تو آپ Chrome کا استعمال کر سکتے ہیں۔</translation>
@@ -155,10 +160,13 @@
 <translation id="7754633291442704733">‏آپ کی تنظیم کے <ph name="DOMAIN" /> کو آپ کے Chrome ڈیٹا، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات تک رسائی حاصل ہوگی جنہیں آپ اس اکاؤنٹ میں اسٹور کرتے ہیں۔ آپ کے سائن آؤٹ کرنے پر، اس آلے سے آپ کا ڈیٹا صاف کر دیا جائے گا۔  تاہم، آپ کا ڈیٹا آپ کے نظم کردہ Google اکاؤنٹ میں اسٹور رہے گا اور آپ کی تنظیم کے لیے دستیاب رہے گا۔ آپ کی تنظیم اس اکاؤنٹ کے لیے مخصوص صارف کی پالیسیاں بھی سیٹ کر سکتی ہے جو Chrome کے رویے کو تبدلی کر سکتی ہیں۔</translation>
 <translation id="7780154209050837198">‏Chrome سے بھرپور فائدہ اٹھانے کے لیے اپنے Google اکاؤنٹ کے ساتھ Chrome میں سائن ان کریں۔</translation>
 <translation id="7855730255114109580">‏Google Chrome اپ ٹو ڈیٹ ہے</translation>
+<translation id="7897703007638178753">‏Chrome کے حالیہ ٹیبز دیکھیں</translation>
+<translation id="7925119591961387184">‏"Chrome" کو منتخب کریں۔</translation>
 <translation id="8022947259858476807">‏لنکس کھولنے، ویجیٹس سے تلاش کرنے اور دیگر ایپس میں پاس ورڈز کو آٹو فل کرنے کیلئے، Chrome کا بطور ڈیفالٹ استعمال کریں</translation>
 <translation id="804638182476029347">‏قیمت میں کمی کے الرٹس موصول کرنے کے لیے Chrome اطلاعات کی اجازت دیں</translation>
 <translation id="81358522153858150">‏Chrome اب آپ کے نظم کردہ اکاؤنٹ کے لیے صارف کی پالیسیوں کو سپورٹ کرتا ہے</translation>
 <translation id="8160472928944011082">‏Chrome اپ ڈیٹ نہیں کیا جا سکتا</translation>
+<translation id="8174679664544842874">‏Chrome میں ایک نیا ٹیب کھلتا ہے۔</translation>
 <translation id="8213758103105806860">‏Chrome بُک مارکس دیکھیں</translation>
 <translation id="8357607116237445042">‏منتخب کریں کہ آیا اپنے Chrome ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے</translation>
 <translation id="8370517070665726704">‏کاپی رائٹ<ph name="YEAR" /> Google LLC۔ جملہ حقوق محفوظ ہیں۔</translation>
@@ -172,8 +180,10 @@
   2۔ ڈیفالٹ براؤزر ایپ پر تھپتھپائیں
   3۔ Chrome منتخب کریں۔</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">‏"Chrome" پھر "ڈیفالٹ براؤزر ایپ" پر تھپتھپائیں۔</translation>
 <translation id="8603022514504485810">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">‏Google Chrome کے ساتھ محفوظ رہیں</translation>
+<translation id="8760668027640688122">‏Chrome میں نیا ٹیب کھولیں</translation>
 <translation id="8765470054473112089">‏جب آپ ایڈریس بار یا تلاش کے خانے میں ٹائپ کرتے ہیں تو بہتر تجاویز حاصل کرنے کے لیے Chrome آپ جو ٹائپ کرتے ہیں اسے آپ کے ڈیفالٹ سرچ انجن کو بھیجتا ہے۔ یہ پوشیدگی میں آف ہے۔</translation>
 <translation id="8772179140489533211">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے۔</translation>
 <translation id="8788269841521769222">‏آپ کو یہ پاس ورڈ یاد رکھنے کی ضرورت نہیں ہوگی۔ اسے Google پاس ورڈ مینیجر میں <ph name="EMAIL" /> کے لیے محفوظ کیا جائے گا</translation>
@@ -183,6 +193,7 @@
 اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="8857676124663337448">‏Google پاس ورڈ مینیجر تمام پاس ورڈز کو چیک نہیں کر سکتا۔ کل دوبارہ کوشش کریں۔</translation>
 <translation id="8897749957032330183">‏پاس ورڈز اس آلہ پر Google پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں۔</translation>
+<translation id="8949681853939555434">‏Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کریں</translation>
 <translation id="8969290730818637510">‏آن ہونے پر:
 <ph name="BEGIN_INDENT" />  • Chrome کو ان لوگوں کے لیے بہتر بنانے میں مدد کریں جو اسے آپ کی طرح استعمال کرتے ہیں۔<ph name="END_INDENT" />
 
@@ -192,4 +203,5 @@
   • اگر آپ مطابقت پذیری کو آن کرتے ہیں تو میٹرکس میں ان URLs کے بارے میں معلومات بھی شامل ہو سکتی ہیں جنہیں آپ ملاحظہ کرتے ہیں۔<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">‏Chrome کو ڈیفالٹ کے بطور سیٹ کریں؟</translation>
 <translation id="9122931302567044771">‏اس کا مطلب ہے کہ Chrome ہر بار ڈیسک ٹاپ سائٹ کی درخواست کرے گا۔</translation>
+<translation id="9181628561061032322">‏Chrome کے حالیہ ٹیبز کھلتے ہیں۔</translation>
 </translationbundle>

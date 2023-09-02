@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C ডিভাইস (বাঁ পোর্ট)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Explore খুলুন</translation>
 <translation id="1294929383540927798">লক-স্ক্রিন বিজ্ঞপ্তির সেটিংস পরিবর্তন করুন</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">প্রস্তাবিত অ্যাপ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">অ্যাপ গ্রিডে একটি অ্যাপ আইকন সরান</translation>
 <translation id="2620016719323068571">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন...</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
+<translation id="2620900772667816510">ব্লুটুথ সুপার রেজোলিউশন</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="2624588537172718173">ডিভাইসের অডিও ও মাইক্রোফোন</translation>
 <translation id="263399434338050016">"সবকটি বেছে নিন"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">ডেস্ক ও উইন্ডো বন্ধ করুন</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> আপনার <ph name="DEVICE_TYPE" /> আগের ভার্সনে ফিরিয়ে নিয়ে যাচ্ছে। আপনার ডিভাইস রিসেট করা হবে এবং সব ডেটা মুছে যাবে।</translation>
 <translation id="3171170659304083361">'ইনপুট পদ্ধতি' সম্পর্কিত সেটিংস</translation>
+<translation id="3176221688814061633">আপনার Chromebook অথবা ব্লুটুথ ডিভাইস, ব্লুটুথের পুরনো কোনও ভার্সন ব্যবহার করছে। ব্লুটুথ সুপার রেজোলিউশন চালু করুন অথবা আরও ভাল অডিও কোয়ালিটির জন্য ইন্টার্নাল মাইক্রোফোন ব্যবহার করুন।</translation>
 <translation id="3181441307743005334">রিস্টার্ট করতে কিছুক্ষণ সময় লাগতে পারে</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{একটি ডিভাইসে কানেক্ট রয়েছে}one{#টি ডিভাইসে কানেক্ট রয়েছে}other{#টি ডিভাইসে কানেক্ট রয়েছে}}</translation>
 <translation id="320207200541803018">টাইমার সেট করুন</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="7219573373513695352">কোনও ডিভাইস কানেক্ট করা নেই</translation>
+<translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> মেমরি | মোট <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। একটি আপডেট প্রয়োগ করতে Chromebook রিস্টার্ট করতে হবে। এতে ১ মিনিট পর্যন্ত সময় লাগতে পারে।</translation>
 <translation id="7256634071279256947">পেছনের মাইক্রোফোন</translation>
 <translation id="7258828758145722155">গতকাল এডিট করা হয়েছে</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">পেরিফেরাল সেটিংসের জন্য আপনার 'ডেটা অ্যাক্সেস সুরক্ষা' ব্যবস্থায় পরিবর্তন করলে পারফর্ম্যান্স অপ্টিমাইজ হতে পারে</translation>
 <translation id="736045644501761622">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
 <translation id="7371404428569700291">উইন্ডো রেকর্ড করুন</translation>
+<translation id="7372069265635026568">মোট <ph name="TOTAL_MEMORY" /> মেমরির মধ্যে <ph name="AVAILABLE_MEMORY" /> উপলভ্য</translation>
 <translation id="737315737514430195">এটি মাইক্রোফোন অনুমতি সহ সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
 <translation id="7377481913241237033">কোড ব্যবহার করে কানেক্ট করুন</translation>

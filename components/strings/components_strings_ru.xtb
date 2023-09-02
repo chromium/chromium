@@ -1106,6 +1106,7 @@
 <translation id="3340978935015468852">настройки</translation>
 <translation id="3342018947887487892">Сайты, на которые вы зайдете в дальнейшем, смогут запрашивать эту информацию – либо темы рекламы, либо объявления, предложенные сайтами, которые вы посетили.</translation>
 <translation id="3342366525167526994">Боди-арт</translation>
+<translation id="3344167530090084176">Чтобы ускорить процесс оплаты, сохраните карту и CVC-код на своем устройстве.</translation>
 <translation id="334438173029876234">Инвентарь для скейтбординга</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Изменить настройки прокси-сервера...</translation>
@@ -1408,6 +1409,7 @@
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3963721102035795474">Режим чтения</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Нет}=1{С 1 сайта }one{С # сайта }few{С # сайтов }many{С # сайтов }other{С # сайта }}</translation>
+<translation id="3966044442021752214">О безопасности</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="3973234410852337861">Сайт <ph name="HOST_NAME" /> заблокирован</translation>
 <translation id="3983340834939868135">Ключ доступа от поставщика "<ph name="VENDOR_NAME" />"</translation>

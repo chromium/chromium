@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">‏USB-C آلہ (بایاں پورٹ)</translation>
 <translation id="1293556467332435079">فائلیں</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">دریافت کریں کھولیں</translation>
 <translation id="1294929383540927798">مقفل اسکرین کی اطلاع کی ترتیبات تبدیل کریں</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">تجویز کردہ ایپس</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">ایپ گرڈ کے اندر ایپ آئیکن منتقل کریں</translation>
 <translation id="2620016719323068571">اپنی <ph name="CATEGORY" />، فائلز، ایپس اور بہت کچھ تلاش کریں...</translation>
 <translation id="2620436844016719705">سسٹم</translation>
+<translation id="2620900772667816510">بلوٹوتھ سپر ریزولوشن</translation>
 <translation id="2621713457727696555">محفوظ ہے</translation>
 <translation id="2624588537172718173">آلہ کا آڈیو اور مائیکروفون</translation>
 <translation id="263399434338050016">"تمام منتخب کریں"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">ڈیسک اور ونڈوز بند کریں</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="3171170659304083361">اندراج کے طریقوں کی ترتیبات</translation>
+<translation id="3176221688814061633">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے بلوٹوتھ سپر ریزولوشن کو آن کریں یا اندرونی مائیکروفون استعمال کریں۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
 <translation id="320207200541803018">ٹائمر سیٹ کریں</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
+<translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
@@ -1522,6 +1526,7 @@
 <translation id="7360036564632145207">پیریفیرلزکی ترتیب کیلئے آپ کے ڈیٹا تک رسائی کے تحفظ کی تبدیلی کارکردگی کو بہتر بنا سکتی ہے</translation>
 <translation id="736045644501761622">وال پیپر اور اسٹائل سیٹ کریں</translation>
 <translation id="7371404428569700291">ونڈو ریکارڈ کریں</translation>
+<translation id="7372069265635026568">کل <ph name="TOTAL_MEMORY" /> میں سے <ph name="AVAILABLE_MEMORY" /> میموری دستیاب ہے</translation>
 <translation id="737315737514430195">اس سے مائیکروفون کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے مائیکروفون تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="7377169924702866686">‏Caps Lock آن ہے۔</translation>
 <translation id="7377481913241237033">کوڈ کے ساتھ منسلک کریں</translation>

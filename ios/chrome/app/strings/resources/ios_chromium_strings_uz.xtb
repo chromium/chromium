@@ -20,6 +20,7 @@
 <translation id="1838412507805038478">Chromium ushbu veb-sayt haqiqiyligi <ph name="ISSUER" /> tomonidan tasdiqlanganini aniqladi.</translation>
 <translation id="1843424232666537147">Chromium brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium ichida Xaritalar</translation>
+<translation id="186734497270163706">Avval “Chromium“, keyin “Asosiy brauzer ilovasi” ustiga bosing.</translation>
 <translation id="1867772173333403444">4. Chromium brauzerini tanlang</translation>
 <translation id="2006345422933397527">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2052320862053429062">Vaqti-vaqti bilan Chromium internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
@@ -110,6 +111,7 @@ Bularni hisobga olish kerak:
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="5951593919357934226">Chromiumdan unumli foydalaning</translation>
 <translation id="5983312940147103417">Chromiumni yaxshilash</translation>
+<translation id="5985102273857091344">Chromium bandini tanlang.</translation>
 <translation id="6062449165341879460">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chromium maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chromium funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>
 <translation id="61109258320235597">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting.</translation>
 <translation id="6119647025869519954">Chromium brauzerini asosiy deb belgilash uchun:
@@ -162,6 +164,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8013573822802650211">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="8071041515667087705">Chromium sozlamalarini oching.</translation>
 <translation id="8073677936375100957">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
+<translation id="8115308261377517697">Chromiumni asosiy brauzer deb belgilang</translation>
 <translation id="8235427517854598594">Chromium brauzeri asosiy brauzer etib belgilansinmi?</translation>
 <translation id="8240981428553046115">Chromium yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>

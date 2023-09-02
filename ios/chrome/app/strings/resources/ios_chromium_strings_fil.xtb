@@ -21,6 +21,7 @@
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps sa Chromium</translation>
+<translation id="186734497270163706">I-tap ang "Chromium" pagkatapos ay "Default na Browser App."</translation>
 <translation id="1867772173333403444">4. Piliin ang Chromium</translation>
 <translation id="2006345422933397527">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2052320862053429062">Pana-panahong sinusuri ng Chromium ang iyong mga password sa mga listahang na-publish online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username, para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
@@ -111,6 +112,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
 <translation id="5951593919357934226">Sulitin ang Chromium.</translation>
 <translation id="5983312940147103417">Pahusayin ang Chromium</translation>
+<translation id="5985102273857091344">Piliin ang "Chromium."</translation>
 <translation id="6062449165341879460">Magkakaroon ng access ang <ph name="DOMAIN" /> ng iyong organisasyon sa data, mga bookmark, history, mga password, at iba mo pang setting sa Chromium na iso-store mo sa account na ito. Kapag nag-sign out ka, maki-clear ang iyong data sa device na ito.  Gayunpaman, mananatiling naka-store ang iyong data sa pinapamahalaang Google Account mo at magiging available ito sa iyong organisasyon. Puwede ring magtakda ang iyong organisasyon ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa gawi ng Chromium.</translation>
 <translation id="61109258320235597">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, ilagay ang passphrase mo.</translation>
 <translation id="6119647025869519954">Para itakda ang Chromium bilang iyong default:
@@ -163,6 +165,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="8013573822802650211">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in sa lahat ng device mo</translation>
 <translation id="8071041515667087705">Pumunta sa Mga Setting ng Chromium.</translation>
 <translation id="8073677936375100957">I-clear ang iyong data sa Chromium sa device na ito?</translation>
+<translation id="8115308261377517697">Itakda ang Chromium bilang iyong Default na Browser</translation>
 <translation id="8235427517854598594">Gawing Default na Browser Mo ang Chromium?</translation>
 <translation id="8240981428553046115">Hindi matingnan ng Chromium kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>

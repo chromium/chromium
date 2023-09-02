@@ -3245,7 +3245,6 @@ Về mặt chức năng thì việc không đặt chính sách này tương đư
 
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.</translation>
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
-<translation id="3776607945781937921">Bắt buộc tải tài liệu Office xuống (ví dụ: .docx) thay vì mở tài liệu trong <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
 <translation id="3788662722837364290">Cài đặt quản lý nguồn khi người dùng không sử dụng</translation>
@@ -3780,9 +3779,6 @@ Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* c
       Nếu bạn đặt chính sách này thành false (sai), thì quá trình phân giải DNS của hệ thống (getaddrinfo()) sẽ chạy trong quy trình mạng thay vì quy trình của trình duyệt. Khi đó, hộp cát dịch vụ mạng có thể sẽ buộc phải tắt, làm giảm khả năng bảo mật của <ph name="PRODUCT_NAME" />.
 
       Nếu bạn không đặt chính sách này, thì quá trình phân giải DNS của hệ thống có thể chạy trong dịch vụ mạng, ngoài dịch vụ mạng hoặc có một phần chạy trong và một phần chạy ngoài, tuỳ vào cấu hình hệ thống và cờ tính năng.</translation>
-<translation id="4228745249339680042">Việc đặt chính sách này sẽ chỉ định các URL và miền không hiển thị lời nhắc khi có yêu cầu về chứng chỉ chứng thực của Khóa bảo mật. Một tín hiệu cũng sẽ được gửi tới Khóa bảo mật để cho biết có thể sử dụng chứng thực riêng lẻ. Nếu không có tín hiệu này thì khi các trang web yêu cầu chứng thực của Khóa bảo mật, người dùng sẽ được nhắc trong <ph name="PRODUCT_NAME" /> phiên bản 65 trở lên.
-
-      Các URL sẽ chỉ khớp ở dạng U2F appID. Các miền chỉ khớp ở dạng webauthn RP ID. Do đó, để bao gồm cả API U2F và API webauthn, hãy liệt kê cả miền và URL appID của một trang web cụ thể.</translation>
 <translation id="4239720644496144453">Bộ nhớ đệm không được sử dụng cho các ứng dụng Android. Nếu nhiều người dùng cài đặt cùng một ứng dụng Android thì ứng dụng sẽ được tải xuống lại cho từng người dùng.</translation>
 <translation id="424318624725112807">Bật tính năng làm nổi bật dấu chèn trên màn hình đăng nhập</translation>
 <translation id="4247914291127524388">Nếu bạn đặt chính sách này thành Bật, thì tính năng đồng bộ hóa <ph name="GOOGLE_DRIVE_NAME" /> trong ứng dụng Files <ph name="PRODUCT_OS_NAME" /> sẽ bị tắt khi dùng kết nối di động. Dữ liệu chỉ được đồng bộ hóa với Drive khi dùng kết nối Wi-Fi hoặc Ethernet.
@@ -6490,7 +6486,6 @@ Nếu bạn không đặt thời gian, thì chu kỳ mặc định là 15 phút 
           Chính sách này không có hiệu lực nếu bạn bật, để trống hoặc không thiết lập.</translation>
 <translation id="6583249367505445969">Tắt thanh dấu trang</translation>
 <translation id="6584541828182430328">Tắt hiển thị cảnh báo toàn màn hình</translation>
-<translation id="6587865958861904456">Khi bật, chính sách này sẽ bắt buộc tải tệp xuống đối với những tài liệu Office thuộc loại MIME mà <ph name="BASIC_EDITOR_NAME" /> thường xử lý. Nếu bạn tắt chính sách này thì các tài liệu đó sẽ tự động mở trong <ph name="BASIC_EDITOR_NAME" />. Việc không đặt chính sách này đối với người dùng thông thường sẽ bằng với việc bật chính sách (ví dụ: sẽ tải tệp xuống), còn đối với người dùng doanh nghiệp thì sẽ bằng với việc tắt chính sách (ví dụ: sẽ mở tệp trong <ph name="BASIC_EDITOR_NAME" />).</translation>
 <translation id="6588634282328239769">Hiển thị URL đầy đủ</translation>
 <translation id="6589049539706330510">Bật chế độ hỗ trợ</translation>
 <translation id="6593350713192882944">Bật tính năng Thông tin nhanh</translation>

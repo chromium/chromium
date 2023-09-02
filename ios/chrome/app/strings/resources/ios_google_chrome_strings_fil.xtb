@@ -87,6 +87,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="4633328489441962921">Hindi matingnan ng Chrome kung may mga update</translation>
 <translation id="4636900170638246267">Mag-sign in sa site na ito at sa Chrome.</translation>
 <translation id="4698415050768537821">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
+<translation id="4761869838909035636">Magpatakbo ng Pag-check sa Kaligtasan sa Chrome</translation>
 <translation id="4819268619367838612">Para makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome.
 
@@ -114,6 +115,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Naka-offline, hindi matingnan ng Chrome kung may mga update</translation>
 <translation id="5716154293141027663">Buksan ang Chrome sa tuwing magta-tap ka sa mga link sa iba pang app</translation>
+<translation id="5808435672482059465">Tingnan ang Iyong History sa Chrome</translation>
 <translation id="5998675059699164418">Hinihiling sa iyo ng organisasyon mo na mag-sign in para magamit ang Chrome.</translation>
 <translation id="6054613632208573261">Gamitin ang Chrome bilang Default</translation>
 <translation id="6063091872902370735">Payagan ang Pag-sign In sa Chrome</translation>
@@ -159,6 +161,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7780154209050837198">Para masulit ang Chrome, mag-sign in sa Chrome gamit ang iyong Google Account.</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
 <translation id="7897703007638178753">Tingnan ang Mga Kamakailang Tab sa Chrome</translation>
+<translation id="7925119591961387184">Piliin ang "Chrome."</translation>
 <translation id="8022947259858476807">Gamitin ang Chrome bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="804638182476029347">Payagan ang mga notification sa Chrome na makatanggap ng mga alerto sa pagbaba ng presyo</translation>
 <translation id="81358522153858150">Suportado na ngayon ng Chrome ang mga patakaran ng user para sa iyong pinamamahalaang account</translation>
@@ -177,6 +180,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
   2. I-tap ang Default na Browser App
   3. Piliin ang Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">I-tap ang "Chrome" pagkatapos ay "Default na Browser App."</translation>
 <translation id="8603022514504485810">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Manatiling Ligtas sa Google Chrome</translation>
 <translation id="8760668027640688122">Magbukas ng Bagong Tab sa Chrome</translation>
@@ -189,6 +193,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8897749957032330183">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
+<translation id="8949681853939555434">Itakda ang Chrome bilang iyong Default na Browser</translation>
 <translation id="8969290730818637510">Kapag naka-on:
 <ph name="BEGIN_INDENT" />  • Tumulong na pahusayin ang Chrome para sa mga taong gumagamit nito gaya ng iyong paggamit.<ph name="END_INDENT" />
 

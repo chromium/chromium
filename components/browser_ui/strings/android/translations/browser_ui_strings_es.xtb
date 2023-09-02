@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Borrar permisos</translation>
 <translation id="301521992641321250">Bloqueado automáticamente</translation>
 <translation id="3069226013421428034">Permite el inicio de sesión de terceros en un sitio específico.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>

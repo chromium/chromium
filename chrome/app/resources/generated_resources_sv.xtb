@@ -814,6 +814,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1630768113285622200">Starta om och fortsätt</translation>
 <translation id="1631503405579357839">Färgblindhet</translation>
 <translation id="1632278969378690607">sök + klicka</translation>
+<translation id="1632293440289326475">Förläng batteritiden med hjälp av strömsparläget</translation>
 <translation id="1632756664321977232">Beskärningsverktyg</translation>
 <translation id="163309982320328737">Den ursprungliga teckenbredden är full</translation>
 <translation id="1633947793238301227">Inaktivera Google Assistent</translation>
@@ -1284,6 +1285,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1988259784461813694">Krav</translation>
 <translation id="1988733631391393183">Visa punktskriftskommandon i ChromeVox-menyer</translation>
 <translation id="1989112275319619282">Bläddra</translation>
+<translation id="1989601282983766341">Hantera appaviseringar, Stör ej och appmärken</translation>
 <translation id="1989903373608997757">Använd alltid</translation>
 <translation id="1990046457226896323">Röstfilerna har laddats ned</translation>
 <translation id="1990512225220753005">Visa inte genvägar på den här sidan</translation>
@@ -2272,6 +2274,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2749756011735116528">Logga in på <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kontrollera grammatik och stavning</translation>
+<translation id="2750020734439919571">Fler inställningar och behörigheter för Chrome-appen</translation>
 <translation id="2750602041558385535">Overifierad nedladdning har blockerats</translation>
 <translation id="2754226775788136540">Söker efter enheter med snabb parkoppling som sparats i <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Google Play Butik har alla appar du behöver – från produktivitet till underhållning. Du kan installera appar när som helst.</translation>
@@ -2422,6 +2425,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="286674810810214575">Kontrollerar strömkällor …</translation>
 <translation id="2867768963760577682">Öppna som en fast flik</translation>
 <translation id="2868746137289129307">Tillägget är inaktuellt och inaktiverat av företagspolicyn. Det kan aktiveras automatiskt när en ny version blir tillgänglig.</translation>
+<translation id="2869511363030898130">Öppna i <ph name="APP_NAME" />-appen</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2870909136778269686">Uppdaterar ...</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
@@ -4949,6 +4953,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4933484234309072027">inbäddad på <ph name="URL" /></translation>
 <translation id="4936042273057045735">Synkronisering av aviseringar stöds inte på telefoner med en jobbprofil</translation>
 <translation id="4937676329899947885">Wifi-nätverk tas emot</translation>
+<translation id="4938052313977274277">Hastighet</translation>
 <translation id="4938788218358929252">dessa receptförslag</translation>
 <translation id="4939805055470675027">Det gick inte att ansluta till <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Det finns <ph name="PRINTER_COUNT" /> skrivare att spara.</translation>
@@ -5195,6 +5200,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Avancerade inställningar för <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Ämne</translation>
+<translation id="5154917547274118687">Minne</translation>
 <translation id="5155327081870541046">Skriv genvägen till webbplatsen du vill söka på i adressfältet, till exempel @bookmarks. Tryck sedan på önskat kortkommando och ange söktermen.</translation>
 <translation id="5156638757840305347">Markören markeras när den visas eller flyttas</translation>
 <translation id="5157250307065481244">Visa webbplatsinformation</translation>
@@ -5264,6 +5270,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5210365745912300556">Stäng flik</translation>
 <translation id="5213114823401215820">Öppna stängd grupp igen</translation>
 <translation id="5213481667492808996">Datatjänsten <ph name="NAME" /> är klar att använda</translation>
+<translation id="5213658238771284310">Återställ sessionen vid start</translation>
 <translation id="5213891612754844763">Visa proxyinställningar</translation>
 <translation id="5214639857958972833">Bokmärket <ph name="BOOKMARK_TITLE" /> har skapats.</translation>
 <translation id="5215502535566372932">Välj land</translation>
@@ -8448,6 +8455,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7815680994978050279">En farlig nedladdning blockerades</translation>
 <translation id="7817361223956157679">Skärmtangentbordet fungerar inte i Linux-appar ännu</translation>
 <translation id="7818135753970109980">Ett nytt tema har lagts till (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">Efter omstarten kan du fortsätta där du slutade med appar, webbplatser och öppna fönster</translation>
 <translation id="7819605256207059717">Blockerades av organisationen</translation>
 <translation id="7820400255539998692">Radera <ph name="FILENAME" /> så att andra som använder enheten inte kan se lösenorden</translation>
 <translation id="7820561748632634942">Vill du tilldela ytterligare brytare?</translation>
@@ -8641,6 +8649,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7964458523224581615">Smaragdgrön</translation>
 <translation id="7966241909927244760">K&amp;opiera bildadress</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 objekt i listan med bokmärken}other{{COUNT} objekt i listan med bokmärken}}</translation>
+<translation id="7967776604158229756">Fler inställningar och behörigheter för webbappen</translation>
 <translation id="7968072247663421402">Leverantörsalternativ</translation>
 <translation id="7968742106503422125">Läsa och ändra data som du kopierar och klistrar in</translation>
 <translation id="7968833647796919681">Aktivera insamling av resultatdata</translation>
@@ -8669,6 +8678,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7987814697832569482">Anslut alltid via detta VPN</translation>
 <translation id="7988355189918024273">Aktivera tillgänglighetsfunktioner</translation>
 <translation id="7988805580376093356">Behåll ditt operativsystem och kör <ph name="DEVICE_OS" /> från USB.</translation>
+<translation id="7988876720343145286">Fler inställningar och behörigheter för Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Röst <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Inställningar för brytarstyrning</translation>
 <translation id="7992203134935383159">Talsyntes</translation>
@@ -9401,6 +9411,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8593450223647418235">Du kan inte öppna filer i Microsoft 365 förrän konfigureringen är klar.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{En webbplats har blockerats}other{# webbplatser har blockerats}}</translation>
 <translation id="8596540852772265699">Egna filformat</translation>
+<translation id="8597462463725156723">Aviseringar dyker inte upp på skärmen. Du kan fortfarande se aviseringar genom att klicka på Stör ej-ikonen nere till höger på skärmen.</translation>
 <translation id="8597845839771543242">Format på egenskap:</translation>
 <translation id="8599681327221583254">Minst en princip har inte konfigurerats korrekt. Kontakta administratören</translation>
 <translation id="8599864823732014237">Vill du hoppa över företagsregistrering?</translation>
@@ -9520,6 +9531,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8680251145628383637">Logga in om du vill få tillgång till samma bokmärken, historik, lösenord och andra inställningar på alla dina enheter. Dessutom blir du automatiskt inloggad på Googles tjänster.</translation>
 <translation id="8681886425883659911">Annonser blockeras på webbplatser som är kända för att visa påträngande eller vilseledande annonser</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> är ansluten och klar</translation>
+<translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8686142379631285985">Inloggad som <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Avbryt <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Tillgängligt</translation>

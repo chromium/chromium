@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C यन्त्र (बायाँ पोर्ट)</translation>
 <translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">एक्स्प्लोर खोल्नुहोस्</translation>
 <translation id="1294929383540927798">लक स्क्रिनको सूचनासम्बन्धी सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">सिफारिस गरिएका एपहरू</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">एप ग्रिडभित्र कुनै एपको आइकन सार्नुहोस्</translation>
 <translation id="2620016719323068571">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
+<translation id="2620900772667816510">ब्लुटुथ सुपर रिजोल्युसन</translation>
 <translation id="2621713457727696555">सुरक्षित पारियो</translation>
 <translation id="2624588537172718173">डिभाइसको अडियो र माइक्रोफोन</translation>
 <translation id="263399434338050016">"सबै चयन गर"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">डेस्क तथा विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्दै छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
 <translation id="3171170659304083361">इनपुट विधिसम्बन्धी सेटिङ</translation>
+<translation id="3176221688814061633">तपाईंको Chromebook वा ब्लुटुथ डिभाइसमा ब्लुटुथको पुरानो संस्करण चलिरहेको छ। अझ गुणस्तरीय अडियोका लागि ब्लुटुथ सुपर रिजोल्युसन अन गर्नुहोस् वा आन्तरिक माइक्रोफोन प्रयोग गर्नुहोस्।</translation>
 <translation id="3181441307743005334">पुन: सुरु हुन केही बेर लाग्छ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{एउटा यन्त्रमा जोडियो}other{# यन्त्रहरूमा जोडियो}}</translation>
 <translation id="320207200541803018">टाइमर सेट गर्नुहोस्</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">शुक्र ग्रह पृथ्वीबाट कति टाढा छ</translation>
 <translation id="7198435252016571249">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="7219573373513695352">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
+<translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। कुनै अद्यावधिक लागू गर्न यो Chromebook पुनः सुरु गर्नु पर्ने हुन्छ। यो प्रक्रिया पूरा हुन १ मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
 <translation id="7258828758145722155">हिजो सम्पादन गरिएको</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
 <translation id="736045644501761622">वालपेपर र शैली तय गर्नुहोस्</translation>
 <translation id="7371404428569700291">विन्डोको भिडियो रेकर्ड गर्नुहोस्</translation>
+<translation id="7372069265635026568">कुल <ph name="TOTAL_MEMORY" /> भण्डारणमध्ये <ph name="AVAILABLE_MEMORY" /> भण्डारण उपलब्ध छ</translation>
 <translation id="737315737514430195">यसले माइक्रोफोन प्रयोग गर्ने अनुमति चाहिने सबै एप तथा वेबसाइटहरूलाई माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="7377169924702866686">क्याप्स लक सक्रिय छ।</translation>
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>

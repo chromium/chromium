@@ -95,6 +95,7 @@
 <translation id="174937106936716857">合計ファイル数</translation>
 <translation id="1755345808328621801">このファイルは Windows ソフトウェアを使用する PC 用に作成されています。ご使用のデバイスでは Chrome OS が実行されているため、互換性がありません。Chrome ウェブストアで適切なアプリをお探しください。</translation>
 <translation id="1757915090001272240">全角ラテン文字</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> と共有</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
 <translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
@@ -212,6 +213,7 @@
 <translation id="2718540689505416944">Linux でアプリをインストール</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、詳細</translation>
 <translation id="2724954091494693138">トルコ語（F）キーボード</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> との共有を管理</translation>
 <translation id="2732839045120506979">ベトナム語（VNI）</translation>
 <translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="2764206540577097904">個人用の Google Workspace ストレージの空き容量がなくなりました。</translation>
@@ -306,6 +308,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
+<translation id="3523225005467146490">1 個のフォルダを <ph name="VM_NAME" /> と共有しました</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3548125359243647069">間違った PIN が繰り返し入力されました。</translation>
@@ -664,6 +667,7 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6177854567773392726">空き容量を確認しています… <ph name="ITEMS_FOUND" /> 個のアイテムが見つかりました</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="6187719147498869044">ハンガリー語</translation>
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199801702437275229">空き容量情報を待機中...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> とフォルダを共有</translation>
 <translation id="7008426324576352165">アップロードを完了するには、組織で追加のストレージが必要です。</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> 個のファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />（<ph name="ROOT_SUMMARY" />）</translation>
@@ -953,6 +958,7 @@
 <translation id="8335837413233998004">ベラルーシ語</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
@@ -962,6 +968,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ネットワーク、接続中</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8428213095426709021">設定</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダを <ph name="VM_NAME" /> と共有しました</translation>
 <translation id="8431909052837336408">SIM PIN を変更</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">SIM カードがありません</translation>

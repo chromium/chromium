@@ -148,6 +148,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1571697193564730395">Basculer le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Dézoomer lorsque la loupe est activée</translation>
 <translation id="1586324912145647027">Accédez aux bureaux 1 à 8</translation>
+<translation id="158838227375272121">Site Web de Google Classroom</translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
 <translation id="1592682369233288537">Bureau suivant : <ph name="NEXT_DESK_NAME" />, utilisez Recherche+Espace pour l'activer.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+flèche vers le bas</translation>
@@ -1151,6 +1152,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5790085346892983794">Opération réussie</translation>
 <translation id="5804651031882187592">Désactiver le paramètre « Verrouiller la carte SIM »</translation>
 <translation id="5805809050170488595">Cliquez pour activer <ph name="NETWORK_NAME" /></translation>
+<translation id="5823239091726045201">Google Tâches sur le Web</translation>
 <translation id="5825969630400862129">Paramètres des appareils connectés</translation>
 <translation id="5837036133683224804">Arrêter <ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Passer à la chanson suivante</translation>

@@ -4950,6 +4950,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4933484234309072027">вградена в <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронизирането на известията не се поддържа за телефони, работещи със служебен потребителски профил</translation>
 <translation id="4937676329899947885">Получават се данни за Wi-Fi мрежата ви</translation>
+<translation id="4938052313977274277">Скорост</translation>
 <translation id="4938788218358929252">тези идеи за рецепти</translation>
 <translation id="4939805055470675027">Не можа да се установи връзка с(ъс) <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">За запазване са налице <ph name="PRINTER_COUNT" /> принтера.</translation>
@@ -5196,6 +5197,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Разширени настройки за „<ph name="PRINTING_DESTINATION" />“</translation>
 <translation id="5154702632169343078">Тема</translation>
+<translation id="5154917547274118687">Памет</translation>
 <translation id="5155327081870541046">В адресната лента въведете прекия път за сайта или частта от Chrome, в които искате да търсите, като например @bookmarks. След това натиснете предпочитаната от вас клавишна комбинация и въведете дума за търсене.</translation>
 <translation id="5156638757840305347">Курсорът е откроен, когато се показва или се движи</translation>
 <translation id="5157250307065481244">Преглед на подробностите за сайта</translation>

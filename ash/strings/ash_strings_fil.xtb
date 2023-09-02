@@ -90,6 +90,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1293264513303784526">USB-C device (port sa kaliwa)</translation>
 <translation id="1293556467332435079">Mga File</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Buksan ang Explore</translation>
 <translation id="1294929383540927798">Baguhin ang mga setting ng notification ng lock-screen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">MGA INIREREKOMENDANG APP</translation>
@@ -387,6 +388,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2612614436418177118">Ilipat ang icon ng isang app sa grid ng app</translation>
 <translation id="2620016719323068571">Hanapin ang iyong mga <ph name="CATEGORY" />, file, app, at higit pa...</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Super Resolution ng Bluetooth</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="2624588537172718173">Audio at mikropono ng device</translation>
 <translation id="263399434338050016">"Piliin lahat"</translation>
@@ -511,6 +513,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3161500364292033097">Isara ang desk at mga window</translation>
 <translation id="316356270129335934">Iniro-roll back ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" />. Mare-reset ang iyong device at made-delete ang lahat ng data.</translation>
 <translation id="3171170659304083361">Mga setting ng mga pamamaraan ng pag-input</translation>
+<translation id="3176221688814061633">Gumagamit ng mas lumang bersyon ng Bluetooth ang iyong Chromebook o Bluetooth device. I-on ang Super Resolution ng Bluetooth o gumamit ng internal na mikropono para sa mas magandang kalidad ng audio.</translation>
 <translation id="3181441307743005334">Posibleng magtagal nang ilang sandali ang pag-restart</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Nakakonekta sa isang device}one{Nakakonekta sa # device}other{Nakakonekta sa # na device}}</translation>
 <translation id="320207200541803018">Magtakda ng timer</translation>
@@ -1497,6 +1500,7 @@ Kaka-install lang</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>
 <translation id="7198435252016571249">Nag-snap ang camera sa kanang sulok sa ibaba. Pagsasalungat sa surface ng system.</translation>
 <translation id="7219573373513695352">Walang nakakonektang device</translation>
+<translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> na memory | <ph name="TOTAL_MEMORY" /> sa kabuuan</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kailangang i-restart ang Chromebook na ito para mailapat ang isang update. Puwede itong umabot nang hanggang 1 minuto</translation>
 <translation id="7256634071279256947">Mikropono sa likod</translation>
 <translation id="7258828758145722155">Na-edit kahapon</translation>
@@ -1522,6 +1526,7 @@ Kaka-install lang</translation>
 <translation id="7360036564632145207">Kapag binago mo ang iyong setting ng proteksyon sa pag-access ng data para sa mga peripheral, mao-optimize ang performance</translation>
 <translation id="736045644501761622">Itakda ang wallpaper at style</translation>
 <translation id="7371404428569700291">I-record ang window</translation>
+<translation id="7372069265635026568">May available na <ph name="AVAILABLE_MEMORY" /> na memory sa kabuuang <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Pinapayagan nito ang access sa mikropono para sa lahat ng app at website na may pahintulot sa mikropono</translation>
 <translation id="7377169924702866686">Naka-on ang Caps Lock.</translation>
 <translation id="7377481913241237033">Kumonekta gamit ang code</translation>

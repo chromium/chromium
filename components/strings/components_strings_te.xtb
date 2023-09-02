@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">చెల్లింపు</translation>
 <translation id="1846432862466000825">ప్లాస్టిక్ (ఆర్కైవల్)</translation>
 <translation id="1848982255014129637">ఫోటో (హై-గ్లాస్)</translation>
+<translation id="1853392626017747777">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్ మూసివేయబడింది</translation>
 <translation id="1854180393107901205">ప్రసారాన్ని ఆపివేయి</translation>
 <translation id="1855370856221982654">బాక్సింగ్</translation>
 <translation id="1856713167556118146">అజ్ఞాత మోడ్ ఏమి చేయదు</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">కొత్త</translation>
 <translation id="1935995810530254458">ఏదైమైనా కాపీ చేయండి</translation>
 <translation id="1939175642807587452">నోటిఫికేషన్‌లను పంపడానికి సైట్ అనుమతి అడగవచ్చు</translation>
+<translation id="1940441167050915935">సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లను తొలగించండి</translation>
 <translation id="1943994668912612445">డిజైన్</translation>
 <translation id="1945968466830820669">మీరు మీ సంస్థ ఖాతాకు యాక్సెస్‌ను కోల్పోవచ్చు. లేదా గుర్తింపు స‌మాచారం చౌర్యానికి గురికావచ్చు. Chromium మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ను మార్చాల్సిందిగా సిఫార్సు చేస్తోంది.</translation>
 <translation id="1946849748901605102">12 x 15 అంగుళాలు</translation>
@@ -1728,6 +1730,7 @@
 <translation id="4628948037717959914">ఫోటో</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">క్యాష్‌బ్యాక్ లింక్ చేయబడింది</translation>
+<translation id="4631881646528206880">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్</translation>
 <translation id="4636930964841734540">సమాచారం</translation>
 <translation id="4638670630777875591">Chromiumలో అజ్ఞాత మోడ్</translation>
 <translation id="464342062220857295">శోధన ఫీచర్‌లు</translation>
@@ -1842,6 +1845,7 @@
 <translation id="4854853140771946034">Google Keepలో త్వరగా కొత్త నోట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="485902285759009870">కోడ్‌ను వెరిఫై చేస్తోంది...</translation>
 <translation id="4862630594858951805">ధర తగ్గినప్పుడు ఈమెయిల్స్ ద్వారా అలర్ట్‌లను పొందాలనుకుంటున్నారా?</translation>
+<translation id="4864406669374375262">క్లిప్‌బోర్డ్‌కు వెర్షన్ స్ట్రింగ్ కాపీ చేయబడింది</translation>
 <translation id="486459320933704969">ఈ వెబ్‌సైట్‌ను సందర్శించడానికి, తల్లి/తండ్రి లేదా గార్డియన్ తప్పనిసరిగా మిమ్మల్ని అనుమతించాలి</translation>
 <translation id="4866506163384898554">మీ కర్సర్‌‌ను చూపించడానికి |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| నొక్కండి</translation>
 <translation id="4873616204573862158">కళ్లజోళ్లు</translation>
@@ -3529,6 +3533,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" />లో ఉన్న పేజీలు అనువదించబడవు</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">మీ భద్రతకు వాటిల్లే ఆపదల గురించి మీకు అర్థం అయ్యి ఉంటే, హానికర ప్రోగ్రామ్‌లు తీసివేయబడటానికి ముందే మీరు <ph name="BEGIN_LINK" />ఈ సైట్‌ను సందర్శించవచ్చు<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">వర్చువల్ కార్డ్ ఎన్‌రోల్‌మెంట్ పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="8347658365704983341">దూర విద్య</translation>
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>

@@ -1108,6 +1108,7 @@
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3342018947887487892">لاحقًا، يمكن لموقع إلكتروني آخر تزوره أن يطلب هذه المعلومات، وهي إما مواضيع الإعلانات أو الإعلانات المقترَحة من المواقع الإلكترونية التي زرتها سابقًا.</translation>
 <translation id="3342366525167526994">فن تجميل الجسد</translation>
+<translation id="3344167530090084176">للدفع بشكلٍ أسرع في المرة المقبلة، احفظ بطاقتك ورمز الأمان على جهازك.</translation>
 <translation id="334438173029876234">معدات ألواح التزحلق</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
@@ -1411,6 +1412,7 @@
 <translation id="3962859241508114581">المقطع الصوتي السابق</translation>
 <translation id="3963721102035795474">وضع القارئ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
+<translation id="3966044442021752214">أمان المنتج</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3983340834939868135">مفتاح المرور من "<ph name="VENDOR_NAME" />"</translation>

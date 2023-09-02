@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">ચુકવણી કરો</translation>
 <translation id="1846432862466000825">પ્લાસ્ટિક (આર્કાઇવલ)</translation>
 <translation id="1848982255014129637">ફોટો (હાઇ-ગ્લોસ)</translation>
+<translation id="1853392626017747777">વર્ચ્યુઅલ કાર્ડની નોંધણી બંધ છે</translation>
 <translation id="1854180393107901205">કાસ્ટ કરવાનું રોકો</translation>
 <translation id="1855370856221982654">બૉક્સિંગ</translation>
 <translation id="1856713167556118146">છૂપો મોડ શું કરતો નથી</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">નવું</translation>
 <translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1939175642807587452">નોટિફિકેશન મોકલવાનું પૂછી શકે છે</translation>
+<translation id="1940441167050915935">સાચવેલા સુરક્ષા કોડ ડિલીટ કરો</translation>
 <translation id="1943994668912612445">ડિઝાઇન</translation>
 <translation id="1945968466830820669">તમે તમારી સંસ્થાના એકાઉન્ટ માટે ઍક્સેસ ગુમાવી શકો છો અથવા તમને ઓળખ ચોરીનો અનુભવ થઈ શકે છે. Chromium તમને હમણાં જ તમારો પાસવર્ડ બદલવાની ભલામણ કરે છે.</translation>
 <translation id="1946849748901605102">12 x 15 ઇંચ</translation>
@@ -1107,6 +1109,7 @@
 <translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3342018947887487892">પછીથી, તમે મુલાકાત લીધેલી કોઈ સાઇટ આ માહિતી માગી શકે છે — પછી તે જાહેરાતના તમારા વિષયો હોય અથવા તો તમે મુલાકાત લીધેલી સાઇટ દ્વારા સૂચવેલી જાહેરાતો હોય.</translation>
 <translation id="3342366525167526994">બૉડી આર્ટ</translation>
+<translation id="3344167530090084176">આગલી વખતે ઝડપથી ચુકવણી કરવા માટે, તમારા ડિવાઇસમાં તમારું કાર્ડ અને સિક્યુરિટી કોડ સાચવો</translation>
 <translation id="334438173029876234">સ્કેટબોર્ડિંગનું સાધન</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">પ્રૉક્સી સેટિંગ બદલો...</translation>
@@ -1409,6 +1412,7 @@
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963721102035795474">રીડર મોડ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટમાંથી }one{# સાઇટમાંથી }other{# સાઇટમાંથી }}</translation>
+<translation id="3966044442021752214">પ્રોડક્ટની સલામતી</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> અવરોધિત છે</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />"માંથી પાસકી</translation>
@@ -1724,6 +1728,7 @@
 <translation id="4628948037717959914">ફોટો</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">કૅશબૅક લિંક કર્યું છે</translation>
+<translation id="4631881646528206880">વર્ચ્યુઅલ કાર્ડની નોંધણી</translation>
 <translation id="4636930964841734540">માહિતી</translation>
 <translation id="4638670630777875591">Chromiumમાં છૂપો મોડ</translation>
 <translation id="464342062220857295">શોધ સુવિધાઓ</translation>
@@ -1838,6 +1843,7 @@
 <translation id="4854853140771946034">Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવો</translation>
 <translation id="485902285759009870">કોડ ચકાસી રહ્યાં છીએ...</translation>
 <translation id="4862630594858951805">જ્યારે કિંમતમાં ઘટાડો થાય, ત્યારે ઇમેઇલ મેળવવા માગો છો?</translation>
+<translation id="4864406669374375262">ક્લિપબોર્ડ પર કૉપિ કરેલી વર્ઝન સ્ટ્રિંગ</translation>
 <translation id="486459320933704969">માતાપિતા અથવા વાલીએ જણાવવું આવશ્યક છે કે જો તમે આ વેબસાઇટની મુલાકાત લો, તો તેમાં કોઈ વાંધો નથી</translation>
 <translation id="4866506163384898554">તમારું કર્સર બતાવવા |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| દબાવો</translation>
 <translation id="4873616204573862158">ચશ્માં</translation>
@@ -3525,6 +3531,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" />માં છે તે પેજનો અનુવાદ થશે નહીં</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">જો તમે તમારી સુરક્ષાના જોખમોને સમજો છો, તો તમે જોખમી પ્રોગ્રામ્સ દૂર કરી દેવામાં આવે તે પહેલાં <ph name="BEGIN_LINK" />આ સાઇટની મુલાકાત<ph name="END_LINK" /> લઈ શકો છો.</translation>
+<translation id="8344776605855290140">વર્ચ્યુઅલ કાર્ડની નોંધણી પૂરી ઊંચાઈ સુધી ખોલવામાં આવી છે</translation>
 <translation id="8347658365704983341">દૂરસ્થ શિક્ષણ</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>

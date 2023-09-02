@@ -813,6 +813,7 @@
 <translation id="1630768113285622200">Перезапустить и продолжить</translation>
 <translation id="1631503405579357839">Дальтонизм</translation>
 <translation id="1632278969378690607">Клавиша поиска + нажатие</translation>
+<translation id="1632293440289326475">Включить режим энергосбережения, чтобы продлить время работы от батареи</translation>
 <translation id="1632756664321977232">Инструмент "Кадрирование"</translation>
 <translation id="163309982320328737">Первоначальная ширина символа – полная</translation>
 <translation id="1633947793238301227">Выключить Google Ассистента</translation>
@@ -1274,6 +1275,7 @@
 <translation id="1988259784461813694">Требования</translation>
 <translation id="1988733631391393183">Показывать команды Брайля в меню ChromeVox</translation>
 <translation id="1989112275319619282">Выбрать</translation>
+<translation id="1989601282983766341">Настроить уведомления приложений, режим "Не беспокоить" и значки уведомлений</translation>
 <translation id="1989903373608997757">Использовать всегда</translation>
 <translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1990512225220753005">Не показывать ярлыки на этой странице</translation>
@@ -2259,6 +2261,7 @@
 <translation id="2749756011735116528">Войти в <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Проверять грамматику и правописание</translation>
+<translation id="2750020734439919571">Дополнительные настройки и разрешения приложений Chrome</translation>
 <translation id="2750602041558385535">Скачивание непроверенного файла заблокировано.</translation>
 <translation id="2754226775788136540">Выполняется поиск устройств с Быстрым подключением, сохраненных в аккаунте <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="2754825024506485820">В Google Play вы найдете любые интересующие вас приложения. Их можно установить в любое время.</translation>
@@ -2409,6 +2412,7 @@
 <translation id="286674810810214575">Проверка источников питания…</translation>
 <translation id="2867768963760577682">Открыть в закрепленной вкладке</translation>
 <translation id="2868746137289129307">Это устаревшее расширение отключено в соответствии с корпоративной политикой. Когда появится новая версия, оно может включиться автоматически.</translation>
+<translation id="2869511363030898130">Открыть в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2870909136778269686">Обновление...</translation>
 <translation id="2871733351037274014">Предзагрузка страниц</translation>
@@ -4935,6 +4939,7 @@
 <translation id="4933484234309072027">встроен в <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронизация уведомлений недоступна, если на телефоне используется рабочий профиль</translation>
 <translation id="4937676329899947885">Получение данных для подключения к сети Wi-Fi</translation>
+<translation id="4938052313977274277">Скорость</translation>
 <translation id="4938788218358929252">эти рецепты</translation>
 <translation id="4939805055470675027">Не удалось подключиться к сети "<ph name="CARRIER_NAME" />"</translation>
 <translation id="4940364377601827259">Принтеров, доступных для сохранения: <ph name="PRINTER_COUNT" />.</translation>
@@ -5181,6 +5186,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" /> – дополнительные настройки</translation>
 <translation id="5154702632169343078">Тема</translation>
+<translation id="5154917547274118687">Память</translation>
 <translation id="5155327081870541046">В адресной строке введите быструю команду для сайта, на котором нужно выполнить поиск, например @bookmarks. Затем нажмите нужное сочетание клавиш и добавьте поисковый запрос.</translation>
 <translation id="5156638757840305347">Выделять текстовый курсор, когда он движется или появляется</translation>
 <translation id="5157250307065481244">Просмотр данных о сайте</translation>
@@ -5250,6 +5256,7 @@
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5213114823401215820">Восстановить закрытую группу</translation>
 <translation id="5213481667492808996">Служба передачи данных "<ph name="NAME" />" готова к работе.</translation>
+<translation id="5213658238771284310">Восстанавливать сеанс при запуске</translation>
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5214639857958972833">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
@@ -8439,6 +8446,7 @@
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">После перезапуска вы сможете продолжить работу с открытыми ранее приложениями, сайтами и окнами</translation>
 <translation id="7819605256207059717">Заблокировано вашей организацией</translation>
 <translation id="7820400255539998692">Чтобы другие пользователи, которые работают с этим устройством, не могли посмотреть ваши пароли, удалите файл <ph name="FILENAME" />.</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
@@ -8632,6 +8640,7 @@
 <translation id="7964458523224581615">Вер-гинье</translation>
 <translation id="7966241909927244760">&amp;Копировать URL картинки</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 объект в списке закладок}one{{COUNT} объект в списке закладок}few{{COUNT} объекта в списке закладок}many{{COUNT} объектов в списке закладок}other{{COUNT} объекта в списке закладок}}</translation>
+<translation id="7967776604158229756">Дополнительные настройки и разрешения веб-приложений</translation>
 <translation id="7968072247663421402">Выбор поставщика услуг</translation>
 <translation id="7968742106503422125">Просмотр и изменение копируемых и вставляемых данных</translation>
 <translation id="7968833647796919681">Разрешить сбор данных о производительности</translation>
@@ -8660,6 +8669,7 @@
 <translation id="7987814697832569482">Всегда использовать эту VPN-сеть</translation>
 <translation id="7988355189918024273">Включить функции для людей с ограниченными возможностями</translation>
 <translation id="7988805580376093356">Оставить текущую ОС и запустить <ph name="DEVICE_OS" /> с USB-накопителя</translation>
+<translation id="7988876720343145286">Дополнительные настройки и разрешения Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, голос <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Настройки функции Switch Access</translation>
 <translation id="7992203134935383159">Синтез речи</translation>
@@ -9392,6 +9402,7 @@
 <translation id="8593450223647418235">Если не завершить настройку, вы не сможете открывать файлы в Microsoft 365.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{Доступ запрещен 1 сайту}one{Доступ запрещен # сайту}few{Доступ запрещен # сайтам}many{Доступ запрещен # сайтам}other{Доступ запрещен # сайта}}</translation>
 <translation id="8596540852772265699">Пользовательские файлы</translation>
+<translation id="8597462463725156723">Уведомления не будут появляться на экране. Вы сможете их посмотреть, нажав на значок "Не беспокоить" в правом нижнем углу экрана.</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
 <translation id="8599681327221583254">Одно или несколько правил настроены неправильно. Обратитесь к администратору.</translation>
 <translation id="8599864823732014237">Пропустить корпоративную регистрацию?</translation>
@@ -9511,6 +9522,7 @@
 <translation id="8680251145628383637">Войдите в аккаунт, чтобы синхронизировать закладки, историю, пароли и другие настройки на всех устройствах. Одновременно будет выполнена авторизация в сервисах Google.</translation>
 <translation id="8681886425883659911">Объявления блокируются на сайтах, где есть навязчивая или вводящая в заблуждение реклама</translation>
 <translation id="8682730193597992579">Принтер <ph name="PRINTER_NAME" /> подключен и готов к работе.</translation>
+<translation id="8685540043423825702">Ваш профиль Chrome</translation>
 <translation id="8686142379631285985">Вы вошли как <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />.</translation>
 <translation id="8687103160920393343">Отменить скачивание файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8688672835843460752">Свободно</translation>

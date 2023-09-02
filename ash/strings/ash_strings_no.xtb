@@ -90,6 +90,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1293264513303784526">USB-C-enhet (porten på venstre side)</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Åpne Utforsk</translation>
 <translation id="1294929383540927798">Endre innstillingene for varsler på låseskjermen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ANBEFALTE APPER</translation>
@@ -387,6 +388,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2612614436418177118">Flytt et appikon i apprutenettet</translation>
 <translation id="2620016719323068571">Søk i <ph name="CATEGORY" />, filer, apper med mer …</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Sikret</translation>
 <translation id="2624588537172718173">Enhetslyd og mikrofon</translation>
 <translation id="263399434338050016">«Merk alt»</translation>
@@ -511,6 +513,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3161500364292033097">Lukk skrivebordet og vinduene</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> utfører en rollback på <ph name="DEVICE_TYPE" />. Enheten blir tilbakestilt, og alle data blir slettet.</translation>
 <translation id="3171170659304083361">Innstillinger for inndatametoder</translation>
+<translation id="3176221688814061633">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Slå på Bluetooth Super Resolution eller bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund å starte på nytt</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Koblet til en enhet}other{Koblet til # enheter}}</translation>
 <translation id="320207200541803018">Start en nedtelling</translation>
@@ -1498,6 +1501,7 @@ Nylig installert</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>
 <translation id="7219573373513695352">Ingen enheter er koblet til</translation>
+<translation id="7229029500464092426">Minne <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totalt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook må startes på nytt for å ta i bruk en oppdatering. Dette kan ta opptil ett minutt.</translation>
 <translation id="7256634071279256947">Mikrofon bak</translation>
 <translation id="7258828758145722155">Redigert i går</translation>
@@ -1523,6 +1527,7 @@ Nylig installert</translation>
 <translation id="7360036564632145207">Hvis du endrer innstillingen for datatilgangsbeskyttelse for eksterne enheter, kan det optimalisere ytelsen</translation>
 <translation id="736045644501761622">Angi bakgrunn og stil</translation>
 <translation id="7371404428569700291">Ta opp vinduet</translation>
+<translation id="7372069265635026568">Minne: <ph name="AVAILABLE_MEMORY" /> er ledig av totalt <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dette gir mikrofontilgang til alle apper og nettsteder som har mikrofontillatelsen</translation>
 <translation id="7377169924702866686">Caps Lock er på.</translation>
 <translation id="7377481913241237033">Tilknytt med en kode</translation>

@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">অ্যাকশন এবং প্ল্যাটফর্ম গেম</translation>
 <translation id="1413809658975081374">গোপনীয়তা ত্রুটি</translation>
 <translation id="1414134146594747368">প্রি-স্কুল</translation>
+<translation id="141826476809826269">এক্সট্র্যাক্ট করা টেক্সটের শেষ অংশ</translation>
 <translation id="1419305130220238697">'Chrome-এ ডাউনলোড ম্যানেজ করুন' বোতাম, Chrome-এ আপনার ডাউনলোড করা ফাইল ম্যানেজ করতে এটি চালু করুন</translation>
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">এখন যে সাইট দেখার চেষ্টা করছেন তা নকল বলে মনে হচ্ছে। ইউআরএলে সামান্য বা সহজে দেখা যায় না এমন পরিবর্তন করে আক্রমণকারীরা সাইট নকল করে।</translation>
 <translation id="1532118530259321453">এই পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
+<translation id="1537807545287921620">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। সংশ্লিষ্ট মেনু খুলে "পিডিএফ থেকে টেক্সট এক্সট্র্যাক্ট করুন" বিকল্প চালু করুন</translation>
 <translation id="1539840569003678498">রিপোর্ট পাঠানো হয়েছে:</translation>
 <translation id="1542105669288201090">ব্যবসা সম্পর্কিত প্রশিক্ষণ</translation>
 <translation id="1545757265410828525">দাম সম্পর্কিত ইতিহাস</translation>
@@ -867,6 +869,7 @@
 <translation id="2803306138276472711">Google নিরাপদ ব্রাউজিং সাম্প্রতিক <ph name="SITE" />-এ <ph name="BEGIN_LINK" />ম্যালওয়্যার শনাক্ত করেছে<ph name="END_LINK" />। যেসব ওয়েবসাইট সাধারণত নিরাপদ থাকে, সেগুলি কখনও কখনও ম্যালওয়্যার দিয়ে আক্রান্ত হয়।</translation>
 <translation id="2807052079800581569">ছবি Y পজিশন</translation>
 <translation id="2808278141522721006">আপনি <ph name="SETTINGS" />-এ Windows Hello চালু বা বন্ধ করতে পারবেন</translation>
+<translation id="2814184336982254349">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। সংশ্লিষ্ট মেনু খুলতে সার্চ বোতামের সাথে m বোতাম প্রেস করুন এবং "পিডিএফ থেকে টেক্সট এক্সট্র্যাক্ট করুন"</translation>
 <translation id="2818338148457093657">সৌন্দর্য পরিষেবা ও স্পা</translation>
 <translation id="2820957248982571256">স্ক্যান করা হচ্ছে…</translation>
 <translation id="2824775600643448204">ঠিকানা এবং সার্চ দণ্ড</translation>
@@ -1110,6 +1113,7 @@
 <translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3342018947887487892">তারপরে, আপনি যে সাইটটি ভিজিট করেন সেটি এই তথ্য জানতে চাইতে পারে — আপনার বিজ্ঞাপনের বিষয় অথবা আপনি যে সাইটগুলি ভিজিট করেন তার দ্বারা সাজেস্ট করা বিজ্ঞাপন।</translation>
 <translation id="3342366525167526994">বডি আর্ট</translation>
+<translation id="3344167530090084176">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার ডিভাইসে কার্ড ও নিরাপত্তা কোড সেভ করে রাখুন</translation>
 <translation id="334438173029876234">স্কেটবর্ডিংয়ের সরঞ্জাম</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">প্রক্সি সেটিংস পরিবর্তন করুন...</translation>
@@ -1170,6 +1174,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> আপনার ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে চায়</translation>
 <translation id="3461824795358126837">হাইলাইটার</translation>
 <translation id="3462200631372590220">উন্নত করার বিশদ বিবরণ, লুকান</translation>
+<translation id="3465972433695735758">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। Google AI-এর সাহায্যে টেক্সট এক্সট্র্যাক্ট করা হয়েছে</translation>
 <translation id="346601286295919445">কেমিস্ট্রি</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, এখন খোলা আছে, খোলা ট্যাবে যেতে ট্যাব প্রেস করে এন্টার প্রেস করুন</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -1187,6 +1192,7 @@
 <translation id="350069200438440499">ফাইলের নাম:</translation>
 <translation id="3501300228850242680">মেটাল (মিউজিক)</translation>
 <translation id="350421688684366066">লেবেল (হাই-গ্লসি)</translation>
+<translation id="350763432931695541">পরবর্তী কয়েকটি পৃষ্ঠা থেকে টেক্সট এক্সট্র্যাক্ট করা হচ্ছে</translation>
 <translation id="3507869775212388416">আইন সংক্রান্ত চাকরি</translation>
 <translation id="3507936815618196901">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চায়</translation>
 <translation id="3512163584740124171">একই নীতির গ্রুপের অন্য একটি নীতি অগ্রাধিকার পেয়েছে, তাই এই নীতি অগ্রাহ্য করা হয়েছে।</translation>
@@ -1412,6 +1418,7 @@
 <translation id="3962859241508114581">আগের ট্র্যাক চালান</translation>
 <translation id="3963721102035795474">পাঠক মোড</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{কিছুই নয়}=1{১টি সাইট থেকে }one{#টি সাইট থেকে }other{#টি সাইট থেকে }}</translation>
+<translation id="3966044442021752214">প্রোডাক্টের নিরাপত্তা</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> অবরুদ্ধ হয়ে রয়েছে</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" থেকে পাসকী</translation>
@@ -2852,6 +2859,7 @@
 <translation id="6973988895180423160">৩.৫ x ৫ ইঞ্চি</translation>
 <translation id="6978236010531171013">তবুও শেয়ার করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">এক্সট্র্যাক্ট করা টেক্সটের শুরুর অংশ</translation>
 <translation id="6979440798594660689">মিউট (ডিফল্ট)</translation>
 <translation id="6987806006823772670">এনভেলপ (কোটেড)</translation>
 <translation id="6989763994942163495">উন্নত সেটিংস দেখান ...</translation>
@@ -2907,6 +2915,7 @@
 <translation id="7102760431686146931">রান্না করার ও খাবারের বাসনপত্র</translation>
 <translation id="7105998430540165694">iCloud কী-চেন থেকে পাসকী</translation>
 <translation id="7106762743910369165">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে</translation>
+<translation id="7107249414147762907">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। কোনও টেক্সট এক্সট্র্যাক্ট করা হয়নি</translation>
 <translation id="7108338896283013870">লুকান</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> আপনার ক্যামেরা ব্যবহার করতে চায়</translation>
 <translation id="7108819624672055576">একটি এক্সটেনশন দ্বারা অনুমোদিত</translation>
@@ -3919,6 +3928,7 @@
 <translation id="917450738466192189">সার্ভারের সার্টিফিকেট অকার্যকর৷</translation>
 <translation id="9174623988242579721">কাস্টম ও দ্রুতগামী যানবাহন</translation>
 <translation id="9174917557437862841">ট্যাব সুইচ বোতাম, এই ট্যাবে পরিবর্তন করতে এন্টার প্রেস করুন</translation>
+<translation id="9177283544810807743">এই পিডিএফ অ্যাক্সেস করা যাচ্ছে না। Google AI-এর সাহায্যে টেক্সট এক্সট্র্যাক্ট করা হচ্ছে</translation>
 <translation id="9179703756951298733">Chrome সেটিংস থেকে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করুন</translation>
 <translation id="9179907736442194268">কোনও সাইটে দাম কমলে সেই বিষয়ে ইমেল বিজ্ঞপ্তি পান</translation>
 <translation id="9183302530794969518">Google Docs</translation>

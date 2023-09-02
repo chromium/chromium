@@ -221,6 +221,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1413407968866574823">Gry akcji i platformowe</translation>
 <translation id="1413809658975081374">Błąd dotyczący prywatności</translation>
 <translation id="1414134146594747368">Edukacja przedszkolna</translation>
+<translation id="141826476809826269">Koniec wyodrębnionego tekstu</translation>
 <translation id="1419305130220238697">Przycisk Zarządzaj pobranymi plikami w Chrome; aktywuj, aby zarządzać pobranymi plikami w Chrome</translation>
 <translation id="1422930527989633628">Może prosić o zgodę na wykrywanie urządzeń Bluetooth w pobliżu</translation>
 <translation id="1426410128494586442">Tak</translation>
@@ -277,6 +278,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1530707389502320859">Próbujesz otworzyć stronę, która wygląda na fałszywą. Złośliwe strony czasami podszywają się pod inne, wprowadzając małe i trudne do zauważenia zmiany w adresie URL.</translation>
 <translation id="1532118530259321453">Komunikat z bieżącej strony</translation>
 <translation id="1536390784834419204">Przetłumacz stronę</translation>
+<translation id="1537807545287921620">Ten plik PDF jest niedostępny. Otwórz menu kontekstowe i włącz „Wyodrębnianie tekstu z pliku PDF”</translation>
 <translation id="1539840569003678498">Wysłanie raportu:</translation>
 <translation id="1542105669288201090">Edukacja biznesowa</translation>
 <translation id="1545757265410828525">Historia cen</translation>
@@ -864,6 +866,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2803306138276472711">Bezpieczne przeglądanie Google <ph name="BEGIN_LINK" />wykryło ostatnio złośliwe oprogramowanie<ph name="END_LINK" /> na <ph name="SITE" />. Strony, które zazwyczaj są bezpieczne, zostają czasem zainfekowane destrukcyjnym oprogramowaniem.</translation>
 <translation id="2807052079800581569">Pozycja Y obrazu</translation>
 <translation id="2808278141522721006">Jeśli chcesz włączyć lub wyłączyć Windows Hello, otwórz <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Ten plik PDF jest niedostępny. Naciśnij klawisz wyszukiwania + M, aby otworzyć menu kontekstowe, i włącz „Wyodrębnianie tekstu z pliku PDF”</translation>
 <translation id="2818338148457093657">Usługi kosmetyczne i spa</translation>
 <translation id="2820957248982571256">Skanuję…</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
@@ -1168,6 +1171,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3461266716147554923"><ph name="URL" /> chce mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="3461824795358126837">Zakreślacz</translation>
 <translation id="3462200631372590220">Ukryj zaawansowane</translation>
+<translation id="3465972433695735758">Ten plik PDF jest niedostępny. Tekst wyodrębniony z wykorzystaniem AI od Google</translation>
 <translation id="346601286295919445">Chemia</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, obecnie otwarta. Naciśnij klawisz Tab, a potem Enter, by przełączyć się na otwartą kartę</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zamknąć wszystkie otwarte okna incognito, naciśnij Tab, a potem Enter.</translation>
@@ -1185,6 +1189,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="350069200438440499">Nazwa pliku:</translation>
 <translation id="3501300228850242680">Muzyka metalowa</translation>
 <translation id="350421688684366066">Etykiety (wysoki połysk)</translation>
+<translation id="350763432931695541">Wyodrębniam tekst na kilku kolejnych stronach</translation>
 <translation id="3507869775212388416">Praca w sektorze prawnym</translation>
 <translation id="3507936815618196901">Tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery.</translation>
 <translation id="3512163584740124171">Ta zasada jest ignorowana, ponieważ inna zasada z tej samej grupy zasad ma wyższy priorytet.</translation>
@@ -2850,6 +2855,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6973988895180423160">3,5 x 5 cali</translation>
 <translation id="6978236010531171013">Udostępnij mimo to</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
+<translation id="6979332652936434520">Początek wyodrębnionego tekstu</translation>
 <translation id="6979440798594660689">Wycisz (domyślnie)</translation>
 <translation id="6987806006823772670">Koperta (powlekana)</translation>
 <translation id="6989763994942163495">Pokaż ustawienia zaawansowane...</translation>
@@ -2905,6 +2911,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7102760431686146931">Garnki i zastawy stołowe</translation>
 <translation id="7105998430540165694">Klucz dostępu z pęku kluczy iCloud</translation>
 <translation id="7106762743910369165">Przeglądarka jest zarządzana przez Twoją organizację</translation>
+<translation id="7107249414147762907">Ten plik PDF jest niedostępny. Nie udało się wyodrębnić tekstu</translation>
 <translation id="7108338896283013870">Ukryj</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> chce korzystać z kamery</translation>
 <translation id="7108819624672055576">Dozwolone przez rozszerzenie</translation>
@@ -3916,6 +3923,7 @@ Dodatkowe informacje:
 <translation id="917450738466192189">Certyfikat serwera jest nieprawidłowy.</translation>
 <translation id="9174623988242579721">Pojazdy nietypowe i specjalne</translation>
 <translation id="9174917557437862841">Przycisk przełączania kart, naciśnij Enter, by przełączyć na tę kartę</translation>
+<translation id="9177283544810807743">Ten plik PDF jest niedostępny. Wyodrębnianie tekstu z wykorzystaniem AI od Google</translation>
 <translation id="9179703756951298733">Zarządzaj płatnościami i kartami kredytowymi w ustawieniach Chrome</translation>
 <translation id="9179907736442194268">Otrzymuj alerty e-mail, jeśli produkt stanieje w dowolnej witrynie</translation>
 <translation id="9183302530794969518">Dokumenty Google</translation>

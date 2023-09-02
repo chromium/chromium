@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="1511320244449497906">Has iniciado sesión y se están sincronizando tus datos con una cuenta gestionada por <ph name="DOMAIN" />, cuyo administrador ahora puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
+<translation id="1516692594929310090">Abre la cuadrícula de pestañas de Chrome.</translation>
 <translation id="1526327845902180576">Si esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
 
@@ -86,6 +87,7 @@ Notas importantes:
 <translation id="4633328489441962921">Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="4636900170638246267">Inicia sesión en este sitio y en Chrome.</translation>
 <translation id="4698415050768537821">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
+<translation id="4761869838909035636">Realizar comprobación de seguridad de Chrome</translation>
 <translation id="4819268619367838612">Para ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google.
 
@@ -113,6 +115,7 @@ Notas importantes:
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Sin conexión, Chrome no puede comprobar si hay actualizaciones</translation>
 <translation id="5716154293141027663">Abre Chrome siempre que toques enlaces en otras aplicaciones</translation>
+<translation id="5808435672482059465">Ver tu historial de Chrome</translation>
 <translation id="5998675059699164418">Tu organización requiere que inicies sesión para usar Chrome.</translation>
 <translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="6063091872902370735">Permitir el inicio de sesión en Chrome</translation>
@@ -132,6 +135,7 @@ Notas importantes:
 
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome no ha podido comprobar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="6916015246697034114">Buscar por voz en Chrome</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="6975725306479268850">Elige Chrome para la función Autocompletar</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>
@@ -148,6 +152,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7400722733683201933">Información de Google Chrome</translation>
 <translation id="7501046334262221972">Para seleccionar Chrome como navegador predeterminado, abre Ajustes, toca Aplicación de navegador predeterminada y, después, selecciona Chrome.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
+<translation id="7581063337314642333">Acceder a la cuadrícula de pestañas en Chrome</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="7669869107155339016">Ve a la configuración de Chrome.</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
@@ -155,10 +160,13 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="7754633291442704733">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, tus marcadores, tu historial, tus contraseñas y otros ajustes de Chrome que almacenes en esta cuenta. Si cierras sesión, tus datos se borrarán de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu cuenta de Google gestionada y estarán disponibles para tu organización. Tu organización también puede establecer políticas de usuarios específicas de esa cuenta que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="7780154209050837198">Para sacarle el máximo partido a Chrome, inicia sesión en Chrome con tu cuenta de Google.</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
+<translation id="7897703007638178753">Ver las pestañas recientes de Chrome</translation>
+<translation id="7925119591961387184">Selecciona Chrome.</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="804638182476029347">Permitir notificaciones de Chrome para recibir alertas de bajadas de precio</translation>
 <translation id="81358522153858150">Chrome ahora admite políticas de usuarios para tu cuenta gestionada</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
+<translation id="8174679664544842874">Abre una nueva pestaña en Chrome.</translation>
 <translation id="8213758103105806860">Ver marcadores de Chrome</translation>
 <translation id="8357607116237445042">Elige si quieres borrar o conservar tus datos de Chrome en este dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
@@ -172,8 +180,10 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
   2. Toca Aplicación de navegador predeterminada
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Toca Chrome y, a continuación, Aplicación de navegador predeterminada.</translation>
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protégete con Google Chrome</translation>
+<translation id="8760668027640688122">Abrir nueva pestaña en Chrome</translation>
 <translation id="8765470054473112089">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
@@ -183,6 +193,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Gestor de contraseñas de Google en este dispositivo.</translation>
+<translation id="8949681853939555434">Establecer Chrome como tu navegador predeterminado</translation>
 <translation id="8969290730818637510">Si esta opción está activada:
 <ph name="BEGIN_INDENT" />  • Ayuda a mejorar Chrome para las personas que lo usan de la misma manera que tú.<ph name="END_INDENT" />
 
@@ -194,4 +205,5 @@ Notas importantes:
   • Si activas la sincronización, puede que las métricas también incluyan información sobre las URLs que visites.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>
 <translation id="9122931302567044771">Esto significa que Chrome siempre solicitará la vista del sitio web como ordenador.</translation>
+<translation id="9181628561061032322">Abre las pestañas recientes de Chrome.</translation>
 </translationbundle>

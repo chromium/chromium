@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ॲक्शन आणि प्लॅटफॉर्म गेम</translation>
 <translation id="1413809658975081374">गोपनीयता एरर</translation>
 <translation id="1414134146594747368">बालवाडी</translation>
+<translation id="141826476809826269">काढलेल्या मजकुराचा शेवट</translation>
 <translation id="1419305130220238697">Chrome मधील डाउनलोड व्यवस्थापित करा बटण, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
 <translation id="1426410128494586442">होय</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">तुम्ही नुकतेच भेट देण्याचा प्रयत्न करत असलेली साइट बनावट असल्याची दिसते. आक्रमणकर्ते काहीवेळा URL मध्ये छोटे व पाहण्यासाठी कठीण असलेले बदल करून बनावट साइट बनवतात.</translation>
 <translation id="1532118530259321453">या पेजचे म्हणणे हे आहे की</translation>
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
+<translation id="1537807545287921620">ही PDF ॲक्सेस करण्यायोग्य नाही. कॉंटेक्स्ट मेनू उघडा आणि "PDF मधून मजकूर काढा" सुरू करा</translation>
 <translation id="1539840569003678498">अहवाल पाठवला:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षण</translation>
 <translation id="1545757265410828525">किमतीचा इतिहास</translation>
@@ -864,6 +866,7 @@
 <translation id="2803306138276472711">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" /> वर <ph name="BEGIN_LINK" />मालवेअर आढळले आहे<ph name="END_LINK" />. सामान्यतः सुरक्षित असलेल्या वेबसाइट काहीवेळा मालवेअरमुळे संक्रमित झालेल्या असतात.</translation>
 <translation id="2807052079800581569">इमेज Y स्थिती</translation>
 <translation id="2808278141522721006">तुम्ही <ph name="SETTINGS" /> मध्ये Windows Hello सुरू किंवा बंद करू शकता</translation>
+<translation id="2814184336982254349">ही PDF ॲक्सेस करण्यायोग्य नाही. कॉंटेक्स्ट मेनू उघडण्यासाठी सर्च + M प्रेस करा आणि "PDF मधून मजकूर काढा" सुरू करा</translation>
 <translation id="2818338148457093657">सौंदर्यासंबंधित सेवा आणि स्पा</translation>
 <translation id="2820957248982571256">स्कॅन होत आहे...</translation>
 <translation id="2824775600643448204">पत्ता आणि शोध बार</translation>
@@ -1107,6 +1110,7 @@
 <translation id="3340978935015468852">सेटिंग्ज</translation>
 <translation id="3342018947887487892">नंतर, तुम्ही भेट दिलेली साइट ही माहिती मागू शकते — तुमचे जाहिरातीचे विषय किंवा तुम्ही भेट दिलेल्या साइटद्वारे सुचवलेल्या जाहिराती.</translation>
 <translation id="3342366525167526994">बॉडी आर्ट</translation>
+<translation id="3344167530090084176">पुढील वेळी आणखी जलद पेमेंट करण्यासाठी, तुमचे कार्ड आणि सुरक्षा कोड तुमच्या डिव्हाइसवर सेव्ह करा</translation>
 <translation id="334438173029876234">स्केटबोर्डिंग उपकरणे</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
@@ -1167,6 +1171,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ला क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पहायच्या आहेत</translation>
 <translation id="3461824795358126837">हायलाइटर</translation>
 <translation id="3462200631372590220">प्रगत लपवा</translation>
+<translation id="3465972433695735758">ही PDF ॲक्सेस करण्यायोग्य नाही. मजकूर काढला आहे, Google AI द्वारे प्रायोजित</translation>
 <translation id="346601286295919445">रसायनशास्त्र</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, सध्या खुला, उघड्या टॅबवर स्विच करण्यासाठी टॅब, त्यानंतर एंटर प्रेस करा</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -1183,6 +1188,7 @@
 <translation id="350069200438440499">फाइल नाव:</translation>
 <translation id="3501300228850242680">मेटल (संगीत)</translation>
 <translation id="350421688684366066">लेबल (हाय-ग्लॉस)</translation>
+<translation id="350763432931695541">पुढील काही पानांमधील मजकूर काढत आहे</translation>
 <translation id="3507869775212388416">कायदेविषयक नोकर्‍या</translation>
 <translation id="3507936815618196901">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करा आणि कॅमेर्‍याचे स्थान ट्रॅक करा</translation>
 <translation id="3512163584740124171">या धोरणाकडे दुर्लक्ष केले कारण त्याच धोरण गटातील दुसऱ्या धोरणाला उच्च प्राधान्य आहे.</translation>
@@ -1408,6 +1414,7 @@
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3963721102035795474">वाचक मोड</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{काहीही नाही}=1{1 साइटकडून }other{# साइटकडून }}</translation>
+<translation id="3966044442021752214">उत्पादन सुरक्षा</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ब्लॉक केले आहे</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" कडील पासकी</translation>
@@ -2848,6 +2855,7 @@
 <translation id="6973988895180423160">३.५ x ५ इं</translation>
 <translation id="6978236010531171013">तरीही शेअर करा</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">काढलेल्या मजकुराची सुरुवात</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6987806006823772670">एन्व्हलप (कोटेड)</translation>
 <translation id="6989763994942163495">प्रगत सेटिंग्ज दर्शवा...</translation>
@@ -2903,6 +2911,7 @@
 <translation id="7102760431686146931">स्वयंपाकाच्या वस्तू आणि डायनिंगवेअर</translation>
 <translation id="7105998430540165694">iCloud Keychain कडील पासकी</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
+<translation id="7107249414147762907">ही PDF ॲक्सेस करण्यायोग्य नाही. कोणताही मजकूर काढला नाही</translation>
 <translation id="7108338896283013870">लपवा</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ला तुमचा कॅमेरा वापरायचा आहे</translation>
 <translation id="7108819624672055576">एका एक्स्टेंशनने परवानगी दिलेले</translation>
@@ -3914,6 +3923,7 @@
 <translation id="917450738466192189">सर्व्हरचे सर्टिफिकेट चुकीचे आहे.</translation>
 <translation id="9174623988242579721">कस्टम आणि परफॉर्मन्स वाहने</translation>
 <translation id="9174917557437862841">टॅब स्विच बटण, या टॅबवर जाण्यासाठी एंटर प्रेस करा</translation>
+<translation id="9177283544810807743">ही PDF ॲक्सेस करण्यायोग्य नाही. मजकूर काढत आहे, Google AI द्वारे प्रायोजित</translation>
 <translation id="9179703756951298733">Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड यांची माहिती व्‍यवस्‍थापित करा</translation>
 <translation id="9179907736442194268">कोणत्याही साइटवर किंमत कमी झाल्यास इमेल सूचना मिळवा</translation>
 <translation id="9183302530794969518">Google Docs</translation>

@@ -88,6 +88,7 @@
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408847409015257906">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
+<translation id="1443958768615272145">ব্রাউজ করা চালিয়ে যান</translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
@@ -164,6 +165,7 @@
 <translation id="1930989359703290198">আপনার সংস্থা শুধু কিছু নির্দিষ্ট অ্যাকাউন্ট ব্যবহার করে আপনাকে সাইন-ইন করার অনুমতি দিয়েছে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">কপি করতে দুবার আলতো চাপুন।</translation>
 <translation id="1943478190258551035">মেনু → সেটিংস</translation>
+<translation id="194449685234099560">আপনি এখানে আপনার সব নতুন ট্যাব খুঁজে পাবেন।</translation>
 <translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
 <translation id="1959441496380398824">তারিখ টাচ করে ধরে রাখুন।</translation>
 <translation id="1959679933317802873">কন্টেন্টের জন্য অপেক্ষা করা হচ্ছে</translation>
@@ -186,6 +188,7 @@
 <translation id="20485545164632846">নতুন আইটেম</translation>
 <translation id="2049727122989709386"><ph name="COUNT" />টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে</translation>
 <translation id="2050196510205866090">{count,plural, =1{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা পেমেন্ট পদ্ধতি আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
+<translation id="2055515971416882518">"সেটিংস" খুলুন।</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
@@ -244,6 +247,7 @@
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2459155039684421202">অ্যাড্রেস বারে, “আমার ইতিহাস মুছুন” বা “পাসওয়ার্ড এডিট করুন”-এর মতো টাস্ক লিখুন।</translation>
 <translation id="2461070143328828326">পাসওয়ার্ড সেটিংস</translation>
+<translation id="2462736546165239215">আপনি নিজের সব ব্রাউজিং ইতিহাস এখানে পাবেন।</translation>
 <translation id="2469960372084740698">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2476359652512522418">বেছে নেওয়া হয়নি</translation>
@@ -343,6 +347,7 @@
 <translation id="2952278131021475699">Lens-এর ক্যামেরার মাধ্যমে সার্চ করার সুবিধা</translation>
 <translation id="2952581218264071393">১. Chrome সেটিংস খুলুন</translation>
 <translation id="2956733177489514605">আপনার পাসওয়ার্ড এবং আরও অনেক কিছু সিঙ্ক করতে Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
+<translation id="2958271635022991876">আপনি এখানে একটি নতুন ট্যাব খুলতে পারবেন।</translation>
 <translation id="2958718410589002129">পাসওয়ার্ড</translation>
 <translation id="2961210776189273067">সম্বোধন</translation>
 <translation id="2964349545761222050">থার্ড-পার্টি কুকি ব্লক করুন</translation>
@@ -1417,6 +1422,7 @@
 <translation id="9097506547406246598">আনফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছবেন?</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
+<translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"-এর থেকে</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
 <translation id="9120217828624527905">সম্পূর্ণ পৃষ্ঠা অনুবাদে পরিবর্তন করুন</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>

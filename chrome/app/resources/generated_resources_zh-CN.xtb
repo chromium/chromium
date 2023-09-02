@@ -806,6 +806,7 @@
 <translation id="1630768113285622200">重启并继续</translation>
 <translation id="1631503405579357839">色盲</translation>
 <translation id="1632278969378690607">搜索键 + 点击</translation>
+<translation id="1632293440289326475">开启节能模式以延长电池续航时间？</translation>
 <translation id="1632756664321977232">剪裁工具</translation>
 <translation id="163309982320328737">初始字符用全角</translation>
 <translation id="1633947793238301227">停用 Google 助理</translation>
@@ -1265,6 +1266,7 @@
 <translation id="1988259784461813694">要求</translation>
 <translation id="1988733631391393183">在 ChromeVox 菜单中显示盲文命令</translation>
 <translation id="1989112275319619282">浏览</translation>
+<translation id="1989601282983766341">管理应用通知、“勿扰”功能和应用标记</translation>
 <translation id="1989903373608997757">始终使用</translation>
 <translation id="1990046457226896323">实时字幕文件已下载完毕</translation>
 <translation id="1990512225220753005">不在本页上显示快捷方式</translation>
@@ -2249,6 +2251,7 @@
 <translation id="2749756011735116528">登录<ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
+<translation id="2750020734439919571">更多 Chrome 应用设置和权限</translation>
 <translation id="2750602041558385535">已拦截未经验证的下载内容</translation>
 <translation id="2754226775788136540">正在查找已保存到 <ph name="PRIMARY_EMAIL" /> 的快速配对设备</translation>
 <translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
@@ -2399,6 +2402,7 @@
 <translation id="286674810810214575">正在检查电源…</translation>
 <translation id="2867768963760577682">在固定标签页中打开</translation>
 <translation id="2868746137289129307">此扩展程序已过期并已根据企业政策停用。当有新版本时，它可能会自动启用。</translation>
+<translation id="2869511363030898130">在<ph name="APP_NAME" />应用内打开</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2870909136778269686">正在更新…</translation>
 <translation id="2871733351037274014">预加载网页</translation>
@@ -4922,6 +4926,7 @@
 <translation id="4933484234309072027">嵌入 <ph name="URL" /></translation>
 <translation id="4936042273057045735">设有工作资料的手机无法同步通知</translation>
 <translation id="4937676329899947885">正在接收 Wi-Fi 网络</translation>
+<translation id="4938052313977274277">速度</translation>
 <translation id="4938788218358929252">这些食谱建议</translation>
 <translation id="4939805055470675027">无法连接到<ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">有 <ph name="PRINTER_COUNT" /> 台可保存的打印机。</translation>
@@ -5168,6 +5173,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
 <translation id="5154702632169343078">主题背景</translation>
+<translation id="5154917547274118687">内存</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="5156638757840305347">光标在出现或移动时突出显示</translation>
 <translation id="5157250307065481244">查看网站详细信息</translation>
@@ -5237,6 +5243,7 @@
 <translation id="5210365745912300556">关闭标签页</translation>
 <translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
+<translation id="5213658238771284310">启动时恢复会话</translation>
 <translation id="5213891612754844763">显示代理设置</translation>
 <translation id="5214639857958972833">已创建“<ph name="BOOKMARK_TITLE" />”书签。</translation>
 <translation id="5215502535566372932">选择国家/地区</translation>
@@ -8418,6 +8425,7 @@
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
 <translation id="7818135753970109980">已添加新主题背景（<ph name="EXTENSION_NAME" />）</translation>
+<translation id="7819087895293765164">重启后，自动进入上次使用的应用/网站/窗口，从上次停下的地方继续浏览或操作</translation>
 <translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
@@ -8611,6 +8619,7 @@
 <translation id="7964458523224581615">深绿</translation>
 <translation id="7966241909927244760">复制图片地址(&amp;O)</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{书签列表中现有 1 个条目}other{书签列表中现有 {COUNT} 个条目}}</translation>
+<translation id="7967776604158229756">更多 Web 应用设置和权限</translation>
 <translation id="7968072247663421402">提供商选项</translation>
 <translation id="7968742106503422125">读取和修改您复制和粘贴的数据</translation>
 <translation id="7968833647796919681">启用性能数据收集</translation>
@@ -8639,6 +8648,7 @@
 <translation id="7987814697832569482">始终通过此 VPN 连接</translation>
 <translation id="7988355189918024273">启用辅助功能</translation>
 <translation id="7988805580376093356">请从 USB（而非您的操作系统）中运行 <ph name="DEVICE_OS" />。</translation>
+<translation id="7988876720343145286">更多 Android 设置和权限</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />语音 <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">开关控制设置</translation>
 <translation id="7992203134935383159">语音合成</translation>
@@ -9371,6 +9381,7 @@
 <translation id="8593450223647418235">完成设置前，您无法在 Microsoft 365 中打开文件。</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{有 1 个网站已被禁止使用 Cookie}other{有 # 个网站已被禁止使用 Cookie}}</translation>
 <translation id="8596540852772265699">自定义文件</translation>
+<translation id="8597462463725156723">屏幕上不会弹出通知。不过，您仍可点击屏幕右下角的“勿扰”图标来查看通知。</translation>
 <translation id="8597845839771543242">属性格式：</translation>
 <translation id="8599681327221583254">有一项或多项政策未正确配置。请与您的管理员联系</translation>
 <translation id="8599864823732014237">跳过企业注册？</translation>
@@ -9490,6 +9501,7 @@
 <translation id="8680251145628383637">登录后即可在您的任何设备上获取自己的书签、历史记录、密码和其他设置。此外，您还会自动登录到 Google 服务。</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已连接且已准备就绪</translation>
+<translation id="8685540043423825702">您的 Chrome 个人资料</translation>
 <translation id="8686142379631285985">目前登录的账号是 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">取消下载 <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">可用</translation>

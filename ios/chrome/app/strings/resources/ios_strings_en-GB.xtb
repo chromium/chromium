@@ -1227,7 +1227,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
-<translation id="8009225694047762179">Manage Passwords</translation>
+<translation id="8009225694047762179">Manage passwords</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Always use secure connections</translation>
 <translation id="802154636333426148">Download failed</translation>
@@ -1373,6 +1373,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8855242995793521265">Doesn't noticeably slow down your browser or device.</translation>
 <translation id="8855781063981781621">To disable Lockdown mode in Chrome, turn it off on your iPad.</translation>
 <translation id="8863431381414769983">Get directions and local info from Google Maps</translation>
+<translation id="8865415417596392024">Chrome data in your account</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8876882697946675716">Keep your devices in sync</translation>

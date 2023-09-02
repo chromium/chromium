@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
 <translation id="310297983047869047">Poprzedni slajd</translation>
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="3114012059975132928">Odtwarzacz</translation>

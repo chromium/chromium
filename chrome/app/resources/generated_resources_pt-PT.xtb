@@ -813,6 +813,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1630768113285622200">Reiniciar e continuar</translation>
 <translation id="1631503405579357839">Daltonismo</translation>
 <translation id="1632278969378690607">pesquisa + clique</translation>
+<translation id="1632293440289326475">Ative a Poupança de energia para prolongar a autonomia da bateria</translation>
 <translation id="1632756664321977232">Ferramenta de recorte</translation>
 <translation id="163309982320328737">A largura de caracteres inicial está completa</translation>
 <translation id="1633947793238301227">Desativar Assistente Google</translation>
@@ -1274,6 +1275,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1988259784461813694">Requisito</translation>
 <translation id="1988733631391393183">Mostrar comandos de braille nos menus do ChromeVox</translation>
 <translation id="1989112275319619282">Procurar</translation>
+<translation id="1989601282983766341">Faça a gestão de notificações de apps, do modo Não incomodar e dos emblemas de apps</translation>
 <translation id="1989903373608997757">Usar sempre</translation>
 <translation id="1990046457226896323">Ficheiros de voz transferidos.</translation>
 <translation id="1990512225220753005">Não mostre atalhos nesta página</translation>
@@ -2261,6 +2263,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2749756011735116528">Iniciar sessão no <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Rever gramática com a ortografia</translation>
+<translation id="2750020734439919571">Mais definições e autorizações da app Chrome</translation>
 <translation id="2750602041558385535">Transferência não validada bloqueada</translation>
 <translation id="2754226775788136540">A procurar dispositivos com o Fast Pair guardados em <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encontre as apps de que precisa, desde produtividade a entretenimento, na Google Play Store. Pode instalar apps em qualquer altura.</translation>
@@ -2411,6 +2414,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="286674810810214575">A verificar as fontes alimentação…</translation>
 <translation id="2867768963760577682">Abrir como Separador Fixo</translation>
 <translation id="2868746137289129307">Esta extensão está desatualizada e foi desativada por uma política empresarial; pode ser ativada automaticamente quando estiver disponível uma versão mais recente.</translation>
+<translation id="2869511363030898130">Abrir na app <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2870909136778269686">A atualizar...</translation>
 <translation id="2871733351037274014">Pré-carregar páginas</translation>
@@ -4941,6 +4945,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4933484234309072027">incorporada em <ph name="URL" /></translation>
 <translation id="4936042273057045735">A sincronização das notificações não é suportada para telemóveis num perfil de trabalho.</translation>
 <translation id="4937676329899947885">A receber rede Wi-Fi</translation>
+<translation id="4938052313977274277">Velocidade</translation>
 <translation id="4938788218358929252">estas ideias de receitas</translation>
 <translation id="4939805055470675027">Não foi possível ligar a <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Existem <ph name="PRINTER_COUNT" /> impressoras disponíveis para guardar.</translation>
@@ -5187,6 +5192,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Definições avançadas de <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Assunto</translation>
+<translation id="5154917547274118687">Memória</translation>
 <translation id="5155327081870541046">Na barra de endereço, introduza o atalho para o site que quer pesquisar, tal como "@bookmarks". Em seguida, prima o seu atalho de teclado favorito e introduza o termo de pesquisa.</translation>
 <translation id="5156638757840305347">O cursor é realçado quando é apresentado ou se move</translation>
 <translation id="5157250307065481244">Ver detalhes do site</translation>
@@ -5256,6 +5262,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
 <translation id="5213114823401215820">Voltar a abrir grupo fechado</translation>
 <translation id="5213481667492808996">O serviço de dados de "<ph name="NAME" />" está pronto a ser utilizado.</translation>
+<translation id="5213658238771284310">Restaure a sessão no arranque</translation>
 <translation id="5213891612754844763">Mostrar definições de proxy</translation>
 <translation id="5214639857958972833">Foi criado o marcador "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Selecionar país</translation>
@@ -8448,6 +8455,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7815680994978050279">Transferência perigosa bloqueada</translation>
 <translation id="7817361223956157679">O teclado no ecrã ainda não funciona em aplicações Linux.</translation>
 <translation id="7818135753970109980">Novo tema adicionado (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">Depois de reiniciar, continue no ponto onde ficou em apps, Websites e janelas abertas</translation>
 <translation id="7819605256207059717">Bloqueado pela sua organização</translation>
 <translation id="7820400255539998692">Elimine <ph name="FILENAME" /> para que as outras pessoas que usam este dispositivo não possam ver as suas palavras-passe</translation>
 <translation id="7820561748632634942">Quer adicionar outros interruptores?</translation>
@@ -8641,6 +8649,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7964458523224581615">Viridiano</translation>
 <translation id="7966241909927244760">C&amp;opiar Endereço da imagem</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 item na lista de marcadores}other{{COUNT} itens na lista de marcadores}}</translation>
+<translation id="7967776604158229756">Mais definições e autorizações da app Web</translation>
 <translation id="7968072247663421402">Opções do fornecedor</translation>
 <translation id="7968742106503422125">Ler e modificar os dados que copia e cola</translation>
 <translation id="7968833647796919681">Ativar a recolha de dados de desempenho</translation>
@@ -8669,6 +8678,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7987814697832569482">Ligar sempre através desta VPN</translation>
 <translation id="7988355189918024273">Ativar funcionalidades de acessibilidade</translation>
 <translation id="7988805580376093356">Mantenha o seu SO e execute o <ph name="DEVICE_OS" /> a partir de uma unidade USB.</translation>
+<translation id="7988876720343145286">Mais definições e autorizações do Android</translation>
 <translation id="7990863024647916394">Voz de <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Definições do acesso por comutador</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
@@ -9403,6 +9413,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8593450223647418235">Não vai poder abrir ficheiros no Microsoft 365 até a configuração estar concluída.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{1 site bloqueado}other{# sites bloqueados}}</translation>
 <translation id="8596540852772265699">Ficheiros personalizados</translation>
+<translation id="8597462463725156723">As notificações não aparecem no ecrã. Clique no ícone Não incomodar na parte inferior direita do ecrã para continuar a ver as notificações.</translation>
 <translation id="8597845839771543242">Formato da propriedade:</translation>
 <translation id="8599681327221583254">Uma ou mais políticas não estão configuradas corretamente. Contacte o seu administrador</translation>
 <translation id="8599864823732014237">Ignorar a inscrição empresarial?</translation>
@@ -9522,6 +9533,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8680251145628383637">Inicie sessão para obter os seus marcadores, o histórico, as palavras-passe e outras definições em todos os seus dispositivos. Além disso, também inicia sessão automaticamente nos serviços Google.</translation>
 <translation id="8681886425883659911">Os anúncios são bloqueados em sites conhecidos por mostrarem anúncios intrusivos ou enganadores</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está ligada e pronta.</translation>
+<translation id="8685540043423825702">O seu perfil do Chrome</translation>
 <translation id="8686142379631285985">Com sessão iniciada como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Disponível</translation>

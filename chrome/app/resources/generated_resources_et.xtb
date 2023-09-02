@@ -4943,6 +4943,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4933484234309072027">manustatud aadressil <ph name="URL" /></translation>
 <translation id="4936042273057045735">Tööprofiili kasutavate telefonide puhul märguannete sünkroonimist ei toetata</translation>
 <translation id="4937676329899947885">WiFi-võrgu mandaadi vastuvõtmine</translation>
+<translation id="4938052313977274277">Kiirus</translation>
 <translation id="4938788218358929252">need retseptiideed</translation>
 <translation id="4939805055470675027">Operaatoriga <ph name="CARRIER_NAME" /> ei saanud ühendust</translation>
 <translation id="4940364377601827259">Salvestamiseks on saadaval <ph name="PRINTER_COUNT" /> printerit.</translation>
@@ -5189,6 +5190,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Printeri <ph name="PRINTING_DESTINATION" /> täpsemad seaded</translation>
 <translation id="5154702632169343078">Teema</translation>
+<translation id="5154917547274118687">Mälu</translation>
 <translation id="5155327081870541046">Sisestage aadressiribale selle saidi otsetee, millel soovite otsida, näiteks „@järjehoidjad“. Seejärel vajutage valitud klaviatuuriotseteed ja sisestage otsingutermin.</translation>
 <translation id="5156638757840305347">Kursor tõstetakse esile, kui see kuvatakse või seda liigutatakse</translation>
 <translation id="5157250307065481244">Kuva saidi üksikasjad</translation>

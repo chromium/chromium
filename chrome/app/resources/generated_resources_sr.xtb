@@ -4935,6 +4935,7 @@
 <translation id="4933484234309072027">уграђено у сајт <ph name="URL" /></translation>
 <translation id="4936042273057045735">Синхронизовање обавештења није подржано за телефоне са пословним профилом</translation>
 <translation id="4937676329899947885">Примамо акредитиве WiFi мреже</translation>
+<translation id="4938052313977274277">Брзина</translation>
 <translation id="4938788218358929252">ове идеје за рецепте</translation>
 <translation id="4939805055470675027">Повезивање са мрежом <ph name="CARRIER_NAME" /> није успело</translation>
 <translation id="4940364377601827259">Доступних штампача за чување: <ph name="PRINTER_COUNT" />.</translation>
@@ -5181,6 +5182,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Напредна подешавања за <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Тема</translation>
+<translation id="5154917547274118687">Меморија</translation>
 <translation id="5155327081870541046">У траци за адресу унесите пречицу за сајт који желите да претражите, на пример, „@bookmarks“. Затим притисните жељену тастерску пречицу и унесите термин за претрагу.</translation>
 <translation id="5156638757840305347">Курсор се истиче кад се појави или помери</translation>
 <translation id="5157250307065481244">Прикажи детаље сајта</translation>

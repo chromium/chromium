@@ -808,6 +808,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1630768113285622200">Restablecer y continuar</translation>
 <translation id="1631503405579357839">Daltonismo</translation>
 <translation id="1632278969378690607">Búsqueda + clic</translation>
+<translation id="1632293440289326475">Activa el Ahorro de energía para extender la duración de la batería</translation>
 <translation id="1632756664321977232">Herramienta de recorte</translation>
 <translation id="163309982320328737">El ancho del carácter inicial está completo</translation>
 <translation id="1633947793238301227">Inhabilitar el Asistente de Google</translation>
@@ -1269,6 +1270,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1988259784461813694">Requisito</translation>
 <translation id="1988733631391393183">Mostrar los comandos braille en los menús de ChromeVox</translation>
 <translation id="1989112275319619282">Navegar</translation>
+<translation id="1989601282983766341">Administra las notificaciones de las apps, la función No interrumpir y los distintivos de la app</translation>
 <translation id="1989903373608997757">Usar siempre</translation>
 <translation id="1990046457226896323">Se descargaron los archivos de Subtitulado instantáneo</translation>
 <translation id="1990512225220753005">No se muestran accesos directos en esta página</translation>
@@ -2254,6 +2256,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2749756011735116528">Iniciar sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controlar la gramática con la ortografía</translation>
+<translation id="2750020734439919571">Más parámetros de configuración y permisos de las apps de Chrome</translation>
 <translation id="2750602041558385535">Se bloqueó una descarga no verificada</translation>
 <translation id="2754226775788136540">Buscando dispositivos de Vinculación rápida guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Encuentra las apps que necesites, tanto para la productividad como para el entretenimiento, en Google Play Store. Puedes instalar apps en cualquier momento.</translation>
@@ -2404,6 +2407,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="286674810810214575">Buscando fuentes de energía…</translation>
 <translation id="2867768963760577682">Abrir como pestaña fija</translation>
 <translation id="2868746137289129307">Esta extensión está desactualizada e inhabilitada por política de la empresa. Podría habilitarse automáticamente cuando haya una versión nueva disponible.</translation>
+<translation id="2869511363030898130">Abrir en la app de <ph name="APP_NAME" /></translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2870909136778269686">Actualizando…</translation>
 <translation id="2871733351037274014">Precargar páginas</translation>
@@ -4930,6 +4934,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4933484234309072027">insertado en <ph name="URL" /></translation>
 <translation id="4936042273057045735">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo</translation>
 <translation id="4937676329899947885">Recibiendo una red Wi-Fi</translation>
+<translation id="4938052313977274277">Velocidad</translation>
 <translation id="4938788218358929252">estas ideas de recetas</translation>
 <translation id="4939805055470675027">No se pudo establecer conexión con <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Hay <ph name="PRINTER_COUNT" /> impresoras disponibles para guardar.</translation>
@@ -5176,6 +5181,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Configuración avanzada para <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Asunto</translation>
+<translation id="5154917547274118687">Memoria</translation>
 <translation id="5155327081870541046">En la barra de direcciones, ingresa el atajo para el sitio donde quieres realizar la búsqueda, como "@favoritos". Luego, presiona la combinación de teclas que hayas elegido y escribe un término de búsqueda.</translation>
 <translation id="5156638757840305347">El cursor se destaca cuando aparece o se mueve.</translation>
 <translation id="5157250307065481244">Ver detalles del sitio</translation>
@@ -5245,6 +5251,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213114823401215820">Volver a abrir el grupo cerrado</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
+<translation id="5213658238771284310">Restablecer sesión al inicio</translation>
 <translation id="5213891612754844763">Mostrar la configuración de proxy</translation>
 <translation id="5214639857958972833">Se creó el favorito "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Selecciona un país</translation>
@@ -8429,6 +8436,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7815680994978050279">Se bloqueó una descarga peligrosa</translation>
 <translation id="7817361223956157679">El teclado en pantalla todavía no es compatible con apps de Linux</translation>
 <translation id="7818135753970109980">Se agregó un tema nuevo (<ph name="EXTENSION_NAME" />).</translation>
+<translation id="7819087895293765164">Después de reiniciar, continúa desde donde dejaste con las apps, los sitios web y las ventanas abiertas</translation>
 <translation id="7819605256207059717">Tu organización lo bloqueó.</translation>
 <translation id="7820400255539998692">Borra <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="7820561748632634942">¿Deseas asignar interruptores adicionales?</translation>
@@ -8622,6 +8630,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7964458523224581615">Viridián</translation>
 <translation id="7966241909927244760">Copiar dirección de la imagen</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elemento en la lista de favoritos}other{{COUNT} elementos en la lista de favoritos}}</translation>
+<translation id="7967776604158229756">Más parámetros de configuración y permisos de las apps web</translation>
 <translation id="7968072247663421402">Opciones del proveedor</translation>
 <translation id="7968742106503422125">Leer y modificar los datos copiados y pegados</translation>
 <translation id="7968833647796919681">Habilitar recopilación de datos de rendimiento</translation>
@@ -8650,6 +8659,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7987814697832569482">Conectarse siempre a través de esta VPN</translation>
 <translation id="7988355189918024273">Habilitar funciones de accesibilidad</translation>
 <translation id="7988805580376093356">Conserva tu SO y ejecuta <ph name="DEVICE_OS" /> desde una unidad USB.</translation>
+<translation id="7988876720343145286">Más parámetros de configuración y permisos de Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voz <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Configuración de Accesibilidad con interruptores</translation>
 <translation id="7992203134935383159">Síntesis de voz</translation>
@@ -9382,6 +9392,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8593450223647418235">No podrás abrir archivos en Microsoft 365 hasta que se complete la configuración.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{Se bloqueó 1 sitio}other{Se bloquearon # sitios}}</translation>
 <translation id="8596540852772265699">Archivos personalizados</translation>
+<translation id="8597462463725156723">Las notificaciones no aparecerán en la pantalla. Para seguir viendo las notificaciones, haz clic en el ícono de No interrumpir que aparece en la parte inferior derecha de la pantalla.</translation>
 <translation id="8597845839771543242">Formato de la propiedad:</translation>
 <translation id="8599681327221583254">Hay una o más políticas que no se configuraron correctamente. Comunícate con tu administrador</translation>
 <translation id="8599864823732014237">¿Deseas omitir la inscripción empresarial?</translation>
@@ -9501,6 +9512,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
 <translation id="8681886425883659911">Se bloquean los anuncios en sitios conocidos por mostrar anuncios intrusivos o engañosos</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> está conectada y lista para usarse</translation>
+<translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8686142379631285985">Accediste como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>
 <translation id="8688672835843460752">Disponible</translation>

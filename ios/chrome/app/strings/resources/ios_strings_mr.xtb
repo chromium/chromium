@@ -88,6 +88,7 @@
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1408847409015257906">"गोपनीयता आणि सुरक्षा" वर टॅप करा.</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
+<translation id="1443958768615272145">ब्राउझ करत रहा</translation>
 <translation id="1449835205994625556">पासवर्ड लपवा</translation>
 <translation id="1450170672351507823">साधारण संरक्षण सुरू आहे. याहून अधिक सुरक्षेसाठी, वर्धित संरक्षण वापरा.</translation>
 <translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
@@ -164,6 +165,7 @@
 <translation id="1930989359703290198">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">कॉपी करण्‍यासाठी दोनदा टॅप करा.</translation>
 <translation id="1943478190258551035">मेनू → सेटिंग्ज</translation>
+<translation id="194449685234099560">तुम्ही तुमचे सर्व खुले टॅब येथे पाहू शकता.</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1959441496380398824">तारखेला स्पर्श करून धरून ठेवा.</translation>
 <translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
@@ -186,6 +188,7 @@
 <translation id="20485545164632846">नवीन आयटम</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> खाती हाच पासवर्ड वापरत आहेत</translation>
 <translation id="2050196510205866090">{count,plural, =1{तुमच्या कीबोर्डच्या वरती सेव्ह केलेली {count} पेमेंट पद्धत उपलब्ध आहे.}other{तुमच्या कीबोर्डच्या वरती सेव्ह केलेल्या {count} पेमेंट पद्धती उपलब्ध आहेत.}}</translation>
+<translation id="2055515971416882518">"सेटिंग्ज" उघडा.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
@@ -244,6 +247,7 @@
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2459155039684421202">ॲड्रेस बारमध्ये, "माझा इतिहास साफ करा" किंवा "पासवर्ड संपादित करा" यासारखी टास्क एंटर करा.</translation>
 <translation id="2461070143328828326">पासवर्ड सेटिंग्ज</translation>
+<translation id="2462736546165239215">तुम्ही तुमचा सर्व ब्राउझिंग इतिहास येथे पाहू शकता.</translation>
 <translation id="2469960372084740698">सुरक्षित ब्राउझिंग बंद करायचे का?</translation>
 <translation id="2473876017985765807">तुम्ही <ph name="WEBSITE" /> साठी आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="2476359652512522418">न निवडलेले</translation>
@@ -343,6 +347,7 @@
 <translation id="2952278131021475699">Lens कॅमेरा वापरून शोध</translation>
 <translation id="2952581218264071393">१. Chrome सेटिंग्ज उघडा</translation>
 <translation id="2956733177489514605">तुमचे पासवर्ड आणि आणखी बरेच काही सिंक करण्यासाठी तुमचे Google खाते वापरून साइन इन करा.</translation>
+<translation id="2958271635022991876">तुम्ही येथे नवीन टॅब उघडू शकता.</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -1413,6 +1418,7 @@
 <translation id="9097506547406246598">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> खात्यांचे पासवर्ड हटवायचे आहेत का?</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
+<translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" कडील</translation>
 <translation id="9107664647686727385">धोक्यात असलेले पासवर्ड तपासा</translation>
 <translation id="9120217828624527905">पूर्ण पेज भाषांतर यावर स्विच करा</translation>
 <translation id="9124387962554796433">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा इतिहास वापरू शकते.</translation>

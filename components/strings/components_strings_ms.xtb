@@ -434,6 +434,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1842969606798536927">Bayar</translation>
 <translation id="1846432862466000825">Plastik (Arkib)</translation>
 <translation id="1848982255014129637">Foto (Kilat Tinggi)</translation>
+<translation id="1853392626017747777">Pendaftaran kad maya ditutup</translation>
 <translation id="1854180393107901205">Berhenti menghantar</translation>
 <translation id="1855370856221982654">Tinju</translation>
 <translation id="1856713167556118146">Perkara yang tidak dilakukan oleh Inkognito</translation>
@@ -470,6 +471,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1924727005275031552">Baharu</translation>
 <translation id="1935995810530254458">Salin juga</translation>
 <translation id="1939175642807587452">Boleh meminta untuk menghantar pemberitahuan</translation>
+<translation id="1940441167050915935">Padamkan kod keselamatan yang disimpan</translation>
 <translation id="1943994668912612445">Reka bentuk</translation>
 <translation id="1945968466830820669">Anda boleh kehilangan akses kepada akaun organisasi anda atau mengalami kecurian identiti. Chromium mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
 <translation id="1946849748901605102">12 x 15 in</translation>
@@ -1727,6 +1729,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Pulangan tunai dipautkan</translation>
+<translation id="4631881646528206880">Pendaftaran kad maya</translation>
 <translation id="4636930964841734540">Maklumat</translation>
 <translation id="4638670630777875591">Inkognito dalam Chromium</translation>
 <translation id="464342062220857295">Ciri carian</translation>
@@ -1841,6 +1844,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4854853140771946034">Buat nota baharu dalam Google Keep dengan pantas</translation>
 <translation id="485902285759009870">Mengesahkan kod...</translation>
 <translation id="4862630594858951805">Anda mahu dapatkan e-mel apabila harga diturunkan?</translation>
+<translation id="4864406669374375262">Versi rentetan disalin kepada papan keratan</translation>
 <translation id="486459320933704969">Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh melawati laman web ini</translation>
 <translation id="4866506163384898554">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk memaparkan kursor anda</translation>
 <translation id="4873616204573862158">Kaca mata</translation>
@@ -3528,6 +3532,7 @@ Butiran tambahan:
 <translation id="8339163506404995330">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemahkan</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Jika anda memahami risiko terhadap keselamatan anda, anda boleh <ph name="BEGIN_LINK" />lawati tapak ini<ph name="END_LINK" /> sebelum atur cara berbahaya dialih keluar.</translation>
+<translation id="8344776605855290140">Pendaftaran kad maya dibuka pada ketinggian penuh</translation>
 <translation id="8347658365704983341">Pembelajaran jarak jauh</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8351131234907093545">Buat nota</translation>

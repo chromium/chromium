@@ -3704,9 +3704,6 @@
       如果此政策设为 false，系统 DNS 解析（getaddrinfo()）会在网络进程中而非浏览器进程中运行。这可能会强制停用网络服务沙盒，导致 <ph name="PRODUCT_NAME" /> 的安全性降低。
 
       如果此政策未设置，系统 DNS 解析可能在网络服务中运行，也可能在网络服务外运行，或部分在网络服务中、部分在网络服务外运行，具体取决于系统配置和功能标志。</translation>
-<translation id="4228745249339680042">通过设置此政策，您可以指定，当哪些网址和网域所对应的网站请求安全密钥认证证书时，系统将不会显示任何提示。此外，系统还会向安全密钥发送信号，表明可使用特定的单项认证。如果您未设置此政策，在网站请求安全密钥的认证时，<ph name="PRODUCT_NAME" /> 65 版及更高版本将向用户显示提示。
-
-      网址将仅匹配为 U2F appID。网域将仅匹配为 webauthn RP ID。因此，如需全面涵盖 U2F API 和 webauthn API，请务必将相应网站的 appID 网址和网域都罗列出来。</translation>
 <translation id="4239720644496144453">缓存不适用于 Android 应用。如果多个用户都想安装同一款 Android 应用，系统便会分别为每个用户重新下载相应的 Android 应用。</translation>
 <translation id="424318624725112807">允许在登录屏幕上使用插入符号突出显示</translation>
 <translation id="4247914291127524388">如果此政策已启用，系统会在使用移动网络连接时在 <ph name="PRODUCT_OS_NAME" />的“文件”应用中关闭 <ph name="GOOGLE_DRIVE_NAME" />同步功能。仅当通过 Wi-Fi 或以太网连接时，系统才会将数据同步到 Google 云端硬盘。

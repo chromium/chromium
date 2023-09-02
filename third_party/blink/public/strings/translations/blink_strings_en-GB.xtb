@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Switched to mirroring</translation>
 <translation id="2031987842108996681">Red channel</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' is used at a wrong position in '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">Minimum value (<ph name="MINIMUM" />) must be less than the maximum value (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="2226276347425096477">Please shorten this text to <ph name="MAX_CHARACTERS" /> characters or less (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

@@ -4951,6 +4951,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4933484234309072027">be van ágyazva itt: <ph name="URL" /></translation>
 <translation id="4936042273057045735">Az értesítések szinkronizálása nem támogatott azoknál a telefonoknál, amelyek munkaprofilt használnak</translation>
 <translation id="4937676329899947885">Wi-Fi-hálózat fogadása</translation>
+<translation id="4938052313977274277">Sebesség</translation>
 <translation id="4938788218358929252">ezek a receptötletek</translation>
 <translation id="4939805055470675027">Nem sikerült kapcsolódni a(z) <ph name="CARRIER_NAME" /> szolgáltatóhoz</translation>
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> menthető nyomtató található.</translation>
@@ -5197,6 +5198,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">A(z) <ph name="PRINTING_DESTINATION" /> speciális beállításai</translation>
 <translation id="5154702632169343078">Tárgy</translation>
+<translation id="5154917547274118687">Memória</translation>
 <translation id="5155327081870541046">Adja meg a címsávban annak a webhelynek a gyorsparancsát, amelyen keresni szeretne (például „@bookmarks“). Ezt követően nyomja le a preferált billentyűparancsot, és írja be a keresési kifejezést.</translation>
 <translation id="5156638757840305347">A kurzor kiemelve látható a megjelenésekor vagy mozgatáskor.</translation>
 <translation id="5157250307065481244">Webhely adatainak megtekintése</translation>

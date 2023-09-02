@@ -4701,6 +4701,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4730492586225682674">Nota terkini stilus pada skrin kunci</translation>
 <translation id="4730888769809690665">Pemberitahuan dibenarkan untuk <ph name="SITE" /></translation>
+<translation id="4731306954230393087">Dibenarkan menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="473140019006744096">Ruang pada peranti ini tidak mencukupi untuk menyelesaikan kemaskinian ini. Kosongkan <ph name="NECESSARY_SPACE" /> pada peranti anda dan cuba lagi.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4733793249294335256">Lokasi</translation>
@@ -4953,6 +4954,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4933484234309072027">terbenam pada <ph name="URL" /></translation>
 <translation id="4936042273057045735">Penyegerakan pemberitahuan tidak disokong untuk telefon dalam profil kerja</translation>
 <translation id="4937676329899947885">Menerima rangkaian Wi-Fi</translation>
+<translation id="4938052313977274277">Kelajuan</translation>
 <translation id="4938788218358929252">idea resipi ini</translation>
 <translation id="4939805055470675027">Tidak dapat menyambung ke <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Terdapat <ph name="PRINTER_COUNT" /> pencetak tersedia untuk disimpan.</translation>
@@ -5199,6 +5201,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Tetapan lanjutan untuk <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Subjek</translation>
+<translation id="5154917547274118687">Memori</translation>
 <translation id="5155327081870541046">Dalam bar alamat, masukkan pintasan bagi laman tempat anda ingin melakukan carian, seperti "@bookmarks". Kemudian, tekan pintasan papan kekunci pilihan anda dan masukkan istilah carian anda.</translation>
 <translation id="5156638757840305347">Kursor diserlahkan apabila dipaparkan atau bergerak</translation>
 <translation id="5157250307065481244">Lihat butiran laman</translation>
@@ -6215,6 +6218,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5990386583461751448">Diterjemahkan</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}other{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}}</translation>
 <translation id="5992225669837656567">Semua tetikus telah diputuskan sambungan</translation>
+<translation id="5992652489368666106">Tiada sempadan</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Semakan lengkap untuk 1 laman}other{Semakan lengkap untuk {NUM_SITES} laman}}</translation>
 <translation id="5997337190805127100">Ketahui Lebih Lanjut Tentang Akses Tapak</translation>
 <translation id="5998458948782718639">Bantu kami tingkatkan autolengkap</translation>
@@ -7403,6 +7407,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6970543303783413625">Tidak dapat mengimport kata laluan. Anda hanya boleh mengimport hingga <ph name="COUNT" /> kata laluan serentak.</translation>
 <translation id="6970856801391541997">Cetak Halaman Tertentu</translation>
 <translation id="6970861306198150268">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini</translation>
+<translation id="6971184043765343932">Imej anda yang dimuat naik</translation>
 <translation id="6972754398087986839">Bermula</translation>
 <translation id="697312151395002334">Dibenarkan untuk menghantar tetingkap timbul dan menggunakan ubah hala</translation>
 <translation id="6973611239564315524">Peningkatan kepada Debian 10 (Buster) tersedia</translation>
@@ -7606,6 +7611,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sedang menggunakan mikrofon anda</translation>
 <translation id="7141105143012495934">Log masuk gagal kerana butiran akaun anda tidak boleh didapatkan semula. Sila hubungi pentadbir anda atau cuba lagi.</translation>
 <translation id="7141844554192012199">Semakan</translation>
+<translation id="714301620504747562">Penyemakan imbas dan carian lebih pantas daripada prapemuatan standard</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7143409552554575716">Bendera ChromeOS</translation>
 <translation id="714447804011008506">Kini muat turun berada dalam bar alat</translation>

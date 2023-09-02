@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="1507010443238049608">Bidra til å gjøre Chromium bedre og raskere</translation>
 <translation id="1531155317299575425">Viser vinduer som ber deg logge på Chromium.</translation>
+<translation id="1591119736686995611">Åpner Chromium-fanerutenettet.</translation>
 <translation id="1617663976202781617">Data fra Chromium-synkronisering</translation>
 <translation id="1647558790457890304">Chromium-innstillinger</translation>
 <translation id="1722370509450468186">Passordet blir lagret i kontoen din (<ph name="EMAIL" />).</translation>
@@ -20,6 +21,7 @@
 <translation id="1843424232666537147">Chromium har funksjoner som hjelper deg med å administrere Internett-dataene dine og hvor fort du kan laste inn nettsider.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
+<translation id="186734497270163706">Trykk på «Chromium» og så på «Standard nettleserapp».</translation>
 <translation id="1867772173333403444">4. Velg Chromium</translation>
 <translation id="2006345422933397527">Chromium kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
 <translation id="2052320862053429062">Chromium sjekker passordene dine regelmessig opp mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
@@ -45,6 +47,7 @@
 <translation id="2942241131342758843">Bruk Chromium som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="3102849287235003384">For å logge av Google-kontoen din på alle nettsteder, <ph name="BEGIN_LINK" />logg av Chromium<ph name="END_LINK" />.</translation>
+<translation id="3219277919172823720">Søk med stemmen i Chromium</translation>
 <translation id="3228349498066165585">Noen av Chromium-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="3256316712990552818">Kopiert til Chromium</translation>
@@ -66,6 +69,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="3955621079070267756">Åpne Chromium fra hvilken som helst app</translation>
 <translation id="4043291146360695975">Passord lagres i Passordlagring kun på denne enheten.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
+<translation id="4195557071150719219">Se nylige faner fra Chromium</translation>
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
 <translation id="452436063477828504">Sørg for at du alltid kan bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
@@ -92,6 +96,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene
 <translation id="5453478652154926037">Chromium kan ikke sjekke passordene dine.</translation>
 <translation id="5521125884468363740">For å se fanene dine overalt hvor du bruker Chromium, logg på og slå på synkronisering</translation>
 <translation id="5522297504975449419">Enkelte Chromium-funksjoner kommer ikke til å være tilgjengelige lenger.</translation>
+<translation id="5571094606370987472">Åpner nylige faner fra Chromium.</translation>
 <translation id="5688047395118852662">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke sjekke passordene dine</translation>
 <translation id="5777187867430702742">Chromium-side</translation>
@@ -107,6 +112,7 @@ Du bør tenke på følgende:
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
 <translation id="5951593919357934226">Få mest mulig ut av Chromium.</translation>
 <translation id="5983312940147103417">Gjør Chromium bedre</translation>
+<translation id="5985102273857091344">Velg «Chromium».</translation>
 <translation id="6062449165341879460">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chromium som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chromium.</translation>
 <translation id="61109258320235597">For å bruke og lagre Chromium-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="6119647025869519954">Slik velger du Chromium som standardnettleser:
@@ -115,6 +121,7 @@ Du bør tenke på følgende:
 3. Velg Chromium.</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
+<translation id="6324041800010509197">Gå til fanerutenettet i Chromium</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>
 <translation id="6407399265324739055">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
@@ -139,10 +146,12 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7313655110045230863">For å gjøre Chromium til standardnettleseren din, åpne Innstillinger. Trykk på Standard nettleserapp, og velg Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">De valgte dataene er fjernet fra Chromium og alle synkroniserte enheter. Det kan hende Google-kontoen din har andre typer nettleserlogger, for eksempel for søk og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
+<translation id="7387082980875012885">Åpne en ny fane i Chromium</translation>
 <translation id="7395825497086981028">Passordet blir lagret i Passordlagring for <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Bruk Chromium overalt</translation>
 <translation id="7523464085759699266">Slå på «Lås inkognitofaner når du lukker Chromium».</translation>
 <translation id="7674213385180944843">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Chromium, og slå på kameraet.</translation>
+<translation id="7710137812207066069">Åpner en ny fane i Chromium.</translation>
 <translation id="7763454117143368771">Bruk Chromium som standardnettleser for å holde deg beskyttet mot farlige nettsteder og holde passordene dine trygge</translation>
 <translation id="7812317783196516890">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chromium.</translation>
 <translation id="7859018312476869945">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
@@ -156,6 +165,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
 <translation id="8071041515667087705">Gå til Chromium-innstillingene.</translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
+<translation id="8115308261377517697">Bruk Chromium som standard nettleser</translation>
 <translation id="8235427517854598594">Vil du gjøre Chromium til standardnettleseren din?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>

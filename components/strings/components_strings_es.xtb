@@ -221,6 +221,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1413407968866574823">Juegos de acción y plataformas</translation>
 <translation id="1413809658975081374">Error de privacidad</translation>
 <translation id="1414134146594747368">Preescolar</translation>
+<translation id="141826476809826269">Fin del texto extraído</translation>
 <translation id="1419305130220238697">Botón Gestionar las descargas en Chrome: actívalo para gestionar los archivos que has descargado en Chrome</translation>
 <translation id="1422930527989633628">Puede pedir permiso para buscar dispositivos Bluetooth cercanos</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -277,6 +278,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1530707389502320859">El sitio web al que estás intentando acceder parece falso. Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
 <translation id="1532118530259321453">Esta página dice</translation>
 <translation id="1536390784834419204">Traducir página</translation>
+<translation id="1537807545287921620">No se puede acceder a este PDF. Abre el menú contextual y activa la opción Extraer texto de PDF.</translation>
 <translation id="1539840569003678498">Informe enviado:</translation>
 <translation id="1542105669288201090">Educación empresarial</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
@@ -434,6 +436,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (archivo)</translation>
 <translation id="1848982255014129637">Foto (brillo intenso)</translation>
+<translation id="1853392626017747777">Registro de tarjeta virtual cerrado</translation>
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1855370856221982654">Boxeo</translation>
 <translation id="1856713167556118146">Lo que no hace el modo Incógnito</translation>
@@ -470,6 +473,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1924727005275031552">Nueva</translation>
 <translation id="1935995810530254458">Copiar de todos modos</translation>
 <translation id="1939175642807587452">Puede pedir permiso para enviar notificaciones</translation>
+<translation id="1940441167050915935">Eliminar códigos de seguridad guardados</translation>
 <translation id="1943994668912612445">Diseño</translation>
 <translation id="1945968466830820669">Podrías perder el acceso a la cuenta de tu organización o tener problemas de suplantación de identidad. Chromium te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="1946849748901605102">12x15 pulgadas</translation>
@@ -864,6 +868,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2803306138276472711">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado malware<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen malware.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
 <translation id="2808278141522721006">Puedes activar o desactivar Windows Hello en <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">No se puede acceder a este PDF. Pulsa la tecla de búsqueda + M para abrir el menú contextual y activa la opción Extraer texto de PDF.</translation>
 <translation id="2818338148457093657">Servicios de belleza y spas</translation>
 <translation id="2820957248982571256">Buscando...</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda </translation>
@@ -1107,6 +1112,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3340978935015468852">configuración</translation>
 <translation id="3342018947887487892">Más tarde, un sitio que visites puede solicitar esta información, ya sea sobre tus temas de anuncios o sobre los anuncios sugeridos por los sitios que has visitado.</translation>
 <translation id="3342366525167526994">Arte corporal</translation>
+<translation id="3344167530090084176">Para pagar más rápido la próxima vez, guarda tu tarjeta y código de seguridad en tu dispositivo</translation>
 <translation id="334438173029876234">Equipamiento de monopatín</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Cambiar la configuración de proxy...</translation>
@@ -1167,6 +1173,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3461266716147554923"><ph name="URL" /> quiere ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
 <translation id="3461824795358126837">Rotulador</translation>
 <translation id="3462200631372590220">Ocultar configuración avanzada</translation>
+<translation id="3465972433695735758">No se puede acceder a este PDF. Texto extraído con la IA de Google.</translation>
 <translation id="346601286295919445">Química</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, abierta actualmente; pulsa el tabulador y luego Intro para cambiar a la pestaña abierta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para cerrar todas las ventanas de Incógnito que estén abiertas</translation>
@@ -1184,6 +1191,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="350069200438440499">Nombre:</translation>
 <translation id="3501300228850242680">Metal (música)</translation>
 <translation id="350421688684366066">Etiquetas (brillo intenso)</translation>
+<translation id="350763432931695541">Extrayendo texto de las páginas siguientes</translation>
 <translation id="3507869775212388416">Trabajos del sector jurídico</translation>
 <translation id="3507936815618196901">Crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="3512163584740124171">Se ha ignorado esta política porque existe otra en el mismo grupo de políticas con mayor prioridad.</translation>
@@ -1409,6 +1417,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3962859241508114581">Canción anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio web }other{De # sitios }}</translation>
+<translation id="3966044442021752214">Seguridad del producto</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
 <translation id="3983340834939868135">Llave de acceso de <ph name="VENDOR_NAME" /></translation>
@@ -1724,6 +1733,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Devolución de dinero asociada</translation>
+<translation id="4631881646528206880">Registro de tarjeta virtual</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4638670630777875591">Incógnito en Chromium</translation>
 <translation id="464342062220857295">Buscar funciones</translation>
@@ -1838,6 +1848,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4854853140771946034">Crea una nueva nota en Google Keep rápidamente</translation>
 <translation id="485902285759009870">Verificando código...</translation>
 <translation id="4862630594858951805">¿Quieres recibir correos cuando baje de precio?</translation>
+<translation id="4864406669374375262">Cadena de versión copiada en el portapapeles</translation>
 <translation id="486459320933704969">Tu padre, madre o tutor/a debe darte permiso para visitar este sitio web</translation>
 <translation id="4866506163384898554">Pulsa |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar el cursor</translation>
 <translation id="4873616204573862158">Gafas</translation>
@@ -2848,6 +2859,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6973988895180423160">3,5 x 5 pulgadas</translation>
 <translation id="6978236010531171013">Compartir igualmente</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Inicio del texto extraído</translation>
 <translation id="6979440798594660689">Silenciar (predeterminado)</translation>
 <translation id="6987806006823772670">Sobre (revestido)</translation>
 <translation id="6989763994942163495">Mostrar configuración avanzada...</translation>
@@ -2903,6 +2915,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7102760431686146931">Utensilios de cocina y vajilla</translation>
 <translation id="7105998430540165694">Llave de acceso del llavero de iCloud</translation>
 <translation id="7106762743910369165">Tu organización es la encargada de gestionar tu navegador</translation>
+<translation id="7107249414147762907">No se puede acceder a este PDF. No se ha extraído texto.</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> quiere utilizar la cámara</translation>
 <translation id="7108819624672055576">Permitido por una extensión</translation>
@@ -3525,6 +3538,7 @@ Más información:
 <translation id="8339163506404995330">No se traducirán las páginas en <ph name="LANGUAGE" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Si entiendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se hayan eliminado los programas dañinos.</translation>
+<translation id="8344776605855290140">Registro de tarjeta virtual abierto a altura completa</translation>
 <translation id="8347658365704983341">Educación a distancia</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
@@ -3914,6 +3928,7 @@ Más información:
 <translation id="917450738466192189">El certificado del servidor no es válido.</translation>
 <translation id="9174623988242579721">Vehículos personalizados y de alto rendimiento</translation>
 <translation id="9174917557437862841">Botón de cambio de pestaña; pulsa Intro para cambiar a esta pestaña</translation>
+<translation id="9177283544810807743">No se puede acceder a este PDF. Extrayendo texto con la IA de Google.</translation>
 <translation id="9179703756951298733">Gestiona la información de tus pagos y tarjetas de crédito desde la configuración de Chrome</translation>
 <translation id="9179907736442194268">Recibe alertas por correo electrónico si el precio baja en algún sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>

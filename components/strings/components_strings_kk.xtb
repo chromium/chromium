@@ -1106,6 +1106,7 @@
 <translation id="3340978935015468852">параметрлер</translation>
 <translation id="3342018947887487892">Кейінірек сіз кірген сайт осы ақпаратты: жарнама тақырыптарын немесе кірген сайттар ұсынған жарнамаларды сұрауы мүмкін.</translation>
 <translation id="3342366525167526994">Денені безендіру өнері</translation>
+<translation id="3344167530090084176">Келесі жолы жылдамырақ төлеу үшін картаңыз бен қауіпсіздік кодын құрылғыға сақтаңыз</translation>
 <translation id="334438173029876234">Скейтбординг жабдығы</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Прокси параметрлерін өзгерту…</translation>
@@ -1408,6 +1409,7 @@
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3963721102035795474">Оқу құралы режимі</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Жоқ}=1{1 сайттан }other{# сайттан }}</translation>
+<translation id="3966044442021752214">Өнім қауіпсіздігі</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> блокталған</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" кіру кілті</translation>

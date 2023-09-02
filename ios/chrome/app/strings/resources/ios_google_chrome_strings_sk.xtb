@@ -86,6 +86,7 @@
 <translation id="4633328489441962921">Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4636900170638246267">Prihláste sa na tomto webe a v Chrome.</translation>
 <translation id="4698415050768537821">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
+<translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
 <translation id="4819268619367838612">Chrome odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="4831642696589369971">Niektoré údaje Chromu zatiaľ neboli uložené vo vašom účte Google.
 
@@ -113,6 +114,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5716154293141027663">Chrome otvoríte vždy, keď klepnete na odkazy v iných aplikáciách</translation>
+<translation id="5808435672482059465">Zobraziť históriu Chromu</translation>
 <translation id="5998675059699164418">Vaša organizácia vyžaduje, aby ste sa na používanie Chromu prihlásili.</translation>
 <translation id="6054613632208573261">Predvolene používať Chrome</translation>
 <translation id="6063091872902370735">Povoliť prihlásenie do Chromu</translation>
@@ -155,6 +157,7 @@
 <translation id="7754633291442704733">Vaša organizácia <ph name="DOMAIN" /> bude mať prístup k údajom, záložkám, histórii, heslám a ďalším nastaveniam Chromu, ktoré uložíte v tomto účte. Keď sa odhlásite, vaše údaje budú z tohto zariadenia vymazané.  Údaje však zostanú uložené vo vašom spravovanom účte Google a budú k dispozícii vašej organizácii. Vaša organizácia môže nastaviť aj pravidlá pre používateľov špecifické pre daný účet, ktoré môžu zmeniť správanie Chromu.</translation>
 <translation id="7780154209050837198">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny</translation>
+<translation id="7925119591961387184">Vyberte Chrome.</translation>
 <translation id="8022947259858476807">Používajte Chrome ako predvolený prehliadač na otváranie odkazov, vyhľadávanie z miniaplikácií a automatické dopĺňanie hesiel v iných aplikáciách</translation>
 <translation id="804638182476029347">Povoľte upozornenia Chromu, aby ste mohli dostávať upozornenia na pokles ceny</translation>
 <translation id="81358522153858150">Chrome teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
@@ -172,6 +175,7 @@
   2. Klepnite na predvolenú aplikáciu prehliadača.
         3. Vyberte Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Klepnite na Chrome a potom na Predvolený prehliadač.</translation>
 <translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 <translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
@@ -183,6 +187,7 @@
 Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="8897749957032330183">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
+<translation id="8949681853939555434">Nastavte si Chrome ako predvolený prehliadač</translation>
 <translation id="8969290730818637510">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chrome pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />
 

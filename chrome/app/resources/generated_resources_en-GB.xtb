@@ -4817,6 +4817,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4820236583224459650">Set as active ticket</translation>
 <translation id="4820795723433418303">Use function keys as Chromebook top row keys</translation>
 <translation id="4821935166599369261">&amp;Profiling Enabled</translation>
+<translation id="4823193082697477185">Access shared files, folders, or drives on a local network. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">Read and change user and device settings</translation>
 <translation id="4824037980212326045">Linux backup and restore</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
@@ -4960,6 +4961,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4933484234309072027">embedded on <ph name="URL" /></translation>
 <translation id="4936042273057045735">Notification syncing is not supported for phones in a work profile</translation>
 <translation id="4937676329899947885">Receiving Wi-Fi network</translation>
+<translation id="4938052313977274277">Speed</translation>
 <translation id="4938788218358929252">these recipe ideas</translation>
 <translation id="4939805055470675027">Couldn't connect to <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">There are <ph name="PRINTER_COUNT" /> printers available to save.</translation>
@@ -5206,6 +5208,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Advanced settings for <ph name="PRINTING_DESTINATION" /></translation>
 <translation id="5154702632169343078">Subject</translation>
+<translation id="5154917547274118687">Memory</translation>
 <translation id="5155327081870541046">In the address bar, enter the shortcut for the site that you want to search, such as '@bookmarks'. Then, press your preferred keyboard shortcut, and enter your search term.</translation>
 <translation id="5156638757840305347">Cursor is highlighted when it appears or moves</translation>
 <translation id="5157250307065481244">View site details</translation>
@@ -8712,7 +8715,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8005600846065423578">Always allow <ph name="HOST" /> to see the clipboard</translation>
 <translation id="8006630792898017994">Space or tab</translation>
 <translation id="8008356846765065031">Internet disconnected. Please check your Internet connection.</translation>
-<translation id="8009225694047762179">Manage Passwords</translation>
+<translation id="8009225694047762179">Manage passwords</translation>
 <translation id="8011372169388649948">'<ph name="BOOKMARK_TITLE" />' moved.</translation>
 <translation id="8012188750847319132">caps lock</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>

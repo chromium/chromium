@@ -222,6 +222,7 @@
 <translation id="1413407968866574823">ایکشن اور پلیٹ فارم گیمز</translation>
 <translation id="1413809658975081374">رازداری کی خرابی</translation>
 <translation id="1414134146594747368">پری اسکول</translation>
+<translation id="141826476809826269">نکالے گئے ٹیکسٹ کا اختتام</translation>
 <translation id="1419305130220238697">‏Chrome میں ڈاؤن لوڈز کا نظم کریں بٹن، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے فعال کریں</translation>
 <translation id="1422930527989633628">سائٹ قریبی بلوٹوتھ آلات کو دریافت کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1426410128494586442">ہاں</translation>
@@ -278,6 +279,7 @@
 <translation id="1530707389502320859">‏آپ نے ابھی جو سائٹ ملاحظہ کرنے کی کوشش کی ہے وہ جعلی معلوم ہوتی ہے۔ بعض اوقات حملہ آور URL میں چھوٹی، مشکل سے نظر آنے والی تبدیلیاں کر کے سائٹس کی نقل کرتے ہیں۔</translation>
 <translation id="1532118530259321453">اس صفحے کے مطابق</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
+<translation id="1537807545287921620">‏یہ PDF ناقابل رسائی ہے۔ سیاق و سباق کا مینو کھولیں اور "PDF سے ٹیکسٹ نکالیں" کو آن کریں</translation>
 <translation id="1539840569003678498">رپورٹ بھیج دی گئی:</translation>
 <translation id="1542105669288201090">کاروباری تعلیم</translation>
 <translation id="1545757265410828525">قیمت کی سرگزشت</translation>
@@ -435,6 +437,7 @@
 <translation id="1842969606798536927">ادائیگی کریں</translation>
 <translation id="1846432862466000825">پلاسٹک (آرکائیول)</translation>
 <translation id="1848982255014129637">تصویر (ہائی گلوس)</translation>
+<translation id="1853392626017747777">ورچوئل کارڈ کا اندراج بند ہو گیا</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
 <translation id="1855370856221982654">باکسنگ</translation>
 <translation id="1856713167556118146">پوشیدگی وضع کیا نہیں کرتی ہے</translation>
@@ -471,6 +474,7 @@
 <translation id="1924727005275031552">نئی</translation>
 <translation id="1935995810530254458">بہر حال کاپی کریں</translation>
 <translation id="1939175642807587452">سائٹ اطلاعات بھیجنے کیلئے پوچھ سکتی ہے</translation>
+<translation id="1940441167050915935">محفوظ کردہ سیکیورٹی کوڈز حذف کریں</translation>
 <translation id="1943994668912612445">ڈیزائن</translation>
 <translation id="1945968466830820669">‏آپ اپنی تنظیم کے اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chromium آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="1946849748901605102">‏‎12 x 15 انچ</translation>
@@ -865,6 +869,7 @@
 <translation id="2803306138276472711">‏Google سیف براؤزنگ کو حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />میلویئر کا پتہ چلا<ph name="END_LINK" />۔ جو ویب سائٹس عام طور پر محفوظ ہوتی ہیں وہ کبھی کبھی میلویئر سے متاثر ہو جاتی ہیں۔</translation>
 <translation id="2807052079800581569">‏تصویر کی Y پوزیشن</translation>
 <translation id="2808278141522721006">‏آپ <ph name="SETTINGS" /> میں Windows Hello کو آن یا آف کر سکتے ہیں</translation>
+<translation id="2814184336982254349">‏یہ PDF ناقابل رسائی ہے۔ سیاق و سباق کا مینو کھولنے کے لیے search پلس m دبائیں اور "PDF سے ٹیکسٹ نکالیں" کو آن کریں۔</translation>
 <translation id="2818338148457093657">بیوٹی سروسز اور اسپاس</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
@@ -1109,6 +1114,7 @@
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3342018947887487892">بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ اس معلومات کا مطالبہ کر سکتی ہے — یا آپ کے اشتہار کے موضوعات یا آپ کی ملاحظہ کردہ سائٹس کے ذریعہ تجویز کردہ اشتہارات۔</translation>
 <translation id="3342366525167526994">باڈی آرٹ</translation>
+<translation id="3344167530090084176">اگلی بار تیزی سے ادائیگی کرنے کے لیے، اپنا کارڈ اور سیکیورٹی کوڈ اپنے آلے میں محفوظ کریں</translation>
 <translation id="334438173029876234">اسکیٹ بورڈنگ کے ساز و سامان</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">پراکسی ترتیبات تبدیل کریں…</translation>
@@ -1169,6 +1175,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہتا ہے</translation>
 <translation id="3461824795358126837">ہائی لائٹر</translation>
 <translation id="3462200631372590220">جدید ترین کو چھپائیں</translation>
+<translation id="3465972433695735758">‏یہ PDF ناقابل رسائی ہے۔ ٹیکسٹ Google AI کی مدد سے نکالا گيا</translation>
 <translation id="346601286295919445">کیمیا</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، فی الحال کھلا ہوا ہے، کھلے ہوئے ٹیب پر سوئچ کرنے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کرنے کیلئے ٹیب پھر Enter دبائیں</translation>
@@ -1186,6 +1193,7 @@
 <translation id="350069200438440499">فائل کا نام:</translation>
 <translation id="3501300228850242680">میٹل (موسیقی)</translation>
 <translation id="350421688684366066">لیبلز (ہائی گلوس)</translation>
+<translation id="350763432931695541">اگلے چند صفحات میں ٹیکسٹ نکالا جا رہا ہے</translation>
 <translation id="3507869775212388416">قانونی جابز</translation>
 <translation id="3507936815618196901">‏اپنے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کریں</translation>
 <translation id="3512163584740124171">اسی پالیسی گروپ کی طرف سے آنے والی دوسری پالیسی میں ایک اعلی ترجیح ہونے کی وجہ سے یہ پالیسی نظر انداز کی جاتی ہے۔</translation>
@@ -1411,6 +1419,7 @@
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963721102035795474">ریڈر وض‏ع</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ سے }other{# سائٹس سے }}</translation>
+<translation id="3966044442021752214">پروڈکٹ کا تحفظ</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود ہے</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" کی جانب سے پاس کی</translation>
@@ -1726,6 +1735,7 @@
 <translation id="4628948037717959914">تصویر</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">کیش بیک لنک کردہ ہے</translation>
+<translation id="4631881646528206880">ورچوئل کارڈ کا اندراج</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4638670630777875591">‏Chromium میں پوشیدگی وضع</translation>
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
@@ -1840,6 +1850,7 @@
 <translation id="4854853140771946034">‏Google Keep میں تیزی سے ایک نیا نوٹ تخلیق کریں</translation>
 <translation id="485902285759009870">کوڈ کی توثیق ہو رہی ہے...</translation>
 <translation id="4862630594858951805">قیمت کم ہونے پر ای میلز چاہتے ہیں؟</translation>
+<translation id="4864406669374375262">ورژن اسٹرنگ کلپ بورڈ پر کاپی ہو گئی</translation>
 <translation id="486459320933704969">یہ سائٹ ملاحظہ کرنے کے لئے آپ کے والد/والدہ یا سرپرست کو کہنا ہوگا کہ یہ آپ کے لئے ٹھیک ہے</translation>
 <translation id="4866506163384898554">اپنا کرسر دکھانے کے لیے |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| دبائیں</translation>
 <translation id="4873616204573862158">چشم پوش</translation>
@@ -2851,6 +2862,7 @@
 <translation id="6973988895180423160">‏‎3.5 x 5 انچ</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">نکالے گئے ٹیکسٹ کا آغاز</translation>
 <translation id="6979440798594660689">خاموش کریں (ڈیفالٹ)</translation>
 <translation id="6987806006823772670">لفافہ (کوٹیڈ)</translation>
 <translation id="6989763994942163495">جدید ترین ترتیبات دکھائیں…</translation>
@@ -2906,6 +2918,7 @@
 <translation id="7102760431686146931">پکانے کے برتن اور کھانے کے برتن</translation>
 <translation id="7105998430540165694">‏iCloud کی چین کی جانب سے پاس کی</translation>
 <translation id="7106762743910369165">آپ کا براؤزر آپ کی تنظیم کے زیر انتظام ہے</translation>
+<translation id="7107249414147762907">‏یہ PDF ناقابل رسائی ہے۔ کوئی ٹیکسٹ نہیں نکالا گیا</translation>
 <translation id="7108338896283013870">چھپائیں</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> آپ کا کیمرا استعمال کرنا چاہتا ہے</translation>
 <translation id="7108819624672055576">ایک ایکسٹینشین کی جانب سے اجازت یافتہ</translation>
@@ -3528,6 +3541,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> کے صفحات کا ترجمہ نہیں کیا جائے گا</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">اگر آپ اپنی سیکیورٹی کے خطروں کو سمجھتے ہیں تو آپ خطرناک پروگراموں کو ہٹائے جانے سے پہلے <ph name="BEGIN_LINK" />یہ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
+<translation id="8344776605855290140">ورچوئل کارڈ کا اندراج پوری اسکرین پر کھلا ہے</translation>
 <translation id="8347658365704983341">فاصلاتی تعلیم</translation>
 <translation id="8349305172487531364">بُک مارکس بار</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
@@ -3918,6 +3932,7 @@
 <translation id="917450738466192189">سرور کا سرٹیفکیٹ غلط ہے۔</translation>
 <translation id="9174623988242579721">حسب ضرورت اور کارکردگی والی گاڑیاں</translation>
 <translation id="9174917557437862841">‏ٹیب پر سوئچ کرنے کا بٹن، اس ٹیب پر سوئچ کرنے کے لیے Enter دبائیں</translation>
+<translation id="9177283544810807743">‏یہ PDF ناقابل رسائی ہے۔ ٹیکسٹ Google AI کی مدد سے نکالا جا رہا ہے</translation>
 <translation id="9179703756951298733">‏Chrome ترتیبات میں اپنی ادائیگیوں اور کریڈٹ کارڈ کی معلومات کا نظم کریں</translation>
 <translation id="9179907736442194268">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر ای میل الرٹس حاصل کریں</translation>
 <translation id="9183302530794969518">Google Docs</translation>

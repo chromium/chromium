@@ -814,6 +814,7 @@
 <translation id="1630768113285622200">Перазапусціць і працягнуць</translation>
 <translation id="1631503405579357839">Дальтанізм</translation>
 <translation id="1632278969378690607">Клавіша пошуку + націсканне</translation>
+<translation id="1632293440289326475">Уключыць эканомію энергіі, каб павялічыць час працы ад акумулятара?</translation>
 <translation id="1632756664321977232">Інструмент "Абрэзка"</translation>
 <translation id="163309982320328737">Пачатковая шырыня сімвалаў – поўная</translation>
 <translation id="1633947793238301227">Выключыць Памочніка Google</translation>
@@ -1275,6 +1276,7 @@
 <translation id="1988259784461813694">Патрабаванні</translation>
 <translation id="1988733631391393183">Паказваць каманды Брайля ў меню ChromeVox</translation>
 <translation id="1989112275319619282">Агляд</translation>
+<translation id="1989601282983766341">Наладзіць апавяшчэнні праграм, работу функцыі "Не турбаваць" і значкі праграм</translation>
 <translation id="1989903373608997757">Заўсёды выкарыстоўваць</translation>
 <translation id="1990046457226896323">Файлы для ператварэння маўлення ў тэкст спампаваны</translation>
 <translation id="1990512225220753005">Не паказваць ярлыкі на гэтай старонцы</translation>
@@ -2258,6 +2260,7 @@
 <translation id="2749756011735116528">Увайсці ва ўліковы запіс <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM-карта</translation>
 <translation id="2749881179542288782">Праверыць граматыку і правапіс</translation>
+<translation id="2750020734439919571">Дадатковыя налады і дазволы праграмы Chrome</translation>
 <translation id="2750602041558385535">Неправераная спампоўка заблакіравана</translation>
 <translation id="2754226775788136540">Ідзе пошук прылад з хуткім спалучэннем, захаваных ва ўліковым запісе <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Патрэбныя вам праграмы, як для працы, так і для забаў, можна знайсці ў Краме Google Play. Іх можна ўсталяваць у любы час.</translation>
@@ -2408,6 +2411,7 @@
 <translation id="286674810810214575">Ідзе праверка крыніц сілкавання...</translation>
 <translation id="2867768963760577682">Адкрыць у замацаванай укладцы</translation>
 <translation id="2868746137289129307">Гэта пашырэнне састарэлае, яно выключана ў адпаведнасці з карпаратыўнай палітыкай. Пры даступнасці новай версіі пашырэнне можа быць уключана аўтаматычна.</translation>
+<translation id="2869511363030898130">Адкрыць у праграме "<ph name="APP_NAME" />"</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2870909136778269686">Ідзе абнаўленне...</translation>
 <translation id="2871733351037274014">Перадзагрузка старонак</translation>
@@ -4932,6 +4936,7 @@
 <translation id="4933484234309072027">убудавана на сайце <ph name="URL" /></translation>
 <translation id="4936042273057045735">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль.</translation>
 <translation id="4937676329899947885">Ідзе атрыманне даных сеткі Wi-Fi</translation>
+<translation id="4938052313977274277">Хуткасць</translation>
 <translation id="4938788218358929252">гэтыя прыклады рэцэптаў</translation>
 <translation id="4939805055470675027">Не ўдалося падключыцца да аператара <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259">Даступна некалькі (<ph name="PRINTER_COUNT" />) прынтараў, якія можна захаваць.</translation>
@@ -5178,6 +5183,7 @@
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722">Пашыраныя налады для прынтара "<ph name="PRINTING_DESTINATION" />"</translation>
 <translation id="5154702632169343078">Тэма</translation>
+<translation id="5154917547274118687">Памяць</translation>
 <translation id="5155327081870541046">У адрасным радку ўвядзіце каманду для старонкі, на якой трэба выканаць пошук (напрыклад, "@bookmarks"). Потым націсніце выбранае спалучэнне клавіш і ўвядзіце пошукавы запыт.</translation>
 <translation id="5156638757840305347">Курсор будзе вылучацца пры з'яўленні на экране і пры руху</translation>
 <translation id="5157250307065481244">Паказаць падрабязныя звесткі пра сайт</translation>
@@ -5247,6 +5253,7 @@
 <translation id="5210365745912300556">Закрыць укладку</translation>
 <translation id="5213114823401215820">Зноў адкрыць закрытую групу</translation>
 <translation id="5213481667492808996">Сэрвіс перадачы даных "<ph name="NAME" />" гатовы да выкарыстання</translation>
+<translation id="5213658238771284310">Аднаўленне сеанса пасля запуску</translation>
 <translation id="5213891612754844763">Паказаць налады проксі-сервера</translation>
 <translation id="5214639857958972833">Створана закладка "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215502535566372932">Выберыце краіну</translation>
@@ -8436,6 +8443,7 @@
 <translation id="7815680994978050279">Небяспечная спампоўка заблакіравана</translation>
 <translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
 <translation id="7818135753970109980">Дададзена новая тэма (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="7819087895293765164">Пасля перазапуску вы зможаце працягваць работу з адкрытымі раней праграмамі, вэб-сайтамі і вокнамі</translation>
 <translation id="7819605256207059717">Элемент заблакіраваны вашай арганізацыяй</translation>
 <translation id="7820400255539998692">Выдаліце файл <ph name="FILENAME" />, каб іншыя карыстальнікі прылады не змаглі пабачыць вашы паролі</translation>
 <translation id="7820561748632634942">Прызначыць дадатковыя пераключальнікі?</translation>
@@ -8629,6 +8637,7 @@
 <translation id="7964458523224581615">Вірыдыян</translation>
 <translation id="7966241909927244760">&amp;Капіраваць адрас відарыса</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 пункт у спісе закладак}one{{COUNT} пункт у спісе закладак}few{{COUNT} пункты ў спісе закладак}many{{COUNT} пунктаў у спісе закладак}other{{COUNT} пункта ў спісе закладак}}</translation>
+<translation id="7967776604158229756">Дадатковыя налады і дазволы вэб-праграмы</translation>
 <translation id="7968072247663421402">Выбар пастаўшчыка</translation>
 <translation id="7968742106503422125">Прагляд і змяненне даных, якія вы капіруеце і ўстаўляеце</translation>
 <translation id="7968833647796919681">Уключыць збор даных аб прадукцыйнасці</translation>
@@ -8657,6 +8666,7 @@
 <translation id="7987814697832569482">Заўсёды падключацца праз гэты VPN</translation>
 <translation id="7988355189918024273">Уключыць спецыяльныя магчымасці</translation>
 <translation id="7988805580376093356">Не выкарыстоўваць бягучую АС і запусціць <ph name="DEVICE_OS" /> з USB.</translation>
+<translation id="7988876720343145286">Дадатковыя налады і дазволы Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, голас <ph name="COUNT" /></translation>
 <translation id="7991296728590311172">Налады доступу праз пераключальнікі</translation>
 <translation id="7992203134935383159">Сінтэз маўлення</translation>
@@ -9253,6 +9263,7 @@
 <translation id="8472623782143987204">патрабуюцца апаратныя сродкі</translation>
 <translation id="8473540203671727883">Агучваць тэкст пад курсорам мышы</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
+<translation id="8474378002946546633">Дазволіць апавяшчэнні</translation>
 <translation id="8474733733775441349">Паказ пароляў, захаваных ва Уліковым запісе Google</translation>
 <translation id="8475313423285172237">Іншая праграма на камп'ютары дадала пашырэнне, якое можа змяніць працу Chrome.</translation>
 <translation id="8476408756881832830">Прыпыняць прайграванне, калі ChromeVox чытае тэкст</translation>
@@ -9387,6 +9398,7 @@
 <translation id="8593450223647418235">Калі не завяршыць наладжванне, вы не зможаце адкрываць файлы ў Microsoft 365.</translation>
 <translation id="8594585498253980290">{COUNT,plural, =1{Файлы cookie заблакіраваны на 1 сайце}one{Файлы cookie заблакіраваны на # сайце}few{Файлы cookie заблакіраваны на # сайтах}many{Файлы cookie заблакіраваны на # сайтах}other{Файлы cookie заблакіраваны на # сайта}}</translation>
 <translation id="8596540852772265699">Карыстальніцкія файлы</translation>
+<translation id="8597462463725156723">Апавяшчэнні не будуць паказвацца на экране. Вы можаце іх праглядзець, націснуўшы на значок "Не турбаваць" у правым ніжнім вугле экрана.</translation>
 <translation id="8597845839771543242">Фармат уласцівасці:</translation>
 <translation id="8599681327221583254">Адна або некалькі палітык наладжаны няправільна. Звярніцеся да адміністратара</translation>
 <translation id="8599864823732014237">Прапусціць рэгістрацыю для арганізацый?</translation>
@@ -9506,6 +9518,7 @@
 <translation id="8680251145628383637">Каб закладкі, гісторыя, паролі і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ў сістэму. Вы таксама аўтаматычна ўвойдзеце ў сэрвісы Google.</translation>
 <translation id="8681886425883659911">На сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман, рэклама блакіруецца</translation>
 <translation id="8682730193597992579">Прынтар "<ph name="PRINTER_NAME" />" падключаны і гатовы да працы</translation>
+<translation id="8685540043423825702">Ваш профіль Chrome</translation>
 <translation id="8686142379631285985">Вы ўвайшлі як <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
 <translation id="8687103160920393343">Скасаваць спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8688672835843460752">Даступна</translation>

@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1846432862466000825">ପ୍ଲାଷ୍ଟିକ (ଆର୍କାଇଭାଲ)</translation>
 <translation id="1848982255014129637">ଫଟୋ (ହାଇ-ଗ୍ଲସ)</translation>
+<translation id="1853392626017747777">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="1854180393107901205">କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1855370856221982654">ବକ୍ସିଂ</translation>
 <translation id="1856713167556118146">ଇନକଗ୍ନିଟୋ କଣ କରେ ନାହିଁ</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">ନୂଆ</translation>
 <translation id="1935995810530254458">ଯେ କୌଣସି ମତେ କପି କରନ୍ତୁ</translation>
 <translation id="1939175642807587452">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
+<translation id="1940441167050915935">ସେଭ କରାଯାଇଥିବା ସୁରକ୍ଷା କୋଡଗୁଡ଼ିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="1943994668912612445">ଡିଜାଇନ</translation>
 <translation id="1945968466830820669">ଆପଣ ଆପଣଙ୍କ ସଂସ୍ଥାର ଆକାଉଣ୍ଟକୁ ଆକ୍ସେସ୍ ହରାଇବେ କିମ୍ବା ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ସୂଚନା ଚୋରି ହେବାର ଅନୁଭବ କରିପାରନ୍ତି। Chromium ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ କୁ ବଦଳାଇବା ପାଇଁ ସୁପାରିଶ୍ କରୁଛି।</translation>
 <translation id="1946849748901605102">12 x 15 ଇଞ୍ଚ</translation>
@@ -1105,6 +1107,7 @@
 <translation id="3340978935015468852">ସେଟିଂସ୍</translation>
 <translation id="3342018947887487892">ପରେ ଆପଣ ଭିଜିଟ କରୁଥିବା ଏକ ସାଇଟ ଏହି ସୂଚନା ମାଗିପାରେ— ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟ କିମ୍ବା ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ପରାମର୍ଶ ଦିଆଯାଇଥିବା ବିଜ୍ଞାପନଗୁଡ଼ିକ।</translation>
 <translation id="3342366525167526994">ବଡି ଆର୍ଟ</translation>
+<translation id="3344167530090084176">ପରବର୍ତ୍ତୀ ସମୟରେ ଶୀଘ୍ର ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କର କାର୍ଡ ଏବଂ ସୁରକ୍ଷା କୋଡକୁ ସେଭ କରନ୍ତୁ</translation>
 <translation id="334438173029876234">ସ୍କେଟବୋର୍ଡିଙ୍ଗ ଇକ୍ୟୁପମେଣ୍ଟ</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌ ପରିବର୍ତ୍ତନ କରନ୍ତୁ...</translation>
@@ -1406,6 +1409,7 @@
 <translation id="3962859241508114581">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="3963721102035795474">ରିଡର୍‌ ମୋଡ୍‌</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ସାଇଟ୍‌ରୁ}other{# ଟି ସାଇଟ୍‌ରୁ }}</translation>
+<translation id="3966044442021752214">ପ୍ରଡକ୍ଟ ସୁରକ୍ଷା</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />କୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ତରଫରୁ ପାସକୀ</translation>
@@ -1721,6 +1725,7 @@
 <translation id="4628948037717959914">ଫଟୋ</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">କ୍ୟାସବ୍ୟାକ୍ ଲିଙ୍କ୍ କରାଯାଇଛି</translation>
+<translation id="4631881646528206880">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ</translation>
 <translation id="4636930964841734540">ସୂଚନା</translation>
 <translation id="4638670630777875591">Chromiumରେ ଇନକଗ୍ନିଟୋ ମୋଡ</translation>
 <translation id="464342062220857295">ଫିଚର୍‍ଗୁଡ଼ିକର ସନ୍ଧାନ କରନ୍ତୁ</translation>
@@ -1836,6 +1841,7 @@
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="485902285759009870">କୋଡ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="4862630594858951805">ମୂଲ୍ୟ ହ୍ରାସ ପାଇବା ବିଷୟରେ ଇମେଲ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="4864406669374375262">କ୍ଲିପବୋର୍ଡକୁ ଭର୍ସନ ଷ୍ଟ୍ରିଂ କପି କରାଯାଇଛି</translation>
 <translation id="486459320933704969">ଏହି ୱେବସାଇଟ ଭିଜିଟ କରିବା ତୁମ ପାଇଁ ଠିକ୍ ବୋଲି ଜଣେ ବାପା କିମ୍ବା ମା ବା ଅଭିଭାବକ କହିବା ଆବଶ୍ୟକ</translation>
 <translation id="4866506163384898554">ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
 <translation id="4873616204573862158">ଆଇୱେର</translation>
@@ -3522,6 +3528,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ରେ ପୃଷ୍ଠାଗୁଡ଼ିକ ଅନୁବାଦ କରାଯିବନାହିଁ</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">ଆପଣଙ୍କ ସୁରକ୍ଷା ପ୍ରତି ଥିବା ବିପଦକୁ ଯଦି ଆପଣ ବୁଝିପାରନ୍ତି ତେବେ, କ୍ଷତିକାରକ ପ୍ରୋଗ୍ରାମ୍‍ଗୁଡ଼ିକୁ କଢ଼ାଯିବା ପୂର୍ବରୁ ଆପଣ ଏହି <ph name="BEGIN_LINK" />ସାଇଟ୍‍କୁ ଯାଇପାରନ୍ତି<ph name="END_LINK" />।</translation>
+<translation id="8344776605855290140">ଭର୍ଚୁଆଲ କାର୍ଡ ପଞ୍ଜିକରଣ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="8347658365704983341">ଦୂର ଶିକ୍ଷା</translation>
 <translation id="8349305172487531364">ବୁକମାର୍କସ୍ ଦଣ୍ଡିକା</translation>
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
