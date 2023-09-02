@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -1722,6 +1723,18 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
         PhysicalRect mapped_overflow_rect =
             ComputeVisualOverflowRect(*child_box, ancestor_for_recursion);
         result.Unite(mapped_overflow_rect);
+      } else if (auto* child_text = DynamicTo<LayoutText>(child)) {
+        const bool child_visible =
+            child_text->StyleRef().Visibility() == EVisibility::kVisible ||
+            !child_text->VisualRectRespectsVisibility();
+        if (!child_visible) {
+          continue;
+        }
+
+        auto overflow_rect = child_text->PhysicalVisualOverflowRect();
+        child_text->MapToVisualRectInAncestorSpace(
+            ancestor_for_recursion, overflow_rect, kUseGeometryMapper);
+        result.Unite(overflow_rect);
       }
     }
   }
