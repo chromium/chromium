@@ -631,6 +631,14 @@ TEST_F(SnapGroupEntryPointArm1Test, TwoWindowsSnappedTest) {
       w1.get(),
       /*state_type=*/chromeos::WindowStateType::kSecondarySnapped);
   EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Select the other window in overview to form a snap group and exit overview.
+  auto* item2 = GetOverviewItemForWindow(w2.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      gfx::ToRoundedPoint(item2->GetTransformedBounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  WaitForOverviewExitAnimation();
 }
 
 // Tests that there is no crash when work area changed after snapping two
@@ -1138,10 +1146,12 @@ TEST_F(SnapGroupEntryPointArm1Test, SnapWithoutShowingOverview) {
 
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  std::unique_ptr<aura::Window> w3(CreateTestWindow());
   SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   SnapOneTestWindow(w2.get(), chromeos::WindowStateType::kSecondarySnapped);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  w2.reset();
 
   snap_group_controller->set_can_enter_overview_for_testing(
       /*can_enter_overview=*/true);

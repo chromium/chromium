@@ -43,7 +43,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                                 public WindowStateObserver {
  public:
   OverviewItem(aura::Window* window,
-               OverviewSession* overview,
+               OverviewSession* overview_session,
                OverviewGrid* overview_grid);
 
   OverviewItem(const OverviewItem&) = delete;
@@ -53,7 +53,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
 
   OverviewItemView* overview_item_view() { return overview_item_view_; }
 
-  // If the window item represents a minimized window, update its content view.
+  // If the window item represents a minimized window, update its contents view.
   void UpdateItemContentViewForMinimizedWindow();
 
   OverviewAnimationType GetExitOverviewAnimationType() const;
@@ -93,7 +93,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void HandleGestureEvent(ui::GestureEvent* event) override;
   void OnFocusedViewActivated() override;
   void OnFocusedViewClosed() override;
-  bool IsDragItem() const override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::RectF& target_bounds,

@@ -82,12 +82,6 @@ constexpr int kSwipeToCloseCloseTranslationDp = 96;
 // change in the size of the item along that dimension.
 constexpr float kDragWindowScale = 0.05f;
 
-// The shadow types corresponding to the default and dragged states.
-constexpr SystemShadow::Type kDefaultShadowType =
-    SystemShadow::Type::kElevation12;
-constexpr SystemShadow::Type kDraggedShadowType =
-    SystemShadow::Type::kElevation24;
-
 // A self-deleting animation observer that runs the given callback when its
 // associated animation completes. Optionally takes a callback that is run when
 // the animation starts.
@@ -875,10 +869,6 @@ void OverviewItem::OnFocusedViewClosed() {
   overview_session_->OnFocusedItemClosed(this);
 }
 
-bool OverviewItem::IsDragItem() const {
-  return overview_session_->GetCurrentDraggedOverviewItem() == this;
-}
-
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
 
@@ -1124,32 +1114,16 @@ void OverviewItem::UpdateWindowDimensionsType() {
 void OverviewItem::CreateItemWidget() {
   TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.visible_on_all_workspaces = true;
-  params.layer_type = ui::LAYER_NOT_DRAWN;
-  params.name = "OverviewItemWidget";
-  params.activatable = views::Widget::InitParams::Activatable::kDefault;
-  params.accept_events = true;
-  params.parent = transform_window_.window()->parent();
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-
   item_widget_ = std::make_unique<views::Widget>();
   item_widget_->set_focus_on_creation(false);
-  item_widget_->Init(std::move(params));
+  item_widget_->Init(CreateOverviewItemWidgetParams(
+      transform_window_.window()->parent(), "OverviewItemWidget"));
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   widget_window->parent()->StackChildBelow(widget_window, GetWindow());
   // Overview uses custom animations so remove the default ones.
   wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
 
-  shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(kDefaultShadowType);
-  auto* shadow_layer = shadow_->GetLayer();
-  auto* widget_layer = item_widget_->GetLayer();
-  widget_layer->Add(shadow_layer);
-  widget_layer->StackAtBottom(shadow_layer);
-  shadow_->ObserveColorProviderSource(item_widget_.get());
+  ConfigureTheShadow();
 
   overview_item_view_ =
       item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
@@ -1162,7 +1136,7 @@ void OverviewItem::CreateItemWidget() {
       overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
           ? 1.f
           : 0.f);
-  widget_layer->SetMasksToBounds(false);
+  item_widget_->GetLayer()->SetMasksToBounds(false);
 }
 
 gfx::Point OverviewItem::GetMagnifierFocusPointInScreen() const {
@@ -1224,6 +1198,9 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
 }
 
 void OverviewItem::OnWindowDestroying(aura::Window* window) {
+  // TODO(b/298518626): Create a Delegate class to handle window destroying as
+  // the current case may no longer apply to group item. We should inform its
+  // direct parent to remove the item.
   CHECK_EQ(GetWindow(), window);
 
   if (is_being_dragged_) {

@@ -56,6 +56,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // Returns true if the corresponding SnapGroup for the given `window1` and
   // `window2` gets created, added to the `snap_groups_` and updated
   // `window_to_snap_group_map_` successfully. False otherwise.
+  // Currently, we make the assumption that the two windows need to be on the
+  // same parent container.
   bool AddSnapGroup(aura::Window* window1, aura::Window* window2);
 
   // Returns true if the corresponding `snap_group` has

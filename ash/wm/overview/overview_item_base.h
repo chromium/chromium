@@ -8,12 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
+#include "ui/views/widget/widget.h"
 
 namespace aura {
 class Window;
@@ -43,8 +45,8 @@ class RoundedLabelWidget;
 class SystemShadow;
 
 // Defines the interface for the overview item which will be implemented by
-// `OverviewItem` and `OverviewGroupItem`. The `OverviewGrid` owns the instance
-// of this interface.
+// `OverviewItem` and `OverviewGroupItem`. The `OverviewGrid` creates and owns
+// the instance of this interface.
 class OverviewItemBase {
  public:
   OverviewItemBase(OverviewSession* overview_session,
@@ -54,12 +56,15 @@ class OverviewItemBase {
   OverviewItemBase& operator=(const OverviewItemBase&) = delete;
   virtual ~OverviewItemBase();
 
-  // Creates an instance of the `OverviewItemBase` given the overview item
-  // `type`.
+  // Creates an instance of the `OverviewItemBase` based on whether the given
+  // `window` belongs to a snap group or not.
   static std::unique_ptr<OverviewItemBase> Create(
       aura::Window* window,
       OverviewSession* overview_session,
       OverviewGrid* overview_grid);
+
+  // Checks if this item is currently being dragged.
+  ASH_EXPORT bool IsDragItem() const;
 
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
@@ -151,11 +156,10 @@ class OverviewItemBase {
   // of the window returned by `GetWindows()`).
   virtual gfx::RectF GetTargetBoundsInScreen() const = 0;
 
-  // Returns the target bounds of `window_`. Same as `target_bounds_`, with some
-  // insets.
+  // Returns the `target_bounds_` of the overview item with some insets.
   virtual gfx::RectF GetWindowTargetBoundsWithInsets() const = 0;
 
-  // Returns the transformed bound of `transform_window_`.
+  // Returns the transformed bound of this.
   virtual gfx::RectF GetTransformedBounds() const = 0;
 
   // Calculates and returns an optimal scale ratio. With MD this is only
@@ -187,7 +191,6 @@ class OverviewItemBase {
   virtual float GetOpacity() const = 0;
 
   // Dispatched before entering overview.
-  // TODO(b/294916205) : Remove this function for optimization.
   virtual void PrepareForOverview() = 0;
 
   // Called when the starting animation is completed, or called immediately
@@ -221,9 +224,6 @@ class OverviewItemBase {
   virtual void OnFocusedViewActivated() = 0;
   virtual void OnFocusedViewClosed() = 0;
 
-  // Checks if this item is currently being dragged.
-  virtual bool IsDragItem() const = 0;
-
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
 
@@ -254,7 +254,7 @@ class OverviewItemBase {
   // window(s) to restore its transform.
   virtual void OnMovingItemToAnotherDesk() = 0;
 
-  // Updates and maybe creates the mirrors needed for multi display dragging.
+  // Updates and maybe creates the mirrors needed for multi-display dragging.
   virtual void UpdateMirrorsForDragging(bool is_touch_dragging) = 0;
 
   // Resets the mirrors needed for multi display dragging.
@@ -286,9 +286,18 @@ class OverviewItemBase {
   }
 
  protected:
-  // Creates `item_widget_` with `overview_item_view_` or group
-  // container view as its contents view
+  // Creates `item_widget_` with `OverviewItemView` or
+  // `OverviewGroupContainerView` as its contents view.
   virtual void CreateItemWidget() = 0;
+
+  // Returns the widget init params needed to create the `item_widget_`.
+  views::Widget::InitParams CreateOverviewItemWidgetParams(
+      aura::Window* parent_window,
+      const std::string& widget_name) const;
+
+  // Creates the `shadow_` and stacks the shadow layer to be at the bottom after
+  // `item_widget_` has been created.
+  void ConfigureTheShadow();
 
   // The root window this item is being displayed on.
   raw_ptr<aura::Window> root_window_;
@@ -303,10 +312,9 @@ class OverviewItemBase {
 
   bool prepared_for_overview_ = false;
 
-  // A widget stacked under the `transform_window_`(s). The widget has
-  // `overview_item_view_` or group container view as its contents view. The
-  // widget is backed by a NOT_DRAWN layer since most of its surface is
-  // transparent.
+  // A widget stacked under the window(s). The widget has `OverviewItemView` or
+  // `OverviewGroupContainerView` as its contents view. The widget is backed by
+  // a NOT_DRAWN layer since most of its surface is transparent.
   std::unique_ptr<views::Widget> item_widget_;
 
   // The target bounds this overview item is fit within. When in splitview,
@@ -342,8 +350,8 @@ class OverviewItemBase {
   // widgets.
   bool should_restack_on_animation_end_ = false;
 
-  // A widget with text that may show up on top of `transform_window_` to notify
-  // users the item cannot be snapped.
+  // A widget with text that may show up on top of the window(s) to notify
+  // users `this` cannot be snapped.
   std::unique_ptr<RoundedLabelWidget> cannot_snap_widget_;
 
   // This has a value when there is a snapped window, or a window about to be

@@ -722,7 +722,7 @@ void OverviewGrid::AddItem(
 
   window_list_.insert(
       window_list_.begin() + index,
-      std::make_unique<OverviewItem>(window, overview_session_, this));
+      OverviewItemBase::Create(window, overview_session_, this));
 
   if (overview_session_)
     overview_session_->UpdateFrameThrottling();

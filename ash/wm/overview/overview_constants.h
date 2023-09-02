@@ -5,8 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_
 
-#include "ash/ash_export.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/time/time.h"
 
@@ -51,6 +50,12 @@ constexpr float kExtremeWindowRatioThreshold = 2.f;
 // the thickness is 2px and the stroke is in the middle, we use a -3px inset to
 // achieve this.
 constexpr int kFocusRingHaloInset = -3;
+
+// The shadow types corresponding to the default and dragged states.
+constexpr SystemShadow::Type kDefaultShadowType =
+    SystemShadow::Type::kElevation12;
+constexpr SystemShadow::Type kDraggedShadowType =
+    SystemShadow::Type::kElevation24;
 
 }  // namespace ash
 
