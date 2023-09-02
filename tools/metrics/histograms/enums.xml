@@ -29378,6 +29378,13 @@ Called by update_document_policy_enum.py.-->
   <int value="10" label="ALEK_BERG_NL"/>
 </enum>
 
+<enum name="DohServerAutoupgradeStatus">
+  <int value="0" label="SuccessWithNoPriorFailures"/>
+  <int value="1" label="SuccessWithSomePriorFailures"/>
+  <int value="2" label="FailureWithSomePriorSuccesses"/>
+  <int value="3" label="FailureWithNoPriorSuccesses"/>
+</enum>
+
 <enum name="DomainBoundCerts.DBLoadStatus">
   <obsolete>
     Feature was removed (crbug.com/875053).

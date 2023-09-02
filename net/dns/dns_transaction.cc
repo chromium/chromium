@@ -1783,6 +1783,10 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
       ResolveContext* resolve_context) override {
+    // Start a timer that will emit metrics after a timeout to indicate whether
+    // DoH auto-upgrade was successful for this session.
+    resolve_context->StartDohAutoupgradeSuccessTimer(session_.get());
+
     return std::make_unique<DnsOverHttpsProbeRunner>(
         session_->GetWeakPtr(), resolve_context->GetWeakPtr());
   }

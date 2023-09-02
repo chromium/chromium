@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -31,6 +32,19 @@ class DohDnsServerIterator;
 class HostCache;
 class URLRequestContext;
 
+// Represents various states of the DoH auto-upgrade process.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Update the corresponding enums.xml
+// entry when making changes here.
+enum class DohServerAutoupgradeStatus {
+  kSuccessWithNoPriorFailures = 0,
+  kSuccessWithSomePriorFailures = 1,
+  kFailureWithSomePriorSuccesses = 2,
+  kFailureWithNoPriorSuccesses = 3,
+
+  kMaxValue = kFailureWithNoPriorSuccesses
+};
+
 // Per-URLRequestContext data used by HostResolver. Expected to be owned by the
 // ContextHostResolver, and all usage/references are expected to be cleaned up
 // or cancelled before the URLRequestContext goes out of service.
@@ -44,6 +58,12 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   // resolver bypass in multiple ways: NXDOMAIN responses are never counted as
   // failures, and the outcome of fallback queries is not taken into account.
   static const int kAutomaticModeFailureLimit = 10;
+
+  // The amount of time to wait after `StartDohAutoupgradeSuccessTimer()` is
+  // called before `EmitDohAutoupgradeSuccessMetrics()` will be called to
+  // possibly record the state of the DoH auto-upgrade process.
+  static constexpr base::TimeDelta kDohAutoupgradeSuccessMetricTimeout =
+      base::Minutes(1);
 
   class DohStatusObserver : public base::CheckedObserver {
    public:
@@ -172,6 +192,12 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     return current_session_.get();
   }
 
+  void StartDohAutoupgradeSuccessTimer(const DnsSession* session);
+
+  bool doh_autoupgrade_metrics_timer_is_running_for_testing() {
+    return doh_autoupgrade_success_metric_timer_.IsRunning();
+  }
+
   // Returns IsolationInfo that should be used for DoH requests. Using a single
   // transient IsolationInfo ensures that DNS requests aren't pooled with normal
   // web requests, but still allows them to be pooled with each other, to allow
@@ -212,10 +238,14 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     // current connection.
     bool current_connection_success = false;
 
-    // Last time when server returned failure or exceeded fallback period.
+    // Last time when server returned failure or exceeded fallback period. Reset
+    // each time that a server returned success.
     base::TimeTicks last_failure;
     // Last time when server returned success.
     base::TimeTicks last_success;
+    // Whether the server has ever returned failure. Used for per-provider
+    // health metrics.
+    bool has_failed_previously = false;
 
     // A histogram of observed RTT .
     std::unique_ptr<base::SampleVector> rtt_histogram;
@@ -262,6 +292,10 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   static bool ServerStatsToDohAvailability(const ServerStats& stats);
 
+  // Emit histograms indicating the current state of all configured DoH
+  // providers (for use in determining whether DoH auto-upgrade was successful).
+  void EmitDohAutoupgradeSuccessMetrics();
+
   raw_ptr<URLRequestContext> url_request_context_;
 
   std::unique_ptr<HostCache> host_cache_;
@@ -295,6 +329,8 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   std::vector<ServerStats> doh_server_stats_;
 
   const IsolationInfo isolation_info_;
+
+  base::OneShotTimer doh_autoupgrade_success_metric_timer_;
 
   base::WeakPtrFactory<ResolveContext> weak_ptr_factory_{this};
 };

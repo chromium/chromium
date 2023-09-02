@@ -1586,6 +1586,7 @@ chromium-metrics-reviews@google.com.
       name="Net.DNS.DnsTransaction.SecureValidated.FailureTime"/>
   <affected-histogram
       name="Net.DNS.DnsTransaction.SecureValidated.SuccessTime"/>
+  <affected-histogram name="Net.DNS.ResolveContext.DohAutoupgrade.Status"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DOMStorageCachePurgeReason" separator=".">

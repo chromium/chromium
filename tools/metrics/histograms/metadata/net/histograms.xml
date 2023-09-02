@@ -1194,7 +1194,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureError"
-    enum="NetErrorCodes" expires_after="2023-11-30">
+    enum="NetErrorCodes" expires_after="2024-06-13">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -1209,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureTime" units="ms"
-    expires_after="2023-11-30">
+    expires_after="2024-01-30">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -1224,7 +1224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.SuccessTime" units="ms"
-    expires_after="2023-11-30">
+    expires_after="2024-01-30">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -1468,7 +1468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.ConfigChange.Success.AttemptTime"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-01-30">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Failure.AttemptTime"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-01-30">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -1488,7 +1488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Success.AttemptTime"
-    units="ms" expires_after="2023-11-30">
+    units="ms" expires_after="2024-01-30">
   <owner>awillia@chromium.org</owner>
   <owner>src/net/dns/OWNERS</owner>
   <summary>
@@ -1532,6 +1532,24 @@ chromium-metrics-reviews@google.com.
     Whether a HostResolverManager::Job (the basic internal unit of work for
     non-local host resolutions, potentially merging redundant requests from
     Chrome) succeeded or failed, and whether it was speculative.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Net.DNS.ResolveContext.DohAutoupgrade.Status"
+    enum="DohServerAutoupgradeStatus" expires_after="2024-01-30">
+<!-- Name completed by histogram_suffixes
+   name="DohProviderId" -->
+
+  <owner>awillia@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The state of the Secure DNS (DoH) auto-upgrade functionality. This histogram
+    is only emitted by clients with secure DNS set to automatic mode, and the
+    emission occurs one minute after the insecure DNS to secure DNS auto-upgrade
+    network probing begins. There will be one histogram emission per DoH
+    provider in the system DNS configuration per NetworkContext that allows
+    using secure DNS queries, and re-emissions can occur each time the DNS
+    configuration changes.
   </summary>
 </histogram>
 

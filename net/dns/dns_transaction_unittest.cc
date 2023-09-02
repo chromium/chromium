@@ -3477,6 +3477,38 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
 }
 
+TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {
+  ConfigureDohServers(/*use_post=*/true, /*num_doh_servers=*/1,
+                      /*make_available=*/false);
+  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
+                      std::size(kT4ResponseDatagram), ASYNC, Transport::HTTPS,
+                      /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+
+  // The metric timer should not have started yet.
+  EXPECT_FALSE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+
+  std::unique_ptr<DnsProbeRunner> runner =
+      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
+  runner->Start(/*network_change=*/false);
+
+  // Ensure that calling `CreateDohProbeRunner()` causes metrics to be emitted
+  // after the timeout.
+  EXPECT_TRUE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+
+  // Fast-forward by enough time for the timer to trigger. Add one millisecond
+  // just to make it clear that afterwards the timeout should definitely have
+  // occurred (although this may not be strictly necessary).
+  FastForwardBy(ResolveContext::kDohAutoupgradeSuccessMetricTimeout +
+                base::Milliseconds(1));
+
+  EXPECT_FALSE(
+      resolve_context_->doh_autoupgrade_metrics_timer_is_running_for_testing());
+}
+
 // Test that if a probe attempt hangs, additional probes will still run on
 // schedule
 TEST_F(DnsTransactionTestWithMockTime, HungProbe) {
