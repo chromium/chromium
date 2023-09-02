@@ -74,6 +74,7 @@ NSString* const kSiriOpenNewIncognitoTab = @"OpenNewIncognitoTabIntent";
 NSString* const kSiriManagePaymentMethods = @"ManagePaymentMethodsIntent";
 NSString* const kSiriRunSafetyCheck = @"RunSafetyCheckIntent";
 NSString* const kSiriManagePasswords = @"ManagePasswordsIntent";
+NSString* const kSiriManageSettings = @"ManageSettingsIntent";
 
 // Constants for compatible mode for user activities.
 NSString* const kRegularMode = @"RegularMode";
@@ -368,6 +369,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     [connectionInformation
         setStartupParameters:[self startupParametersForOpeningNewTabWithAction:
                                        MANAGE_PASSWORDS]];
+  } else if ([userActivity.activityType isEqualToString:kSiriManageSettings]) {
+    [connectionInformation
+        setStartupParameters:
+            [self startupParametersForOpeningNewTabWithAction:MANAGE_SETTINGS]];
   } else {
     // Do nothing for unknown activity type.
     return NO;

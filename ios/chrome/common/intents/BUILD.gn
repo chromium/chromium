@@ -23,5 +23,6 @@ intent_definition("intents") {
     "ManagePaymentMethodsIntent",
     "RunSafetyCheckIntent",
     "ManagePasswordsIntent",
+    "ManageSettingsIntent",
   ]
 }

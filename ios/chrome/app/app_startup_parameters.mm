@@ -112,6 +112,9 @@
     case MANAGE_PASSWORDS:
       [description appendString:@", should open manage passwords setting page"];
       break;
+    case MANAGE_SETTINGS:
+      [description appendString:@", should open settings page"];
+      break;
     default:
       break;
   }

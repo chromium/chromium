@@ -1139,6 +1139,70 @@
       <key>INIntentVerb</key>
       <string>Open</string>
     </dict>
+    <dict>
+      <key>INIntentCategory</key>
+      <string>information</string>
+      <key>INIntentConfigurable</key>
+      <true/>
+      <key>INIntentDescriptionID</key>
+      <string>21vBHG</string>
+      <key>INIntentEligibleForWidgets</key>
+      <true/>
+      <key>INIntentManagedParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Manage Chrome Settings</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>ONmNyW</string>
+          <key>INIntentParameterCombinationUpdatesLinked</key>
+          <true/>
+        </dict>
+      </dict>
+      <key>INIntentName</key>
+      <string>ManageSettings</string>
+      <key>INIntentParameterCombinations</key>
+      <dict>
+        <key></key>
+        <dict>
+          <key>INIntentParameterCombinationIsPrimary</key>
+          <true/>
+          <key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+          <true/>
+          <key>INIntentParameterCombinationTitle</key>
+          <string>Manage Chrome Settings</string>
+          <key>INIntentParameterCombinationTitleID</key>
+          <string>Um63tc</string>
+        </dict>
+      </dict>
+      <key>INIntentResponse</key>
+      <dict>
+        <key>INIntentResponseCodes</key>
+        <array>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>success</string>
+            <key>INIntentResponseCodeSuccess</key>
+            <true/>
+          </dict>
+          <dict>
+            <key>INIntentResponseCodeName</key>
+            <string>failure</string>
+          </dict>
+        </array>
+      </dict>
+      <key>INIntentTitle</key>
+      <string>Manage Chrome Settings</string>
+      <key>INIntentTitleID</key>
+      <string>H0Xgfw</string>
+      <key>INIntentType</key>
+      <string>Custom</string>
+      <key>INIntentVerb</key>
+      <string>Open</string>
+    </dict>
   </array>
   <key>INTypes</key>
   <array/>

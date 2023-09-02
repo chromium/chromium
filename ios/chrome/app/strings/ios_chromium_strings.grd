@@ -800,6 +800,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_MANAGE_PASSWORDS_DESCRIPTION" desc="Siri Shortcut description to manage passwords [iOS only]">
         Opens The Password Manager in Chromium.
       </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_SETTINGS_TITLE" desc="Siri Shortcut for manage settings title [iOS only]">
+        Manage Chromium Settings
+      </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_SETTINGS_DESCRIPTION" desc="Siri Shortcut description to manage settings in chromium [iOS only]">
+        Opens The Settings in Chromium.
+      </message>
     </messages>
   </release>
 </grit>

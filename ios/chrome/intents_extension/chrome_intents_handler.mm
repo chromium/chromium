@@ -8,6 +8,7 @@
 
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
+#import "ios/chrome/common/intents/ManageSettingsIntent.h"
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
@@ -38,7 +39,8 @@
                                     OpenNewIncognitoTabIntentHandling,
                                     ManagePaymentMethodsIntentHandling,
                                     RunSafetyCheckIntentHandling,
-                                    ManagePasswordsIntentHandling>
+                                    ManagePasswordsIntentHandling,
+                                    ManageSettingsIntentHandling>
 @end
 
 @implementation ChromeIntentsHandler
@@ -331,6 +333,21 @@
       [[ManagePasswordsIntentResponse alloc]
           initWithCode:ManagePasswordsIntentResponseCodeContinueInApp
           userActivity:activity];
+
+  completion(response);
+}
+
+#pragma mark - ManageSettingsIntentHandling
+
+- (void)handleManageSettings:(ManageSettingsIntent*)intent
+                  completion:
+                      (void (^)(ManageSettingsIntentResponse*))completion {
+  NSUserActivity* activity = [[NSUserActivity alloc]
+      initWithActivityType:NSStringFromClass([ManageSettingsIntent class])];
+
+  ManageSettingsIntentResponse* response = [[ManageSettingsIntentResponse alloc]
+      initWithCode:ManageSettingsIntentResponseCodeContinueInApp
+      userActivity:activity];
 
   completion(response);
 }

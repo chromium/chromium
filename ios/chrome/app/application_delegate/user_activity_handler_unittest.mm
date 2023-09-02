@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/intents/ManagePasswordsIntent.h"
 #import "ios/chrome/common/intents/ManagePaymentMethodsIntent.h"
+#import "ios/chrome/common/intents/ManageSettingsIntent.h"
 #import "ios/chrome/common/intents/OpenBookmarksIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
@@ -1209,5 +1210,35 @@ TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentManagePasswords) {
                                   initStage:InitStageFinal];
 
   EXPECT_EQ(MANAGE_PASSWORDS,
+            [connectionInformationMock startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to manage settings intent.
+TEST_F(UserActivityHandlerTest, ContinueUserActivityIntentManageSettings) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"ManageSettingsIntent"];
+
+  ManageSettingsIntent* intent = [[ManageSettingsIntent alloc] init];
+
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+
+  id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
+
+  FakeStartupInformation* fakeStartupInformation =
+      [[FakeStartupInformation alloc] init];
+  FakeConnectionInformation* connectionInformationMock =
+      [[FakeConnectionInformation alloc] init];
+  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+
+  [UserActivityHandler continueUserActivity:mock_user_activity
+                        applicationIsActive:YES
+                                  tabOpener:tabOpener
+                      connectionInformation:connectionInformationMock
+                         startupInformation:fakeStartupInformation
+                               browserState:nullptr
+                                  initStage:InitStageFinal];
+
+  EXPECT_EQ(MANAGE_SETTINGS,
             [connectionInformationMock startupParameters].postOpeningAction);
 }

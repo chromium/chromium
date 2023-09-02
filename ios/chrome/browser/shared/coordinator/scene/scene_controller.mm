@@ -2526,6 +2526,11 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf showPasswordSearchPage];
       };
+    case MANAGE_SETTINGS:
+      return ^{
+        [weakSelf showSettingsFromViewController:weakSelf.currentInterface
+                                                     .viewController];
+      };
     default:
       return nil;
   }

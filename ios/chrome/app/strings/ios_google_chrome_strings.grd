@@ -806,6 +806,12 @@ Things to consider:
       <message name="IDS_IOS_INTENTS_MANAGE_PASSWORDS_DESCRIPTION" desc="Siri Shortcut description to manage passwords [iOS only]">
         Opens The Password Manager in Chrome.
       </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_SETTINGS_TITLE" desc="Siri Shortcut for manage settings title [iOS only]">
+        Manage Chrome Settings
+      </message>
+      <message name="IDS_IOS_INTENTS_MANAGE_SETTINGS_DESCRIPTION" desc="Siri Shortcut description to manage settings in chrome [iOS only]">
+        Opens The Settings in Chrome.
+      </message>
     </messages>
   </release>
 </grit>
