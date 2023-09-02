@@ -22,10 +22,11 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome.*:118-
+- chrome_os:118-
+- android:118-
 future_on:
-- chrome.*
-- chrome_os
-- android
 - fuchsia
 owners:
 - zmin@chromium.org
