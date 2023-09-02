@@ -24454,7 +24454,7 @@
         "policies": {},
         "prefs": {
           "policy.force_permission_policy_unload_default_enabled": {
-            "default_value": true
+            "default_value": false
           }
         }
       },

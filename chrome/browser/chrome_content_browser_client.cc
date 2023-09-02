@@ -1674,7 +1674,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       true);
 
   registry->RegisterBooleanPref(
-      policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, true);
+      policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled, false);
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
@@ -2752,11 +2752,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
       }
 
-      // The policy is "enabled" to follow policy naming convention but the
-      // switch is "disable" because we want the default to have no switch since
-      // this is the default case.
-      if (!prefs->GetBoolean(policy::policy_prefs::
-                                 kForcePermissionPolicyUnloadDefaultEnabled)) {
+      if (prefs->GetBoolean(policy::policy_prefs::
+                                kForcePermissionPolicyUnloadDefaultEnabled)) {
         command_line->AppendSwitch(
             blink::switches::kForcePermissionPolicyUnloadDefaultEnabled);
       }

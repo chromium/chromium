@@ -108,10 +108,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // The unload handler should have run if an only if the policy has disabled
   // the deprecation.
-  if (GetParam() == Policy::kFalse) {
-    ASSERT_EQ(result, "true");
-  } else {
-    ASSERT_EQ(result, "false");
+  switch (GetParam()) {
+    case Policy::kTrue:
+      ASSERT_EQ(result, "true");
+      break;
+    case Policy::kFalse:
+    case Policy::kDefault:
+      ASSERT_EQ(result, "false");
   }
 }
 
