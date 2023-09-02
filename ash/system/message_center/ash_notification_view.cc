@@ -49,7 +49,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/animation_throughput_reporter.h"
-#include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -124,14 +123,19 @@ constexpr auto kImageContainerPadding = gfx::Insets::TLBR(12, 14, 12, 12);
 constexpr auto kActionButtonsRowPadding = gfx::Insets::TLBR(4, 38, 12, 4);
 constexpr int kActionsRowHorizontalSpacing = 8;
 
-constexpr auto kContentRowPadding = gfx::Insets::TLBR(16, 0, 0, 0);
+constexpr auto kContentRowPadding = gfx::Insets::TLBR(14, 0, 0, 0);
 
 constexpr int kLeftContentVerticalSpacing = 4;
 constexpr int kTitleRowMinimumWidthWithIcon = 186;
 constexpr int kTitleRowMinimumWidth = 266;
 constexpr int kTitleRowSpacing = 6;
 
-constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(4, 0, 8, 0);
+// This padding is applied in collapsed mode when there is no message in order
+// to vertically center the title.
+constexpr auto kTitleRowNoMessageCollapsedPadding =
+    gfx::Insets::TLBR(12, 0, 0, 0);
+
+constexpr auto kHeaderRowExpandedPadding = gfx::Insets::TLBR(6, 0, 8, 0);
 constexpr auto kHeaderRowCollapsedPadding = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kRightContentCollapsedPadding = gfx::Insets::TLBR(12, 0, 0, 16);
 constexpr auto kRightContentExpandedPadding = gfx::Insets::TLBR(20, 0, 0, 16);
@@ -1126,6 +1130,12 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     title_row_->UpdateVisibility(IsExpandable() && !expanded);
     title_row_->title_view()->SetMaxLines(
         expanded ? kTitleLabelExpandedMaxLines : kTitleLabelCollapsedMaxLines);
+    // Add extra padding to center the title in collapsed mode when there is no
+    // message.
+    title_row_->SetProperty(views::kMarginsKey,
+                            !message_label() && !use_expanded_padding
+                                ? kTitleRowNoMessageCollapsedPadding
+                                : gfx::Insets());
   }
 
   if (message_label()) {

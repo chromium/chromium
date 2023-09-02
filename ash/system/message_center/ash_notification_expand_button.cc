@@ -42,7 +42,7 @@ namespace ash {
 namespace {
 
 constexpr gfx::Insets kFocusInsets(2);
-constexpr gfx::Insets kImageInsets(4);
+constexpr gfx::Insets kImageInsets(2);
 constexpr auto kLabelInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kCornerRadius = 12;
 constexpr int kChevronIconSize = 16;
