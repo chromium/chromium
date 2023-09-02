@@ -537,12 +537,6 @@ class PaymentsClient {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   void set_access_token_for_testing(std::string access_token);
 
-  // TODO(crbug.com/1409158): Remove this function, as it should not be the
-  // PaymentsClient's responsibility to check if the user is off the record. The
-  // sole responsibility of the PaymentsClient is to send requests to the Google
-  // payments server.
-  bool is_off_the_record() { return is_off_the_record_; }
-
  private:
   friend class PaymentsClientTest;
 

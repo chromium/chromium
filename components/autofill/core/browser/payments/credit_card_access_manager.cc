@@ -235,8 +235,8 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
   // TODO(crbug.com/1409151): Rename `offer_fido_opt_in`, and check that the
   // user is off the record separately.
-  unmask_details_.offer_fido_opt_in = unmask_details_.offer_fido_opt_in &&
-                                      !payments_client_->is_off_the_record();
+  unmask_details_.offer_fido_opt_in =
+      unmask_details_.offer_fido_opt_in && !client_->IsOffTheRecord();
 
   // Set delay as fido request timeout if available, otherwise set to default.
   int delay_ms = kDelayForGetUnmaskDetails;
