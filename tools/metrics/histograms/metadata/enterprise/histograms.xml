@@ -2873,6 +2873,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.UserPolicy.Count" units="policies"
+    expires_after="2024-06-12">
+  <owner>vincb@google.com</owner>
+  <owner>ftirelo@chromium.org</owner>
+  <summary>
+    Records the number of user policies that are active when using a managed
+    account.
+
+    Recorded once during the profile's browsing session on the first policy
+    update after signing in with a managed account.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
     enum="GoogleServiceAuthError" expires_after="2024-01-14">
   <owner>agawronska@chromium.org</owner>

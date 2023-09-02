@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_policy_metrics_recorder.h"
 #include "components/policy/policy_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -81,6 +82,9 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // CloudPolicyManager:
   void GetChromePolicy(PolicyMap* policy_map) override;
 
+  // Starts recording metrics.
+  void StartRecordingMetric();
+
   bool policies_required_ = false;
 
   // Typed pointer to the store owned by UserCloudPolicyManager. Note that
@@ -92,6 +96,9 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
+
+  // Metrics recorder.
+  std::unique_ptr<UserPolicyMetricsRecorder> metrics_recorder_;
 };
 
 }  // namespace policy

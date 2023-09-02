@@ -87,6 +87,12 @@ void UserCloudPolicyManager::Shutdown() {
 }
 
 void UserCloudPolicyManager::SetSigninAccountId(const AccountId& account_id) {
+  if (account_id.is_valid()) {
+    // Start the recorder as it is assumed that there is now a valid managed
+    // account.
+    StartRecordingMetric();
+  }
+
   store_->SetSigninAccountId(account_id);
 }
 
@@ -163,6 +169,11 @@ bool UserCloudPolicyManager::IsFirstPolicyLoadComplete(
     PolicyDomain domain) const {
   return !policies_required_ ||
          CloudPolicyManager::IsFirstPolicyLoadComplete(domain);
+}
+
+void UserCloudPolicyManager::StartRecordingMetric() {
+  // Starts a recording session by creating the recorder.
+  metrics_recorder_ = std::make_unique<UserPolicyMetricsRecorder>(this);
 }
 
 }  // namespace policy
