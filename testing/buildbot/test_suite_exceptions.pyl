@@ -1644,12 +1644,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
         ],
       },
-      'android-pie-arm64-rel': {
-        'swarming': {
-          # TODO(crbug.com/1462745): Temporarily increase the shard to 3 for the network issue.
-          'shards': 3,
-        },
-      },
     },
   },
   'chrome_public_wpt': {
