@@ -2090,6 +2090,9 @@ INSTANTIATE_TEST_SUITE_P(
 
         // InstallerResult::kSystemError, explicit error code.
         {"INSTALLER_RESULT=3 INSTALLER_ERROR=99", 99, {}, {}},
+
+        // InstallerResult::kSuccess.
+        {"INSTALLER_RESULT=0", 0, {}, {}},
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
@@ -2105,46 +2108,58 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
     EXPECT_TRUE(base::GetFileSize(crx_path, &crx_file_size));
   }
 
+  const bool should_install_successfully = !GetParam().error_code;
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       {
           AppUpdateExpectation(
               GetParam().command_line_args, kMsiAppId,
               base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
-              /*is_install=*/true,
-              /*should_update=*/false, false, "", crx_relative_path,
+              /*is_install=*/true, should_install_successfully, false, "",
+              crx_relative_path,
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
               GetParam().error_code, /*EVENT_INSTALL_COMPLETE=*/2),
       });
 
-  // The updater should uninstall itself automatically since the app failed to
-  // install, and there are now no apps to manage.
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(
       kMsiAppId,
       base::Value::Dict()
-          .Set(
-              "expected_update_state",
-              base::Value::Dict()
-                  .Set("app_id", kMsiAppId)
-                  .Set("state",
-                       static_cast<int>(
-                           UpdateService::UpdateState::State::kUpdateError))
-                  .Set("next_version", kMsiUpdatedVersion.GetString())
-                  .Set("downloaded_bytes", static_cast<int>(crx_file_size))
-                  .Set("total_bytes", static_cast<int>(crx_file_size))
-                  .Set("install_progress", -1)
-                  .Set("error_category",
-                       static_cast<int>(UpdateService::ErrorCategory::kInstall))
-                  .Set("error_code", GetParam().error_code)
-                  .Set("extra_code1", 0)
-                  .Set("installer_text", GetParam().installer_text)
-                  .Set("installer_cmd_line", GetParam().installer_cmd_line))
+          .Set("expected_update_state",
+               base::Value::Dict()
+                   .Set("app_id", kMsiAppId)
+                   .Set("state",
+                        static_cast<int>(
+                            should_install_successfully
+                                ? UpdateService::UpdateState::State::kUpdated
+                                : UpdateService::UpdateState::State::
+                                      kUpdateError))
+                   .Set("next_version", kMsiUpdatedVersion.GetString())
+                   .Set("downloaded_bytes", static_cast<int>(crx_file_size))
+                   .Set("total_bytes", static_cast<int>(crx_file_size))
+                   .Set("install_progress", -1)
+                   .Set("error_category",
+                        should_install_successfully
+                            ? 0
+                            : static_cast<int>(
+                                  UpdateService::ErrorCategory::kInstall))
+                   .Set("error_code", GetParam().error_code)
+                   .Set("extra_code1", 0)
+                   .Set("installer_text", GetParam().installer_text)
+                   .Set("installer_cmd_line", GetParam().installer_cmd_line))
           .Set("expected_result", 0)));
-  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
 
-  ASSERT_TRUE(WaitForUpdaterExit());
+  if (should_install_successfully) {
+    ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+    ASSERT_NO_FATAL_FAILURE(Uninstall());
+  } else {
+    ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kMsiAppId));
+
+    // Wait for the updater to uninstall itself automatically since the app
+    // failed to install, and there are now no apps to manage.
+    ASSERT_TRUE(WaitForUpdaterExit());
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)
