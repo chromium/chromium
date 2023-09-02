@@ -221,46 +221,29 @@ crbug.com/1473838 [ linux intel passthrough display-server-wayland ] WebglExtens
 # Extensions not available on Fuchsia
 [ fuchsia ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 [ fuchsia ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-[ fuchsia fuchsia-board-astro ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-[ fuchsia fuchsia-board-sherlock ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-[ fuchsia fuchsia-board-astro ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-[ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ fuchsia web-engine-shell ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+[ fuchsia web-engine-shell ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+[ fuchsia web-engine-shell passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
+[ fuchsia web-engine-shell passthrough ] WebglExtension_EXT_depth_clamp [ Skip ]
 
 # Disabling as they cannot pass with protected memory.
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-npot-video.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-npot-video.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/misc/texture-npot-video.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 
 # This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
 # proprietary codecs.
@@ -272,16 +255,6 @@ crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_c
 crbug.com/1080401 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 crbug.com/1080408 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
 crbug.com/1080377 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
-
-# Video not supported on Fuchsia qemu boards.
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/image_bitmap_from_video/* [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/video/* [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-npot-video.html [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
-[ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
 
 # The following test is very slow and therefore times out on Android bot.
 [ android ] conformance/rendering/multisample-corruption.html [ Skip ]
@@ -448,12 +421,10 @@ crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test
 # Fuchsia failures #
 ####################
 
-crbug.com/1371306 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
-crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1371306 [ fuchsia web-engine-shell ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 # Flaky tests
-[ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
-[ fuchsia fuchsia-board-sherlock ] WebglExtension_EXT_float_blend [ Failure ]
+[ fuchsia web-engine-shell ] WebglExtension_EXT_float_blend [ Failure ]
 
 # Anti-aliasing disabled on Fuchsia
 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
