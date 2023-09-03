@@ -349,8 +349,7 @@ bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
   if (!local_location)
     return false;
 
-  if (HasClipPath() &&
-      !ClipPathClipper::HitTest(*this, ObjectBoundingBox(), *local_location)) {
+  if (HasClipPath() && !ClipPathClipper::HitTest(*this, *local_location)) {
     return false;
   }
 

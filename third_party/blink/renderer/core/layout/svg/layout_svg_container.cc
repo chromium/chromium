@@ -249,9 +249,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                             LocalToSVGParentTransform());
   if (!local_location)
     return false;
-  if (HasClipPath() &&
-      !ClipPathClipper::HitTest(*this, content_.ObjectBoundingBox(),
-                                *local_location)) {
+  if (HasClipPath() && !ClipPathClipper::HitTest(*this, *local_location)) {
     return false;
   }
 
