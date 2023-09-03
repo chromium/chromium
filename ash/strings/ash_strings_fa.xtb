@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">‏دستگاه USB-C (درگاه سمت چپ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">باز کردن «کاوش»</translation>
 <translation id="1294929383540927798">تغییر تنظیمات اعلان صفحه قفل</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">برنامه‌های توصیه‌شده</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">جابه‌جایی نماد برنامه در جدول برنامه</translation>
 <translation id="2620016719323068571">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر…</translation>
 <translation id="2620436844016719705">سیستم</translation>
+<translation id="2620900772667816510">وضوح فوق‌العاده با بلوتوث</translation>
 <translation id="2621713457727696555">ایمن شد</translation>
 <translation id="2624588537172718173">صدا و میکروفون دستگاه</translation>
 <translation id="263399434338050016">«انتخاب همه»</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">بستن میزکار و پنجره‌ها</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> درحال تنزل دادن <ph name="DEVICE_TYPE" /> است. دستگاهتان بازنشانی و همه داده‌ها حذف خواهد شد.</translation>
 <translation id="3171170659304083361">تنظیمات روش‌های ورودی</translation>
+<translation id="3176221688814061633">‏‫Chromebook یا دستگاه بلوتوث شما از نسخه قدیمی‌تر بلوتوث استفاده می‌کند. برای کیفیت صدای بهتر، «وضوح فوق‌العاده با بلوتوث» را روشن کنید یا از میکروفون داخلی استفاده کنید.</translation>
 <translation id="3181441307743005334">بازراه‌اندازی ممکن است مدتی طول بکشد</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{متصل به یک دستگاه.}one{متصل به # دستگاه}other{متصل به # دستگاه}}</translation>
 <translation id="320207200541803018">تنظیم زمان‌سنج</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="7219573373513695352">دستگاهی متصل نیست</translation>
+<translation id="7229029500464092426">حافظه <ph name="AVAILABLE_MEMORY" /> | مجموع <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>
 <translation id="7258828758145722155">دیروز ویرایش شده است</translation>
@@ -1522,6 +1526,7 @@
 <translation id="7360036564632145207">تغییر تنظیم محافظت از دسترسی به داده‌ها برای لوازم جانبی ممکن است عملکرد را بهینه‌سازی کند</translation>
 <translation id="736045644501761622">تنظیم کاغذدیواری و سبک</translation>
 <translation id="7371404428569700291">پنجره ضبط</translation>
+<translation id="7372069265635026568">‫<ph name="AVAILABLE_MEMORY" /> حافظه از مجموع <ph name="TOTAL_MEMORY" /> دردسترس است</translation>
 <translation id="737315737514430195">با این کار، دسترسی به میکروفون برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="7377169924702866686">‏Caps Lock روشن است.</translation>
 <translation id="7377481913241237033">اتصال با کد</translation>

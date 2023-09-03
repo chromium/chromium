@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="310297983047869047">Ankstesnė skaidrė</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="3114012059975132928">Vaizdo įrašų leistuvė</translation>

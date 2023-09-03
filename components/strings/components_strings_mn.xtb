@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">Тулаант, платформын тоглоом</translation>
 <translation id="1413809658975081374">Хувийн нууцлалын алдаа</translation>
 <translation id="1414134146594747368">Бэлтгэл сургууль</translation>
+<translation id="141826476809826269">Задалсан текстийн төгсгөл</translation>
 <translation id="1419305130220238697">Chrome-д татаж авсан файлуудыг удирдах товчлуур, Chrome-д татаж авсан файлуудаа удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="1422930527989633628">Ойролцоох Bluetooth төхөөрөмжүүдийг илрүүлэхийг хүсэх боломжтой</translation>
 <translation id="1426410128494586442">Тийм</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">Таны дөнгөж сая зочлохыг оролдсон сайт хуурамч юм шиг харагдаж байна. Халдагч этгээдүүд заримдаа харахад хэцүү, бага зэргийн өөрчлөлтийг URL-д оруулах замаар сайтыг дуурайдаг.</translation>
 <translation id="1532118530259321453">Энэ хуудас хэлэхдээ</translation>
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
+<translation id="1537807545287921620">Энэ PDF-д хандах боломжгүй. Хам сэдэв цэсийг нээж, "PDF-с текст задлах"-ыг асаана уу</translation>
 <translation id="1539840569003678498">Тайланг илгээсэн:</translation>
 <translation id="1542105669288201090">Бизнесийн боловсрол</translation>
 <translation id="1545757265410828525">Үнийн түүх</translation>
@@ -864,6 +866,7 @@
 <translation id="2803306138276472711"><ph name="SITE" />-д <ph name="BEGIN_LINK" />вирус<ph name="END_LINK" /> байгааг Google-ийн Аюулгүй Хайлт олж ирлрүүллээ. Ихэвчлэн аюулгүй байдаг веб сайтууд заримдаа вирусд өртөх тохиолдол байдаг.</translation>
 <translation id="2807052079800581569">Y тэнхлэгийн дагуу зургийн байршил</translation>
 <translation id="2808278141522721006">Та Windows Hello-г <ph name="SETTINGS" />-д асаах эсвэл унтраах боломжтой</translation>
+<translation id="2814184336982254349">Энэ PDF-д хандах боломжгүй. Хам сэдэв цэсийг нээж, "PDF-с текст задлах"-ыг асаахын тулд search нэмэх нь m товчлуурыг дарна уу</translation>
 <translation id="2818338148457093657">Гоо сайхны үйлчилгээ болон спанууд</translation>
 <translation id="2820957248982571256">Шалгаж байна...</translation>
 <translation id="2824775600643448204">Хаяг ба хайлтын цонх</translation>
@@ -1169,6 +1172,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> түр санах ойд хуулсан текст, зургийг харах хүсэлтэй байна</translation>
 <translation id="3461824795358126837">Тодруулагч</translation>
 <translation id="3462200631372590220">Дэлгэрэнгүй мэдээллийг нуух</translation>
+<translation id="3465972433695735758">Энэ PDF-д хандах боломжгүй. Текстийг задалсан, Google AI-р дэмжсэн</translation>
 <translation id="346601286295919445">Хими</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> одоогоор нээлттэй байна. Нээлттэй таб руу сэлгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Одоогоор нээлттэй байгаа бүх нууцлалтай цонхыг хаахын тулд tab, дараа нь Enter дээр дарна уу</translation>
@@ -1186,6 +1190,7 @@
 <translation id="350069200438440499">Файлын нэр:</translation>
 <translation id="3501300228850242680">Металл (Хөгжим)</translation>
 <translation id="350421688684366066">Шошго (маш гялгар)</translation>
+<translation id="350763432931695541">Дараагийн цөөн хэдэн хуудсанд текстийг задалж байна</translation>
 <translation id="3507869775212388416">Хууль зүйн ажлын байрууд</translation>
 <translation id="3507936815618196901">Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын хөдөлгөөнийг хянах</translation>
 <translation id="3512163584740124171">Ижил удирдамжийн бүлгийн өөр удирдамж илүү өндөр ач холбогдолтой байгаа тохиолдолд энэ удирдамжийг үл хэрэгсэнэ.</translation>
@@ -2850,6 +2855,7 @@
 <translation id="6973988895180423160">3.5 x 5 инч</translation>
 <translation id="6978236010531171013">Ямартай ч хуваалцах</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Задалсан текстийн эхлэл</translation>
 <translation id="6979440798594660689">Дууг хаах (өгөгдмөл)</translation>
 <translation id="6987806006823772670">Дугтуй (бүрсэн)</translation>
 <translation id="6989763994942163495">Нарийвчилсан тохиргоог харуулах ...</translation>
@@ -2905,6 +2911,7 @@
 <translation id="7102760431686146931">Хоолны сав болон хоолны хэрэгсэл</translation>
 <translation id="7105998430540165694">iCloud Keychain-н нэвтрэх түлхүүр</translation>
 <translation id="7106762743910369165">Танай байгууллага таны хөтчийг удирддаг</translation>
+<translation id="7107249414147762907">Энэ PDF-д хандах боломжгүй. Ямар ч текст задлаагүй</translation>
 <translation id="7108338896283013870">Нуух</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> таны камерыг ашиглах хүсэлтэй байна</translation>
 <translation id="7108819624672055576">Өргөтгөл зөвшөөрсөн</translation>
@@ -3916,6 +3923,7 @@
 <translation id="917450738466192189">Серверийн гэрчилгээ хүчингүй байна.</translation>
 <translation id="9174623988242579721">Захиалгат, өндөр хүчин чадалтай тээврийн хэрэгсэл</translation>
 <translation id="9174917557437862841">Таб сэлгэх товчлуур, энэ таб руу сэлгэхийн тулд Enter дээр дарна уу</translation>
+<translation id="9177283544810807743">Энэ PDF-д хандах боломжгүй. Текстийг задалж байна, Google AI-р дэмжсэн</translation>
 <translation id="9179703756951298733">Chrome-н тохиргоон дээрээс төлбөр, зээлийн картын мэдээллээ удирдах</translation>
 <translation id="9179907736442194268">Аль нэг сайт дээр үнэ буурсан тохиолдолд имэйлээр илгээх сэрэмжлүүлэг аваарай</translation>
 <translation id="9183302530794969518">Google Докс</translation>

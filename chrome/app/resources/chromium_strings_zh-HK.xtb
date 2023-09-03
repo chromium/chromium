@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="1029669172902658969">重新啟動以更新 &amp;Chromium 作業系統</translation>
 <translation id="1040916596585577953">Chromium 建議你審核此擴充程式</translation>
+<translation id="1042552502243217427">當網站要求以私密方式預先載入網頁上的連結時，Chromium 會使用 Google 伺服器。這麼做可在預先載入網站中隱藏你的身分，不過 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="1065672644894730302">系統無法讀取您的偏好設定。
 
 部分功能可能無法使用，而系統也不會儲存任何偏好設定的變更。</translation>
@@ -131,6 +132,7 @@
 <translation id="3713809861844741608">在 Chromium 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="378917192836375108">Chromium 可讓您按一下網頁上的電話號碼，隨即透過 Skype 撥打電話！</translation>
 <translation id="3790262771324122253">瞭解 Chromium 封鎖部分下載內容的原因</translation>
+<translation id="3802055581630249637">Chromium 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
 <translation id="3830894615770080216">Chromium 作業系統</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">取得 Chromium 作業系統相關說明</translation>
@@ -241,6 +243,7 @@
 <translation id="6132897690380286411">Chromium 即將關閉並刪除資料</translation>
 <translation id="6134968993075716475">「安全瀏覽」功能已停用。Chromium 建議啟用此功能。</translation>
 <translation id="6145820983052037069">您可在此處切換不同的 Chromium 設定檔</translation>
+<translation id="615103374448673771">如果你允許 Cookie，Chromium 可能會在預先載入時使用 Cookie</translation>
 <translation id="6175304430031192654">視乎你的設定，Chromium 亦可能會傳送 Cookie 和你目前的網址</translation>
 <translation id="6183079672144801177">請確認您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chromium，然後再傳送一次。</translation>
 <translation id="6212496753309875659">這部電腦已安裝較新的 Chromium 版本。如果軟件無法工作，請解除安裝 Chromium，然後再試一次。</translation>
@@ -265,6 +268,7 @@
 <translation id="6400112897226594999">電腦畫面中的 Chromium 圖示。</translation>
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium 作業系統</translation>
+<translation id="6443470774889161065">Chromium 會預先載入更多你可能瀏覽的網頁，以便在你瀏覽時更快載入。</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6475912303565314141">這個擴充功能也會管制您啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="648319183876919572">「強化安全瀏覽」可進一步保護您免受危險網站和下載檔案威脅</translation>

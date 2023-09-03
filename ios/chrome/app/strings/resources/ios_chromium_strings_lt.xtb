@@ -20,6 +20,7 @@
 <translation id="1843424232666537147">„Chromium“ yra funkcijų, kurias naudojant lengva tvarkyti internetinius duomenis ir tinklalapių įkėlimo spartą.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Žemėlapiai naršyklėje „Chromium“</translation>
+<translation id="186734497270163706">Palieskite „Chromium“, tada – „Numatytoji naršyklės programa“.</translation>
 <translation id="1867772173333403444">4. Pasirinkite „Chromium“</translation>
 <translation id="2006345422933397527">„Chromium“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2052320862053429062">„Chromium“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
@@ -107,6 +108,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="5945387852661427312">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chromium“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chromium“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="5951593919357934226">Išnaudokite visas „Chromium“ galimybes.</translation>
 <translation id="5983312940147103417">„Chromium“ tobulinimas</translation>
+<translation id="5985102273857091344">Pasirinkite „Chromium“.</translation>
 <translation id="6062449165341879460">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chromium“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chromium“ veikimą.</translation>
 <translation id="61109258320235597">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, įveskite slaptafrazę.</translation>
 <translation id="6119647025869519954">Jei norite nustatyti „Chromium“ kaip numatytąją naršyklę, atlikite toliau nurodytus veiksmus.
@@ -156,6 +158,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8013573822802650211">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite visuose įrenginiuose</translation>
 <translation id="8071041515667087705">Eikite į „Chromium“ nustatymus.</translation>
 <translation id="8073677936375100957">Išvalyti jūsų „Chromium“ duomenis iš šio įrenginio?</translation>
+<translation id="8115308261377517697">„Chromium“ nustatymas kaip numatytosios naršyklės</translation>
 <translation id="8235427517854598594">Nustatyti „Chromium“ kaip numatytąją naršyklę?</translation>
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="8409374867500149834">Turite patikimiausią „Chromium“ apsaugą nuo žalingų svetainių</translation>

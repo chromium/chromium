@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3114012059975132928">影片播放器</translation>

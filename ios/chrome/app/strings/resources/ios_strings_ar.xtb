@@ -1366,6 +1366,7 @@
 <translation id="8855242995793521265">لا يؤدي إلى إبطاء المتصفِّح أو الجهاز بشكل ملحوظ.</translation>
 <translation id="8855781063981781621">‏لإيقاف "وضع التأمين" (Lockdown Mode) في Chrome، عليك إيقافه على جهاز iPad.</translation>
 <translation id="8863431381414769983">‏الحصول على الاتجاهات والمعلومات المحلية من "خرائط Google"</translation>
+<translation id="8865415417596392024">‏بيانات Chrome في حسابك</translation>
 <translation id="8868471676553493380">{count,plural, =1{علامة تبويب واحدة ({count})}zero{{count} علامة تبويب}two{علامتا تبويب ({count})}few{{count} علامات تبويب}many{{count} علامة تبويب}other{{count} علامة تبويب}}</translation>
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>
 <translation id="8876882697946675716">مواصلة مزامنة الأجهزة</translation>

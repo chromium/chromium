@@ -88,6 +88,7 @@
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="1408847409015257906">Нууцлал болон аюулгүй байдлыг товшино уу.</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
+<translation id="1443958768615272145">Үргэлжлүүлэн үзэх</translation>
 <translation id="1449835205994625556">Нууц үгийг нуух</translation>
 <translation id="1450170672351507823">Стандарт хамгаалалт асаалттай байна. Аюулгүй байдлаа улам нэмэгдүүлэхийг хүсвэл сайжруулсан хамгаалалтыг ашиглаарай.</translation>
 <translation id="149095475893949513">Энэ вебсайт тохируулгын профайлыг татаж авахаар оролдож байна.</translation>
@@ -164,6 +165,7 @@
 <translation id="1930989359703290198">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Хуулахын тулд хоёр удаа товшино уу.</translation>
 <translation id="1943478190258551035">Цэс → Тохиргоо</translation>
+<translation id="194449685234099560">Та бүх нээлттэй табаа эндээс олох боломжтой.</translation>
 <translation id="1952172573699511566">Вебсайт текстийг таны сонгосон хэлээр (хэрэв тухайн хэл боломжтой бол) харуулна.</translation>
 <translation id="1959441496380398824">Огноог удаан дарна уу.</translation>
 <translation id="1959679933317802873">Контентыг хүлээж байна</translation>
@@ -186,6 +188,7 @@
 <translation id="20485545164632846">шинэ зүйл</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> бүртгэл ижил нууц үг ашиглаж байна</translation>
 <translation id="2050196510205866090">{count,plural, =1{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}other{Таны гарын дээр хадгалсан {count} төлбөрийн хэрэгсэл боломжтой байна.}}</translation>
+<translation id="2055515971416882518">"Тохиргоо"-г нээнэ үү.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="2074131957428911366">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK" />тохиргооноос<ph name="END_LINK" /> сонгож болно.</translation>
 <translation id="2079545284768500474">Буцаах</translation>
@@ -244,6 +247,7 @@
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2459155039684421202">Хаяг оруулах хэсэгт “миний түүхийг арилгах” эсвэл “нууц үгнүүдийг засах” зэрэг ажлууд оруулна уу.</translation>
 <translation id="2461070143328828326">Нууц үгний тохиргоо</translation>
+<translation id="2462736546165239215">Та бүх хөтчийн түүхээ эндээс олох боломжтой.</translation>
 <translation id="2469960372084740698">Аюулгүй үзэхийг унтраах уу?</translation>
 <translation id="2473876017985765807">Та <ph name="WEBSITE" />-н нууц үгийг аль хэдийн хадгалсан</translation>
 <translation id="2476359652512522418">Сонгоогүй</translation>
@@ -343,6 +347,7 @@
 <translation id="2952278131021475699">Lens-н Камерын хайлт</translation>
 <translation id="2952581218264071393">1. Chrome-н тохиргоог нээнэ үү</translation>
 <translation id="2956733177489514605">Нууц үгнүүд болон бусад зүйлээ синк хийхийн тулд Google Бүртгэлдээ нэвтэрнэ үү.</translation>
+<translation id="2958271635022991876">Та энд шинэ таб нээх боломжтой.</translation>
 <translation id="2958718410589002129">Нууц үг</translation>
 <translation id="2961210776189273067">Цол хэргэм</translation>
 <translation id="2964349545761222050">Гуравдагч талын күүкиг блоклох</translation>
@@ -1412,6 +1417,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9097506547406246598">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> нууц үгийг устгах уу?</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
+<translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"-с</translation>
 <translation id="9107664647686727385">Алдагдсан нууц үгнүүдийг шалгана</translation>
 <translation id="9120217828624527905">Хуудасны бүрэн орчуулга руу сэлгэнэ үү</translation>
 <translation id="9124387962554796433">Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>

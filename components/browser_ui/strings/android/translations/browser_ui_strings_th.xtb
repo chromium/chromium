@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
 <translation id="301521992641321250">ถูกบล็อกโดยอัตโนมัติ</translation>
 <translation id="3069226013421428034">อนุญาตการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{หมดอายุวันพรุ่งนี้}other{หมดอายุในอีก # วัน}}</translation>
 <translation id="310297983047869047">สไลด์ก่อนหน้า</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="3114012059975132928">โปรแกรมเล่นวิดีโอ</translation>

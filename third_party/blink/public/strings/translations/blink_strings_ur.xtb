@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">مررنگ میں سوئچ ہو گیا</translation>
 <translation id="2031987842108996681">سرخ چینل</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' کا استعمال '<ph name="INVALIDDOMAIN" />' میں ایک غلط پوزیشن پر ہوا ہے۔</translation>
+<translation id="2068711044993563745">کم از کم قدر (<ph name="MINIMUM" />) زیادہ سے زیادہ قدر (<ph name="MAXIMUM" />) سے کم ہونی چاہیے۔</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2226276347425096477">براہ کرم اس متن کو مختصر کر کے <ph name="MAX_CHARACTERS" /> یا اس سے کم حروف تک لائیں (آپ فی الحال <ph name="CURRENT_LENGTH" /> حروف استعمال کر رہے ہیں)۔</translation>
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>

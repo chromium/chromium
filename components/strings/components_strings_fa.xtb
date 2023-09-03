@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">بازی‌های اکشن و سکویی</translation>
 <translation id="1413809658975081374">خطای حریم خصوصی</translation>
 <translation id="1414134146594747368">پیش‌دبستانی</translation>
+<translation id="141826476809826269">پایان نوشتار استخراج‌شده</translation>
 <translation id="1419305130220238697">‏دکمه «مدیریت بارگیری‌ها در Chrome»؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، آن را فعال کنید</translation>
 <translation id="1422930527989633628">می‌تواند برای پیدا کردن دستگاه‌های بلوتوث اطراف درخواست دهد</translation>
 <translation id="1426410128494586442">بله</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">سایتی که لحظاتی پیش تلاش کردید از آن بازدید کنید، جعلی به‌نظر می‌رسد. گاهی‌اوقات حمله‌کنندگان با ایجاد تغییرات کوچک در نشانی وب که به‌آسانی قابل‌دیدن نیست، سایت‌ها را جعل می‌کنند.</translation>
 <translation id="1532118530259321453">این صفحه می‌گوید</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
+<translation id="1537807545287921620">‏این فایل PDF غیرقابل‌دسترس است. منوِ زمینه‌ای را باز کنید و «استخراج نوشتار از PDF» را روشن کنید</translation>
 <translation id="1539840569003678498">گزارش ارسال شد:</translation>
 <translation id="1542105669288201090">آموزش کسب‌وکار</translation>
 <translation id="1545757265410828525">سابقه قیمت</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">پرداخت</translation>
 <translation id="1846432862466000825">پلاستیک (آرشیوی)</translation>
 <translation id="1848982255014129637">عکس (خیلی براق)</translation>
+<translation id="1853392626017747777">ثبت‌نام کارت مجازی بسته شده است</translation>
 <translation id="1854180393107901205">توقف فرستادن</translation>
 <translation id="1855370856221982654">بوکس</translation>
 <translation id="1856713167556118146">«حالت ناشناس» چه کارهایی انجام نمی‌دهد</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">جدید</translation>
 <translation id="1935995810530254458">درهرصورت کپی شود</translation>
 <translation id="1939175642807587452">می‌تواند برای ارسال اعلان درخواست دهد</translation>
+<translation id="1940441167050915935">حذف کدهای امنیتی ذخیره‌شده</translation>
 <translation id="1943994668912612445">طراحی</translation>
 <translation id="1945968466830820669">‏ممکن است دسترسی به حساب سازمانتان را از دست بدهید یا به سرقت هویت دچار شوید. Chromium توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
 <translation id="1946849748901605102">۱۵ × ۱۲ اینچ</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">‏Google Safe Browsing به تازگی در <ph name="SITE" />، ‏<ph name="BEGIN_LINK" />بدافزار شناسایی کرده است<ph name="END_LINK" />. گاهی اوقات وب‌سایت‌هایی که معمولاً ایمن هستند با بدافزار آلوده می‌شوند.</translation>
 <translation id="2807052079800581569">‏موقعیت Y تصویر</translation>
 <translation id="2808278141522721006">‏می‌توانید Windows Hello را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
+<translation id="2814184336982254349">‏این فایل PDF غیرقابل‌دسترس است. برای باز کردن منوِ زمینه‌ای و روشن کردن «استخراج نوشتار از PDF»، کلید جستجو و m را فشار دهید.</translation>
 <translation id="2818338148457093657">خدمات زیبایی و اسپا</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> می‌خواهد به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
 <translation id="3461824795358126837">ماژیک</translation>
 <translation id="3462200631372590220">پنهان کردن پیشرفته</translation>
+<translation id="3465972433695735758">‏این فایل PDF غیرقابل‌دسترس است. نوشتار با پشتیبانی هوش مصنوعی Google استخراج شد</translation>
 <translation id="346601286295919445">شیمی</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" />، اکنون باز است، برای جابه‌جا شدن به برگه باز، ابتدا دکمه Tab سپس Enter را فشار دهید</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">نام فایل:</translation>
 <translation id="3501300228850242680">متال (موسیقی)</translation>
 <translation id="350421688684366066">برچسب (خیلی براق)</translation>
+<translation id="350763432931695541">درحال استخراج نوشتار چند صفحه بعدی</translation>
 <translation id="3507869775212388416">مشاغل حقوقی</translation>
 <translation id="3507936815618196901">ایجاد نقشه سه‌بعدی از محیط و ردیابی موقعیت دوربین</translation>
 <translation id="3512163584740124171">این خط‌مشی، چون خط‌مشی دیگری از همین گروه خط‌مشی اولویت بالاتری دارد، لحاظ نمی‌شود.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">عکس</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">بازگشت نقدی پیوند داده شده است</translation>
+<translation id="4631881646528206880">ثبت‌نام کارت مجازی</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
 <translation id="4638670630777875591">‏«حالت ناشناس» در Chromium</translation>
 <translation id="464342062220857295">ویژگی‌های جستجو</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">‏ایجاد سریع یادداشت جدید در Google Keep</translation>
 <translation id="485902285759009870">درحال تأیید کد…</translation>
 <translation id="4862630594858951805">مایلید اگر قیمت کاهش پیدا کرد ایمیل دریافت کنید؟</translation>
+<translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4866506163384898554">برای نمایش نشانگر، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
 <translation id="4873616204573862158">عینک</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">۵ × ۳٫۵ اینچ</translation>
 <translation id="6978236010531171013">درهرصورت هم‌رسانی شود</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">شروع نوشتار استخراج‌شده</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
 <translation id="6987806006823772670">پاکت (روکش‌دار)</translation>
 <translation id="6989763994942163495">نمایش تنظیمات پیشرفته ...</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">وسایل آشپزی و غذاخوری</translation>
 <translation id="7105998430540165694">‏گذرکلید از iCloud Keychain</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
+<translation id="7107249414147762907">‏این فایل PDF غیرقابل‌دسترس است. نوشتاری استخراج نشد</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> می‌خواهد از دوربین شما استفاده کند</translation>
 <translation id="7108819624672055576">توسط افزونه مجاز شده است</translation>
@@ -3527,6 +3538,7 @@
 <translation id="8339163506404995330">صفحه‌های <ph name="LANGUAGE" /> ترجمه نخواند شد</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">اگر خطرات امنیتی‌ای که متوجه شما هستند را درک می‌کنید، می‌توانید قبل از حذف شدن برنامه‌های خطرناک، <ph name="BEGIN_LINK" />از این سایت بازدید کنید<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">ثبت‌نام کارت مجازی به‌صورت کامل باز شده است</translation>
 <translation id="8347658365704983341">آموزش ازراه‌دور</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
 <translation id="8351131234907093545">یادداشت ایجاد کنید</translation>
@@ -3916,6 +3928,7 @@
 <translation id="917450738466192189">گواهی سرور نامعتبر است.</translation>
 <translation id="9174623988242579721">خودروی سفارشی و با عملکرد بالا</translation>
 <translation id="9174917557437862841">‏دکمه جابجایی برگه، برای جابجایی به این برگه، Enter را فشار دهید</translation>
+<translation id="9177283544810807743">‏این فایل PDF غیرقابل‌دسترس است. نوشتار با پشتیبانی «هوش مصنوعی Google» استخراج شد</translation>
 <translation id="9179703756951298733">‏اطلاعات پرداخت‌ها و کارت اعتباری‌تان را در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="9179907736442194268">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت می‌کنید</translation>
 <translation id="9183302530794969518">‏سندنگار Google</translation>

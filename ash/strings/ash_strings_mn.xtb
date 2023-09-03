@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C төхөөрөмж (зүүн талын порт)</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1293699935367580298">Esc товч</translation>
+<translation id="1294046132466831888">Explore-г нээх</translation>
 <translation id="1294929383540927798">Түгжигдсэн дэлгэцийн мэдэгдлийн тохиргоог өөрчлөх</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">САНАЛ БОЛГОСОН АПП</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Аппын дүрс тэмдгийг аппын хүснэгт дотор зөөх</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, файлууд, аппууд болон бусад зүйлээ хайгаарай...</translation>
 <translation id="2620436844016719705">Систем</translation>
+<translation id="2620900772667816510">Bluetooth-н супер нягтрал</translation>
 <translation id="2621713457727696555">Хамгаалалттай</translation>
 <translation id="2624588537172718173">Төхөөрөмжийн аудио болон микрофон</translation>
 <translation id="263399434338050016">"Бүгдийг сонгох"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Дэлгэц болон цонхнуудыг хаана уу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> таны <ph name="DEVICE_TYPE" />-г өмнөх хувилбар луу нь буцааж байна. Таны төхөөрөмжийг шинэчилж, бүх өгөгдлийг устгана.</translation>
 <translation id="3171170659304083361">Оруулах аргын тохиргоо</translation>
+<translation id="3176221688814061633">Таны Chromebook эсвэл Bluetooth төхөөрөмж Bluetooth-н хуучин хувилбарыг ашиглаж байна. Аудионы чанарыг илүү сайжруулахын тулд Bluetooth-н супер нягтралыг асаах эсвэл дотоод микрофоныг ашиглана уу.</translation>
 <translation id="3181441307743005334">Дахин эхлүүлэхэд хэдэн хором шаардлагатай байж болзошгүй</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Төхөөрөмжид холбогдсон}other{# төхөөрөмжид холбогдсон}}</translation>
 <translation id="320207200541803018">Цаг хэмжигч тохируулах</translation>
@@ -1499,6 +1502,7 @@
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="7219573373513695352">Ямар ч төхөөрөмж холбогдоогүй</translation>
+<translation id="7229029500464092426">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Энэ Chromebook-д шинэчлэлтийг хэрэгжүүлэхийн тулд үүнийг дахин эхлүүлэх шаардлагатай. Үүнд 1 минут хүртэл хугацаа шаардагдаж болно.</translation>
 <translation id="7256634071279256947">Арын микрофон</translation>
 <translation id="7258828758145722155">Өчигдөр зассан</translation>
@@ -1524,6 +1528,7 @@
 <translation id="7360036564632145207">Та дагалдах төхөөрөмжүүдийн тохиргооны өгөгдлийн хандалтын хамгаалалтаа өөрчилснөөр гүйцэтгэлийг оновчлох боломжтой</translation>
 <translation id="736045644501761622">Дэлгэцийн зураг ба загвар тохируулах</translation>
 <translation id="7371404428569700291">Цонхыг бичих</translation>
+<translation id="7372069265635026568">Нийт <ph name="TOTAL_MEMORY" />-н санах ойгоос <ph name="AVAILABLE_MEMORY" /> боломжтой байна</translation>
 <translation id="737315737514430195">Энэ нь микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
 <translation id="7377169924702866686">Caps Lock идэвхжсэн байна.</translation>
 <translation id="7377481913241237033">Кодоор холбогдох</translation>

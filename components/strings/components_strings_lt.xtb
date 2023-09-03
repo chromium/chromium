@@ -221,6 +221,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1413407968866574823">Veiksmo ir platformų žaidimai</translation>
 <translation id="1413809658975081374">Privatumo klaida</translation>
 <translation id="1414134146594747368">Parengiamoji mokykla</translation>
+<translation id="141826476809826269">Išskirto teksto pabaiga</translation>
 <translation id="1419305130220238697">Mygtukas „Tvarkyti atsisiuntimus naršyklėje „Chrome“; suaktyvinkite, kad galėtumėte tvarkyti failus, kuriuos atsisiuntėte naršyklėje „Chrome“</translation>
 <translation id="1422930527989633628">Gali būti prašoma atrasti netoliese esančius „Bluetooth“ įrenginius</translation>
 <translation id="1426410128494586442">Taip</translation>
@@ -277,6 +278,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1530707389502320859">Svetainė, kurioje ką tik bandėte apsilankyti, atrodo kaip suklastota svetainė. Užpuolėjai kartais sukuria svetainių kopijas ir atlieka nedidelius, sunkiai pastebimus URL pakeitimus.</translation>
 <translation id="1532118530259321453">Šiame puslapyje nurodyta:</translation>
 <translation id="1536390784834419204">Versti puslapį</translation>
+<translation id="1537807545287921620">Šis PDF failas nepasiekiamas. Atidarykite kontekstinį meniu ir įjunkite parinktį „išskirti tekstą iš PDF“</translation>
 <translation id="1539840569003678498">Ataskaita išsiųsta:</translation>
 <translation id="1542105669288201090">Verslo studijos</translation>
 <translation id="1545757265410828525">Kainų istorija</translation>
@@ -864,6 +866,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2803306138276472711">„Google“ saugaus naršymo sistema neseniai <ph name="BEGIN_LINK" />aptiko kenkėjiškų programų<ph name="END_LINK" /> svetainėje <ph name="SITE" />. Kartais svetainės, kurios paprastai yra saugios, užkrečiamos kenkėjiškomis programomis.</translation>
 <translation id="2807052079800581569">Vaizdo Y padėtis</translation>
 <translation id="2808278141522721006">„Windows Hello“ galite įjungti arba išjungti skiltyje „<ph name="SETTINGS" />“</translation>
+<translation id="2814184336982254349">Šis PDF failas nepasiekiamas. Paspauskite paieškos ir „m“ klavišus, kad atidarytumėte kontekstinį meniu, ir įjunkite parinktį „išskirti tekstą iš PDF“</translation>
 <translation id="2818338148457093657">Grožio paslaugos ir SPA centrai</translation>
 <translation id="2820957248982571256">Nuskaitoma...</translation>
 <translation id="2824775600643448204">Adreso ir paieškos juosta</translation>
@@ -1169,6 +1172,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3461266716147554923"><ph name="URL" /> nori matyti tekstą ir vaizdus, nukopijuotus į iškarpinę</translation>
 <translation id="3461824795358126837">Paryškinimo žymeklis</translation>
 <translation id="3462200631372590220">Slėpti išsamią informaciją</translation>
+<translation id="3465972433695735758">Šis PDF failas nepasiekiamas. Tekstas išskirtas pagal „Google“ DI</translation>
 <translation id="346601286295919445">Chemija</translation>
 <translation id="3468054117417088249">Šiuo metu atidarytas „<ph name="TAB_SWITCH_SUFFIX" />“. Paspauskite skirtuką, tada „Enter“, kad perjungtumėte į atidarytą skirtuką</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite uždaryti visus šiuo metu atidarytus inkognito langus</translation>
@@ -1186,6 +1190,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="350069200438440499">Failo pav.:</translation>
 <translation id="3501300228850242680">Metalas (muzika)</translation>
 <translation id="350421688684366066">Etiketės (itin blizgios)</translation>
+<translation id="350763432931695541">Išarchyvuojamas tekstas keliuose kituose puslapiuose</translation>
 <translation id="3507869775212388416">Darbai teisės srityje</translation>
 <translation id="3507936815618196901">Kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
 <translation id="3512163584740124171">Šios politikos nepaisoma, nes kitos politikos toje pačioje politikos grupėje prioritetas yra didesnis.</translation>
@@ -2851,6 +2856,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6973988895180423160">3,5 x 5 col.</translation>
 <translation id="6978236010531171013">Vis tiek bendrinti</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
+<translation id="6979332652936434520">Išskirto teksto pradžia</translation>
 <translation id="6979440798594660689">Nutildyti (numatytasis)</translation>
 <translation id="6987806006823772670">Vokas (dengtas)</translation>
 <translation id="6989763994942163495">Rodyti išplėstinius nustatymus...</translation>
@@ -2906,6 +2912,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7102760431686146931">Virtuvės ir pietų stalo indai</translation>
 <translation id="7105998430540165694">Prieigos raktas iš „iCloud Keychain“</translation>
 <translation id="7106762743910369165">Jūsų naršyklę tvarko jūsų organizacija</translation>
+<translation id="7107249414147762907">Šis PDF failas nepasiekiamas. Neišskirtas joks tekstas</translation>
 <translation id="7108338896283013870">Slėpti</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> nori naudoti fotoaparatą</translation>
 <translation id="7108819624672055576">Leidžiama pagal plėtinį</translation>
@@ -3918,6 +3925,7 @@ Papildoma išsami informacija:
 <translation id="917450738466192189">Serverio sertifikatas negalioja.</translation>
 <translation id="9174623988242579721">Priskirtos ir didelio našumo transporto priemonės</translation>
 <translation id="9174917557437862841">Skirtuko perjungimo mygtukas; paspauskite „Enter“, kad perjungtumėte į šį skirtuką</translation>
+<translation id="9177283544810807743">Šis PDF failas nepasiekiamas. Tekstas išskiriamas pagal „Google“ DI</translation>
 <translation id="9179703756951298733">Tvarkykite mokėjimų ir kredito kortelės informaciją „Chrome“ nustatymuose</translation>
 <translation id="9179907736442194268">Gaukite įspėjimus el. paštu, jei kurioje nors svetainėje sumažės kaina.</translation>
 <translation id="9183302530794969518">„Google“ dokumentai</translation>

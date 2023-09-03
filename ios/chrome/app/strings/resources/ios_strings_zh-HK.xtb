@@ -88,6 +88,7 @@
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1408847409015257906">輕按 [私隱權和安全性]。</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1443958768615272145">繼續瀏覽</translation>
 <translation id="1449835205994625556">隱藏密碼</translation>
 <translation id="1450170672351507823">已開啟「標準保護功能」。如要進一步提升安全性，請使用「強化保護功能」。</translation>
 <translation id="149095475893949513">此網站正嘗試下載設定描述檔。</translation>
@@ -164,6 +165,7 @@
 <translation id="1930989359703290198">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">輕按兩下即可複製。</translation>
 <translation id="1943478190258551035">「選單」→「設定」</translation>
+<translation id="194449685234099560">你可在此找到所有開啟的分頁。</translation>
 <translation id="1952172573699511566">網站將盡可能以您偏好的語言顯示文字。</translation>
 <translation id="1959441496380398824">輕觸並按住所需日期。</translation>
 <translation id="1959679933317802873">正在等待內容</translation>
@@ -186,6 +188,7 @@
 <translation id="20485545164632846">新項目</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> 個帳戶正在使用同一個密碼</translation>
 <translation id="2050196510205866090">{count,plural, =1{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅付款方法儲存咗喺鍵盤上面。}}</translation>
+<translation id="2055515971416882518">開啟「設定」。</translation>
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
@@ -244,6 +247,7 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2459155039684421202">在網址列中輸入要執行的工作，例如「清除記錄」或「編輯密碼」。</translation>
 <translation id="2461070143328828326">密碼設定</translation>
+<translation id="2462736546165239215">你可在此找到所有瀏覽記錄。</translation>
 <translation id="2469960372084740698">要關閉安全瀏覽功能嗎？</translation>
 <translation id="2473876017985765807">您已儲存 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">無揀</translation>
@@ -343,6 +347,7 @@
 <translation id="2952278131021475699">智能鏡頭相機搜尋功能</translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
 <translation id="2956733177489514605">登入 Google 帳戶就能同步處理密碼和其他資料。</translation>
+<translation id="2958271635022991876">你可在此開啟新分頁。</translation>
 <translation id="2958718410589002129">密碼</translation>
 <translation id="2961210776189273067">標題</translation>
 <translation id="2964349545761222050">封鎖第三方 Cookie</translation>
@@ -449,6 +454,7 @@
 <translation id="3533202363250687977">關閉所有無痕式分頁</translation>
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3540141921715814660">加入書籤</translation>
+<translation id="355101282835380364">儲存在帳戶中…</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3565207542107370586">清除瀏覽資料…</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
@@ -462,6 +468,7 @@
 <translation id="3609785682760573515">同步處理中…</translation>
 <translation id="3631443864840848029">請確保要儲存此網站目前的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
+<translation id="3643338347976071250">{count,plural, =1{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="364480321352456989">Chrome 版本過舊。</translation>
 <translation id="3646736009628185125">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">有可用的設定描述檔。</translation>
@@ -541,6 +548,7 @@
 <translation id="418156467088430727">在新分頁中查看離線版本</translation>
 <translation id="4181841719683918333">語言</translation>
 <translation id="4187450337729239226">貼上同埋搜尋</translation>
+<translation id="4197456013861852807">{count,plural, =1{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="4216918546378735658">取消</translation>
 <translation id="4223967053752765281">您的機構已關閉登入功能。您仍可在此裝置上查看自己的書籤、記錄、密碼和其他設定，但作出的變更將不會同步到您的帳戶。</translation>
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全風險。</translation>
@@ -1302,6 +1310,7 @@
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8517375800490286174">開放原始碼授權</translation>
+<translation id="8522147671363140027">{count,plural, =1{這 {count} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}other{這 {count} 個密碼和其他項目只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" /> 個<ph name="INCOGNITO" />分頁之中嘅第 <ph name="FIRST_VISIBLE_TAB" /> 至第 <ph name="LAST_VISIBLE_TAB" /> 個</translation>
 <translation id="8528009254289981965">在無痕模式中開啟其他應用程式的連結</translation>
 <translation id="8529767659511976195">新功能</translation>
@@ -1410,6 +1419,7 @@
 <translation id="9097506547406246598">無法取消追蹤，發生錯誤。</translation>
 <translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
+<translation id="9106655997975673326">來自「<ph name="SOURCE_DEVICE" />」</translation>
 <translation id="9107664647686727385">檢查是否有被盜用的密碼</translation>
 <translation id="9120217828624527905">切換至「完整頁面翻譯」</translation>
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>

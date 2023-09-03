@@ -90,6 +90,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1293264513303784526">USB-C įrenginys (prievadas kairėje)</translation>
 <translation id="1293556467332435079">Failai</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Atidaryti skiltį „Naršymas“</translation>
 <translation id="1294929383540927798">Pakeisti užrakinimo ekrano pranešimų nustatymus</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">REKOMENDUOJAMOS PROGRAMOS</translation>
@@ -387,6 +388,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2612614436418177118">Perkelti programos piktogramą į programų tinklelį</translation>
 <translation id="2620016719323068571">Ieškoti <ph name="CATEGORY" />, failų, programų ir kt...</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2620900772667816510">„Bluetooth“ didžiausia skyra</translation>
 <translation id="2621713457727696555">Apsaugota</translation>
 <translation id="2624588537172718173">Įrenginio garsas ir mikrofonas</translation>
 <translation id="263399434338050016">„Pasirinkti viską“</translation>
@@ -511,6 +513,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3161500364292033097">Uždaryti darbalaukį ir langus</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> grąžina ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
 <translation id="3171170659304083361">Įvesties metodų nustatymai</translation>
+<translation id="3176221688814061633">„Chromebook“ ar „Bluetooth“ įrenginyje naudojamas senesnės versijos „Bluetooth“. Įjunkite „Bluetooth“ didžiausią skyrą arba naudokite vidinį mikrofoną, kad garso kokybė būtų geresnė.</translation>
 <translation id="3181441307743005334">Paleidimas iš naujo gali šiek tiek užtrukti</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Prisijungta prie įrenginio}one{Prisijungta prie # įrenginio}few{Prisijungta prie # įrenginių}many{Prisijungta prie # įrenginio}other{Prisijungta prie # įrenginių}}</translation>
 <translation id="320207200541803018">Nustatyk laikmatį</translation>
@@ -1498,6 +1501,7 @@ Naujas įdiegimas</translation>
 <translation id="7189412385142492784">Kaip toli yra Venera</translation>
 <translation id="7198435252016571249">Fotoaparato peržiūra pridėta apatiniame dešiniajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="7219573373513695352">Nėra susietų įrenginių</translation>
+<translation id="7229029500464092426">Atminties: <ph name="AVAILABLE_MEMORY" /> | Iš viso: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kad būtų pritaikytas naujinys, šį „Chromebook“ reikia paleisti iš naujo. Tai gali užtrukti iki minutės</translation>
 <translation id="7256634071279256947">Užpakalinis mikrofonas</translation>
 <translation id="7258828758145722155">Redaguota vakar</translation>
@@ -1523,6 +1527,7 @@ Naujas įdiegimas</translation>
 <translation id="7360036564632145207">Našumą gali pavykti optimizuoti pakeičiant duomenų prieigos apsaugos išoriniams įrenginiams nustatymą</translation>
 <translation id="736045644501761622">Nustatyti ekrano foną ir stilių</translation>
 <translation id="7371404428569700291">Įrašymo langas</translation>
+<translation id="7372069265635026568">Laisvos atminties: <ph name="AVAILABLE_MEMORY" /> iš <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Tai leis pasiekti mikrofoną visoms programoms ir svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="7377169924702866686">Įjungtas didžiųjų raidžių klavišas.</translation>
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>

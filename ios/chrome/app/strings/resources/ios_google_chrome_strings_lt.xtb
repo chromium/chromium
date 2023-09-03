@@ -157,6 +157,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="7754633291442704733">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chrome“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chrome“ veikimą.</translation>
 <translation id="7780154209050837198">Jei norite išnaudoti visas „Chrome“ galimybes, prisijunkite prie „Chrome“ naudodami „Google“ paskyrą.</translation>
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
+<translation id="7925119591961387184">Pasirinkite „Chrome“.</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="804638182476029347">Leiskite „Chrome“ pranešimams gauti įspėjimus apie sumažintas kainas</translation>
 <translation id="81358522153858150">Dabar „Chrome“ palaiko valdomos paskyros naudotojo politiką</translation>
@@ -174,6 +175,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
   2. Palieskite „Numatytoji naršyklės programa“.
   3. Pasirinkite „Chrome“.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Palieskite „Chrome“, tada – „Numatytoji naršyklės programa“.</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
 <translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
@@ -185,6 +187,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="8897749957032330183">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje.</translation>
+<translation id="8949681853939555434">„Chrome“ nustatymas kaip numatytosios naršyklės</translation>
 <translation id="8969290730818637510">Kai įjungta
 <ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />
 

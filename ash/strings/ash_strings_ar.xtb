@@ -366,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">فتح قفل النوافذ</translation>
 <translation id="2528111225373402384">إعدادات نقطة الاتصال</translation>
+<translation id="253007620291357635">‫"<ph name="NETWORK_NAME" />" ·‏ "<ph name="SERVICE_PROVIDER" />"</translation>
 <translation id="2530896289327917474">تفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها</translation>
 <translation id="2531025035050312891">الجهاز بطيء</translation>
 <translation id="2531107890083353124">أثناء سحب علامة التبويب، اضغط على <ph name="KEY_ONE" />.</translation>
@@ -1854,6 +1855,7 @@
 <translation id="8731487213223706745">ينتهي الحدث في <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735678380411481005">لون الإضاءة الخلفية للوحة المفاتيح</translation>
+<translation id="8742057891287715849">‫"<ph name="NAME" />" ·‏ "<ph name="SERVICE_PROVIDER" />": جارٍ التفعيل…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>

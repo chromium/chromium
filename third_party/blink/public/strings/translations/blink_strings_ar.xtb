@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">تم التبديل إلى النسخ المطابق.</translation>
 <translation id="2031987842108996681">درجات اللون الأحمر</translation>
 <translation id="2060505056492490888">تم استخدام "<ph name="DOT" />" في موضع خاطئ في "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">يجب أن يكون الحد الأدنى للقيمة (<ph name="MINIMUM" />) أقل من الحد الأقصى للقيمة (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2226276347425096477">يُرجى اختصار هذا النص حتى يصل إلى <ph name="MAX_CHARACTERS" /> من الحروف أو أقل (أنت الآن تستخدم <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
 <translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
