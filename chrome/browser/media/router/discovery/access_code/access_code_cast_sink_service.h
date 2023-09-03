@@ -45,6 +45,10 @@ class AccessCodeCastSinkService : public KeyedService,
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
       absl::optional<MediaSink::Id> sink_id)>;
 
+  // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
+  // an instance of this service.
+  explicit AccessCodeCastSinkService(Profile* profile);
+
   AccessCodeCastSinkService(const AccessCodeCastSinkService&) = delete;
   AccessCodeCastSinkService& operator=(const AccessCodeCastSinkService&) =
       delete;
@@ -171,10 +175,6 @@ class AccessCodeCastSinkService : public KeyedService,
                            InitializePrefUpdater);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            ValidateStoredDevices);
-
-  // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
-  // an instance of this service.
-  explicit AccessCodeCastSinkService(Profile* profile);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(

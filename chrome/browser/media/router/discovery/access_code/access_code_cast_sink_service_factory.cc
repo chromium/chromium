@@ -65,13 +65,14 @@ AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
 
 AccessCodeCastSinkServiceFactory::~AccessCodeCastSinkServiceFactory() = default;
 
-KeyedService* AccessCodeCastSinkServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccessCodeCastSinkServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
   if (!profile || !GetAccessCodeCastEnabledPref(profile)) {
     return nullptr;
   }
-  return new AccessCodeCastSinkService(profile);
+  return std::make_unique<AccessCodeCastSinkService>(profile);
 }
 
 bool AccessCodeCastSinkServiceFactory::ServiceIsCreatedWithBrowserContext()
