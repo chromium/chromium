@@ -478,13 +478,14 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
   switch (current_bubble_type_) {
     case BubbleType::LOCAL_SAVE:
     case BubbleType::UPLOAD_SAVE:
+      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
+    case BubbleType::LOCAL_CVC_SAVE:
+      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC);
     case BubbleType::MANAGE_CARDS:
       return l10n_util::GetStringUTF16(
           options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
               ? IDS_TOOLTIP_SAVE_CVC
               : IDS_TOOLTIP_SAVE_CREDIT_CARD);
-    case BubbleType::LOCAL_CVC_SAVE:
-      return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC);
     case BubbleType::UPLOAD_IN_PROGRESS:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD_PENDING);
     case BubbleType::FAILURE:
