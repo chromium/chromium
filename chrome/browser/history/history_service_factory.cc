@@ -101,9 +101,10 @@ HistoryServiceFactory::HistoryServiceFactory()
 
 HistoryServiceFactory::~HistoryServiceFactory() = default;
 
-KeyedService* HistoryServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HistoryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildHistoryService(context).release();
+  return BuildHistoryService(context);
 }
 
 bool HistoryServiceFactory::ServiceIsNULLWhileTesting() const {
