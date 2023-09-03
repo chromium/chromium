@@ -67,6 +67,10 @@ if (is_mac) {
   import("//build/config/mac/mac_sdk.gni")
 }
 
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
+}
+
 declare_args() {
   # TODO(crbug.com/1442625): Enable for Windows.
   enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
@@ -97,7 +101,15 @@ if (enable_nocompile_tests) {
           nulldevice = "nul"
         } else {
           cxx = "clang-cl"
-          nulldevice = "/dev/null"
+
+          # Unfortunately, clang-cl always wants to suffix the output file name
+          # with ".obj", and /dev/null.obj is not a valid file. As a bit of a
+          # hack, simply use the path to the generated .cc file, knowing:
+          # - that clang-cl will append ".obj" to the filename, so it will never
+          #   clash.
+          # - except when the nocompile test unexpectedly passes, the output
+          #   file will never actually be written.
+          nulldevice = rebased_result_path
         }
       } else {
         cxx = "clang++"
@@ -120,6 +132,21 @@ if (enable_nocompile_tests) {
         "-Wno-implicit-int-float-conversion",
       ]
       if (is_win) {
+        # On Windows we fall back to using system headers from a sysroot from
+        # depot_tools. This is negotiated by python scripts and the result is
+        # available in //build/toolchain/win/win_toolchain_data.gni. From there
+        # we get the `include_flags_imsvc` which point to the system headers.
+        if (host_cpu == "x86") {
+          win_toolchain_data = win_toolchain_data_x86
+        } else if (host_cpu == "x64") {
+          win_toolchain_data = win_toolchain_data_x64
+        } else if (host_cpu == "arm64") {
+          win_toolchain_data = win_toolchain_data_arm64
+        } else {
+          error("Unsupported host_cpu, add it to win_toolchain_data.gni")
+        }
+        args += [ "${win_toolchain_data.include_flags_imsvc}" ]
+
         args += [
           "/W4",
           "-Wno-unused-parameter",
@@ -171,15 +198,12 @@ if (enable_nocompile_tests) {
       }
 
       if (sysroot != "") {
+        assert(!is_win)
         sysroot_path = rebase_path(sysroot, root_build_dir)
-        if (is_win) {
-          args += [ "/winsysroot" + sysroot_path ]
-        } else {
-          args += [
-            "--sysroot",
-            sysroot_path,
-          ]
-        }
+        args += [
+          "--sysroot",
+          sysroot_path,
+        ]
       }
 
       if (!is_nacl) {
