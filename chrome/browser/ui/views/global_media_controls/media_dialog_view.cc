@@ -208,8 +208,7 @@ void MediaDialogView::RefreshMediaItem(
     return;
   }
 
-  observed_items_[id]->UpdateFooterView(
-      BuildFooter(id, item, profile_, entry_point_));
+  observed_items_[id]->UpdateFooterView(BuildFooter(id, item, profile_));
   observed_items_[id]->UpdateDeviceSelector(BuildDeviceSelector(
       id, item, service_, service_, profile_, entry_point_));
 
@@ -661,7 +660,7 @@ MediaDialogView::BuildMediaItemUIView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   return std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooter(id, item, profile_, entry_point_),
+      id, item, BuildFooter(id, item, profile_),
       BuildDeviceSelector(id, item, service_, service_, profile_,
                           entry_point_));
 }

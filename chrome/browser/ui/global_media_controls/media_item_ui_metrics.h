@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_METRICS_H_
 
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "components/global_media_controls/public/constants.h"
 #include "components/media_router/common/media_sink.h"
 
 namespace {
@@ -33,15 +32,10 @@ enum GlobalMediaControlsCastMode {
 
 class MediaItemUIMetrics {
  public:
-  static void RecordStartCastMode(media_router::MediaCastMode cast_mode);
-  static void RecordStopCastMode(media_router::MediaCastMode cast_mode);
   static void RecordStartCastingMetrics(
       media_router::SinkIconType sink_icon_type,
-      media_router::MediaCastMode cast_mode,
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
-  static void RecordStopCastingMetrics(
-      media_router::MediaCastMode cast_mode,
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point);
+      media_router::MediaCastMode cast_mode);
+  static void RecordStopCastingMetrics(media_router::MediaCastMode cast_mode);
 };
 
 #endif

@@ -135,10 +135,9 @@ void CastDeviceListHost::SelectDevice(const std::string& device_id) {
   } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
     // We record stopping casting here even if we are starting casting, because
     // the existing session is being stopped and replaced by a new session.
-    // TODO(crbug.com/1411139): Call RecordStopCastingMetrics() here instead.
     if (sink.provider == media_router::mojom::MediaRouteProviderId::DIAL) {
       DCHECK(sink.route);
-      MediaItemUIMetrics::RecordStopCastMode(
+      MediaItemUIMetrics::RecordStopCastingMetrics(
           media_router::MediaCastMode::PRESENTATION);
       cast_controller_->StopCasting(sink.route->media_route_id());
     } else {
@@ -175,8 +174,8 @@ void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
   if (cast_mode.value() == media_router::MediaCastMode::REMOTE_PLAYBACK) {
     media_remoting_callback_.Run();
   }
-  // TODO(crbug.com/1411139): Call RecordStartCastingMetrics() here instead.
-  MediaItemUIMetrics::RecordStartCastMode(cast_mode.value());
+  MediaItemUIMetrics::RecordStartCastingMetrics(sink.icon_type,
+                                                cast_mode.value());
 }
 
 void CastDeviceListHost::DestroyCastController() {

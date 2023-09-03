@@ -76,10 +76,7 @@ QuickSettingsMediaViewController::ShowMediaItem(
   CHECK(MediaNotificationProvider::Get());
 
   auto media_item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item,
-      MediaNotificationProvider::Get()->BuildFooterView(
-          id, item,
-          global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
+      id, item, MediaNotificationProvider::Get()->BuildFooterView(id, item),
       MediaNotificationProvider::Get()->BuildDeviceSelectorView(
           id, item,
           global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),

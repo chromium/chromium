@@ -4148,18 +4148,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Notification.Cast.StartStop"
-    enum="GlobalMediaControlsCastActionAndEntryPoint"
-    expires_after="2024-01-14">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the user starts or stops a Cast session. Records the action
-    and how the Global Media Controls UI was opened.
-  </summary>
-</histogram>
-
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
     expires_after="2024-01-14">
   <owner>takumif@chromium.org</owner>
@@ -4168,7 +4156,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of the action (e.g. pause) whenever the user makes an
     action on a Cast media notification. Starting and stopping casting is
-    recorded in Media.Notification.Cast.StartStop.
+    recorded in Media.GlobalMediaControls.MediaCastMode.Start and
+    Media.GlobalMediaControls.MediaCastMode.Stop.
   </summary>
 </histogram>
 

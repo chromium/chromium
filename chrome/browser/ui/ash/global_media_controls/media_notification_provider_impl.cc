@@ -205,9 +205,8 @@ MediaNotificationProviderImpl::BuildDeviceSelectorView(
 std::unique_ptr<global_media_controls::MediaItemUIFooter>
 MediaNotificationProviderImpl::BuildFooterView(
     const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  return BuildFooter(id, item, GetProfile(), entry_point, media_color_theme_);
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
+  return BuildFooter(id, item, GetProfile(), media_color_theme_);
 }
 
 global_media_controls::MediaItemUI*
@@ -221,7 +220,7 @@ MediaNotificationProviderImpl::ShowMediaItem(
   bool show_devices =
       (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooterView(id, item, entry_point_),
+      id, item, BuildFooterView(id, item),
       BuildDeviceSelectorView(id, item, entry_point_, show_devices),
       color_theme_, media_color_theme_,
       global_media_controls::MediaDisplayPage::kQuickSettingsMediaDetailedView);
@@ -255,7 +254,7 @@ void MediaNotificationProviderImpl::RefreshMediaItem(
   bool show_devices =
       (!show_devices_for_item_id_.empty() && (id == show_devices_for_item_id_));
   auto* media_item_ui = media_item_ui_list_view_->GetItem(id);
-  media_item_ui->UpdateFooterView(BuildFooterView(id, item, entry_point_));
+  media_item_ui->UpdateFooterView(BuildFooterView(id, item));
   media_item_ui->UpdateDeviceSelector(
       BuildDeviceSelectorView(id, item, entry_point_, show_devices));
 

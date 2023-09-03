@@ -68,7 +68,6 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     Profile* profile,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     absl::optional<media_message_center::MediaColorTheme> media_color_theme =
         absl::nullopt);
 

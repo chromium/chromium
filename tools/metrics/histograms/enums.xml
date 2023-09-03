@@ -49681,15 +49681,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="kGLImplementationEGLANGLE"/>
 </enum>
 
-<enum name="GlobalMediaControlsCastActionAndEntryPoint">
-  <int value="0" label="Casting started via toolbar icon"/>
-  <int value="1" label="Casting stopped via toolbar icon"/>
-  <int value="2" label="Casting started via Presentation API"/>
-  <int value="3" label="Casting stopped via Presentation API"/>
-  <int value="4" label="Casting started via system tray"/>
-  <int value="5" label="Casting stopped via system tray"/>
-</enum>
-
 <enum name="GlobalMediaControlsCastMode">
   <int value="0" label="Presentation"/>
   <int value="1" label="Remote Playback"/>

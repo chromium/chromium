@@ -77,9 +77,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
       bool show_devices) override;
   std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooterView(
       const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item,
-      global_media_controls::GlobalMediaControlsEntryPoint entry_point)
-      override;
+      base::WeakPtr<media_message_center::MediaNotificationItem> item) override;
 
   // global_media_controls::MediaDialogDelegate:
   global_media_controls::MediaItemUI* ShowMediaItem(

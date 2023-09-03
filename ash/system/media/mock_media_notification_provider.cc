@@ -44,8 +44,7 @@ MockMediaNotificationProvider::BuildDeviceSelectorView(
 std::unique_ptr<global_media_controls::MediaItemUIFooter>
 MockMediaNotificationProvider::BuildFooterView(
     const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   return nullptr;
 }
 

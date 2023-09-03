@@ -264,8 +264,7 @@ void CastMediaNotificationItem::OnRouteUpdated(
     view_->UpdateWithMediaMetadata(metadata_);
 }
 
-void CastMediaNotificationItem::StopCasting(
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+void CastMediaNotificationItem::StopCasting() {
   media_router::MediaRouterFactory::GetApiForBrowserContext(profile_)
       ->TerminateRoute(media_route_id_);
 
@@ -275,7 +274,7 @@ void CastMediaNotificationItem::StopCasting(
       ->NotifyEvent("media_route_stopped_from_gmc");
 
   MediaItemUIMetrics::RecordStopCastingMetrics(
-      media_router::MediaCastMode::PRESENTATION, entry_point);
+      media_router::MediaCastMode::PRESENTATION);
 }
 
 mojo::PendingRemote<media_router::mojom::MediaStatusObserver>
