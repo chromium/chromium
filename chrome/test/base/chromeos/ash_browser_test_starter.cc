@@ -148,6 +148,9 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   lacros_args.emplace_back(base::StringPrintf("--%s=%s", switches::kGaiaUrl,
                                               base_url().spec().c_str()));
   lacros_args.emplace_back("--enable-features=ApiAccessibilityServicePrivate");
+  // Disable gpu process in Lacros since hardware accelerated rendering is
+  // not possible yet in Ash X11 backend. See details in crbug/1478369.
+  lacros_args.emplace_back("--disable-gpu");
   command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
                                   base::JoinString(lacros_args, "####"));
 
