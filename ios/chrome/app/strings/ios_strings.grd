@@ -2898,6 +2898,45 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE" desc="Title of the view that allow user to enter the details for a new password credential to add it to the list the passwords. [iOS only]">
         Add Password
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_BUTTON" desc="Alert accept button in settings > password confirming the user wants to save all their local passwords to their account. [iOS Only]">
+        Save in Account
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_CANCEL" desc="Alert cancel button in settings > password cancelling when user is offered to move passwords to account. [iOS Only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_DESCRIPTION" desc="Alert description in settings > password confirming to the user that they can save all their local passwords to their account. [iOS Only]">
+        {COUNT, plural,
+        =1 {You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}}
+        =2 {You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}}
+        =3 {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} other in your Google Account, {EMAIL}}
+        other {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_TITLE" desc="Alert title in settings > password, confirming all local passwords will be saved to the user's account. [iOS Only]">
+        {COUNT, plural,
+        =1 {Save {COUNT} Password in Your Google Account}
+        other {Save {COUNT} Passwords in Your Google Account}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_BUTTON" desc="Section button in settings > password allowing the user to save all their local passwords to their account. [iOS Only]">
+        {COUNT, plural,
+        =1 {Save Password in Account}
+        other {Save Passwords in Account}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_DESCRIPTION" desc="Section description in settings > password explaining to the user that they can save all their local passwords to their account to use them on other devices. [iOS Only]">
+        {COUNT, plural,
+        =1 {{COUNT} password is saved only to this device. To use it on your other devices, save it in your Google Account, {EMAIL}.}
+        other {{COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {EMAIL}.}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SECTION_TITLE" desc="Section title in settings > password, about saving all local passwords to the user's account. [iOS Only]">
+        Use Passwords on All Your Devices
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SNACKBAR_MESSAGE" desc="Snackbar message in settings > password, about local passwords having been saved into the user's account. [iOS Only]">
+        {COUNT, plural,
+        =1 {Password saved in your Google Account, {EMAIL}}
+        other {Passwords saved in your Google Account, {EMAIL}}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to save local passwords to their account, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to save local passwords to their account. [Length: about two lines] [iOS only]">
+        To save passwords in your account, you must first set a passcode on your device.
+      </message>
       <message name="IDS_IOS_LOCAL_PASSWORD_ACCESSIBILITY_LABEL" desc="Screenreader label when a password is saved only locally and not backed up to any account.">
         Password saved only on this device
       </message>
