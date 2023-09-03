@@ -962,12 +962,14 @@ void InputHandler::DragController::EndDragging(
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback) {
   if (drag_state_->updating > 0) {
+    auto update_callback = base::BindOnce(
+        &InputHandler::DragController::EndDragging, weak_factory_.GetWeakPtr(),
+        nullptr, std::move(event), std::move(callback));
     // Chaining callbacks to ensure none get replaced.
     drag_state_->updated_callback =
-        std::move(drag_state_->updated_callback)
-            .Then(base::BindOnce(&InputHandler::DragController::EndDragging,
-                                 weak_factory_.GetWeakPtr(), nullptr,
-                                 std::move(event), std::move(callback)));
+        drag_state_->updated_callback ? std::move(drag_state_->updated_callback)
+                                            .Then(std::move(update_callback))
+                                      : std::move(update_callback);
     return;
   }
   if (host_hint) {
