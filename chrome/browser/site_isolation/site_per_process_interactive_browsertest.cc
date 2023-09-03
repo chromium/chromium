@@ -307,8 +307,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* child1;
-  content::RenderFrameHost* child2;
+  content::RenderFrameHost* child1 = nullptr;
+  content::RenderFrameHost* child2 = nullptr;
 
   if (GetParam() == std::string("iframe")) {
     child1 = ChildFrameAt(main_frame, 0);
@@ -497,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* child;
+  content::RenderFrameHost* child = nullptr;
 
   if (GetParam() == std::string("iframe")) {
     child = ChildFrameAt(main_frame, 0);
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 // The test then presses <tab> twice to focus on elements 1 and 2.
 // TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
-                       DISABLED_SequentialFocusNavigationPassThrough) {
+                       SequentialFocusNavigationPassThrough) {
   GURL main_url(https_server()->GetURL(
       "a.test",
       GetParam() == std::string("fencedframe")
@@ -581,12 +581,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* child1 =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame)[0];
-  content::RenderFrameHost* child2 =
-      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(child1);
-  content::RenderFrameHost* child3 =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame)[1];
+  content::RenderFrameHost* child1 = nullptr;
+  content::RenderFrameHost* child2 = nullptr;
+  content::RenderFrameHost* child3 = nullptr;
+
+  if (GetParam() == std::string("iframe")) {
+    child1 = ChildFrameAt(main_frame, 0);
+    child2 = ChildFrameAt(child1, 0);
+    child3 = ChildFrameAt(main_frame, 1);
+  } else {
+    std::vector<content::RenderFrameHost*> child_frames =
+        fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame);
+    ASSERT_EQ(child_frames.size(), 2u);
+    child1 = child_frames[0];
+    child2 = fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(child1);
+    child3 = child_frames[1];
+  }
 
   ASSERT_NE(nullptr, child1);
   ASSERT_NE(nullptr, child2);
@@ -653,7 +663,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
 // move focus to the UI, and <tab> one more time to focus on element 1 again.
 // TODO(crbug.com/1466478): Re-enable this test once this bug is fixed.
 IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
-                       DISABLED_SequentialFocusWrapBackIntoChildFrame) {
+                       SequentialFocusWrapBackIntoChildFrame) {
   GURL main_url(https_server()->GetURL(
       "a.test",
       GetParam() == std::string("fencedframe")
@@ -666,12 +676,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* child1 =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame)[0];
-  content::RenderFrameHost* child2 =
-      fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(child1);
-  content::RenderFrameHost* child3 =
-      fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame)[1];
+  content::RenderFrameHost* child1 = nullptr;
+  content::RenderFrameHost* child2 = nullptr;
+  content::RenderFrameHost* child3 = nullptr;
+
+  if (GetParam() == std::string("iframe")) {
+    child1 = ChildFrameAt(main_frame, 0);
+    child2 = ChildFrameAt(child1, 0);
+    child3 = ChildFrameAt(main_frame, 1);
+  } else {
+    std::vector<content::RenderFrameHost*> child_frames =
+        fenced_frame_test_helper().GetChildFencedFrameHosts(main_frame);
+    ASSERT_EQ(child_frames.size(), 2u);
+    child1 = child_frames[0];
+    child2 = fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(child1);
+    child3 = child_frames[1];
+  }
 
   ASSERT_NE(nullptr, child1);
   ASSERT_NE(nullptr, child2);
