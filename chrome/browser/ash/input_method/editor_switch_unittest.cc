@@ -105,6 +105,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kDeclined));
   editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
@@ -124,6 +125,9 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
   editor_switch.OnActivateIme("xkb:us::eng");
+
+  editor_switch.OnTabletModeUpdated(false);
+  editor_switch.OnActivateIme("nacl_mozc_jp");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD),
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
@@ -142,6 +146,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("nacl_mozc_jp");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
@@ -161,6 +166,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
@@ -181,10 +187,31 @@ TEST_F(EditorSwitchTest,
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, false);
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
       CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_FALSE(editor_switch.CanBeTriggered());
+}
+
+TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kOrca);
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(true);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_FALSE(editor_switch.CanBeTriggered());
@@ -202,6 +229,7 @@ TEST_F(
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(prefs::kOrcaConsentStatus,
                                   base::to_underlying(ConsentStatus::kPending));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
@@ -223,6 +251,7 @@ TEST_F(
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
