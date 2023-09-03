@@ -184,9 +184,10 @@ KioskAppUpdateServiceFactory* KioskAppUpdateServiceFactory::GetInstance() {
   return base::Singleton<KioskAppUpdateServiceFactory>::get();
 }
 
-KeyedService* KioskAppUpdateServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+KioskAppUpdateServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new KioskAppUpdateService(
+  return std::make_unique<KioskAppUpdateService>(
       Profile::FromBrowserContext(context),
       g_browser_process->platform_part()->automatic_reboot_manager());
 }
