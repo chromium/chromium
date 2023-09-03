@@ -50,7 +50,8 @@ MerchantViewerDataManagerFactory::MerchantViewerDataManagerFactory()
 
 MerchantViewerDataManagerFactory::~MerchantViewerDataManagerFactory() = default;
 
-KeyedService* MerchantViewerDataManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MerchantViewerDataManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new MerchantViewerDataManager(context);
+  return std::make_unique<MerchantViewerDataManager>(context);
 }
