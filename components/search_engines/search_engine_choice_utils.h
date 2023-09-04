@@ -28,6 +28,16 @@ struct ProfileProperties {
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties);
 
+// Returns the country ID to use in the context of any search engine choice
+// logic. Can be overridden using `switches::kSearchEngineChoiceCountry`.
+// See `//components/country_codes` for the Country ID format.
+int GetSearchEngineChoiceCountryId(PrefService& profile_prefs);
+
+// Returns whether the provided `country_id` is eligible for the EEA default
+// search engine choice prompt.
+// See `//components/country_codes` for the Country ID format.
+bool IsEeaChoiceCountry(int country_id);
+
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_

@@ -6,6 +6,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 
@@ -13,6 +14,10 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
  protected:
   SearchEngineChoiceJsBrowserTest() {
     set_test_loader_host(chrome::kChromeUISearchEngineChoiceHost);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
   }
 
  private:
