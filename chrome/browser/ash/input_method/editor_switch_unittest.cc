@@ -52,17 +52,6 @@ TEST_F(EditorSwitchTest,
 }
 
 TEST_F(EditorSwitchTest,
-       FeatureWillNotBeAvailableForUnmanagedAccountOnDogfoodDevices) {
-  base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
-  TestingProfile profile_;
-  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
-  EditorSwitch editor_switch(/*profile=*/&profile_,
-                             /*country_code=*/kAllowedTestCountry);
-
-  EXPECT_FALSE(editor_switch.IsAllowedForUse());
-}
-
-TEST_F(EditorSwitchTest,
        FeatureWillNotBeAvailableForManagedAccountOnNonDogfoodDevices) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -103,17 +92,6 @@ TEST_F(EditorSwitchTest,
                              /*country_code=*/kDeniedTestCountry);
 
   EXPECT_FALSE(editor_switch.IsAllowedForUse());
-}
-
-TEST_F(EditorSwitchTest,
-       FeatureWillBeAvailableForUseForManagedAccountOnDogfoodDevices) {
-  base::test::ScopedFeatureList feature_list(features::kOrcaDogfood);
-  TestingProfile profile_;
-  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EditorSwitch editor_switch(/*profile=*/&profile_,
-                             /*country_code=*/kAllowedTestCountry);
-
-  EXPECT_TRUE(editor_switch.IsAllowedForUse());
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
