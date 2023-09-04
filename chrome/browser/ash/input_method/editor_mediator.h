@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
@@ -30,8 +28,7 @@ namespace input_method {
 // providing an overall unified interface for the backend of the project.
 class EditorMediator : public EditorInstanceImpl::Delegate,
                        public EditorEventSink,
-                       public ProfileObserver,
-                       public TabletModeObserver {
+                       public ProfileObserver {
  public:
   // country_code that determines the country/territory in which the device is
   // situated.
@@ -57,11 +54,6 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void OnBlur() override;
   void OnActivateIme(std::string_view engine_id) override;
   void OnConsentActionReceived(ConsentAction consent_action) override;
-
-  // TabletModeObserver:
-  void OnTabletModeStarting() override;
-  void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
 
   // EditorInstanceImpl::Delegate overrides
   void CommitEditorResult(std::string_view text) override;
@@ -99,9 +91,6 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   std::unique_ptr<ash::MakoPageHandler> mako_page_handler_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
-
-  base::ScopedObservation<TabletMode, TabletModeObserver>
-      tablet_mode_observation_{this};
 
   base::WeakPtrFactory<EditorMediator> weak_ptr_factory_{this};
 };

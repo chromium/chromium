@@ -5,9 +5,6 @@
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/tablet_mode.h"
-#include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -30,9 +27,6 @@ EditorMediator::EditorMediator(Profile* profile, std::string_view country_code)
   g_instance_ = this;
 
   profile_observation_.Observe(profile_);
-  tablet_mode_observation_.Observe(TabletMode::Get());
-
-  editor_switch_->OnTabletModeUpdated(ash::TabletMode::IsInTabletMode());
 }
 
 EditorMediator::~EditorMediator() {
@@ -71,18 +65,6 @@ void EditorMediator::OnBlur() {
 
 void EditorMediator::OnActivateIme(std::string_view engine_id) {
   editor_switch_->OnActivateIme(engine_id);
-}
-
-void EditorMediator::OnTabletModeStarting() {
-  editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/true);
-}
-
-void EditorMediator::OnTabletModeEnded() {
-  editor_switch_->OnTabletModeUpdated(/*tablet_mode_enabled=*/false);
-}
-
-void EditorMediator::OnTabletControllerDestroyed() {
-  tablet_mode_observation_.Reset();
 }
 
 void EditorMediator::OnConsentActionReceived(ConsentAction consent_action) {
