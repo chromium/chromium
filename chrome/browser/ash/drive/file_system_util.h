@@ -47,6 +47,7 @@ bool IsDriveEnabledForProfile(const Profile* profile);
 
 // Connection status to Drive.
 enum class ConnectionStatus {
+  kNone,
   // Disconnected because Drive service is unavailable for this account (either
   // disabled by a flag or the account has no Google account (e.g., guests)).
   kNoService,
@@ -63,6 +64,9 @@ enum class ConnectionStatus {
 };
 
 std::ostream& operator<<(std::ostream& out, ConnectionStatus status);
+
+// Sets the Drive connection status for testing purposes.
+void SetDriveConnectionStatusForTesting(ConnectionStatus status);
 
 // Returns the Drive connection status for the |profile|.
 ConnectionStatus GetDriveConnectionStatus(Profile* profile);

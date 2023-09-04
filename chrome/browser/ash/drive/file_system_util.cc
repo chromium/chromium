@@ -180,6 +180,7 @@ std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
 #define PRINT(s)               \
   case ConnectionStatus::k##s: \
     return out << #s;
+    PRINT(None)
     PRINT(NoService)
     PRINT(NoNetwork)
     PRINT(NotReady)
@@ -193,8 +194,21 @@ std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
              << ")";
 }
 
+static ConnectionStatus connection_status_for_testing = ConnectionStatus::kNone;
+
+void SetDriveConnectionStatusForTesting(const ConnectionStatus status) {
+  VLOG(1) << "SetDriveConnectionStatusForTesting: " << status;
+  connection_status_for_testing = status;
+}
+
 ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
   using enum ConnectionStatus;
+
+  if (connection_status_for_testing != kNone) {
+    VLOG(1) << "GetDriveConnectionStatus: for testing: "
+            << connection_status_for_testing;
+    return connection_status_for_testing;
+  }
 
   if (!GetIntegrationServiceByProfile(profile)) {
     VLOG(1) << "GetDriveConnectionStatus: no Drive integration service";
