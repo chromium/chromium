@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
@@ -629,6 +630,9 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     const AutofillProfile& profile,
     const ServerFieldTypeSet& types) const {
   const std::string& app_locale = comparator.app_locale();
+  // TODO(crbug.com/1417975): Remove when
+  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+  bool has_different_address = false;
   for (ServerFieldType type : types) {
     // Prefer GetInfo over GetRawInfo so that a reasonable value is retrieved
     // when the raw data is empty or unnormalized. For example, suppose a
@@ -636,15 +640,24 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     // GetInfo for the NAME_FULL type returns the constituent name parts;
     // however, GetRawInfo returns an empty string.
     const std::u16string value = GetInfo(type, app_locale);
+    if (value.empty()) {
+      continue;
+    }
 
-    if (value.empty() || type == ADDRESS_HOME_ADDRESS ||
-        type == ADDRESS_HOME_STREET_ADDRESS || type == ADDRESS_HOME_LINE1 ||
-        type == ADDRESS_HOME_LINE2 || type == ADDRESS_HOME_LINE3) {
-      // Ignore street addresses because comparing addresses such as 200 Elm St
-      // and 200 Elm Street could cause |profile| to not be seen as a subset of
-      // |this|. If the form includes a street address, then it is likely it
-      // contains another address field, e.g. a city or postal code, and
-      // comparing these other address parts is more reliable.
+    // TODO(crbug.com/1417975): Use rewriter rules for all kAddressHome types.
+    if (type == ADDRESS_HOME_ADDRESS || type == ADDRESS_HOME_STREET_ADDRESS ||
+        type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
+        type == ADDRESS_HOME_LINE3) {
+      const AddressComponent& address = GetAddress().GetStructuredAddress();
+      const AddressComponent& other_address =
+          profile.GetAddress().GetStructuredAddress();
+      // This will compare street addresses after applying appropriate address
+      // rewriter rules to both values, so that for example US streets like
+      // `Main Street` and `main st` evaluate to equal.
+      has_different_address =
+          has_different_address ||
+          (address.GetValueForComparisonForType(type, other_address) !=
+           other_address.GetValueForComparisonForType(type, address));
       continue;
     } else if (type == NAME_FULL) {
       if (!comparator.IsNameVariantOf(
@@ -678,7 +691,15 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       return false;
     }
   }
-  return true;
+  // When `kAutofillUseAddressRewriterInProfileSubsetComparison` is disabled,
+  // Ignore street addresses because comparing addresses such as 200 Elm St and
+  // 200 Elm Street could cause |profile| to not be seen as a subset of |this|.
+  // If the form includes a street address, then it is likely it contains
+  // another address field, e.g. a city or postal code, and comparing these
+  // other address parts is more reliable.
+  return !has_different_address ||
+         !base::FeatureList::IsEnabled(
+             features::kAutofillUseAddressRewriterInProfileSubsetComparison);
 }
 
 bool AutofillProfile::IsStrictSupersetOf(
