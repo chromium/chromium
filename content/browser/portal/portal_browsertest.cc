@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(PortalDefaultActivationBrowserTest,
   VerifyActivationTraceEvents(StopTracing());
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1222682
 #define MAYBE_AdoptPredecessor DISABLED_AdoptPredecessor
 #else
