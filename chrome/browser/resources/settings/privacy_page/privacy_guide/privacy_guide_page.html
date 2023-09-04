@@ -81,21 +81,21 @@
   }
 
   #backgroundClouds {
-    transform: translateX(calc(var(--privacy-guide-step) * -10px));
+    transform: translateX(calc(var(--privacy-guide-step) * -4px));
     transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
   }
 
   :host-context([dir='rtl']) #backgroundClouds {
-    transform: translateX(calc(var(--privacy-guide-step) * 10px));
+    transform: translateX(calc(var(--privacy-guide-step) * 4px));
   }
 
   #backgroundHills {
-    transform: translateX(calc(var(--privacy-guide-step) * -5px));
+    transform: translateX(calc(var(--privacy-guide-step) * -2px));
     transition: transform 300ms cubic-bezier(.4, 0, .2, 1);
   }
 
   :host-context([dir='rtl']) #backgroundHills {
-    transform: translateX(calc(var(--privacy-guide-step) * 5px));
+    transform: translateX(calc(var(--privacy-guide-step) * 2px));
   }
 </style>
 <div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard"
