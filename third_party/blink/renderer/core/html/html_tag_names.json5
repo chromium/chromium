@@ -286,6 +286,12 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
+      name: "listbox",
+      interfaceName: "HTMLListboxElement",
+      runtimeEnabled: "HTMLSelectListElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
+    },
+    {
       name: "listing",
       interfaceName: "HTMLPreElement",
     },

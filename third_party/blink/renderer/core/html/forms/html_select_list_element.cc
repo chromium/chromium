@@ -159,6 +159,8 @@ void HTMLSelectListElement::SelectMutationCallback::DidChangeChildren(
 
         if (element->HasTagName(html_names::kSelectedoptionTag)) {
           select_->UpdateSelectedValuePart();
+        } else if (IsA<HTMLListboxElement>(element)) {
+          select_->UpdateListboxPart();
         }
       }
     }
@@ -295,7 +297,8 @@ void HTMLSelectListElement::ManuallyAssignSlots() {
     if (auto* element = DynamicTo<Element>(node)) {
       if (!explicit_button && element->SlotName() == kButtonPartName) {
         explicit_button = element;
-      } else if (!listbox && element->SlotName() == kListboxPartName) {
+      } else if (!listbox && (element->SlotName() == kListboxPartName ||
+                              IsA<HTMLListboxElement>(element))) {
         listbox = element;
       } else if (!selected_value &&
                  element->SlotName() == kSelectedValuePartName) {
@@ -696,8 +699,15 @@ bool HTMLSelectListElement::IsValidButtonPart(const Node* node,
 bool HTMLSelectListElement::IsValidListboxPart(const Node* node,
                                                bool show_warning) const {
   auto* element = DynamicTo<HTMLElement>(node);
-  if (!element ||
-      element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
+  if (!element) {
+    return false;
+  }
+
+  if (IsA<HTMLListboxElement>(element) && element->parentNode() == this) {
+    return true;
+  }
+
+  if (element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
     return false;
   }
 
@@ -727,6 +737,7 @@ bool HTMLSelectListElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
+  // We only get here if behavior=listbox.
   return true;
 }
 

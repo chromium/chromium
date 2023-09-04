@@ -114,7 +114,8 @@ selectlist option:checked:disabled {
 }
 
 selectlist::-internal-selectlist-listbox,
-selectlist::-internal-selectlist-preview {
+selectlist::-internal-selectlist-preview,
+selectlist > listbox {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
@@ -123,7 +124,8 @@ selectlist::-internal-selectlist-preview {
   padding: 0.25em 0;
 }
 
-selectlist::-internal-selectlist-listbox {
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox {
   background-color: Field;
 }
 
@@ -132,14 +134,16 @@ selectlist::-internal-selectlist-listbox {
  * provided from an outer tree scope. */
 selectlist [behavior=listbox],
 selectlist::-internal-selectlist-listbox,
-selectlist::-internal-selectlist-preview {
+selectlist::-internal-selectlist-preview,
+selectlist > listbox {
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
 }
 
 selectlist [behavior=listbox],
-selectlist::-internal-selectlist-listbox {
+selectlist::-internal-selectlist-listbox,
+selectlist > listbox {
   min-block-size: 1lh;
   position-fallback: -internal-selectlist-listbox-default-fallbacks;
 }
@@ -165,3 +169,31 @@ selectlist::-internal-selectlist-preview {
   background-color: -internal-light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
 }
 
+/* this is a copy of the [popover] styles from html.css. When this gets
+ * merged with html.css, the rules can be combined. */
+selectlist > listbox {
+  position: fixed;
+  inset: auto;
+  width: fit-content;
+  height: fit-content;
+  margin: 0;
+  border: solid;
+  padding: 0.25em;
+  overflow: auto;
+  color: CanvasText;
+  background-color: Canvas;
+}
+selectlist > listbox:not(:popover-open) {
+  display: none;
+}
+selectlist > listbox:popover-open {
+  overlay: auto !important;
+}
+selectlist > listbox:-internal-popover-in-top-layer::backdrop {
+  /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
+  position: fixed;
+  inset: 0;
+  /* Specific to [popover]: */
+  pointer-events: none !important;
+  background-color: transparent;
+}

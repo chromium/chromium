@@ -179,6 +179,8 @@ blink_core_sources_html = [
   "forms/html_label_element.h",
   "forms/html_legend_element.cc",
   "forms/html_legend_element.h",
+  "forms/html_listbox_element.cc",
+  "forms/html_listbox_element.h",
   "forms/html_opt_group_element.cc",
   "forms/html_opt_group_element.h",
   "forms/html_option_element.cc",
