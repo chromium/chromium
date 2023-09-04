@@ -328,5 +328,16 @@ const FeatureParam<bool> kPartialLowEndModeExcludePartitionAllocSupport{
     false};
 #endif
 
+BASE_FEATURE(kEnableConfigurableThreadCacheMultiplier,
+             "EnableConfigurableThreadCacheMultiplier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<double> kThreadCacheMultiplier{
+    &kEnableConfigurableThreadCacheMultiplier, "ThreadCacheMultiplier", 2.};
+
+const base::FeatureParam<double> kThreadCacheMultiplierForAndroid{
+    &kEnableConfigurableThreadCacheMultiplier,
+    "ThreadCacheMultiplierForAndroid", 1.};
+
 }  // namespace features
 }  // namespace base

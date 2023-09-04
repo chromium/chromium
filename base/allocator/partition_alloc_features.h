@@ -192,6 +192,11 @@ extern const base::FeatureParam<bool>
 inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
     "BackupRefPtrRendererLive";
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
+extern const BASE_EXPORT base::FeatureParam<double> kThreadCacheMultiplier;
+extern const BASE_EXPORT base::FeatureParam<double>
+    kThreadCacheMultiplierForAndroid;
+
 }  // namespace features
 }  // namespace base
 

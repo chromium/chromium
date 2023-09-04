@@ -1283,14 +1283,30 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   base::allocator::StartThreadCachePeriodicPurge();
 
+  if (base::FeatureList::IsEnabled(
+          base::features::kEnableConfigurableThreadCacheMultiplier)) {
+    // If kEnableConfigurableThreadCacheMultiplier is enabled, override the
+    // multiplier value with the corresponding feature param.
 #if BUILDFLAG(IS_ANDROID)
-  // Lower thread cache limits to avoid stranding too much memory in the caches.
-  if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
-          features::kPartialLowEndModeExcludePartitionAllocSupport)) {
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
-  }
+        base::features::kThreadCacheMultiplierForAndroid.Get());
+#else   // BUILDFLAG(IS_ANDROID)
+    ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
+        base::features::kThreadCacheMultiplier.Get());
 #endif  // BUILDFLAG(IS_ANDROID)
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    // If kEnableConfigurableThreadCacheMultiplier is not enabled, lower
+    // thread cache limits on Android low end device to avoid stranding too much
+    // memory in the caches.
+    if (SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled(
+            features::kPartialLowEndModeExcludePartitionAllocSupport)) {
+      ::partition_alloc::ThreadCacheRegistry::Instance()
+          .SetThreadCacheMultiplier(
+              ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
 
   // Renderer processes are more performance-sensitive, increase thread cache
   // limits.
