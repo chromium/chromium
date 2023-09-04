@@ -653,8 +653,8 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
       continue;
     }
 
-    users_.push_back(
-        CreateUserFromDeviceLocalAccount(account_id, type).release());
+    user_storage_.push_back(CreateUserFromDeviceLocalAccount(account_id, type));
+    users_.push_back(user_storage_.back().get());
   }
 }
 
@@ -708,24 +708,21 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
                                             user_manager::kRegularUsersPref);
     prefs_users_update->clear();
-    for (user_manager::UserList::iterator it = users_.begin();
-         it != users_.end();) {
-      const AccountId account_id = (*it)->GetAccountId();
-      if ((*it)->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
+    // Take snapshot because DeleteUser called in the loop will update it.
+    std::vector<user_manager::User*> users = users_;
+    for (user_manager::User* user : users) {
+      const AccountId account_id = user->GetAccountId();
+      if (user->HasGaiaAccount() && account_id != GetOwnerAccountId() &&
           IsEphemeralAccountId(account_id)) {
         user_manager::UserManager::Get()->NotifyUserToBeRemoved(account_id);
         RemoveNonCryptohomeData(account_id);
-        DeleteUser(*it);
+        DeleteUser(user);
         user_manager::UserManager::Get()->NotifyUserRemoved(
             account_id,
             user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED);
-        it = users_.erase(it);
         changed = true;
-      } else {
-        if ((*it)->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-          prefs_users_update->Append(account_id.GetUserEmail());
-        }
-        ++it;
+      } else if (user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
+        prefs_users_update->Append(account_id.GetUserEmail());
       }
     }
   }
@@ -1001,15 +998,15 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
   }
 
   // Remove the old device local accounts from the user list.
-  for (user_manager::UserList::iterator it = users_.begin();
-       it != users_.end();) {
-    if ((*it)->IsDeviceLocalAccount()) {
-      if (*it != GetActiveUser()) {
-        DeleteUser(*it);
+  // Take snapshot because DeleteUser will update |user_|.
+  std::vector<user_manager::User*> users = users_;
+  for (user_manager::User* user : users) {
+    if (user->IsDeviceLocalAccount()) {
+      if (user != GetActiveUser()) {
+        DeleteUser(user);
+      } else {
+        base::Erase(users_, user);
       }
-      it = users_.erase(it);
-    } else {
-      ++it;
     }
   }
 
@@ -1024,10 +1021,9 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
             active_user->GetAccountId()) {
       users_.insert(users_.begin(), active_user);
     } else {
-      users_.insert(users_.begin(),
-                    CreateUserFromDeviceLocalAccount(
-                        AccountId::FromUserEmail(account.user_id), account.type)
-                        .release());
+      user_storage_.push_back(CreateUserFromDeviceLocalAccount(
+          AccountId::FromUserEmail(account.user_id), account.type));
+      users_.insert(users_.begin(), user_storage_.back().get());
     }
     if (account.type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
         account.type == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {

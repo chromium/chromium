@@ -62,12 +62,14 @@ const User* FakeUserManager::AddUser(const AccountId& account_id) {
 
 const User* FakeUserManager::AddChildUser(const AccountId& account_id) {
   User* user = User::CreateRegularUser(account_id, USER_TYPE_CHILD);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
 const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
   User* user = User::CreateGuestUser(account_id);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -75,6 +77,7 @@ const User* FakeUserManager::AddGuestUser(const AccountId& account_id) {
 const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   User* user = User::CreateKioskAppUser(account_id);
   user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -84,14 +87,15 @@ const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
   User* user = User::CreateRegularUser(account_id, USER_TYPE_REGULAR);
   user->SetAffiliation(is_affiliated);
   user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
 
 const user_manager::User* FakeUserManager::AddPublicAccountUser(
     const AccountId& account_id) {
-  user_manager::User* user =
-      user_manager::User::CreatePublicAccountUserForTesting(account_id);
+  User* user = User::CreatePublicAccountUserForTesting(account_id);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -100,11 +104,7 @@ void FakeUserManager::RemoveUserFromList(const AccountId& account_id) {
   const UserList::iterator it =
       base::ranges::find(users_, account_id, &User::GetAccountId);
   if (it != users_.end()) {
-    if (primary_user_ == *it)
-      primary_user_ = nullptr;
-    if (active_user_ != *it)
-      delete *it;
-    users_.erase(it);
+    DeleteUser(*it);
   }
 }
 

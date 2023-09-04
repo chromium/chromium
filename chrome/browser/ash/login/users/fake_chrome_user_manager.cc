@@ -118,6 +118,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
 
   if (profile) {
@@ -134,6 +135,7 @@ user_manager::User* FakeChromeUserManager::AddKioskAppUser(
   user_manager::User* user = user_manager::User::CreateKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -144,6 +146,7 @@ user_manager::User* FakeChromeUserManager::AddArcKioskAppUser(
       user_manager::User::CreateArcKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -154,6 +157,7 @@ user_manager::User* FakeChromeUserManager::AddWebKioskAppUser(
       user_manager::User::CreateWebKioskAppUser(account_id);
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -163,6 +167,7 @@ user_manager::User* FakeChromeUserManager::AddGuestUser() {
       user_manager::User::CreateGuestUser(user_manager::GuestAccountId());
   user->set_username_hash(
       user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()));
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -178,6 +183,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_PROFILE, false);
+  user_storage_.emplace_back(user);
   users_.push_back(user);
   return user;
 }
@@ -258,13 +264,7 @@ void FakeChromeUserManager::RemoveUserFromList(const AccountId& account_id) {
   const user_manager::UserList::iterator it =
       base::ranges::find(users_, account_id, &user_manager::User::GetAccountId);
   if (it != users_.end()) {
-    if (primary_user_ == *it) {
-      primary_user_ = nullptr;
-    }
-    if (active_user_ != *it) {
-      delete *it;
-    }
-    users_.erase(it);
+    DeleteUser(*it);
   }
 }
 

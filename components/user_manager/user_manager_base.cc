@@ -14,6 +14,7 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -164,18 +165,7 @@ UserManagerBase::UserManagerBase(
   }
 }
 
-UserManagerBase::~UserManagerBase() {
-  // Can't use STLDeleteElements because of the private destructor of User.
-  for (UserList::iterator it = users_.begin(); it != users_.end();
-       it = users_.erase(it)) {
-    DeleteUser(*it);
-  }
-  // These are pointers to the same User instances that were in users_ list.
-  logged_in_users_.clear();
-  lru_logged_in_users_.clear();
-
-  DeleteUser(active_user_);
-}
+UserManagerBase::~UserManagerBase() = default;
 
 void UserManagerBase::Shutdown() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
@@ -260,8 +250,11 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       break;
 
     case USER_TYPE_PUBLIC_ACCOUNT:
-      PublicAccountUserLoggedIn(
-          user ? user : User::CreatePublicAccountUser(account_id));
+      if (!user) {
+        user = User::CreatePublicAccountUser(account_id);
+        user_storage_.emplace_back(user);
+      }
+      PublicAccountUserLoggedIn(user);
       break;
 
     case USER_TYPE_KIOSK_APP:
@@ -1035,6 +1028,8 @@ void UserManagerBase::EnsureUsersLoaded() {
     user->set_force_online_signin(LoadForceOnlineSignin(*it));
     KnownUser known_user(local_state_.get());
     user->set_using_saml(known_user.IsUsingSAML(*it));
+
+    user_storage_.emplace_back(user);
     users_.push_back(user);
   }
 
@@ -1100,7 +1095,9 @@ User* UserManagerBase::FindUserInListAndModify(const AccountId& account_id) {
 
 void UserManagerBase::GuestUserLoggedIn() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  active_user_ = User::CreateGuestUser(GuestAccountId());
+  auto* user = User::CreateGuestUser(GuestAccountId());
+  user_storage_.emplace_back(user);
+  active_user_ = user;
 }
 
 void UserManagerBase::AddUserRecord(User* user) {
@@ -1129,7 +1126,9 @@ void UserManagerBase::RegularUserLoggedIn(const AccountId& account_id,
   // If the user was not found on the user list, create a new user.
   SetIsCurrentUserNew(!active_user_);
   if (IsCurrentUserNew()) {
-    active_user_ = User::CreateRegularUser(account_id, user_type);
+    auto* user = User::CreateRegularUser(account_id, user_type);
+    user_storage_.emplace_back(user);
+    active_user_ = user;
     SaveUserType(active_user_);
 
     active_user_->set_oauth_token_status(LoadUserOAuthStatus(account_id));
@@ -1152,7 +1151,9 @@ void UserManagerBase::RegularUserLoggedInAsEphemeral(
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   SetIsCurrentUserNew(true);
   is_current_user_ephemeral_regular_user_ = true;
-  active_user_ = User::CreateRegularUser(account_id, user_type);
+  auto* user = User::CreateRegularUser(account_id, user_type);
+  user_storage_.emplace_back(user);
+  active_user_ = user;
   KnownUser(local_state_.get())
       .SetIsEphemeralUser(active_user_->GetAccountId(), true);
 }
@@ -1346,10 +1347,17 @@ void UserManagerBase::DoUpdateAccountLocale(
 }
 
 void UserManagerBase::DeleteUser(User* user) {
-  const bool is_active_user = (user == active_user_);
-  delete user;
-  if (is_active_user)
+  if (active_user_ == user) {
     active_user_ = nullptr;
+  }
+  if (primary_user_ == user) {
+    primary_user_ = nullptr;
+  }
+  base::Erase(users_, user);
+  base::Erase(logged_in_users_, user);
+  base::Erase(lru_logged_in_users_, user);
+
+  base::EraseIf(user_storage_, [user](auto& ptr) { return ptr.get() == user; });
 }
 
 // TODO(crbug/1189715): Remove dormant legacy supervised user cryptohomes. After

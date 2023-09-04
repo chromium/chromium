@@ -304,6 +304,11 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
 
+  // A list of User instances taking their ownership.
+  // Following members can refer User instances in this vector.
+  // Thus, they must be listed below to deal with raw_ptr rule.
+  std::vector<std::unique_ptr<User>> user_storage_;
+
   // The logged-in user that is currently active in current session.
   // NULL until a user has logged in, then points to one
   // of the User instances in |users_|, the |guest_user_| instance or an
