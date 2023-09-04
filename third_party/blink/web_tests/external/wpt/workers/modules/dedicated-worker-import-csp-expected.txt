@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS worker-src 'self' directive should disallow cross origin static import.
+FAIL worker-src * directive should allow cross origin static import. assert_array_equals: expected property 0 to be "export-on-load-script.js" but got "ERROR" (expected array ["export-on-load-script.js"] got ["ERROR"])
+PASS script-src 'self' directive should disallow cross origin static import.
+FAIL script-src * directive should allow cross origin static import. assert_array_equals: expected property 0 to be "export-on-load-script.js" but got "ERROR" (expected array ["export-on-load-script.js"] got ["ERROR"])
+FAIL worker-src * directive should override script-src 'self' directive and allow cross origin static import. assert_array_equals: expected property 0 to be "export-on-load-script.js" but got "ERROR" (expected array ["export-on-load-script.js"] got ["ERROR"])
+PASS worker-src 'self' directive should override script-src * directive and disallow cross origin static import.
+FAIL script-src-elem 'self' directive should not take effect on static import. assert_array_equals: expected property 0 to be "export-on-load-script.js" but got "ERROR" (expected array ["export-on-load-script.js"] got ["ERROR"])
+PASS script-src 'self' directive should disallow cross origin dynamic import.
+PASS script-src-elem 'self' directive should disallow cross origin dynamic import.
+PASS script-src * directive should allow cross origin dynamic import.
+PASS worker-src 'self' directive should not take effect on dynamic import.
+Harness: the test ran to completion.
+

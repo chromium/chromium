@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS getTotalLength() should return nonzero value in a c-v:hidden subtree.
+PASS getPointAtLength() should return nonzero values in a c-v:hidden subtree.
+FAIL isPointInFill() should return true in a c-v:hidden subtree. Failed to execute 'isPointInFill' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+FAIL isPointInStroke() should return true in a c-v:hidden subtree. Failed to execute 'isPointInStroke' on 'SVGGeometryElement': parameter 1 is not of type 'SVGPoint'.
+PASS checkIntersection() should return true in a c-v:hidden subtree.
+FAIL checkEnclosure() should return true in a c-v:hidden subtree. assert_true: enclosure expected true got false
+PASS getIntersectionList() should return items in a c-v:hidden subtree.
+FAIL getEnclosureList() should return items in a c-v:hidden subtree. assert_greater_than: intersection expected a number greater than 0 but got 0
+PASS path getBBox() should return nonzero values in a c-v:hidden subtree.
+Harness: the test ran to completion.
+

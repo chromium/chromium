@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Static import.
+FAIL Static import (cross-origin). assert_true: expected true got false
+PASS Static import (redirect).
+PASS Nested static import.
+PASS Static import and then dynamic import.
+PASS Dynamic import.
+PASS Nested dynamic import.
+PASS Dynamic import and then static import.
+PASS eval(import()).
+Harness: the test ran to completion.
+

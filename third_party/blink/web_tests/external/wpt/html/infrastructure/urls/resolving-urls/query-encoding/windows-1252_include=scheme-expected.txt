@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 PASS Scheme ftp (getting <a>.href)
 PASS Scheme file (getting <a>.href)
-FAIL Scheme gopher (getting <a>.href) assert_true: expected substring %E5 got gopher://example.invalid/?x=%C3%A5 expected true got false
 PASS Scheme http (getting <a>.href)
 PASS Scheme https (getting <a>.href)
 FAIL Scheme ws (getting <a>.href) assert_true: expected substring %C3%A5 got ws://example.invalid/?x=%E5 expected true got false
 FAIL Scheme wss (getting <a>.href) assert_true: expected substring %C3%A5 got wss://example.invalid/?x=%E5 expected true got false
+PASS Scheme gopher (getting <a>.href)
 PASS Scheme mailto (getting <a>.href)
 PASS Scheme data (getting <a>.href)
 PASS Scheme javascript (getting <a>.href)

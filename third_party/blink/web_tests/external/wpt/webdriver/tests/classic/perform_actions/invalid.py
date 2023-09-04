@@ -2,6 +2,8 @@
 
 import pytest
 
+from webdriver.error import InvalidArgumentException
+
 from tests.support.asserts import assert_error
 from . import perform_actions
 
@@ -821,3 +823,16 @@ def test_wheel_action_scroll_origin_element_invalid_value(session):
     ]
     response = perform_actions(session, actions)
     assert_error(response, "no such element")
+
+
+@pytest.mark.parametrize("missing", ["x", "y", "deltaX", "deltaY"])
+def test_wheel_action_scroll_missing_property(
+    session, test_actions_scroll_page, wheel_chain, missing
+):
+    target = session.find.css("#scrollable", all=False)
+
+    actions = wheel_chain.scroll(0, 0, 5, 10, origin=target)
+    del actions._actions[-1][missing]
+
+    with pytest.raises(InvalidArgumentException):
+        actions.perform()

@@ -1,14 +1,14 @@
 This is a testharness.js-based test.
 PASS loading css <link>
-FAIL loading image <img src> assert_equals: expected substring %26%23229%3B got unknown query expected (undefined) undefined but got (number) 256
-FAIL loading image <embed src> assert_equals: expected substring %26%23229%3B got default intrinsic width expected (undefined) undefined but got (number) 300
-FAIL loading image <object data> assert_equals: expected substring %26%23229%3B got default intrinsic width expected (undefined) undefined but got (number) 300
-FAIL loading image <input src> assert_equals: expected substring %26%23229%3B got unknown query expected (undefined) undefined but got (number) 256
-FAIL loading image <video poster> assert_equals: expected substring %26%23229%3B got unknown query expected (undefined) undefined but got (number) 256
-FAIL loading video <video> assert_equals: expected substring %26%23229%3B got undefined expected (undefined) undefined but got (number) 614
-FAIL loading video <video><source> assert_equals: expected substring %26%23229%3B got undefined expected (undefined) undefined but got (number) 614
-FAIL loading video <audio> assert_equals: expected substring %26%23229%3B got undefined expected (undefined) undefined but got (number) 614
-FAIL loading video <audio><source> assert_equals: expected substring %26%23229%3B got undefined expected (undefined) undefined but got (number) 614
+PASS loading image <img src>
+FAIL loading image <embed src> assert_equals: expected substring %26%23229%3B got default intrinsic width expected 1 but got 300
+FAIL loading image <object data> assert_equals: expected substring %26%23229%3B got default intrinsic width expected 1 but got 300
+PASS loading image <input src>
+PASS loading image <video poster>
+FAIL loading video <video> assert_equals: expected substring %26%23229%3B got Infinity expected 3 but got Infinity
+FAIL loading video <video><source> assert_equals: expected substring %26%23229%3B got Infinity expected 3 but got Infinity
+FAIL loading video <audio> assert_equals: expected substring %26%23229%3B got Infinity expected 3 but got Infinity
+FAIL loading video <audio><source> assert_equals: expected substring %26%23229%3B got Infinity expected 3 but got Infinity
 PASS loading webvtt <track>
 Harness: the test ran to completion.
 
