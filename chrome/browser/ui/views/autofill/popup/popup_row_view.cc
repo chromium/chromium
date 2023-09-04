@@ -143,6 +143,12 @@ void PopupRowView::SetCellPermanentlyHighlighted(CellType type,
   }
 }
 
+gfx::RectF PopupRowView::GetCellBounds(CellType cell) const {
+  const PopupCellView* view = GetCellView(cell);
+  // The view is expected to be present.
+  return gfx::RectF(view->GetBoundsInScreen());
+}
+
 bool PopupRowView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   // Some cells may want to define their own behavior.
@@ -193,13 +199,17 @@ void PopupRowView::SelectPreviousCell() {
   }
 }
 
-PopupCellView* PopupRowView::GetCellView(CellType type) {
+const PopupCellView* PopupRowView::GetCellView(CellType type) const {
   switch (type) {
     case CellType::kContent:
       return content_view_.get();
     case CellType::kControl:
       return control_view_.get();
   }
+}
+
+PopupCellView* PopupRowView::GetCellView(CellType type) {
+  return const_cast<PopupCellView*>(std::as_const(*this).GetCellView(type));
 }
 
 BEGIN_METADATA(PopupRowView, views::View)

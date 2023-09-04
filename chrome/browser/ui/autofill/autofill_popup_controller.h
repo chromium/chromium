@@ -98,6 +98,9 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions) = 0;
 
+  // Hides open by `OpenSubPopup()` popup, noop if there is no open sub-popup.
+  virtual void HideSubPopup() = 0;
+
  protected:
   ~AutofillPopupController() override = default;
 };

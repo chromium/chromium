@@ -16,6 +16,7 @@ namespace autofill {
 
 void TestAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
+    bool is_permanently_highlighted,
     ui::AXNodeData* node_data) const {
   node_data->role = ax::mojom::Role::kListBoxOption;
   node_data->SetNameChecked(kVoiceOverName);

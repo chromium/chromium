@@ -80,7 +80,10 @@ enum class PopupHidingReason {
   // No frame currently has focus. This case is caught for safety because it
   // might be reachable due to race conditions.
   kNoFrameHasFocus = 23,
-  kMaxValue = kNoFrameHasFocus
+  // Sub-popup related reason, used when closing a sub-popup (e.g. by moving
+  // the mouse out of the suggestion control or by the keyboard navigation).
+  kExpandedSuggestionCollapsedSubPopup = 24,
+  kMaxValue = kExpandedSuggestionCollapsedSubPopup
 };
 
 }  // namespace autofill

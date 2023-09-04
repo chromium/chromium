@@ -578,5 +578,8 @@
     <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
       Cancel
     </message>
+    <message name="IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME" desc="Autofill desktop popup: the a11y name for the expandable suggestion controll." translateable="false">
+      Expand suggestion
+    </message>
   </if>
 </grit-part>

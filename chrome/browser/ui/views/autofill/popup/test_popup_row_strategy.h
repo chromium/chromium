@@ -21,6 +21,7 @@ class TestAccessibilityDelegate : public PopupCellView::AccessibilityDelegate {
   ~TestAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
+                             bool is_permanently_highlighted,
                              ui::AXNodeData* node_data) const override;
 };
 

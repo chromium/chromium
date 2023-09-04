@@ -44,8 +44,9 @@ class PopupCellView : public views::View {
     virtual ~AccessibilityDelegate() = default;
 
     // Sets the a11y information in `node_data` based on whether the cell in
-    // question `is_selected` or not.
+    // question `is_selected` or not, or `is_permanently_highlighted` or not.
     virtual void GetAccessibleNodeData(bool is_selected,
+                                       bool is_permanently_highlighted,
                                        ui::AXNodeData* node_data) const = 0;
   };
 

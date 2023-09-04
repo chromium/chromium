@@ -67,8 +67,12 @@ void PopupCellView::SetSelected(bool selected) {
 }
 
 void PopupCellView::SetPermanentlyHighlighted(bool permanently_highlighted) {
-  permanently_highlighted_ = permanently_highlighted;
-  RefreshStyle();
+  if (permanently_highlighted_ != permanently_highlighted) {
+    permanently_highlighted_ = permanently_highlighted;
+    RefreshStyle();
+    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
+                             /*send_native_event=*/true);
+  }
 }
 
 bool PopupCellView::IsHighlighted() const {
@@ -217,7 +221,8 @@ bool PopupCellView::HandleAccessibleAction(
 
 void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (a11y_delegate_) {
-    a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
+    a11y_delegate_->GetAccessibleNodeData(GetSelected(),
+                                          permanently_highlighted_, node_data);
   }
 }
 

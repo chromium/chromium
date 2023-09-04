@@ -200,6 +200,10 @@ AutofillKeyboardAccessoryAdapter::OpenSubPopup(
   return nullptr;
 }
 
+void AutofillKeyboardAccessoryAdapter::HideSubPopup() {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
+}
+
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(
     int index,
     std::u16string* title,

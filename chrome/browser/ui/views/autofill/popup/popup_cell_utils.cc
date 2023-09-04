@@ -104,13 +104,6 @@ std::u16string GetIconAccessibleName(const std::string& icon_text) {
   return std::u16string();
 }
 
-std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
-    const gfx::VectorIcon& vector_icon,
-    int icon_size = kIconSize) {
-  return std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
-}
-
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
@@ -558,6 +551,13 @@ void AddSuggestionStrategyContentCellChildren(
 
   // Prepare the callbacks to the controller.
   AddCallbacksToContentView(controller, line_number, *view);
+}
+
+std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
+    const gfx::VectorIcon& vector_icon,
+    int icon_size = kIconSize) {
+  return std::make_unique<views::ImageView>(
+      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
 }
 
 }  // namespace autofill::popup_cell_utils

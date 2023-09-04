@@ -98,7 +98,7 @@ class MockAutofillPopupController
               (const gfx::RectF& anchor_bounds,
                std::vector<Suggestion> suggestions),
               (override));
-
+  MOCK_METHOD(void, HideSubPopup, (), (override));
   void set_suggestions(const std::vector<PopupItemId>& ids) {
     suggestions_.clear();
 

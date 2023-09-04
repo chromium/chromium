@@ -113,6 +113,9 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     web_contents_->Resize({0, 0, 1024, 768});
     ON_CALL(autofill_popup_controller_, GetWebContents())
         .WillByDefault(Return(web_contents_.get()));
+    ON_CALL(autofill_popup_controller_, OpenSubPopup)
+        .WillByDefault(Return(autofill_popup_sub_controller_.GetWeakPtr()));
+
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
@@ -223,6 +226,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<PopupViewViews> view_;
   NiceMock<MockAutofillPopupController> autofill_popup_controller_;
+  NiceMock<MockAutofillPopupController> autofill_popup_sub_controller_;
 };
 
 class PopupViewViewsTestWithAnyPopupItemId

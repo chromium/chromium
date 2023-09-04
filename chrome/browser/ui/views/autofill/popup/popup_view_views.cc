@@ -208,13 +208,15 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
     new_row.SetSelectedCell(cell_index->second);
     new_row.ScrollViewToVisible();
 
-    if (cell_index->second == PopupRowView::CellType::kControl &&
-        !controller_->GetSuggestionAt(cell_index->first).children.empty()) {
-      open_sub_popup_timer_.Start(
-          FROM_HERE, kOpenSubPopupDelay,
-          base::BindOnce(&PopupViewViews::SetCellWithOpenSubPopup,
-                         weak_ptr_factory_.GetWeakPtr(), cell_index));
-    }
+    bool can_open_sub_popup =
+        cell_index->second == PopupRowView::CellType::kControl &&
+        !controller_->GetSuggestionAt(cell_index->first).children.empty();
+    absl::optional<CellIndex> open_sub_popup_cell =
+        can_open_sub_popup ? cell_index : absl::nullopt;
+    open_sub_popup_timer_.Start(
+        FROM_HERE, kOpenSubPopupDelay,
+        base::BindOnce(&PopupViewViews::SetCellWithOpenSubPopup,
+                       weak_ptr_factory_.GetWeakPtr(), open_sub_popup_cell));
 
   } else {
     row_with_selected_cell_ = absl::nullopt;
@@ -703,6 +705,7 @@ void PopupViewViews::SetCellWithOpenSubPopup(
 
   // Close previously open sub-popup if any.
   if (open_sub_popup_cell_ && HasPopupRowViewAt(open_sub_popup_cell_->first)) {
+    controller_->HideSubPopup();
     GetPopupRowViewAt(open_sub_popup_cell_->first)
         .SetCellPermanentlyHighlighted(open_sub_popup_cell_->second, false);
     open_sub_popup_cell_ = absl::nullopt;
@@ -710,9 +713,19 @@ void PopupViewViews::SetCellWithOpenSubPopup(
 
   // Open a sub-popup on the new cell if provided.
   if (cell_index && HasPopupRowViewAt(cell_index->first)) {
-    GetPopupRowViewAt(cell_index->first)
-        .SetCellPermanentlyHighlighted(cell_index->second, true);
-    open_sub_popup_cell_ = cell_index;
+    const Suggestion& suggestion =
+        controller_->GetSuggestionAt(cell_index->first);
+
+    CHECK(!suggestion.children.empty());
+    CHECK(cell_index->second == PopupRowView::CellType::kControl);
+
+    PopupRowView& row = GetPopupRowViewAt(cell_index->first);
+
+    if (controller_->OpenSubPopup(row.GetCellBounds(cell_index->second),
+                                  suggestion.children)) {
+      row.SetCellPermanentlyHighlighted(cell_index->second, true);
+      open_sub_popup_cell_ = cell_index;
+    }
   }
 }
 

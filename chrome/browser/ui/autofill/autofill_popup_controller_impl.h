@@ -125,6 +125,7 @@ class AutofillPopupControllerImpl
   base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions) override;
+  void HideSubPopup() override;
 
   // Disables show thresholds. See the documentation of the member for details.
   void DisableThresholdForTesting(bool disable_threshold) {
@@ -322,7 +323,10 @@ class AutofillPopupControllerImpl
   // Parent's popup controller. The root popup doesn't have a parent, but in
   // sub-popups it must be present.
   const absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>>
-      parent_;
+      parent_controller_;
+
+  // The open sub-popup controller if any, `nullptr` otherwise.
+  base::WeakPtr<AutofillPopupController> sub_popup_controller_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

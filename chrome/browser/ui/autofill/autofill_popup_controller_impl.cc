@@ -125,7 +125,7 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
       delegate_(delegate),
       show_pwd_migration_warning_callback_(
           std::move(show_pwd_migration_warning_callback)),
-      parent_(parent) {
+      parent_controller_(parent) {
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
@@ -182,9 +182,10 @@ void AutofillPopupControllerImpl::Show(
   if (view_) {
     OnSuggestionsChanged();
   } else {
-    bool has_parent = parent_ && parent_->get();
-    view_ = has_parent ? parent_->get()->CreateSubPopupView(GetWeakPtr())
-                       : AutofillPopupView::Create(GetWeakPtr());
+    bool has_parent = parent_controller_ && parent_controller_->get();
+    view_ = has_parent
+                ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
+                : AutofillPopupView::Create(GetWeakPtr());
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.
@@ -479,9 +480,17 @@ AutofillPopupControllerImpl::OpenSubPopup(const gfx::RectF& anchor_bounds,
 
   // Show() can fail and cause controller deletion. Therefore store the weak
   // pointer before, so that this method returns null when that happens.
-  base::WeakPtr<AutofillPopupController> result = controller->GetWeakPtr();
+  sub_popup_controller_ = controller->GetWeakPtr();
   controller->Show(std::move(suggestions), trigger_source_);
-  return result;
+  return sub_popup_controller_;
+}
+
+void AutofillPopupControllerImpl::HideSubPopup() {
+  if (sub_popup_controller_) {
+    sub_popup_controller_->Hide(
+        PopupHidingReason::kExpandedSuggestionCollapsedSubPopup);
+    sub_popup_controller_ = nullptr;
+  }
 }
 
 void AutofillPopupControllerImpl::OnEnterPictureInPicture() {
@@ -615,6 +624,8 @@ void AutofillPopupControllerImpl::ClearState() {
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
+  HideSubPopup();
+
   // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
   // prevents recursive calls triggered by `view_->Hide()`
   // (crbug.com/1267047).

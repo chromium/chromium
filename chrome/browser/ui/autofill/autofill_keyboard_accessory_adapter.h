@@ -112,7 +112,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   base::WeakPtr<AutofillPopupController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions) override;
-
+  void HideSubPopup() override;
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;
