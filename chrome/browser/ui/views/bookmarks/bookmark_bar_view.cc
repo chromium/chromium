@@ -1897,8 +1897,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   if (node->is_url()) {
     // Themify chrome:// favicons and the default one. This is similar to
     // code in the tabstrip.
-    bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
-
+    bool themify_icon = favicon::ShouldThemifyFavicon(node->url());
     // TODO(crbug.com/1099602): BookmarkModel::GetFavicon should be updated to
     // support ImageModel.
     auto favicon = ui::ImageModel::FromImage(bookmark_model_->GetFavicon(node));

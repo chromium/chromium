@@ -189,18 +189,23 @@ void SaveFaviconEvenIfInIncognito(content::WebContents* contents) {
                                favicon_status.image);
 }
 
+bool ShouldThemifyFavicon(GURL url) {
+  if (!url.SchemeIs(content::kChromeUIScheme)) {
+    return false;
+  }
+  return url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
+         url.host_piece() != chrome::kChromeUIHelpHost &&
+         url.host_piece() != chrome::kChromeUIVersionHost &&
+         url.host_piece() != chrome::kChromeUINetExportHost &&
+         url.host_piece() != chrome::kChromeUINewTabHost &&
+         url.host_piece() != password_manager::kChromeUIPasswordManagerHost;
+}
+
 bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
   const GURL& virtual_url = entry->GetVirtualURL();
   const GURL& actual_url = entry->GetURL();
 
-  if (virtual_url.SchemeIs(content::kChromeUIScheme) &&
-      virtual_url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
-      virtual_url.host_piece() != chrome::kChromeUIHelpHost &&
-      virtual_url.host_piece() != chrome::kChromeUIVersionHost &&
-      virtual_url.host_piece() != chrome::kChromeUINetExportHost &&
-      virtual_url.host_piece() != chrome::kChromeUINewTabHost &&
-      virtual_url.host_piece() !=
-          password_manager::kChromeUIPasswordManagerHost) {
+  if (ShouldThemifyFavicon(virtual_url)) {
     return true;
   }
 
