@@ -1153,12 +1153,12 @@ export namespace Network {
 }
 export const ScriptCommandSchema = z.lazy(() =>
   z.union([
-    Script.AddPreloadScriptCommandSchema,
+    Script.AddPreloadScriptSchema,
     Script.CallFunctionSchema,
     Script.DisownSchema,
     Script.EvaluateSchema,
     Script.GetRealmsSchema,
-    Script.RemovePreloadScriptCommandSchema,
+    Script.RemovePreloadScriptSchema,
   ])
 );
 export const ScriptResultSchema = z.lazy(() =>
@@ -1893,7 +1893,7 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const AddPreloadScriptCommandSchema = z.lazy(() =>
+  export const AddPreloadScriptSchema = z.lazy(() =>
     z.object({
       method: z.literal('script.addPreloadScript'),
       params: Script.AddPreloadScriptParametersSchema,
@@ -1999,7 +1999,7 @@ export namespace Script {
   );
 }
 export namespace Script {
-  export const RemovePreloadScriptCommandSchema = z.lazy(() =>
+  export const RemovePreloadScriptSchema = z.lazy(() =>
     z.object({
       method: z.literal('script.removePreloadScript'),
       params: Script.RemovePreloadScriptParametersSchema,

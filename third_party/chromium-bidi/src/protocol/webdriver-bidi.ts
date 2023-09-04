@@ -919,12 +919,12 @@ export namespace Network {
   };
 }
 export type ScriptCommand =
-  | Script.AddPreloadScriptCommand
+  | Script.AddPreloadScript
   | Script.CallFunction
   | Script.Disown
   | Script.Evaluate
   | Script.GetRealms
-  | Script.RemovePreloadScriptCommand;
+  | Script.RemovePreloadScript;
 export type ScriptResult =
   | Script.AddPreloadScriptResult
   | Script.EvaluateResult
@@ -1476,7 +1476,7 @@ export namespace Script {
   export type Target = Script.RealmTarget | Script.ContextTarget;
 }
 export namespace Script {
-  export type AddPreloadScriptCommand = {
+  export type AddPreloadScript = {
     method: 'script.addPreloadScript';
     params: Script.AddPreloadScriptParameters;
   };
@@ -1564,7 +1564,7 @@ export namespace Script {
   };
 }
 export namespace Script {
-  export type RemovePreloadScriptCommand = {
+  export type RemovePreloadScript = {
     method: 'script.removePreloadScript';
     params: Script.RemovePreloadScriptParameters;
   };
