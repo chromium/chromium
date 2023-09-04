@@ -303,11 +303,13 @@ public class DirectWritingTriggerTest {
 
         Rect editableBounds = new Rect(0, 0, 20, 20);
         ArgumentCaptor<MotionEvent> eventReceived = ArgumentCaptor.forClass(MotionEvent.class);
-        mDwTrigger.onFocusedNodeChanged(editableBounds, true, mContainerView);
-        verify(mDwServiceCallback).updateEditableBounds(eq(editableBounds), any());
-        verify(mDwServiceBinder).updateEditableBounds(editableBounds, mContainerView);
+        mDwTrigger.onFocusedNodeChanged(editableBounds, true, mContainerView, 2, 5);
+        Rect scaledBounds = new Rect(editableBounds.left * 2, editableBounds.top * 2 + 5,
+                editableBounds.right * 2, editableBounds.bottom * 2 + 5);
+        verify(mDwServiceCallback).updateEditableBounds(eq(scaledBounds), any());
+        verify(mDwServiceBinder).updateEditableBounds(scaledBounds, mContainerView);
         verify(mDwServiceBinder)
-                .onStopRecognition(eventReceived.capture(), eq(editableBounds), eq(mContainerView));
+                .onStopRecognition(eventReceived.capture(), eq(scaledBounds), eq(mContainerView));
         assertEquals(eventReceived.getValue().getAction(), MotionEvent.ACTION_UP);
     }
 
@@ -323,7 +325,8 @@ public class DirectWritingTriggerTest {
         mDwTrigger.handleTouchEvent(me, mContainerView);
 
         Rect editableBounds = new Rect(0, 0, 20, 20);
-        mDwTrigger.onFocusedNodeChanged(editableBounds, false, mContainerView);
+        mDwTrigger.onFocusedNodeChanged(editableBounds, false, mContainerView, 1, 20);
+        editableBounds.offset(0, 20);
         verify(mDwServiceCallback).updateEditableBounds(eq(editableBounds), any());
         // Verify that hide DW toolbar is called and stop recognition is also called.
         verify(mDwServiceBinder).hideDWToolbar();

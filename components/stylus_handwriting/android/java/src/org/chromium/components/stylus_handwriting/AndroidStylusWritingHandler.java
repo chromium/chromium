@@ -6,10 +6,14 @@ package org.chromium.components.stylus_handwriting;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
@@ -132,5 +136,27 @@ public class AndroidStylusWritingHandler
         currentView.setPointerIcon(
                 PointerIcon.getSystemIcon(currentView.getContext(), sHandwritingPointerType));
         return true;
+    }
+
+    @Override
+    public EditorBoundsInfo onEditElementFocusedForStylusWriting(
+            Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
+        RectF bounds = new RectF(focusedEditBounds.left / scaleFactor,
+                focusedEditBounds.top / scaleFactor, focusedEditBounds.right / scaleFactor,
+                focusedEditBounds.bottom / scaleFactor);
+        return new EditorBoundsInfo.Builder()
+                .setEditorBounds(bounds)
+                .setHandwritingBounds(bounds)
+                .build();
+    }
+
+    @Override
+    public EditorBoundsInfo onFocusedNodeChanged(Rect editableBoundsOnScreenDip, boolean isEditable,
+            View currentView, float scaleFactor, int contentOffsetY) {
+        RectF bounds = new RectF(editableBoundsOnScreenDip);
+        return new EditorBoundsInfo.Builder()
+                .setEditorBounds(bounds)
+                .setHandwritingBounds(bounds)
+                .build();
     }
 }

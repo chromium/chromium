@@ -9,7 +9,10 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.EditorInfo;
+
+import androidx.annotation.Nullable;
 
 /**
  * Interface that provides Stylus handwriting to text input functionality in HTML edit fields. This
@@ -42,11 +45,15 @@ public interface StylusWritingHandler {
     /**
      * Notify focused node has changed in web page.
      *
-     * @param editableBounds the Editable element bounds Rect in pix
+     * @param editableBoundsOnScreenDip the Editable element bounds Rect in dip
      * @param isEditable     is true if focused node is of editable type.
      * @param currentView the {@link View} in which the focused node changed.
      */
-    default void onFocusedNodeChanged(Rect editableBounds, boolean isEditable, View currentView) {}
+    @Nullable
+    default EditorBoundsInfo onFocusedNodeChanged(Rect editableBoundsOnScreenDip,
+            boolean isEditable, View currentView, float scaleFactor, int contentOffsetY) {
+        return null;
+    }
 
     /**
      * Handle touch events if needed for stylus writing.
@@ -93,6 +100,9 @@ public interface StylusWritingHandler {
      * @param focusedEditBounds the input field bounds in view
      * @param cursorPosition the input cursor Position point in pix
      */
-    default void onEditElementFocusedForStylusWriting(
-            Rect focusedEditBounds, Point cursorPosition) {}
+    @Nullable
+    default EditorBoundsInfo onEditElementFocusedForStylusWriting(
+            Rect focusedEditBounds, Point cursorPosition, float scaleFactor, int contentOffsetY) {
+        return null;
+    }
 }
