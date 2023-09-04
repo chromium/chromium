@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/cpu.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -19,6 +20,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+namespace {
+
+constexpr wchar_t kHypervisorLogicalProcessorCounter[] =
+    L"\\Hyper-V Hypervisor Logical Processor(_Total)\\% Total Run Time";
+
+constexpr wchar_t kProcessorCounter[] =
+    L"\\Processor(_Total)\\% Processor Time";
+
+}  // namespace
 
 // Helper class that performs the actual I/O. It must run on a
 // SequencedTaskRunner that is properly configured for blocking I/O
@@ -98,9 +109,29 @@ CpuProbeWin::BlockingTaskRunnerHelper::GetPdhData() {
     if (!cpu_query_.is_valid())
       return absl::nullopt;
 
-    pdh_status = PdhAddEnglishCounter(cpu_query_.get(),
-                                      L"\\Processor(_Total)\\% Processor Time",
-                                      NULL, &cpu_percent_utilization_);
+    // When running in a VM, to provide a useful compute pressure signal, we
+    // must measure the usage of the physical CPU rather than the virtual CPU
+    // of the particular guest we are running in. The Microsoft documentation
+    // explains how to get this data when running under Hyper-V:
+    // https://learn.microsoft.com/en-us/windows-server/administration/performance-tuning/role/hyper-v-server/configuration#cpu-statistics
+    const bool is_running_in_vm = base::CPU().is_running_in_vm();
+    const auto* query_info = is_running_in_vm
+                                 ? kHypervisorLogicalProcessorCounter
+                                 : kProcessorCounter;
+    pdh_status = PdhAddEnglishCounter(cpu_query_.get(), query_info, NULL,
+                                      &cpu_percent_utilization_);
+
+    // When Chrome is running under a different hypervisor, we can add the
+    // Hyper-V performance counter successfully but it isn't available to
+    // obtain data. Fall back to the normal one in this case.
+    if (is_running_in_vm && pdh_status == ERROR_SUCCESS) {
+      pdh_status = PdhCollectQueryData(cpu_query_.get());
+      if (pdh_status != ERROR_SUCCESS) {
+        pdh_status = PdhAddEnglishCounter(cpu_query_.get(), kProcessorCounter,
+                                          NULL, &cpu_percent_utilization_);
+      }
+    }
+
     if (pdh_status != ERROR_SUCCESS) {
       cpu_query_.reset();
       LOG(ERROR) << "PdhAddEnglishCounter failed: "
