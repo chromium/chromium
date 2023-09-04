@@ -844,6 +844,7 @@ void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
   DCHECK_GT(pending_uploads_, 0UL);
   if (url.has_value()) {
     upload_total_size_ += size;
+    fm_tasks::SetOfficeFileMovedToGoogleDrive(profile_, base::Time::Now());
     // Open the URL.
     const OfficeTaskResult task_result_uma =
         transfer_required_ == OfficeFilesTransferRequired::kCopy
@@ -858,7 +859,6 @@ void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
     return;
   }
   RecordUploadLatencyUMA();
-  fm_tasks::SetOfficeFileMovedToGoogleDrive(profile_, base::Time::Now());
 }
 
 void CloudOpenTask::FinishedOneDriveUpload(
@@ -873,6 +873,7 @@ void CloudOpenTask::FinishedOneDriveUpload(
       // TODO(b/296950967): metric to log here?
       return;
     }
+    fm_tasks::SetOfficeFileMovedToOneDrive(profile, base::Time::Now());
     const OfficeTaskResult task_result_uma =
         transfer_required_ == OfficeFilesTransferRequired::kCopy
             ? OfficeTaskResult::kCopied
@@ -893,7 +894,6 @@ void CloudOpenTask::FinishedOneDriveUpload(
     // TODO(b/296950967): metric to log here?
     return;
   }
-  fm_tasks::SetOfficeFileMovedToOneDrive(profile, base::Time::Now());
 }
 
 void CloudOpenTask::RecordUploadLatencyUMA() {
