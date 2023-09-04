@@ -77,26 +77,23 @@ class DedicatedOrSharedWorkerFetchContextImpl::Factory
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles) override {
     DCHECK(freezable_task_runner);
     DCHECK(unfreezable_task_runner);
 
-    if (CanCreateServiceWorkerURLLoader(request)) {
-      // Create our own URLLoader to route the request to the controller service
-      // worker.
-      return std::make_unique<URLLoader>(
-          cors_exempt_header_list_, terminate_sync_load_event_,
-          std::move(freezable_task_runner), std::move(unfreezable_task_runner),
-          service_worker_loader_factory_, std::move(keep_alive_handle),
-          back_forward_cache_loader_helper);
-    }
+    // Create our own URLLoader to route the request to the controller service
+    // worker.
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+        CanCreateServiceWorkerURLLoader(request)
+            ? service_worker_loader_factory_
+            : loader_factory_;
 
     return std::make_unique<URLLoader>(
         cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(freezable_task_runner), std::move(unfreezable_task_runner),
-        loader_factory_, std::move(keep_alive_handle),
-        back_forward_cache_loader_helper);
+        std::move(loader_factory), std::move(keep_alive_handle),
+        back_forward_cache_loader_helper, std::move(throttles));
   }
 
   void SetServiceWorkerURLLoaderFactory(
@@ -385,10 +382,6 @@ void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
   }
 
   auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
-  if (throttle_provider_) {
-    url_request_extra_data->set_url_loader_throttles(
-        throttle_provider_->CreateThrottles(ancestor_frame_id_, request));
-  }
   request.SetURLRequestExtraData(std::move(url_request_extra_data));
 
   if (g_rewrite_url)
@@ -398,6 +391,15 @@ void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
     request.SetReferrerString(WebString());
     request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   }
+}
+
+WebVector<std::unique_ptr<URLLoaderThrottle>>
+DedicatedOrSharedWorkerFetchContextImpl::CreateThrottles(
+    const WebURLRequest& request) {
+  if (throttle_provider_) {
+    return throttle_provider_->CreateThrottles(ancestor_frame_id_, request);
+  }
+  return {};
 }
 
 mojom::ControllerServiceWorkerMode

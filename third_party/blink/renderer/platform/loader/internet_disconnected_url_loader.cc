@@ -24,7 +24,8 @@ InternetDisconnectedURLLoaderFactory::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles) {
   DCHECK(freezable_task_runner);
   return std::make_unique<InternetDisconnectedURLLoader>(
       std::move(freezable_task_runner));

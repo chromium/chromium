@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
@@ -36,6 +37,7 @@ class CodeCacheHost;
 class WebDocumentSubresourceFilter;
 class URLLoaderFactory;
 class WebURLRequest;
+class URLLoaderThrottle;
 
 // Helper class allowing DedicatedOrSharedWorkerFetchContextImpl to notify blink
 // upon an accept languages update. This class will be extended by
@@ -104,6 +106,10 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // handle the request correctly in the loading stack later. (Example: service
   // worker)
   virtual void WillSendRequest(WebURLRequest&) = 0;
+
+  // Creates URLLoaderThrottles for the `request`.
+  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest& request) = 0;
 
   // Returns whether a controller service worker exists and if it has fetch
   // handler.

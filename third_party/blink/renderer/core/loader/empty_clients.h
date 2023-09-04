@@ -266,6 +266,10 @@ class EmptyWebWorkerFetchContext : public WebWorkerFetchContext {
     return nullptr;
   }
   void WillSendRequest(WebURLRequest&) override {}
+  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest&) override {
+    return {};
+  }
   blink::mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override {
     return mojom::ControllerServiceWorkerMode::kNoController;

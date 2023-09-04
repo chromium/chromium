@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_frame.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,6 +60,17 @@ LoaderFactoryForFrame::LoaderFactoryForFrame(DocumentLoader& document_loader,
   window.GetFrame()->GetLocalFrameHostRemote().GetKeepAliveHandleFactory(
       keep_alive_handle_factory_.BindNewPipeAndPassReceiver(
           window.GetTaskRunner(TaskType::kNetworking)));
+
+  // LocalFrameClient member may not be valid in some tests.
+  if (window_->GetFrame()->Client() &&
+      window_->GetFrame()->Client()->GetWebFrame() &&
+      window_->GetFrame()->Client()->GetWebFrame()->Client()) {
+    throttle_provider_ = window_->GetFrame()
+                             ->Client()
+                             ->GetWebFrame()
+                             ->Client()
+                             ->CreateWebURLLoaderThrottleProviderForFrame();
+  }
 }
 
 void LoaderFactoryForFrame::Trace(Visitor* visitor) const {
@@ -76,6 +88,15 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
   WrappedResourceRequest webreq(request);
+  Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
+  if (throttle_provider_) {
+    WebVector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
+        throttle_provider_->CreateThrottles(webreq);
+    throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
+    for (auto& throttle : web_throttles) {
+      throttles.push_back(std::move(throttle));
+    }
+  }
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
       url_loader_factory;
@@ -121,10 +142,10 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
                        std::move(url_loader_factory))),
                GetCorsExemptHeaderList(),
                /*terminate_sync_load_event=*/nullptr)
-        ->CreateURLLoader(webreq, freezable_task_runner,
-                          unfreezable_task_runner,
-                          /*keep_alive_handle=*/mojo::NullRemote(),
-                          back_forward_cache_loader_helper);
+        ->CreateURLLoader(
+            webreq, freezable_task_runner, unfreezable_task_runner,
+            /*keep_alive_handle=*/mojo::NullRemote(),
+            back_forward_cache_loader_helper, std::move(throttles));
   }
 
   if (document_loader_->GetServiceWorkerNetworkProvider()) {
@@ -141,13 +162,14 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
                  /*terminate_sync_load_event=*/nullptr)
           ->CreateURLLoader(webreq, freezable_task_runner,
                             unfreezable_task_runner, std::move(pending_remote),
-                            back_forward_cache_loader_helper);
+                            back_forward_cache_loader_helper,
+                            std::move(throttles));
     }
   }
 
   if (prefetched_signed_exchange_manager_) {
-    auto loader =
-        prefetched_signed_exchange_manager_->MaybeCreateURLLoader(webreq);
+    auto loader = prefetched_signed_exchange_manager_->MaybeCreateURLLoader(
+        webreq, throttles);
     if (loader)
       return loader;
   }
@@ -167,7 +189,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
              /*terminate_sync_load_event=*/nullptr)
       ->CreateURLLoader(webreq, freezable_task_runner, unfreezable_task_runner,
                         std::move(pending_remote),
-                        back_forward_cache_loader_helper);
+                        back_forward_cache_loader_helper, std::move(throttles));
 }
 
 std::unique_ptr<WebCodeCacheLoader>

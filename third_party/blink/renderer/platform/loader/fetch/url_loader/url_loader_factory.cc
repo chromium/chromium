@@ -8,6 +8,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 
 namespace blink {
@@ -31,14 +32,15 @@ std::unique_ptr<URLLoader> URLLoaderFactory::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles) {
   DCHECK(freezable_task_runner);
   DCHECK(unfreezable_task_runner);
   return std::make_unique<URLLoader>(
       cors_exempt_header_list_, terminate_sync_load_event_,
       std::move(freezable_task_runner), std::move(unfreezable_task_runner),
       loader_factory_, std::move(keep_alive_handle),
-      back_forward_cache_loader_helper);
+      back_forward_cache_loader_helper, std::move(throttles));
 }
 
 }  // namespace blink

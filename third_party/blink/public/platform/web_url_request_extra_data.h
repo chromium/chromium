@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_REQUEST_EXTRA_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_REQUEST_EXTRA_DATA_H_
 
-#include <memory>
-
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -66,13 +64,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
     custom_user_agent_ = custom_user_agent;
   }
 
-  WebVector<std::unique_ptr<URLLoaderThrottle>> TakeURLLoaderThrottles() {
-    return std::move(url_loader_throttles_);
-  }
-  void set_url_loader_throttles(
-      WebVector<std::unique_ptr<URLLoaderThrottle>> throttles) {
-    url_loader_throttles_ = std::move(throttles);
-  }
   bool allow_cross_origin_auth_prompt() const {
     return allow_cross_origin_auth_prompt_;
   }
@@ -92,7 +83,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   bool is_for_no_state_prefetch_ = false;
   bool originated_from_service_worker_ = false;
   WebString custom_user_agent_;
-  WebVector<std::unique_ptr<URLLoaderThrottle>> url_loader_throttles_;
   bool allow_cross_origin_auth_prompt_ = false;
 
   // The origin of the top most frame. Only applicable for frames.

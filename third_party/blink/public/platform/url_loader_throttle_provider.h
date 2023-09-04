@@ -23,9 +23,11 @@ enum class URLLoaderThrottleProviderType {
   kWorker
 };
 
+// TODO(crbug.com/1379780): This class name should have Web prefix according to
+// third_party/blink/public/README.md#naming-conventions
 class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
  public:
-  virtual ~URLLoaderThrottleProvider() {}
+  virtual ~URLLoaderThrottleProvider() = default;
 
   // Used to copy a URLLoaderThrottleProvider between worker threads.
   virtual std::unique_ptr<URLLoaderThrottleProvider> Clone() = 0;
@@ -34,12 +36,26 @@ class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
   // service workers call it on the worker thread. |render_frame_id| will be set
   // to the corresponding frame for frame and dedicated worker requests,
   // otherwise it will be MSG_ROUTING_NONE.
+  //
+  // TODO(crbug.com/1379780): The 'render_frame_id' argument is required because
+  // a frame's URLLoaderThrottleProvider is designed to be created only once per
+  // process and shared between multiple frames. But when we have
+  // URLLoaderThrottleProvider for each frames in the background threads, we
+  // don't need the 'render_frame_id' argument.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       int render_frame_id,
       const WebURLRequest& request) = 0;
 
   // Set the network status online state as specified in |is_online|.
   virtual void SetOnline(bool is_online) = 0;
+};
+
+class BLINK_PLATFORM_EXPORT WebURLLoaderThrottleProviderForFrame {
+ public:
+  virtual ~WebURLLoaderThrottleProviderForFrame() = default;
+
+  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest& request) = 0;
 };
 
 }  // namespace blink

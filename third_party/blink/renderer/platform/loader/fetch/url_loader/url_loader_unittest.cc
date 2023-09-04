@@ -173,7 +173,8 @@ class TestURLLoaderClient : public URLLoaderClient {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &fake_url_loader_factory_),
             /*keep_alive_handle=*/mojo::NullRemote(),
-            /*back_forward_cache_loader_helper=*/nullptr)),
+            /*back_forward_cache_loader_helper=*/nullptr,
+            /*throttles=*/{})),
         delete_on_receive_redirect_(false),
         delete_on_receive_response_(false),
         delete_on_receive_data_(false),

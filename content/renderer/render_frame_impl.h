@@ -630,6 +630,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
+  CreateWebURLLoaderThrottleProviderForFrame() override;
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;

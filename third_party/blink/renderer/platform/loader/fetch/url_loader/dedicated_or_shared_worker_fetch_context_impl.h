@@ -118,6 +118,8 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
       CodeCacheHost*) override;
   void WillSendRequest(WebURLRequest&) override;
+  WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
   void SetIsOnSubframe(bool) override;

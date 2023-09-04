@@ -31,6 +31,7 @@ namespace blink {
 class BackForwardCacheLoaderHelper;
 class URLLoader;
 class WebURLRequest;
+class URLLoaderThrottle;
 
 // An abstract interface to create a URLLoader. It is expected that each
 // loading context holds its own per-context URLLoaderFactory.
@@ -55,7 +56,8 @@ class BLINK_PLATFORM_EXPORT URLLoaderFactory {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
 
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;

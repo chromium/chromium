@@ -1186,6 +1186,29 @@ bool ShouldNotifySubresourceResponseStarted(blink::RendererPreferences pref) {
   return pref.send_subresource_notification;
 }
 
+class WebURLLoaderThrottleProviderForFrameImpl
+    : public blink::WebURLLoaderThrottleProviderForFrame {
+ public:
+  explicit WebURLLoaderThrottleProviderForFrameImpl(int routing_id)
+      : routing_id_(routing_id) {}
+  ~WebURLLoaderThrottleProviderForFrameImpl() override = default;
+
+  WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+      const WebURLRequest& request) override {
+    RenderThreadImpl* render_thread = RenderThreadImpl::current();
+    // The RenderThreadImpl or its URLLoaderThrottleProvider member may not be
+    // valid in some tests.
+    if (!render_thread || !render_thread->url_loader_throttle_provider()) {
+      return {};
+    }
+    return render_thread->url_loader_throttle_provider()->CreateThrottles(
+        routing_id_, request);
+  }
+
+ private:
+  const int routing_id_;
+};
+
 }  // namespace
 
 RenderFrameImpl::AssertNavigationCommits::AssertNavigationCommits(
@@ -4311,16 +4334,6 @@ void RenderFrameImpl::WillSendRequestInternal(
   request.SetDownloadToNetworkCacheOnly(is_for_no_state_prefetch &&
                                         !for_outermost_main_frame);
 
-  // The RenderThreadImpl or its URLLoaderThrottleProvider member may not be
-  // valid in some tests.
-  RenderThreadImpl* render_thread = RenderThreadImpl::current();
-  if (!for_redirect && render_thread &&
-      render_thread->url_loader_throttle_provider()) {
-    url_request_extra_data->set_url_loader_throttles(
-        render_thread->url_loader_throttle_provider()->CreateThrottles(
-            routing_id_, request));
-  }
-
   request.SetHasUserGesture(frame_->HasTransientUserActivation());
 
   if (!GetWebView()->GetRendererPreferences().enable_referrers) {
@@ -6065,6 +6078,12 @@ RenderFrameImpl::GetURLLoaderFactory() {
     return nullptr;
   }
   return GetLoaderFactoryBundle();
+}
+
+std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
+RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
+  return std::make_unique<WebURLLoaderThrottleProviderForFrameImpl>(
+      routing_id_);
 }
 
 void RenderFrameImpl::OnStopLoading() {

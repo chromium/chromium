@@ -69,6 +69,7 @@ class WebURLRequestExtraData;
 class URLLoaderClient;
 class WebURLResponse;
 struct WebURLError;
+class URLLoaderThrottle;
 
 class BLINK_PLATFORM_EXPORT URLLoader {
  public:
@@ -81,7 +82,8 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
   URLLoader();

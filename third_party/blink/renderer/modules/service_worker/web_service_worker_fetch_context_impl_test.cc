@@ -56,14 +56,8 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
     WebURLRequest request;
     request.SetUrl(kScriptUrl);
     request.SetRequestContext(mojom::RequestContextType::SERVICE_WORKER);
-    context->WillSendRequest(request);
-
-    // Throttles should be created by the provider.
-    auto* url_request_extra_data = static_cast<WebURLRequestExtraData*>(
-        request.GetURLRequestExtraData().get());
-    ASSERT_TRUE(url_request_extra_data);
     WebVector<std::unique_ptr<URLLoaderThrottle>> throttles =
-        url_request_extra_data->TakeURLLoaderThrottles();
+        context->CreateThrottles(request);
     EXPECT_EQ(1u, throttles.size());
   }
   {
@@ -71,14 +65,8 @@ TEST_F(WebServiceWorkerFetchContextImplTest, SkipThrottling) {
     WebURLRequest request;
     request.SetUrl(kScriptUrlToSkipThrottling);
     request.SetRequestContext(mojom::RequestContextType::SERVICE_WORKER);
-    context->WillSendRequest(request);
-
-    // Throttles should not be created by the provider.
-    auto* url_request_extra_data = static_cast<WebURLRequestExtraData*>(
-        request.GetURLRequestExtraData().get());
-    ASSERT_TRUE(url_request_extra_data);
     WebVector<std::unique_ptr<URLLoaderThrottle>> throttles =
-        url_request_extra_data->TakeURLLoaderThrottles();
+        context->CreateThrottles(request);
     EXPECT_TRUE(throttles.empty());
   }
 }

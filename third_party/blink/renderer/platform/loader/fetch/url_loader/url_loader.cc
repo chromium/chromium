@@ -106,7 +106,8 @@ class URLLoader::Context : public ResourceRequestClient {
           scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
           scoped_refptr<network::SharedURLLoaderFactory> factory,
           mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-          BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+          BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+          Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
 
   int request_id() const { return request_id_; }
   URLLoaderClient* client() const { return client_; }
@@ -189,6 +190,7 @@ class URLLoader::Context : public ResourceRequestClient {
 
   WeakPersistent<BackForwardCacheLoaderHelper>
       back_forward_cache_loader_helper_;
+  Vector<std::unique_ptr<URLLoaderThrottle>> throttles_;
 };
 
 // URLLoader::Context -------------------------------------------------------
@@ -201,7 +203,8 @@ URLLoader::Context::Context(
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles)
     : loader_(loader),
       has_devtools_request_id_(false),
       client_(nullptr),
@@ -213,7 +216,8 @@ URLLoader::Context::Context(
       request_id_(-1),
       resource_request_sender_(std::make_unique<ResourceRequestSender>()),
       url_loader_factory_(std::move(url_loader_factory)),
-      back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {
+      back_forward_cache_loader_helper_(back_forward_cache_loader_helper),
+      throttles_(std::move(throttles)) {
   DCHECK(url_loader_factory_);
 }
 
@@ -282,8 +286,10 @@ void URLLoader::Context::Start(
     url_request_extra_data = empty_url_request_extra_data.get();
   }
 
-  auto throttles =
-      url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  for (auto& throttle : throttles_) {
+    throttles.push_back(std::move(throttle));
+  }
 
   // TODO(falken): URLLoader should be able to get the top frame origin via some
   // plumbing such as through ResourceLoader -> FetchContext -> LocalFrame
@@ -456,16 +462,17 @@ URLLoader::URLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> keep_alive_handle,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
-    : context_(
-          base::MakeRefCounted<Context>(this,
-                                        cors_exempt_header_list,
-                                        terminate_sync_load_event,
-                                        std::move(freezable_task_runner),
-                                        std::move(unfreezable_task_runner),
-                                        std::move(url_loader_factory),
-                                        std::move(keep_alive_handle),
-                                        back_forward_cache_loader_helper)) {}
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    Vector<std::unique_ptr<URLLoaderThrottle>> throttles)
+    : context_(base::MakeRefCounted<Context>(this,
+                                             cors_exempt_header_list,
+                                             terminate_sync_load_event,
+                                             std::move(freezable_task_runner),
+                                             std::move(unfreezable_task_runner),
+                                             std::move(url_loader_factory),
+                                             std::move(keep_alive_handle),
+                                             back_forward_cache_loader_helper,
+                                             std::move(throttles))) {}
 
 URLLoader::URLLoader() = default;
 
