@@ -27,7 +27,8 @@ enum class AppStateChange {
   kClosed = 2,
 };
 
-// Records metrics related to app discovery and app usage.
+// Records metrics related to app discovery and app usage. This should only be
+// used in Chrome OS.
 //
 // No metrics should be recorded if app-sync is off.
 class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
@@ -91,9 +92,21 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   bool IsStateInactive(InstanceState instance_state);
   bool IsStateActive(InstanceState instance_state);
 
-  void RecordAppActive(const std::string& app_id);
-  void RecordAppInactive(const std::string& app_id);
+  void RecordAppActive(const InstanceUpdate& instance_update);
+  void RecordAppInactive(const InstanceUpdate& instance_update);
   void RecordAppClosed(const InstanceUpdate& instance_update);
+
+  // Returns the string identifier to be logged for the given |profile_| and
+  // |hashed_app_id|.
+  //
+  // For most apps, this should return the same string used to generate the URL
+  // string key for UKM. A lot of these URLs are hashed before being collected.
+  // For more information, refer to //components/ukm/app_source_url_recorder.h.
+  //
+  // ARC app package names are collected unhashed since the app package names
+  // are public information on the play store.
+  std::string GetAppStringToRecord(const std::string& hashed_app_id,
+                                   AppType app_type);
 
   // Profile for which apps discovery metrics are being recorded for.
   raw_ptr<Profile, ExperimentalAsh> profile_;

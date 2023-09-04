@@ -5,7 +5,13 @@
 #include "chrome/browser/apps/app_service/metrics/app_discovery_metrics.h"
 
 #include "base/logging.h"
-#include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/package_id.h"
+#include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -47,7 +53,7 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
   }
 
   cros_events::AppDiscovery_AppInstalled event;
-  event.SetAppId(app_id)
+  event.SetAppId(GetAppStringToRecord(app_id, app_type))
       .SetAppType(static_cast<int>(app_type))
       .SetInstallSource(static_cast<int>(app_install_source))
       .SetInstallReason(static_cast<int>(app_install_reason));
@@ -63,7 +69,7 @@ void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
   }
 
   cros_events::AppDiscovery_AppLaunched event;
-  event.SetAppId(app_id)
+  event.SetAppId(GetAppStringToRecord(app_id, app_type))
       .SetAppType(static_cast<int>(app_type))
       .SetLaunchSource(static_cast<int>(launch_source));
   event.Record();
@@ -79,7 +85,7 @@ void AppDiscoveryMetrics::OnAppUninstalled(
   }
 
   cros_events::AppDiscovery_AppUninstall event;
-  event.SetAppId(app_id)
+  event.SetAppId(GetAppStringToRecord(app_id, app_type))
       .SetAppType(static_cast<int>(app_type))
       .SetUninstallSource(static_cast<int>(app_uninstall_source));
   event.Record();
@@ -169,9 +175,9 @@ void AppDiscoveryMetrics::RecordAppState(
   if (instance_update.IsDestruction()) {
     RecordAppClosed(instance_update);
   } else if (IsUpdateActiveToInactive(instance_update)) {
-    RecordAppInactive(instance_update.AppId());
+    RecordAppInactive(instance_update);
   } else if (IsUpdateInactiveToActive(instance_update)) {
-    RecordAppActive(instance_update.AppId());
+    RecordAppActive(instance_update);
   }
 }
 
@@ -223,16 +229,22 @@ bool AppDiscoveryMetrics::IsStateActive(InstanceState instance_state) {
   return instance_state & InstanceState::kActive;
 }
 
-void AppDiscoveryMetrics::RecordAppActive(const std::string& app_id) {
+void AppDiscoveryMetrics::RecordAppActive(
+    const InstanceUpdate& instance_update) {
   cros_events::AppDiscovery_AppStateChanged()
-      .SetAppId(app_id)
+      .SetAppId(
+          GetAppStringToRecord(instance_update.AppId(),
+                               GetAppType(profile_, instance_update.AppId())))
       .SetAppState(static_cast<int>(AppStateChange::kActive))
       .Record();
 }
 
-void AppDiscoveryMetrics::RecordAppInactive(const std::string& app_id) {
+void AppDiscoveryMetrics::RecordAppInactive(
+    const InstanceUpdate& instance_update) {
   cros_events::AppDiscovery_AppStateChanged()
-      .SetAppId(app_id)
+      .SetAppId(
+          GetAppStringToRecord(instance_update.AppId(),
+                               GetAppType(profile_, instance_update.AppId())))
       .SetAppState(static_cast<int>(AppStateChange::kInactive))
       .Record();
 }
@@ -245,9 +257,58 @@ void AppDiscoveryMetrics::RecordAppClosed(
   // If instance_update is the only instance of the app.
   if (prev_instances.size() == 1) {
     cros_events::AppDiscovery_AppStateChanged()
-        .SetAppId(instance_update.AppId())
+        .SetAppId(
+            GetAppStringToRecord(instance_update.AppId(),
+                                 GetAppType(profile_, instance_update.AppId())))
         .SetAppState(static_cast<int>(AppStateChange::kClosed))
         .Record();
+  }
+}
+
+std::string AppDiscoveryMetrics::GetAppStringToRecord(
+    const std::string& hashed_app_id,
+    AppType app_type) {
+  // Generates a URL for the given |profile_| and |hashed_app_id| that may
+  // return the canonical app name for certain |app_type|.
+  GURL url = AppPlatformMetrics::GetURLForApp(profile_, hashed_app_id);
+
+  switch (app_type) {
+    // Collects the app package name unhashed. App package names are public and
+    // in the play store.
+    case AppType::kArc:
+      return url.spec();
+
+    // Crostini apps are identified by concatenating the desktop_id and the
+    // app_id. For more documentation as to what the desktop_id and app_id,
+    // refer to the documentation in
+    // //chrome/browser/ash/guest_os/guest_os_registery_service.h.
+    case AppType::kCrostini:
+
+    // Borealis apps are identified using the steam app ID, which is a number
+    // assigned to games by steam.
+    case AppType::kBorealis:
+      return url.spec();
+
+    // Web apps may contain sensitive data in the URLs. Collect the
+    // |hashed_app_id| of the app to avoid collecting potentially sensitive data
+    // in the URL.
+    case AppType::kWeb:
+      return hashed_app_id;
+
+    // These app types have app names that are hashed before the URLs are
+    // generated.
+    case AppType::kBuiltIn:
+    case AppType::kChromeApp:
+    case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kStandaloneBrowserExtension:
+    case AppType::kSystemWeb:
+      return url.spec();
+
+    // Any other app types should not be collected.
+    default:
+      return "";
   }
 }
 

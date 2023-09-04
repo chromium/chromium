@@ -198,6 +198,9 @@ AppTypeName GetAppTypeName(Profile* profile,
 // service.
 AppType GetAppType(Profile* profile, const std::string& app_id);
 
+// Returns true if |app_id| is a system web app for a given |profile|.
+bool IsSystemWebApp(Profile* profile, const std::string& app_id);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_UTILS_H_

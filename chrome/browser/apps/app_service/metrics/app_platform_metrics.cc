@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -477,6 +478,11 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     return ukm::kInvalidSourceId;
   }
 
+  GURL url = GetURLForApp(profile, app_id);
+  if (url.is_empty()) {
+    return ukm::kInvalidSourceId;
+  }
+
   switch (app_type) {
     case AppType::kBuiltIn:
     case AppType::kChromeApp:
@@ -484,60 +490,123 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
     case AppType::kStandaloneBrowser:
     case AppType::kStandaloneBrowserChromeApp:
     case AppType::kStandaloneBrowserExtension:
-      return ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+    case AppType::kSystemWeb:
+      return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(
+          url, ukm::AppType::kChromeApp);
     case AppType::kArc:
-    case AppType::kWeb:
-    case AppType::kSystemWeb: {
-      std::string publisher_id;
-      apps::InstallReason install_reason;
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->AppRegistryCache()
-          .ForOneApp(app_id, [&publisher_id,
-                              &install_reason](const apps::AppUpdate& update) {
-            publisher_id = update.PublisherId();
-            install_reason = update.InstallReason();
-          });
-      if (publisher_id.empty()) {
-        return ukm::kInvalidSourceId;
+      return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(url,
+                                                          ukm::AppType::kArc);
+    case AppType::kWeb: {
+      // Some system web-apps may be PWAs.
+      if (IsSystemWebApp(profile, app_id)) {
+        return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(
+            url, ukm::AppType::kChromeApp);
       }
-      if (app_type == AppType::kArc) {
-        return ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
-            publisher_id);
-      }
-      if (app_type == AppType::kSystemWeb ||
-          install_reason == apps::InstallReason::kSystem) {
-        // For system web apps, call GetSourceIdForChromeApp to record the app
-        // id because the url could be filtered by the server side.
-        return ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
-      }
-      return ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
+      return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(url,
+                                                          ukm::AppType::kPWA);
     }
     case AppType::kCrostini:
-      return GetSourceIdForCrostini(profile, app_id);
+      return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(
+          url, ukm::AppType::kCrostini);
     case AppType::kBorealis:
-      return GetSourceIdForBorealis(profile, app_id);
-    case AppType::kBruschetta:
-    case AppType::kUnknown:
-    case AppType::kMacOs:
-    case AppType::kPluginVm:
-    case AppType::kRemote:
+      return ukm::AppSourceUrlRecorder::GetSourceIdForUrl(
+          url, ukm::AppType::kBorealis);
+    // App types that are not supported by UKM.
+    default:
       return ukm::kInvalidSourceId;
   }
 }
 
 // static
-ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
-    Profile* profile,
-    const std::string& app_id) {
+GURL AppPlatformMetrics::GetURLForApp(Profile* profile,
+                                      const std::string& app_id) {
+  AppType app_type = GetAppType(profile, app_id);
+
+  // If the app should not be recorded, then emit an empty URL so the URL is not
+  // recorded for the associated app.
+  if (!ShouldRecordUkmForAppTypeName(app_type)) {
+    return GURL();
+  }
+
+  switch (app_type) {
+    // |app_id| is already hashed for these apps and are of the format
+    // app://{app_id}.
+    case AppType::kBuiltIn:
+    case AppType::kChromeApp:
+    case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kStandaloneBrowserExtension:
+    // For system web apps, call GetSourceIdForChromeApp to record the app
+    // id because the url could be filtered by the server side.
+    case AppType::kSystemWeb:
+      return ukm::AppSourceUrlRecorder::GetURLForChromeApp(app_id);
+    // ARC apps contain the app package name and the URL generated is of the
+    // format app://{package_name}. The package name will be populated if it is
+    // a properly registered ARC app.
+    case AppType::kArc: {
+      std::string package_name = GetPublisherId(profile, app_id);
+      // Empty package name ID indicates that the ARC app is not properly
+      // registered application.
+      if (package_name.empty() || app_id.empty()) {
+        return GURL();
+      }
+      return ukm::AppSourceUrlRecorder::GetURLForArcPackageName(package_name);
+    }
+    case AppType::kWeb: {
+      // Some PWAs can be categorized as system web apps. System web apps should
+      // be encoded as a ChromeApp hash.
+      if (IsSystemWebApp(profile, app_id)) {
+        return ukm::AppSourceUrlRecorder::GetURLForChromeApp(app_id);
+      }
+
+      std::string publisher_id = GetPublisherId(profile, app_id);
+      // Empty publisher ID indicates that the app is not a properly registered
+      // PWA.
+      if (publisher_id.empty() || app_id.empty()) {
+        return GURL();
+      }
+
+      return ukm::AppSourceUrlRecorder::GetURLForPWA(GURL(publisher_id));
+    }
+    case AppType::kCrostini: {
+      auto crostini_app_id = GetIdForCrostini(profile, app_id);
+      return ukm::AppSourceUrlRecorder::GetURLForCrostini(
+          crostini_app_id.desktop_id, crostini_app_id.registration_name);
+    }
+    case AppType::kBorealis:
+      return GetURLForBorealis(profile, app_id);
+    // Other app types should not be logged. Return empty GURL so that
+    // these app types are not recorded.
+    default:
+      return GURL();
+  }
+}
+
+// static
+std::string AppPlatformMetrics::GetPublisherId(Profile* profile,
+                                               const std::string& app_id) {
+  std::string publisher_id;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&publisher_id](const apps::AppUpdate& update) {
+        publisher_id = update.PublisherId();
+      });
+  return publisher_id;
+}
+
+// static
+GURL AppPlatformMetrics::GetURLForBorealis(Profile* profile,
+                                           const std::string& app_id) {
   // Most Borealis apps are identified by a numeric ID, except these.
   if (app_id == borealis::kClientAppId) {
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("client");
+    return ukm::AppSourceUrlRecorder::GetURLForBorealis("client");
   } else if (app_id == borealis::kInstallerAppId) {
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("installer");
+    return ukm::AppSourceUrlRecorder::GetURLForBorealis("installer");
   } else if (app_id.find(borealis::kIgnoredAppIdPrefix) != std::string::npos) {
-    // These are not real apps from a user's point of view,
-    // so it doesn't make sense to record metrics for them.
-    return ukm::kInvalidSourceId;
+    // These are not real apps from a user's point of view, so it doesn't make
+    // sense to record metrics for them.
+    return GURL();
   }
 
   // For most borealis apps, we convert to the "steam app id", which is a unique
@@ -547,7 +616,7 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
   // steam id).
   absl::optional<int> borealis_id = borealis::SteamGameId(profile, app_id);
   if (borealis_id.has_value()) {
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis(
+    return ukm::AppSourceUrlRecorder::GetURLForBorealis(
         base::NumberToString(borealis_id.value()));
   }
 
@@ -558,28 +627,32 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
   // In general all Borealis apps should have a steam id, so if we do see this
   // Source ID being reported, that's a bug.
   LOG(WARNING) << "Couldn't get Borealis ID for UNREGISTERED app " << app_id;
-  return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("UNREGISTERED");
+  return ukm::AppSourceUrlRecorder::GetURLForBorealis("UNREGISTERED");
 }
 
 // static
-ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
-    Profile* profile,
-    const std::string& app_id) {
+CrostiniAppId AppPlatformMetrics::GetIdForCrostini(Profile* profile,
+                                                   const std::string& app_id) {
   auto* registry =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   auto registration = registry->GetRegistration(app_id);
   if (!registration) {
-    // If there's no registration then we're not allowed to record anything that
-    // could identify the app (and we don't know the app name anyway), but
-    // recording every unregistered app in one big bucket is fine.
-    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("UNREGISTERED",
-                                                             "UNREGISTERED");
+    // If there's no registration then we're not allowed to record anything
+    // that could identify the app (and we don't know the app name anyway),
+    // but recording every unregistered app in one big bucket is fine.
+    return CrostiniAppId{
+        .desktop_id = "UNREGISTERED",
+        .registration_name = "UNREGISTERED",
+    };
   }
   auto desktop_id = registration->DesktopFileId() == ""
                         ? "NoId"
                         : registration->DesktopFileId();
-  return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
-      desktop_id, registration->Name());
+  return CrostiniAppId{
+      .desktop_id = desktop_id,
+      .registration_name = registration->Name(),
+
+  };
 }
 
 // static

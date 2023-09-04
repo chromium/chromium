@@ -45,6 +45,11 @@ enum class InstallTime {
   kMaxValue = kRunning,
 };
 
+struct CrostiniAppId {
+  std::string desktop_id;
+  std::string registration_name;
+};
+
 extern const char kAppRunningDuration[];
 extern const char kAppActivatedCount[];
 extern const char kAppUsageTime[];
@@ -166,13 +171,23 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Returns the SourceId of UKM for `app_id`.
   static ukm::SourceId GetSourceId(Profile* profile, const std::string& app_id);
 
-  // Returns the SourceId for a Borealis app_id.
-  static ukm::SourceId GetSourceIdForBorealis(Profile* profile,
-                                              const std::string& app_id);
+  // Returns the URL used to create the SourceId for UKM. The URL will be empty
+  // if nothing should be recorded for |app_id|.
+  //
+  // This is used to retrieve an app identifier that is used in UKM where UKM is
+  // not the logger.
+  static GURL GetURLForApp(Profile* profile, const std::string& app_id);
 
-  // Gets the source id for a Crostini app_id.
-  static ukm::SourceId GetSourceIdForCrostini(Profile* profile,
-                                              const std::string& app_id);
+  // Returns a publisher id fetched from |profile| for a given |app_id|.
+  static std::string GetPublisherId(Profile* profile,
+                                    const std::string& app_id);
+
+  // Returns the URL for a Borealis app_id.
+  static GURL GetURLForBorealis(Profile* profile, const std::string& app_id);
+
+  // Returns a crostini id struct for an app_id.
+  static CrostiniAppId GetIdForCrostini(Profile* profile,
+                                        const std::string& app_id);
 
   // Informs UKM service that the source_id is no longer needed and can be
   // deleted later.

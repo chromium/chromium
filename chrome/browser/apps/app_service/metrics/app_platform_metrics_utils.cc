@@ -496,4 +496,18 @@ AppType GetAppType(Profile* profile, const std::string& app_id) {
   return AppType::kUnknown;
 }
 
+bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
+  AppType app_type = GetAppType(profile, app_id);
+
+  InstallReason install_reason;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&install_reason](const apps::AppUpdate& update) {
+        install_reason = update.InstallReason();
+      });
+
+  return app_type == AppType::kSystemWeb ||
+         install_reason == apps::InstallReason::kSystem;
+}
+
 }  // namespace apps
