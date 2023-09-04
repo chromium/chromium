@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -176,33 +177,31 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(PhoneNumberI18NTest, ConstructPhoneNumber) {
   std::u16string number;
-  EXPECT_TRUE(ConstructPhoneNumber(u"1", u"650", u"2345678", "US", &number));
+  EXPECT_TRUE(ConstructPhoneNumber(u"16502345678", "US", &number));
   EXPECT_EQ(u"1 650-234-5678", number);
-  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), u"650", u"2345678", "US",
-                                   &number));
-  EXPECT_EQ(u"(650) 234-5678", number);
-  EXPECT_TRUE(ConstructPhoneNumber(u"1", std::u16string(), u"6502345678", "US",
-                                   &number));
-  EXPECT_EQ(u"1 650-234-5678", number);
-  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), std::u16string(),
-                                   u"6502345678", "US", &number));
+  EXPECT_TRUE(ConstructPhoneNumber(u"6502345678", "US", &number));
   EXPECT_EQ(u"(650) 234-5678", number);
 
-  EXPECT_FALSE(ConstructPhoneNumber(std::u16string(), u"650", u"234567890",
-                                    "US", &number));
+  // Invalid number, too long.
+  EXPECT_FALSE(ConstructPhoneNumber(u"650234567890", "US", &number));
   EXPECT_EQ(std::u16string(), number);
   // Italian number
-  EXPECT_TRUE(ConstructPhoneNumber(u"39", u"347", u"2345678", "IT", &number));
+  EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"39", u"347", u"2345678"}),
+                                   "IT", &number));
   EXPECT_EQ(u"+39 347 234 5678", number);
-  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), u"347", u"2345678", "IT",
-                                   &number));
+  EXPECT_TRUE(ConstructPhoneNumber(u"39 347 2345678", "IT", &number));
+  EXPECT_EQ(u"+39 347 234 5678", number);
+  EXPECT_TRUE(
+      ConstructPhoneNumber(base::StrCat({u"347", u"2345678"}), "IT", &number));
   EXPECT_EQ(u"347 234 5678", number);
   // German number.
-  EXPECT_TRUE(
-      ConstructPhoneNumber(u"49", u"024", u"2345678901", "DE", &number));
-  EXPECT_EQ(u"+49 2423 45678901", number);
-  EXPECT_TRUE(ConstructPhoneNumber(std::u16string(), u"024", u"2345678901",
+  // Not a strictly correct number, because the zero trunk prefix in 024 does
+  // not belong there.
+  EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"49", u"024", u"2345678901"}),
                                    "DE", &number));
+  EXPECT_EQ(u"+49 2423 45678901", number);
+  EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"024", u"2345678901"}), "DE",
+                                   &number));
   EXPECT_EQ(u"02423 45678901", number);
 }
 

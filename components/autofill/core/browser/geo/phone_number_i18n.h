@@ -64,19 +64,17 @@ bool IsPossiblePhoneNumber(const std::string& phone_number,
 std::u16string NormalizePhoneNumber(const std::u16string& value,
                                     const std::string& default_region);
 
-// Constructs whole phone number from parts.
-// |city_code| - area code, could be empty.
-// |country_code| - country code, could be empty.
-// |number| - local number, should not be empty.
-// |region| - current region, the parsing is based on.
-// |whole_number| - constructed whole number.
+// Constructs whole phone number by parsing and then formatting a whole number.
+// `input_whole_number` - Concatenation of an country code (could be empty), an
+// area code (could be empty) and a local number (should not be empty).
+// `region` - current region, the parsing is based on.
+// `output_whole_number` - constructed whole number.
 // Separator characters are stripped before parsing the digits.
 // Returns true if parsing was successful, false otherwise.
-[[nodiscard]] bool ConstructPhoneNumber(const std::u16string& country_code,
-                                        const std::u16string& city_code,
-                                        const std::u16string& number,
-                                        const std::string& default_region,
-                                        std::u16string* whole_number);
+[[nodiscard]] bool ConstructPhoneNumber(
+    const std::u16string& input_whole_number,
+    const std::string& region,
+    std::u16string* output_whole_number);
 
 // Returns true if |number_a| and |number_b| parse to the same phone number in
 // the given |region|.

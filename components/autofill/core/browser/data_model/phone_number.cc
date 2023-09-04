@@ -385,7 +385,7 @@ bool PhoneNumber::PhoneCombineHelper::ParseNumber(
     return true;
   }
 
-  return i18n::ConstructPhoneNumber(country_, city_, phone_,
+  return i18n::ConstructPhoneNumber(country_ + city_ + phone_,
                                     GetRegion(profile, app_locale), value);
 }
 

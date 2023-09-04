@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -877,6 +878,51 @@ TEST_P(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {expected_profile});
   histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
+}
+
+// This test verifies that a phone number is stored correctly in the following
+// situation: A form contains a telephone number field that is classified as
+// a PHONE_HOME_CITY_AND_NUMBER field (either due to heuristics or due to
+// crowdsourcing). If a user enters an international phone number (e.g. +374 10
+// 123456), this must be parsed as such, not as a local number in the assumed
+// country. Otherwise, the stored value is incorrect. Before a fix, the
+// number quoted above would be stored as "(010) 123456" for a DE address
+// profile and not stored at all for a US address profile.
+TEST_P(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
+  // This is an Armenian phone number
+  const char* kInternationalNumber = "+374 10 123456";
+
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  // Despite the US default profile, we expect the international number.
+  ASSERT_TRUE(expected_profile.SetInfo(PHONE_HOME_WHOLE_NUMBER,
+                                       base::UTF8ToUTF16(kInternationalNumber),
+                                       kLocale));
+
+  // Create an address form with `kInternationalNumber`.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER,
+                  kInternationalNumber);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Replace PHONE_HOME_WHOLE_NUMBER by PHONE_HOME_CITY_AND_NUMBER in field
+  // classifications.
+  std::vector<ServerFieldType> types;
+  for (const auto& field : form_structure->fields()) {
+    if (field->heuristic_type() == PHONE_HOME_WHOLE_NUMBER) {
+      types.push_back(PHONE_HOME_CITY_AND_NUMBER);
+    } else {
+      types.push_back(field->heuristic_type());
+    }
+  }
+  test_api(form_structure.get()).SetFieldTypes(types, types);
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+  ASSERT_EQ(personal_data_manager_->GetProfiles().size(), 1u);
+  EXPECT_EQ(base::UTF8ToUTF16(kInternationalNumber),
+            personal_data_manager_->GetProfiles()[0]->GetRawInfo(
+                PHONE_HOME_WHOLE_NUMBER));
 }
 
 // Tests that invalid countries in submitted forms are ignored, and that the
