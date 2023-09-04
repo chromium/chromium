@@ -336,9 +336,9 @@ class DriveIntegrationService : public KeyedService,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
- private:
   void UpdateNetworkState();
 
+ private:
   enum class State {
     kNone,
     kInitializing,

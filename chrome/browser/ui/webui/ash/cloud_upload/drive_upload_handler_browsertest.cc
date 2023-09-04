@@ -7,11 +7,13 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -40,7 +42,11 @@ namespace ash::cloud_upload {
 
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
+using drive::DriveIntegrationService;
+using drive::util::ConnectionStatus;
+using drive::util::SetDriveConnectionStatusForTesting;
 using testing::_;
+using enum network::mojom::ConnectionType;
 
 namespace {
 
@@ -92,7 +98,8 @@ class DriveUploadHandlerTest
 
   void SetUpOnMainThread() override {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+        CONNECTION_ETHERNET);
+    SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
     InProcessBrowserTest::SetUpOnMainThread();
   }
 
@@ -106,16 +113,14 @@ class DriveUploadHandlerTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  drive::DriveIntegrationService* CreateDriveIntegrationService(
-      Profile* profile) {
+  DriveIntegrationService* CreateDriveIntegrationService(Profile* profile) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     fake_drivefs_helpers_[profile] =
         std::make_unique<file_manager::test::FakeSimpleDriveFsHelper>(
             profile, drive_mount_point_);
-    auto* integration_service = new drive::DriveIntegrationService(
+    return new DriveIntegrationService(
         profile, "", drive_mount_point_,
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
-    return integration_service;
   }
 
   // Creates mount point for My files and registers local filesystem.
@@ -265,7 +270,7 @@ class DriveUploadHandlerTest
     return fake_drivefs().delegate();
   }
 
-  drive::DriveIntegrationService* drive_integration_service() {
+  DriveIntegrationService* drive_integration_service() {
     return drive::DriveIntegrationServiceFactory::FindForProfile(profile());
   }
 
@@ -463,13 +468,13 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
-                       DISABLED_UploadFromMyFilesNoConnection) {
+IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
   content::NetworkConnectionChangeSimulator().SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_NONE);
+      CONNECTION_NONE);
+  SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
 
   // Define the source file as a test docx file within My files.
   const std::string test_file_name = "text.docx";
@@ -494,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
-                       DISABLED_UploadFromMyFilesConnectionLostDuringUpload) {
+                       UploadFromMyFilesConnectionLostDuringUpload) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
@@ -504,9 +509,11 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, my_files_dir_);
 
-  on_transfer_complete_callback_ = base::BindRepeating([] {
+  on_transfer_complete_callback_ = base::BindLambdaForTesting([this] {
     content::NetworkConnectionChangeSimulator().SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_NONE);
+        CONNECTION_NONE);
+    SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
+    drive_integration_service()->UpdateNetworkState();
   });
 
   base::RunLoop run_loop;
