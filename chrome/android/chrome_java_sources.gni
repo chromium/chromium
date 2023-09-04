@@ -142,6 +142,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetCoordinator.java",
+  "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetLifecycle.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetMediator.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetProperties.java",
   "java/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetView.java",

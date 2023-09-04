@@ -27,9 +27,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -56,6 +60,10 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private WebContents mWebContents;
     @Mock
     private ManagedBottomSheetController mBottomSheetController;
+    @Mock
+    private LayoutStateProvider mLayoutStateProvider;
+    @Mock
+    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetBridge mBridge;
@@ -73,6 +81,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mBridge = new AutofillVcnEnrollBottomSheetBridge();
+
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
+        mBridge.setLayoutStateProviderForTesting(mLayoutStateProvider);
+
+        mBridge.setTabModelSelectorSupplierForTesting(mTabModelSelectorSupplier);
     }
 
     @After

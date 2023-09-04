@@ -16,15 +16,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 /** The mediator controller for the virtual card enrollment bottom sheet. */
-/*package*/ class AutofillVcnEnrollBottomSheetMediator
-        implements BottomSheetContent, View.OnClickListener {
+/*package*/ class AutofillVcnEnrollBottomSheetMediator implements BottomSheetContent {
     private final View mContentView;
     private final ScrollView mScrollView;
-    private final View mAcceptButton;
-    private final View mCancelButton;
-    private final Runnable mOnAccept;
-    private final Runnable mOnCancel;
     private final Runnable mOnDismiss;
+    private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
     private BottomSheetController mBottomSheetController;
 
     /**
@@ -33,27 +29,15 @@ import org.chromium.ui.base.WindowAndroid;
      * @param contentView The bottom sheet content.
      * @param scrollView The view that optionally scrolls the contents within the sheet on smaller
      *                   screens.
-     * @param acceptButton The button that the user taps when they accept the enrollment prompt.
-     * @param cancelButton The button that the user taps when they cancel the enrollment prompt.
-     * @param onAccept The callback to invoke when the user accepts the enrollment prompt.
-     * @param onCancel The callback to invoke when the user cancels the enrollment prompt.
      * @param onDismiss The callback to invoke when the user dismisses the bottom sheet.
+     * @param lifecycle A custom lifecycle that ignores page navigations.
      */
     /*package*/ AutofillVcnEnrollBottomSheetMediator(View contentView, ScrollView scrollView,
-            View acceptButton, View cancelButton, Runnable onAccept, Runnable onCancel,
-            Runnable onDismiss) {
+            Runnable onDismiss, AutofillVcnEnrollBottomSheetLifecycle lifecycle) {
         mContentView = contentView;
         mScrollView = scrollView;
-
-        mAcceptButton = acceptButton;
-        mAcceptButton.setOnClickListener(this);
-
-        mCancelButton = cancelButton;
-        mCancelButton.setOnClickListener(this);
-
-        mOnAccept = onAccept;
-        mOnCancel = onCancel;
         mOnDismiss = onDismiss;
+        mLifecycle = lifecycle;
     }
 
     /**
@@ -64,27 +48,22 @@ import org.chromium.ui.base.WindowAndroid;
      * @return True if shown.
      */
     /*package*/ boolean requestShowContent(WindowAndroid window) {
+        if (!mLifecycle.canBegin()) return false;
+
         mBottomSheetController = BottomSheetControllerProvider.from(window);
         if (mBottomSheetController == null) return false;
 
-        return mBottomSheetController.requestShowContent(this, /*animate=*/true);
-    }
+        boolean didShow = mBottomSheetController.requestShowContent(this, /*animate=*/true);
 
-    @Override
-    public void onClick(View v) {
-        if (v == mAcceptButton) {
-            mOnAccept.run();
-            hide();
-        } else if (v == mCancelButton) {
-            mOnCancel.run();
-            hide();
-        } else {
-            assert false : "Unknown view clicked";
-        }
+        if (didShow) mLifecycle.begin(/*onEndOfLifecycle=*/this::hide);
+
+        return didShow;
     }
 
     /** Hides the bottom sheet, if present. */
     /*package*/ void hide() {
+        if (mLifecycle.hasBegun()) mLifecycle.end();
+
         if (mBottomSheetController == null) return;
         mBottomSheetController.hideContent(this, /*animate=*/true,
                 BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
@@ -114,6 +93,11 @@ import org.chromium.ui.base.WindowAndroid;
     @Override
     public int getPriority() {
         return ContentPriority.HIGH;
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        return true;
     }
 
     @Override

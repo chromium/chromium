@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
@@ -45,15 +46,13 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
+    private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
+    @Mock
     private ManagedBottomSheetController mBottomSheetController;
 
     private WindowAndroid mWindow;
     private View mContentView;
     private ScrollView mScrollView;
-    private View mAcceptButton;
-    private View mCancelButton;
-    private boolean mAccepted;
-    private boolean mCancelled;
     private boolean mDismissed;
     private AutofillVcnEnrollBottomSheetMediator mMediator;
 
@@ -65,21 +64,12 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         Context context = mWindow.getContext().get();
         mContentView = new View(context);
         mScrollView = new ScrollView(context);
-        mAcceptButton = new View(context);
-        mCancelButton = new View(context);
-        mAccepted = false;
-        mCancelled = false;
         mDismissed = false;
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(mContentView, mScrollView,
-                mAcceptButton, mCancelButton, this::onAccept, this::onCancel, this::onDismiss);
+        when(mLifecycle.canBegin()).thenReturn(true);
+        mMediator = new AutofillVcnEnrollBottomSheetMediator(
+                mContentView, mScrollView, this::onDismiss, mLifecycle);
     }
 
-    private void onAccept() {
-        mAccepted = true;
-    }
-    private void onCancel() {
-        mCancelled = true;
-    }
     private void onDismiss() {
         mDismissed = true;
     }
@@ -99,23 +89,12 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     }
 
     @Test
-    public void testClickAcceptButtonAfterShowing() {
+    public void testCannotShowBottomSheet() {
+        when(mLifecycle.canBegin()).thenReturn(false); // E.g., when in tab overview.
+
         mMediator.requestShowContent(mWindow);
 
-        mMediator.onClick(mAcceptButton);
-
-        assertTrue(mAccepted);
-        verifyBottomSheetControllerHideContentCalled();
-    }
-
-    @Test
-    public void testClickCancelButtonAfterShowing() {
-        mMediator.requestShowContent(mWindow);
-
-        mMediator.onClick(mCancelButton);
-
-        assertTrue(mCancelled);
-        verifyBottomSheetControllerHideContentCalled();
+        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test
@@ -130,22 +109,6 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         verify(mBottomSheetController)
                 .hideContent(/*content=*/eq(mMediator), /*animate=*/eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
-    }
-
-    @Test
-    public void testClickAcceptButtonWithoutShowing() {
-        mMediator.onClick(mAcceptButton);
-
-        assertTrue(mAccepted);
-        verifyNoInteractions(mBottomSheetController);
-    }
-
-    @Test
-    public void testClickCancelButtonWithoutShowing() {
-        mMediator.onClick(mCancelButton);
-
-        assertTrue(mCancelled);
-        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test

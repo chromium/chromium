@@ -42,6 +42,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/autofill/settings/SettingsLauncherHelperTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetCoordinatorTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetLifecycleTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskTest.java",
