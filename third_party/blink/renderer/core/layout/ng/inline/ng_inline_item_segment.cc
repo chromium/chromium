@@ -98,6 +98,13 @@ RunSegmenter::RunSegmenterRange NGInlineItemSegment::ToRunSegmenterRange(
                            segment_data_);
 }
 
+std::unique_ptr<NGInlineItemSegments> NGInlineItemSegments::Clone() const {
+  auto new_segments = std::make_unique<NGInlineItemSegments>();
+  new_segments->segments_.AppendVector(segments_);
+  new_segments->items_to_segments_.AppendVector(items_to_segments_);
+  return new_segments;
+}
+
 unsigned NGInlineItemSegments::OffsetForSegment(
     const NGInlineItemSegment& segment) const {
   return &segment == segments_.begin() ? 0 : std::prev(&segment)->EndOffset();

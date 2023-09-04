@@ -77,6 +77,8 @@ class CORE_EXPORT NGInlineItemSegments {
   USING_FAST_MALLOC(NGInlineItemSegments);
 
  public:
+  std::unique_ptr<NGInlineItemSegments> Clone() const;
+
   unsigned size() const { return segments_.size(); }
   bool IsEmpty() const { return segments_.empty(); }
 
