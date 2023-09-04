@@ -569,10 +569,18 @@ class IsMatcherHelper {
   template <typename U>
   static Result<true> Test(typename U::is_gtest_matcher*);
   template <typename U>
+  static Result<true> Test(decltype(&U::MatchAndExplain));
+  template <typename U>
   static Result<false> Test(...);
 
  public:
   static const bool value = decltype(Test<T>(nullptr))::value;
+};
+
+template <class T>
+class IsMatcherHelper<testing::PolymorphicMatcher<T>> {
+ public:
+  static const bool value = true;
 };
 
 template <typename T>
