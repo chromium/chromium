@@ -13,6 +13,7 @@ export enum PrivacyGuideStep {
   COOKIES = 'cookies',
   SAFE_BROWSING = 'safeBrowsing',
   SEARCH_SUGGESTIONS = 'searchSuggestions',
+  PRELOAD = 'preload',
   COMPLETION = 'completion',
 }
 

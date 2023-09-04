@@ -708,6 +708,11 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
           "runMochaSuite('SearchSuggestionsCardNavigations')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PreloadCardNavigations) {
+  RunTest("settings/privacy_guide_page_test.js",
+          "runMochaSuite('PreloadCardNavigations')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuideDialog')");

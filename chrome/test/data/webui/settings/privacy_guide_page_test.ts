@@ -6,13 +6,13 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard} from './privacy_guide_test_util.js';
+import {createPrivacyGuidePageForTest, navigateToStep, clickNextOnWelcomeStep, setCookieSetting, setParametersForCookiesStep, setParametersForHistorySyncStep, setParametersForSafeBrowsingStep, setSafeBrowsingSetting, setupPrivacyGuidePageForTest, setupPrivacyRouteForTest, setupSync, shouldShowCookiesCard, shouldShowHistorySyncCard, shouldShowSafeBrowsingCard, setPreloadSetting, shouldShowPreloadCard} from './privacy_guide_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
@@ -41,6 +41,7 @@ interface AssertCardComponentsVisibleParams {
   isSafeBrowsingFragmentVisibleExpected?: boolean;
   isCookiesFragmentVisibleExpected?: boolean;
   isSearchSuggestionsFragmentVisibleExpected?: boolean;
+  isPreloadFragmentVisibleExpected?: boolean;
 }
 
 function assertCardComponentsVisible({
@@ -54,6 +55,7 @@ function assertCardComponentsVisible({
   isSafeBrowsingFragmentVisibleExpected,
   isCookiesFragmentVisibleExpected,
   isSearchSuggestionsFragmentVisibleExpected,
+  isPreloadFragmentVisibleExpected,
 }: AssertCardComponentsVisibleParams) {
   assertEquals(
       !!isSettingFooterVisibleExpected, isChildVisible(page, '#settingFooter'));
@@ -89,6 +91,11 @@ function assertCardComponentsVisible({
         !!isSearchSuggestionsFragmentVisibleExpected,
         isChildVisible(page, '#' + PrivacyGuideStep.SEARCH_SUGGESTIONS));
   }
+  if (loadTimeData.getBoolean('enablePrivacyGuidePreload')) {
+    assertEquals(
+        !!isPreloadFragmentVisibleExpected,
+        isChildVisible(page, '#' + PrivacyGuideStep.PRELOAD));
+  }
 }
 
 /**
@@ -108,6 +115,10 @@ function getExpectedNumberOfActiveCards(
   }
   if (!shouldShowSafeBrowsingCard(page)) {
     numSteps -= 1;
+  }
+  if (loadTimeData.getBoolean('enablePrivacyGuidePreload') &&
+      shouldShowPreloadCard(page)) {
+    numSteps += 1;
   }
   return numSteps;
 }
@@ -228,6 +239,29 @@ function assertSearchSuggestionsCardVisible(
     isSearchSuggestionsFragmentVisibleExpected: true,
   });
   let activeIndex = 4;
+  if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
+    activeIndex -= 1;
+  }
+  if (!shouldShowCookiesCard(page)) {
+    activeIndex -= 1;
+  }
+  if (!shouldShowSafeBrowsingCard(page)) {
+    activeIndex -= 1;
+  }
+  assertStepIndicatorModel(page, syncBrowserProxy, activeIndex);
+}
+
+function assertPreloadCardVisible(
+    page: SettingsPrivacyGuidePageElement,
+    syncBrowserProxy: TestSyncBrowserProxy) {
+  assertQueryParameter(PrivacyGuideStep.PRELOAD);
+  assertCardComponentsVisible({
+    page: page,
+    isSettingFooterVisibleExpected: true,
+    isBackButtonVisibleExpected: true,
+    isPreloadFragmentVisibleExpected: true,
+  });
+  let activeIndex = 5;
   if (!shouldShowHistorySyncCard(syncBrowserProxy)) {
     activeIndex -= 1;
   }
@@ -1514,6 +1548,83 @@ suite('SearchSuggestionsCardNavigations', function() {
 
   test('hatsInformedOnFinish', async function() {
     await navigateToStep(PrivacyGuideStep.SEARCH_SUGGESTIONS);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+
+    // HaTS gets triggered if the user navigates to the completion page.
+    const interaction =
+        await testHatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
+    assertEquals(TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE, interaction);
+  });
+});
+
+suite('PreloadCardNavigations', function() {
+  let page: SettingsPrivacyGuidePageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  let testHatsBrowserProxy: TestHatsBrowserProxy;
+
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({enablePrivacyGuidePreload: true});
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = null;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    page = createPrivacyGuidePageForTest(settingsPrefs);
+    setupPrivacyGuidePageForTest(page, syncBrowserProxy);
+
+    testHatsBrowserProxy = new TestHatsBrowserProxy();
+    HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // The browser instance is shared among the tests, hence the route needs to
+    // be reset between tests.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('preloadCardBackNavigation', async function() {
+    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
+    await navigateToStep(PrivacyGuideStep.PRELOAD);
+    assertPreloadCardVisible(page, syncBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    assertSearchSuggestionsCardVisible(page, syncBrowserProxy);
+  });
+
+  test('preloadExtendedNavigatesAway', async function() {
+    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
+    await navigateToStep(PrivacyGuideStep.PRELOAD);
+    assertPreloadCardVisible(page, syncBrowserProxy);
+
+    // Changing preload settings to extended while shown should navigate away.
+    setPreloadSetting(page, NetworkPredictionOptions.EXTENDED);
+    await flushTasks();
+    assertCompletionCardVisible(page);
+  });
+
+  test('preloadCardForwardNavigationShouldShowCompletion', async function() {
+    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
+    await navigateToStep(PrivacyGuideStep.PRELOAD);
+    assertPreloadCardVisible(page, syncBrowserProxy);
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+    assertCompletionCardVisible(page);
+  });
+
+  test('hatsInformedOnFinish', async function() {
+    setPreloadSetting(page, NetworkPredictionOptions.STANDARD);
+    await navigateToStep(PrivacyGuideStep.PRELOAD);
 
     page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
 

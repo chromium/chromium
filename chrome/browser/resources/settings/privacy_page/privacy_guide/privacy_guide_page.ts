@@ -33,6 +33,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
+import {NetworkPredictionOptions} from '../../performance_page/constants.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, Router} from '../../router.js';
@@ -132,7 +133,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
       },
 
       syncStatus_: Object,
@@ -141,7 +142,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
+      'onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
@@ -295,11 +296,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         [
           PrivacyGuideStep.SEARCH_SUGGESTIONS,
           {
-            nextStep: PrivacyGuideStep.COMPLETION,
+            nextStep: PrivacyGuideStep.PRELOAD,
             previousStep: PrivacyGuideStep.SAFE_BROWSING,
             onForwardNavigation: () => {
-              HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-                  TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
               this.metricsBrowserProxy_
                   .recordPrivacyGuideNextNavigationHistogram(
                       PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON);
@@ -314,13 +313,25 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
           },
         ],
         [
+          PrivacyGuideStep.PRELOAD,
+          {
+            nextStep: PrivacyGuideStep.COMPLETION,
+            previousStep: PrivacyGuideStep.SEARCH_SUGGESTIONS,
+            onForwardNavigation: () => {
+              HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+                  TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
+            },
+            isAvailable: () => this.shouldShowPreloadCard_(),
+          },
+        ],
+        [
           PrivacyGuideStep.COMPLETION,
           {
             onBackwardNavigation: () => {
               this.metricsBrowserProxy_.recordAction(
                   'Settings.PrivacyGuide.BackClickCompletion');
             },
-            previousStep: PrivacyGuideStep.SEARCH_SUGGESTIONS,
+            previousStep: PrivacyGuideStep.PRELOAD,
             isAvailable: () => true,
           },
         ],
@@ -510,6 +521,12 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         continue;
       }
 
+      if (step === PrivacyGuideStep.PRELOAD) {
+        // TODO(crbug.com/1215630): No metrics are recorded for preload card
+        // now.
+        continue;
+      }
+
       if (step === PrivacyGuideStep.WELCOME) {
         // This card has no status since it is always eligible to be shown and
         // is always reached.
@@ -664,6 +681,22 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         this.getPref('generated.safe_browsing').value;
     return currentSafeBrowsingSetting === SafeBrowsingSetting.ENHANCED ||
         currentSafeBrowsingSetting === SafeBrowsingSetting.STANDARD;
+  }
+
+  private shouldShowPreloadCard_(): boolean {
+    if (!loadTimeData.getBoolean('enablePrivacyGuidePreload')) {
+      // The preload card should only be available when the feature is on.
+      return false;
+    }
+    if (!this.prefs) {
+      // Prefs are not available yet. Show the card until they become available.
+      return true;
+    }
+    const currentPreloadSettings =
+        this.getPref<NetworkPredictionOptions>('net.network_prediction_options')
+            .value;
+    return currentPreloadSettings === NetworkPredictionOptions.STANDARD ||
+        currentPreloadSettings === NetworkPredictionOptions.DISABLED;
   }
 
   private showAnySettingFragment_(): boolean {
