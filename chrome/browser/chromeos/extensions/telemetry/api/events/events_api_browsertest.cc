@@ -5,9 +5,11 @@
 #include <cstddef>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -91,6 +93,9 @@ class TelemetryExtensionEventsApiBrowserTest
   }
 
  protected:
+  void CheckIsEventSupported(const std::vector<std::string>& events,
+                             const std::string& status);
+
   FakeEventsService* GetFakeService() {
     return fake_events_service_impl_.get();
   }
@@ -108,31 +113,110 @@ class TelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
-// Checks that the correct events are available. This checks all released events
-// that are not behind a feature flag.
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckCorrectEventsAvailable) {
-  constexpr char kEnabledEvents[] =
-      "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent', "
-      "'onKeyboardDiagnosticEvent', 'onSdCardEvent', 'onPowerEvent', "
-      "'onStylusGarageEvent', 'onTouchpadButtonEvent', 'onTouchpadTouchEvent', "
-      "'onTouchpadConnectedEvent', 'onExternalDisplayEvent', "
-      "'onStylusConnectedEvent', 'onStylusTouchEvent', "
-      "'onTouchscreenTouchEvent', 'onTouchscreenConnectedEvent']";
+void TelemetryExtensionEventsApiBrowserTest::CheckIsEventSupported(
+    const std::vector<std::string>& events,
+    const std::string& status) {
+  if (events.empty()) {
+    return;
+  }
 
+  std::string event_str;
+  for (const auto& event : events) {
+    if (event_str.empty()) {
+      event_str.append("[");
+    } else {
+      event_str.append(",");
+    }
+    event_str.append("'");
+    event_str.append(event);
+    event_str.append("'");
+  }
+  event_str.append("]");
+
+  // Don't use array.forEach because it doesn't support await.
   CreateExtensionAndRunServiceWorker(base::StringPrintf(R"(
     chrome.test.runTests([
-      function checkSupportedEvents() {
-        const methods = Object.getOwnPropertyNames(chrome.os.events)
-            .filter(item =>
-               typeof chrome.os.events[item].addListener === 'function');
-
-        chrome.test.assertEq(methods.sort(), %s.sort());
+      async function isEventSupported() {
+        const events = %s;
+        for (let i = 0; i < events.length; i++) {
+          const result = await chrome.os.events.isEventSupported(events[i]);
+          chrome.test.assertEq(result, {
+            status: '%s'
+          });
+        }
         chrome.test.succeed();
       }
     ]);
     )",
-                                                        kEnabledEvents));
+                                                        event_str.c_str(),
+                                                        status.c_str()));
+}
+
+// Checks the event supportability.
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       IsEventSupported) {
+  auto supported = crosapi::TelemetryExtensionSupportStatus::NewSupported(
+      crosapi::TelemetryExtensionSupported::New());
+  GetFakeService()->SetIsEventSupportedResponse(std::move(supported));
+
+  std::vector<std::string> unsupported_events;
+  std::vector<std::string> supported_events;
+  crosapi::TelemetryEventCategoryEnum category =
+      crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField;
+  switch (category) {
+    // Features behind a feature flag.
+    case crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField:
+      [[fallthrough]];
+    // Features without a feature flag.
+    case crosapi::TelemetryEventCategoryEnum::kAudioJack:
+      supported_events.push_back("audio_jack");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kLid:
+      supported_events.push_back("lid");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kUsb:
+      supported_events.push_back("usb");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kExternalDisplay:
+      supported_events.push_back("external_display");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kSdCard:
+      supported_events.push_back("sd_card");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kPower:
+      supported_events.push_back("power");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
+      supported_events.push_back("keyboard_diagnostic");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kStylusGarage:
+      supported_events.push_back("stylus_garage");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadButton:
+      supported_events.push_back("touchpad_button");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadTouch:
+      supported_events.push_back("touchpad_touch");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadConnected:
+      supported_events.push_back("touchpad_connected");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kStylusTouch:
+      supported_events.push_back("stylus_touch");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kStylusConnected:
+      supported_events.push_back("stylus_connected");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch:
+      supported_events.push_back("touchscreen_touch");
+      [[fallthrough]];
+    case crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected:
+      supported_events.push_back("touchscreen_connected");
+      break;
+  }
+
+  CheckIsEventSupported(unsupported_events, "unsupported");
+  CheckIsEventSupported(supported_events, "supported");
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,

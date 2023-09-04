@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,6 +31,44 @@ namespace chromeos {
 namespace {
 
 namespace crosapi = ::crosapi::mojom;
+
+std::string GetFeatureName(crosapi::TelemetryEventCategoryEnum category) {
+  switch (category) {
+    case crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField:
+      return "";
+    case crosapi::TelemetryEventCategoryEnum::kAudioJack:
+      return "os.events.onAudioJackEvent";
+    case crosapi::TelemetryEventCategoryEnum::kLid:
+      return "os.events.onLidEvent";
+    case crosapi::TelemetryEventCategoryEnum::kUsb:
+      return "os.events.onUsbEvent";
+    case crosapi::TelemetryEventCategoryEnum::kExternalDisplay:
+      return "os.events.onExternalDisplayEvent";
+    case crosapi::TelemetryEventCategoryEnum::kSdCard:
+      return "os.events.onSdCardEvent";
+    case crosapi::TelemetryEventCategoryEnum::kPower:
+      return "os.events.onPowerEvent";
+    case crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
+      return "os.events.onKeyboardDiagnosticEvent";
+    case crosapi::TelemetryEventCategoryEnum::kStylusGarage:
+      return "os.events.onStylusGarageEvent";
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadButton:
+      return "os.events.onTouchpadButtonEvent";
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadTouch:
+      return "os.events.onTouchpadTouchEvent";
+    case crosapi::TelemetryEventCategoryEnum::kTouchpadConnected:
+      return "os.events.onTouchpadConnectedEvent";
+    case crosapi::TelemetryEventCategoryEnum::kTouchscreenTouch:
+      return "os.events.onTouchscreenTouchEvent";
+    case crosapi::TelemetryEventCategoryEnum::kTouchscreenConnected:
+      return "os.events.onTouchscreenConnectedEvent";
+    case crosapi::TelemetryEventCategoryEnum::kStylusTouch:
+      return "os.events.onStylusTouchEvent";
+    case crosapi::TelemetryEventCategoryEnum::kStylusConnected:
+      return "os.events.onStylusConnectedEvent";
+  }
+  NOTREACHED_NORETURN();
+}
 
 }  // namespace
 
@@ -99,6 +138,34 @@ void EventManager::RemoveObservationsForExtensionAndCategory(
 void EventManager::IsEventSupported(
     crosapi::TelemetryEventCategoryEnum category,
     crosapi::TelemetryEventService::IsEventSupportedCallback callback) {
+  std::string feature_name = GetFeatureName(category);
+  const auto* feature =
+      extensions::FeatureProvider::GetAPIFeatures()->GetFeature(feature_name);
+  // Healthd team uses feature flag "TelemetryExtensionPendingApprovalApi" for
+  // pending APIs. "os.events" API has been released, and we keep adding API
+  // under it like "os.events.abc" and use the feature flag for pending
+  // approval. Once it's approved, we remove it from the "_api_features.json"
+  // file.
+  //
+  // Hence, for the API under "os.events", as long as we can find it in the
+  // "_api_features.json" file, it means it's behind a feature flag and then we
+  // should report it as "unsupported".
+  //
+  // Note 1: This check is based on the above assumption. That is, if we need to
+  // add the feature into _api_features.json due to other reasons, this check
+  // will report incorrect answer.
+  //
+  // TODO(b/296816372): Retrieve the feature flag name to see if it's really
+  // behind a flag.
+  //
+  // Note 2: Indeed this will not work if we control feature access using ways
+  // other than adding feature flag (such as through blocklist).
+  if (feature) {
+    auto unsupported = crosapi::TelemetryExtensionSupportStatus::NewUnsupported(
+        crosapi::TelemetryExtensionUnsupported::New());
+    std::move(callback).Run(std::move(unsupported));
+    return;
+  }
   GetRemoteService()->IsEventSupported(category, std::move(callback));
 }
 
