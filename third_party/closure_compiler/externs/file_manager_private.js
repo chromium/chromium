@@ -692,7 +692,7 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
 /**
  * @typedef {{
  *   driveEnabled: boolean,
- *   cellularDisabled: boolean,
+ *   driveSyncEnabledOnMeteredNetwork: boolean,
  *   searchSuggestEnabled: boolean,
  *   use24hourClock: boolean,
  *   timezone: string,
@@ -709,7 +709,7 @@ chrome.fileManagerPrivate.Preferences;
 
 /**
  * @typedef {{
- *   cellularDisabled: (boolean|undefined),
+ *   driveSyncEnabledOnMeteredNetwork: (boolean|undefined),
  *   arcEnabled: (boolean|undefined),
  *   arcRemovableMediaAccessEnabled: (boolean|undefined),
  *   folderShortcuts: (!Array<string>|undefined),

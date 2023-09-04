@@ -818,7 +818,7 @@ dictionary GetVolumeRootOptions {
 
 dictionary Preferences {
   boolean driveEnabled;
-  boolean cellularDisabled;
+  boolean driveSyncEnabledOnMeteredNetwork;
   boolean searchSuggestEnabled;
   boolean use24hourClock;
   DOMString timezone;
@@ -832,7 +832,7 @@ dictionary Preferences {
 };
 
 dictionary PreferencesChange {
-  boolean? cellularDisabled;
+  boolean? driveSyncEnabledOnMeteredNetwork;
   boolean? arcEnabled;
   boolean? arcRemovableMediaAccessEnabled;
   DOMString[]? folderShortcuts;

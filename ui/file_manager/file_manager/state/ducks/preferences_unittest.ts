@@ -13,7 +13,7 @@ import {Preferences, updatePreferences} from './preferences.js';
  */
 const INITIAL_PREFERENCES: Preferences = {
   driveEnabled: false,
-  cellularDisabled: false,
+  driveSyncEnabledOnMeteredNetwork: false,
   searchSuggestEnabled: false,
   use24hourClock: false,
   timezone: 'GMT+10',
@@ -78,7 +78,7 @@ export async function testPreferencesWithNoKeysUpdates(done: () => void) {
   // all initially `false` and this updates them all to `true` one by one.
   let preferences = INITIAL_PREFERENCES;
   const booleanPreferences = [
-    'cellularDisabled',
+    'driveSyncEnabledOnMeteredNetwork',
     'arcEnabled',
     'arcRemovableMediaAccessEnabled',
     'driveFsBulkPinningEnabled',

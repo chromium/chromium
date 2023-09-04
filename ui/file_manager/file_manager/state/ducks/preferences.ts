@@ -89,7 +89,7 @@ function updatePreferencesReducer(
 
   const updatedPreferences = {...currentState.preferences!};
   const keysToCheck: Array<keyof PreferencesChange> = [
-    'cellularDisabled',
+    'driveSyncEnabledOnMeteredNetwork',
     'arcEnabled',
     'arcRemovableMediaAccessEnabled',
     'folderShortcuts',

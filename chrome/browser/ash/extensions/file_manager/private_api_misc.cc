@@ -239,8 +239,8 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.drive_enabled = drive::util::IsDriveEnabledForProfile(profile) &&
                          drive_integration_service &&
                          !drive_integration_service->mount_failed();
-  result.cellular_disabled =
-      service->GetBoolean(drive::prefs::kDisableDriveOverCellular);
+  result.drive_sync_enabled_on_metered_network =
+      !service->GetBoolean(drive::prefs::kDisableDriveOverCellular);
   if (drive::util::IsDriveFsBulkPinningEnabled(profile)) {
     result.drive_fs_bulk_pinning_enabled =
         service->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
@@ -278,9 +278,11 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   PrefService* const service = profile->GetPrefs();
 
-  if (params->change_info.cellular_disabled) {
+  if (params->change_info.drive_sync_enabled_on_metered_network) {
+    const bool drive_sync_enabled_on_metered_network =
+        *params->change_info.drive_sync_enabled_on_metered_network;
     service->SetBoolean(drive::prefs::kDisableDriveOverCellular,
-                        *params->change_info.cellular_disabled);
+                        !drive_sync_enabled_on_metered_network);
   }
   if (drive::util::IsDriveFsBulkPinningEnabled(profile) &&
       params->change_info.drive_fs_bulk_pinning_enabled) {

@@ -30,7 +30,7 @@ let panel: XfCloudPanel|null = null;
  */
 const PREFERENCES = {
   driveEnabled: false,
-  cellularDisabled: false,
+  driveSyncEnabledOnMeteredNetwork: true,
   searchSuggestEnabled: false,
   use24hourClock: false,
   timezone: 'GMT+10',

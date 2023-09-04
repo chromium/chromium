@@ -20,7 +20,7 @@
 declare namespace chrome {
   export namespace fileManagerPrivate {
     type PreferencesChange = {
-      cellularDisabled: boolean,
+      driveSyncEnabledOnMeteredNetwork: boolean,
       arcEnabled: boolean,
       arcRemovableMediaAccessEnabled: boolean,
       folderShortcuts: string[],

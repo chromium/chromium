@@ -101,9 +101,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
   private syncing_ = false;
 
   /**
-   * When true, sync has been disabled on cellular network.
+   * When true, sync has been enabled on metered networks.
    */
-  private cellularDisabled_ = false;
+  private driveSyncEnabledOnMeteredNetwork_ = false;
 
   private queue_ = new AsyncQueue();
 
@@ -260,7 +260,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * Returns whether the Drive sync is currently suppressed or not.
    */
   isSyncSuppressed() {
-    return navigator.connection.type === 'cellular' && this.cellularDisabled_;
+    return navigator.connection.type === 'cellular' &&
+        !this.driveSyncEnabledOnMeteredNetwork_;
   }
 
   /**
@@ -553,7 +554,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
     switch (notificationId) {
       case NotificationId.DISABLED_MOBILE_SYNC:
         notifications.clear(notificationId, () => {});
-        chrome.fileManagerPrivate.setPreferences({cellularDisabled: false});
+        chrome.fileManagerPrivate.setPreferences(
+            {driveSyncEnabledOnMeteredNetwork: true});
         break;
       case NotificationId.ENABLE_DOCS_OFFLINE:
         notifications.clear(notificationId, () => {});
@@ -586,7 +588,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
    */
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
-      this.cellularDisabled_ = pref.cellularDisabled;
+      this.driveSyncEnabledOnMeteredNetwork_ =
+          pref.driveSyncEnabledOnMeteredNetwork;
     });
   }
 

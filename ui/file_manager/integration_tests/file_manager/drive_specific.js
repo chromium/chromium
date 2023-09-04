@@ -438,6 +438,7 @@ testcase.drivePinHosted = async () => {
 
 /**
  * Tests pinning a file to a mobile network.
+ * TODO(b/296960734): Fix this test once the notification has been fixed.
  */
 testcase.drivePinFileMobileNetwork = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -486,7 +487,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   await repeatUntil(async () => {
     const preferences =
         await remoteCall.callRemoteTestUtil('getPreferences', null, []);
-    return preferences.cellularDisabled ?
+    return !preferences.driveSyncEnabledOnMeteredNetwork ?
         pending(caller, 'Drive sync is still disabled.') :
         null;
   });

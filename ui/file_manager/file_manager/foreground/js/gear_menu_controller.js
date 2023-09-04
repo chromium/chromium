@@ -146,7 +146,7 @@ export class GearMenuController {
         return;
       }
 
-      if (prefs.cellularDisabled) {
+      if (prefs.driveSyncEnabledOnMeteredNetwork) {
         this.gearMenu_.syncButton.setAttribute('checked', '');
       } else {
         this.gearMenu_.syncButton.removeAttribute('checked');
