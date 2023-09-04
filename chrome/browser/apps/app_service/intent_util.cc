@@ -325,12 +325,12 @@ apps::IntentFilters CreateIntentFiltersForExtension(
       extensions::WebFileHandlers::GetFileHandlers(*extension);
   if (intent_filter_data && !intent_filter_data->empty()) {
     apps::IntentFilters filters;
-    for (const auto& file_handler : *intent_filter_data) {
+    for (const auto& web_file_handler : *intent_filter_data) {
       // Flatten mime_types and file_extensions.
       std::vector<std::string> mime_types;
       std::vector<std::string> file_extensions;
       for (const auto [mime_type, file_extension_list] :
-           file_handler.accept.additional_properties) {
+           web_file_handler.file_handler.accept.additional_properties) {
         mime_types.emplace_back(mime_type);
         for (const auto& file_extension : file_extension_list.GetList()) {
           file_extensions.emplace_back(file_extension.GetString());
@@ -338,7 +338,8 @@ apps::IntentFilters CreateIntentFiltersForExtension(
       }
 
       filters.push_back(CreateFileFilter({kIntentActionView}, mime_types,
-                                         file_extensions, file_handler.action));
+                                         file_extensions,
+                                         web_file_handler.file_handler.action));
     }
     return filters;
   }

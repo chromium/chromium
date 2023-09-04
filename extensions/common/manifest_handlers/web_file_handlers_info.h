@@ -15,17 +15,28 @@
 namespace extensions {
 
 using FileHandler = api::file_handlers::FileHandler;
-using WebFileHandlersInfo = std::vector<FileHandler>;
+
+struct WebFileHandler {
+  enum class LaunchType {
+    kSingleClient,
+    kMultipleClients,
+  };
+
+  FileHandler file_handler;
+  LaunchType launch_type = LaunchType::kSingleClient;
+
+  // Return an enum type instead of the idl string type. This value is currently
+  // set to `single-client` if it or nothing is provided, set to
+  // `multiple-clients` if that's provided, or errors in any other case.
+  LaunchType GetLaunchType() const { return launch_type; }
+};
+
+using WebFileHandlersInfo = std::vector<WebFileHandler>;
 
 // Structured contents of the `file_handlers` manifest key.
 struct WebFileHandlers : public Extension::ManifestData {
   WebFileHandlers();
   ~WebFileHandlers() override;
-
-  enum class LaunchType {
-    kSingleClient,
-    kMultipleClients,
-  };
 
   // The list of entries for the web-accessible resources of the extension.
   WebFileHandlersInfo file_handlers;
@@ -44,7 +55,7 @@ struct WebFileHandlers : public Extension::ManifestData {
   // set to `single-client` if it or nothing is provided, set to
   // `multiple-clients` if that's provided, or errors in any other case.
   // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
-  static LaunchType GetLaunchType(
+  static WebFileHandler::LaunchType GetLaunchType(
       const absl::optional<std::string>& launch_type);
 };
 

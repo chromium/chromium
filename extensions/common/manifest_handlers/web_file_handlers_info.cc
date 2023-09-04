@@ -50,7 +50,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
   }
 
   for (size_t i = 0; i < manifest_keys.file_handlers.size(); i++) {
-    FileHandler file_handler;
+    WebFileHandler web_file_handler;
     auto& manifest_file_handler = manifest_keys.file_handlers[i];
 
     // `name` is a string that can't be empty.
@@ -58,7 +58,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
       *error = get_error(i, "`name` must have a value.");
       return nullptr;
     }
-    file_handler.name = std::move(manifest_file_handler.name);
+    web_file_handler.file_handler.name = std::move(manifest_file_handler.name);
 
     // `action` is a string that can't be empty and starts with slash.
     if (manifest_file_handler.action.empty()) {
@@ -68,7 +68,8 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
       *error = get_error(i, "`action` must start with a forward slash.");
       return nullptr;
     }
-    file_handler.action = std::move(manifest_file_handler.action);
+    web_file_handler.file_handler.action =
+        std::move(manifest_file_handler.action);
 
     // `accept` is a dictionary. MIME types are strings with one slash. File
     // extensions are strings or an array of strings where each string has a
@@ -127,7 +128,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
 
     // Make the temporary `accept` permanent by assigning to `file_handler`.
     api::file_handlers::FileHandler::Accept::Populate(
-        accept, file_handler.accept, *error);
+        accept, web_file_handler.file_handler.accept, *error);
 
     // `icon` is an optional array of dictionaries.
     if (manifest_file_handler.icons.has_value()) {
@@ -166,23 +167,32 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
       }
 
       // Append icon.
-      file_handler.icons = std::move(manifest_file_handler.icons);
+      web_file_handler.file_handler.icons =
+          std::move(manifest_file_handler.icons);
     }
 
     // `launch_type` is an optional string that defaults to "single-client".
-    file_handler.launch_type = std::move(manifest_file_handler.launch_type);
-    if (!file_handler.launch_type.has_value()) {
-      file_handler.launch_type = "single-client";
-    } else {
-      const std::string launch_type = file_handler.launch_type.value();
-      if (launch_type != "single-client" && launch_type != "multiple-clients") {
+    {
+      web_file_handler.file_handler.launch_type =
+          std::move(manifest_file_handler.launch_type);
+      const std::string launch_type =
+          web_file_handler.file_handler.launch_type.value_or("single-client");
+
+      // Use an enum for potential validity enforcement and typed comparison.
+      if (launch_type == "single-client") {
+        web_file_handler.launch_type =
+            WebFileHandler::LaunchType::kSingleClient;
+      } else if (launch_type == "multiple-clients") {
+        web_file_handler.launch_type =
+            WebFileHandler::LaunchType::kMultipleClients;
+      } else {
         *error = get_error(i, "`launch_type` must have a valid value.");
         return nullptr;
       }
     }
 
     // Append file handlers.
-    info->file_handlers.emplace_back(std::move(file_handler));
+    info->file_handlers.emplace_back(std::move(web_file_handler));
   }
 
   return info;
@@ -272,14 +282,6 @@ bool WebFileHandlers::SupportsWebFileHandlers(const Extension& extension) {
   bool is_id_in_allowlist = feature->IsIdInAllowlist(extension.hashed_id());
   return is_id_in_allowlist;
 #endif
-}
-
-// static.
-WebFileHandlers::LaunchType WebFileHandlers::GetLaunchType(
-    const absl::optional<std::string>& launch_type) {
-  return launch_type.has_value() && launch_type.value() == "multiple-clients"
-             ? WebFileHandlers::LaunchType::kMultipleClients
-             : WebFileHandlers::LaunchType::kSingleClient;
 }
 
 }  // namespace extensions

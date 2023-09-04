@@ -364,18 +364,18 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
 // Launch an application if `launch_type` is `multiple_clients`. First find a
 // matching handler for the intent. Return `web_contents` if a launch occurred.
 WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
-    const extensions::api::file_handlers::FileHandler& handler,
+    const extensions::WebFileHandler& handler,
     const apps::AppLaunchParams& params,
     Profile* profile,
     const Extension& extension) {
   // Find the matching file_handler definition based on the handler action.
-  if (handler.action != params.intent->activity_name) {
+  if (handler.file_handler.action != params.intent->activity_name) {
     return nullptr;
   }
 
   // Determine if this is single-client (default) or multiple-clients.
-  if (extensions::WebFileHandlers::GetLaunchType(handler.launch_type) !=
-      extensions::WebFileHandlers::LaunchType::kMultipleClients) {
+  if (handler.GetLaunchType() !=
+      extensions::WebFileHandler::LaunchType::kMultipleClients) {
     return nullptr;
   }
 

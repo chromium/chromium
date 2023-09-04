@@ -213,7 +213,7 @@ TEST_F(WebFileHandlersTest, GeneralSuccess) {
 
     // Exercise the web `file_handlers` key with a subkey introduced in MV3.
     for (const auto& file_handler : *file_handlers) {
-      EXPECT_TRUE(file_handler.action.size() > 0);
+      EXPECT_TRUE(file_handler.file_handler.action.size() > 0);
     }
   }
 }

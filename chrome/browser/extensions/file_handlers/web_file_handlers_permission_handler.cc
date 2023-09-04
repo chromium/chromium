@@ -125,15 +125,16 @@ const apps::FileHandlers WebFileHandlersPermissionHandler::GetAppsFileHandlers(
     return web_file_handlers;
   }
 
-  for (const auto& file_handler : *file_handlers) {
-    apps::FileHandler web_file_handler;
-    web_file_handler.action = GURL(file_handler.action);
-    web_file_handler.display_name = base::UTF8ToUTF16(file_handler.name);
+  for (const auto& web_file_handler : *file_handlers) {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL(web_file_handler.file_handler.action);
+    file_handler.display_name =
+        base::UTF8ToUTF16(web_file_handler.file_handler.name);
 
     // Compute `accept`, which contains all mime types and file extensions.
     apps::FileHandler::Accept accept;
     for (const auto [mime_type, file_extension_list] :
-         file_handler.accept.additional_properties) {
+         web_file_handler.file_handler.accept.additional_properties) {
       apps::FileHandler::AcceptEntry accept_entry;
       accept_entry.mime_type = mime_type;
       base::flat_set<std::string> file_extensions;
@@ -143,15 +144,16 @@ const apps::FileHandlers WebFileHandlersPermissionHandler::GetAppsFileHandlers(
       accept_entry.file_extensions = file_extensions;
       accept.emplace_back(accept_entry);
     }
-    web_file_handler.accept = accept;
+    file_handler.accept = accept;
 
     // The default launch type is single client.
-    web_file_handler.launch_type =
-        file_handler.launch_type != "multiple-client"
+    file_handler.launch_type =
+        web_file_handler.launch_type ==
+                WebFileHandler::LaunchType::kSingleClient
             ? apps::FileHandler::LaunchType::kSingleClient
             : apps::FileHandler::LaunchType::kMultipleClients;
 
-    web_file_handlers.emplace_back(web_file_handler);
+    web_file_handlers.emplace_back(file_handler);
   }
 
   return web_file_handlers;
