@@ -119,6 +119,8 @@ class DefaultHandlersForFileExtensionsPolicyHandler
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
+
+  bool IsValidPolicyId(base::StringPiece policy_id) const;
 };
 
 class ScreenMagnifierPolicyHandler : public IntRangePolicyHandlerBase {

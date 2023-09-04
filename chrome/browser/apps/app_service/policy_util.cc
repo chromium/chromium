@@ -91,14 +91,6 @@ GetPreinstalledWebAppsMappingForTesting() {
 
 }  // namespace
 
-bool IsSupportedAppTypePolicyId(base::StringPiece policy_id) {
-  return IsChromeAppPolicyId(policy_id) ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-         IsArcAppPolicyId(policy_id) || IsSystemWebAppPolicyId(policy_id) ||
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-         IsWebAppPolicyId(policy_id) || IsPreinstalledWebAppPolicyId(policy_id);
-}
-
 bool IsChromeAppPolicyId(base::StringPiece policy_id) {
   return crx_file::id_util::IdIsValid(policy_id);
 }

@@ -148,6 +148,14 @@ base::Value CalculateIdleActionValue(const base::Value* idle_action_value,
   return ConvertToActionEnumValue(idle_action_value);
 }
 
+bool IsSupportedAppTypePolicyId(base::StringPiece policy_id) {
+  return apps_util::IsChromeAppPolicyId(policy_id) ||
+         apps_util::IsArcAppPolicyId(policy_id) ||
+         apps_util::IsSystemWebAppPolicyId(policy_id) ||
+         apps_util::IsWebAppPolicyId(policy_id) ||
+         apps_util::IsPreinstalledWebAppPolicyId(policy_id);
+}
+
 }  // namespace
 
 ExternalDataPolicyHandler::ExternalDataPolicyHandler(const char* policy_name)
@@ -361,8 +369,8 @@ PinnedLauncherAppsPolicyHandler::PinnedLauncherAppsPolicyHandler()
 PinnedLauncherAppsPolicyHandler::~PinnedLauncherAppsPolicyHandler() = default;
 
 bool PinnedLauncherAppsPolicyHandler::CheckListEntry(const base::Value& value) {
-  const std::string policy_id = value.GetString();
-  return apps_util::IsSupportedAppTypePolicyId(policy_id);
+  const std::string& policy_id = value.GetString();
+  return IsSupportedAppTypePolicyId(policy_id);
 }
 
 void PinnedLauncherAppsPolicyHandler::ApplyList(base::Value::List filtered_list,
@@ -405,7 +413,7 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
     DCHECK(policy_id);
 
-    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+    if (!IsValidPolicyId(*policy_id)) {
       errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
                        PolicyErrorPath{index, kPolicyEntryPolicyIdKey});
       continue;
@@ -450,7 +458,7 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
     const std::string* policy_id =
         policy_entry_dict.FindString(kPolicyEntryPolicyIdKey);
-    if (!apps_util::IsSupportedAppTypePolicyId(*policy_id)) {
+    if (!IsValidPolicyId(*policy_id)) {
       continue;
     }
 
@@ -465,6 +473,11 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
 
   prefs->SetValue(prefs::kDefaultHandlersForFileExtensions,
                   base::Value(std::move(pref_mapping)));
+}
+
+bool DefaultHandlersForFileExtensionsPolicyHandler::IsValidPolicyId(
+    base::StringPiece policy_id) const {
+  return IsSupportedAppTypePolicyId(policy_id);
 }
 
 ScreenMagnifierPolicyHandler::ScreenMagnifierPolicyHandler()

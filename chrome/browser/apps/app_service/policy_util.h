@@ -33,9 +33,6 @@ class Profile;
 
 namespace apps_util {
 
-// Checks whether |policy_id| specifies an app of supported type.
-bool IsSupportedAppTypePolicyId(base::StringPiece policy_id);
-
 // Checks whether |policy_id| specifies a Chrome App.
 bool IsChromeAppPolicyId(base::StringPiece policy_id);
 
