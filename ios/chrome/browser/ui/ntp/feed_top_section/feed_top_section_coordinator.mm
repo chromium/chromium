@@ -74,9 +74,10 @@
   // If the user is signed out and signin is allowed, then start the top-of-feed
   // signin promo components.
   if (self.isSignInPromoEnabled) {
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForBrowserState(browserState)
+        initWithAccountManagerService:accountManagerService
                           authService:AuthenticationServiceFactory::
                                           GetForBrowserState(browserState)
                           prefService:browserState->GetPrefs()
@@ -89,7 +90,9 @@
     if (base::FeatureList::IsEnabled(
             syncer::kReplaceSyncPromosWithSignInPromos)) {
       self.signinPromoMediator.signinPromoAction =
-          SigninPromoAction::kSigninSheet;
+          accountManagerService->HasIdentities()
+              ? SigninPromoAction::kSigninSheet
+              : SigninPromoAction::kInstantSignin;
     }
     self.signinPromoMediator.consumer = self.feedTopSectionMediator;
     self.feedTopSectionMediator.signinPromoMediator = self.signinPromoMediator;
