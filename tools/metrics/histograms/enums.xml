@@ -33874,6 +33874,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1152" label="ProfileSeparationSettings"/>
   <int value="1153" label="ProfileSeparationDataMigrationSettings"/>
   <int value="1154" label="ProfileSeparationDomainExceptionList"/>
+  <int value="1155" label="FullRestoreMode"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

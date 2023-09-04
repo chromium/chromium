@@ -1527,6 +1527,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGlanceablesEnabled,
     ash::prefs::kGlanceablesEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kFullRestoreMode,
+    ash::full_restore::kRestoreAppsAndPagesPrefName,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
