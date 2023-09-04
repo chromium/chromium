@@ -120,6 +120,7 @@ found in the LICENSE file.
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/privacy_sandbox_notice_dialog_dropdown_button_height"
+                        android:gravity="center_vertical"
                         android:text="@string/privacy_sandbox_m1_consent_learn_more_expand_label"
                         style="@style/TextAppearance.TextMedium.Secondary" />
 

@@ -98,6 +98,7 @@ found in the LICENSE file.
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:minHeight="@dimen/privacy_sandbox_notice_dialog_dropdown_button_height"
                         android:text="@string/privacy_sandbox_m1_notice_eea_learn_more_expand_label"
                         style="@style/TextAppearance.TextMedium.Secondary" />

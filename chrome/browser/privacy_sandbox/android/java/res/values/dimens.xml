@@ -14,7 +14,7 @@ found in the LICENSE file.
   <dimen name="privacy_sandbox_consent_button_margin_between">8dp</dimen>
   <dimen name="privacy_sandbox_notice_button_margin_between">4dp</dimen>
   <dimen name="privacy_sandbox_consent_dropdown_button_height">24dp</dimen>
-  <dimen name="privacy_sandbox_notice_dialog_dropdown_button_height">24dp</dimen>
+  <dimen name="privacy_sandbox_notice_dialog_dropdown_button_height">48dp</dimen>
   <dimen name="privacy_sandbox_notice_margin_bottom">32dp</dimen>
   <dimen name="privacy_sandbox_dialog_title_margin">20dp</dimen>
   <dimen name="privacy_sandbox_chrome_logo_width">40dp</dimen>
