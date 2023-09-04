@@ -398,7 +398,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       // TODO(sstan): Use different UI after UX design finalized.
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
               profile, app_id, *app_info, launch_intent_to_send, event_flags,
-              GhostWindowType::kFixup, window_info)) {
+              GhostWindowType::kFixup, WindowPredictorUseCase::kArcNotReady,
+              window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }
@@ -408,7 +409,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
                arc::GetArcAndroidSdkVersionAsInt() >= arc::kArcVersionR) {
       if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
               profile, app_id, *app_info, launch_intent_to_send, event_flags,
-              GhostWindowType::kAppLaunch, window_info)) {
+              GhostWindowType::kAppLaunch, WindowPredictorUseCase::kArcNotReady,
+              window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }
@@ -439,7 +441,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     // booting) stage. It should be trigger after ARCVM idle for a while.
     if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
             profile, app_id, *app_info, launch_intent_to_send, event_flags,
-            GhostWindowType::kAppLaunch, window_info)) {
+            GhostWindowType::kAppLaunch, WindowPredictorUseCase::kArcVmmSwapped,
+            window_info)) {
       return true;
     }
     VLOG(2) << "Failed to launch ghost window for swapped state, fallback to "
@@ -462,7 +465,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     // For some devices, launch ghost window and app at the same time.
     if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
             profile, app_id, *app_info, launch_intent_to_send, event_flags,
-            GhostWindowType::kAppLaunch, window_info)) {
+            GhostWindowType::kAppLaunch,
+            WindowPredictorUseCase::kInstanceResponse, window_info)) {
       return true;
     }
     VLOG(2) << "Failed to launch ghost window, fallback to launch directly.";

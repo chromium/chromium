@@ -27,6 +27,17 @@ enum class GhostWindowType {
   kMaxValue = kFixup,
 };
 
+// Reason for intentionally use Window Predictor.
+// Passed on launch ghost window by window predictor, also used for UMA counter.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WindowPredictorUseCase {
+  kArcNotReady = 0,
+  kInstanceResponse = 1,
+  kArcVmmSwapped = 2,
+  kMaxValue = kArcVmmSwapped,
+};
+
 // Is the the window info provide enough data to create corresponding ARC ghost
 // window.
 bool CanLaunchGhostWindowByRestoreData(

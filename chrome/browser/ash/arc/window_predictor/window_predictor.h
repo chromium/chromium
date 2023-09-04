@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/window_predictor/arc_predictor_app_launch_handler.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 
 namespace arc {
 
@@ -34,6 +35,7 @@ class WindowPredictor {
       const apps::IntentPtr& intent,
       int event_flags,
       GhostWindowType window_type,
+      WindowPredictorUseCase use_case,
       const arc::mojom::WindowInfoPtr& window_info);
 
   // Get predict app window info by app id and existed window info.

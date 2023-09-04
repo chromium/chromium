@@ -20,7 +20,8 @@ namespace {
 
 constexpr char kWindowPredictorLaunchHistogram[] = "Arc.WindowPredictorLaunch";
 
-// Reason for Window Predictor launch action enumeration; Used for UMA counter.
+// Reason for Window Predictor launch action when failed to launch App
+// enumeration; Used for UMA counter.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class WindowPredictorLaunchType {
@@ -30,6 +31,9 @@ enum class WindowPredictorLaunchType {
   kFailedNoArcAppLaunchHandler = 3,
   kMaxValue = kFailedNoArcAppLaunchHandler,
 };
+
+constexpr char kWindowPredictorUseCaseHistogram[] =
+    "Arc.WindowPredictorUseCase";
 
 // Pre-defined screen size for ARC. See ArcLaunchParamsModifier.java in ARC
 // codebase.
@@ -90,6 +94,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
     const apps::IntentPtr& intent,
     int event_flags,
     GhostWindowType window_type,
+    WindowPredictorUseCase use_case,
     const arc::mojom::WindowInfoPtr& window_info) {
   // ArcGhostWindowHandler maybe null in the test env.
   if (!ash::full_restore::ArcGhostWindowHandler::Get())
@@ -126,6 +131,7 @@ bool WindowPredictor::LaunchArcAppWithGhostWindow(
 
   base::UmaHistogramEnumeration(kWindowPredictorLaunchHistogram,
                                 WindowPredictorLaunchType::kSuccess);
+  base::UmaHistogramEnumeration(kWindowPredictorUseCaseHistogram, use_case);
   return true;
 }
 

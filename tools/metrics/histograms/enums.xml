@@ -115539,6 +115539,12 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="FailedNoArcAppLaunchHandler"/>
 </enum>
 
+<enum name="WindowPredictorUseCase">
+  <int value="0" label="ArcNotReady"/>
+  <int value="1" label="InstanceResponse"/>
+  <int value="2" label="ArcVmmSwapped"/>
+</enum>
+
 <enum name="WindowsDriveType">
   <int value="0" label="DRIVE_UNKNOWN"/>
   <int value="1" label="DRIVE_NO_ROOT_DIR"/>
