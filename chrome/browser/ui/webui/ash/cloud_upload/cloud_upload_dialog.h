@@ -223,6 +223,7 @@ class CloudOpenTask : public BrowserListObserver,
   raw_ptr<CloudUploadDialog, ExperimentalAsh> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;
   int64_t upload_total_size_ = 0;
+  bool has_upload_errors_ = false;
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
 };
