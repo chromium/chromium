@@ -460,7 +460,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)disableTabResumption {
-  // TODO(crbug.com/1464185): Add metrics.
   tab_resumption_prefs::DisableTabResumption(_localState);
   [self hideTabResumption];
 }
@@ -579,8 +578,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)openTabResumptionItem {
   switch (_tabResumptionItem.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      // TODO(crbug.com/1464185): Add metrics.
-      // TODO(crbug.com/1464185): Derank or hide the tile.
+      // TODO(crbug.com/1478156): Add metrics.
+      // TODO(crbug.com/1478156): Derank or hide the tile.
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpened];
@@ -1263,7 +1262,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return;
   }
 
-  // TODO(crbug.com/1464185): Add restrictions.
+  // TODO(crbug.com/1478156): Add restrictions.
   if (_tabResumptionItem) {
     [self.consumer showTabResumptionWithItem:_tabResumptionItem];
     return;

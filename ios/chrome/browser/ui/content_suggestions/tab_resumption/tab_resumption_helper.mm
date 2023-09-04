@@ -134,7 +134,7 @@ void TabResumptionHelper::LastTabResumptionItem(
     if (synced_sessions->GetSessionCount()) {
       // Get the last synced session and tab.
       session = synced_sessions->GetSession(0);
-      // TODO(crbug.com/1464185): Add restrictions.
+      // TODO(crbug.com/1478156): Add restrictions.
       last_synced_tab_synced_time = session->modified_time;
     }
   }
