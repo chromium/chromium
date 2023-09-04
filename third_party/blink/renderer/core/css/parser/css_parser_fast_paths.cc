@@ -1500,6 +1500,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kFlexWrap:
       return value_id == CSSValueID::kNowrap || value_id == CSSValueID::kWrap ||
              value_id == CSSValueID::kWrapReverse;
+    case CSSPropertyID::kFormSizing:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNormal;
     case CSSPropertyID::kHyphens:
 #if BUILDFLAG(USE_MINIKIN_HYPHENATION) || BUILDFLAG(IS_APPLE)
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
@@ -1680,6 +1682,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kEmptyCells,
     CSSPropertyID::kFillRule,
     CSSPropertyID::kFloat,
+    CSSPropertyID::kFormSizing,
     CSSPropertyID::kForcedColorAdjust,
     CSSPropertyID::kHyphens,
     CSSPropertyID::kImageRendering,

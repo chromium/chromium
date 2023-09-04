@@ -3704,6 +3704,13 @@ const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.ForcedColorAdjust());
 }
 
+const CSSValue* FormSizing::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool) const {
+  return CSSIdentifierValue::Create(style.FormSizing());
+}
+
 void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.SetInternalVisitedColor(builder.InitialColorForColorScheme());

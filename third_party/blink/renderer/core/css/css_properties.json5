@@ -1462,6 +1462,16 @@
       computable: false,
     },
     {
+      name: "form-sizing",
+      field_group: "visual",
+      field_template: "keyword",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      keywords: ["auto", "normal"],
+      default_value: "auto",
+      typedom_types: ["Keyword"],
+      runtime_flag: "CssFormSizing",
+    },
+    {
       name: "-webkit-locale",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,

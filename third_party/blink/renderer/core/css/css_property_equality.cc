@@ -417,6 +417,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetFontWeight() == b.GetFontWeight();
     case CSSPropertyID::kForcedColorAdjust:
       return a.ForcedColorAdjust() == b.ForcedColorAdjust();
+    case CSSPropertyID::kFormSizing:
+      return a.FormSizing() == b.FormSizing();
     case CSSPropertyID::kGridAutoColumns:
       return a.GridAutoColumns() == b.GridAutoColumns();
     case CSSPropertyID::kGridAutoFlow:

@@ -238,7 +238,7 @@
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
                 "justify-self", "contain", "contain-intrinsic-width",
-                "contain-intrinsic-height", "container-type",
+                "contain-intrinsic-height", "container-type", "form-sizing",
                 "content-visibility", "aspect-ratio", "overflow-clip-margin",
                 "-internal-align-content-block", "orphans", "widows",
                 "scrollbar-gutter", "break-after", "break-before",

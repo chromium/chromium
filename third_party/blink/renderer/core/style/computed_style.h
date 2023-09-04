@@ -2498,6 +2498,11 @@ class ComputedStyle final : public ComputedStyleBase {
             OverflowClipMargin()->GetMargin() != LayoutUnit());
   }
 
+  // Form-sizing utility function
+  bool DisableControlFixedSize() const {
+    return FormSizing() == EFormSizing::kNormal;
+  }
+
  private:
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;

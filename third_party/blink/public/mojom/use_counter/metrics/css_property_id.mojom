@@ -823,6 +823,7 @@ enum CSSSampleId {
     kTextAutospace = 767,
     kNavigationTrigger = 768,
     kDynamicRangeLimit = 769,
+    kFormSizing = 770,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

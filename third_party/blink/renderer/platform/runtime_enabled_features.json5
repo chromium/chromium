@@ -896,6 +896,11 @@
       base_feature: "none",
     },
     {
+      // crbug.com/1447058
+      name: "CssFormSizing",
+      status: "test",
+    },
+    {
       name: "CSSGridTemplatePropertyInterpolation",
       status: "stable",
       base_feature: "none",
