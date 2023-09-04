@@ -49,9 +49,9 @@ class ImageFetchTabHelper : public ImageFetchJavaScriptFeature::Handler,
   //   1. Call injected JavaScript to get the image data from web page;
   //   2. If JavaScript fails or does not send a message back in 300ms, try
   //   downloading the image by image_fetcher::FetchImageData.
-  void GetImageData(const GURL& url,
-                    const web::Referrer& referrer,
-                    ImageDataCallback callback);
+  virtual void GetImageData(const GURL& url,
+                            const web::Referrer& referrer,
+                            ImageDataCallback callback);
 
   // ImageFetchJavaScriptFeature::Handler.
   void HandleJsSuccess(int call_id,
