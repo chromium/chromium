@@ -40,6 +40,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="1177414119866731261">Hap menynë e Chrome</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1200396280085622191">Përdor Chrome sa herë që troket te lidhjet në mesazhe dhe aplikacione të tjera.</translation>
+<translation id="1201402288615127009">Para</translation>
 <translation id="1207113853726624428">Kërkim i ri</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Fshih për momentin</translation>
@@ -726,6 +727,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5228579091201413441">Aktivizo sinkronizimin</translation>
 <translation id="5232485538978018676">Identifikohu me llogari të menaxhuar</translation>
 <translation id="5234764350956374838">Hiq</translation>
+<translation id="5238301240406177137">Ruaje te llogaria</translation>
 <translation id="5245322853195994030">Anulo sinkronizimin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.}other{Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.}}</translation>
 <translation id="5271549068863921519">Ruaj fjalëkalimin</translation>

@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
 <translation id="3069226013421428034">Permita o login de terceiros em um site específico.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
 <translation id="310297983047869047">Slide anterior</translation>
 <translation id="3109724472072898302">Recolhido</translation>
 <translation id="3114012059975132928">Player de vídeo</translation>

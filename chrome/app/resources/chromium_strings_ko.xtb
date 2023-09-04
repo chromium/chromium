@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="1029669172902658969">다시 실행하여 ChromiumOS 업데이트</translation>
 <translation id="1040916596585577953">Chromium에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
+<translation id="1042552502243217427">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chromium은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습하게 됩니다.</translation>
 <translation id="1065672644894730302">환경설정을 읽을 수 없습니다.
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
@@ -131,6 +132,7 @@
 <translation id="3713809861844741608">새 Chromium 탭에서 링크 열기(&amp;T)</translation>
 <translation id="378917192836375108">Chromium을 사용하면 웹에서 전화번호를 클릭하여 Skype로 통화할 수 있습니다.</translation>
 <translation id="3790262771324122253">Chromium에서 일부 다운로드를 차단하는 이유 알아보기</translation>
+<translation id="3802055581630249637">Chromium은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="3830894615770080216">ChromiumOS 시스템</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS 도움말 보기</translation>
@@ -241,6 +243,7 @@
 <translation id="6132897690380286411">Chromium이 곧 종료되고 데이터가 삭제됩니다</translation>
 <translation id="6134968993075716475">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
 <translation id="6145820983052037069">여기에서 Chromium 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="615103374448673771">사용자가 쿠키를 허용하면 Chromium에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="6175304430031192654">설정에 따라 Chromium에서 쿠키와 현재 URL을 전송할 수도 있습니다.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
@@ -265,6 +268,7 @@
 <translation id="6400112897226594999">컴퓨터 화면에 표시된 Chromium 로고입니다.</translation>
 <translation id="6403826409255603130">Chromium은 빠른 속도로 웹페이지와 애플리케이션을 실행하는 웹 브라우저입니다. 빠르고 안정적이며 사용하기에 편리합니다. Chromium에 내장된 멀웨어 및 악성 코드 방지 기능을 사용하여 더욱 안전하게 웹을 검색하세요.</translation>
 <translation id="6442900851116057561">ChromiumOS 다시 시작</translation>
+<translation id="6443470774889161065">Chromium은 사용자가 방문할 때 페이지를 더 빠르게 로드할 수 있도록 사용자가 방문할 가능성이 높은 페이지를 미리 로드합니다.</translation>
 <translation id="6455857529632101747">Chromium 프로필에 오신 것을 환영합니다</translation>
 <translation id="6475912303565314141">또한 Chromium을 시작할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="648319183876919572">향상된 세이프 브라우징은 위험한 웹사이트와 다운로드로부터 사용자를 보호합니다.</translation>

@@ -312,6 +312,7 @@
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2708051474374549906">Google로 전송되는 인터넷 사용 기록을 토대로 위험한 사이트, 다운로드 항목, 확장 프로그램에 대한 실시간 선제적 보호 조치를 적용합니다.</translation>
+<translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> 브라우저에서 열기</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">체험판</translation>
 <translation id="2718352093833049315">Wi-Fi 연결 시</translation>
@@ -340,6 +341,7 @@
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" />님이 다음 웹사이트의 승인을 요청했습니다.</translation>
+<translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="2886836735871983413">웹을 탐색하면 여기에 사이트 목록이 표시됩니다.</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>

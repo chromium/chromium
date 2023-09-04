@@ -21,6 +21,7 @@
 <translation id="1843424232666537147">Chromium sadrži funkcije koje vam pomažu kod upravljanja internetskim podacima i brzine učitavanja web lokacija.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Mape u Chromiumu</translation>
+<translation id="186734497270163706">Dodirnite Chromium, a zatim Zadana aplikacija preglednika.</translation>
 <translation id="1867772173333403444">4. Odaberite Chromium</translation>
 <translation id="2006345422933397527">Chromium nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2052320862053429062">Chromium povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
@@ -111,6 +112,7 @@ Stvari za razmatranje:
 <translation id="5945387852661427312">Prijavljujete se s računom kojim upravlja domena <ph name="DOMAIN" /> i dajete njenom administratoru kontrolu nad svojim podacima iz Chromiuma. Vaši podaci će se trajno povezati s ovim računom. Odjavom iz Chromiuma će se izbrisati vaši podaci s ovog uređaja, ali će ostati pohranjeni na vašem Google računu.</translation>
 <translation id="5951593919357934226">Iskoristite sve prednosti Chromiuma.</translation>
 <translation id="5983312940147103417">Poboljšajte Chromium</translation>
+<translation id="5985102273857091344">Odaberite Chromium.</translation>
 <translation id="6062449165341879460">Vaša organizacija <ph name="DOMAIN" /> će imati pristup podacima Chromiuma, oznakama, historiji, lozinkama i drugim postavkama koje pohranjujete na ovom računu Kada se odjavite, vaši podaci će biti obrisani s ovog uređaja.  Međutim, vaši podaci će ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija također može postaviti pravila za korisnike koja su specifična za taj račun koja mogu promijeniti ponašanje Chromiuma.</translation>
 <translation id="61109258320235597">Da koristite i sačuvate podatke Chromiuma na Google računu, unesite pristupni izraz.</translation>
 <translation id="6119647025869519954">Da postavite Chromium kao zadani preglednik:
@@ -163,6 +165,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="8013573822802650211">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chromium, prijavite se na svim uređajima</translation>
 <translation id="8071041515667087705">Idite u Postavke Chromiuma.</translation>
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
+<translation id="8115308261377517697">Postavite Chromium kao zadani preglednik</translation>
 <translation id="8235427517854598594">Postaviti Chromium kao zadani preglednik?</translation>
 <translation id="8240981428553046115">Chromium nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="8409374867500149834">Imate najjaču zaštitu Chromea od štetnih web lokacija</translation>

@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">เปิดเมนู Chrome</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1200396280085622191">ใช้ Chrome ทุกครั้งที่คุณแตะลิงก์ในข้อความและแอปอื่นๆ</translation>
+<translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1207113853726624428">ค้นหาใหม่</translation>
 <translation id="1207493287814084192">17:30 น.</translation>
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
@@ -734,6 +735,7 @@
 <translation id="5228579091201413441">เปิดใช้การซิงค์</translation>
 <translation id="5232485538978018676">ลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ</translation>
 <translation id="5234764350956374838">ปิด</translation>
+<translation id="5238301240406177137">บันทึกในบัญชี</translation>
 <translation id="5245322853195994030">ยกเลิกการซิงค์</translation>
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>

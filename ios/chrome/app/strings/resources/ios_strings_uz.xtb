@@ -40,6 +40,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1177414119866731261">Chrome menyusini oching</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1200396280085622191">Xabarlar va boshqa ilovalardagi havolalar bosilganda Chrome ochilsin.</translation>
+<translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1207113853726624428">Yangi qidiruv</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Berkitish</translation>
@@ -734,6 +735,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5228579091201413441">Sinxronlashni yoqish</translation>
 <translation id="5232485538978018676">Boshqariladigan hisobga kirish</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5238301240406177137">Hisobda saqlash</translation>
 <translation id="5245322853195994030">Sinxronizatsiyani bekor qilish</translation>
 <translation id="5271265092610673171">{count,plural, =1{Majburiy maydoncha boʻsh. Saqlashdan oldin uni toʻldiring.}other{Ayrim majburiy maydonchalar boʻsh. Saqlashdan oldin ularni toʻldiring.}}</translation>
 <translation id="5271549068863921519">Parolni saqlash</translation>

@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Nastavite Chrome kot privzeto možnost sinhroniziranja zavihkov, gesel in podatkov za plačilo v vseh napravah.</translation>
 <translation id="1504372625950710826">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="1511320244449497906">Prijavljeni ste in poteka sinhronizacija podatkov z računom, ki ga upravlja domena <ph name="DOMAIN" />, kjer lahko skrbnik zdaj nastavi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
+<translation id="1516692594929310090">Odpiranje mreže zavihkov v Chromu.</translation>
 <translation id="1526327845902180576">Če je omogočeno:
 <ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chrome za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Kaj je treba upoštevati:
 
 Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chromu ni uspelo preveriti vseh gesel. Poskusite znova pozneje.</translation>
+<translation id="6916015246697034114">Iskanje z govorom v Chromu</translation>
 <translation id="6964931465519938134">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="6975725306479268850">Izbira Chroma za samodejno izpolnjevanje</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>
@@ -150,6 +152,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7400722733683201933">O brskalniku Google Chrome</translation>
 <translation id="7501046334262221972">Če želite Chrome nastaviti kot privzeti brskalnik, odprite nastavitve. Dotaknite se »Privzeti brskalnik« in izberite Chrome.</translation>
 <translation id="756809126120519699">Chromovi podatki so izbrisani.</translation>
+<translation id="7581063337314642333">Odpiranje mreže zavihkov v Chromu</translation>
 <translation id="7662994914830945754">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="7669869107155339016">Odprite nastavitve Chroma.</translation>
 <translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
@@ -157,10 +160,13 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> bo imela dostop do podatkov Chroma, zaznamkov, zgodovine, gesel in drugih nastavitev, ki jih shranite v tem računu. Ko se odjavite, bodo podatki izbrisani iz te naprave.  Vaši podatki bodo kljub temu še naprej shranjeni v upravljanem računu Google in bodo na voljo vaši organizaciji. Vaša organizacija lahko nastavi tudi uporabniške pravilnike, specifične za ta račun, to pa lahko spremeni način delovanja Chroma.</translation>
 <translation id="7780154209050837198">Če želite kar najbolje izkoristiti Chrome, se prijavite vanj z računom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je posodobljen</translation>
+<translation id="7897703007638178753">Ogled nedavnih zavihkov v Chromu</translation>
+<translation id="7925119591961387184">Izberite »Chrome«.</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="804638182476029347">Dovolite obvestila za Chrome, če želite prejemati opozorila o znižanju cen</translation>
 <translation id="81358522153858150">Chrome zdaj podpira uporabniške pravilnike za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Chroma ni mogoče posodobiti</translation>
+<translation id="8174679664544842874">Odpiranje novega zavihka v Chromu.</translation>
 <translation id="8213758103105806860">Ogled zaznamkov v Chromu</translation>
 <translation id="8357607116237445042">Izberite, ali želite izbrisati podatke v Chromu iz te naprave ali jih obdržati.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
@@ -174,8 +180,10 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
   2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
   3. Izberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Dotaknite se »Chrome« in nato »Default Browser App« (Privzeti brskalnik).</translation>
 <translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
+<translation id="8760668027640688122">Odpiranje novega zavihka v Chromu</translation>
 <translation id="8765470054473112089">Ko tipkate v naslovno vrstico ali iskalno polje, Chrome vaše vnose pošlje v privzeti iskalnik zaradi boljših predlogov. V anonimnem načinu je to izklopljeno.</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
 <translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
@@ -185,6 +193,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="8897749957032330183">Gesla so shranjena v Googlovem upravitelju gesel v tej napravi.</translation>
+<translation id="8949681853939555434">Nastavite Chrome kot privzeti brskalnik</translation>
 <translation id="8969290730818637510">Če je omogočeno:
 <ph name="BEGIN_INDENT" />  • Pomagate izboljšati Chrome za ljudi, ki ga uporabljajo kot vi.<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@ Kaj je treba upoštevati:
   • Če vklopite sinhronizacijo, bodo meritve vključevale tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 <translation id="9122931302567044771">To pomeni, da bo Chrome vsakič zahteval spletno mesto za namizne naprave.</translation>
+<translation id="9181628561061032322">Odpiranje nedavnih zavihkov v Chromu.</translation>
 </translationbundle>

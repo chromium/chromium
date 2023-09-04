@@ -4221,7 +4221,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4351770750390404505"><ph name="BEGIN_PARAGRAPH1" />Per garantire un'esperienza ottimale, <ph name="DEVICE_OS" /> raccoglie i dati relativi all'hardware dei dispositivi e li condivide con Google per stabilire quali aggiornamenti devono essere recapitati. Se vuoi, puoi consentire a Google di usare questi dati per ulteriori scopi quali il supporto e i miglioramenti dell'assistenza e dell'esperienza relative a <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi accedere su questo dispositivo e visitare la sezione CHROMEOSFLEX_HARDWARE_INFO in chrome://system per visualizzare i dati inviati a Google per il filtro degli aggiornamenti, nonché eventuali altri casi in cui decidi di condividere dati con Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Visita la pagina g.co/flex/HWDataCollection per avere maggiori informazioni sui dati che <ph name="DEVICE_OS" /> potrebbe condividere con Google e sulle relative modalità di utilizzo.<ph name="END_PARAGRAPH3" /></translation>
-<translation id="435185728237714178">Vai all'app "<ph name="APP_NAME" />" per gestire le app installate e in streaming</translation>
+<translation id="435185728237714178">Vai all'app "<ph name="APP_NAME" />" per gestire le app installate e riprodotte in streaming</translation>
 <translation id="4354073718307267720">Chiedi conferma quando un sito vuole creare una mappa 3D dell'ambiente circostante o monitorare la posizione della fotocamera</translation>
 <translation id="4354344420232759511">Qui verranno visualizzati i siti visitati</translation>
 <translation id="435527878592612277">Seleziona la foto</translation>

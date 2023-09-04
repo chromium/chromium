@@ -161,6 +161,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="7897703007638178753">Prikaz nedavnih kartica u Chromeu</translation>
+<translation id="7925119591961387184">Odaberite Chrome.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite obavještenja Chromea da dobijate obavještenja o padu cijena</translation>
 <translation id="81358522153858150">Chrome sada podržava korisnička pravila za vaš upravljani račun</translation>
@@ -179,6 +180,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Dodirnite Chrome, a zatim Zadana aplikacija preglednika.</translation>
 <translation id="8603022514504485810">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
 <translation id="8760668027640688122">Otvaranje nove kartice u Chromeu</translation>
@@ -191,6 +193,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
 <translation id="8897749957032330183">Lozinke se pohranjuju u Google upravitelju lozinki na ovom uređaju.</translation>
+<translation id="8949681853939555434">Postavite Chrome kao zadani preglednik</translation>
 <translation id="8969290730818637510">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomozite nam da poboljšamo Chrome za osobe koje ga koriste na isti način kao i vi.<ph name="END_INDENT" />
 

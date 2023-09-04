@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">الدفع</translation>
 <translation id="1846432862466000825">بلاستيك (أرشفة)</translation>
 <translation id="1848982255014129637">تصوير (شديد اللمعان)</translation>
+<translation id="1853392626017747777">تم إغلاق تسجيل البطاقة الافتراضية.</translation>
 <translation id="1854180393107901205">إيقاف البث</translation>
 <translation id="1855370856221982654">ملاكمة</translation>
 <translation id="1856713167556118146">إجراءات لا ينفّذها وضع التصفُّح المتخفي</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">جديد</translation>
 <translation id="1935995810530254458">النسخ على أيّ حال</translation>
 <translation id="1939175642807587452">السماح للموقع الإلكتروني بطلب إرسال إشعارات</translation>
+<translation id="1940441167050915935">حذف رموز الأمان المحفوظة</translation>
 <translation id="1943994668912612445">تصميم</translation>
 <translation id="1945968466830820669">‏قد تفقد إمكانية الوصول إلى حساب مؤسستك أو تتعرَّض لسرقة هويتك. لذا، يوصي Chromium بتغيير كلمة مرورك الآن.</translation>
 <translation id="1946849748901605102">12 × 15 بوصة</translation>
@@ -1730,6 +1732,7 @@
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">تم ربط مكافأة لاسترداد جزء من المال.</translation>
+<translation id="4631881646528206880">تسجيل البطاقة الافتراضية</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4638670630777875591">‏وضع التصفّح المتخفي في متصفّح Chromium</translation>
 <translation id="464342062220857295">ميزات البحث</translation>
@@ -1844,6 +1847,7 @@
 <translation id="4854853140771946034">‏إنشاء ملاحظة جديدة في Google Keep بسرعة</translation>
 <translation id="485902285759009870">جارٍ التحقّق من الرمز…</translation>
 <translation id="4862630594858951805">هل تريد تلقّي رسائل إلكترونية عند انخفاض السعر؟</translation>
+<translation id="4864406669374375262">تم نسخ سلسلة الإصدار إلى الحافظة.</translation>
 <translation id="486459320933704969">يجب أن يوافق الوصي عليك أو أحد والديَك على طلبك بزيارة هذا الموقع الإلكتروني.</translation>
 <translation id="4866506163384898554">اضغط على |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| لعرض المؤشر.</translation>
 <translation id="4873616204573862158">نظارات</translation>
@@ -3532,6 +3536,7 @@
 <translation id="8339163506404995330">لن تتم ترجمة الصفحات باللغة <ph name="LANGUAGE" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">إذا كنت على دراية بالمخاطر التي تهدد أمانك، يمكنك <ph name="BEGIN_LINK" />زيارة هذا الموقع<ph name="END_LINK" /> قبل أن تتم إزالة البرامج الضارة.</translation>
+<translation id="8344776605855290140">تم فتح تسجيل البطاقة الافتراضية بطول الشاشة.</translation>
 <translation id="8347658365704983341">تعليم عن بُعد</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>

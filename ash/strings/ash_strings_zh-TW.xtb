@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C 裝置 (左側連接埠)</translation>
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">開啟「探索」</translation>
 <translation id="1294929383540927798">變更螢幕鎖定通知設定</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">推薦應用程式</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">在應用程式排列顯示畫面中移動應用程式圖示</translation>
 <translation id="2620016719323068571">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容...</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="2620900772667816510">高解析度藍牙</translation>
 <translation id="2621713457727696555">已受到安全保護</translation>
 <translation id="2624588537172718173">裝置音訊和麥克風</translation>
 <translation id="263399434338050016">「全選」</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">關閉桌面和視窗</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在復原 <ph name="DEVICE_TYPE" />。你的裝置將會重設，且所有資料將遭到刪除。</translation>
 <translation id="3171170659304083361">輸入法設定</translation>
+<translation id="3176221688814061633">Chromebook 或藍牙裝置使用的是舊版藍牙。請開啟高解析度藍牙或使用內部麥克風，以提高音訊品質。</translation>
 <translation id="3181441307743005334">重新啟動中，請稍候</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已連線至一部裝置}other{已連線至 # 部裝置}}</translation>
 <translation id="320207200541803018">設定計時器</translation>
@@ -1494,6 +1497,7 @@
 <translation id="7189412385142492784">金星有多遠</translation>
 <translation id="7198435252016571249">攝影機已對齊右下角，與系統平台發生衝突。</translation>
 <translation id="7219573373513695352">未連線到任何裝置</translation>
+<translation id="7229029500464092426">記憶體可用量：<ph name="AVAILABLE_MEMORY" /> | 總量：<ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。這部 Chromebook 需要重新啟動才能套用更新。最多可能需要 1 分鐘才能完成。</translation>
 <translation id="7256634071279256947">後置麥克風</translation>
 <translation id="7258828758145722155">昨天編輯過</translation>
@@ -1519,6 +1523,7 @@
 <translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
 <translation id="736045644501761622">設定桌布和樣式</translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
+<translation id="7372069265635026568">記憶體總容量為 <ph name="TOTAL_MEMORY" />，還可使用 <ph name="AVAILABLE_MEMORY" /></translation>
 <translation id="737315737514430195">這將允許具有麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
 <translation id="7377481913241237033">使用代碼進行連結</translation>

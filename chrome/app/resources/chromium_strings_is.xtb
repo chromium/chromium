@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Halda uppsetningu áfram</translation>
 <translation id="1029669172902658969">Endurræstu til að uppfæra &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">Chromium mælir með að þú farir yfir þessa viðbót</translation>
+<translation id="1042552502243217427">Þegar vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðunni sinni notar Chromium Google-þjóna. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig en Google lærir að þekkja hvaða vefsvæðum er forhlaðið.</translation>
 <translation id="1065672644894730302">Ekki er tókst að lesa kjörstillingarnar þínar.
 
 Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingum verða ekki vistaðar.</translation>
@@ -131,6 +132,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="3713809861844741608">Opna &amp;tengil í nýjum Chromium flipa</translation>
 <translation id="378917192836375108">Með Chromium geturðu smellt á símanúmer á vefnum og hringt í það með Skype!</translation>
 <translation id="3790262771324122253">Kynntu þér hvers vegna Chromium lokar á sumt niðurhal</translation>
+<translation id="3802055581630249637">Chromium forhleður síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær</translation>
 <translation id="3830894615770080216">ChromiumOS kerfi</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Fá hjálp með ChromiumOS</translation>
@@ -241,6 +243,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6132897690380286411">Chromium mun bráðlega lokast og eyða gögnum</translation>
 <translation id="6134968993075716475">Slökkt er á öruggri vefskoðun. Chromium mælir með því að kveikt sé á henni.</translation>
 <translation id="6145820983052037069">Hér geturðu skipt á milli Chromium prófíla</translation>
+<translation id="615103374448673771">Ef þú leyfir fótspor kann Chromium að nota þau við forhleðslu</translation>
 <translation id="6175304430031192654">Chromium kann einnig að senda fótspor og opna vefslóð, allt eftir því hvaða stillingar eru valdar</translation>
 <translation id="6183079672144801177">Vertu viss um að þú sért skráð(ur) inn á Chromium í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="6212496753309875659">Á þessari tölvu er þegar nýrri útgáfa af Chromium. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Chromium og reyna aftur.</translation>
@@ -265,6 +268,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6400112897226594999">Chromium-lógó á tölvuskjá.</translation>
 <translation id="6403826409255603130">Chromium er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Chromium gegn spilliforritum og vefveiðum.</translation>
 <translation id="6442900851116057561">Endurræsa ChromiumOS</translation>
+<translation id="6443470774889161065">Chromium forhleður fleiri síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær</translation>
 <translation id="6455857529632101747">Velkomin(n) í Chromium prófíla</translation>
 <translation id="6475912303565314141">Stýrir því einnig hvaða síða birtist þegar þú ræsir Chromium.</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>

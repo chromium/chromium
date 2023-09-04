@@ -1892,6 +1892,13 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 <translation id="262740370354162807">Sturen van documenten naar <ph name="CLOUD_PRINT_NAME" /> aanzetten</translation>
 <translation id="2633084400146331575">Gesproken feedback aanzetten</translation>
 <translation id="2633907568797306353">Toestaan dat Phone Hub-meldingen worden aangezet</translation>
+<translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> kan verzoeken voor het maken van toegangssleutels/WebAuthn rechtstreeks naar iCloud Sleutelhanger op macOS 13.5 of hoger sturen. Als iCloud Sleutelhanger-synchronisatie nog niet is aangezet, wordt de gebruiker gevraagd om in te loggen bij iCloud of iCloud Sleutelhanger-synchronisatie aan te zetten.
+
+Als je dit beleid instelt op False, wordt iCloud Sleutelhanger niet standaard gebruikt en kan het eerdere gedrag (inloggegevens maken in het <ph name="PRODUCT_NAME" />-profiel) worden gebruikt. Gebruikers kunnen iCloud Sleutelhanger nog steeds als optie selecteren en kunnen de inloggegevens van iCloud Sleutelhanger nog steeds zien als ze inloggen.
+
+Als je dit beleid instelt op True, is iCloud Sleutelhanger de standaardinstelling als het WebAuthn-verzoek compatibel is met die keuze.
+
+Als je dit beleid niet instelt, is de standaard afhankelijk van factoren zoals of iCloud Drive aanstaat en of de gebruiker recent inloggegevens heeft gebruikt of gemaakt in hun <ph name="PRODUCT_NAME" />-profiel.</translation>
 <translation id="2635872253077105112">Met dit beleid kun je de lijst met websites instellen die in een alternatieve browser moeten worden geopend. Elk item wordt behandeld als regel waarmee iets in een alternatieve browser wordt geopend. <ph name="PRODUCT_NAME" /> gebruikt deze regels bij de keuze of een URL in een alternatieve browser moet worden geopend. Als de add-in van <ph name="IE_PRODUCT_NAME" /> aanstaat, schakelt <ph name="IE_PRODUCT_NAME" /> terug naar <ph name="PRODUCT_NAME" /> als de regels niet overeenkomen. Als regels elkaar tegenspreken, gebruikt <ph name="PRODUCT_NAME" /> de meest specifieke regel.
 
       Als je het beleid niet instelt, worden er geen websites aan de lijst toegevoegd.
@@ -5238,6 +5245,7 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
       Als je dit beleid instelt op False of niet instelt, worden de waarschuwingen over beëindiging getoond.</translation>
 <translation id="5659776687676755342">Geluid voor een bijna lege batterij aanzetten</translation>
 <translation id="5660228672907979869">Voorkomen dat partitionering van opslag door derden kan worden aangezet.</translation>
+<translation id="5660950553460381588">Toegangssleutels waar mogelijk standaard maken in iCloud Sleutelhanger.</translation>
 <translation id="5666457529647159548">Gebruikers toestaan geïnstalleerde clientcertificaten te beheren.</translation>
 <translation id="567377007899266033">Als het beleid wordt ingesteld op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor extensies naar Google gestuurd. Er worden geen gebeurtenissen geregistreerd als het beleid is ingesteld op False. Als het beleid niet is ingesteld, is True de standaardwaarde.</translation>
 <translation id="5676740747107495269">Toegankelijkheidsopties tonen in het systeemvakmenu op het inlogscherm</translation>
@@ -5552,6 +5560,13 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 <translation id="5984237109586500246">Webcontent accepteren die wordt geleverd als Signed HTTP Exchanges</translation>
 <translation id="5987654816293745077">Runtime-tellers voor apparaat rapporteren</translation>
 <translation id="5991707691018985057">Annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor de beforeunload-gebeurtenis. Annuleringsdialoogvenster niet tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
+<translation id="5992485316563377005">Als je dit beleid toepast of niet instelt, staat Code-integriteit van weergaveprogramma aan.
+
+      Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" /> omdat onbekende en potentieel schadelijke code kan worden geladen in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in de processen van het weergaveprogramma van <ph name="PRODUCT_NAME" /> moeten worden uitgevoerd.
+
+      Dit beleid is verwijderd in Chrome 118 en wordt genegeerd als het is ingesteld.
+
+      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="5994438001592408007">Glanceables staan aan voor gebruikers.</translation>
 <translation id="5997543603646547632">Klok met 24-uursnotatie standaard gebruiken</translation>
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgezet (beëindigd)</translation>
@@ -6197,6 +6212,9 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner zijn dan de inactieve vertraging.</translation>
 <translation id="6497085755801788141">De ingebouwde certificaatverificatie gebruiken</translation>
+<translation id="65055701428353978">Als je dit beleid instelt, specificeer je voor elke getroffen extensie een lijst met OAuth-omleidingen die naast de standaard omleiding https://&lt;extension id&gt;.chromiumapp.org/ kunnen worden gebruikt door extensies met de <ph name="IDENTITY_API_NAME" />-API (<ph name="IDENTITY_API_URL" />).
+
+Als je het beleid niet instelt of als je een lege lijst met URL's invoert, mogen alle apps of extensies alleen de standaard omleiding gebruiken als ze de <ph name="IDENTITY_API_NAME" />-API gebruiken.</translation>
 <translation id="6506486086262398387">Als je het beleid toepast, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid niet toepast, staat NTLM-verificatie voor SMB-fileshares uit.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
@@ -6427,6 +6445,7 @@ Als je dit beleid instelt op False, wordt het oude gedrag toegepast.</translatio
 <translation id="6661178198729301029">Cloudrapportage voor beheerde profielen aanzetten</translation>
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
+<translation id="6669691206059842248">Extra OAuth-omleidingen per extensie instellen</translation>
 <translation id="6669700740683748046">Met deze functie is de volledige URL in de adresbalk zichtbaar.
       Als je dit beleid instelt op True, is de volledige URL zichtbaar in de adresbalk, inclusief schema's en subdomeinen.
       Als je dit beleid instelt op False, wordt de standaard URL-weergave toegepast.
@@ -7172,6 +7191,7 @@ Als je dit beleid instelt op <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTA
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7317472245305274219">Bepalen of het maken van toegangssleutels standaard wordt ingesteld op iCloud Sleutelhanger.</translation>
 <translation id="7322825363493984512">Het wachtwoord om systeemservices te verifiëren bij de externe webproxy.</translation>
 <translation id="7323773727263636287">Zet de toegankelijkheidsfunctie voor kleurcorrectie aan.
 
@@ -7240,6 +7260,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7372831798009983116">Toegankelijkheidsfunctie voor automatisch klikken aanzetten</translation>
 <translation id="7373200034079131670">Opnieuw opstarten bij uitloggen gebruiker als Android of een VM is gestart.</translation>
+<translation id="7374784840090523241">Toegangssleutels worden standaard op andere opslaglocaties gemaakt, zoals het <ph name="PRODUCT_NAME" />-profiel.</translation>
 <translation id="7375785904116479354">Als je het beleid toepast, wordt de standaard zoekmachine van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, wordt de standaard zoekmachine niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor de standaard zoekmachine aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>

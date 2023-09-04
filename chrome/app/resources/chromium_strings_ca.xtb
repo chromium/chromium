@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Reprèn la instal·lació</translation>
 <translation id="1029669172902658969">Reinicia per actualitzar &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium et recomana que revisis aquesta extensió</translation>
+<translation id="1042552502243217427">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chromium fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="1065672644894730302">No es poden llegir les vostres preferències. És possible que algunes funcions no estiguin disponibles i que els canvis a les preferències no es desin.</translation>
 <translation id="1083934481477628225">El teu pare o mare ha desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium</translation>
 <translation id="1098170124587656448">Chromium pot ajudar a protegir-te de violacions de les dades, d'extensions malicioses i més</translation>
@@ -129,6 +130,7 @@
 <translation id="3713809861844741608">Obre l'enllaç en una pes&amp;tanya nova a Chromium</translation>
 <translation id="378917192836375108">Chromium us permet fer clic en un número de telèfon al web i trucar-hi amb Skype!</translation>
 <translation id="3790262771324122253">Descobreix per què Chromium bloqueja algunes baixades</translation>
+<translation id="3802055581630249637">Chromium precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="3830894615770080216">Sistema Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
 <translation id="386822487697155367">Obtén ajuda per a Chromium OS</translation>
@@ -239,6 +241,7 @@
 <translation id="6132897690380286411">Chromium es tancarà aviat i suprimirà les dades</translation>
 <translation id="6134968993075716475">Navegació segura està desactivada. Chromium recomana activar-la.</translation>
 <translation id="6145820983052037069">Pots canviar entre perfils de Chromium aquí</translation>
+<translation id="615103374448673771">Si permets les galetes, Chromium pot utilitzar-les en la precàrrega</translation>
 <translation id="6175304430031192654">En funció de la teva configuració, Chromium també pot enviar galetes i el teu URL actual</translation>
 <translation id="6183079672144801177">Assegura't que tinguis la sessió iniciada a Chromium a <ph name="TARGET_DEVICE_NAME" /> i prova d'enviar-ho de nou.</translation>
 <translation id="6212496753309875659">Aquest equip ja té una versió més recent de Chromium. Si el programari no funciona, desinstal·leu Chromium i torneu-ho a provar.</translation>
@@ -263,6 +266,7 @@
 <translation id="6400112897226594999">Logotip de Chromium a l'interior d'una pantalla d'ordinador.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
 <translation id="6442900851116057561">Reinicia Chromium OS</translation>
+<translation id="6443470774889161065">Chromium precarrega encara més pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="6455857529632101747">Et donem la benvinguda als perfils de Chromium</translation>
 <translation id="6475912303565314141">També controla la pàgina que es mostra quan inicieu Chromium.</translation>
 <translation id="648319183876919572">La Navegació segura millorada és més eficaç a l'hora de protegir-te de baixades i llocs web perillosos</translation>

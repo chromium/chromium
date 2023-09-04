@@ -436,6 +436,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1842969606798536927">Mokėti</translation>
 <translation id="1846432862466000825">Plastikas (archyvinis)</translation>
 <translation id="1848982255014129637">Fotopopierius (itin blizgus)</translation>
+<translation id="1853392626017747777">Virtualiosios kortelės registracijos langas uždarytas</translation>
 <translation id="1854180393107901205">Sustabdyti perdavimą</translation>
 <translation id="1855370856221982654">Boksas</translation>
 <translation id="1856713167556118146">Kas neatliekama inkognito režimu</translation>
@@ -472,6 +473,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1924727005275031552">Naujas</translation>
 <translation id="1935995810530254458">Vis tiek kopijuoti</translation>
 <translation id="1939175642807587452">Gali būti prašoma siųsti pranešimus</translation>
+<translation id="1940441167050915935">Ištrinti išsaugotus saugos kodus</translation>
 <translation id="1943994668912612445">Dizainas</translation>
 <translation id="1945968466830820669">Galite prarasti prieigą prie organizacijos paskyros arba gali būti pavogta tapatybė. „Chromium“ rekomenduoja pakeisti slaptažodį dabar.</translation>
 <translation id="1946849748901605102">12 x 15 col.</translation>
@@ -1732,6 +1734,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4628948037717959914">Nuotrauka</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Grynųjų grąžinimas susietas</translation>
+<translation id="4631881646528206880">Virtualios kortelės registracija</translation>
 <translation id="4636930964841734540">Informacija</translation>
 <translation id="4638670630777875591">Inkognito režimas naršyklėje „Chromium“</translation>
 <translation id="464342062220857295">Paieškos funkcijos</translation>
@@ -1846,6 +1849,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4854853140771946034">Greitai sukurkite naują „Google Keep“ užrašą</translation>
 <translation id="485902285759009870">Patvirtinamas kodas...</translation>
 <translation id="4862630594858951805">Norite gauti el. laiškus, kai kaina sumažės?</translation>
+<translation id="4864406669374375262">Versijos eilutė nukopijuota į iškarpinę</translation>
 <translation id="486459320933704969">Vienas iš tėvų ar globėjų turi patvirtinti, kad galite apsilankyti šioje svetainėje</translation>
 <translation id="4866506163384898554">Paspauskite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />, kad būtų rodomas žymeklis</translation>
 <translation id="4873616204573862158">Akiniai</translation>
@@ -3535,6 +3539,7 @@ Papildoma išsami informacija:
 <translation id="8339163506404995330">Puslapiai, parašyti <ph name="LANGUAGE" />, verčiami nebus</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
 <translation id="834457929814110454">Jei suprantate, kokia rizika gali kilti jūsų saugai, galite <ph name="BEGIN_LINK" />apsilankyti šioje svetainėje<ph name="END_LINK" />, kol iš jos dar nepašalintos kenkėjiškos programos.</translation>
+<translation id="8344776605855290140">Virtualios kortelės registracijos langas atidarytas per visą ekrano aukštį</translation>
 <translation id="8347658365704983341">Nuotolinis mokymasis</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>

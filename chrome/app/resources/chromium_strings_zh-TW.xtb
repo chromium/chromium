@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="1029669172902658969">重新啟動以更新 Chromium OS(&amp;C)</translation>
 <translation id="1040916596585577953">Chromium 建議你檢查這項擴充功能</translation>
+<translation id="1042552502243217427">當網站要求以私密方式預先載入網頁上的連結時，Chromium 會使用 Google 伺服器進行預先載入作業。這麼做可在預先載入網站中隱藏你的身分，但 Google 會知道這類網站預先載入的內容。</translation>
 <translation id="1065672644894730302">系統無法讀取你的偏好設定。部分功能可能無法使用，且系統也不會儲存任何偏好設定的變更。</translation>
 <translation id="1083934481477628225">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定</translation>
 <translation id="1098170124587656448">Chromium 可確保安全性，例如防範資料侵害事件或封鎖含有惡意軟體的擴充功能等等</translation>
@@ -129,6 +130,7 @@
 <translation id="3713809861844741608">在新的 Chromium 分頁中開啟連結(&amp;T)</translation>
 <translation id="378917192836375108">透過 Chromium，你只要按一下網路上的電話號碼，即可用 Skype 打電話！</translation>
 <translation id="3790262771324122253">瞭解 Chromium 封鎖某些下載內容的原因</translation>
+<translation id="3802055581630249637">Chromium 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="3830894615770080216">Chromium OS 系統</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">前往 Chromium OS 說明頁面</translation>
@@ -239,6 +241,7 @@
 <translation id="6132897690380286411">Chromium 即將關閉並刪除資料</translation>
 <translation id="6134968993075716475">安全瀏覽功能已停用。Chromium 建議啟用這項功能。</translation>
 <translation id="6145820983052037069">你可以在這裡切換不同的 Chromium 設定檔</translation>
+<translation id="615103374448673771">如果你允許 Cookie，Chromium 可能會使用 Cookie 預先載入網頁</translation>
 <translation id="6175304430031192654">視你的設定而定，Chromium 也可能會傳送 Cookie 和你目前的網址</translation>
 <translation id="6183079672144801177">請確認你已在「<ph name="TARGET_DEVICE_NAME" />」上登入 Chromium，然後再傳送一次。</translation>
 <translation id="6212496753309875659">這台電腦已安裝較新的 Chromium 版本。如果軟體無法順利運作，請解除安裝 Chromium，然後再試一次。</translation>
@@ -263,6 +266,7 @@
 <translation id="6400112897226594999">電腦螢幕畫面中的 Chromium 標誌。</translation>
 <translation id="6403826409255603130">Chromium 網路瀏覽器開啟網頁和執行應用程式的速度十分迅速。除了迅速、穩定且易於使用之外，Chromium 的內建惡意軟體與網路釣魚防護功能，可讓你安心悠遊網路。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium OS</translation>
+<translation id="6443470774889161065">Chromium 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入</translation>
 <translation id="6455857529632101747">歡迎使用 Chromium 設定檔</translation>
 <translation id="6475912303565314141">這個擴充功能也會控管你啟動 Chromium 時所顯示的網頁。</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>

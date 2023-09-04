@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">‏منوی Chrome را باز کنید</translation>
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1200396280085622191">‏با ضربه زدن روی پیوندهای موجود در پیام‌ها و برنامه‌های دیگر، از Chrome استفاده کنید.</translation>
+<translation id="1201402288615127009">بعدی</translation>
 <translation id="1207113853726624428">جستجوی جدید</translation>
 <translation id="1207493287814084192">۵:۳۰ ب.ظ.</translation>
 <translation id="1209206284964581585">فعلاً پنهان شود</translation>
@@ -734,6 +735,7 @@
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
 <translation id="5232485538978018676">ورود به سیستم با «حساب مدیریت‌شده»</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5238301240406177137">ذخیره در حساب</translation>
 <translation id="5245322853195994030">لغو همگام‌سازی</translation>
 <translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>

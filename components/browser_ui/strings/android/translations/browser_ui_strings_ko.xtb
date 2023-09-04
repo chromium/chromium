@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">권한 재설정</translation>
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3069226013421428034">특정 사이트에 대해 서드 파티 로그인을 허용합니다.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="3114012059975132928">동영상 플레이어</translation>

@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Chrome ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1200396280085622191">ಸಂದೇಶಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1207113853726624428">ಹೊಸ ಹುಡುಕಾಟ</translation>
 <translation id="1207493287814084192">ಸಂಜೆ 5:30</translation>
 <translation id="1209206284964581585">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
@@ -734,6 +735,7 @@
 <translation id="5228579091201413441">ಸಿಂಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5232485538978018676">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="5238301240406177137">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="5245322853195994030">ಸಿಂಕ್ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="5271265092610673171">{count,plural, =1{ಅಗತ್ಯವಿರುವ ಕ್ಷೇತ್ರವು ಖಾಲಿ ಇದೆ. ಉಳಿಸುವ ಮೊದಲು ಅದನ್ನು ಭರ್ತಿಮಾಡಿ.}one{ಅಗತ್ಯವಿರುವ ಕೆಲವು ಕ್ಷೇತ್ರಗಳು ಖಾಲಿ ಇವೆ. ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.}other{ಅಗತ್ಯವಿರುವ ಕೆಲವು ಕ್ಷೇತ್ರಗಳು ಖಾಲಿ ಇವೆ. ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.}}</translation>
 <translation id="5271549068863921519">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸಿ</translation>

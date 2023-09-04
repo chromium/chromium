@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">Jocuri de acțiune și platformă</translation>
 <translation id="1413809658975081374">Eroare legată de confidențialitate</translation>
 <translation id="1414134146594747368">Grădiniță</translation>
+<translation id="141826476809826269">Finalul textului extras</translation>
 <translation id="1419305130220238697">Butonul Gestionează descărcările în Chrome, activează pentru a gestiona fișierele pe care le-ai descărcat în Chrome</translation>
 <translation id="1422930527989633628">Poate solicita permisiunea să descopere dispozitive Bluetooth din apropiere</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">Site-ul pe care ai încercat să-l accesezi pare fals. Uneori, atacatorii imită site-uri aducând modificări mici, greu de observat, adresei URL.</translation>
 <translation id="1532118530259321453">Această pagină afișează mesajul</translation>
 <translation id="1536390784834419204">Tradu pagina</translation>
+<translation id="1537807545287921620">Acest PDF nu se poate accesa. Deschide meniul contextual și activează „extrage textul din PDF”</translation>
 <translation id="1539840569003678498">Raportul a fost trimis:</translation>
 <translation id="1542105669288201090">Educație comercială</translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">Plătește</translation>
 <translation id="1846432862466000825">Plastic (de arhivă)</translation>
 <translation id="1848982255014129637">Foto (foarte lucios)</translation>
+<translation id="1853392626017747777">Înscrierea cardului virtual s-a închis</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
 <translation id="1855370856221982654">Box</translation>
 <translation id="1856713167556118146">Ce nu face modul incognito</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">Nou</translation>
 <translation id="1935995810530254458">Copiază oricum</translation>
 <translation id="1939175642807587452">Poate solicita permisiunea de a trimite notificări</translation>
+<translation id="1940441167050915935">Șterge codurile de securitate salvate</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Este posibil să pierzi accesul la contul organizației sau să fii victima unui furt de identitate. Chromium îți recomandă să îți schimbi acum parola.</translation>
 <translation id="1946849748901605102">12 x 15 in</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">Navigarea sigură Google <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe <ph name="SITE" />. Site-urile care sunt de obicei sigure sunt uneori infectate cu programe malware.</translation>
 <translation id="2807052079800581569">Poziția Y a imaginii</translation>
 <translation id="2808278141522721006">Poți să activezi sau să dezactivezi Windows Hello în <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Acest PDF nu se poate accesa. Apasă pe tasta de căutare plus m pentru a deschide meniul contextual și activează „extrage textul din PDF”</translation>
 <translation id="2818338148457093657">Servicii de înfrumusețare și centre spa</translation>
 <translation id="2820957248982571256">Se scanează...</translation>
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> dorește să vadă textul și imaginile copiate în clipboard</translation>
 <translation id="3461824795358126837">Evidențiator</translation>
 <translation id="3462200631372590220">Ascundeți detaliile avansate</translation>
+<translation id="3465972433695735758">Acest PDF nu se poate accesa. Text extras, bazat pe Google AI</translation>
 <translation id="346601286295919445">Chimie</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, deschisă acum, apasă pe filă, apoi pe Enter pentru a comuta la fila deschisă</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a închide toate ferestrele incognito deschise</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">Nume fișier:</translation>
 <translation id="3501300228850242680">Metal (muzică)</translation>
 <translation id="350421688684366066">Etichete (foarte lucios)</translation>
+<translation id="350763432931695541">Se extrage textul din următoarele pagini</translation>
 <translation id="3507869775212388416">Locuri de muncă în domeniul juridic</translation>
 <translation id="3507936815618196901">să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="3512163584740124171">Această politică este ignorată deoarece o altă politică din același grup de politici are prioritate ridicată.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">Fotografie</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Ofertă cu returnare de bani</translation>
+<translation id="4631881646528206880">Înregistrarea cardului virtual</translation>
 <translation id="4636930964841734540">Informații</translation>
 <translation id="4638670630777875591">Modul incognito în Chromium</translation>
 <translation id="464342062220857295">Funcții de căutare</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">Creează rapid o notă în Google Keep</translation>
 <translation id="485902285759009870">Codul se verifică...</translation>
 <translation id="4862630594858951805">Vrei să primești e-mailuri când scade prețul?</translation>
+<translation id="4864406669374375262">Șirul versiunii s-a copiat în clipboard</translation>
 <translation id="486459320933704969">Părintele sau tutorele trebuie să spună că poți accesa acest site</translation>
 <translation id="4866506163384898554">Apasă pe |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pentru a afișa cursorul</translation>
 <translation id="4873616204573862158">Ochelari de vedere și de soare</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">3,5 x 5 in</translation>
 <translation id="6978236010531171013">Permite accesul oricum</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Începutul textului extras</translation>
 <translation id="6979440798594660689">Dezactivează sunetul (prestabilit)</translation>
 <translation id="6987806006823772670">Plic (tratat)</translation>
 <translation id="6989763994942163495">Afișează setările avansate...</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">Vase pentru gătit și masă</translation>
 <translation id="7105998430540165694">Cheia de acces din iCloud Keychain</translation>
 <translation id="7106762743910369165">Browserul este gestionat de organizația ta</translation>
+<translation id="7107249414147762907">Acest PDF nu se poate accesa. Nu s-a extras niciun text</translation>
 <translation id="7108338896283013870">Ascunde</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> dorește să utilizeze camera foto</translation>
 <translation id="7108819624672055576">Permisă de o extensie</translation>
@@ -3527,6 +3538,7 @@ Detalii suplimentare:
 <translation id="8339163506404995330">Paginile în <ph name="LANGUAGE" /> nu vor fi traduse</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Dacă îți asumi riscurile de securitate, poți să <ph name="BEGIN_LINK" />accesezi acest site<ph name="END_LINK" /> înainte ca programele periculoase să fie eliminate.</translation>
+<translation id="8344776605855290140">Înregistrarea cardului virtual s-a deschis la înălțimea completă</translation>
 <translation id="8347658365704983341">Învățământ la distanță</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
@@ -3917,6 +3929,7 @@ Detalii suplimentare:
 <translation id="917450738466192189">Certificatul serverului nu este valid.</translation>
 <translation id="9174623988242579721">Vehicule personalizate și de performanță</translation>
 <translation id="9174917557437862841">Butonul Comută între file, apasă pe Enter pentru a comuta la această filă</translation>
+<translation id="9177283544810807743">Acest PDF nu se poate accesa. Extragerea textului, un produs Google AI</translation>
 <translation id="9179703756951298733">Gestionează informațiile despre plăți și carduri de credit din setările Chrome</translation>
 <translation id="9179907736442194268">Primește alerte prin e-mail dacă prețul scade pe orice site</translation>
 <translation id="9183302530794969518">Documente Google</translation>

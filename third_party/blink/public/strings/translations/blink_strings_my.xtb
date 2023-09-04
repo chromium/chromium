@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">စကရင်ပွားခြင်းသို့ ပြောင်းထားသည်</translation>
 <translation id="2031987842108996681">အနီ ချန်နယ်</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ကို '<ph name="INVALIDDOMAIN" />' ထဲတွင် နေရာမှားသုံးထားသည်။</translation>
+<translation id="2068711044993563745">အနည်းဆုံးတန်ဖိုး (<ph name="MINIMUM" />) သည် အများဆုံးတန်ဖိုး (<ph name="MAXIMUM" />) ထက် လျှော့နည်းရမည်။</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2226276347425096477">ကျေးဇူးပြုပြီး ဒီစာသားကို သင်္ကေတ<ph name="MAX_CHARACTERS" /> အထိ သို့မဟုတ် နည်းအောင် တိုပေးပါ (သင်သည် လောလောဆယ်မှာ သင်္ကေတ <ph name="CURRENT_LENGTH" />ခု သုံးထားသည်)။</translation>
 <translation id="2247351761944213033">အပတ် <ph name="WEEKNUMBER" />၊ <ph name="YEAR" /></translation>

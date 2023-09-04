@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">మిర్రరింగ్‌కు మార్చబడింది</translation>
 <translation id="2031987842108996681">రెడ్ ఛానెల్</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'లో '<ph name="DOT" />' తప్పు స్థానంలో ఉపయోగించబడింది.</translation>
+<translation id="2068711044993563745">కనిష్ఠ విలువ (<ph name="MINIMUM" />) తప్పనిసరిగా గరిష్ఠ విలువ (<ph name="MAXIMUM" />) కంటే తక్కువగా ఉండాలి.</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>

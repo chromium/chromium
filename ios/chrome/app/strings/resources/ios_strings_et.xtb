@@ -40,6 +40,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1177414119866731261">Chrome'i menüü avamine</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1200396280085622191">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites ja muudes rakendustes linke.</translation>
+<translation id="1201402288615127009">Järgmine</translation>
 <translation id="1207113853726624428">Uus otsing</translation>
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Peida praeguseks</translation>
@@ -726,6 +727,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5228579091201413441">Sünkroonimise lubamine</translation>
 <translation id="5232485538978018676">Sisselogimine hallatud kontoga</translation>
 <translation id="5234764350956374838">Loobu</translation>
+<translation id="5238301240406177137">Salvesta kontole</translation>
 <translation id="5245322853195994030">Tühista sünkroonimine</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kohustuslik väli on tühi. Täitke see enne salvestamist.}other{Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.}}</translation>
 <translation id="5271549068863921519">Salvesta parool</translation>

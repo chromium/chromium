@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">アクション ゲーム、プラットフォーム ゲーム</translation>
 <translation id="1413809658975081374">プライバシー エラー</translation>
 <translation id="1414134146594747368">保育園</translation>
+<translation id="141826476809826269">抽出されたテキストの末尾</translation>
 <translation id="1419305130220238697">[Chrome でのダウンロードを管理] ボタンです。実行すると、Chrome でダウンロードしたファイルを管理できます</translation>
 <translation id="1422930527989633628">近くにある Bluetooth デバイスの検出を要求できる</translation>
 <translation id="1426410128494586442">はい</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">アクセスしようとしたサイトは偽装サイトのようです。不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
 <translation id="1532118530259321453">このページの内容</translation>
 <translation id="1536390784834419204">ページを翻訳</translation>
+<translation id="1537807545287921620">この PDF にアクセスできません。コンテキスト メニューを開き、[PDF からテキストを抽出] をオンにしてください</translation>
 <translation id="1539840569003678498">レポートの送信日時:</translation>
 <translation id="1542105669288201090">ビジネス教育</translation>
 <translation id="1545757265410828525">価格の推移</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">お支払い</translation>
 <translation id="1846432862466000825">プラスチック（アーカイバル）</translation>
 <translation id="1848982255014129637">写真（高光沢）</translation>
+<translation id="1853392626017747777">仮想カードの登録を閉じました</translation>
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1855370856221982654">ボクシング</translation>
 <translation id="1856713167556118146">シークレット モードで行われないこと</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">新</translation>
 <translation id="1935995810530254458">このままコピー</translation>
 <translation id="1939175642807587452">通知の送信を要求できる</translation>
+<translation id="1940441167050915935">保存したセキュリティ コードを削除</translation>
 <translation id="1943994668912612445">設計、デザイン</translation>
 <translation id="1945968466830820669">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="1946849748901605102">12x15 インチ</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />不正なソフトウェアが検出されました<ph name="END_LINK" />。通常は安全なウェブサイトであっても、不正なソフトウェアに感染している場合があります。</translation>
 <translation id="2807052079800581569">画像の Y 座標</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> で Windows Hello のオンとオフを切り替えることができます</translation>
+<translation id="2814184336982254349">この PDF にアクセスできません。検索+M キーを押してコンテキスト メニューを開き、[PDF からテキストを抽出] をオンにしてください</translation>
 <translation id="2818338148457093657">美容サービス、スパ</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2824775600643448204">アドレス検索バー</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> が、クリップボードにコピーされているテキストや画像にアクセスしようとしています</translation>
 <translation id="3461824795358126837">蛍光ペン</translation>
 <translation id="3462200631372590220">詳細情報を表示しない</translation>
+<translation id="3465972433695735758">この PDF にアクセスできません。Google AI を使用してテキストが抽出されました</translation>
 <translation id="346601286295919445">化学</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> が現在開いています。Tab キー、Enter キーの順に押すと開いているタブに切り替わります</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、現在開いているすべてのシークレット ウィンドウを閉じます</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">ファイル名:</translation>
 <translation id="3501300228850242680">ヘビーメタル</translation>
 <translation id="350421688684366066">ラベル（高光沢）</translation>
+<translation id="350763432931695541">次の数ページのテキストを抽出しています</translation>
 <translation id="3507869775212388416">法律系の求人情報</translation>
 <translation id="3507936815618196901">周囲の 3D マップの作成とカメラ位置の追跡</translation>
 <translation id="3512163584740124171">より優先度の高いポリシーが同じポリシー グループにあるため、このポリシーは無視されます。</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">写真</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">キャッシュバックをリンクしました</translation>
+<translation id="4631881646528206880">仮想カードの登録</translation>
 <translation id="4636930964841734540">情報</translation>
 <translation id="4638670630777875591">Chromium のシークレット モード</translation>
 <translation id="464342062220857295">検索機能</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
 <translation id="4862630594858951805">値下げがあったときにメールでお知らせしますか？</translation>
+<translation id="4864406669374375262">バージョン文字列をクリップボードにコピーしました</translation>
 <translation id="486459320933704969">保護者の方から、このウェブサイトを開いてもよいという承認をもらう必要があります</translation>
 <translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="4873616204573862158">眼鏡</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">3.5x5 インチ（L 判）</translation>
 <translation id="6978236010531171013">このまま共有</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
+<translation id="6979332652936434520">抽出されたテキストの先頭</translation>
 <translation id="6979440798594660689">ミュート（デフォルト）</translation>
 <translation id="6987806006823772670">封筒（コーティング）</translation>
 <translation id="6989763994942163495">詳細設定を表示...</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">調理器具、食器類</translation>
 <translation id="7105998430540165694">iCloud キーチェーンのパスキー</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
+<translation id="7107249414147762907">この PDF にアクセスできません。抽出されたテキストはありません</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> から、カメラの使用許可を求められています</translation>
 <translation id="7108819624672055576">拡張機能によって許可</translation>
@@ -3527,6 +3538,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" />のページは翻訳されません</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">有害なプログラムが削除されるより前に<ph name="BEGIN_LINK" />このサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
+<translation id="8344776605855290140">仮想カードの登録が画面全体に表示されています</translation>
 <translation id="8347658365704983341">遠隔学習</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
 <translation id="8351131234907093545">メモを作成</translation>
@@ -3917,6 +3929,7 @@
 <translation id="917450738466192189">サーバーの証明書が無効です。</translation>
 <translation id="9174623988242579721">カスタムカー、高性能車</translation>
 <translation id="9174917557437862841">タブの切り替えボタンです。Enter キーを押すとこのタブに切り替わります</translation>
+<translation id="9177283544810807743">この PDF にアクセスできません。Google AI を使用してテキストを抽出しています</translation>
 <translation id="9179703756951298733">Chrome の設定でお支払いとクレジット カード情報を管理します</translation>
 <translation id="9179907736442194268">値下げしたサイトがある場合、メールで通知します</translation>
 <translation id="9183302530794969518">Google ドキュメント</translation>

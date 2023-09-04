@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Nadaljuj namestitev</translation>
 <translation id="1029669172902658969">Znova zaženite, če želite posodobiti &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium priporoča, da pregledate to razširitev</translation>
+<translation id="1042552502243217427">Ko spletno mesto zahteva zasebno vnaprejšnje nalaganje povezav na svoji strani, Chromium uporabi Googlove strežnike. S tem je vaša identiteta skrita pred vnaprej naloženim mestom, vendar Google izve, katera spletna mesta se vnaprej nalagajo.</translation>
 <translation id="1065672644894730302">Nastavitev ni mogoče prebrati.
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
@@ -131,6 +132,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3713809861844741608">Odpiranje povezave na novem &amp;zavihku v Chromiumu</translation>
 <translation id="378917192836375108">Chromium omogoča, da v spletu kliknete telefonsko številko in jo pokličete prek Skypa.</translation>
 <translation id="3790262771324122253">Preberite, zakaj Chromium blokira nekatere prenose</translation>
+<translation id="3802055581630249637">Chromium vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
 <translation id="3830894615770080216">Sistem Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pomoč za Chromium OS</translation>
@@ -241,6 +243,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6132897690380286411">Chromium se bo kmalu zaprl in izbrisal bo podatke</translation>
 <translation id="6134968993075716475">Varno brskanje je izklopljeno. Chromium priporoča, da ga vklopite.</translation>
 <translation id="6145820983052037069">Med profili v Chromiumu lahko preklapljate tukaj</translation>
+<translation id="615103374448673771">Če omogočite piškotke, jih bo Chromium morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="6175304430031192654">Chromium lahko glede na nastavitve pošlje tudi piškotke in vaš trenutni URL</translation>
 <translation id="6183079672144801177">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chromium, nato poskusite znova poslati.</translation>
 <translation id="6212496753309875659">Ta računalnik že ima novejšo različico Chromiuma. Če programska oprema ne deluje, odstranite Chromium in poskusite znova.</translation>
@@ -265,6 +268,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6400112897226594999">Chromiumov logotip na zaslonu računalnika.</translation>
 <translation id="6403826409255603130">Chromium je spletni brskalnik, ki bliskovito odpira spletne strani in izvaja aplikacije. Je hiter, stabilen in preprost za uporabo. Z vgrajeno zaščito pred zlonamerno programsko opremo in lažnim predstavljanjem je brskanje po spletu varno.</translation>
 <translation id="6442900851116057561">Vnovičen zagon sistema Chromium OS</translation>
+<translation id="6443470774889161065">Chromium vnaprej naloži še več strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje</translation>
 <translation id="6455857529632101747">Pozdravljeni v profilih za Chromium</translation>
 <translation id="6475912303565314141">Določa tudi, katera stran je prikazana, ko zaženete Chromium.</translation>
 <translation id="648319183876919572">Izboljšano varno brskanje vas še bolje varuje pred nevarnimi spletnimi mesti in prenosi</translation>

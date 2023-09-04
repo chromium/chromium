@@ -40,6 +40,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1177414119866731261">Agorwch y ddewislen Chrome</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1200396280085622191">Defnyddiwch Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon ac apiau eraill.</translation>
+<translation id="1201402288615127009">Nesaf</translation>
 <translation id="1207113853726624428">Chwiliad newydd</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">Cuddio am nawr</translation>
@@ -726,6 +727,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5228579091201413441">Galluogi cysoni</translation>
 <translation id="5232485538978018676">Mewngofnodwch gyda Chyfrif a Reolir</translation>
 <translation id="5234764350956374838">Diystyru</translation>
+<translation id="5238301240406177137">Cadw yn y Cyfrif</translation>
 <translation id="5245322853195994030">Canslo'r Cysoni</translation>
 <translation id="5271265092610673171">{count,plural, =1{Mae maes gofynnol yn wag. Llenwch ef cyn cadw.}zero{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}two{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}few{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}many{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}other{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}}</translation>
 <translation id="5271549068863921519">Cadw cyfrinair</translation>

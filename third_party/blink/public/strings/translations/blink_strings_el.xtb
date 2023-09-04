@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Εναλλαγή σε κατοπτρισμό</translation>
 <translation id="2031987842108996681">Κανάλι κόκκινου χρώματος</translation>
 <translation id="2060505056492490888">Το σύμβολο "<ph name="DOT" />" χρησιμοποιείται σε λάθος θέση στη διεύθυνση "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Η ελάχιστη τιμή (<ph name="MINIMUM" />) πρέπει να είναι μικρότερη από τη μέγιστη τιμή (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2226276347425096477">Κάντε πιο σύντομο αυτό το κείμενο ώστε να έχει το πολύ <ph name="MAX_CHARACTERS" /> χαρακτήρες (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
 <translation id="2247351761944213033">Εβδομάδα <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

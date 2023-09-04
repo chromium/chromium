@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="1511320244449497906">Sua conta está conectada e seus dados estão sendo sincronizados com uma conta gerenciada por <ph name="DOMAIN" />, onde o administrador pode definir políticas do usuário específicas para a conta que podem mudar o comportamento do Chrome.</translation>
+<translation id="1516692594929310090">Abre a grade de guias do Chrome.</translation>
 <translation id="1526327845902180576">Quando ativado:
 <ph name="BEGIN_INDENT" /> • Ajudar a melhorar o Chrome para as pessoas que o usam como você.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Considerações:
 
 Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Não foi possível verificar todas as senhas com o Chrome. Tente novamente mais tarde.</translation>
+<translation id="6916015246697034114">Pesquisar com voz no Chrome</translation>
 <translation id="6964931465519938134">Agora você poderá usar o Chrome sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
@@ -150,6 +152,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>
 <translation id="7501046334262221972">Para definir o Chrome como o navegador padrão, abra as configurações. Toque em "App do navegador padrão" e selecione o Chrome.</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
+<translation id="7581063337314642333">Acessar a grade de guias no Chrome</translation>
 <translation id="7662994914830945754">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login e ative a sincronização</translation>
 <translation id="7669869107155339016">Acesse as configurações do Chrome.</translation>
 <translation id="7693590760643069321">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
@@ -157,10 +160,13 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="7754633291442704733">A organização <ph name="DOMAIN" /> vai ter acesso aos dados, favoritos, histórico, senhas e outras configurações do Chrome que você armazenar nessa conta. Quando você sair, seus dados vão ser apagados deste dispositivo.  No entanto, os dados continuarão armazenados na sua Conta do Google gerenciada e vão ficar disponíveis para sua organização. A organização também pode definir políticas do usuário específicas para a conta, e elas podem mudar o comportamento do Chrome.</translation>
 <translation id="7780154209050837198">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google.</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
+<translation id="7897703007638178753">Conferir guias recentes do Chrome</translation>
+<translation id="7925119591961387184">Selecione "Chrome".</translation>
 <translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="804638182476029347">Permitir notificações do Chrome para receber alertas de redução no preço</translation>
 <translation id="81358522153858150">O Chrome agora oferece suporte para políticas do usuário na sua conta gerenciada</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
+<translation id="8174679664544842874">Abre uma nova guia no Chrome.</translation>
 <translation id="8213758103105806860">Visualizar favoritos do Chrome</translation>
 <translation id="8357607116237445042">Você quer apagar ou manter os dados do Chrome neste dispositivo?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
@@ -174,8 +180,10 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
   2. Toque em "App do navegador padrão".
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Toque em "Chrome" e em "App de navegação padrão".</translation>
 <translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Mais proteção com o Google Chrome</translation>
+<translation id="8760668027640688122">Abrir nova guia no Chrome</translation>
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
@@ -185,6 +193,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
+<translation id="8949681853939555434">Definir o Chrome como seu navegador padrão</translation>
 <translation id="8969290730818637510">Quando ativada, essa configuração:
 <ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chrome para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@ Considerações:
   • Se você ativar a sincronização, as métricas também poderão incluir informações sobre os URLs que você acessa.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
 <translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
+<translation id="9181628561061032322">Abre as guias recentes do Chrome.</translation>
 </translationbundle>

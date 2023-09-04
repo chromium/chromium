@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">მძაფრსიუჟეტიანი და პლატფორმის თამაშები</translation>
 <translation id="1413809658975081374">კონფიდენციალურობის შეცდომა</translation>
 <translation id="1414134146594747368">სკოლამდელი</translation>
+<translation id="141826476809826269">ამოღებული ტექსტის დასასრული</translation>
 <translation id="1419305130220238697">Chrome-ის მეშვეობით ჩამოტვირთული ფაილების მართვის ღილაკი, Chrome-ის მეშვეობით ჩამოტვირთული ფაილების სამართავად გაააქტიურეთ ის</translation>
 <translation id="1422930527989633628">შეუძლია ახლომდებარე Bluetooth-მოწყობილობების აღმოჩენის თხოვნა</translation>
 <translation id="1426410128494586442">დიახ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">როგორც ჩანს, საიტი, რომლის მონახულებასაც ეს-ესაა ცდილობდით, ყალბია. თავდამსხმელები, ზოგჯერ, ახდენენ საიტების იმიტირებას URL-ში მცირე, რთულად შესამჩნევი ცვლილებების შეტანით.</translation>
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
+<translation id="1537807545287921620">ამ PDF-ზე წვდომა შეუძლებელია. გახსენით კონტექსტური მენიუ და აირჩიეთ „ტექსტის ამოღება PDF-იდან“.</translation>
 <translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
 <translation id="1542105669288201090">ბიზნესგანათლება</translation>
 <translation id="1545757265410828525">ფასების ისტორია</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">გადახდა</translation>
 <translation id="1846432862466000825">პლასტმასა (საარქივო)</translation>
 <translation id="1848982255014129637">ფოტო (ძალიან პრიალა)</translation>
+<translation id="1853392626017747777">ვირტუალური ბარათის რეგისტრაცია დახურულია</translation>
 <translation id="1854180393107901205">ტრანსლირების შეწყვეტა</translation>
 <translation id="1855370856221982654">კრივი</translation>
 <translation id="1856713167556118146">რა არის მიუწვდომელი ინკოგნიტო რეჟიმში</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">სიახლე</translation>
 <translation id="1935995810530254458">მაინც კოპირება</translation>
 <translation id="1939175642807587452">შეუძლია შეტყობინებების გამოგზავნის თხოვნა</translation>
+<translation id="1940441167050915935">უსაფრთხოების შენახული კოდების წაშლა</translation>
 <translation id="1943994668912612445">დიზაინი</translation>
 <translation id="1945968466830820669">თქვენ შეიძლება მოგპარონ პერსონალური მონაცემები, ან დაკარგოთ წვდომა თქვენი ორგანიზაციის ანგარიშზე. Chromium გირჩევთ, ახლავე შეცვალოთ პაროლი.</translation>
 <translation id="1946849748901605102">12 x 15 დუიმი</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">Google-ის უსაფრთხო დათვალიერების ფუნქციამ <ph name="BEGIN_LINK" />აღმოაჩინა საზიანო პროგრამა<ph name="END_LINK" /> <ph name="SITE" />-ზე. ზოგჯერ ნორმალური და უსაფრთხო ვებსაიტები ინფიცირდება საზიანო პროგრამებით.</translation>
 <translation id="2807052079800581569">სურათის Y პოზიცია</translation>
 <translation id="2808278141522721006">Windows Hello-ს ჩართვა/გამორთვა შეგიძლიათ აქ: <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">ამ PDF-ზე წვდომა შეუძლებელია. დააჭირეთ კლავიშთა კომბინაციას Search + m, რომ გახსნათ კონტექსტური მენიუ და აირჩიოთ „ტექსტის ამოღება PDF-იდან“.</translation>
 <translation id="2818338148457093657">სილამაზის მომსახურება და სპები</translation>
 <translation id="2820957248982571256">მიმდინარეობს სკანირება...</translation>
 <translation id="2824775600643448204">მისამართი და ძიების ზოლი</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ითხოვს გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვას</translation>
 <translation id="3461824795358126837">გამომყოფი</translation>
 <translation id="3462200631372590220">გაფართოებულების დამალვა</translation>
+<translation id="3465972433695735758">ამ PDF-ზე წვდომა შეუძლებელია. ტექსტი ამოღებულია Google-ის ხელოვნური ინტელექტის დახმარებით.</translation>
 <translation id="346601286295919445">ქიმია</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ამჟამად გახსნილია, გახსნილ ჩანართზე გადასართველად ჯერ დააჭირეთ კლავიშს „Tab“, ხოლო შემდეგ — კლავიშს „Enter“</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ამჟამად გახსნილი ყველა ინკოგნიტო ფანჯრის დასახურად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">ფაილის სახელი:</translation>
 <translation id="3501300228850242680">მეტალი (მუსიკა)</translation>
 <translation id="350421688684366066">ლეიბლები (ძალიან პრიალა)</translation>
+<translation id="350763432931695541">მიმდინარეობს ტექსტის ამოღება მომდევნო რამდენიმე გვერდზე</translation>
 <translation id="3507869775212388416">ვაკანსიები იურიდიულ სფეროში</translation>
 <translation id="3507936815618196901">თქვენი გარემოს 3-განზომილებიანი რუკის შექმნა ან კამერის პოზიციისთვის თვალის მიდევნება</translation>
 <translation id="3512163584740124171">ეს წესები იგნორირებული იქნება, ვინაიდან წესების იმავე ჯგუფში შემავალ სხვა წესებს უფრო მაღალი პრიორიტეტი აქვს.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">ფოტო</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">ქეშბექი მიბმულია</translation>
+<translation id="4631881646528206880">ვირტუალური ბარათის რეგისტრაცია</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
 <translation id="4638670630777875591">ინკოგნიტო რეჟიმი Chromium-ში</translation>
 <translation id="464342062220857295">ძიების ფუნქციები</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">Google Keep-ში ახალი ჩანიშვნის სწრაფად შექმნა</translation>
 <translation id="485902285759009870">მიმდინარეობს კოდის დადასტურება...</translation>
 <translation id="4862630594858951805">გსურთ ელფოსტით შეიტყოთ ფასის კლების შესახებ?</translation>
+<translation id="4864406669374375262">ვერსიის სტრიქონი დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="486459320933704969">მშობელმა ან მეურვემ უნდა დაადასტუროს, რომ ამ ვებსაიტის მონახულება შეგიძლიათ</translation>
 <translation id="4866506163384898554">კურსორის საჩვენებლად დააჭირეთ კლავიშებზე |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">სათვალეები</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">3.5 x 5 დუიმი</translation>
 <translation id="6978236010531171013">მაინც გაზიარება</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">ამოღებული ტექსტის დასაწყისი</translation>
 <translation id="6979440798594660689">დადუმება (ნაგულისხმევი)</translation>
 <translation id="6987806006823772670">კონვერტი (დანაფარიანი)</translation>
 <translation id="6989763994942163495">დამატებითი პარამეტრების ჩვენება…</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">სამზარეულოს და სასადილო ჭურჭელი</translation>
 <translation id="7105998430540165694">iCloud Keychain-ის წვდომის გასაღები</translation>
 <translation id="7106762743910369165">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია</translation>
+<translation id="7107249414147762907">ამ PDF-ზე წვდომა შეუძლებელია. ტექსტი ამოღებული არ არის.</translation>
 <translation id="7108338896283013870">დამალვა</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ითხოვს თქვენი კამერის გამოყენების ნებართვას</translation>
 <translation id="7108819624672055576">დაშვებულია გაფართოების მიერ</translation>
@@ -3527,6 +3538,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> გვერდები არ ითარგმნება</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">თუ გესმით უსაფრთხოების რისკები, შეგიძლიათ <ph name="BEGIN_LINK" />გადახვიდეთ ამ საიტზე<ph name="END_LINK" /> მავნე პროგრამების წაშლამდე.</translation>
+<translation id="8344776605855290140">ვირტუალური ბარათის რეგისტრაცია გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="8347658365704983341">დისტანციური სწავლება</translation>
 <translation id="8349305172487531364">სანიშნეების ზოლი</translation>
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
@@ -3916,6 +3928,7 @@
 <translation id="917450738466192189">სერვერის სერტიფიკატი არასწორია.</translation>
 <translation id="9174623988242579721">ინდივიდუალური შეკვეთით დამზადებული და სწრაფი სატრანსპორტო საშუალებები</translation>
 <translation id="9174917557437862841">ჩანართის გადართვის ღილაკი, ამ ჩანართზე გადასართველად დააჭირეთ კლავიშს „Enter“</translation>
+<translation id="9177283544810807743">ამ PDF-ზე წვდომა შეუძლებელია. მიმდინარეობს ტექსტის ამოღება Google-ის ხელოვნური ინტელექტის დახმარებით.</translation>
 <translation id="9179703756951298733">მართეთ საგადახდო და საკრედიტო ბარათების ინფორმაცია Chrome-ის პარამეტრებიდან</translation>
 <translation id="9179907736442194268">მიიღეთ გაფრთხილებები ელფოსტით, როცა რომელიმე საიტზე ფასი დაიკლებს</translation>
 <translation id="9183302530794969518">Google Docs</translation>

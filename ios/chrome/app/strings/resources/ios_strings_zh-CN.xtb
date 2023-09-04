@@ -38,6 +38,7 @@
 <translation id="1177414119866731261">打开 Chrome 菜单</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1200396280085622191">每次点按消息和其他应用中的链接时，都使用 Chrome 打开。</translation>
+<translation id="1201402288615127009">下一步</translation>
 <translation id="1207113853726624428">新搜索</translation>
 <translation id="1207493287814084192">下午 5:30</translation>
 <translation id="1209206284964581585">暂时隐藏</translation>
@@ -86,6 +87,7 @@
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1430915738399379752">打印</translation>
+<translation id="1443958768615272145">继续浏览</translation>
 <translation id="1449835205994625556">隐藏密码</translation>
 <translation id="1450170672351507823">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
 <translation id="149095475893949513">此网站正要尝试下载一个配置文件。</translation>
@@ -162,6 +164,7 @@
 <translation id="1930989359703290198">根据贵单位的要求，您只能使用特定账号登录。不允许使用的账号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1943478190258551035">菜单 → 设置</translation>
+<translation id="194449685234099560">您可在此处找到您打开的所有标签页。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1959441496380398824">轻触并按住某个日期。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
@@ -184,6 +187,7 @@
 <translation id="20485545164632846">新项</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 个账号在使用同一密码</translation>
 <translation id="2050196510205866090">{count,plural, =1{键盘上方显示了 {count} 种已保存的付款方式。}other{键盘上方显示了 {count} 种已保存的付款方式。}}</translation>
+<translation id="2055515971416882518">打开“设置”。</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
@@ -242,6 +246,7 @@
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2459155039684421202">在地址栏中输入任务，例如“清除我的历史记录”或“修改密码”。</translation>
 <translation id="2461070143328828326">密码设置</translation>
+<translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
 <translation id="2469960372084740698">关闭“安全浏览”功能？</translation>
 <translation id="2473876017985765807">您已经保存了在 <ph name="WEBSITE" /> 上使用的密码</translation>
 <translation id="2476359652512522418">未选中</translation>
@@ -341,6 +346,7 @@
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2956733177489514605">登录您的 Google 账号即可同步您的密码等信息。</translation>
+<translation id="2958271635022991876">您可在此处打开新标签页。</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2961210776189273067">称谓</translation>
 <translation id="2964349545761222050">阻止第三方 Cookie</translation>
@@ -724,6 +730,7 @@
 <translation id="5228579091201413441">启用同步功能</translation>
 <translation id="5232485538978018676">使用受管理的账号登录</translation>
 <translation id="5234764350956374838">关闭</translation>
+<translation id="5238301240406177137">保存到账号</translation>
 <translation id="5245322853195994030">取消同步</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
@@ -1404,6 +1411,7 @@
 <translation id="9097506547406246598">无法取消关注。出了点问题。</translation>
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
+<translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
 <translation id="9120217828624527905">切换为整页翻译</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>

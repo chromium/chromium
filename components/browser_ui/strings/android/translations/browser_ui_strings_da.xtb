@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3069226013421428034">Tillad tredjepartslogin for et bestemt website.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="3114012059975132928">Videoafspiller</translation>

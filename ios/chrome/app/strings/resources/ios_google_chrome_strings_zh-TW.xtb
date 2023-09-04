@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="1511320244449497906">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chrome 行為的使用者政策。</translation>
+<translation id="1516692594929310090">開啟 Chrome 分頁方格。</translation>
 <translation id="1526327845902180576">開啟時：
 <ph name="BEGIN_INDENT" /> • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
+<translation id="6916015246697034114">在 Chrome 中使用語音搜尋</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
@@ -150,6 +152,7 @@
 <translation id="7400722733683201933">關於 Google Chrome</translation>
 <translation id="7501046334262221972">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸「預設的瀏覽器應用程式」並選取「Chrome」。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
+<translation id="7581063337314642333">開啟 Chrome 的分頁方格</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="7669869107155339016">前往 Chrome 設定。</translation>
 <translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
@@ -157,10 +160,13 @@
 <translation id="7754633291442704733">貴機構 <ph name="DOMAIN" /> 將可存取你儲存在這個帳戶中的 Chrome 資料、書籤、歷史記錄、密碼和其他設定。登出帳戶後，系統會清除這部裝置中的資料。不過，你的資料仍會儲存在受管理 Google 帳戶中，並可供貴機構使用。貴機構也可以設定該帳戶專屬的使用者政策，這些政策可以變更 Chrome 的行為。</translation>
 <translation id="7780154209050837198">如要充分運用 Chrome 的各項功能，請透過 Google 帳戶登入 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
+<translation id="7897703007638178753">查看最近使用 Chrome 開啟的分頁</translation>
+<translation id="7925119591961387184">選取「Chrome」。</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
 <translation id="81358522153858150">Chrome 現在支援受管理帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
+<translation id="8174679664544842874">使用 Chrome 開啟新分頁。</translation>
 <translation id="8213758103105806860">查看 Chrome 書籤</translation>
 <translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
@@ -174,8 +180,10 @@
   2. 輕觸「預設瀏覽器 App」
   3. 選取「Chrome」</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">依序輕觸「Chrome」和「預設瀏覽器 App」</translation>
 <translation id="8603022514504485810">Google 密碼管理工具無法檢查所有密碼，請明天再試。你也可以<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
+<translation id="8760668027640688122">使用 Chrome 開啟新分頁</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
@@ -185,6 +193,7 @@
 如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
+<translation id="8949681853939555434">將 Chrome 設為預設瀏覽器</translation>
 <translation id="8969290730818637510">開啟時：
 <ph name="BEGIN_INDENT" />  • 可協助 Chrome 為使用者提供更優質的服務體驗。<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@
   • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">要將 Chrome 設為預設瀏覽器嗎？</translation>
 <translation id="9122931302567044771">這代表 Chrome 每次都會對電腦版網站發出要求。</translation>
+<translation id="9181628561061032322">開啟最近使用 Chrome 開啟的分頁。</translation>
 </translationbundle>

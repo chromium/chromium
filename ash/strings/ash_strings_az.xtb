@@ -90,6 +90,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1293264513303784526">USB-C cihazı (sol port)</translation>
 <translation id="1293556467332435079">Fayllar</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">"Araşdırın" tətbiqini açın</translation>
 <translation id="1294929383540927798">Kilid ekranının bildiriş ayarını dəyişin</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">TÖVSİYƏ EDİLƏN TƏTBİQLƏR</translation>
@@ -387,6 +388,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2612614436418177118">Tətbiq ikonasını tətbiq torunda hərəkət etdirin</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, fayllar, tətbiqlər və s. axtarın...</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2620900772667816510">Bluetooth superayırdetmə dəqiqliyi</translation>
 <translation id="2621713457727696555">Güvənli</translation>
 <translation id="2624588537172718173">Cihaz audiosu və mikrofon</translation>
 <translation id="263399434338050016">"Hamısını seçin"</translation>
@@ -511,6 +513,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3161500364292033097">Masa və pəncərələri bağlayın</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> cihazınızı əvvəlki versiyaya qaytarır. Cihazınız sıfırlanacaq və bütün məlumatlar silinəcək.</translation>
 <translation id="3171170659304083361">Daxiletmə metodu ayarları</translation>
+<translation id="3176221688814061633">Chromebook və ya Bluetooth cihazının Bluetooth versiyası köhnədir. Yaxşı audio keyfiyyəti üçün Bluetooth superayırdetmə dəqiqliyini aktiv edin və ya daxili mikrofondan istifadə edin.</translation>
 <translation id="3181441307743005334">Yenidən başlatmaq bir qədər vaxt apara bilər</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Cihaza qoşuldunuz}other{# cihaza qoşuldunuz}}</translation>
 <translation id="320207200541803018">Taymer ayarlayın</translation>
@@ -1498,6 +1501,7 @@ Yeni quraşdırma</translation>
 <translation id="7189412385142492784">Venera nə qədər uzaqdadır</translation>
 <translation id="7198435252016571249">Kamera aşağı sağ küncə çəkildi. Sistem səthi ilə ziddiyyət yarandı.</translation>
 <translation id="7219573373513695352">Cihaz qoşulmayıb</translation>
+<translation id="7229029500464092426">Yaddaş: <ph name="AVAILABLE_MEMORY" /> | Cəmi: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Bu Chromebook yeniləməni tətbiq etmək üçün yenidən başlamalıdır. Bu, 1 dəqiqəyə qədər vaxt apara bilər.</translation>
 <translation id="7256634071279256947">Arxa mikrofon</translation>
 <translation id="7258828758145722155">Dünən redaktə edilib</translation>
@@ -1523,6 +1527,7 @@ Yeni quraşdırma</translation>
 <translation id="7360036564632145207">Periferik cihazlar ayarı üçün data giriş qorumasını dəyişsəniz, performans optimallaşa bilər</translation>
 <translation id="736045644501761622">Divar kağızı və üslub ayarlayın</translation>
 <translation id="7371404428569700291">Çəkiliş pəncərəsi</translation>
+<translation id="7372069265635026568">Əlçatan yaddaş: <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Mikrofon icazəsi olan bütün tətbiq və vebsaytlar üçün mikrofona giriş icazəsi verir</translation>
 <translation id="7377169924702866686">Caps Lock aktivdir.</translation>
 <translation id="7377481913241237033">Kod ilə qoşulun</translation>

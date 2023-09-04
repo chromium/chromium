@@ -40,6 +40,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1177414119866731261">Abre el Menú de Chrome.</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1200396280085622191">Usa Chrome cada vez que presiones vínculos en mensajes y otras apps.</translation>
+<translation id="1201402288615127009">Siguiente</translation>
 <translation id="1207113853726624428">Nueva búsqueda</translation>
 <translation id="1207493287814084192">5:30 p.m.</translation>
 <translation id="1209206284964581585">Ocultar por el momento</translation>
@@ -726,6 +727,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5232485538978018676">Acceder con una cuenta administrada</translation>
 <translation id="5234764350956374838">Descartar</translation>
+<translation id="5238301240406177137">Guardar en la cuenta</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Llénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Llénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>

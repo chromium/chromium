@@ -221,6 +221,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1413407968866574823">Jogos de ação e plataforma</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Pré-escola</translation>
+<translation id="141826476809826269">Fim do texto extraído</translation>
 <translation id="1419305130220238697">Botão "Gerenciar downloads no Chrome". Ative para gerenciar os arquivos transferidos por download no Chrome</translation>
 <translation id="1422930527989633628">Pode pedir para descobrir dispositivos Bluetooth por perto</translation>
 <translation id="1426410128494586442">Sim</translation>
@@ -277,6 +278,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
 <translation id="1532118530259321453">Essa página diz</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
+<translation id="1537807545287921620">Não é possível acessar este PDF. Abra o menu de contexto e ative a opção "Extrair texto do PDF"</translation>
 <translation id="1539840569003678498">Relatório enviado:</translation>
 <translation id="1542105669288201090">Educação em administração</translation>
 <translation id="1545757265410828525">Histórico de preços</translation>
@@ -434,6 +436,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (permanente)</translation>
 <translation id="1848982255014129637">Foto (alto brilho)</translation>
+<translation id="1853392626017747777">Registro do cartão virtual fechado</translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1856713167556118146">O que a navegação anônima não faz</translation>
@@ -470,6 +473,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1939175642807587452">Pode pedir para enviar notificações</translation>
+<translation id="1940441167050915935">Excluir códigos de segurança salvos</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Você pode perder o acesso à conta da sua organização ou sofrer roubo de identidade. O Chromium recomenda que você altere sua senha agora.</translation>
 <translation id="1946849748901605102">12 x 15 pol.</translation>
@@ -864,6 +868,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2803306138276472711">A Navegação segura do Google recentemente <ph name="BEGIN_LINK" />detectou malware<ph name="END_LINK" /> em <ph name="SITE" />. Websites que geralmente são seguros, algumas vezes, são infetados com malware.</translation>
 <translation id="2807052079800581569">Posição da imagem Y</translation>
 <translation id="2808278141522721006">Você pode ativar ou desativar o Windows Hello nas <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Não é possível acessar este PDF. Pressione a tecla de pesquisa + "m" para abrir o menu de contexto e ativar a opção "Extrair texto do PDF"</translation>
 <translation id="2818338148457093657">Spas e serviços de beleza</translation>
 <translation id="2820957248982571256">Verificando...</translation>
 <translation id="2824775600643448204">Barra de endereço e de pesquisa</translation>
@@ -1168,6 +1173,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3461266716147554923"><ph name="URL" /> quer ver os textos e imagens copiados para a área de transferência</translation>
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar detalhes</translation>
+<translation id="3465972433695735758">Não é possível acessar este PDF. Texto extraído com tecnologia de IA do Google</translation>
 <translation id="346601286295919445">Química</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> está aberta. Pressione Tab e depois Enter para mudar para a guia aberta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para fechar todas as janelas anônimas abertas</translation>
@@ -1185,6 +1191,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="350069200438440499">Nome do arquivo:</translation>
 <translation id="3501300228850242680">Metal (Música)</translation>
 <translation id="350421688684366066">Rótulos (alto brilho)</translation>
+<translation id="350763432931695541">Extraindo texto em algumas das páginas a seguir</translation>
 <translation id="3507869775212388416">Empregos na área de direito</translation>
 <translation id="3507936815618196901">Criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
 <translation id="3512163584740124171">Esta política é ignorada porque outra política do mesmo grupo tem uma prioridade mais alta.</translation>
@@ -1726,6 +1733,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Reembolso vinculado</translation>
+<translation id="4631881646528206880">Registro de cartão virtual</translation>
 <translation id="4636930964841734540">Informações</translation>
 <translation id="4638670630777875591">Navegação anônima no Chromium</translation>
 <translation id="464342062220857295">Recursos de pesquisa</translation>
@@ -1840,6 +1848,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4854853140771946034">Criar rapidamente uma nova nota no Google Keep</translation>
 <translation id="485902285759009870">Confirmando código...</translation>
 <translation id="4862630594858951805">Quer receber e-mails quando houver reduções no preço?</translation>
+<translation id="4864406669374375262">String da versão copiada para a área de transferência</translation>
 <translation id="486459320933704969">Um familiar ou responsável precisa autorizar seu acesso a este site</translation>
 <translation id="4866506163384898554">Pressione |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para mostrar o cursor</translation>
 <translation id="4873616204573862158">Óculos</translation>
@@ -2850,6 +2859,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6973988895180423160">3,5 x 5 pol.</translation>
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Início do texto extraído</translation>
 <translation id="6979440798594660689">Desativar som (padrão)</translation>
 <translation id="6987806006823772670">Envelope (revestido)</translation>
 <translation id="6989763994942163495">Mostrar configurações avançadas...</translation>
@@ -2905,6 +2915,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7102760431686146931">Panelas e jogos de jantar</translation>
 <translation id="7105998430540165694">Chave de acesso do conjunto do iCloud</translation>
 <translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
+<translation id="7107249414147762907">Não é possível acessar este PDF. Nenhum texto extraído</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> quer usar sua câmera</translation>
 <translation id="7108819624672055576">Permitida por uma extensão</translation>
@@ -3527,6 +3538,7 @@ Mais detalhes:
 <translation id="8339163506404995330">Páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Se você entende os riscos para sua segurança, pode <ph name="BEGIN_LINK" />visitar este site<ph name="END_LINK" /> antes de os programas nocivos serem removidos.</translation>
+<translation id="8344776605855290140">Registro de cartão virtual aberto no tamanho máximo</translation>
 <translation id="8347658365704983341">Ensino a distância</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8351131234907093545">Criar nota</translation>
@@ -3918,6 +3930,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="917450738466192189">O certificado do servidor é inválido.</translation>
 <translation id="9174623988242579721">Veículos personalizados e de desempenho</translation>
 <translation id="9174917557437862841">Botão de alternância de guia. Pressione Enter para mudar para esta guia</translation>
+<translation id="9177283544810807743">Não é possível acessar este PDF. Extraindo texto com a tecnologia de IA do Google</translation>
 <translation id="9179703756951298733">Gerencie seus pagamentos e suas informações de cartão de crédito nas configurações do Chrome</translation>
 <translation id="9179907736442194268">Receba alertas por e-mail se houver uma redução no preço em algum site</translation>
 <translation id="9183302530794969518">Documentos Google</translation>

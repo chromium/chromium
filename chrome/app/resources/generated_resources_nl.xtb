@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Je microfoon en camera gebruiken</translation>
 <translation id="1005333234656240382">ADB-foutopsporing aanzetten?</translation>
 <translation id="1005671386794704751">Roze</translation>
+<translation id="1006557561787696884">Toegangssleutels gebruiken op je Apple-apparaten</translation>
 <translation id="1006873397406093306">Deze extensie kan je gegevens op sites lezen en wijzigen. Je bepaalt tot welke sites de extensie toegang heeft.</translation>
 <translation id="1007057452468855774">Google Play Store aanzetten</translation>
 <translation id="1008186147501209563">Bookmarks exporteren</translation>
@@ -278,6 +279,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1203559206734265703">Protected Audience-foutopsporing staat aan.</translation>
 <translation id="120368089816228251">Muzieknoot</translation>
 <translation id="1203942045716040624">Gedeelde worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="1210678701920254279">Printers bekijken of toevoegen en actieve afdruktaken zien</translation>
 <translation id="1211769675100312947">Snelkoppelingen worden door jou beheerd</translation>
 <translation id="1213254615020057352">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="1213726621272705156">Je ziet geen kaarten meer op deze pagina</translation>
@@ -2132,6 +2134,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2658941648214598230">Oorspronkelijke content bekijken?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Functies verschillen per apparaat</translation>
 <translation id="2659971421398561408">Schijfgrootte aanpassen voor Crostini</translation>
+<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> kan nu je gebruikersnaam en wachtwoord gebruiken als die Google Wachtwoordmanager gebruikt om in te loggen bij <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Gebeurtenis</translation>
 <translation id="266079277508604648">Verbinding met printer niet mogelijk. Controleer of de printer is aangezet en via wifi of USB is verbonden met je Chromebook.</translation>
 <translation id="2661315027005813059">Pagina in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2256,6 +2259,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="274362947316498129">Een app probeert toegang te krijgen tot <ph name="DEVICE_NAME" />. Zet de privacyschakelaar voor <ph name="DEVICE_NAME" /> uit om toegang te geven.</translation>
 <translation id="2745080116229976798">Gekwalificeerde ondergeschiktheid van Microsoft</translation>
+<translation id="2749026027885331579">Je gezinsleden kunnen nu je gebruikersnaam en wachtwoord gebruiken als ze Google Wachtwoordmanager gebruiken om in te loggen bij <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">Inloggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Simkaart</translation>
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
@@ -4352,6 +4356,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4449948729197510913">Je gebruikersnaam hoort bij het werkaccount van je organisatie. Als je apparaten wilt inschrijven bij het account, moet je eerst het domeineigendom verifiëren in de Beheerdersconsole. Je hebt beheerdersrechten voor het account nodig om te verifiëren.</translation>
 <translation id="4450974146388585462">Diagnose</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> heeft een actieve TPM waargenomen die je gegevens beter beveiligd kan opslaan.</translation>
+<translation id="4451203458188403050">Tekst uit pdf extraheren</translation>
 <translation id="4451479197788154834">Je wachtwoord is opgeslagen op dit apparaat en in je Google-account</translation>
 <translation id="4452898361839215358">of selecteer PPD. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Raak de vingerafdruksensor rechtsboven op je toetsenbord aan. Je vingerafdrukgegevens worden beveiligd opgeslagen en blijven uitsluitend op je <ph name="DEVICE_TYPE" /> staan.</translation>
@@ -4421,6 +4426,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4510195992002502722">Kan feedback niet sturen. Opnieuw proberen…</translation>
 <translation id="4510479820467554003">Lijst met ouderaccounts</translation>
 <translation id="451102079304155829">winkelwagens</translation>
+<translation id="4511344327646819192">Als je niet wilt dat anderen je wachtwoord gebruiken, wijzig je het op <ph name="WEBSITE" /></translation>
 <translation id="4513872120116766993">Voorspellend schrijven</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4515872537870654449">Neem contact op met Dell voor service. Het dock wordt uitgezet als de ventilator niet werkt.</translation>
@@ -5572,6 +5578,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5478520208448702555">Sites kunnen een scherm-in-scherm-venster openen als je naar een ander tabblad gaat</translation>
 <translation id="5481273127572794904">Geen toestemming om automatisch meerdere bestanden te downloaden</translation>
 <translation id="5481941284378890518">Printers in de buurt toevoegen</translation>
+<translation id="5484181871714116891">Als deze optie aanstaat, worden toegangssleutels gemaakt in iCloud Sleutelhanger en zijn deze beschikbaar op je Apple-apparaten. Staat de optie uit, dan worden toegangssleutels gemaakt in je Chrome-profiel op dit apparaat.</translation>
 <translation id="5484462543003267273">Gezin beheren</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereist dat je een back-up van je gegevens maakt en deze <ph name="DEVICE_TYPE" /> binnen {NUM_DAYS} dagen terugstuurt. <ph name="LINK_BEGIN" />Details bekijken<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">App toevoegen</translation>
@@ -7008,6 +7015,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6671497123040790595">Beheer door <ph name="MANAGER" /> instellen</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> toevoegen</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
+<translation id="6673797129585578649">Verlengt de batterijduur door de helderheid te verminderen, achtergrondactiviteit en visuele effecten te beperken, meldingen te vertragen en Chrome Energiebesparing aan te zetten.</translation>
 <translation id="6674571176963658787">Geef je wachtwoordzin op om de synchronisatie te starten</translation>
 <translation id="6675665718701918026">Aanwijsapparaat verbonden</translation>
 <translation id="6676212663108450937">Overweeg het gebruik van een hoofdtelefoon wanneer je je stem traint</translation>
@@ -7622,6 +7630,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7180865173735832675">Aanpassen</translation>
 <translation id="7181117767881540376">&amp;Bookmarkbalk verbergen</translation>
 <translation id="7182791023900310535">Je wachtwoord verplaatsen</translation>
+<translation id="718427252411067142">Als je niet wilt dat anderen je wachtwoord gebruiken, open je de app om je wachtwoord te wijzigen</translation>
 <translation id="7186088072322679094">In werkbalk houden</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> kan deze map niet openen omdat deze systeembestanden bevat</translation>
 <translation id="7188508872042490670">Sitegegevens op het apparaat</translation>
@@ -8417,6 +8426,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7803657407897251194">Verbind je <ph name="DEVICE_TYPE" /> met een netwerk om door te gaan met instellen op je Android-apparaat</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
+<translation id="780446144738273886">Scan de pdf om tekst voor de schermlezer te extraheren. Wordt alleen ondersteund in de Chrome-browser.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tip sluiten</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
@@ -9024,6 +9034,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="828642162569365647">Dit wachtwoord of deze pincode beschermt je gegevens op deze <ph name="DEVICE_TYPE" /> en informatie die je opent vanaf je telefoon. Je moet elke keer ontgrendelen als je <ph name="DEVICE_TYPE" /> uit de slaapstand komt.</translation>
 <translation id="8287902281644548111">Zoeken op API-aanroep/URL</translation>
 <translation id="8288032458496410887"><ph name="APP" /> verwijderen...</translation>
+<translation id="8288553158681886528">Tekst uit pdf extraheren</translation>
 <translation id="8289128870594824098">Schijfgrootte</translation>
 <translation id="8289509909262565712">Welkom bij <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Chrome downloaden</translation>
@@ -9299,6 +9310,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan in de instellingen van het ChromeOS-apparaat van je kind. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">Probeer een andere beveiligingssleutel</translation>
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>
+<translation id="8515580632187889788">Als je doorgaat, geef je derden toestemming om informatie te verifiëren waarmee dit apparaat in het netwerk wordt geïdentificeerd. Wil je niet dat derden toegang hebben tot apparaatgegevens, dan kun je <ph name="BEGIN_LINK" />handmatig<ph name="END_LINK" /> een e-simkaartprofiel instellen.</translation>
 <translation id="8517759303731677493">Bewerken…</translation>
 <translation id="8518942514525208851">Grof taalgebruik verbergen</translation>
 <translation id="8519895319663397036">Kan wachtwoorden niet importeren. Het bestand moet kleiner zijn dan 150 KB.</translation>

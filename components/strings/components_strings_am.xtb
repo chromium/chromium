@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">የእርምጃ እና መሰረተ ስርዓት ጨዋታዎች</translation>
 <translation id="1413809658975081374">የግላዊነት ስህተት</translation>
 <translation id="1414134146594747368">ቅድመ ትምህርት ቤት</translation>
+<translation id="141826476809826269">የወጣ ጽሁፍ ማብቂያ</translation>
 <translation id="1419305130220238697">በChrome አዝራር ውስጥ ውርዶችን ያስተዳድሩ፣ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ያግብሩ</translation>
 <translation id="1422930527989633628">በአቅራቢያ ያሉ የብሉቱዝ መሣሪያዎችን ለማግኘት መጠየቅ ይችላል</translation>
 <translation id="1426410128494586442">አዎ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">አሁን ለመጎብኘት የሞከሩት ጣቢያ የሐስት ይመስላል። አጥቂዎች አንዳንድ ግ ጊዜ በዩአርኤሉ ላይ ለመታየት የሚያስቸግሩ አነስተኛ ለውጦችን በማድረግ ጥኣቢያዎችን ያስመስላሉ።</translation>
 <translation id="1532118530259321453">ይህ ገፅ እንዲህ ይላል፦</translation>
 <translation id="1536390784834419204">ገፅ ተርጉም</translation>
+<translation id="1537807545287921620">ይህ PDF ተደራሽ አይደለም። ተገቢ ሁኔታ ምናሌን ይክፈቱ እና «ከPDF ላይ ጽሁፍ አውጣ» የሚለውን ያብሩ</translation>
 <translation id="1539840569003678498">ሪፖርት ተልኳል፦</translation>
 <translation id="1542105669288201090">የቢዝነስ ትምህርት</translation>
 <translation id="1545757265410828525">የዋጋ ታሪክ</translation>
@@ -864,6 +866,7 @@
 <translation id="2803306138276472711">Google የጥንቃቄ አሰሳ በቅርብ ጊዜ <ph name="SITE" /> ላይ <ph name="BEGIN_LINK" />ተንኮል-አዘል ዌር<ph name="END_LINK" /> አግኝቷል። በመደበኛ ጊዜ ደህንነታቸው የተጠበቁ ድር ጣቢያዎች አንዳንድ ጊዜ በተንኮል-አዘል ዌር ይጠቃሉ።</translation>
 <translation id="2807052079800581569">የምስል Y አቀማመጥ</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> ውስጥ Windows Helloን ማብራት ወይም ማጥፋት ይችላሉ</translation>
+<translation id="2814184336982254349">ይህ PDF ተደራሽ አይደለም። ተገቢ ሁኔታ ምናሌን ለመክፈት ፍለጋ ሲደመር mን ይጫኑ እና «ከPDF ላይ ጽሁፍ አውጣ» የሚለውን ያብሩ</translation>
 <translation id="2818338148457093657">የውበት አገልግሎቶች እና ስፓዎች</translation>
 <translation id="2820957248982571256">በመቃኘት ላይ...</translation>
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
@@ -1167,6 +1170,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ወደ ቅንጥብ ሰሌዳው የተቀዱ ጽሑፍን እና ምስሎችን መመልከት ይፈልጋል</translation>
 <translation id="3461824795358126837">ማድመቂያ</translation>
 <translation id="3462200631372590220">የላቁ ደብቅ</translation>
+<translation id="3465972433695735758">ይህ PDF ተደራሽ አይደለም። ጽሁፍ ወጥቷል፣ በGoogle AI የተጎላበተ</translation>
 <translation id="346601286295919445">ኬሚስትሪ</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />፣ በአሁኑ ጊዜ ክፍት፣ ወደ ክፍቱ ትር ለመቀየር ከዚያ Enter ይጫኑ</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ አሁን ክፍት የሆኑት ሁሉንም ማንነት የማያሳውቁ መስኮቶችን ለመዝጋት ትር ከዚያ አስገባን ይጫኑ</translation>
@@ -1184,6 +1188,7 @@
 <translation id="350069200438440499">የፋይል ስም፦</translation>
 <translation id="3501300228850242680">ሜታል (ሙዚቃ)</translation>
 <translation id="350421688684366066">መሰየሚያዎች (በከፍተኛው አንጸባራቂ)</translation>
+<translation id="350763432931695541">በሚቀጥሉት ጥቂት ገፆች ውስጥ ጽሁፍ በማውጣት ላይ</translation>
 <translation id="3507869775212388416">የህግ ስራዎች</translation>
 <translation id="3507936815618196901">የዙሪያዎ የ3ል ካርታ መፍጠር ወይም የካሜራ ቦታን መከታተል</translation>
 <translation id="3512163584740124171">ይህ መመሪያ ከተመሳሳይ የመመሪያ ቡድን የመጣ ሌላ መመሪያ ከፍተኛ ተቀዳሚነት ስላለው ችላ ተብሏል።</translation>
@@ -2849,6 +2854,7 @@
 <translation id="6973988895180423160">3.5 x 5 ኢንች</translation>
 <translation id="6978236010531171013">ለማንኛወም አጋራ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">የወጣ ጽሁፍ መጀመሪያ</translation>
 <translation id="6979440798594660689">ድምጸ-ከል አድርግ (ነባሪ)</translation>
 <translation id="6987806006823772670">ፖስታ (የተሸፈነ)</translation>
 <translation id="6989763994942163495">የላቁ ቅንብሮችን አሳይ...</translation>
@@ -2904,6 +2910,7 @@
 <translation id="7102760431686146931">የምግብ ማብሰያዎች እና መመገቢያ እቃዎች</translation>
 <translation id="7105998430540165694">የይለፍ ቁልፍ ከiCloud Keychain</translation>
 <translation id="7106762743910369165">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
+<translation id="7107249414147762907">ይህ PDF ተደራሽ አይደለም። ምንም ጽሁፍ አልወጣም</translation>
 <translation id="7108338896283013870">ደብቅ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ካሜራዎን መጠቀም ይፈልጋል</translation>
 <translation id="7108819624672055576">በቅጥያ የተፈቀደ</translation>
@@ -3916,6 +3923,7 @@
 <translation id="917450738466192189">የአገልጋይ እውቅና ማረጋገጫ ልክ ያልኾነ ነው።</translation>
 <translation id="9174623988242579721">ብጁ እና የከፍተኛ ሥራ ተሽከርካሪዎች</translation>
 <translation id="9174917557437862841">የማብሪያ ማጥፊያ አዝራር ትር፣ ወደዚህ ትር ለመቀየር Enter ይጫኑ</translation>
+<translation id="9177283544810807743">ይህ PDF ተደራሽ አይደለም። ጽሁፍን በማውጣት ላይ፣ በGoogle AI የተጎላበተ</translation>
 <translation id="9179703756951298733">በChrome ቅንብሮች ውስጥ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ ያስተዳድሩ</translation>
 <translation id="9179907736442194268">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ የኢሜይል ማንቂያዎችን ያግኙ</translation>
 <translation id="9183302530794969518">Google ሰነድ</translation>

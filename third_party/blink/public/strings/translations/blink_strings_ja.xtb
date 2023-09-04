@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">ミラーリングに切り替わりました</translation>
 <translation id="2031987842108996681">赤チャネル</translation>
 <translation id="2060505056492490888">「<ph name="INVALIDDOMAIN" />」内の「<ph name="DOT" />」の位置が間違っています。</translation>
+<translation id="2068711044993563745">最小値（<ph name="MINIMUM" />）は最大値（<ph name="MAXIMUM" />）より小さくしてください。</translation>
 <translation id="2148716181193084225">今日</translation>
 <translation id="2226276347425096477">このテキストを半角 <ph name="MAX_CHARACTERS" /> 文字以下にしてください（現時点で半角 <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>

@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">動作與平台類遊戲</translation>
 <translation id="1413809658975081374">隱私權設定發生錯誤</translation>
 <translation id="1414134146594747368">幼稚園</translation>
+<translation id="141826476809826269">擷取的文字內容結尾</translation>
 <translation id="1419305130220238697">「管理 Chrome 下載內容」按鈕，啟動後即可管理在 Chrome 中下載的檔案</translation>
 <translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">你剛才嘗試造訪的網站可能是假網站。攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
 <translation id="1532118530259321453">這個網頁顯示</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
+<translation id="1537807545287921620">這份 PDF 無法存取。請依序開啟內容選單和「擷取 PDF 中的文字」</translation>
 <translation id="1539840569003678498">回報時間：</translation>
 <translation id="1542105669288201090">商業教育</translation>
 <translation id="1545757265410828525">價格記錄</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">支付</translation>
 <translation id="1846432862466000825">塑膠 (典藏用)</translation>
 <translation id="1848982255014129637">相紙 (高光面)</translation>
+<translation id="1853392626017747777">虛擬卡片註冊對話方塊已關閉</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1855370856221982654">拳擊</translation>
 <translation id="1856713167556118146">無痕模式不支援的功能</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1935995810530254458">仍要複製</translation>
 <translation id="1939175642807587452">可以要求傳送通知</translation>
+<translation id="1940441167050915935">刪除已儲存的安全碼</translation>
 <translation id="1943994668912612445">設計</translation>
 <translation id="1945968466830820669">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="1946849748901605102">12 x 15 吋</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟體<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會遭到惡意軟體感染。</translation>
 <translation id="2807052079800581569">圖片 Y 位置</translation>
 <translation id="2808278141522721006">你可以前往「<ph name="SETTINGS" />」開啟或關閉 Windows Hello</translation>
+<translation id="2814184336982254349">這份 PDF 無法存取。請按下搜尋鍵 + M 鍵開啟內容選單，然後開啟「擷取 PDF 中的文字」</translation>
 <translation id="2818338148457093657">美容服務與 SPA</translation>
 <translation id="2820957248982571256">掃描中...</translation>
 <translation id="2824775600643448204">網址與搜尋列</translation>
@@ -1167,6 +1172,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> 要求讀取已複製到剪貼簿的文字和圖片</translation>
 <translation id="3461824795358126837">螢光筆</translation>
 <translation id="3462200631372590220">隱藏詳細資料</translation>
+<translation id="3465972433695735758">這份 PDF 無法存取。系統已運用 Google AI 技術擷取文字</translation>
 <translation id="346601286295919445">化學</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />，目前已開啟，依序按下 Tab 鍵和 Enter 鍵即可切換至開啟的分頁</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可關閉目前開啟的所有無痕式視窗</translation>
@@ -1184,6 +1190,7 @@
 <translation id="350069200438440499">檔案名稱：</translation>
 <translation id="3501300228850242680">金屬 (音樂)</translation>
 <translation id="350421688684366066">標籤 (高光面)</translation>
+<translation id="350763432931695541">正在擷取接下來幾頁中的文字</translation>
 <translation id="3507869775212388416">法律相關工作</translation>
 <translation id="3507936815618196901">根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略這項政策。</translation>
@@ -1725,6 +1732,7 @@
 <translation id="4628948037717959914">相片</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
 <translation id="4631649115723685955">已連結現金回饋</translation>
+<translation id="4631881646528206880">虛擬卡片註冊</translation>
 <translation id="4636930964841734540">資訊</translation>
 <translation id="4638670630777875591">Chromium 無痕模式</translation>
 <translation id="464342062220857295">搜尋功能</translation>
@@ -1839,6 +1847,7 @@
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
 <translation id="4862630594858951805">想在商品降價時收到電子郵件通知嗎？</translation>
+<translation id="4864406669374375262">已將版本字串複製到剪貼簿</translation>
 <translation id="486459320933704969">你必須獲得家長或監護人許可，才能造訪這個網站</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
 <translation id="4873616204573862158">眼鏡</translation>
@@ -2849,6 +2858,7 @@
 <translation id="6973988895180423160">3.5 x 5 吋</translation>
 <translation id="6978236010531171013">一律分享</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
+<translation id="6979332652936434520">擷取的文字內容開頭</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6987806006823772670">信封 (塗布紙)</translation>
 <translation id="6989763994942163495">顯示進階設定...</translation>
@@ -2904,6 +2914,7 @@
 <translation id="7102760431686146931">廚具與餐具</translation>
 <translation id="7105998430540165694">iCloud 鑰匙圈的密碼金鑰</translation>
 <translation id="7106762743910369165">你的瀏覽器是由貴機構管理</translation>
+<translation id="7107249414147762907">這份 PDF 無法存取。系統未擷取任何文字</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> 要求使用攝影機</translation>
 <translation id="7108819624672055576">依據擴充功能設定允許</translation>
@@ -3526,6 +3537,7 @@
 <translation id="8339163506404995330">系統將不會翻譯<ph name="LANGUAGE" />網頁</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">如果你瞭解安全性風險，也可以選擇在有害程式尚未遭到移除的狀態下<ph name="BEGIN_LINK" />造訪這個網站<ph name="END_LINK" />。</translation>
+<translation id="8344776605855290140">虛擬卡片註冊對話方塊已開啟，並顯示在整個畫面上</translation>
 <translation id="8347658365704983341">遠距教學</translation>
 <translation id="8349305172487531364">書籤列</translation>
 <translation id="8351131234907093545">寫筆記</translation>
@@ -3915,6 +3927,7 @@
 <translation id="917450738466192189">伺服器憑證無效。</translation>
 <translation id="9174623988242579721">改裝車與性能車</translation>
 <translation id="9174917557437862841">分頁切換鈕，按下 Enter 鍵即可切換到這個分頁</translation>
+<translation id="9177283544810807743">這份 PDF 無法存取。系統正在運用 Google AI 技術擷取文字</translation>
 <translation id="9179703756951298733">在 Chrome 設定中管理付款和信用卡資訊</translation>
 <translation id="9179907736442194268">產品在任何網站上降價時都會通知你</translation>
 <translation id="9183302530794969518">Google 文件</translation>

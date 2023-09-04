@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Откройте меню Chrome.</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1200396280085622191">Открывайте ссылки в сообщениях и других приложениях с помощью Chrome.</translation>
+<translation id="1201402288615127009">Далее</translation>
 <translation id="1207113853726624428">Новый поиск</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Скрыть</translation>
@@ -726,6 +727,7 @@
 <translation id="5228579091201413441">Включить синхронизацию</translation>
 <translation id="5232485538978018676">Вход в управляемый аккаунт</translation>
 <translation id="5234764350956374838">Закрыть</translation>
+<translation id="5238301240406177137">Сохранить в аккаунте</translation>
 <translation id="5245322853195994030">Отключить</translation>
 <translation id="5271265092610673171">{count,plural, =1{Пропущено обязательное поле. Заполните его.}one{Пропущены обязательные поля. Заполните их.}few{Пропущены обязательные поля. Заполните их.}many{Пропущены обязательные поля. Заполните их.}other{Пропущены обязательные поля. Заполните их.}}</translation>
 <translation id="5271549068863921519">Сохранить пароль</translation>

@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">開啟 Chrome 選單</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1200396280085622191">隨時使用 Chrome 開啟訊息和其他應用程式中的連結。</translation>
+<translation id="1201402288615127009">下一個</translation>
 <translation id="1207113853726624428">新搜尋</translation>
 <translation id="1207493287814084192">下午 5 時 30 分</translation>
 <translation id="1209206284964581585">暫時隱藏</translation>
@@ -734,6 +735,7 @@
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5232485538978018676">使用受管理的帳戶登入</translation>
 <translation id="5234764350956374838">關閉</translation>
+<translation id="5238301240406177137">儲存在帳戶中</translation>
 <translation id="5245322853195994030">取消同步處理</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>

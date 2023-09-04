@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">インストールを再開</translation>
 <translation id="1029669172902658969">再起動して Chromium OS を更新</translation>
 <translation id="1040916596585577953">この拡張機能を確認することをおすすめします</translation>
+<translation id="1042552502243217427">ページのリンクを非公開でプリロードするようサイトから求められた場合、Chromium は Google サーバーを使用します。これによりプリロードしたサイトにユーザーの情報が知られることはありませんが、Google はどのようなサイトがプリロードされたかを学習します。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1083934481477628225">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
 <translation id="1098170124587656448">Chromium でデータ侵害や不正な拡張機能などの脅威から保護されているか確認します</translation>
@@ -129,6 +130,7 @@
 <translation id="3713809861844741608">新しい Chromium タブでリンクを開く(&amp;T)</translation>
 <translation id="378917192836375108">Chromium では、ウェブサイト上の電話番号をクリックするだけで Skype で通話を発信できます。</translation>
 <translation id="3790262771324122253">Chromium で一部のダウンロードがブロックされる理由</translation>
+<translation id="3802055581630249637">アクセスする可能性の高いページがプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
 <translation id="3830894615770080216">Chromium OS システム</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Chromium OS のヘルプを見る</translation>
@@ -239,6 +241,7 @@
 <translation id="6132897690380286411">Chromium はまもなく終了し、データが削除されます</translation>
 <translation id="6134968993075716475">セーフ ブラウジングがオフになっています。Chromium はオンにすることをおすすめしています。</translation>
 <translation id="6145820983052037069">こちらで Chromium プロフィールを切り替えることができます</translation>
+<translation id="615103374448673771">Cookie を許可した場合、Chromium はプリロードの際に Cookie を使用することがあります。</translation>
 <translation id="6175304430031192654">設定によっては、Chromium から Cookie や現在の URL が送信されることもあります</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
@@ -263,6 +266,7 @@
 <translation id="6400112897226594999">パソコンの画面に表示された Chromium のロゴ。</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6442900851116057561">Chromium OS を再起動してください</translation>
+<translation id="6443470774889161065">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
 <translation id="6455857529632101747">Chromium プロフィールへようこそ</translation>
 <translation id="6475912303565314141">この拡張機能では、Chromium の起動時に表示されるページも制御されます。</translation>
 <translation id="648319183876919572">セーフ ブラウジング保護強化機能では、危険なウェブサイトやダウンロードから高いセキュリティ強度で保護されます</translation>

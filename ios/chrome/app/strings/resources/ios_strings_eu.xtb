@@ -40,6 +40,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1177414119866731261">Ireki Chrome-ko menua</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1200396280085622191">Erabili Chrome mezuetako eta beste aplikazioetako estekak sakatzen dituzunean.</translation>
+<translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1207113853726624428">Bilaketa berria</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ezkutatu</translation>
@@ -726,6 +727,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5228579091201413441">Gaitu sinkronizazioa</translation>
 <translation id="5232485538978018676">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="5234764350956374838">Baztertu</translation>
+<translation id="5238301240406177137">Gorde kontuan</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
 <translation id="5271265092610673171">{count,plural, =1{Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>

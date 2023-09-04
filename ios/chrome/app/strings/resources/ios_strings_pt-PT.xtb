@@ -40,6 +40,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1177414119866731261">Abra o menu do Chrome</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1200396280085622191">Use o Chrome sempre que tocar em links em mensagens e noutras apps.</translation>
+<translation id="1201402288615127009">Seguinte</translation>
 <translation id="1207113853726624428">Nova pesquisa</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ocultar para já</translation>
@@ -734,6 +735,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5228579091201413441">Ativar a sincronização</translation>
 <translation id="5232485538978018676">Inicie sessão com uma conta gerida</translation>
 <translation id="5234764350956374838">Ignorar</translation>
+<translation id="5238301240406177137">Guardar na conta</translation>
 <translation id="5245322853195994030">Cancelar sincronização</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está vazio. Preencha-o antes de guardar.}other{Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>

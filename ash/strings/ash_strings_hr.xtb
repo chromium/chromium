@@ -90,6 +90,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1293264513303784526">USB-C uređaj (lijevi priključak)</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Otvorite Istraživanje</translation>
 <translation id="1294929383540927798">Promijenite postavke obavijesti o zaključanom zaslonu</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">PREPORUČENE APLIKACIJE</translation>
@@ -387,6 +388,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2612614436418177118">Premještanje ikone aplikacije unutar rešetke aplikacije</translation>
 <translation id="2620016719323068571">Pretražujte svoje <ph name="CATEGORY" />, datoteke, aplikacije i ostalo...</translation>
 <translation id="2620436844016719705">Sustav</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="2624588537172718173">Zvuk na uređaju i mikrofon</translation>
 <translation id="263399434338050016">"Odaberi sve"</translation>
@@ -511,6 +513,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3161500364292033097">Zatvaranje radne površine i prozora</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vraća vaš uređaj <ph name="DEVICE_TYPE" /> na prethodnu verziju. Uređaj će se vratiti na zadano i svi će se podaci izbrisati.</translation>
 <translation id="3171170659304083361">Postavke načina unosa</translation>
+<translation id="3176221688814061633">Chromebook ili Bluetooth uređaj upotrebljava stariju verziju Bluetootha. Uključite Bluetooth Super Resolution ili upotrebljavajte interni mikrofon za bolju kvalitetu zvuka.</translation>
 <translation id="3181441307743005334">Ponovno pokretanje može potrajati neko vrijeme</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezano s jednim uređajem}one{Povezano s # uređajem}few{Povezano s # uređaja}other{Povezano s # uređaja}}</translation>
 <translation id="320207200541803018">Postavi odbrojavanje</translation>
@@ -1497,6 +1500,7 @@ Novo instaliranje</translation>
 <translation id="7189412385142492784">Kolika je udaljenost do Venere</translation>
 <translation id="7198435252016571249">Kamera je poravnata s donjim desnim kutom. Došlo je do sukoba s površinom sustava.</translation>
 <translation id="7219573373513695352">Nije povezan nijedan uređaj</translation>
+<translation id="7229029500464092426">Memorija <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ukupno</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ovaj se Chromebook treba pokrenuti ponovo da bi se primijenilo ažuriranje. To može potrajati minutu.</translation>
 <translation id="7256634071279256947">Stražnji mikrofon</translation>
 <translation id="7258828758145722155">Uređeno jučer</translation>
@@ -1522,6 +1526,7 @@ Novo instaliranje</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
 <translation id="736045644501761622">Postavite pozadinu i stil</translation>
 <translation id="7371404428569700291">Snimanje prozora</translation>
+<translation id="7372069265635026568">Dostupno <ph name="AVAILABLE_MEMORY" /> memorije od ukupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Omogućuje pristup mikrofonu za sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>

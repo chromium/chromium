@@ -19,6 +19,7 @@
 <translation id="1838412507805038478">Chromium የዚህ ድር ጣቢያ እውቅና ማረጋገጫ ያወጣው <ph name="ISSUER" /> መሆኑን አረጋግጧል።</translation>
 <translation id="1843424232666537147">Chromium እርስዎ የበይነመረብ ውሂብዎን እና ድረ-ገጾችን በምን ያህል ፍጥነት መጫን እንደሚችሉ እንዲያቀናብሩ የሚያስችሉዎት ባህሪያት አሉት። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">በChromium ውስጥ ያሉ ካርታዎች</translation>
+<translation id="186734497270163706">«Chromium» ከዚያ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ።</translation>
 <translation id="1867772173333403444">4. Chromiumን ይምረጡ</translation>
 <translation id="2006345422933397527">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="2052320862053429062">Chromium በየጊዜው የእርስዎን የይለፍ ቃላት መስመር ላይ ከታተሙ ዝርዝሮች ጋር እያነጻጸረ ይፈትሻል። ይህን በሚያደርግበት ጊዜ የእርስዎ የይለፍ ቃላት እና የተጠቃሚ ስሞች Googleን ጨምሮ በሌላ ማንም ወገን እንዳይነበቡ ይመሠጠራሉ።</translation>
@@ -106,6 +107,7 @@
 <translation id="5945387852661427312">በ<ph name="DOMAIN" /> ከሚተዳደር መለያ ዘግተው እየወጡና ለአስተዳዳሪው ሙሉውን በChromium ውሂብዎ ቁጥጥር እየሰጡ ነው። የእርስዎ ውሂብ እስከመጨረሻው ከዚህ መለያ ጋር ይተሳሰራል። ከChromium ዘግቶ መውጣት ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል፣ ነገር ግን በእርስዎ Google መለያ ላይ እንደተከማቸ ይቆያል።</translation>
 <translation id="5951593919357934226">ከChromium ምርጡን ያግኙ።</translation>
 <translation id="5983312940147103417">Chromiumን የተሻለ ያድርጉት</translation>
+<translation id="5985102273857091344">«Chromium» የሚለውን ይምረጡ።</translation>
 <translation id="6062449165341879460">በዚህ መለያ ውስጥ ለሚያከማቿቸው የእርስዎ የChromium ውሂብ፣ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ድርጅትዎ <ph name="DOMAIN" /> መዳረሻ ይኖረዋል። ዘግተው በሚወጡበት ጊዜ፣ ውሂብዎ ከዚህ መሣሪያ ላይ ይጸዳል።  ሆኖም፣ ውሂብዎ በሚተዳደር የGoogle መለያዎ እንደተከማቸ የሚቆይ እና ለድርጅትዎ የሚገኝ ይሆናል። እንዲሁም ድርጅትዎ ለዚያ መለያ የChromium ባህሪን ሊቀይሩ የሚችሉ የተወሰኑ የተጠቃሚ መመሪያዎችን ማቀናበር ይችላል።</translation>
 <translation id="61109258320235597">በGoogle መለያዎ ውስጥ የChromium ውሂብን ለመጠቀም እና ለማስቀመጥ የእርስዎን የይለፍ ሐረግ ያስገቡ።</translation>
 <translation id="6119647025869519954">Chromiumን የእርስዎ ነባሪ ለማድረግ፦
@@ -155,6 +157,7 @@
 <translation id="8013573822802650211">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="8071041515667087705">ወደ Chromium ቅንብሮች ይሂዱ</translation>
 <translation id="8073677936375100957">የChromium ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
+<translation id="8115308261377517697">Chromiumን እንደ ነባሪ አሳሽዎ አድርገው ያቀናብሩ</translation>
 <translation id="8235427517854598594">Chromium የእርስዎ ነባሪ አሳሽ ይደረግ?</translation>
 <translation id="8240981428553046115">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="8409374867500149834">ከጎጂ ድር ጣቢያዎች የሚከላከል የChromium በጣም ጠንካራ ጥበቃ አለዎት</translation>

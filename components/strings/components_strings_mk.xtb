@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1846432862466000825">Пластика (архивска)</translation>
 <translation id="1848982255014129637">Фотографија (висок сјај)</translation>
+<translation id="1853392626017747777">Регистрацијата за виртуелна картичка е затворена</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Што не прави „Инкогнито“</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">Ново</translation>
 <translation id="1935995810530254458">Сепак копирај</translation>
 <translation id="1939175642807587452">Може да прашува за да испраќа известувања</translation>
+<translation id="1940441167050915935">Избришете ги зачуваните безбедносни кодови</translation>
 <translation id="1943994668912612445">Дизајн</translation>
 <translation id="1945968466830820669">Може да го изгубите пристапот до сметката на вашата организација или да ви го украдат идентитетот. Chromium препорачува да ја смените лозинката веднаш.</translation>
 <translation id="1946849748901605102">12 x 15 инчи</translation>
@@ -1726,6 +1728,7 @@
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
+<translation id="4631881646528206880">Регистрација за виртуелна картичка</translation>
 <translation id="4636930964841734540">Информации</translation>
 <translation id="4638670630777875591">„Инкогнито“ во Chromium</translation>
 <translation id="464342062220857295">Функции за пребарување</translation>
@@ -1840,6 +1843,7 @@
 <translation id="4854853140771946034">Набрзина создајте нова белешка во Google Keep</translation>
 <translation id="485902285759009870">Се потврдува кодот…</translation>
 <translation id="4862630594858951805">Дали сакате да добивате е-пораки кога ќе се намали цената?</translation>
+<translation id="4864406669374375262">Низа на верзијата е копирана во привремената меморија</translation>
 <translation id="486459320933704969">Родител или старател мора да одобри за да го посетиш веб-сајтов</translation>
 <translation id="4866506163384898554">Притиснете |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| за да се прикаже курсорот</translation>
 <translation id="4873616204573862158">Очила</translation>
@@ -3527,6 +3531,7 @@
 <translation id="8339163506404995330">Страниците на <ph name="LANGUAGE" /> нема да се преведуваат</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Доколку ги разбирате ризиците по безбедноста, може да ја <ph name="BEGIN_LINK" />посетите локацијата<ph name="END_LINK" /> пред да се отстранат штетните програми.</translation>
+<translation id="8344776605855290140">Регистрацијата за виртуелна картичка е отворена на цел екран</translation>
 <translation id="8347658365704983341">Далечинско учење</translation>
 <translation id="8349305172487531364">Лента со обележувачи</translation>
 <translation id="8351131234907093545">Создајте белешка</translation>

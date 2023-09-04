@@ -90,6 +90,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1293264513303784526">USB-C-enhed (venstre port)</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Åbn Udforsk</translation>
 <translation id="1294929383540927798">Skift indstillinger for notifikationer på låseskærm</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ANBEFALEDE APPS</translation>
@@ -387,6 +388,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2612614436418177118">Flyt et appikon inden for appgitteret</translation>
 <translation id="2620016719323068571">Søg i dine <ph name="CATEGORY" />, filer, apps og meget mere...</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
 <translation id="2624588537172718173">Enhedslyd og mikrofon</translation>
 <translation id="263399434338050016">"Vælg alle"</translation>
@@ -511,6 +513,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3161500364292033097">Luk skrivebord og vinduer</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> skifter til en tidligere version af din <ph name="DEVICE_TYPE" />. Din enhed nulstilles, og alle data slettes.</translation>
 <translation id="3171170659304083361">Indstillinger for indtastningsmetoder</translation>
+<translation id="3176221688814061633">Din Chromebook eller Bluetooth-enhed anvender en ældre version af Bluetooth. Aktivér Bluetooth Super Resolution, eller brug den interne mikrofon for at få bedre lydkvalitet.</translation>
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
 <translation id="320207200541803018">Indstil timer</translation>
@@ -1498,6 +1501,7 @@ Installeret for nylig</translation>
 <translation id="7189412385142492784">Hvor langt væk er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er fastgjort til hjørnet nederst til højre. Dette er i strid med systemfladen.</translation>
 <translation id="7219573373513695352">Ingen enheder er forbundet</translation>
+<translation id="7229029500464092426">Hukommelse <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> i alt</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denne Chromebook skal genstartes, før opdateringen kan anvendes. Dette kan tage op til 1 minut.</translation>
 <translation id="7256634071279256947">Mikrofon på bagsiden</translation>
 <translation id="7258828758145722155">Redigeret i går</translation>
@@ -1523,6 +1527,7 @@ Installeret for nylig</translation>
 <translation id="7360036564632145207">Du kan forbedre ydeevnen ved at ændre indstillingen Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="736045644501761622">Konfigurer Baggrund og stil</translation>
 <translation id="7371404428569700291">Optag vindue</translation>
+<translation id="7372069265635026568">Hukommelse <ph name="AVAILABLE_MEMORY" /> er ledig ud af i alt <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dette giver alle apps og websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="7377169924702866686">Caps Lock er slået til.</translation>
 <translation id="7377481913241237033">Opret forbindelse med en kode</translation>

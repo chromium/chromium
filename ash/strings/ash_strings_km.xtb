@@ -366,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">ដោះសោ​វិនដូ</translation>
 <translation id="2528111225373402384">ការកំណត់​ហតស្ប៉ត</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">បើក ឬបិទ​មុខងារ caret browsing</translation>
 <translation id="2531025035050312891">ឧបករណ៍ដើរយឺត</translation>
 <translation id="2531107890083353124">ខណៈពេល​អូសផ្ទាំង សូមចុច <ph name="KEY_ONE" /></translation>
@@ -1856,6 +1857,7 @@
 <translation id="8731487213223706745">បញ្ចប់នៅម៉ោង <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">វាអាច​នឹង​ព្យាយាម​លួច​ការចុច​របស់អ្នក</translation>
 <translation id="8735678380411481005">ពណ៌​ពន្លឺ​ផ្នែកខាងក្រោយ​ក្ដារចុច</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />៖ កំពុងបើកដំណើរការ...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">ផ្ទៀងផ្ទាត់អត្តសញ្ញាណ​របស់អ្នក៖ <ph name="ORIGIN_NAME" /> ចង់បញ្ជាក់​ថាជាអ្នក</translation>

@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Chrome मेन्यू खोलें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1200396280085622191">मैसेज और अन्य ऐप्लिकेशन में मिले लिंक पर टैप करके, किसी भी समय Chrome का इस्तेमाल करें.</translation>
+<translation id="1201402288615127009">अगला</translation>
 <translation id="1207113853726624428">नई खोज</translation>
 <translation id="1207493287814084192">शाम 5:30 बजे</translation>
 <translation id="1209206284964581585">अभी छिपाएं</translation>
@@ -726,6 +727,7 @@
 <translation id="5228579091201413441">सिंक चालू करें</translation>
 <translation id="5232485538978018676">मैनेज किए जा रहे खाते से साइन इन करें</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
+<translation id="5238301240406177137">खाते में सेव करें</translation>
 <translation id="5245322853195994030">सिंक करना रद्द करें</translation>
 <translation id="5271265092610673171">{count,plural, =1{एक ज़रूरी फ़ील्ड खाली है. सेव करने से पहले इसे भरें.}one{एक ज़रूरी फ़ील्ड खाली है. सेव करने से पहले इसे भरें.}other{कुछ ज़रूरी फ़ील्ड खाली हैं. सेव करने से पहले इन्हें भरें.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव करें</translation>

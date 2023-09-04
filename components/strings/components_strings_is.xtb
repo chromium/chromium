@@ -434,6 +434,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1842969606798536927">Greiða</translation>
 <translation id="1846432862466000825">Plast (skjalapappír)</translation>
 <translation id="1848982255014129637">Ljósmynd (háglans)</translation>
+<translation id="1853392626017747777">Skráningu sýndarkorts lokað</translation>
 <translation id="1854180393107901205">Hætta útsendingu</translation>
 <translation id="1855370856221982654">Box</translation>
 <translation id="1856713167556118146">Huliðsstilling gerir ekki eftirfarandi</translation>
@@ -470,6 +471,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1924727005275031552">Nýtt</translation>
 <translation id="1935995810530254458">Afrita samt</translation>
 <translation id="1939175642807587452">Getur beðið um að senda tilkynningar</translation>
+<translation id="1940441167050915935">Eyða vistuðum öryggisnúmerum</translation>
 <translation id="1943994668912612445">Hönnun</translation>
 <translation id="1945968466830820669">Þú gætir misst aðgang að fyrirtækisreikningnum eða orðið fyrir auðkennisstuldi. Chromium mælir með því að þú skiptir um aðgangsorð núna.</translation>
 <translation id="1946849748901605102">12 x 15 to.</translation>
@@ -1726,6 +1728,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4628948037717959914">Mynd</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Fjárvildarkerfi tengt</translation>
+<translation id="4631881646528206880">Skráning sýndarkorts</translation>
 <translation id="4636930964841734540">Upplýsingar</translation>
 <translation id="4638670630777875591">Huliðsstilling í Chromium</translation>
 <translation id="464342062220857295">Leitareiginleikar</translation>
@@ -1840,6 +1843,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4854853140771946034">Búa til nýja glósu í Google Keep á skjótan hátt</translation>
 <translation id="485902285759009870">Staðfestir kóða...</translation>
 <translation id="4862630594858951805">Viltu fá tölvupóst þegar verðið lækkar?</translation>
+<translation id="4864406669374375262">Útgáfustrengur vistaður á klippiborð</translation>
 <translation id="486459320933704969">Foreldri eða forráðamaður verður að samþykkja að þú opnir þetta vefsvæði</translation>
 <translation id="4866506163384898554">Ýttu á |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| til að sýna bendilinn</translation>
 <translation id="4873616204573862158">Gleraugu og sólgleraugu</translation>
@@ -3527,6 +3531,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8339163506404995330">Síður á þessu tungumáli verða ekki þýddar: <ph name="LANGUAGE" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Ef þú skilur öryggisáhættuna sem það hefur í för með sér geturðu <ph name="BEGIN_LINK" />heimsótt þetta vefsvæði<ph name="END_LINK" /> áður en skaðlegu forritin hafa verið fjarlægð.</translation>
+<translation id="8344776605855290140">Skráning sýndarkorts opnuð í fullri hæð</translation>
 <translation id="8347658365704983341">Fjarnám</translation>
 <translation id="8349305172487531364">Bókamerkjastika</translation>
 <translation id="8351131234907093545">Búa til glósu</translation>

@@ -20,6 +20,7 @@
 <translation id="1843424232666537147">Chromium har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps i Chromium</translation>
+<translation id="186734497270163706">Tryk på "Chromium" efterfulgt af "Standardapp til browsing".</translation>
 <translation id="1867772173333403444">4. Vælg Chromium</translation>
 <translation id="2006345422933397527">Chromium kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2052320862053429062">Chromium tjekker regelmæssigt, om dine adgangskoder er på nogen lister over adgangskoder, der er blevet afsløret online. Dine adgangskoder og brugernavne krypteres under disse tjek, så de kan ikke læses af nogen, heller ikke Google.</translation>
@@ -107,6 +108,7 @@ Vær opmærksom på følgende:
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="5951593919357934226">Få mest muligt ud af Chromium.</translation>
 <translation id="5983312940147103417">Gør Chromium bedre</translation>
+<translation id="5985102273857091344">Vælg "Chromium".</translation>
 <translation id="6062449165341879460">Din organisation <ph name="DOMAIN" /> får adgang til din Chromium-historik samt dine Chromium-data, -bogmærker, -adgangskoder og andre indstillinger, som du har gemt på denne konto. Når du logger ud, ryddes dine data fra denne enhed.  Dine data vil dog fortsat være gemt på din managerstyrede Google-konto, og de vil fortsat være tilgængelige for din organisation. Din organisation kan også konfigurere brugerpolitikker, der gælder specifikt for den pågældende konto, og som kan ændre Chromiums adfærd.</translation>
 <translation id="61109258320235597">Angiv din adgangssætning for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="6119647025869519954">Sådan gør du Chromium til din standardbrowser:
@@ -156,6 +158,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="8071041515667087705">Gå til Chromium-indstillinger.</translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
+<translation id="8115308261377517697">Angiv Chromium som din standardbrowser</translation>
 <translation id="8235427517854598594">Vil du gøre Chromium til din standardbrowser?</translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>

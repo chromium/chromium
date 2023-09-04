@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Ανοίξτε το μενού Chrome</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1200396280085622191">Χρησιμοποιήστε το Chrome κάθε φορά που πατάτε συνδέσμους σε μηνύματα και άλλες εφαρμογές.</translation>
+<translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1207113853726624428">Νέα αναζήτηση</translation>
 <translation id="1207493287814084192">5.30 μ.μ.</translation>
 <translation id="1209206284964581585">Προσωρινή απόκρυψη</translation>
@@ -734,6 +735,7 @@
 <translation id="5228579091201413441">Ενεργοποίηση συγχρονισμού</translation>
 <translation id="5232485538978018676">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
+<translation id="5238301240406177137">Αποθήκευση στον λογαριασμό</translation>
 <translation id="5245322853195994030">Ακύρωση συγχρονισμού</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ένα απαιτούμενο πεδίο είναι κενό. Συμπληρώστε το πριν κάνετε αποθήκευση.}other{Ορισμένα απαιτούμενα πεδία είναι κενά. Συμπληρώστε τα πριν κάνετε αποθήκευση.}}</translation>
 <translation id="5271549068863921519">Αποθήκευση κωδικού πρόσβασης</translation>
@@ -1374,6 +1376,7 @@
 <translation id="8855242995793521265">Δεν επιβραδύνει αισθητά το πρόγραμμα περιήγησης ή τη συσκευή σας.</translation>
 <translation id="8855781063981781621">Για να απενεργοποιήσετε τη Λειτουργία κλειδώματος στο Chrome, απενεργοποιήστε τη στο iPad.</translation>
 <translation id="8863431381414769983">Λάβετε οδηγίες και τοπικές πληροφορίες από τους Χάρτες Google</translation>
+<translation id="8865415417596392024">Δεδομένα Chrome στον λογαριασμό σας</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} καρτέλα}other{{count} καρτέλες}}</translation>
 <translation id="8870413625673593573">Έκλεισαν πρόσφατα</translation>
 <translation id="8876882697946675716">Διατηρήστε συγχρονισμένες τις συσκευές σας</translation>

@@ -4710,6 +4710,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Naujausias užrašas rašikliu užrakinimo ekrane</translation>
 <translation id="4730888769809690665">Svetainėje <ph name="SITE" /> pranešimai leidžiami</translation>
+<translation id="4731306954230393087">Leidžiama naudoti išsaugotą informaciją apie jus</translation>
 <translation id="473140019006744096">Šiame įrenginyje nėra pakankamai vietos, kad būtų galima užbaigti šį atnaujinimą. Išvalykite <ph name="NECESSARY_SPACE" /> įrenginyje ir bandykite dar kartą.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (kairioji)</translation>
 <translation id="4733793249294335256">Vieta</translation>
@@ -6228,6 +6229,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5990386583461751448">Išversta</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Kad galėtumėte toliau naršyti žiniatinklį, paprašykite administratoriaus pašalinti šią programą.}one{Kad galėtumėte toliau naršyti žiniatinklį, paprašykite administratoriaus pašalinti šias programas.}few{Kad galėtumėte toliau naršyti žiniatinklį, paprašykite administratoriaus pašalinti šias programas.}many{Kad galėtumėte toliau naršyti žiniatinklį, paprašykite administratoriaus pašalinti šias programas.}other{Kad galėtumėte toliau naršyti žiniatinklį, paprašykite administratoriaus pašalinti šias programas.}}</translation>
 <translation id="5992225669837656567">Visos pelės atjungtos</translation>
+<translation id="5992652489368666106">Be rėmelio</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 svetainės peržiūra baigta}one{{NUM_SITES} svetainės peržiūra baigta}few{{NUM_SITES} svetainių peržiūra baigta}many{{NUM_SITES} svetainės peržiūra baigta}other{{NUM_SITES} svetainių peržiūra baigta}}</translation>
 <translation id="5997337190805127100">Sužinokite daugiau apie prieigą prie svetainės</translation>
 <translation id="5998458948782718639">Padėkite tobulinti Automatinio pildymo paslaugą</translation>
@@ -7423,6 +7425,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6970543303783413625">Nepavyko importuoti slaptažodžių. Vienu metu galite importuoti daugiausia tik tiek slaptažodžių: <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Spausdinti konkrečius puslapius</translation>
 <translation id="6970861306198150268">Įsitikinkite, kad išsaugojote dabartinį šios svetainės slaptažodį</translation>
+<translation id="6971184043765343932">Jūsų įkeltas vaizdas</translation>
 <translation id="6972754398087986839">Darbo pradžia</translation>
 <translation id="697312151395002334">Leidžiama siųsti iššokančiuosius langus ir naudoti peradresavimus</translation>
 <translation id="6973611239564315524">Galima naujovinti į „Debian 10 (Buster)“</translation>
@@ -7626,6 +7629,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7139627972753429585">„<ph name="APP_NAME" />“ naudoja mikrofoną</translation>
 <translation id="7141105143012495934">Nepavyko prisijungti, nes negalima gauti išsamios paskyros informacijos. Susisiekite su administratoriumi arba bandykite dar kartą.</translation>
 <translation id="7141844554192012199">Patikra</translation>
+<translation id="714301620504747562">Naršymas ir paieška yra spartesni nei įprastas išankstinis įkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7143409552554575716">„ChromeOS“ žymos</translation>
 <translation id="714447804011008506">Dabar atsisiuntimai yra įrankių juostoje</translation>

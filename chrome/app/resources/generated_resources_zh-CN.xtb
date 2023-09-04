@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">使用您的麦克风和摄像头</translation>
 <translation id="1005333234656240382">启用 ADB 调试？</translation>
 <translation id="1005671386794704751">花瓣粉</translation>
+<translation id="1006557561787696884">在您的各部 Apple 设备上使用通行密钥</translation>
 <translation id="1006873397406093306">此扩展程序可读取和更改您的网站数据。您可以控制此扩展程序能访问哪些网站。</translation>
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
@@ -278,6 +279,7 @@
 <translation id="1203559206734265703">Protected Audience 调试功能已启用。</translation>
 <translation id="120368089816228251">乐谱</translation>
 <translation id="1203942045716040624">Shared Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="1210678701920254279">查看或添加打印机，并查看正在执行的打印任务</translation>
 <translation id="1211769675100312947">您自己选取快捷方式</translation>
 <translation id="1213254615020057352">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。</translation>
 <translation id="1213726621272705156">此页面不会再显示卡片</translation>
@@ -2124,6 +2126,7 @@
 <translation id="2658941648214598230">显示原始内容？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能因设备而异</translation>
 <translation id="2659971421398561408">调整为 Crostini 分配的磁盘空间大小</translation>
+<translation id="2660309468936690885">现在，<ph name="RECIPIENT_NAME" />可在使用 Google 密码管理工具登录 <ph name="WEBSITE" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">事件</translation>
 <translation id="266079277508604648">无法连接到打印机。请确保该打印机已开机且已通过 Wi-Fi 或 USB 连接到您的 Chromebook。</translation>
 <translation id="2661315027005813059">往返缓存版页面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2248,6 +2251,7 @@
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="274362947316498129">有一款应用正在尝试使用<ph name="DEVICE_NAME" />。若要允许使用<ph name="DEVICE_NAME" />，请关闭它的隐私保护开关。</translation>
 <translation id="2745080116229976798">Microsoft 合格的部署</translation>
+<translation id="2749026027885331579">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="WEBSITE" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">登录<ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
@@ -4342,6 +4346,7 @@
 <translation id="4449948729197510913">您的用户名属于贵单位的企业账号。如需将设备注册到该账号，请先在管理控制台中验证域名所有权。您需要拥有该账号的管理员权限才能进行验证。</translation>
 <translation id="4450974146388585462">诊断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
+<translation id="4451203458188403050">提取 PDF 文件中的文本</translation>
 <translation id="4451479197788154834">您的密码已保存到此设备上和您的 Google 账号中</translation>
 <translation id="4452898361839215358">或选择 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
@@ -4411,6 +4416,7 @@
 <translation id="4510195992002502722">未能发送反馈。正在重试…</translation>
 <translation id="4510479820467554003">家长账号列表</translation>
 <translation id="451102079304155829">购物车</translation>
+<translation id="4511344327646819192">为防止他人使用您的密码，请前往 <ph name="WEBSITE" /> 更改密码</translation>
 <translation id="4513872120116766993">预测性撰写</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4515872537870654449">请联系戴尔以获取帮助。如果风扇停止工作，基座将会关闭。</translation>
@@ -5563,6 +5569,7 @@
 <translation id="5478520208448702555">网站可能会在您切换到另一标签页时打开画中画窗口</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
+<translation id="5484181871714116891">当此选项处于开启状态时，通行密钥会在 iCloud 钥匙串中创建，并可在各部 Apple 设备上使用。当此选项处于关闭状态时，通行密钥会在该设备上您的 Chrome 个人资料中创建。</translation>
 <translation id="5484462543003267273">管理家庭</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求您备份自己的数据并在 {NUM_DAYS} 天内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">添加应用</translation>
@@ -7000,6 +7007,7 @@
 <translation id="6671497123040790595">正在设置为受 <ph name="MANAGER" /> 管理</translation>
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
+<translation id="6673797129585578649">通过降低亮度、限制后台活动和视觉效果、延迟通知和开启 Chrome 节能模式来延长电池续航时间。</translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="6675665718701918026">已连接指针设备</translation>
 <translation id="6676212663108450937">请考虑在训练语音时使用耳机</translation>
@@ -7615,6 +7623,7 @@
 <translation id="7180865173735832675">自定义</translation>
 <translation id="7181117767881540376">隐藏书签栏(&amp;H)</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
+<translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
 <translation id="7186088072322679094">固定在工具栏中</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> 无法打开此文件夹，因为其中含有系统文件</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
@@ -8413,6 +8422,7 @@
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7803657407897251194">如要使用 Android 设备继续设置，请将 <ph name="DEVICE_TYPE" /> 连接到网络</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
+<translation id="780446144738273886">扫描 PDF 文件以提取文本供屏幕阅读器朗读。仅适用于 Chrome 浏览器</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7805906048382884326">关闭提示</translation>
 <translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
@@ -9020,6 +9030,7 @@
 <translation id="828642162569365647">此密码或 PIN 码可保护您在这部 <ph name="DEVICE_TYPE" /> 上的数据以及您通过手机访问的任何信息。每次 <ph name="DEVICE_TYPE" /> 从睡眠状态中唤醒后，您都需要解锁。</translation>
 <translation id="8287902281644548111">按 API 调用/网址搜索</translation>
 <translation id="8288032458496410887">卸载<ph name="APP" />…</translation>
+<translation id="8288553158681886528">提取 PDF 文件中的文本</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下载 Chrome</translation>
@@ -9295,6 +9306,7 @@
     <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">尝试改用一个不同的安全密钥</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
+<translation id="8515580632187889788">继续即表示您允许第三方验证相应网络中这部设备的标识信息。如果不想让第三方访问设备信息，您可<ph name="BEGIN_LINK" />手动<ph name="END_LINK" />设置 eSIM 卡配置文件。</translation>
 <translation id="8517759303731677493">修改…</translation>
 <translation id="8518942514525208851">隐藏脏话</translation>
 <translation id="8519895319663397036">无法导入密码。文件大小应小于 150 KB。</translation>

@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C መሣሪያ (የግራ ወደብ)</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">ያስሱን ክፈት</translation>
 <translation id="1294929383540927798">የማያ ገፅ ቆልፍ ማሳወቂያ ቅንብሮቹን ይለውጡ</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
 <translation id="1306549533752902673">የሚመከሩ መተግበሪያዎች</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">የመተግበሪያ አዶን የመተግበሪያ ፍርግርግ ውስጥ ያንቀሳቅሳል</translation>
 <translation id="2620016719323068571">የእርስዎን <ph name="CATEGORY" />፣ ፋይሎች፣ መተግበሪያዎች እና ሌሎችን ይፈልጉ...</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
+<translation id="2620900772667816510">የብሉቱዝ እጅግ የላቀ ጥራት</translation>
 <translation id="2621713457727696555">ደህንነቱ ተጠብቋል</translation>
 <translation id="2624588537172718173">የመሣሪያ ኦዲዮ እና ማይክሮፎን</translation>
 <translation id="263399434338050016">«ሁሉንም ይምረጡ»</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">ዴስክን እና መስኮቶችን ዝጋ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እየመለሰው ነው። መሣሪያዎ ዳግም ይጀመራል እና ሁሉም ውሂብ ይሰረዛል።</translation>
 <translation id="3171170659304083361">የግቤት ስልቶች ቅንብሮች</translation>
+<translation id="3176221688814061633">የእርስዎ Chromebook ወይም የብሉቱዝ መሣሪያ የድሮ የሆነ የብሉቱዝ ስሪት እየተጠቀመ ነው። ለተሻለ የኦዲዮ ጥራት የብሉቱዝ እጅግ የላቀ ጥራትን ያብሩ ወይም ውስጣዊ ማይክሮፎንን ይጠቀሙ።</translation>
 <translation id="3181441307743005334">ዳግም ማስነሳት ትንሽ ጊዜ ሊወስድ ይችላል</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ከአንድ መሣሪያ ጋር ተገናኝቷል}one{ከ# መሣሪያዎች ጋር ተገናኝቷል}other{ከ# መሣሪያዎች ጋር ተገናኝቷል}}</translation>
 <translation id="320207200541803018">ሰዓት ቆጣሪ አዘጋጅ</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">ቬኑስ ምን ያህል ይርቃል</translation>
 <translation id="7198435252016571249">ካሜራ ወደ ታችኛው ቀኝ ጥግ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
 <translation id="7219573373513695352">ምንም መሣሪያዎች አልተገናኙም</translation>
+<translation id="7229029500464092426">ማህደረ ትውስታ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ጠቅላላ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />። ይህ Chromebook አንድ ዝማኔን ለመተግበር ዳግም መነሳት አለበት። ይህ እስከ 1 ደቂቃ ድረስ ሊወስድ ይችላል</translation>
 <translation id="7256634071279256947">የኋላ ማይክሮፎን</translation>
 <translation id="7258828758145722155">ትላንትና አርትዖት ተደርጎበታል</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">ለተቀጥላ ክፍሎች ቅንብሮች የውሂብ መዳረሻ ጥበቃን መለወጥ አፈጻጸሙን ሊያተባ ይችላል</translation>
 <translation id="736045644501761622">ልጣፍ እና ቅጥ አቀናብር</translation>
 <translation id="7371404428569700291">መስኮትን ቅዳ</translation>
+<translation id="7372069265635026568">ከ<ph name="TOTAL_MEMORY" /> አጠቃላይ <ph name="AVAILABLE_MEMORY" /> ማከማቻ ይገኛል</translation>
 <translation id="737315737514430195">ይህ የማይክሮፎን ፈቃድ ላላቸው መተግበሪያዎች እና ድር ጣቢያዎች በሙሉ የማይክሮፎን መዳረሻን ይፈቅዳል</translation>
 <translation id="7377169924702866686">Caps Lock በርቷል።</translation>
 <translation id="7377481913241237033">ከኮድ ጋር ተገናኝ</translation>

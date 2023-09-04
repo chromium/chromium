@@ -40,6 +40,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1177414119866731261">Buka Menu Chrome</translation>
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1200396280085622191">Gunakan Chrome kapan saja dengan mengetuk link di pesan dan aplikasi lainnya.</translation>
+<translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1207113853726624428">Penelusuran Baru</translation>
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
@@ -726,6 +727,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
 <translation id="5232485538978018676">Login dengan Akun Terkelola</translation>
 <translation id="5234764350956374838">Tutup</translation>
+<translation id="5238301240406177137">Simpan di Akun</translation>
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}other{Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}}</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>

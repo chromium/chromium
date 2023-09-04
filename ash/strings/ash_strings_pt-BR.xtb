@@ -90,6 +90,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta da esquerda)</translation>
 <translation id="1293556467332435079">Arquivos</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Abra a opção "Explorar"</translation>
 <translation id="1294929383540927798">Alterar as configurações de notificação da tela de bloqueio</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APPS RECOMENDADOS</translation>
@@ -387,6 +388,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2612614436418177118">Mover um ícone de app na grade de apps</translation>
 <translation id="2620016719323068571">Pesquise <ph name="CATEGORY" />, arquivos, apps e muito mais…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2620900772667816510">Super resolução do Bluetooth</translation>
 <translation id="2621713457727696555">Protegida</translation>
 <translation id="2624588537172718173">Áudio e microfone do dispositivo</translation>
 <translation id="263399434338050016">"Selecionar todos"</translation>
@@ -511,6 +513,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
 <translation id="3171170659304083361">Configurações de métodos de entrada</translation>
+<translation id="3176221688814061633">Seu Chromebook ou dispositivo Bluetooth está usando uma versão mais antiga do Bluetooth. Ative a super resolução do Bluetooth ou use o microfone interno para melhorar a qualidade do áudio.</translation>
 <translation id="3181441307743005334">A reinicialização pode demorar um pouco</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a um dispositivo}one{Conectado a # dispositivo}other{Conectado a # dispositivos}}</translation>
 <translation id="320207200541803018">Definir timer</translation>
@@ -1498,6 +1501,7 @@ Nova instalação</translation>
 <translation id="7189412385142492784">Qual é a distância até Vênus?</translation>
 <translation id="7198435252016571249">Câmera alinhada ao canto direito de baixo. Conflito com a superfície do sistema.</translation>
 <translation id="7219573373513695352">Nenhum dispositivo conectado</translation>
+<translation id="7229029500464092426">Memória usada: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este Chromebook precisa ser reiniciado para que uma atualização seja aplicada. Isso pode demorar até um minuto.</translation>
 <translation id="7256634071279256947">Microfone traseiro</translation>
 <translation id="7258828758145722155">Editado ontem</translation>
@@ -1523,6 +1527,7 @@ Nova instalação</translation>
 <translation id="7360036564632145207">Mudar sua configuração de proteção de acesso a dados para periféricos pode otimizar o desempenho</translation>
 <translation id="736045644501761622">Definir Estilo e fundo de tela</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
+<translation id="7372069265635026568">Memória disponível: <ph name="AVAILABLE_MEMORY" /> de um total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dá acesso ao microfone para todos os apps e sites com essa permissão</translation>
 <translation id="7377169924702866686">O Caps Lock está ativado.</translation>
 <translation id="7377481913241237033">Conectar com um código</translation>

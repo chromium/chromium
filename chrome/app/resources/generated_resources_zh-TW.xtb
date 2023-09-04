@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">使用你的麥克風和相機</translation>
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
 <translation id="1005671386794704751">玫瑰粉</translation>
+<translation id="1006557561787696884">在 Apple 裝置上使用密碼金鑰</translation>
 <translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
 <translation id="1007057452468855774">開啟 Google Play 商店</translation>
 <translation id="1008186147501209563">匯出書籤</translation>
@@ -278,6 +279,7 @@
 <translation id="1203559206734265703">Protected Audience 偵錯功能已啟用。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共享 Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="1210678701920254279">查看或新增印表機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善貴子女的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="1213726621272705156">這個頁面不會再顯示資訊卡</translation>
@@ -2132,6 +2134,7 @@
 <translation id="2658941648214598230">要顯示原始內容嗎？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能會因裝置而異</translation>
 <translation id="2659971421398561408">調整 Crostini 磁碟大小</translation>
+<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" />透過 Google 密碼管理工具登入 <ph name="WEBSITE" /> 時，現在可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="266079277508604648">無法連上印表機。請確認印表機已開啟，且已透過 Wi-Fi 或 USB 連上 Chromebook。</translation>
 <translation id="2661315027005813059">往返快取頁面：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2256,6 +2259,7 @@
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
+<translation id="2749026027885331579">家庭成員透過 Google 密碼管理工具登入 <ph name="WEBSITE" /> 時，現在可以使用你的使用者名稱和密碼。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">檢查拼字及文法</translation>
@@ -4352,6 +4356,7 @@
 <translation id="4449948729197510913">你的使用者名稱屬於貴機構的公司帳戶。如要將裝置註冊到這個帳戶，請先在管理控制台中驗證網域擁有權。你必須擁有帳戶的管理員權限才能進行驗證。</translation>
 <translation id="4450974146388585462">診斷</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 偵測到有效的 TPM，這可安全儲存你的資料。</translation>
+<translation id="4451203458188403050">擷取 PDF 中的文字</translation>
 <translation id="4451479197788154834">你已將密碼儲存在這部裝置上和 Google 帳戶中</translation>
 <translation id="4452898361839215358">或選取 PPD。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">請輕觸鍵盤右上角的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
@@ -4421,6 +4426,7 @@
 <translation id="4510195992002502722">無法傳送意見。重試中...</translation>
 <translation id="4510479820467554003">家長帳戶清單</translation>
 <translation id="451102079304155829">購物車</translation>
+<translation id="4511344327646819192">如果不希望他人使用你的密碼，請前往 <ph name="WEBSITE" /> 變更密碼</translation>
 <translation id="4513872120116766993">預測書寫建議</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4515872537870654449">請聯絡 Dell 以取得支援服務。風扇故障時，座架將會停止運作。</translation>
@@ -4684,6 +4690,7 @@
 <translation id="4728558894243024398">平台</translation>
 <translation id="4730492586225682674">在螢幕鎖定狀態下顯示以觸控筆記錄的最新筆記</translation>
 <translation id="4730888769809690665">你已允許 <ph name="SITE" /> 傳送通知</translation>
+<translation id="4731306954230393087">這個網站可使用與你相關的既有資訊</translation>
 <translation id="473140019006744096">裝置空間不足，無法完成這項更新作業。請在裝置上釋出 <ph name="NECESSARY_SPACE" /> 的空間，然後再試一次。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
 <translation id="4733793249294335256">位置</translation>
@@ -5573,6 +5580,7 @@
 <translation id="5478520208448702555">切換到其他分頁時，網站可以開啟子母畫面視窗</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
+<translation id="5484181871714116891">開啟之後，系統會在 iCloud 鑰匙圈中建立密碼金鑰，方便你在 Apple 裝置上使用。如果關閉，系統會在這部裝置的 Chrome 設定檔中建立密碼金鑰。</translation>
 <translation id="5484462543003267273">管理家庭群組</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在 {NUM_DAYS} 天內歸還這部 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">新增應用程式</translation>
@@ -6197,6 +6205,7 @@
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
 <translation id="5992225669837656567">所有滑鼠均已中斷連線</translation>
+<translation id="5992652489368666106">無框線</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{已完成 1 個網站的檢查}other{已完成 {NUM_SITES} 個網站的檢查}}</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="5998458948782718639">協助改善自動填入功能</translation>
@@ -7009,6 +7018,7 @@
 <translation id="6671497123040790595">正在配置由 <ph name="MANAGER" /> 管理的設定</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
+<translation id="6673797129585578649">系統會降低亮度、限制背景活動和視覺效果、延後通知並開啟 Chrome 節能模式，以延長電池續航力。</translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="6675665718701918026">已連上指標裝置</translation>
 <translation id="6676212663108450937">訓練聲音時，建議你使用耳罩式耳機</translation>
@@ -7384,6 +7394,7 @@
 <translation id="6970543303783413625">無法匯入密碼，一次最多只能匯入 <ph name="COUNT" /> 個密碼。</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
 <translation id="6970861306198150268">請確認你儲存的是這個網站目前的密碼</translation>
+<translation id="6971184043765343932">你上傳的圖片</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="697312151395002334">可以傳送彈出式視窗及使用重新導向</translation>
 <translation id="6973611239564315524">現在可以升級至 Debian 10 (Buster)</translation>
@@ -7587,6 +7598,7 @@
 <translation id="7139627972753429585">「<ph name="APP_NAME" />」正在使用麥克風</translation>
 <translation id="7141105143012495934">無法擷取您的帳戶詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7141844554192012199">安全檢查</translation>
+<translation id="714301620504747562">相較於標準預先載入，瀏覽及搜尋內容時的載入速度更快了</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7143409552554575716">ChromeOS 旗標</translation>
 <translation id="714447804011008506">下載內容現在會列在工具列中</translation>
@@ -7624,6 +7636,7 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
+<translation id="718427252411067142">如果不希望他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="7186088072322679094">固定在工具列中</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> 無法開啟這個資料夾，因為資料夾中包含系統檔案</translation>
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
@@ -8422,6 +8435,7 @@
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7803657407897251194">如要繼續使用 Android 裝置進行設定，請將 <ph name="DEVICE_TYPE" /> 連上網路</translation>
 <translation id="7804072833593604762">已關閉分頁</translation>
+<translation id="780446144738273886">掃描 PDF 以擷取用於螢幕閱讀器的文字 (僅適用於 Chrome 瀏覽器)</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7805906048382884326">關閉提示</translation>
 <translation id="7807067443225230855">搜尋與 Google 助理</translation>
@@ -9029,6 +9043,7 @@
 <translation id="828642162569365647">這個密碼或 PIN 碼會保護你在這部 <ph name="DEVICE_TYPE" /> 上的資料，還有你從手機存取的任何資訊。每次要喚醒 <ph name="DEVICE_TYPE" /> 時，你都必須解鎖裝置。</translation>
 <translation id="8287902281644548111">依 API 呼叫/網址搜尋</translation>
 <translation id="8288032458496410887">解除安裝「<ph name="APP" />」...</translation>
+<translation id="8288553158681886528">擷取 PDF 中的文字</translation>
 <translation id="8289128870594824098">磁碟大小</translation>
 <translation id="8289509909262565712">歡迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下載 Chrome</translation>
@@ -9304,6 +9319,7 @@
     <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>
+<translation id="8515580632187889788">選擇繼續，即表示你允許第三方可在這個網路上驗證這部裝置的識別資訊。如果不想讓第三方存取裝置資訊，可以<ph name="BEGIN_LINK" />手動<ph name="END_LINK" />設定 eSIM 卡設定檔。</translation>
 <translation id="8517759303731677493">編輯…</translation>
 <translation id="8518942514525208851">隱藏不雅用語</translation>
 <translation id="8519895319663397036">無法匯入密碼，檔案大小不得超過 150 KB。</translation>

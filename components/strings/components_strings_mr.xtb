@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">पेमेंट करा</translation>
 <translation id="1846432862466000825">प्लॅस्टिक (आर्कायव्हल)</translation>
 <translation id="1848982255014129637">फोटो (हाय-ग्लॉस)</translation>
+<translation id="1853392626017747777">व्हर्च्युअल कार्डची नोंदणी बंद केली</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
 <translation id="1855370856221982654">बॉक्सिंग</translation>
 <translation id="1856713167556118146">गुप्त मोड काय करत नाही</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">नवीन</translation>
 <translation id="1935995810530254458">तरीही कॉपी करा</translation>
 <translation id="1939175642807587452">सूचना पाठवण्याची विनंती करू शकते</translation>
+<translation id="1940441167050915935">सेव्ह केलेले सुरक्षा कोड हटवा</translation>
 <translation id="1943994668912612445">डिझाइन</translation>
 <translation id="1945968466830820669">तुम्ही तुमच्या संस्थेच्या खात्याचा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chromium तुमचा पासवर्ड लगेच बदलण्याची शिफारस करत आहे.</translation>
 <translation id="1946849748901605102">१२ x १५ इं</translation>
@@ -1730,6 +1732,7 @@
 <translation id="4628948037717959914">फोटो</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">कॅशबॅक लिंक केला</translation>
+<translation id="4631881646528206880">व्हर्च्युअल कार्डची नोंदणी</translation>
 <translation id="4636930964841734540">माहिती</translation>
 <translation id="4638670630777875591">Chromium मधील गुप्त मोड</translation>
 <translation id="464342062220857295">शोध वैशिष्ट्ये</translation>
@@ -1844,6 +1847,7 @@
 <translation id="4854853140771946034">Google Keep मध्ये नवीन टीप झटपट तयार करा</translation>
 <translation id="485902285759009870">कोडची पडताळणी करत आहे...</translation>
 <translation id="4862630594858951805">किंमत कमी झाल्यानंतर ईमेल हवा आहे का?</translation>
+<translation id="4864406669374375262">आवृत्तीची स्ट्रिंग क्लिपबोर्डवर कॉपी केली</translation>
 <translation id="486459320933704969">तुम्ही या वेबसाइटला भेट देऊ शकता अशी पालकांनी मंजुरी देणे आवश्यक आहे</translation>
 <translation id="4866506163384898554">तुमचा कर्सर दाखवण्यासाठी |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| प्रेस करा</translation>
 <translation id="4873616204573862158">आयवेअर</translation>
@@ -3534,6 +3538,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाही</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">तुमच्या सुरक्षिततेच्या जोखमी समजत असल्यास, धोकादायक प्रोग्राम काढले जाण्यापूर्वी तुम्ही <ph name="BEGIN_LINK" />या असुरक्षित साइटला भेट देऊ शकता<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">व्हर्च्युअल कार्डची नोंदणी पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8347658365704983341">दूरस्‍थ शिक्षण</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>

@@ -90,6 +90,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1293264513303784526">Naprava USB-C (leva vrata)</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Odpri »Razišči«</translation>
 <translation id="1294929383540927798">Spreminjanje nastavitve obvestil na zaklenjenem zaslonu</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">PRIPOROČENE APLIKACIJE</translation>
@@ -387,6 +388,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2612614436418177118">Premikanje ikone aplikacije znotraj mreže aplikacij</translation>
 <translation id="2620016719323068571">Iščite po <ph name="CATEGORY" />, datotekah, aplikacijah in drugem …</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2620900772667816510">Super ločljivost Bluetooth</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="2624588537172718173">Zvok v napravi in mikrofon</translation>
 <translation id="263399434338050016">»Izberi vse«</translation>
@@ -511,6 +513,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3161500364292033097">Zapri namizje in okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> vrača napravo <ph name="DEVICE_TYPE" /> na prejšnjo različico. Naprava se bo ponastavila in vaši podatki bodo izbrisani.</translation>
 <translation id="3171170659304083361">Nastavitve načinov vnosa</translation>
+<translation id="3176221688814061633">Chromebook ali naprava Bluetooth uporablja starejšo različico Bluetootha. Vklopite super ločljivost Bluetooth ali uporabite notranji mikrofon za boljšo kakovost zvoka.</translation>
 <translation id="3181441307743005334">Vnovičen zagon lahko traja nekaj časa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Vzpostavljena je povezava z eno napravo}one{Vzpostavljena je povezava z # napravo}two{Vzpostavljena je povezava z # napravama}few{Vzpostavljena je povezava s # napravami}other{Vzpostavljena je povezava s # napravami}}</translation>
 <translation id="320207200541803018">Nastavitev merilnika časa</translation>
@@ -1498,6 +1501,7 @@ Nova namestitev</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="7219573373513695352">Nobena naprava ni povezana</translation>
+<translation id="7229029500464092426">Pomnilnik <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (skupno)</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ta Chromebook je treba znova zagnati, če želite uveljaviti posodobitev. Traja lahko največ eno minuto.</translation>
 <translation id="7256634071279256947">Zadnji mikrofon</translation>
 <translation id="7258828758145722155">Urejeno včeraj</translation>
@@ -1523,6 +1527,7 @@ Nova namestitev</translation>
 <translation id="7360036564632145207">S spremembo nastavitve zaščite dostopa do podatkov za zunanje dodatne opreme lahko optimizirate delovanje.</translation>
 <translation id="736045644501761622">Nastavitev zaslonskega ozadja in sloga</translation>
 <translation id="7371404428569700291">Okno za snemanje</translation>
+<translation id="7372069265635026568">Pomnilnik: <ph name="AVAILABLE_MEMORY" /> je na voljo od skupno <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">To omogoča dostop do mikrofona za vse aplikacije in spletna mesta z dovoljenjem za mikrofon.</translation>
 <translation id="7377169924702866686">Tipka Caps Lock je vklopljena.</translation>
 <translation id="7377481913241237033">Povezava s kodo</translation>

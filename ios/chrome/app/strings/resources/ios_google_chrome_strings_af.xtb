@@ -157,6 +157,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7754633291442704733">Jou organisasie <ph name="DOMAIN" /> sal toegang hê tot jou Chrome-data, -boekmerke, -geskiedenis, -wagwoorde en ander -instellings wat jy in hierdie rekening stoor. Wanneer jy afmeld, sal jou data van hierdie toestel uitgevee word.  Jou data sal egter gestoor bly in jou bestuurde Google-rekening en beskikbaar wees vir jou organisasie. Jou organisasie kan ook gebruikersbeleide spesifiek vir daardie rekening stel wat die gedrag van Chrome kan verander.</translation>
 <translation id="7780154209050837198">Meld met jou Google-rekening by Chrome aan om die meeste voordeel daaruit te trek.</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
+<translation id="7925119591961387184">Kies “Chrome.”</translation>
 <translation id="8022947259858476807">Gebruik by verstek Chrome om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="804638182476029347">Laat Chrome-kennisgewings toe om prysverlagingopletberigte te kry</translation>
 <translation id="81358522153858150">Chrome steun nou gebruikerbeleide vir jou bestuurde rekening</translation>
@@ -174,6 +175,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
   2. Tik op Verstekblaaierprogram
   3. Kies Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Tik op “Chrome” en dan op “Verstekblaaierapp”.</translation>
 <translation id="8603022514504485810">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Bly veilig met Google Chrome</translation>
 <translation id="8765470054473112089">Wanneer jy iets in die adresbalk of soekkassie tik, stuur Chrome wat jy tik na jou versteksoekenjin toe om beter voorstelle te kry. Dit is af in Incognito.</translation>
@@ -185,6 +187,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="8857676124663337448">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
 <translation id="8897749957032330183">Wagwoorde word op hierdie toestel in Google Wagwoordbestuurder gestoor.</translation>
+<translation id="8949681853939555434">Stel Chrome as jou verstekblaaier</translation>
 <translation id="8969290730818637510">Wanneer dit aan is:
 <ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
 

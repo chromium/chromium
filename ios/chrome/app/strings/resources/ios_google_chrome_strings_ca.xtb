@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Configura Chrome com a navegador predeterminat per sincronitzar les pestanyes, les contrasenyes i la informació de pagament de tots els dispositius</translation>
 <translation id="1504372625950710826">Chrome no ha pogut cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="1511320244449497906">Tens la sessió iniciada i sincronitzes les teves dades amb un compte gestionat per <ph name="DOMAIN" />. L'administrador d'aquest compte ara pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
+<translation id="1516692594929310090">Obre la quadrícula de pestanyes de Chrome.</translation>
 <translation id="1526327845902180576">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chrome per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Aspectes que cal tenir en compte:
 
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar més tard.</translation>
+<translation id="6916015246697034114">Cerca amb la veu a Chrome</translation>
 <translation id="6964931465519938134">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="6975725306479268850">Tria Chrome a Emplenament automàtic</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
@@ -150,6 +152,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7400722733683201933">Sobre Google Chrome</translation>
 <translation id="7501046334262221972">Per establir Chrome com a navegador predeterminat, obre Configuració. Toca Aplicació de navegador predeterminada i, tot seguit, selecciona Chrome.</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
+<translation id="7581063337314642333">Visita la quadrícula de pestanyes a Chrome</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="7669869107155339016">Ves a la configuració de Chrome.</translation>
 <translation id="7693590760643069321">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
@@ -157,10 +160,13 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="7754633291442704733">La teva organització (<ph name="DOMAIN" />) tindrà accés a les teves dades, les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de Chrome que emmagatzemis en aquest compte. Quan tanquis la sessió, les teves dades s'esborraran d'aquest dispositiu,  però continuaran emmagatzemades al teu Compte de Google gestionat i estaran disponibles per a la teva organització. L'organització també pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chrome.</translation>
 <translation id="7780154209050837198">Per treure el màxim profit de Chrome, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
+<translation id="7897703007638178753">Mostra les pestanyes recents de Chrome</translation>
+<translation id="7925119591961387184">Selecciona Chrome.</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="804638182476029347">Permet que les notificacions de Chrome incloguin alertes de baixada de preu</translation>
 <translation id="81358522153858150">Chrome ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
+<translation id="8174679664544842874">Obre una pestanya nova a Chrome.</translation>
 <translation id="8213758103105806860">Mostra les adreces d'interès de Chrome</translation>
 <translation id="8357607116237445042">Tria si vols esborrar les dades de Chrome d'aquest dispositiu o si vols conservar-les</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
@@ -174,8 +180,10 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
   2. Toca App de navegació per omissió.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Toca Chrome i, a continuació, Aplicació de navegació predeterminada.</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Protegeix-te amb Google Chrome</translation>
+<translation id="8760668027640688122">Obre una pestanya nova a Chrome</translation>
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>
 <translation id="8788269841521769222">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
@@ -185,6 +193,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
 <translation id="8897749957032330183">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu.</translation>
+<translation id="8949681853939555434">Defineix Chrome com a navegador predeterminat</translation>
 <translation id="8969290730818637510">Quan aquesta opció està activada:
 <ph name="BEGIN_INDENT" />  • Ajuda a millorar Chrome per a les persones que el fan servir igual que tu.<ph name="END_INDENT" />
 
@@ -194,4 +203,5 @@ Aspectes que cal tenir en compte:
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Vols establir Chrome com a predeterminat?</translation>
 <translation id="9122931302567044771">Això vol dir que Chrome sol·licitarà el lloc web per a ordinadors cada vegada.</translation>
+<translation id="9181628561061032322">Obre les pestanyes recents de Chrome.</translation>
 </translationbundle>

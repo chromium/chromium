@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">Уређај са USB прикључком типа C (леви порт)</translation>
 <translation id="1293556467332435079">Датотеке</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Отвори опцију Истражите</translation>
 <translation id="1294929383540927798">Промените подешавања обавештења на закључаном екрану</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ПРЕПОРУЧЕНЕ АПЛИКАЦИЈЕ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Преместите икону апликације унутар мреже апликације</translation>
 <translation id="2620016719323068571">Претражујте категорију <ph name="CATEGORY" />, фајлове, апликације и друго…</translation>
 <translation id="2620436844016719705">Систем</translation>
+<translation id="2620900772667816510">Bluetooth супер резолуција</translation>
 <translation id="2621713457727696555">Заштићено</translation>
 <translation id="2624588537172718173">Звук уређаја и микрофон</translation>
 <translation id="263399434338050016">„Изабери све“</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Затворите радну површину и прозоре</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> враћа <ph name="DEVICE_TYPE" /> на претходну верзију. Уређај ће се ресетовати и сви подаци ће бити избрисани.</translation>
 <translation id="3171170659304083361">Подешавања метода уноса</translation>
+<translation id="3176221688814061633">Chromebook или Bluetooth уређај користи старију верзију Bluetooth-а. Укључите Bluetooth супер резолуцију или користите интерни микрофон за бољи квалитет звука.</translation>
 <translation id="3181441307743005334">Рестартовање може да потраје</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Повезани сте са једним уређајем}one{Повезани сте са # уређајем}few{Повезани сте са # уређаја}other{Повезани сте са # уређаја}}</translation>
 <translation id="320207200541803018">Подеси тајмер</translation>
@@ -1499,6 +1502,7 @@
 <translation id="7189412385142492784">Колико далеко је Венера</translation>
 <translation id="7198435252016571249">Камера је уклопљена у доњи десни угао. Неусаглашеност са површином система.</translation>
 <translation id="7219573373513695352">Ниједан уређај није повезан</translation>
+<translation id="7229029500464092426">Искоришћена меморија <ph name="AVAILABLE_MEMORY" /> | Укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Овај Chromebook мора да се растартује ради примене ажурирања. Ово може да потраје највише 1 минут.</translation>
 <translation id="7256634071279256947">Задњи микрофон</translation>
 <translation id="7258828758145722155">Измењено јуче</translation>
@@ -1524,6 +1528,7 @@
 <translation id="7360036564632145207">Ако промените подешавање заштите приступа подацима за периферне уређаје, можете да оптимизујете учинак</translation>
 <translation id="736045644501761622">Подеси позадину и стил</translation>
 <translation id="7371404428569700291">Сними прозор</translation>
+<translation id="7372069265635026568">Доступно је <ph name="AVAILABLE_MEMORY" /> меморије од укупно <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ово дозвољава приступ микрофону за све апликације и веб-сајтове са дозволом за микрофон</translation>
 <translation id="7377169924702866686">Caps Lock је укључен.</translation>
 <translation id="7377481913241237033">Повежите се помоћу кода</translation>

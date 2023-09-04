@@ -221,6 +221,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1413407968866574823">Akcijske in platformske igre</translation>
 <translation id="1413809658975081374">Napaka zasebnosti</translation>
 <translation id="1414134146594747368">Predšolska vzgoja</translation>
+<translation id="141826476809826269">Konec pridobljenega besedila</translation>
 <translation id="1419305130220238697">Gumb za upravljanje prenosov v Chromu, aktivirajte, če želite upravljati datoteke, ki ste jih prenesli v Chromu</translation>
 <translation id="1422930527989633628">Lahko zahteva odkrivanje naprav Bluetooth v bližini.</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -277,6 +278,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1530707389502320859">Spletno mesto, ki ste ga pravkar poskusili odpreti, je videti lažno. Napadalci včasih poskušajo kopirati spletna mesta, tako da skoraj neopazno spremenijo URL.</translation>
 <translation id="1532118530259321453">Ta stran sporoča:</translation>
 <translation id="1536390784834419204">Prevedi stran</translation>
+<translation id="1537807545287921620">Ta datoteka PDF ni dostopna. Odprite kontekstni meni in vklopite možnost »pridobivanja besedila iz datoteke PDF«</translation>
 <translation id="1539840569003678498">Poslano poročilo:</translation>
 <translation id="1542105669288201090">Poslovna izobrazba</translation>
 <translation id="1545757265410828525">Zgodovina cen</translation>
@@ -434,6 +436,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1842969606798536927">Plačilo</translation>
 <translation id="1846432862466000825">Plastic (Archival)</translation>
 <translation id="1848982255014129637">Photo (High-Gloss)</translation>
+<translation id="1853392626017747777">Včlanitev navidezne kartice je zaprta</translation>
 <translation id="1854180393107901205">Ustavi predvajanje</translation>
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1856713167556118146">Kaj se ne zgodi v anonimnem načinu</translation>
@@ -470,6 +473,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Vseeno kopiraj</translation>
 <translation id="1939175642807587452">Lahko zahteva pošiljanje obvestil.</translation>
+<translation id="1940441167050915935">Izbriši shranjene varnostne kode</translation>
 <translation id="1943994668912612445">Oblikovanje</translation>
 <translation id="1945968466830820669">Izgubite lahko dostop do računa za organizacijo ali postanete žrtev kraje identitete. Chromium priporoča, da spremenite geslo.</translation>
 <translation id="1946849748901605102">12 x 15 palcev</translation>
@@ -864,6 +868,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2803306138276472711">Googlova funkcija varnega brskanja je na spletnem mestu <ph name="SITE" /> nedavno <ph name="BEGIN_LINK" />zaznala zlonamerno programsko opremo<ph name="END_LINK" />. Spletna mesta, ki so običajno varna, so včasih okužena z zlonamerno programsko opremo.</translation>
 <translation id="2807052079800581569">Položaj Y slike</translation>
 <translation id="2808278141522721006">Windows Hello lahko vklopite ali izklopite tukaj: <ph name="SETTINGS" />.</translation>
+<translation id="2814184336982254349">Ta datoteka PDF ni dostopna. Pritisnite tipko za iskanje plus m, če želite odpreti kontekstni meni, in vklopite možnost »Pridobivanje besedila iz PDF-ja«</translation>
 <translation id="2818338148457093657">Lepotilne storitve in zdravilišča</translation>
 <translation id="2820957248982571256">Iskanje ...</translation>
 <translation id="2824775600643448204">Naslovna in iskalna vrstica</translation>
@@ -1168,6 +1173,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3461266716147554923"><ph name="URL" /> si želi ogledati besedilo in slike, kopirane v odložišče</translation>
 <translation id="3461824795358126837">Označevalnik</translation>
 <translation id="3462200631372590220">Skrij podrobnosti</translation>
+<translation id="3465972433695735758">Ta datoteka PDF ni dostopna. Besedilo pridobljeno, uporablja tehnologijo Googlove umetne inteligence</translation>
 <translation id="346601286295919445">Kemija</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno odprto, pritisnite tabulatorko, nato Enter, če želite preklopiti na odprti zavihek</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite zapreti vsa trenutno odprta anonimna okna.</translation>
@@ -1185,6 +1191,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="350069200438440499">Ime datoteke:</translation>
 <translation id="3501300228850242680">Metalska glasba</translation>
 <translation id="350421688684366066">Labels (High-Gloss)</translation>
+<translation id="350763432931695541">Pridobivanje besedila na naslednjih nekaj straneh</translation>
 <translation id="3507869775212388416">Zaposlitev na področju prava</translation>
 <translation id="3507936815618196901">Ustvarjanje 3D-zemljevida vaše okolice in spremljanje položaja kamere</translation>
 <translation id="3512163584740124171">Ta pravilnik se prezre, ker ima drug pravilnik iz iste skupine pravilnikov prednost.</translation>
@@ -1726,6 +1733,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Vključuje vračilo gotovine</translation>
+<translation id="4631881646528206880">Včlanitev navidezne kartice</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4638670630777875591">Anonimni način v Chromiumu</translation>
 <translation id="464342062220857295">Funkcije iskanja</translation>
@@ -1840,6 +1848,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
 <translation id="485902285759009870">Preverjanje kode …</translation>
 <translation id="4862630594858951805">Ali želite prejemati e-poštna sporočila, ko se cena zniža?</translation>
+<translation id="4864406669374375262">Niz različice je kopiran v odložišče</translation>
 <translation id="486459320933704969">Starš ali skrbnik mora potrditi, da lahko obiščeš to spletno mesto.</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za prikaz kazalca</translation>
 <translation id="4873616204573862158">Očala</translation>
@@ -2850,6 +2859,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6973988895180423160">3,5 x 5 palcev</translation>
 <translation id="6978236010531171013">Vseeno deli</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Začetek pridobljenega besedila</translation>
 <translation id="6979440798594660689">Izklop zvoka (privzeto)</translation>
 <translation id="6987806006823772670">Envelope (Coated)</translation>
 <translation id="6989763994942163495">Prikaži dodatne nastavitve ...</translation>
@@ -2905,6 +2915,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7102760431686146931">Kuhinjska posoda, servisi in jedilni pribor</translation>
 <translation id="7105998430540165694">Ključ za dostop iz storitve iCloud Keychain</translation>
 <translation id="7106762743910369165">Vaš brskalnik upravlja organizacija</translation>
+<translation id="7107249414147762907">Ta datoteka PDF ni dostopna. Besedilo ni bilo pridobljeno</translation>
 <translation id="7108338896283013870">Skrij</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi uporabljati kamero</translation>
 <translation id="7108819624672055576">Omogoča razširitev</translation>
@@ -3527,6 +3538,7 @@ Dodatne podrobnosti:
 <translation id="8339163506404995330">Strani v jeziku <ph name="LANGUAGE" /> ne bodo prevedene</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Če se zavedate varnostnega tveganja, lahko <ph name="BEGIN_LINK" />obiščete to spletno mesto<ph name="END_LINK" />, preden bodo škodljivi programi odstranjeni.</translation>
+<translation id="8344776605855290140">Včlanitev navidezne kartice je odprta pri polni višini</translation>
 <translation id="8347658365704983341">Učenje na daljavo</translation>
 <translation id="8349305172487531364">Vrstica z zaznamki</translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
@@ -3916,6 +3928,7 @@ Dodatne podrobnosti:
 <translation id="917450738466192189">Potrdilo strežnika ni veljavno.</translation>
 <translation id="9174623988242579721">Vozila po meri in predelana vozila</translation>
 <translation id="9174917557437862841">Gumb za preklop zavihkov, pritisnite Enter, če želite preklopiti na ta zavihek</translation>
+<translation id="9177283544810807743">Ta datoteka PDF ni dostopna. Pridobivanje besedila, ki uporablja tehnologijo Googlove umetne inteligence</translation>
 <translation id="9179703756951298733">Upravljanje plačil in podatkov o kreditnih karticah v nastavitvah v Chromu</translation>
 <translation id="9179907736442194268">Prejmite e-poštna opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
 <translation id="9183302530794969518">Google Dokumenti</translation>

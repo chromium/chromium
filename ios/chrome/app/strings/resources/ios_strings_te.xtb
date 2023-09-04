@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Chrome మెనూను తెరవండి</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1200396280085622191">మెసేజ్‌లలో, ఇతర యాప్‌లలో కనిపించే లింక్‌లను ట్యాప్ చేయడం ద్వారా ఎప్పుడైనా, ఎక్కడైనా Chromeను ఉపయోగించండి.</translation>
+<translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1207113853726624428">కొత్త శోధన</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">ప్రస్తుతానికి దాచు</translation>
@@ -729,6 +730,7 @@
 <translation id="5228579091201413441">సింక్‌ను ప్రారంభించండి</translation>
 <translation id="5232485538978018676">నిర్వహించబడుతున్న ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
+<translation id="5238301240406177137">ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="5245322853195994030">సింక్‌ను రద్దు చేయండి</translation>
 <translation id="5271265092610673171">{count,plural, =1{అవసరమైన ఫీల్డ్ ఖాళీగా ఉంది. సేవ్ చేయడానికి ముందు దాన్ని పూరించండి.}other{కొన్ని అవసరమైన ఫీల్డ్స్ ఖాళీగా ఉన్నాయి. సేవ్ చేయడానికి ముందు వాటిని పూరించండి.}}</translation>
 <translation id="5271549068863921519">పాస్‌వర్డ్‌ను సేవ్ చేయండి</translation>
@@ -1368,6 +1370,7 @@
 <translation id="8855242995793521265">మీ బ్రౌజర్ లేదా పరికర వేగాన్ని అంతగా తగ్గించదు.</translation>
 <translation id="8855781063981781621">Chromeలో లాక్‌డౌన్ మోడ్‌ను డిజేబుల్ చేయడానికి మీ iPadలో దాన్ని ఆఫ్ చేయాలి.</translation>
 <translation id="8863431381414769983">Google Maps నుండి దిశలు, లోకల్ సమాచారాన్ని పొందండి</translation>
+<translation id="8865415417596392024">మీ ఖాతాలోని Chrome డేటా</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ట్యాబ్}other{{count} ట్యాబ్‌లు}}</translation>
 <translation id="8870413625673593573">ఇటీవల మూసివేసినవి</translation>
 <translation id="8876882697946675716">మీ పరికరాలను సింక్‌లో ఉంచండి</translation>

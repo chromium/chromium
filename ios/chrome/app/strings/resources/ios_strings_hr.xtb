@@ -40,6 +40,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1177414119866731261">Otvorite izbornik preglednika Chrome</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1200396280085622191">Upotrebljavajte Chrome svaki put kad dodirnete veze u porukama i drugim aplikacijama.</translation>
+<translation id="1201402288615127009">Dalje</translation>
 <translation id="1207113853726624428">Novo pretraživanje</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Zasad sakrij</translation>
@@ -88,6 +89,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1408847409015257906">Dodirnite Privatnost i sigurnost.</translation>
 <translation id="1430915738399379752">Ispis</translation>
+<translation id="1443958768615272145">Nastavite pregledavati</translation>
 <translation id="1449835205994625556">Sakrijte zaporku</translation>
 <translation id="1450170672351507823">Uključena je standardna zaštita. Za još veću sigurnost koristite poboljšanu zaštitu.</translation>
 <translation id="149095475893949513">Web-lokacija pokušava preuzeti profil za konfiguraciju.</translation>
@@ -164,6 +166,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1930989359703290198">Vaša organizacija dopušta da se prijavite samo putem određenih računa. Nedopušteni su računi skriveni. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Dodirnite dvaput da biste kopirali.</translation>
 <translation id="1943478190258551035">Izbornik → Postavke</translation>
+<translation id="194449685234099560">Ovdje možete pronaći sve svoje otvorene kartice.</translation>
 <translation id="1952172573699511566">Web-lokacije prikazivat će tekst na željenom jeziku kad god je to moguće.</translation>
 <translation id="1959441496380398824">Dodirnite i zadržite datum.</translation>
 <translation id="1959679933317802873">Čekanje sadržaja</translation>
@@ -186,6 +189,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="20485545164632846">nova stavka</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> računa koristi istu zaporku</translation>
 <translation id="2050196510205866090">{count,plural, =1{Iznad tipkovnice dostupan je {count} spremljeni način plaćanja.}one{Iznad tipkovnice dostupan je {count} spremljeni način plaćanja.}few{Iznad tipkovnice dostupna su {count} spremljena načina plaćanja.}other{Iznad tipkovnice dostupno je {count} spremljenih načina plaćanja.}}</translation>
+<translation id="2055515971416882518">Otvorite Postavke.</translation>
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">Uvijek možete odabrati u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> što će se sinkronizirati.</translation>
 <translation id="2079545284768500474">Poništi</translation>
@@ -244,6 +248,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="2459155039684421202">U adresnu traku unesite zadatak kao što je "izbriši moju povijest" ili "uredi zaporke".</translation>
 <translation id="2461070143328828326">Postavke zaporke</translation>
+<translation id="2462736546165239215">Ovdje možete pronaći svu svoju povijest pregledavanja.</translation>
 <translation id="2469960372084740698">Želite li isključiti sigurno pregledavanje?</translation>
 <translation id="2473876017985765807">Već ste spremili zaporku za web-lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nije odabrano</translation>
@@ -343,6 +348,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2952278131021475699">Traženje fotoaparatom u Objektivu</translation>
 <translation id="2952581218264071393">1. Otvorite postavke Chromea</translation>
 <translation id="2956733177489514605">Prijavite se Google računom da biste sinkronizirali zaporke i ostalo.</translation>
+<translation id="2958271635022991876">Ovdje možete otvoriti novu karticu.</translation>
 <translation id="2958718410589002129">Zaporke</translation>
 <translation id="2961210776189273067">Titula</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće trećih strana</translation>
@@ -729,6 +735,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5228579091201413441">Omogući sinkronizaciju</translation>
 <translation id="5232485538978018676">Prijavite se upravljanim računom</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5238301240406177137">Spremi na račun</translation>
 <translation id="5245322853195994030">Otkaži sinkronizaciju</translation>
 <translation id="5271265092610673171">{count,plural, =1{Obavezno polje je prazno. Ispunite ga prije spremanja.}one{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}few{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}other{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}}</translation>
 <translation id="5271549068863921519">Spremi zaporku</translation>
@@ -1416,6 +1423,7 @@ Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste
 <translation id="9097506547406246598">Prestanak praćenja nije uspio. Nešto nije u redu.</translation>
 <translation id="9098541895599151034">Želite li izbrisati zaporke (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Potrebna je zaporka</translation>
+<translation id="9106655997975673326">S uređaja <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Traženje ugroženih zaporki</translation>
 <translation id="9120217828624527905">Prijeđite na prijevod cijele stranice</translation>
 <translation id="9124387962554796433">Google može upotrebljavati vašu povijest za prilagodbu Pretraživanja i drugih Googleovih usluga.</translation>

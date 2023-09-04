@@ -40,6 +40,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1177414119866731261">Abre Menú de Chrome</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1200396280085622191">Utiliza Chrome sempre que toques ligazóns en mensaxes e noutras aplicacións.</translation>
+<translation id="1201402288615127009">Seguinte</translation>
 <translation id="1207113853726624428">Nova busca</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Ocultar por agora</translation>
@@ -726,6 +727,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5232485538978018676">Iniciar sesión cunha conta xestionada</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
+<translation id="5238301240406177137">Gardar na conta</translation>
 <translation id="5245322853195994030">Cancelar sincronización</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>

@@ -40,6 +40,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1177414119866731261">Avaa Chrome-valikko</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1200396280085622191">Käytä Chromea, kun napautat linkkejä viesteissä ja muissa sovelluksissa.</translation>
+<translation id="1201402288615127009">Seuraava</translation>
 <translation id="1207113853726624428">Uusi haku</translation>
 <translation id="1207493287814084192">17.30</translation>
 <translation id="1209206284964581585">Piilota toistaiseksi</translation>
@@ -726,6 +727,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5228579091201413441">Ota synkronointi käyttöön</translation>
 <translation id="5232485538978018676">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5238301240406177137">Tallenna tilille</translation>
 <translation id="5245322853195994030">Peru synkronointi</translation>
 <translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>

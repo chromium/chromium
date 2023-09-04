@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C デバイス（左側面のポート）</translation>
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">「使い方・ヒント」を開く</translation>
 <translation id="1294929383540927798">ロック画面の通知設定を変更</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
@@ -365,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">ウィンドウの固定を解除</translation>
 <translation id="2528111225373402384">アクセス ポイント設定</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2531107890083353124">タブをドラッグしながら、<ph name="KEY_ONE" /> キーを押す</translation>
@@ -387,6 +389,7 @@
 <translation id="2612614436418177118">アプリグリッド内でアプリアイコンを移動します</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />、ファイル、アプリなどを検索...</translation>
 <translation id="2620436844016719705">システム</translation>
+<translation id="2620900772667816510">Bluetooth 超解像</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="2624588537172718173">デバイスの音声とマイク</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
@@ -511,6 +514,7 @@
 <translation id="3161500364292033097">デスクとウィンドウを閉じる</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> が <ph name="DEVICE_TYPE" /> をロールバックしています。デバイスはリセットされ、データはすべて削除されます。</translation>
 <translation id="3171170659304083361">入力方法の設定</translation>
+<translation id="3176221688814061633">Chromebook または Bluetooth デバイスで古いバージョンの Bluetooth が使用されています。Bluetooth 超解像をオンにするか、内蔵マイクを使用すると音質が向上します。</translation>
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{1 台のデバイスと接続されています}other{# 台のデバイスと接続されています}}</translation>
 <translation id="320207200541803018">タイマーを設定して</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="7219573373513695352">接続されているデバイスはありません</translation>
+<translation id="7229029500464092426">メモリ <ph name="AVAILABLE_MEMORY" /> | 合計 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。アップデートを適用するには、Chromebook を再起動する必要があります。再起動には最長で 1 分ほどかかります。</translation>
 <translation id="7256634071279256947">後方のマイク</translation>
 <translation id="7258828758145722155">昨日編集したファイル</translation>
@@ -1523,6 +1528,7 @@
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
 <translation id="736045644501761622">壁紙とスタイルを設定</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
+<translation id="7372069265635026568">合計メモリ <ph name="TOTAL_MEMORY" /> 中 <ph name="AVAILABLE_MEMORY" /> を使用できます</translation>
 <translation id="737315737514430195">マイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
@@ -1853,6 +1859,7 @@
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> に終了</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735678380411481005">キーボードのバックライトの色</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: 有効にしています...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />、<ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="875593634123171288">VPN 設定を表示</translation>

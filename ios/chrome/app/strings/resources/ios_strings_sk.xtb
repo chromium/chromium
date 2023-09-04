@@ -40,6 +40,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1177414119866731261">Otvorte Ponuku Chrome</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1200396280085622191">Chrome môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
+<translation id="1201402288615127009">Ďalej</translation>
 <translation id="1207113853726624428">Nové vyhľadávanie</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Skryť</translation>
@@ -454,6 +455,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3533202363250687977">Zavrieť všetky karty inkognito</translation>
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3540141921715814660">Pridať medzi záložky</translation>
+<translation id="355101282835380364">Uložiť do účtu…</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
 <translation id="3565207542107370586">Vymazať dáta prehliadania…</translation>
 <translation id="3575234738189584619">Vyhľadávať pomocou funkcie Lens</translation>
@@ -467,6 +469,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3609785682760573515">Prebieha synchronizácia...</translation>
 <translation id="3631443864840848029">Uistite sa, že ukladáte aktuálne heslo tohto webu.</translation>
 <translation id="3638472932233958418">Predbežne načítavať webové stránky</translation>
+<translation id="3643338347976071250">{count,plural, =1{{count} heslo je uložené iba v tomto zariadení. Ak ho chcete používať v ďalších zariadeniach, uložte si ho do účtu Google {email}.}few{{count} heslá sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} hesiel je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
 <translation id="364480321352456989">Váš Chrome je zastaraný.</translation>
 <translation id="3646736009628185125">Člen vašej rodiny nemôže momentálne dostávať heslá. Požiadajte ho, aby aktualizoval Chrome a synchronizoval svoje heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">K dispozícii je profil konfigurácie</translation>
@@ -546,6 +549,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4187450337729239226">Prilepiť a hľadať</translation>
+<translation id="4197456013861852807">{count,plural, =1{{count} položka je uložená iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju do účtu Google {email}.}few{{count} položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
 <translation id="4216918546378735658">Zrušiť</translation>
 <translation id="4223967053752765281">Vaša organizácia vypla prihlasovanie. Naďalej uvidíte všetky svoje záložky, históriu, heslá a ďalšie nastavenia v tomto zariadení. Ak vykonáte zmeny, nebudú synchronizované do vášho účtu.</translation>
 <translation id="422474357428465195">Máte viacero problémov heslami, ktoré môžu ohroziť vaše zabezpečenie.</translation>
@@ -731,6 +735,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
 <translation id="5232485538978018676">Prihlásenie spravovaným účtom</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
+<translation id="5238301240406177137">Uložiť do účtu</translation>
 <translation id="5245322853195994030">Zrušiť synchronizáciu</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
@@ -1309,6 +1314,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="850600235656508448">Otvoriť v režime inkognito</translation>
 <translation id="8517375800490286174">Licencie open source</translation>
+<translation id="8522147671363140027">{count,plural, =1{{count} heslo a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}few{{count} heslá a ďalšie položky sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}many{{count} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}other{{count} hesiel a ďalších položiek je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich do účtu Google {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> – karty <ph name="FIRST_VISIBLE_TAB" /> až <ph name="LAST_VISIBLE_TAB" /> z <ph name="NUMBER_OF_OPEN_TABS" /></translation>
 <translation id="8528009254289981965">Otváranie odkazov z iných aplikácií v režime inkognito</translation>
 <translation id="8529767659511976195">Nové</translation>

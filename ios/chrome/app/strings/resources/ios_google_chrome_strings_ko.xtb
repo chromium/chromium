@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Chrome을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본 브라우저로 설정하세요.</translation>
 <translation id="1504372625950710826">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
 <translation id="1511320244449497906">현재 로그인되어 있으며 <ph name="DOMAIN" />에서 관리하는 계정과 데이터를 동기화하려고 합니다. 이 도메인의 관리자는 이제 해당 계정에 적용되는 사용자 정책을 설정할 수 있으며 이로 인해 Chrome의 동작이 변경될 수 있습니다</translation>
+<translation id="1516692594929310090">Chrome 탭 그리드를 엽니다.</translation>
 <translation id="1526327845902180576">사용 설정 되어 있을 때:
 <ph name="BEGIN_INDENT" /> • 나와 비슷한 사용자를 위한 Chrome 개선에 도움이 됩니다.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="6822673484890854830">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="6916015246697034114">Chrome에서 음성으로 검색하기</translation>
 <translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>
 <translation id="7059914902409643750">나만의 Chrome 만들기</translation>
@@ -150,6 +152,7 @@
 <translation id="7400722733683201933">Chrome 정보</translation>
 <translation id="7501046334262221972">Chrome을 기본 브라우저로 설정하려면 설정을 여세요. 기본 브라우저 앱을 탭한 다음 Chrome을 선택합니다.</translation>
 <translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
+<translation id="7581063337314642333">Chrome에서 탭 그리드로 이동</translation>
 <translation id="7662994914830945754">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="7669869107155339016">Chrome 설정으로 이동합니다.</translation>
 <translation id="7693590760643069321">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
@@ -157,10 +160,13 @@
 <translation id="7754633291442704733"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chrome 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chrome의 동작을 변경할 수도 있습니다.</translation>
 <translation id="7780154209050837198">Chrome을 최대한 활용하려면 Google 계정으로 Chrome에 로그인하세요</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
+<translation id="7897703007638178753">Chrome 최근 탭 보기</translation>
+<translation id="7925119591961387184">'Chrome'을 선택합니다.</translation>
 <translation id="8022947259858476807">링크를 열고, 위젯에서 검색하고, 다른 앱에서 비밀번호를 자동 완성할 기본 브라우저로 Chrome을 사용합니다.</translation>
 <translation id="804638182476029347">Chrome에서 가격 인하 알림을 받도록 허용</translation>
 <translation id="81358522153858150">이제 Chrome에서 관리 계정에 대한 사용자 정책을 지원합니다</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
+<translation id="8174679664544842874">Chrome에서 새 탭을 엽니다.</translation>
 <translation id="8213758103105806860">Chrome 북마크 보기</translation>
 <translation id="8357607116237445042">이 기기에서 내 Chrome 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
@@ -174,8 +180,10 @@
   2. 기본 브라우저 앱을 탭합니다.
   3. Chrome을 선택합니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
+<translation id="8587647598504233556">'Chrome'을 탭한 다음 '기본 브라우저 앱'을 탭합니다.</translation>
 <translation id="8603022514504485810">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="8736550665979974340">Chrome으로 안전하게 보호하기</translation>
+<translation id="8760668027640688122">Chrome에서 새 탭 열기</translation>
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8772179140489533211">Chrome에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="8788269841521769222">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
@@ -185,6 +193,7 @@
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="8857676124663337448">Google 비밀번호 관리자에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="8897749957032330183">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
+<translation id="8949681853939555434">Chrome을 기본 브라우저로 설정</translation>
 <translation id="8969290730818637510">사용 설정되어 있을 때:
 <ph name="BEGIN_INDENT" />  • 나와 비슷한 사용자를 위한 Chrome 개선에 도움이 됩니다.<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@
   • 동기화를 사용 설정하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="9122931302567044771">Chrome에서 데스크톱 사이트를 매번 요청함을 의미합니다</translation>
+<translation id="9181628561061032322">Chrome 최근 탭을 엽니다.</translation>
 </translationbundle>

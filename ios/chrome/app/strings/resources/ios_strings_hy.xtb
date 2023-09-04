@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Բացեք Chrome-ի ընտրացանկը</translation>
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1200396280085622191">Օգտագործեք Chrome-ը՝ հաղորդագրություններում և այլ հավելվածներում առկա հղումները բացելու համար։</translation>
+<translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1207113853726624428">Նոր որոնում</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Առայժմ թաքցնել</translation>
@@ -726,6 +727,7 @@
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
 <translation id="5232485538978018676">Մուտք կառավարվող հաշիվ</translation>
 <translation id="5234764350956374838">Փակել</translation>
+<translation id="5238301240406177137">Պահել հաշվում</translation>
 <translation id="5245322853195994030">Չեղարկել համաժամացումը</translation>
 <translation id="5271265092610673171">{count,plural, =1{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}one{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}other{Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։}}</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>

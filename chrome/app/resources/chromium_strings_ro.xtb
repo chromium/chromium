@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Reia instalarea</translation>
 <translation id="1029669172902658969">Relansează pentru a actualiza sistemul de operare &amp;Chromium</translation>
 <translation id="1040916596585577953">Chromium îți recomandă să examinezi această extensie</translation>
+<translation id="1042552502243217427">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Chromium folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
 <translation id="1098170124587656448">Chromium te protejează împotriva încălcării securității datelor, a extensiilor necorespunzătoare și nu numai</translation>
@@ -129,6 +130,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="3713809861844741608">Deschide linkul într-o &amp;filă Chromium nouă</translation>
 <translation id="378917192836375108">Chromium vă permite să dați clic pe un număr de telefon de pe web pentru a-l apela cu Skype!</translation>
 <translation id="3790262771324122253">Află de ce Chromium blochează unele descărcări</translation>
+<translation id="3802055581630249637">Chromium preîncarcă paginile pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi</translation>
 <translation id="3830894615770080216">Sistemul de operare Chromium</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Solicită ajutor privind sistemul de operare Chromium</translation>
@@ -239,6 +241,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6132897690380286411">În curând, Chromium se va închide și va șterge datele</translation>
 <translation id="6134968993075716475">Navigarea sigură este dezactivată. Chromium îți recomandă s-o activezi.</translation>
 <translation id="6145820983052037069">Aici poți comuta între profilurile Chromium</translation>
+<translation id="615103374448673771">Dacă permiți cookie-uri, Chromium le poate folosi pentru preîncărcare</translation>
 <translation id="6175304430031192654">În funcție de setări, Chromium poate și să trimită cookie-uri și adresa URL actuală</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
@@ -263,6 +266,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6400112897226594999">Sigla Chromium pe un ecran de computer.</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
 <translation id="6442900851116057561">Repornește sistemul de operare Chromium</translation>
+<translation id="6443470774889161065">Chromium preîncarcă și mai multe pagini pe care este posibil să le accesezi, astfel încât să se încarce mai rapid când le accesezi.</translation>
 <translation id="6455857529632101747">Bun venit la profilurile Chromium</translation>
 <translation id="6475912303565314141">Stabilește și ce pagină se afișează când porniți Chromium.</translation>
 <translation id="648319183876919572">Navigarea sigură îmbunătățită face mai multe pentru a te proteja împotriva site-urilor și a descărcărilor periculoase</translation>

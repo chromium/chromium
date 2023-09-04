@@ -90,6 +90,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1293264513303784526">USB C-toestel (poort aan linkerkant)</translation>
 <translation id="1293556467332435079">Lêers</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Maak Verken oop</translation>
 <translation id="1294929383540927798">Verander die sluitskerm-kennisgewinginstellings</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">AANBEVEELDE PROGRAMME</translation>
@@ -387,6 +388,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2612614436418177118">Skuif 'n appikoon binne approoster</translation>
 <translation id="2620016719323068571">Deursoek jou <ph name="CATEGORY" />, lêers, programme en meer …</translation>
 <translation id="2620436844016719705">Stelsel</translation>
+<translation id="2620900772667816510">Bluetooth-superresolusie</translation>
 <translation id="2621713457727696555">Beveilig</translation>
 <translation id="2624588537172718173">Toesteloudio en -mikrofoon</translation>
 <translation id="263399434338050016">"Kies alles"</translation>
@@ -511,6 +513,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3161500364292033097">Maak lessenaar en vensters toe</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> rol tans jou <ph name="DEVICE_TYPE" /> terug. Jou toestel sal teruggestel word en alle data sal uitgevee word.</translation>
 <translation id="3171170659304083361">Invoermetodesinstellings</translation>
+<translation id="3176221688814061633">Jou Chromebook of Bluetooth-toestel gebruik tans ’n ouer weergawe van Bluetooth. Skakel die Bluetooth-superresolusie aan of gebruik interne mikrofoon vir beter klankgehalte.</translation>
 <translation id="3181441307743005334">Dit kan 'n rukkie neem om te herbegin</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Gekoppel aan 'n toestel}other{Gekoppel aan # toestelle}}</translation>
 <translation id="320207200541803018">Stel afteller</translation>
@@ -1499,6 +1502,7 @@ Nuwe installasie</translation>
 <translation id="7189412385142492784">Hoe ver is Venus</translation>
 <translation id="7198435252016571249">Kamera is geglip na hoek onder regs. Konflik met stelseloppervlak.</translation>
 <translation id="7219573373513695352">Geen toestelle is gekoppel nie</translation>
+<translation id="7229029500464092426">Geheue <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> totaal</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Hierdie Chromebook moet herbegin om 'n opdatering toe te pas. Dit kan tot 1 minuut neem.</translation>
 <translation id="7256634071279256947">Agterste mikrofoon</translation>
 <translation id="7258828758145722155">Gister gewysig</translation>
@@ -1524,6 +1528,7 @@ Nuwe installasie</translation>
 <translation id="7360036564632145207">As jy jou datatoegangbeskerming vir randtoestelle se instelling verander, kan dit werkverrigting optimeer</translation>
 <translation id="736045644501761622">Stel muurpapier en styl</translation>
 <translation id="7371404428569700291">Neem venster op</translation>
+<translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheue beskikbaar uit totale <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Dit gee mikrofoontoegang vir alle apps en webwerwe met die mikrofoontoestemming</translation>
 <translation id="7377169924702866686">Hoofletterslot is aan.</translation>
 <translation id="7377481913241237033">Koppel met 'n kode</translation>

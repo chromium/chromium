@@ -2099,7 +2099,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2613535083491958306"><ph name="ORIGIN" /> akan dapat mengedit <ph name="FILENAME" /></translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{Buka dan edit <ph name="FILE1" /> di ekstensi ini}other{Buka dan edit <ph name="FILE1" />, ... di aplikasi ini?}}</translation>
 <translation id="2616366145935564096">Membaca dan mengubah data Anda di <ph name="WEBSITE_1" /></translation>
-<translation id="2618797463720777311">Menyiapkan Berbagi Langsung</translation>
+<translation id="2618797463720777311">Penyiapan Berbagi Langsung</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman.</translation>
 <translation id="2620245777360407679">Perangkat yang saat ini terhubung ke hotspot</translation>

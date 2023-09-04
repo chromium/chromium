@@ -90,6 +90,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1293264513303784526">Dispositiu USB-C (port esquerre)</translation>
 <translation id="1293556467332435079">Fitxers</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Obre Explora</translation>
 <translation id="1294929383540927798">Canvia la configuració de notificacions de la pantalla de bloqueig</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLICACIONS RECOMANADES</translation>
@@ -387,6 +388,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2612614436418177118">Mou la icona d'una aplicació a la quadrícula d'aplicacions</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, fitxers, aplicacions i més...</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2620900772667816510">Superresolució Bluetooth</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2624588537172718173">Àudio i micròfon del dispositiu</translation>
 <translation id="263399434338050016">"Selecciona-ho tot"</translation>
@@ -511,6 +513,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3161500364292033097">Tanca l'escriptori i les finestres</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> està tornant el dispositiu <ph name="DEVICE_TYPE" /> a una versió anterior. El dispositiu es restablirà i totes les dades se suprimiran.</translation>
 <translation id="3171170659304083361">Configuració dels mètodes d'introducció de text</translation>
+<translation id="3176221688814061633">El Chromebook o el dispositiu Bluetooth utilitza una versió anterior de Bluetooth. Activa la superresolució Bluetooth o utilitza el micròfon intern per millorar la qualitat de l'àudio.</translation>
 <translation id="3181441307743005334">Pot tardar una estona a reiniciar-se</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
 <translation id="320207200541803018">Inicia el temporitzador</translation>
@@ -1498,6 +1501,7 @@ Instal·lació nova</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
 <translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="7219573373513695352">Cap dispositiu connectat</translation>
+<translation id="7229029500464092426">Memòria: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Aquest Chromebook s'ha de reiniciar perquè s'apliqui una actualització. Aquest procés pot tardar fins a 1 minut</translation>
 <translation id="7256634071279256947">Micròfon posterior</translation>
 <translation id="7258828758145722155">Editat ahir</translation>
@@ -1520,6 +1524,7 @@ Instal·lació nova</translation>
 <translation id="7360036564632145207">Canviar l'opció de configuració de la protecció d'accés a les dades per a perifèrics pot optimitzar el rendiment</translation>
 <translation id="736045644501761622">Estableix l'estil i el fons de pantalla</translation>
 <translation id="7371404428569700291">Grava la finestra</translation>
+<translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> de memòria disponible d'un total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Permet l'accés al micròfon a totes les aplicacions i a tots els llocs web amb permís per accedir al micròfon</translation>
 <translation id="7377169924702866686">Bloq Maj està activat.</translation>
 <translation id="7377481913241237033">Connecta't amb un codi</translation>

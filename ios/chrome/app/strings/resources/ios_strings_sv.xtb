@@ -40,6 +40,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1177414119866731261">Öppna Chrome-menyn</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1200396280085622191">Använd Chrome varje gång du trycker på länkar i meddelanden och andra appar.</translation>
+<translation id="1201402288615127009">Nästa</translation>
 <translation id="1207113853726624428">Ny sökning</translation>
 <translation id="1207493287814084192">15.30</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
@@ -726,6 +727,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5228579091201413441">Aktivera synkronisering</translation>
 <translation id="5232485538978018676">Logga in med ett hanterat konto</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5238301240406177137">Spara i kontot</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>

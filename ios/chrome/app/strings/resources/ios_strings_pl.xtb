@@ -40,6 +40,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1177414119866731261">Otwórz menu Chrome</translation>
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1200396280085622191">Używaj Chrome, zawsze gdy klikasz linki w wiadomościach i w innych aplikacjach.</translation>
+<translation id="1201402288615127009">Dalej</translation>
 <translation id="1207113853726624428">Nowe wyszukiwanie</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
@@ -731,6 +732,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5228579091201413441">Włącz synchronizację</translation>
 <translation id="5232485538978018676">Zaloguj się na konto zarządzane</translation>
 <translation id="5234764350956374838">Zamknij</translation>
+<translation id="5238301240406177137">Zapisz na koncie</translation>
 <translation id="5245322853195994030">Anuluj synchronizację</translation>
 <translation id="5271265092610673171">{count,plural, =1{Wymagane pole jest puste. Wypełnij je przed zapisaniem.}few{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}many{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}other{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}}</translation>
 <translation id="5271549068863921519">Zapisz hasło</translation>

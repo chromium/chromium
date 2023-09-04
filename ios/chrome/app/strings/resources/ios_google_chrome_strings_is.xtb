@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="1504372625950710826">Chrome gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
 <translation id="1511320244449497906">Þú ert innskráð(ur) og samstillir gögnin þín við reikning í umsjón <ph name="DOMAIN" />. Viðkomandi kerfisstjóri getur nú stillt notendareglur sem eru sértækar fyrir viðkomandi reikning og geta breytt virkni Chrome.</translation>
+<translation id="1516692594929310090">Opnar flipayfirlit Chrome.</translation>
 <translation id="1526327845902180576">Þegar kveikt er á þessu:
 <ph name="BEGIN_INDENT" />  • Hjálpaðu til við að bæta Chrome fyrir fólk sem notar það eins og þú.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Hafðu í huga:
 
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
+<translation id="6916015246697034114">Leita með röddinni í Chrome</translation>
 <translation id="6964931465519938134">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="6975725306479268850">Velja Chrome fyrir sjálfvirka útfyllingu</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
@@ -150,6 +152,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7400722733683201933">Um Google Chrome</translation>
 <translation id="7501046334262221972">Til að gera Chrome að sjálfgefnum vafra skaltu opna stillingarnar. Þar skaltu ýta á „Sjálfgefið vafraforrit“ og velja Chrome.</translation>
 <translation id="756809126120519699">Chrome gögnum eytt</translation>
+<translation id="7581063337314642333">Opna flipayfirlit Chrome</translation>
 <translation id="7662994914830945754">Skráðu þig inn og kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="7669869107155339016">Opnaðu stillingar Chrome.</translation>
 <translation id="7693590760643069321">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
@@ -157,10 +160,12 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="7754633291442704733"><ph name="DOMAIN" /> fyrirtækisins þíns fær aðgang að Chrome gögnunum þínum, bókamerkjum, ferli, aðgangsorðum og öðrum stillingum sem þú geymir á þessum reikningi. Þegar þú skráir þig út verður gögnunum þínum eytt úr þessu tæki.  Hins vegar verða gögnin þín geymd á stýrða Google reikningnum þínum og verða aðgengileg fyrirtækinu þínu. Fyrirtækið þitt getur líka stillt notendareglur sem eru sértækar fyrir reikninginn þinn og geta breytt virkni Chrome.</translation>
 <translation id="7780154209050837198">Skráðu þig inn á Chrome með Google reikningnum þínum svo að Chrome nýtist þér sem best.</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
+<translation id="7897703007638178753">Sjá nýlega flipa Chrome</translation>
 <translation id="8022947259858476807">Notaðu Chrome sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="804638182476029347">Leyfa Chrome-tilkynningar til að fá tilkynningar um verðlækkanir</translation>
 <translation id="81358522153858150">Chrome styður nú notendareglur fyrir stýrða reikninginn þinn</translation>
 <translation id="8160472928944011082">Ekki er hægt að uppfæra Chrome</translation>
+<translation id="8174679664544842874">Opnar nýjan flipa í Chrome.</translation>
 <translation id="8213758103105806860">Sjá bókamerki Chrome</translation>
 <translation id="8357607116237445042">Veldu hvort þú vilt hreinsa gögn Chrome úr þessu tæki eða geyma þau</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
@@ -176,6 +181,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google-reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Öryggi með Google Chrome</translation>
+<translation id="8760668027640688122">Opna nýjan flipa í Chrome</translation>
 <translation id="8765470054473112089">Þegar þú skrifar í veffangastiku eða leitarreit sendir Chrome það sem þú skrifar á sjálfgefna leitarvél til að fá betri tillögur. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="8772179140489533211">Sýna innskráningartilkynningar í Chrome.</translation>
 <translation id="8788269841521769222">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
@@ -194,4 +200,5 @@ Hafðu í huga:
   • Ef þú kveikir að samstillingu gætu mæligildi innihaldið upplýsingar um vefslóðir sem þú ferð á.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Stilla Chrome sem sjálfgefið?</translation>
 <translation id="9122931302567044771">Þetta þýðir að Chrome biður alltaf um skjáborðsútgáfu vefsvæðis.</translation>
+<translation id="9181628561061032322">Opnar nýlega flipa Chrome.</translation>
 </translationbundle>

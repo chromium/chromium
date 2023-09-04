@@ -40,6 +40,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1177414119866731261">Otevřete nabídku Chrome.</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1200396280085622191">Používejte Chrome, kdykoli klepnete na odkazy ve zprávách a jiných aplikacích.</translation>
+<translation id="1201402288615127009">Další</translation>
 <translation id="1207113853726624428">Nové vyhledávání</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Prozatím skrýt</translation>
@@ -726,6 +727,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5228579091201413441">Aktivace synchronizace</translation>
 <translation id="5232485538978018676">Přihlášení pomocí spravovaného účtu</translation>
 <translation id="5234764350956374838">Zavřít</translation>
+<translation id="5238301240406177137">Uložit do účtu</translation>
 <translation id="5245322853195994030">Zrušit synchronizaci</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdné. Před uložením ho vyplňte.}few{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}many{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}other{Některá povinná pole jsou prázdná. Před uložením je vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložit heslo</translation>
@@ -1364,6 +1366,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8855242995793521265">Nijak znatelně nezpomaluje prohlížeč ani zařízení.</translation>
 <translation id="8855781063981781621">Pokud chcete v Chromu deaktivovat režim blokování, vypněte ho na svém iPadu.</translation>
 <translation id="8863431381414769983">Získávat trasy a místní informace z Map Google</translation>
+<translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} karty}other{{count} karet}}</translation>
 <translation id="8870413625673593573">Nedávno zavřené</translation>
 <translation id="8876882697946675716">Synchronizujte svá zařízení</translation>

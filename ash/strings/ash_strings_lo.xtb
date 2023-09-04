@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">ອຸ​ປະ​ກອນ USB-C (​ຊ່ອງ​ຊ້າຍ)</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">ເປີດ Explore</translation>
 <translation id="1294929383540927798">ປ່ຽນການຕັ້ງຄ່າການແຈ້ງເຕືອນໜ້າຈໍລັອກ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ແອັບທີ່ແນະນຳ</translation>
@@ -365,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">ປົດລັອກໜ້າຈໍ</translation>
 <translation id="2528111225373402384">ການຕັ້ງຄ່າຮັອດສະປອດ</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">ເປີດ ຫຼື ປິດການຮຽກເບິ່ງດ້ວຍແປ້ນພິມ</translation>
 <translation id="2531025035050312891">ອຸປະກອນເຮັດວຽກຊ້າ</translation>
 <translation id="2531107890083353124">ໃນຂະນະທີ່ລາກແຖບ, ໃຫ້ກົດ <ph name="KEY_ONE" /></translation>
@@ -387,6 +389,7 @@
 <translation id="2612614436418177118">ຍ້າຍໄອຄອນແອັບພາຍໃນຕາຕະລາງແອັບ</translation>
 <translation id="2620016719323068571">ຊອກຫາ <ph name="CATEGORY" />, ໄຟລ໌, ແອັບ ແລະ ອື່ນໆຂອງທ່ານ...</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
+<translation id="2620900772667816510">Bluetooth ຄວາມລະອຽດສູງສຸດ</translation>
 <translation id="2621713457727696555">ຮັກສາຄວາມປອດໄພແລ້ວ</translation>
 <translation id="2624588537172718173">ສຽງຈາກອຸປະກອນ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="263399434338050016">"ເລືອກທັງໝົດ"</translation>
@@ -511,6 +514,7 @@
 <translation id="3161500364292033097">ປິດໂຕະ ແລະ ໜ້າຈໍ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ກຳລັງປ່ຽນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກັບໄປເປັນເວີຊັນເກົ່າ. ອຸປະກອນຂອງທ່ານຈະຣີເຊັດ ແລະ ຂໍ້ມູນທັງໝົດຈະຖືກລຶບອອກ.</translation>
 <translation id="3171170659304083361">ການຕັ້ງຄ່າວິທີການປ້ອນຂໍ້ມູນ</translation>
+<translation id="3176221688814061633">Chromebook ຫຼື ອຸປະກອນ Bluetooth ຂອງທ່ານກຳລັງໃຊ້ Bluetooth ເວີຊັນເກົ່າ. ເປີດໃຊ້ Bluetooth ຄວາມລະອຽດສູງສຸດ ຫຼື ໃຊ້ໄມໂຄຣໂຟນພາຍໃນເພື່ອຄຸນນະພາບສຽງທີ່ດີຂຶ້ນ.</translation>
 <translation id="3181441307743005334">ການຣິສະຕາດອາດຈະໃຊ້ເວລາຄາວໜຶ່ງ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ເຊື່ອມຕໍ່ກັບໜຶ່ງອຸປະກອນແລ້ວ}other{ເຊື່ອມຕໍ່ກັບ # ອຸປະກອນແລ້ວ}}</translation>
 <translation id="320207200541803018">ຕັ້ງຄ່າໂມງນັບຖອຍຫຼັງ</translation>
@@ -1498,6 +1502,7 @@
 <translation id="7189412385142492784">ດາວສຸກຢູ່ໄກເທົ່າໃດ</translation>
 <translation id="7198435252016571249">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຂວາລຸ່ມແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="7219573373513695352">ບໍ່ມີອຸປະກອນເຊື່ອມຕໍ່</translation>
+<translation id="7229029500464092426">ໃຊ້ໜ່ວຍຄວາມຈຳແລ້ວ <ph name="AVAILABLE_MEMORY" /> | ຮວມທັງໝົດ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ນີ້ຈຳເປັນຕ້ອງຣິສະຕາດຄືນໃໝ່ເພື່ອນຳໃຊ້ການອັບເດດ. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາເຖິງ 1 ນາທີ.</translation>
 <translation id="7256634071279256947">ໄມໂຄຣໂຟນຫຼັງ</translation>
 <translation id="7258828758145722155">ແກ້ໄຂມື້ວານນີ້</translation>
@@ -1523,6 +1528,7 @@
 <translation id="7360036564632145207">ການປ່ຽນການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນຂອງທ່ານສຳລັບການຕັ້ງຄ່າອຸປະກອນຕໍ່ພ່ວງສາມາດປັບປຸງປະສິດທິພາບໃຫ້ເໝາະສົມໄດ້</translation>
 <translation id="736045644501761622">ຕັ້ງຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="7371404428569700291">ບັນທຶກໜ້າຈໍ</translation>
+<translation id="7372069265635026568">ໜ່ວຍຄວາມຈຳຫວ່າງ <ph name="AVAILABLE_MEMORY" /> ຈາກທັງໝົດ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">ການດຳເນີນການນີ້ອະນຸຍາດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນໃຫ້ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີສິດອະນຸຍາດໄມໂຄຣໂຟນ</translation>
 <translation id="7377169924702866686">Caps Lock ເປີດຢູ່.</translation>
 <translation id="7377481913241237033">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດ</translation>
@@ -1852,6 +1858,7 @@
 <translation id="8731487213223706745">ສິ້ນສຸດ <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">ມັນອາດຈະກຳລັງພະຍາຍາມລັກໃຊ້ການກົດແປ້ນພິມຂອງທ່ານຢູ່</translation>
 <translation id="8735678380411481005">ສີໄຟແປ້ນພິມ</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ: <ph name="ORIGIN_NAME" /> ຕ້ອງການຢືນຢັນວ່າມັນແມ່ນທ່ານ</translation>

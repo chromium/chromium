@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Restableix els permisos</translation>
 <translation id="301521992641321250">Bloquejada automàticament</translation>
 <translation id="3069226013421428034">Permet l'inici de sessió de tercers en un lloc web concret.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3109724472072898302">Reduït</translation>
 <translation id="3114012059975132928">Reproductor de vídeo</translation>

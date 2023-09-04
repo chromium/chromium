@@ -157,6 +157,7 @@
 <translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 账号登录 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
+<translation id="7925119591961387184">选择“Chrome”。</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理账号设置用户规范</translation>
@@ -174,6 +175,7 @@
   2. 点按“默认浏览器应用”
   3. 选择“Chrome”。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">依次点按“Chrome”和“默认浏览器应用”。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome 为您保驾护航</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
@@ -185,6 +187,7 @@
 如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密码管理工具无法检查所有密码。请明天再试。</translation>
 <translation id="8897749957032330183">系统会将密码保存到此设备上的 Google 密码管理工具中。</translation>
+<translation id="8949681853939555434">将 Chrome 设为默认浏览器</translation>
 <translation id="8969290730818637510">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
 

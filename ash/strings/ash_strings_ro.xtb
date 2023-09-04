@@ -90,6 +90,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1293264513303784526">Dispozitiv USB-C (portul din stânga)</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Deschide Explorare</translation>
 <translation id="1294929383540927798">Modifică setările pentru notificările de pe ecranul de blocare</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLICAȚII RECOMANDATE</translation>
@@ -387,6 +388,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2612614436418177118">Mută o pictogramă de aplicație în grila de aplicații</translation>
 <translation id="2620016719323068571">Caută în <ph name="CATEGORY" />, fișiere, aplicații și altele…</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2620900772667816510">Super-rezoluție Bluetooth</translation>
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="2624588537172718173">Conținutul audio de la dispozitiv și microfon</translation>
 <translation id="263399434338050016">Selectează tot.</translation>
@@ -511,6 +513,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3161500364292033097">Închide desktopul și ferestrele</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> aduce dispozitivul <ph name="DEVICE_TYPE" /> la starea anterioară. Dispozitivul va fi resetat și toate datele vor fi șterse.</translation>
 <translation id="3171170659304083361">Setări pentru metode de introducere a textului</translation>
+<translation id="3176221688814061633">Chromebookul sau dispozitivul Bluetooth folosește o versiune Bluetooth mai veche. Activează Super-rezoluția Bluetooth sau folosește microfonul intern pentru o calitate audio mai bună.</translation>
 <translation id="3181441307743005334">Repornirea poate dura un timp</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectat la un dispozitiv}few{Conectat la # dispozitive}other{Conectat la # de dispozitive}}</translation>
 <translation id="320207200541803018">Setează temporizatorul</translation>
@@ -1498,6 +1501,7 @@ Instalare nouă</translation>
 <translation id="7189412385142492784">Cât de departe este Venus</translation>
 <translation id="7198435252016571249">Camera foto este aliniată cu colțul din dreapta jos. Conflict cu platforma de sistem.</translation>
 <translation id="7219573373513695352">Niciun dispozitiv conectat</translation>
+<translation id="7229029500464092426">Memorie <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Este necesară repornirea Chromebookului pentru aplicarea unei actualizări. Poate dura cel mult un minut.</translation>
 <translation id="7256634071279256947">Microfonul din spate</translation>
 <translation id="7258828758145722155">Editat ieri</translation>
@@ -1523,6 +1527,7 @@ Instalare nouă</translation>
 <translation id="7360036564632145207">Modificarea setării pentru protecția accesului la date pentru dispozitive periferice poate optimiza performanța</translation>
 <translation id="736045644501761622">Setează imaginea de fundal și stilul</translation>
 <translation id="7371404428569700291">Înregistrează fereastra</translation>
+<translation id="7372069265635026568">Memoria disponibilă este de <ph name="AVAILABLE_MEMORY" /> din totalul de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Aceasta permite accesul la microfon pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="7377169924702866686">Tasta Caps Lock este activată.</translation>
 <translation id="7377481913241237033">Conectează-te cu un cod</translation>

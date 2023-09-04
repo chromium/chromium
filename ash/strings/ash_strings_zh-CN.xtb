@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">打开“探索”</translation>
 <translation id="1294929383540927798">更改锁定屏幕通知设置</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">在应用网格内移动某个应用图标</translation>
 <translation id="2620016719323068571">搜索您的<ph name="CATEGORY" />、文件、应用等内容…</translation>
 <translation id="2620436844016719705">系统</translation>
+<translation id="2620900772667816510">超高解析度蓝牙</translation>
 <translation id="2621713457727696555">受保护</translation>
 <translation id="2624588537172718173">设备音频和麦克风</translation>
 <translation id="263399434338050016">“全选”</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">关闭桌面和窗口</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> 正在回滚您的 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
 <translation id="3171170659304083361">输入法设置</translation>
+<translation id="3176221688814061633">您的 Chromebook 或蓝牙设备使用的是旧版蓝牙。开启超高解析度蓝牙或使用内置麦克风可提升音质。</translation>
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已连接到 1 台设备}other{已连接到 # 台设备}}</translation>
 <translation id="320207200541803018">设置定时器</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
 <translation id="7219573373513695352">未连接任何设备</translation>
+<translation id="7229029500464092426">可用内存为 <ph name="AVAILABLE_MEMORY" /> | 共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />。此 Chromebook 需要重新启动才能让更新生效。此过程最多可能需要 1 分钟的时间。</translation>
 <translation id="7256634071279256947">后置麦克风</translation>
 <translation id="7258828758145722155">昨天修改过</translation>
@@ -1520,6 +1524,7 @@
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
 <translation id="736045644501761622">设置壁纸与样式</translation>
 <translation id="7371404428569700291">录制窗口</translation>
+<translation id="7372069265635026568">可用内存为 <ph name="AVAILABLE_MEMORY" />，总共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">如果您取消麦克风静音，即意味着允许所有具有麦克风使用权限的应用和网站使用麦克风</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7377481913241237033">利用代码连接</translation>

@@ -90,6 +90,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1293264513303784526">USB-C-apparaat (poort aan linkerkant)</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Ontdekken openen</translation>
 <translation id="1294929383540927798">Instellingen voor meldingen voor het vergrendelscherm wijzigen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
@@ -387,6 +388,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2612614436418177118">Een app-icoon verplaatsen binnen het app-raster</translation>
 <translation id="2620016719323068571">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps…</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Beveiligd</translation>
 <translation id="2624588537172718173">Audio van apparaat en microfoon</translation>
 <translation id="263399434338050016">'Alles selecteren'</translation>
@@ -511,6 +513,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3161500364292033097">Bureau en vensters sluiten</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> zet je <ph name="DEVICE_TYPE" /> terug naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="3171170659304083361">Instellingen voor invoermethoden</translation>
+<translation id="3176221688814061633">Je Chromebook of bluetooth-apparaat gebruikt een oudere versie van bluetooth. Zet Bluetooth Super Resolution aan of gebruik de interne microfoon voor een betere audiokwaliteit.</translation>
 <translation id="3181441307743005334">Opnieuw opstarten kan even duren</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Verbonden met een apparaat}other{Verbonden met # apparaten}}</translation>
 <translation id="320207200541803018">Timer instellen</translation>
@@ -1498,6 +1501,7 @@ Nieuwe installatie</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>
 <translation id="7198435252016571249">Camera uitgelijnd op de rechterbenedenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="7219573373513695352">Geen apparaten gekoppeld</translation>
+<translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Deze Chromebook moet opnieuw worden opgestart om een update uit te voeren. Dit kan ongeveer één minuut duren.</translation>
 <translation id="7256634071279256947">Microfoon aan achterzijde</translation>
 <translation id="7258828758145722155">Gisteren bewerkt</translation>
@@ -1520,6 +1524,7 @@ Nieuwe installatie</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
 <translation id="7371404428569700291">Opname van venster maken</translation>
+<translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> geheugen van in totaal <ph name="TOTAL_MEMORY" /> beschikbaar</translation>
 <translation id="737315737514430195">Hierdoor wordt microfoontoegang toegestaan voor alle apps en websites met microfoonrechten</translation>
 <translation id="7377169924702866686">Caps Lock staat aan.</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>

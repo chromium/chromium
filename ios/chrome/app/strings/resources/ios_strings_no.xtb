@@ -40,6 +40,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1177414119866731261">Åpne Chrome-menyen</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1200396280085622191">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
+<translation id="1201402288615127009">Neste</translation>
 <translation id="1207113853726624428">Nytt søk</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
@@ -734,6 +735,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5228579091201413441">Slå på synkronisering</translation>
 <translation id="5232485538978018676">Logg på med administrert konto</translation>
 <translation id="5234764350956374838">Lukk</translation>
+<translation id="5238301240406177137">Lagre i konto</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>

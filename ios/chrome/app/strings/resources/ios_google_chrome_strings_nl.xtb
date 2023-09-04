@@ -157,6 +157,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="7754633291442704733">Je organisatie <ph name="DOMAIN" /> heeft toegang tot je Chrome-gegevens, bookmarks, geschiedenis, wachtwoorden en andere instellingen die je in dit account opslaat. Als je uitlogt, worden je gegevens van dit apparaat gewist.  De gegevens blijven wel opgeslagen in je beheerde Google-account en zijn nog steeds beschikbaar voor je organisatie. Je organisatie kan ook specifiek voor dat account gebruikersbeleid instellen waarmee het gedrag van Chrome kan worden gewijzigd.</translation>
 <translation id="7780154209050837198">Log in bij Chrome met je Google-account om het maximale uit Chrome te halen.</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
+<translation id="7925119591961387184">Selecteer Chrome.</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="804638182476029347">Chrome-meldingen toestaan om meldingen over prijsdalingen te krijgen</translation>
 <translation id="81358522153858150">Chrome ondersteunt nu gebruikersbeleid voor je beheerde account</translation>
@@ -174,6 +175,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 2. Tik op Standaard browser-app.
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Tik op Chrome en dan op Standaard browser-app.</translation>
 <translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
 <translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
@@ -185,6 +187,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="8897749957032330183">Wachtwoorden worden opgeslagen in Google Wachtwoordmanager op dit apparaat.</translation>
+<translation id="8949681853939555434">Chrome instellen als je standaardbrowser</translation>
 <translation id="8969290730818637510">Als dit aanstaat:
 <ph name="BEGIN_INDENT" />  • Help Chrome te verbeteren voor mensen die de browser gebruiken op dezelfde manier als jij.<ph name="END_INDENT" />
 

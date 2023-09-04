@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">Экшн-гульні і платформеры</translation>
 <translation id="1413809658975081374">Памылка прыватнасці</translation>
 <translation id="1414134146594747368">Дашкольнае навучанне</translation>
+<translation id="141826476809826269">Канец вынятага тэксту</translation>
 <translation id="1419305130220238697">Кнопка "Кіраваць спампоўкамі ў Chrome". Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце яе.</translation>
 <translation id="1422930527989633628">Сайт можа запытваць дазвол выяўляць прылады з Bluetooth паблізу</translation>
 <translation id="1426410128494586442">Так</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">Сайт, які вы хацелі наведаць, можа быць фальшывым. Зламыснікі часам імітуюць сайты, уносячы невялікія і непрыкметныя змяненні ў URL-адрас.</translation>
 <translation id="1532118530259321453">Інфармацыя ад старонкі</translation>
 <translation id="1536390784834419204">Перакласці старонку</translation>
+<translation id="1537807545287921620">Гэты файл PDF недаступны. Адкрыйце кантэкстнае меню і ўключыце функцыю "Выняць тэкст з PDF".</translation>
 <translation id="1539840569003678498">Справаздача адпраўлена:</translation>
 <translation id="1542105669288201090">Бізнес-адукацыя</translation>
 <translation id="1545757265410828525">Гісторыя цэн</translation>
@@ -864,6 +866,7 @@
 <translation id="2803306138276472711">Google Бяспечны прагляд толькі што <ph name="BEGIN_LINK" />выявіў шкоднае ПЗ<ph name="END_LINK" /> на сайце <ph name="SITE" />. Сайты, якія звычайна з'яўляюцца надзейнымі, часам заражаюцца шкодным ПЗ.</translation>
 <translation id="2807052079800581569">Размяшчэнне відарыса па восі Y</translation>
 <translation id="2808278141522721006">Уключыць або выключыць Windows Hello можна ў раздзеле "<ph name="SETTINGS" />"</translation>
+<translation id="2814184336982254349">Гэты файл PDF недаступны. Націсніце Пошук + M, каб адкрыць кантэкстнае меню і ўключыць функцыю "Выняць тэкст з PDF".</translation>
 <translation id="2818338148457093657">Спа і салоны прыгажосці</translation>
 <translation id="2820957248982571256">Ідзе пошук...</translation>
 <translation id="2824775600643448204">Адрасны радок і панэль пошуку</translation>
@@ -1168,6 +1171,7 @@
 <translation id="3461266716147554923">Сайт <ph name="URL" /> запытвае доступ на прагляд тэкстаў і відарысаў, скапіраваных у буфер абмену</translation>
 <translation id="3461824795358126837">Маркер</translation>
 <translation id="3462200631372590220">Схаваць дадатковую інфармацыю</translation>
+<translation id="3465972433695735758">Гэты файл PDF недаступны. Тэкст выняты пры дапамозе штучнага інтэлекту ад Google.</translation>
 <translation id="346601286295919445">Хімія</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, укладка адкрытая, каб перайсці на адкрытую ўкладку, націсніце Tab, затым Enter</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб закрыць усе адкрытыя вокны ў рэжыме інкогніта, націсніце Tab, затым Enter</translation>
@@ -1184,6 +1188,7 @@
 <translation id="350069200438440499">Назва файла:</translation>
 <translation id="3501300228850242680">Метал (музыка)</translation>
 <translation id="350421688684366066">Высакаглянцавы этыкетачны матэрыял</translation>
+<translation id="350763432931695541">Вымаецца тэкст наступных некалькіх старонак</translation>
 <translation id="3507869775212388416">Вакансіі ў сферы юрыспрудэнцыі</translation>
 <translation id="3507936815618196901">стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="3512163584740124171">Гэта палітыка ігнаруецца, бо іншая палітыка з той жа групы палітык мае вышэйшы прыярытэт.</translation>
@@ -2849,6 +2854,7 @@
 <translation id="6973988895180423160">3,5 x 5 цаляў</translation>
 <translation id="6978236010531171013">Усё роўна абагуліць</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
+<translation id="6979332652936434520">Пачатак вынятага тэксту</translation>
 <translation id="6979440798594660689">Выключыць (стандартна)</translation>
 <translation id="6987806006823772670">Канверт з матэрыялу з пакрыццём</translation>
 <translation id="6989763994942163495">Паказаць пашыраныя налады...</translation>
@@ -2904,6 +2910,7 @@
 <translation id="7102760431686146931">Кухонны і сталовы посуд</translation>
 <translation id="7105998430540165694">Ключ доступу з iCloud Keychain</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
+<translation id="7107249414147762907">Гэты файл PDF недаступны. Тэкст не выняты.</translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> запытвае доступ да камеры</translation>
 <translation id="7108819624672055576">Дазволена пашырэннем</translation>
@@ -3916,6 +3923,7 @@
 <translation id="917450738466192189">Няправільны сертыфікат сервера.</translation>
 <translation id="9174623988242579721">Аўтамабілі з высокімі дынамічнымі характарыстыкамі і мадыфікаваныя аўтамабілі</translation>
 <translation id="9174917557437862841">Кнопка пераключэння ўкладак. Націсніце Enter, каб пераключыцца на гэту ўкладку</translation>
+<translation id="9177283544810807743">Гэты файл PDF недаступны. Тэкст вымаецца пры дапамозе штучнага інтэлекту ад Google.</translation>
 <translation id="9179703756951298733">Кіраваць плацяжамі і звесткамі крэдытнай карткі ў наладах Chrome</translation>
 <translation id="9179907736442194268">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі па электроннай пошце</translation>
 <translation id="9183302530794969518">Дакументы Google</translation>

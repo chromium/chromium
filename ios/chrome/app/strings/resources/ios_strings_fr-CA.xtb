@@ -39,6 +39,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1177414119866731261">Ouvrir le menu Chrome</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1200396280085622191">Utilisez Chrome chaque fois que vous touchez des liens dans les messages et dans d'autres applications.</translation>
+<translation id="1201402288615127009">Suivant</translation>
 <translation id="1207113853726624428">Nouvelle recherche</translation>
 <translation id="1207493287814084192">17 h 30</translation>
 <translation id="1209206284964581585">Masquer pour l'instant</translation>
@@ -714,6 +715,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5228579091201413441">Activer la synchronisation</translation>
 <translation id="5232485538978018676">Se connecter avec un compte géré</translation>
 <translation id="5234764350956374838">Fermer</translation>
+<translation id="5238301240406177137">Enregistrer dans le compte</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>

@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Ресетуј дозволе</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3069226013421428034">Дозволите пријављивање трећих страна за одређени сајт.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Истиче сутра}one{Истиче за # дан}few{Истиче за # дана}other{Истиче за # дана}}</translation>
 <translation id="310297983047869047">Претходни слајд</translation>
 <translation id="3109724472072898302">Скупљено</translation>
 <translation id="3114012059975132928">Видео плејер</translation>

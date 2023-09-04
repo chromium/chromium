@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ଆକ୍ସନ ଏବଂ ପ୍ଲାଟଫର୍ମ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="1413809658975081374">ଗୋପନୀୟତା ତ୍ରୁଟି</translation>
 <translation id="1414134146594747368">ପ୍ରିସ୍କୁଲ</translation>
+<translation id="141826476809826269">ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଥିବା ଟେକ୍ସଟର ଶେଷ</translation>
 <translation id="1419305130220238697">'Chromeରେ ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, Chromeରେ ଆପଣ ଡାଉନଲୋଡ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1422930527989633628">ଆଖପାଖର ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1426410128494586442">ହଁ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">ଆପଣ ଏବେ ଯେଉଁ ସାଇଟ୍‌କୁ ଯିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛନ୍ତି ତାହା ନକଲି ଜଣାପଡୁଛି। URLରେ ଛୋଟ ପରିବର୍ତ୍ତନ କରି ଆକ୍ରମଣକାରୀମାନେ ବେଳେ ବେଳେ ସାଇଟ୍‍ଗୁଡ଼ିକର ନକଲ କରିଥାନ୍ତି ଯାହା ଜାଣିବା କଷ୍ଟକର ହୋଇଥାଏ।</translation>
 <translation id="1532118530259321453">ଏହି ପୃଷ୍ଠା ଏହା କୁହେ</translation>
 <translation id="1536390784834419204">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="1537807545287921620">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ପ୍ରସଙ୍ଗ ମେନୁ ଖୋଲି "PDFରୁ ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1539840569003678498">ରିପୋର୍ଟ ପଠାଯାଇଛି:</translation>
 <translation id="1542105669288201090">ବିଜିନେସ ଶିକ୍ଷା</translation>
 <translation id="1545757265410828525">ମୂଲ୍ୟ ଇତିହାସ</translation>
@@ -866,6 +868,7 @@
 <translation id="2803306138276472711">Google ନିରାପଦ ବ୍ରାଉଜିଂ, ନିକଟରେ <ph name="SITE" />ରେ <ph name="BEGIN_LINK" />ମାଲ୍‌ୱେର୍ ଚିହ୍ନଟ କରିଛି<ph name="END_LINK" />। ସାଧାରଣତଃ ସୁରକ୍ଷିତ ରହୁଥିବା ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ବେଳେବେଳେ ମାଲ୍‌ୱେର୍ ଦ୍ୱାରା ସଂକ୍ରମିତ ହୋଇଥାନ୍ତି।</translation>
 <translation id="2807052079800581569">ଛବିର Y ସ୍ଥାନ</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" />ରେ ଆପଣ Windows Helloକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିପାରିବେ</translation>
+<translation id="2814184336982254349">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ପ୍ରସଙ୍ଗ ମେନୁ ଖୋଲିବାକୁ ସର୍ଚ୍ଚ ସହିତ m ଦବାନ୍ତୁ ଏବଂ "PDFରୁ ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ"କୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2818338148457093657">ବିୟୁଟି ସେବା ଏବଂ ସ୍ପା</translation>
 <translation id="2820957248982571256">ସ୍କାନ୍‌ କରୁଛି...</translation>
 <translation id="2824775600643448204">ଠିକଣା ଏବଂ ସନ୍ଧାନ ବାର୍</translation>
@@ -1168,6 +1171,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> କ୍ଲିପ୍‍‍ବୋର୍ଡରେ କପି କରାଯାଇଥିବା ଟେକ୍ସଟ୍ ଓ ଛବିକୁ ଦେଖିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3461824795358126837">ହାଇଲାଇଟର୍</translation>
 <translation id="3462200631372590220">ଅତ୍ୟାଧୁନିକତା ଲୁଚାନ୍ତୁ</translation>
+<translation id="3465972433695735758">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି, Google AI ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="346601286295919445">ରସାୟନ ବିଜ୍ଞାନ</translation>
 <translation id="3468054117417088249">,<ph name="TAB_SWITCH_SUFFIX" />, ବର୍ତ୍ତମାନ ଖୋଲାଅଛି, Tab ଦବାନ୍ତୁ, ତା’ପରେ ଖୋଲାଥିବା ଟାବ୍‍କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -1185,6 +1189,7 @@
 <translation id="350069200438440499">ଫାଇଲ୍ ନାମ:</translation>
 <translation id="3501300228850242680">ମେଟାଲ (ମ୍ୟୁଜିକ)</translation>
 <translation id="350421688684366066">ଲେବଲ (ହାଇ-ଗ୍ଲସ)</translation>
+<translation id="350763432931695541">ପରବର୍ତ୍ତୀ କିଛି ପୃଷ୍ଠାରେ ଟେକ୍ସଟକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି</translation>
 <translation id="3507869775212388416">ଆଇନ ଚାକିରି</translation>
 <translation id="3507936815618196901">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରନ୍ତୁ ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରନ୍ତୁ</translation>
 <translation id="3512163584740124171">ଏହି ନୀତିକୁ ଅଣଦେଖା କରାଯାଏ କାରଣ ସେହି ଏକା ନୀତି ଗୋଷ୍ଠୀ ଭିତରୁ ଅନ୍ୟ ଗୋଟିଏ ନୀତିର ପ୍ରାଧାନ୍ୟ ଅଛି।</translation>
@@ -2851,6 +2856,7 @@
 <translation id="6973988895180423160">3.5 x 5 ଇଞ୍ଚ</translation>
 <translation id="6978236010531171013">ଯେ କୌଣସି ମତେ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଥିବା ଟେକ୍ସଟର ଆରମ୍ଭ</translation>
 <translation id="6979440798594660689">ମ୍ୟୁଟ୍‌ (ଡିଫଲ୍ଟ)</translation>
 <translation id="6987806006823772670">ଏନଭେଲପ (କୋଟେଡ)</translation>
 <translation id="6989763994942163495">ଉନ୍ନତ ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ...</translation>
@@ -2906,6 +2912,7 @@
 <translation id="7102760431686146931">କୁକୱେର ଏବଂ ଡାଇନିଂୱେର</translation>
 <translation id="7105998430540165694">iCloud କୀଚେନ ତରଫରୁ ପାସକୀ</translation>
 <translation id="7106762743910369165">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର୍ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
+<translation id="7107249414147762907">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। କୌଣସି ଟେକ୍ସଟ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇନାହଁ</translation>
 <translation id="7108338896283013870">ଲୁଚାନ୍ତୁ</translation>
 <translation id="7108634116785509031"><ph name="HOST" />, ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7108819624672055576">ଏକ ଏକ୍ସଟେନ୍‍ସନ୍ ଦ୍ୱାରା ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -3918,6 +3925,7 @@
 <translation id="917450738466192189">ସର୍ଭର୍‍ର ସାର୍ଟିଫିକେଟ୍ ଅବୈଧ ଅଟେ।</translation>
 <translation id="9174623988242579721">କଷ୍ଟମ ଏବଂ ପରଫରମାନ୍ସ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
 <translation id="9174917557437862841">ଟାବ୍ ସ୍ୱିଚ୍ କରିବାର ବଟନ୍, ଏହି ଟାବ୍‍କୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଏଣ୍ଟର୍ ଦବାନ୍ତୁ</translation>
+<translation id="9177283544810807743">ଏହି PDF ଆକ୍ସେସ ଯୋଗ୍ୟ ନୁହେଁ। ଟେକ୍ସଟକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି, Google AI ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="9179703756951298733">Chrome ସେଟିଂସରେ ଆପଣଙ୍କର ପେମେଣ୍ଟ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ ସୂଚନା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9179907736442194268">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଇମେଲ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
 <translation id="9183302530794969518">Google Docs</translation>

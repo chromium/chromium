@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">Ekşn və platforma oyunları</translation>
 <translation id="1413809658975081374">Məxfilik xətası</translation>
 <translation id="1414134146594747368">Məktəbəqədər</translation>
+<translation id="141826476809826269">Çıxarılmış mətnin sonu</translation>
 <translation id="1419305130220238697">"Chrome-da endirmələri idarə edin" düyməsi, aktivləşdirərək Chrome-da endirdiyiniz faylları idarə edin</translation>
 <translation id="1422930527989633628">Saytlar yaxınlıqdakı Bluetooth cihazlarını aşkarlamaq üçün icazə istəyə bilər</translation>
 <translation id="1426410128494586442">Bəli</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">Bu, saxta sayta oxşayır. Hücumçular bəzən URL-a kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.</translation>
 <translation id="1532118530259321453">Bu səhifə deyir:</translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
+<translation id="1537807545287921620">Bu PDF-ə daxil olmaq olmur. Kontekst menyusunu açıb, "PDF-dən mətn çıxarın" seçimini aktiv edin</translation>
 <translation id="1539840569003678498">Şikayət göndərildi:</translation>
 <translation id="1542105669288201090">Biznes təhsili</translation>
 <translation id="1545757265410828525">Qiymət tarixçəsi</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">Ödəniş</translation>
 <translation id="1846432862466000825">Plastik (arxiv)</translation>
 <translation id="1848982255014129637">Foto (çox parlaq)</translation>
+<translation id="1853392626017747777">Virtual kart qeydiyyatı bağlandı</translation>
 <translation id="1854180393107901205">Yayımı dayandırın</translation>
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1856713167556118146">Anonim rejim nələri bacarmır</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1935995810530254458">İstənilən halda kopyalayın</translation>
 <translation id="1939175642807587452">Saytlar bildirişlər göndərmək üçün icazə istəyə bilər</translation>
+<translation id="1940441167050915935">Yadda saxlanmış təhlükəsizlik kodlarını silin</translation>
 <translation id="1943994668912612445">Dizayn</translation>
 <translation id="1945968466830820669">Təşkilat hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chromium parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="1946849748901605102">12 x 15 düym</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">Google Güvənlik Baxış <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli proqram aşkar etdi<ph name="END_LINK" />. Adətən güvənli olan veb saytlar bəzən zərərli proqramlar ilə yoluxur.</translation>
 <translation id="2807052079800581569">Şəklin Y oxu üzrə mövqeyi</translation>
 <translation id="2808278141522721006">Windows Hello'nu <ph name="SETTINGS" /> bölməsində aktiv və ya deaktiv edə bilərsiniz</translation>
+<translation id="2814184336982254349">Bu PDF-ə daxil olmaq olmur. Axtarış və m üzərinə basaraq kontekst menyusunu açıb, "PDF-dən mətn çıxarın" seçimini aktiv edin</translation>
 <translation id="2818338148457093657">Gözəllik xidmətləri və spa</translation>
 <translation id="2820957248982571256">Skan edilir...</translation>
 <translation id="2824775600643448204">Ünvan və axtarış paneli</translation>
@@ -1166,6 +1171,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> buferə kopylanan mətn və şəkillərə baxmaq istəyir</translation>
 <translation id="3461824795358126837">Vurğulayıcı</translation>
 <translation id="3462200631372590220">Qabaqcıl olanı gizlədin</translation>
+<translation id="3465972433695735758">Bu PDF-ə daxil olmaq olmur. Mətn çıxarıldı. Google AI tərəfindən dəstəklənir</translation>
 <translation id="346601286295919445">Kimya</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> hazırda açıqdır, açıq taba keçmək üçün Taba klikləyib daxil olun</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
@@ -1182,6 +1188,7 @@
 <translation id="350069200438440499">Fayl adı:</translation>
 <translation id="3501300228850242680">Metal (Musiqi)</translation>
 <translation id="350421688684366066">Etiket (çox parlaq)</translation>
+<translation id="350763432931695541">Növbəti səhifələrdə mətn çıxarılır</translation>
 <translation id="3507869775212388416">Hüquq sahəsində işlər</translation>
 <translation id="3507936815618196901">Ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və kamera mövqeyini izləmək</translation>
 <translation id="3512163584740124171">Eyni siyasət qrupundan olan digər siyasət üstünlük təşkil etdiyinə görə bu siyasət iqnor edilir.</translation>
@@ -1722,6 +1729,7 @@
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Keşbek əlaqələndirilib</translation>
+<translation id="4631881646528206880">Virtual kart qeydiyyatı</translation>
 <translation id="4636930964841734540">İnfo</translation>
 <translation id="4638670630777875591">Chromium'da Anonim Rejim</translation>
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
@@ -1836,6 +1844,7 @@
 <translation id="4854853140771946034">Google Keep'də cəld yeni qeyd yaradın</translation>
 <translation id="485902285759009870">Kod doğrulanır...</translation>
 <translation id="4862630594858951805">Qiymət düşdükdə e-məktub göndərilsin?</translation>
+<translation id="4864406669374375262">Versiya sətri mübadilə buferinə kopyalandı</translation>
 <translation id="486459320933704969">Valideyn və ya qəyyum bu vebsaytı ziyarət etmənizə icazə verməlidir</translation>
 <translation id="4866506163384898554">Kursoru göstərmək üçün |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| düyməsinə basın</translation>
 <translation id="4873616204573862158">Eynək</translation>
@@ -2846,6 +2855,7 @@
 <translation id="6973988895180423160">3,5 x 5 düym</translation>
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
+<translation id="6979332652936434520">Çıxarılmış mətnin əvvəli</translation>
 <translation id="6979440798594660689">Səssiz edin (defolt)</translation>
 <translation id="6987806006823772670">Zərf (örtüklü)</translation>
 <translation id="6989763994942163495">Qabaqcıl ayarları göstərin...</translation>
@@ -2901,6 +2911,7 @@
 <translation id="7102760431686146931">Qab-qacaq və yemək əşyaları</translation>
 <translation id="7105998430540165694">iCloud Keychain-dən giriş açarı</translation>
 <translation id="7106762743910369165">Təşkilatınız brauzerinizi idarə edir</translation>
+<translation id="7107249414147762907">Bu PDF-ə daxil olmaq olmur. Mətn çıxarılmadı</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kameranızı istifadə etmək istəyir</translation>
 <translation id="7108819624672055576">Artırma tərəfindən icazə verildi</translation>
@@ -3523,6 +3534,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilində olan səhifələr tərcümə edilməyəcək</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Güvənliyinizə olan riskləri anlamaq üçün zərərverici proqramların silinməsindən öncə <ph name="BEGIN_LINK" />bu sayta daxil olun<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">Virtual kart qeydiyyatı tam uzunluqda açıldı</translation>
 <translation id="8347658365704983341">Distant təhsil</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
@@ -3912,6 +3924,7 @@
 <translation id="917450738466192189">Serverin sertifikatı yanlışdlr.</translation>
 <translation id="9174623988242579721">Fərdi ve performans avtomobilləri</translation>
 <translation id="9174917557437862841">Bu taba keçmək üçün keçid düyməsinə klikləyib "Daxil olun" düyməsinə basın</translation>
+<translation id="9177283544810807743">Bu PDF-ə daxil olmaq olmur. Mətn çıxarılır. Google AI tərəfindən dəstəklənir</translation>
 <translation id="9179703756951298733">Ödəniş və kredit kartı məlumatlarınızı Chrome ayarlarında idarə edin</translation>
 <translation id="9179907736442194268">Hər hansı saytda qiymət enərsə, e-poçt xəbərdarlıqları alın</translation>
 <translation id="9183302530794969518">Google Sənəd</translation>

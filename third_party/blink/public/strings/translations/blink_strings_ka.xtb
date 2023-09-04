@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">გადართულია არეკვლაზე</translation>
 <translation id="2031987842108996681">წითელი არხი</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />“ გამოყენებულია, როგორც არასწორი პოზიცია მისამართში „<ph name="INVALIDDOMAIN" />“.</translation>
+<translation id="2068711044993563745">მინიმალური მნიშვნელობა (<ph name="MINIMUM" />) უნდა იყოს მაქსიმალურ მნიშვნელობაზე ნაკლები (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2226276347425096477">შეამოკლეთ ტექსტი <ph name="MAX_CHARACTERS" /> ან ნაკლები რაოდენობის სიმბოლომდე (ამჟამად გამოყენებულია <ph name="CURRENT_LENGTH" /> სიმბოლო).</translation>
 <translation id="2247351761944213033">კვირა <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

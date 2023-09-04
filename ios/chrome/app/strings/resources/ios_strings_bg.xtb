@@ -40,6 +40,7 @@
 <translation id="1177414119866731261">Отворете менюто на Chrome.</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1200396280085622191">Използвайте Chrome всеки път, когато докоснете връзки в съобщения и други приложения.</translation>
+<translation id="1201402288615127009">Напред</translation>
 <translation id="1207113853726624428">Ново търсене</translation>
 <translation id="1207493287814084192">17:30 ч.</translation>
 <translation id="1209206284964581585">Скриване засега</translation>
@@ -726,6 +727,7 @@
 <translation id="5228579091201413441">Активиране на синхронизирането</translation>
 <translation id="5232485538978018676">Влизане с управляван профил</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5238301240406177137">Запазване в профила</translation>
 <translation id="5245322853195994030">Анулиране на синхронизирането</translation>
 <translation id="5271265092610673171">{count,plural, =1{Едно от задължителните полета е празно. Попълнете го, преди да запазите.}other{Някои от задължителните полета са празни. Попълнете ги, преди да запазите.}}</translation>
 <translation id="5271549068863921519">Запазване на паролата</translation>

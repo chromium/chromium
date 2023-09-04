@@ -4702,6 +4702,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4728558894243024398">Kerfi</translation>
 <translation id="4730492586225682674">Síðasta glósa með penna á lásskjá</translation>
 <translation id="4730888769809690665">Tilkynningar leyfðar fyrir <ph name="SITE" /></translation>
+<translation id="4731306954230393087">Má nota upplýsingar sem það hefur vistað um þig</translation>
 <translation id="473140019006744096">Ekki er nægilegt geymslurými á tækinu til að ljúka uppfærslunni. Losaðu um <ph name="NECESSARY_SPACE" /> í tækinu og reyndu aftur.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (vinstri)</translation>
 <translation id="4733793249294335256">Staðsetning</translation>
@@ -6218,6 +6219,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5990386583461751448">Þýtt</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Til að tryggja að þú getir haldið áfram að nota vefinn skaltu biðja stjórnanda um að fjarlægja þetta forrit.}one{Til að tryggja að þú getir haldið áfram að nota vefinn skaltu biðja stjórnanda um að fjarlægja þessi forrit.}other{Til að tryggja að þú getir haldið áfram að nota vefinn skaltu biðja stjórnanda um að fjarlægja þessi forrit.}}</translation>
 <translation id="5992225669837656567">Allar mýs voru aftengdar</translation>
+<translation id="5992652489368666106">Enginn rammi</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Yfirferð lokið fyrir 1 vefsvæði}one{Yfirferð lokið fyrir {NUM_SITES} vefsvæði}other{Yfirferð lokið fyrir {NUM_SITES} vefsvæði}}</translation>
 <translation id="5997337190805127100">Frekari upplýsingar um aðgang að vefsvæðum</translation>
 <translation id="5998458948782718639">Hjálpaðu til við að bæta sjálfvirka útfyllingu</translation>
@@ -7408,6 +7410,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6970543303783413625">Ekki er hægt að flytja inn aðgangsorð. Aðeins er hægt að flytja inn allt að <ph name="COUNT" /> aðgangsorð í einu.</translation>
 <translation id="6970856801391541997">Prenta tilteknar síður</translation>
 <translation id="6970861306198150268">Gakktu úr skugga um að þú sért að vista núverandi aðgangsorð þitt fyrir þetta vefsvæði</translation>
+<translation id="6971184043765343932">Myndin sem þú hlóðst upp</translation>
 <translation id="6972754398087986839">Byrja</translation>
 <translation id="697312151395002334">Mega senda sprettiglugga og nota framsendingu.</translation>
 <translation id="6973611239564315524">Uppfærsla í Debian 10 (Buster) er í boði</translation>
@@ -7610,6 +7613,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7139627972753429585"><ph name="APP_NAME" /> er að nota hljóðnemann</translation>
 <translation id="7141105143012495934">Innskráning mistókst vegna þess að ekki tókst að sækja reikningsupplýsingar. Hafðu samband við kerfisstjóra eða reyndu aftur.</translation>
 <translation id="7141844554192012199">Yfirferð</translation>
+<translation id="714301620504747562">Það er fljótlegra að fletta og leita en að forhlaða á hefðbundinn máta</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7143409552554575716">ChromeOS-flögg</translation>
 <translation id="714447804011008506">Niðurhal er nú á tækjastikunni</translation>

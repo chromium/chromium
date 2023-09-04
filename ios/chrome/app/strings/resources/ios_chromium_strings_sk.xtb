@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">Váš účet nefunguje v prehliadači Chromium. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="1507010443238049608">Pomoc so zlepšovaním funkcií a výkonu prehliadača Chromium</translation>
 <translation id="1531155317299575425">Zobrazí výzvy na prihlásenie do prehliadača Chromium.</translation>
+<translation id="1591119736686995611">Otvorí mriežku kariet v prehliadači Chromium.</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
 <translation id="1647558790457890304">Nastavenia prehliadača Chromium</translation>
 <translation id="1722370509450468186">Heslo bude uložené do vášho účtu (<ph name="EMAIL" />).</translation>
@@ -46,6 +47,7 @@
 <translation id="2942241131342758843">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou prehliadača Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
+<translation id="3219277919172823720">Vyhľadávať hlasom v prehliadači Chromium</translation>
 <translation id="3228349498066165585">Niektoré údaje prehliadača Chromium zatiaľ neboli vo vašom účte Google uložené.
         Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
 <translation id="3256316712990552818">Skopírovaná do prehliadača Chromium</translation>
@@ -67,6 +69,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="3955621079070267756">Otvárajte Chromium z ľubovoľnej aplikácie</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
+<translation id="4195557071150719219">Zobraziť nedávne karty v prehliadači Chromium</translation>
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
 <translation id="452436063477828504">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť údaje prehliadača Chromium</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -93,6 +96,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="5453478652154926037">Chromium nedokáže skontrolovať vaše heslá.</translation>
 <translation id="5521125884468363740">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="5522297504975449419">Niektoré funkcie prehliadača Chromium už nebudú k dispozícii.</translation>
+<translation id="5571094606370987472">Otvorí nedávne karty v prehliadači Chromium.</translation>
 <translation id="5688047395118852662">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chromium naplno.</translation>
 <translation id="5700709190537129682">Chromium nemôže skontrolovať heslá</translation>
 <translation id="5777187867430702742">Stránka prehliadača Chromium</translation>
@@ -117,6 +121,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 3. Vyberte Chromium.</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
+<translation id="6324041800010509197">Prejsť na mriežku kariet v prehliadači Chromium</translation>
 <translation id="632825460376924298">Povoliť prihlásenie do prehliadača Chromium</translation>
 <translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="6407399265324739055">Spôsoby platby a adresy nebudú šifrované. História prehliadania z prehliadača Chromium sa nebude synchronizovať.
@@ -141,10 +146,12 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="7313655110045230863">Ak chcete nastaviť Chromium ako predvolený prehliadač, otvorte Nastavenia. Klepnite na Predvolený prehliadač a potom vyberte Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Vybraté údaje boli odstránené z prehliadača Chromium a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>
+<translation id="7387082980875012885">Otvoriť novú kartu v prehliadači Chromium</translation>
 <translation id="7395825497086981028">Heslo bude uložené do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Používajte Chromium kdekoľvek</translation>
 <translation id="7523464085759699266">Zapnite Uzamknúť karty inkognito pri zavretí prehliadača Chromium.</translation>
 <translation id="7674213385180944843">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Chromium a zapnite fotoaparát.</translation>
+<translation id="7710137812207066069">Otvorí novú kartu v prehliadači Chromium.</translation>
 <translation id="7763454117143368771">Používajte Chromium ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="7812317783196516890">Prihlásili ste sa do účtu spravovaného doménou <ph name="DOMAIN" /> a synchronizujete s ním svoje údaje. Na tejto doméne môže jeho správca teraz nastavovať pravidlá pre používateľov, ktoré sú preň špecifické a môžu zmeniť správanie prehliadača Chromium.</translation>
 <translation id="7859018312476869945">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, prehliadač Chromium odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>

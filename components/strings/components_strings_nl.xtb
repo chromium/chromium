@@ -221,6 +221,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1413407968866574823">Actie- en platformgames</translation>
 <translation id="1413809658975081374">Privacyfout</translation>
 <translation id="1414134146594747368">Peuterschool</translation>
+<translation id="141826476809826269">Einde van geëxtraheerde tekst</translation>
 <translation id="1419305130220238697">Knop Downloads in Chrome beheren. Activeer deze om bestanden te beheren die je hebt gedownload in Chrome.</translation>
 <translation id="1422930527989633628">Kan vragen of deze site bluetooth-apparaten in de buurt mag vinden</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -277,6 +278,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1530707389502320859">De site die je zojuist probeerde te bezoeken, lijkt nep te zijn. Aanvallers maken sites soms na door kleine wijzigingen in de URL aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="1532118530259321453">Deze pagina meldt het volgende</translation>
 <translation id="1536390784834419204">Pagina vertalen</translation>
+<translation id="1537807545287921620">Deze pdf is niet toegankelijk. Open het contextmenu en zet Tekst uit pdf extraheren aan.</translation>
 <translation id="1539840569003678498">Melding gestuurd:</translation>
 <translation id="1542105669288201090">Bedrijfsonderwijs</translation>
 <translation id="1545757265410828525">Prijsgeschiedenis</translation>
@@ -864,6 +866,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2803306138276472711">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />malware gedetecteerd<ph name="END_LINK" /> op <ph name="SITE" />. Websites die normaal gesproken veilig zijn, worden soms geïnfecteerd met malware.</translation>
 <translation id="2807052079800581569">Y-positie van afbeelding</translation>
 <translation id="2808278141522721006">Je kunt Windows Hello aan- of uitzetten in <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Deze pdf is niet toegankelijk. Druk op Zoeken + M om het contextmenu te openen en zet Tekst uit pdf extraheren aan.</translation>
 <translation id="2818338148457093657">Schoonheidsservices en spa's</translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2824775600643448204">Adres- en zoekbalk</translation>
@@ -1165,6 +1168,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3461266716147554923"><ph name="URL" /> wil tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
 <translation id="3461824795358126837">Markeren</translation>
 <translation id="3462200631372590220">Gedetailleerde informatie verbergen</translation>
+<translation id="3465972433695735758">Deze pdf is niet toegankelijk. Tekst geëxtraheerd, mogelijk gemaakt door AI van Google.</translation>
 <translation id="346601286295919445">Scheikunde</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, momenteel geopend. druk op Tab en vervolgens op Enter om naar het geopende tabblad te schakelen</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om alle momenteel geopende incognitovensters te sluiten</translation>
@@ -1181,6 +1185,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="350069200438440499">Bestandsnaam:</translation>
 <translation id="3501300228850242680">Metal (muziek)</translation>
 <translation id="350421688684366066">Labels (hoogglans)</translation>
+<translation id="350763432931695541">Tekst extraheren van de volgende pagina's</translation>
 <translation id="3507869775212388416">Juridische banen</translation>
 <translation id="3507936815618196901">Een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
 <translation id="3512163584740124171">Dit beleid wordt genegeerd omdat een ander beleid in dezelfde beleidsgroep een hogere prioriteit heeft.</translation>
@@ -2844,6 +2849,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6973988895180423160">3,5 x 5 inch</translation>
 <translation id="6978236010531171013">Toch delen</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Begin van geëxtraheerde tekst</translation>
 <translation id="6979440798594660689">Geluid uitzetten (standaard)</translation>
 <translation id="6987806006823772670">Envelop (gecoat)</translation>
 <translation id="6989763994942163495">Geavanceerde instellingen bekijken...</translation>
@@ -2899,6 +2905,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7102760431686146931">Kookgerei en servies</translation>
 <translation id="7105998430540165694">Toegangssleutel uit iCloud Sleutelhanger</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
+<translation id="7107249414147762907">Deze pdf is niet toegankelijk. Geen tekst geëxtraheerd.</translation>
 <translation id="7108338896283013870">Verbergen</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> wil gebruikmaken van je camera</translation>
 <translation id="7108819624672055576">Toegestaan door een extensie</translation>
@@ -3910,6 +3917,7 @@ Aanvullende informatie:
 <translation id="917450738466192189">Het servercertificaat is ongeldig.</translation>
 <translation id="9174623988242579721">Custom en bijzondere voertuigen</translation>
 <translation id="9174917557437862841">Schakelknop voor tabbladen, druk op Enter om naar dit tabblad te schakelen</translation>
+<translation id="9177283544810807743">Deze pdf is niet toegankelijk. Tekst extraheren, mogelijk gemaakt door AI van Google.</translation>
 <translation id="9179703756951298733">Je betalingen en creditcardgegevens beheren in de Chrome-instellingen</translation>
 <translation id="9179907736442194268">Krijg e-mailmeldingen bij een prijsdaling op een site</translation>
 <translation id="9183302530794969518">Google Documenten</translation>

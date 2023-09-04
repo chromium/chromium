@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C ଡିଭାଇସ୍ (ବାମ ପୋର୍ଟ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Explore ଖୋଲନ୍ତୁ</translation>
 <translation id="1294929383540927798">ଲକ୍‌-ସ୍କ୍ରିନ୍‌ ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ସୁପାରିଶ୍ କରାଯାଇଥିବା ଆପ୍‍ଗୁଡ଼ିକ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">ଆପ ଗ୍ରିଡ ମଧ୍ୟରେ ଥିବା ଏକ ଆପ ଆଇକନକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2620016719323068571">ଆପଣଙ୍କ <ph name="CATEGORY" />, ଫାଇଲ, ଆପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ସନ୍ଧାନ କରନ୍ତୁ...</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
+<translation id="2620900772667816510">ବ୍ଲୁଟୁଥ ସୁପର ରିଜୋଲ୍ୟୁସନ</translation>
 <translation id="2621713457727696555">ସୁରକ୍ଷିତ</translation>
 <translation id="2624588537172718173">ଡିଭାଇସ ଅଡିଓ ଏବଂ ମାଇକ୍ରୋଫୋନ</translation>
 <translation id="263399434338050016">"ସମସ୍ତ ଚୟନ କରନ୍ତୁ"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">ଡେସ୍କ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ପ୍ରତ୍ୟାହାର କରୁଛି। ଆପଣଙ୍କ ଡିଭାଇସ ରିସେଟ ହେବ ଏବଂ ସମସ୍ତ ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="3171170659304083361">ଇନପୁଟ୍ ପଦ୍ଧତି ସେଟିଂସ୍</translation>
+<translation id="3176221688814061633">ଆପଣଙ୍କ Chromebook କିମ୍ବା ବ୍ଲୁଟୁଥ ଡିଭାଇସ ବ୍ଲୁଟୁଥର ଏକ ପୁରୁଣା ଭର୍ସନ ବ୍ୟବହାର କରୁଛି। ଆହୁରି ଭଲ ଅଡିଓ ଗୁଣବତ୍ତା ପାଇଁ ବ୍ଲୁଟୁଥ ସୁପର ରିଜୋଲ୍ୟୁସନକୁ ଚାଲୁ କରନ୍ତୁ କିମ୍ବା ଇଣ୍ଟର୍ନଲ ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="3181441307743005334">ରିଷ୍ଟାର୍ଟ ହେବା ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ଏକ ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}other{#ଟି ଡିଭାଇସ୍‌ ସହ ସଂଯୁକ୍ତ}}</translation>
 <translation id="320207200541803018">ଟାଇମର୍ ସେଟ୍ କରନ୍ତୁ</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7189412385142492784">ଶୁକ୍ର ଗ୍ରହ କେତେ ଦୂରରେ ଅବସ୍ଥିତ</translation>
 <translation id="7198435252016571249">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="7219573373513695352">କୌଣସି ଡିଭାଇସ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
+<translation id="7229029500464092426">ମୋଟ <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> ମେମୋରୀ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />। ଏକ ଅପଡେଟ୍ ଲାଗୁ କରିବା ନିମନ୍ତେ ଏହି Chromebook ରିଷ୍ଟାର୍ଟ କରିବା ଦରକାର। ଏହା ପାଖାପାଖି 1 ମିନିଟ୍ ସମୟ ନେଇପାରେ।</translation>
 <translation id="7256634071279256947">ପଛପଟର ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="7258828758145722155">ଗତକାଲି ଏଡିଟ କରାଯାଇଛି</translation>
@@ -1522,6 +1526,7 @@
 <translation id="7360036564632145207">ପେରିଫେରାଲଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କ ଡାଟା ଆକ୍ସେସ୍ ସୁରକ୍ଷା ସେଟିଂରେ ପରିବର୍ତ୍ତନ କରି ପରଫରମାନ୍ସକୁ ଅପ୍ଟିମାଇଜ୍ କରାଯାଇପାରିବ</translation>
 <translation id="736045644501761622">ୱାଲପେପର ଏବଂ ଷ୍ଟାଇଲ ସେଟ କରନ୍ତୁ</translation>
 <translation id="7371404428569700291">ୱିଣ୍ଡୋ ରେକର୍ଡ କରନ୍ତୁ</translation>
+<translation id="7372069265635026568">ମୋଟ <ph name="TOTAL_MEMORY" />ରୁ <ph name="AVAILABLE_MEMORY" /> ମେମୋରୀ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="737315737514430195">ଏହା ମାଇକ୍ରୋଫୋନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ପାଇଁ ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଅନୁମତି ଦିଏ</translation>
 <translation id="7377169924702866686">କ୍ୟାପ୍ସ ଲକ୍ ଅନ୍ ଅଛି।</translation>
 <translation id="7377481913241237033">ଏକ କୋଡ ମାଧ୍ୟମରେ ସଂଯୋଗ କରନ୍ତୁ</translation>

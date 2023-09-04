@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ເກມແອກຊັນ ແລະ ເກມຕໍ່ສູ້</translation>
 <translation id="1413809658975081374">ຄວາມເປັນສ່ວນຕົວຂັດຂ້ອງ</translation>
 <translation id="1414134146594747368">ໂຮງຮຽນອະນຸບານ</translation>
+<translation id="141826476809826269">ສິ້ນສຸດຂໍ້ຄວາມທີ່ສະກັດມາແລ້ວ</translation>
 <translation id="1419305130220238697">ປຸ່ມຈັດການການດາວໂຫຼດໃນ Chrome, ເປີດນຳໃຊ້ເພື່ອຈັດການໄຟລ໌ທີ່ທ່ານໄດ້ດາວໂຫຼດໃນ Chrome</translation>
 <translation id="1422930527989633628">ສາມາດຂໍຄົ້ນພົບອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ</translation>
 <translation id="1426410128494586442">ແມ່ນແລ້ວ</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">ເວັບໄຊທີ່ທ່ານຫາກໍພະຍາຍາມເຂົ້າເບິ່ງປາກົດວ່າເປັນເວັບປອມ. ບາງຄັ້ງຜູ້ໂຈມຕີປອມເປັນເວັບໄຊຕ່າງໆໂດຍການເຮັດການປ່ຽນແປງນ້ອຍໆທີ່ເບິ່ງເຫັນໄດ້ຍາກຕໍ່ກັບ URL.</translation>
 <translation id="1532118530259321453">ໜ້ານີ້ບອກ</translation>
 <translation id="1536390784834419204">ແປໜ້າ</translation>
+<translation id="1537807545287921620">ບໍ່ສາມາດເຂົ້າເຖິງ PDF ນີ້ໄດ້. ເປີດເມນູບໍລິບົດແລ້ວເປີດໃຊ້ "ສະກັດຂໍ້ຄວາມຈາກ PDF"</translation>
 <translation id="1539840569003678498">ສົ່ງລາຍງານແລ້ວ:</translation>
 <translation id="1542105669288201090">ທຸລະກິດ ການສຶກສາ</translation>
 <translation id="1545757265410828525">ປະຫວັດລາຄາ</translation>
@@ -866,6 +868,7 @@
 <translation id="2803306138276472711">ເມື່ອບໍ່ດົນມານີ້ Google Safe Browsing <ph name="BEGIN_LINK" />ໄດ້ກວດພົບມາລແວ<ph name="END_LINK" /> ຢູ່ເທິງ <ph name="SITE" />. ເວັບໄຊທ໌ທີ່ປົກກະຕິມີຄວາມປອດໄພບາງຄັ້ງຈະຕິດມາລແວ.</translation>
 <translation id="2807052079800581569">ຕຳແໜ່ງຮູບພາບຕາມແກນ Y</translation>
 <translation id="2808278141522721006">ທ່ານສາມາດເປີດ ຫຼື ປິດ Windows Hello ໄດ້ຢູ່ໃນ <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">ບໍ່ສາມາດເຂົ້າເຖິງ PDF ນີ້ໄດ້. ກົດຊອກຫາກັບປຸ່ມ m ເພື່ອເປີເມນູບໍລິບົດ ແລະ ເປີດໃຊ້ "ສະກັດຂໍ້ຄວາມຈາກ PDF"</translation>
 <translation id="2818338148457093657">ບໍລິການເສີມຄວາມງາມ ແລະ ສະປາ</translation>
 <translation id="2820957248982571256">ກຳລັງສະແກນ…</translation>
 <translation id="2824775600643448204">ແຖບ​ທີ່​ຢູ່​ ແລະ​ຄົ້ນ​ຫາ</translation>
@@ -1170,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> ຕ້ອງການເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ</translation>
 <translation id="3461824795358126837">ຕົວໄຮໄລ້</translation>
 <translation id="3462200631372590220">ເຊື່ອງ​ຂັ້ນສູງ</translation>
+<translation id="3465972433695735758">ບໍ່ສາມາດເຂົ້າເຖິງ PDF ນີ້ໄດ້. ສະກັດຂໍ້ຄວາມແລ້ວ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="346601286295919445">ເຄມີສາດ</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ເປີດຢູ່ໃນຂະນະນີ້, ກະລຸນາກົດແຖບ ແລ້ວກົດ Enter ເພື່ອປ່ຽນເປັນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ tab ຈາກນັ້ນກົດ Enter ເພື່ອປິດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດທີ່ກຳລັງເປີດຢູ່ຕອນນີ້</translation>
@@ -1187,6 +1191,7 @@
 <translation id="350069200438440499">ຊື່ໄຟລ໌:</translation>
 <translation id="3501300228850242680">ມີທັລ (ເພງ)</translation>
 <translation id="350421688684366066">ປ້າຍ (ມັນວາວຫຼາຍ)</translation>
+<translation id="350763432931695541">ກຳລັງສະກັດຂໍ້ຄວາມໃນອີກສອງສາມໜ້າຕໍ່ໄປ</translation>
 <translation id="3507869775212388416">ວຽກກົດໝາຍ</translation>
 <translation id="3507936815618196901">ສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="3512163584740124171">ລະບົບລະເລີຍນະໂຍບາຍນີ້ເພາະວ່ານະໂຍບາຍອື່ນຈາກກຸ່ມນະໂຍບາຍດຽວກັນມີບຸລິມະສິດສູງກວ່າ.</translation>
@@ -2854,6 +2859,7 @@
 <translation id="6973988895180423160">3.5 x 5 ນິ້ວ</translation>
 <translation id="6978236010531171013">ຢືນຢັນການແບ່ງປັນ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">ເລີ່ມຂໍ້ຄວາມທີ່ສະກັດມາແລ້ວ</translation>
 <translation id="6979440798594660689">ປິດສຽງ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="6987806006823772670">ຊອງ (ເຄືອບ)</translation>
 <translation id="6989763994942163495">ສະ​ແດງການຕັ້ງຄ່າຂັ້ນສູງ...</translation>
@@ -2909,6 +2915,7 @@
 <translation id="7102760431686146931">ເຄື່ອງຄົວ ແລະ ເຄື່ອງໃສ່ອາຫານ</translation>
 <translation id="7105998430540165694">ກະແຈຜ່ານຈາກ iCloud Keychain</translation>
 <translation id="7106762743910369165">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍອົງການຈັດຕັ້ງຂອງທ່ານ</translation>
+<translation id="7107249414147762907">ບໍ່ສາມາດເຂົ້າເຖິງ PDF ນີ້ໄດ້. ບໍ່ໄດ້ສະກັດຂໍ້ຄວາມ</translation>
 <translation id="7108338896283013870">ເຊື່ອງ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ຕ້ອງການໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
 <translation id="7108819624672055576">ອະນຸຍາດໂດຍສ່ວນຂະຫຍາຍ</translation>
@@ -3921,6 +3928,7 @@
 <translation id="917450738466192189">ໃບຢັ້ງຢືນຂອງເຊີບເວີໃຊ້ບໍ່ໄດ້.</translation>
 <translation id="9174623988242579721">ລົດສັ່ງຜະລິດ ແລະ ສະມັດຖະນະສູງ</translation>
 <translation id="9174917557437862841">ແຕະປຸ່ມສະຫຼັບ, ກົດ Enter ເພື່ອປ່ຽນເປັນແຖບນີ້</translation>
+<translation id="9177283544810807743">ບໍ່ສາມາດເຂົ້າເຖິງ PDF ນີ້ໄດ້. ກຳລັງສະກັດຂໍ້ຄວາມ, ຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="9179703756951298733">ຈັດການການຈ່າຍເງິນ ແລະ ຂໍ້ມູນບັດເຄຣດິດຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="9179907736442194268">ຮັບການເຕືອນອີເມວຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດໜຶ່ງ</translation>
 <translation id="9183302530794969518">Google Docs</translation>

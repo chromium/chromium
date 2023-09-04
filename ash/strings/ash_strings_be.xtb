@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">Прылада USB-C (левы порт)</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Адкрыць Агляд</translation>
 <translation id="1294929383540927798">Змяніць налады апавяшчэнняў экрана блакіроўкі</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Перамясціць значок праграмы ў сетцы праграм</translation>
 <translation id="2620016719323068571">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі...</translation>
 <translation id="2620436844016719705">Сістэма</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Абаронена</translation>
 <translation id="2624588537172718173">Аўдыя з прылады і мікрафон</translation>
 <translation id="263399434338050016">"Выбраць усё"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Закрыць працоўны стол і вокны</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> выконвае адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
 <translation id="3171170659304083361">Налады спосабаў уводу</translation>
+<translation id="3176221688814061633">На вашым ноўтбуку Chromebook або прыладзе з Bluetooth выкарыстоўваецца старая версія Bluetooth. Каб палепшыць якасць гуку, уключыце Bluetooth Super Resolution ці скарыстайце ўбудаваны мікрафон.</translation>
 <translation id="3181441307743005334">Перазапуск можа заняць некаторы час</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Падключана да прылады}one{Падключана да # прылады}few{Падключана да # прылад}many{Падключана да # прылад}other{Падключана да # прылады}}</translation>
 <translation id="320207200541803018">Задаць таймер</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="7219573373513695352">Няма падключаных прылад</translation>
+<translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>
 <translation id="7258828758145722155">Зменена ўчора</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">Вы можаце аптымізаваць прадукцыйнасць, змяняючы налады абмежавання доступу да даных для перыферыйных прылад</translation>
 <translation id="736045644501761622">Задаць шпалеры і стыль</translation>
 <translation id="7371404428569700291">Запіс акна</translation>
+<translation id="7372069265635026568">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Доступ да мікрафона атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="7377169924702866686">Уключаны Caps Lock.</translation>
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>

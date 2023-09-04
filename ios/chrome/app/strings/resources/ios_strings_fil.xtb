@@ -40,6 +40,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1177414119866731261">Buksan ang Menu ng Chrome</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1200396280085622191">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
+<translation id="1201402288615127009">Susunod</translation>
 <translation id="1207113853726624428">Bagong Paghahanap</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
 <translation id="1209206284964581585">Itago sa ngayon</translation>
@@ -734,6 +735,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
 <translation id="5232485538978018676">Mag-sign in sa Pinapamahalaang Account</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
+<translation id="5238301240406177137">I-save sa Account</translation>
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
 <translation id="5271265092610673171">{count,plural, =1{Walang laman ang isang nire-require na field. Sagutan ito bago i-save.}one{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}other{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}}</translation>
 <translation id="5271549068863921519">I-save ang password</translation>

@@ -221,6 +221,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1413407968866574823">Akcijske i platformske igre</translation>
 <translation id="1413809658975081374">Pogreška privatnosti</translation>
 <translation id="1414134146594747368">Predškolci</translation>
+<translation id="141826476809826269">Kraj izdvojenog teksta</translation>
 <translation id="1419305130220238697">Gumb Upravljaj preuzimanjima u Chromeu, aktivirajte ga da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
 <translation id="1422930527989633628">Može tražiti dopuštenje za otkrivanje Bluetooth uređaja u blizini</translation>
 <translation id="1426410128494586442">Da</translation>
@@ -277,6 +278,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1530707389502320859">Web-lokacija koju ste upravo pokušali posjetiti izgleda lažno. Napadači ponekad oponašaju web-lokacije sitnim izmjenama URL-a.</translation>
 <translation id="1532118530259321453">Na ovoj se stranici navodi sljedeće</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
+<translation id="1537807545287921620">Taj PDF nije dostupan. Otvorite kontekstni izbornik i uključite opciju Izdvoji tekst iz PDF-a</translation>
 <translation id="1539840569003678498">Izvješće je poslano:</translation>
 <translation id="1542105669288201090">Poslovno obrazovanje</translation>
 <translation id="1545757265410828525">Povijest cijena</translation>
@@ -866,6 +868,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2803306138276472711">Google sigurno pregledavanje nedavno je <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web-lokacije koje su inače sigurne ponekad mogu biti zaražene zlonamjernim softverom.</translation>
 <translation id="2807052079800581569">Y-položaj slike</translation>
 <translation id="2808278141522721006">Windows Hello možete uključiti ili isključiti u odjeljku <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Taj PDF nije dostupan. Pritisnite Pretraživanje i m da biste otvorili kontekstni izbornik i uključite opciju Izdvoji tekst iz PDF-a</translation>
 <translation id="2818338148457093657">Kozmetičke usluge i spa-centri</translation>
 <translation id="2820957248982571256">Traženje...</translation>
 <translation id="2824775600643448204">Adresna traka i traka za pretraživanje</translation>
@@ -1170,6 +1173,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3461266716147554923"><ph name="URL" /> želi vidjeti tekst i slike kopirane u međuspremnik</translation>
 <translation id="3461824795358126837">Alat za isticanje</translation>
 <translation id="3462200631372590220">Sakrij napredno</translation>
+<translation id="3465972433695735758">Taj PDF nije dostupan. Tekst je izdvojen uz pomoć Googleovog AI-ja</translation>
 <translation id="346601286295919445">Kemija</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutačno otvoreno, pritisnite karticu pa Enter za prebacivanje na otvorenu karticu</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste zatvorili sve anonimne prozore koji su trenutačno otvoreni</translation>
@@ -1187,6 +1191,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="350069200438440499">Naziv:</translation>
 <translation id="3501300228850242680">Metal (glazba)</translation>
 <translation id="350421688684366066">Naljepnice (visoki sjaj)</translation>
+<translation id="350763432931695541">Izdvajanje teksta na sljedećih nekoliko stranica</translation>
 <translation id="3507869775212388416">Pravni poslovi</translation>
 <translation id="3507936815618196901">Izradite 3D kartu svojeg okruženja i pratite položaj kamere</translation>
 <translation id="3512163584740124171">To se pravilo zanemaruje jer drugo pravilo iz iste grupe pravila ima viši prioritet.</translation>
@@ -2853,6 +2858,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6973988895180423160">3,5 x 5 in</translation>
 <translation id="6978236010531171013">Svejedno podijeli</translation>
 <translation id="6979158407327259162">Google disk</translation>
+<translation id="6979332652936434520">Početak izdvojenog teksta</translation>
 <translation id="6979440798594660689">Bez zvuka (zadano)</translation>
 <translation id="6987806006823772670">Omotnica (s premazom)</translation>
 <translation id="6989763994942163495">Pokaži napredne postavke...</translation>
@@ -2908,6 +2914,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7102760431686146931">Pribor za kuhanje i jelo</translation>
 <translation id="7105998430540165694">Pristupni ključ iz iCloud privjeska ključeva</translation>
 <translation id="7106762743910369165">Vašim preglednikom upravlja vaša organizacija</translation>
+<translation id="7107249414147762907">Taj PDF nije dostupan. Tekst nije izdvojen</translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi upotrijebiti vašu kameru</translation>
 <translation id="7108819624672055576">Dopustilo proširenje</translation>
@@ -3922,6 +3929,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="917450738466192189">Certifikat poslužitelja nije valjan.</translation>
 <translation id="9174623988242579721">Prilagođena i posebna vozila</translation>
 <translation id="9174917557437862841">Gumb za promjenu kartice, pritisnite Enter za prebacivanje na tu karticu</translation>
+<translation id="9177283544810807743">Taj PDF nije dostupan. Izdvajanje teksta uz pomoć Googleovog AI-ja</translation>
 <translation id="9179703756951298733">Upravljanje podacima o plaćanjima i kreditnim karticama u postavkama Chromea</translation>
 <translation id="9179907736442194268">Dobivajte upozorenja e-porukom ako se cijena snizi na bilo kojoj web-lokaciji</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>

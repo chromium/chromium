@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">액션 및 플랫폼 게임</translation>
 <translation id="1413809658975081374">개인 정보 보호 오류</translation>
 <translation id="1414134146594747368">유치원</translation>
+<translation id="141826476809826269">추출된 텍스트의 끝</translation>
 <translation id="1419305130220238697">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 활성화하세요.</translation>
 <translation id="1422930527989633628">주변 블루투스 기기를 조회하도록 요청할 수 있음</translation>
 <translation id="1426410128494586442">예</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">방문하려고 한 사이트가 허위 사이트로 보입니다. 일부 공격자는 사이트의 URL을 알아채기 어려울 정도로 약간 변경하여 다른 사이트를 모방합니다.</translation>
 <translation id="1532118530259321453">이 페이지 내용:</translation>
 <translation id="1536390784834419204">페이지 번역</translation>
+<translation id="1537807545287921620">이 PDF에 액세스할 수 없습니다. 컨텍스트 메뉴를 열고 'PDF에서 텍스트 추출'을 사용 설정합니다</translation>
 <translation id="1539840569003678498">보고 날짜:</translation>
 <translation id="1542105669288201090">비즈니스 교육</translation>
 <translation id="1545757265410828525">가격 변동 내역</translation>
@@ -434,6 +436,7 @@
 <translation id="1842969606798536927">결제</translation>
 <translation id="1846432862466000825">플라스틱(보관용)</translation>
 <translation id="1848982255014129637">사진(고광택)</translation>
+<translation id="1853392626017747777">가상 카드 등록 종료됨</translation>
 <translation id="1854180393107901205">전송 중지</translation>
 <translation id="1855370856221982654">복싱</translation>
 <translation id="1856713167556118146">시크릿 모드에서 제공되지 않는 기능</translation>
@@ -470,6 +473,7 @@
 <translation id="1924727005275031552">새로운 주소</translation>
 <translation id="1935995810530254458">무시하고 복사</translation>
 <translation id="1939175642807587452">알림 전송을 요청할 수 있음</translation>
+<translation id="1940441167050915935">저장된 보안 코드 삭제</translation>
 <translation id="1943994668912612445">설계</translation>
 <translation id="1945968466830820669">조직의 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="1946849748901605102">12x15인치</translation>
@@ -864,6 +868,7 @@
 <translation id="2803306138276472711">최근 Google 세이프 브라우징이 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 때가 있습니다.</translation>
 <translation id="2807052079800581569">이미지 Y 위치</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" />에서 Windows Hello를 사용 또는 사용 중지할 수 있습니다.</translation>
+<translation id="2814184336982254349">이 PDF에 액세스할 수 없습니다. 검색 + m 키를 눌러 컨텍스트 메뉴를 열고 'PDF에서 텍스트 추출'을 사용 설정합니다</translation>
 <translation id="2818338148457093657">뷰티 서비스 및 스파</translation>
 <translation id="2820957248982571256">검색 중...</translation>
 <translation id="2824775600643448204">주소창 및 검색창</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" />에서 클립보드에 복사된 텍스트 및 이미지를 확인하려고 합니다.</translation>
 <translation id="3461824795358126837">형광펜</translation>
 <translation id="3462200631372590220">세부정보 숨기기</translation>
+<translation id="3465972433695735758">이 PDF에 액세스할 수 없습니다. Google AI를 통해 텍스트가 추출되었습니다</translation>
 <translation id="346601286295919445">화학</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, 현재 열려 있음, Tab을 누른 다음 Enter를 눌러 열린 탭으로 전환</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 현재 열려 있는 시크릿 창을 모두 닫으려면 Tab과 Enter를 차례로 누르세요</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">파일 이름:</translation>
 <translation id="3501300228850242680">메탈(음악)</translation>
 <translation id="350421688684366066">라벨(고광택)</translation>
+<translation id="350763432931695541">다음 몇 페이지에서 텍스트 추출</translation>
 <translation id="3507869775212388416">법률직</translation>
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
 <translation id="3512163584740124171">동일한 정책 그룹에 있는 다른 정책이 우선순위가 높기 때문에 이 정책은 무시됩니다.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">사진</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">캐시백 연결됨</translation>
+<translation id="4631881646528206880">가상 카드 등록</translation>
 <translation id="4636930964841734540">정보</translation>
 <translation id="4638670630777875591">Chromium 시크릿 모드</translation>
 <translation id="464342062220857295">검색 기능</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
 <translation id="485902285759009870">코드 인증 중...</translation>
 <translation id="4862630594858951805">가격이 인하되면 이메일을 받고 싶으신가요?</translation>
+<translation id="4864406669374375262">버전 문자열이 클립보드에 복사되었습니다.</translation>
 <translation id="486459320933704969">부모님 또는 보호자가 이 웹사이트를 방문해도 괜찮다고 말해야 합니다.</translation>
 <translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="4873616204573862158">안경 및 선글라스</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">3.5x5인치</translation>
 <translation id="6978236010531171013">무시하고 공유</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">추출된 텍스트의 시작</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
 <translation id="6987806006823772670">봉투(코팅)</translation>
 <translation id="6989763994942163495">고급 설정 표시</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">조리기구 및 식기</translation>
 <translation id="7105998430540165694">iCloud 키체인의 패스키</translation>
 <translation id="7106762743910369165">조직에서 관리하는 브라우저입니다.</translation>
+<translation id="7107249414147762907">이 PDF에 액세스할 수 없습니다. 추출된 텍스트가 없습니다</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108634116785509031"><ph name="HOST" />에서 카메라에 액세스하려고 합니다</translation>
 <translation id="7108819624672055576">확장 프로그램에서 허용</translation>
@@ -3526,6 +3537,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" />로 된 페이지를 번역하지 않습니다.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_YEAR" />/<ph name="EXPIRATION_MONTH" /></translation>
 <translation id="834457929814110454">보안 관련 위험을 이해한다면 악성 프로그램이 삭제되기 전에 <ph name="BEGIN_LINK" />이 사이트를 방문<ph name="END_LINK" />해도 됩니다.</translation>
+<translation id="8344776605855290140">가상 카드 등록이 전체 높이로 열림</translation>
 <translation id="8347658365704983341">원격 교육</translation>
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
@@ -3915,6 +3927,7 @@
 <translation id="917450738466192189">서버의 인증서가 유효하지 않습니다.</translation>
 <translation id="9174623988242579721">커스텀 및 고성능 자동차</translation>
 <translation id="9174917557437862841">탭 전환 버튼, 이 탭으로 전환하려면 Enter를 누르세요</translation>
+<translation id="9177283544810807743">이 PDF에 액세스할 수 없습니다. Google AI를 통해 텍스트를 추출하고 있습니다</translation>
 <translation id="9179703756951298733">Chrome 설정에서 결제 및 신용카드 정보를 관리하세요.</translation>
 <translation id="9179907736442194268">사이트에서 가격이 인하되면 이메일 알림이 전송됩니다.</translation>
 <translation id="9183302530794969518">Google Docs</translation>

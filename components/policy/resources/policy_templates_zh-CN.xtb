@@ -1885,6 +1885,13 @@
 <translation id="262740370354162807">允许将文档提交到 <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">启用语音反馈</translation>
 <translation id="2633907568797306353">允许启用 Phone Hub 通知</translation>
+<translation id="2634265675787412567">在 macOS 13.5 或更高版本上，<ph name="PRODUCT_NAME" /> 可将通行密钥/WebAuthn 创建请求直接定向到 iCloud 钥匙串。如果 iCloud 钥匙串同步功能尚未启用，系统会提示用户通过 iCloud 登录，或者可能会提示用户启用 iCloud 钥匙串同步功能。
+
+如果此政策设为 false，系统默认不会使用 iCloud 钥匙串，而会改为采取之前的行为（即在 <ph name="PRODUCT_NAME" /> 个人资料中创建凭据）。用户仍能选择将 iCloud 钥匙串作为一个选项，并且登录时或许仍会看到 iCloud 钥匙串凭据。
+
+如果此政策设为“true”，每当 WebAuthn 请求与所选的选项兼容时，系统默认便会在 iCloud 钥匙串中创建凭据。
+
+如果未设置此政策，默认设置将取决于多种因素，例如是否启用了 iCloud 云盘，以及用户近期是否使用过其 <ph name="PRODUCT_NAME" /> 个人资料中的凭据或在其中创建了凭据。</translation>
 <translation id="2635872253077105112">通过设置此政策，您可以控制要在备用浏览器中打开的网站列表。每项内容都会被视为一条规则，用于确定要在备用浏览器中打开的网站。<ph name="PRODUCT_NAME" /> 会使用这些规则来确定是否应在备用浏览器中打开某个网址。如果 <ph name="IE_PRODUCT_NAME" /> 插件已开启，当规则无匹配项时，<ph name="IE_PRODUCT_NAME" /> 会切换回 <ph name="PRODUCT_NAME" />。如果规则之间相互冲突，<ph name="PRODUCT_NAME" /> 会使用最具体的规则。
 
       如果您不设置此政策，系统不会将任何网站加入列表。
@@ -5224,6 +5231,7 @@
       如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
 <translation id="5659776687676755342">启用电量不足提示音</translation>
 <translation id="5660228672907979869">禁止启用第三方存储分区。</translation>
+<translation id="5660950553460381588">默认尽可能在 iCloud 钥匙串中创建通行密钥。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
@@ -5539,6 +5547,13 @@
 <translation id="5984237109586500246">接受通过 Signed HTTP Exchange (SXG) 提供的网络内容</translation>
 <translation id="5987654816293745077">报告设备运行时计数器数据</translation>
 <translation id="5991707691018985057">针对 beforeunload 事件调用 event.preventDefault() 时显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，不显示取消对话框。</translation>
+<translation id="5992485316563377005">如果此政策已启用或未设置，系统会开启“渲染程序代码完整性”。
+
+      如果停用此政策，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中加载，因此会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
+
+      此政策已从 Chrome 118 中移除，所以相关设置（若已指定）会被忽略。
+
+      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="5994438001592408007">已为用户启用 Glanceables。</translation>
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
@@ -6185,6 +6200,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           指定的政策值应以毫秒为单位，且必须小于闲置延迟时间。</translation>
 <translation id="6497085755801788141">使用内置证书验证程序</translation>
+<translation id="65055701428353978">通过设置此政策，您可为每个受影响的扩展程序指定一个 OAuth 重定向网址列表。当相应扩展程序使用 <ph name="IDENTITY_API_NAME" /> API (<ph name="IDENTITY_API_URL" />) 时，除了可搭配使用标准 https://&lt;扩展程序 id&gt;.chromiumapp.org/ 重定向网址，还可搭配使用该列表中的网址。
+
+如果您未设置此政策或提供空的网址列表，则所有应用或扩展程序在使用 <ph name="IDENTITY_API_NAME" /> API 时只能使用标准重定向网址。</translation>
 <translation id="6506486086262398387">如果此政策已启用，适用于 <ph name="PRODUCT_OS_NAME" />的网络文件共享功能会酌情使用 NTLM 对 SMB 共享文件进行身份验证。如果此政策已停用，系统会关闭对 SMB 共享文件的 NTLM 身份验证机制。
 
       如果您未设置此政策，系统的默认行为就会是：为受管用户停用此政策，并为其他用户启用此政策。</translation>
@@ -6415,6 +6433,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6661178198729301029">为受管理个人资料启用云报告功能</translation>
 <translation id="6665670272107384733">指定用户必须按什么样的频率输入密码才能使用快速解锁功能</translation>
 <translation id="6667586534922258705">在登录屏幕和锁定的屏幕上显示“显示密码”按钮</translation>
+<translation id="6669691206059842248">为每个扩展程序配置额外的 OAuth 重定向网址</translation>
 <translation id="6669700740683748046">此功能可让系统在地址栏中显示完整网址。
       如果此政策设为 True，系统将会在地址栏中显示包含协议和子网域的完整网址。
       如果此政策设为 False，系统将会应用默认网址显示方式。
@@ -7163,6 +7182,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
+<translation id="7317472245305274219">控制是否默认在 iCloud 钥匙串中创建通行密钥。</translation>
 <translation id="7322825363493984512">用于向远程网络代理验证系统服务身份的密码。</translation>
 <translation id="7323773727263636287">启用色彩校正无障碍功能。
 
@@ -7229,6 +7249,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="7372831798009983116">启用“自动点击”无障碍功能</translation>
 <translation id="7373200034079131670">在用户退出后重新启动（如果 Android 或虚拟机已启动）。</translation>
+<translation id="7374784840090523241">默认在其他存储区（例如 <ph name="PRODUCT_NAME" /> 个人资料）中创建通行密钥。</translation>
 <translation id="7375785904116479354">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入默认搜索引擎。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入默认搜索引擎。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“默认搜索引擎”复选框。</translation>

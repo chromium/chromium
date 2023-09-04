@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">マイクとカメラを使用する</translation>
 <translation id="1005333234656240382">ADB デバッグを有効にしますか？</translation>
 <translation id="1005671386794704751">ローズ</translation>
+<translation id="1006557561787696884">Apple デバイスでパスキーを使用する</translation>
 <translation id="1006873397406093306">この拡張機能は、サイト上でユーザー自身のデータを読み取りおよび変更できます。ユーザーは、拡張機能がアクセスできるサイトを管理することができます。</translation>
 <translation id="1007057452468855774">Google Play ストアを有効にする</translation>
 <translation id="1008186147501209563">ブックマークをエクスポート</translation>
@@ -278,6 +279,7 @@
 <translation id="1203559206734265703">Protected Audience のデバッグが有効です。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共有ワーカー: <ph name="SCRIPT_URL" /></translation>
+<translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
 <translation id="1213254615020057352">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="1213726621272705156">今後このページでカードは表示されません</translation>
@@ -2126,6 +2128,7 @@
 <translation id="2658941648214598230">元のコンテンツを表示しますか？</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />機能はデバイスによって異なります</translation>
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
+<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> さんが Google パスワード マネージャーを使用して <ph name="WEBSITE" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="266079277508604648">プリンタに接続できません。プリンタの電源が入っていて、Wi-Fi または USB 経由で Chromebook に接続されていることを確認してください。</translation>
 <translation id="2661315027005813059">バックフォワード キャッシュのページ: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2250,6 +2253,7 @@
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="274362947316498129">アプリが <ph name="DEVICE_NAME" /> にアクセスしようとしています。アクセスを許可するには、<ph name="DEVICE_NAME" /> のプライバシー スイッチをオフにしてください。</translation>
 <translation id="2745080116229976798">Microsoft 限定従属</translation>
+<translation id="2749026027885331579">ファミリー メンバーが Google パスワード マネージャーを使用して <ph name="WEBSITE" /> にログインする際に、あなたのユーザー名とパスワードを使用できるようになりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
@@ -4345,6 +4349,7 @@
 <translation id="4449948729197510913">お客様のユーザー名は組織の企業アカウントに属しています。アカウントにデバイスを登録するには、まず管理コンソールでドメインの所有権を確認してください。なお、確認にはアカウントの管理者権限が必要です。</translation>
 <translation id="4450974146388585462">診断</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> が、データをより安全に保存できる有効な TPM を検出しました。</translation>
+<translation id="4451203458188403050">PDF からテキストを抽出します</translation>
 <translation id="4451479197788154834">パスワードはこのデバイスと Google アカウントに保存されています</translation>
 <translation id="4452898361839215358">または、PPD を選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
@@ -4414,6 +4419,7 @@
 <translation id="4510195992002502722">フィードバックを送信できませんでした。再試行しています...</translation>
 <translation id="4510479820467554003">保護者のアカウント リスト</translation>
 <translation id="451102079304155829">カート</translation>
+<translation id="4511344327646819192">他のユーザーがパスワードを使用できないようにするには、<ph name="WEBSITE" /> でパスワードを変更します</translation>
 <translation id="4513872120116766993">予測入力</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4515872537870654449">サポートについては、Dell にお問い合わせください。ファンが動作しない場合、ドックはシャットダウンされます。</translation>
@@ -4677,6 +4683,7 @@
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4730492586225682674">ロック画面でタッチペンによる最新メモを表示</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> で通知を許可されています</translation>
+<translation id="4731306954230393087">保存したあなたに関する情報の使用を許可する</translation>
 <translation id="473140019006744096">更新を完了するのに十分な容量がデバイスにありません。デバイスで <ph name="NECESSARY_SPACE" /> の容量を確保してから、もう一度お試しください。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4733793249294335256">保存先</translation>
@@ -4786,6 +4793,7 @@
 <translation id="4820236583224459650">有効なチケットとして設定</translation>
 <translation id="4820795723433418303">ファンクション キーを最上段のキーとして使用する</translation>
 <translation id="4821935166599369261">プロファイル記録の開始(&amp;P)</translation>
+<translation id="4823193082697477185">ローカル ネットワーク上の共有ファイル、フォルダ、ドライブにアクセスします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4823484602432206655">ユーザー設定とデバイス設定の読み取りと変更</translation>
 <translation id="4824037980212326045">Linux のバックアップと復元</translation>
 <translation id="4824958205181053313">同期をキャンセルしますか？</translation>
@@ -5564,6 +5572,7 @@
 <translation id="5478520208448702555">別のタブに変更したときにピクチャー イン ピクチャー ウィンドウを開くことをサイトに許可するかどうかを設定します</translation>
 <translation id="5481273127572794904">複数のファイルの自動ダウンロードを許可しないサイト</translation>
 <translation id="5481941284378890518">近くのプリンタを追加</translation>
+<translation id="5484181871714116891">オンにした場合、パスキーが iCloud キーチェーンで作成され、Apple デバイスで使用できるようになります。オフにした場合、パスキーはこのデバイスの Chrome プロフィールで作成されます。</translation>
 <translation id="5484462543003267273">ファミリーを管理</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="MANAGER" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" /> を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">アプリを追加</translation>
@@ -6191,6 +6200,7 @@
 <translation id="5990386583461751448">翻訳済み</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
+<translation id="5992652489368666106">枠線なし</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
@@ -7003,6 +7013,7 @@
 <translation id="6671497123040790595"><ph name="MANAGER" /> の管理対象として設定する</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> を追加</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" />（USB）</translation>
+<translation id="6673797129585578649">明るさを下げ、バックグラウンド アクティビティと視覚効果を制限し、通知を遅らせて、Chrome の省エネモードをオンにすることで、バッテリーを長持ちさせます。</translation>
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
 <translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="6676212663108450937">音声を認識させる場合はヘッドフォンの使用をご検討ください</translation>
@@ -7377,6 +7388,7 @@
 <translation id="6970543303783413625">パスワードをインポートできません。一度にインポートできるパスワードは最大 <ph name="COUNT" /> 件です。</translation>
 <translation id="6970856801391541997">指定したページを印刷</translation>
 <translation id="6970861306198150268">このサイトの現在のパスワードを保存していることをご確認ください</translation>
+<translation id="6971184043765343932">アップロードした画像</translation>
 <translation id="6972754398087986839">開始する</translation>
 <translation id="697312151395002334">ポップアップの送信やリダイレクトの使用を許可するサイト</translation>
 <translation id="6973611239564315524">Debian 10（Buster）にアップグレードできます</translation>
@@ -7580,6 +7592,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7141844554192012199">チェックアップ</translation>
+<translation id="714301620504747562">ブラウジングと検索が標準のプリロードよりも高速になります</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7143409552554575716">ChromeOS フラグ</translation>
 <translation id="714447804011008506">ツールバーからダウンロードにアクセスできるようになりました</translation>
@@ -7617,6 +7630,7 @@
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7181117767881540376">ブックマーク バーを非表示(&amp;H)</translation>
 <translation id="7182791023900310535">パスワードを移動</translation>
+<translation id="718427252411067142">他のユーザーがパスワードを使用できないようにするには、アプリを開いてパスワードを変更します</translation>
 <translation id="7186088072322679094">ツールバーに残す</translation>
 <translation id="7186303001964993981">システム ファイルが含まれているため、<ph name="ORIGIN" /> はこのフォルダを開くことができません</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
@@ -8413,6 +8427,7 @@
 <translation id="780301667611848630">同意しない</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
+<translation id="780446144738273886">PDF をスキャンしてスクリーン リーダー用のテキストを抽出します。この機能は Chrome ブラウザでのみサポートされます</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
@@ -9020,6 +9035,7 @@
 <translation id="828642162569365647">パスワードまたは PIN で、この <ph name="DEVICE_TYPE" /> のデータとスマートフォンからアクセスする情報を保護します。<ph name="DEVICE_TYPE" /> がスリープモードから復帰するたびにロックを解除する必要があります。</translation>
 <translation id="8287902281644548111">API 呼び出しまたは URL で検索</translation>
 <translation id="8288032458496410887">「<ph name="APP" />」をアンインストール...</translation>
+<translation id="8288553158681886528">PDF からテキストを抽出</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> へようこそ</translation>
 <translation id="8291415872436043161">Chrome をダウンロードする</translation>
@@ -9295,6 +9311,7 @@
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、お子様の ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">別のセキュリティ キーを試す</translation>
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>
+<translation id="8515580632187889788">続行すると、ネットワーク上でこのデバイスを識別する情報を第三者が確認できるようになります。第三者がデバイス情報にアクセスできないようにするには、eSIM プロファイルを<ph name="BEGIN_LINK" />手動で<ph name="END_LINK" />設定してください。</translation>
 <translation id="8517759303731677493">編集…</translation>
 <translation id="8518942514525208851">不適切な表現を隠す</translation>
 <translation id="8519895319663397036">パスワードをインポートできません。ファイルサイズを 150 KB より小さくしてください。</translation>

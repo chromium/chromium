@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Chrome を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
 <translation id="1504372625950710826">Chrome でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="1511320244449497906">ログインしてデータを同期している、<ph name="DOMAIN" /> 管理のアカウントに対して、管理者が専用のユーザー ポリシーを設定して Chrome の動作を変更できるようになりました。</translation>
+<translation id="1516692594929310090">Chrome のタブグリッドを開きます。</translation>
 <translation id="1526327845902180576">オンにした場合:
 <ph name="BEGIN_INDENT" />  • 同じように Chrome を使用する他のユーザーの利便性向上に役立てられます。<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="6822673484890854830">Chrome ですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
+<translation id="6916015246697034114">Chrome で音声検索</translation>
 <translation id="6964931465519938134">メッセージ、ドキュメント、他のアプリでタップしたリンクが常に Chrome で開かれるようになります。</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7059914902409643750">Chrome を独自にカスタマイズ</translation>
@@ -150,6 +152,7 @@
 <translation id="7400722733683201933">Google Chrome について</translation>
 <translation id="7501046334262221972">Chrome をデフォルトのブラウザにするには、[設定] を開き、[デフォルトのブラウザアプリ] をタップして、Chrome を選択します。</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
+<translation id="7581063337314642333">Chrome でタブグリッドにアクセス</translation>
 <translation id="7662994914830945754">どのデバイスからでも Chrome で自分のタブにアクセスするには、ログインして同期をオンにしてください</translation>
 <translation id="7669869107155339016">Chrome 設定に移動します。</translation>
 <translation id="7693590760643069321">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
@@ -157,10 +160,13 @@
 <translation id="7754633291442704733">このアカウントで保存した Chrome のデータ、ブックマーク、履歴、パスワード、その他の設定は、組織（<ph name="DOMAIN" />）からアクセス可能となります。ログアウトすると、データはこのデバイスから消去されますが、管理対象の Google アカウントには保存されたままで、組織はこれを使用できます。また、組織はこのアカウント専用のユーザー ポリシーを設定して、Chrome の動作を変更することも可能です。</translation>
 <translation id="7780154209050837198">Chrome を最大限に活用するには、Google アカウントで Chrome にログインしてください。</translation>
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
+<translation id="7897703007638178753">Chrome で最近使ったタブを表示</translation>
+<translation id="7925119591961387184">[Chrome] を選択します。</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリへのパスワード自動入力に使用できるようになります</translation>
 <translation id="804638182476029347">Chrome の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="81358522153858150">Chrome で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>
 <translation id="8160472928944011082">Chrome を更新できません</translation>
+<translation id="8174679664544842874">Chrome で新しいタブを開きます。</translation>
 <translation id="8213758103105806860">Chrome のブックマークを表示</translation>
 <translation id="8357607116237445042">このデバイスから Chrome データを削除するかどうかを選択してください</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
@@ -174,8 +180,10 @@
   2. [デフォルトのブラウザアプリ] をタップします。
   3. [Chrome] を選択します。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">[Chrome]、[デフォルトのブラウザ App] の順にタップします。</translation>
 <translation id="8603022514504485810">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome でいつでも安全にブラウジング</translation>
+<translation id="8760668027640688122">Chrome で新しいタブを開く</translation>
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
 <translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
 <translation id="8788269841521769222">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
@@ -185,6 +193,7 @@
 この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />します。</translation>
 <translation id="8857676124663337448">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="8897749957032330183">パスワードは、このデバイスの Google パスワード マネージャーに保存されます。</translation>
+<translation id="8949681853939555434">Chrome をデフォルトのブラウザに設定する</translation>
 <translation id="8969290730818637510">オンにした場合:
 <ph name="BEGIN_INDENT" />  • 同じように Chrome を使用する他のユーザーの利便性向上に役立てられます。<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@
   • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 <translation id="9122931302567044771">Chrome は毎回 PC 版サイトをリクエストします。</translation>
+<translation id="9181628561061032322">Chrome で最近使ったタブを開きます。</translation>
 </translationbundle>

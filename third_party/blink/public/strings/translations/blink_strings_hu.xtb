@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Átváltott tükrözésre</translation>
 <translation id="2031987842108996681">Vörös csatorna</translation>
 <translation id="2060505056492490888">A „<ph name="DOT" />” rossz helyen van a(z) „<ph name="INVALIDDOMAIN" />” címben.</translation>
+<translation id="2068711044993563745">A minimális értéknek (<ph name="MINIMUM" />) kisebbnek kell lennie a maximális értéknél (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>

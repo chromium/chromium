@@ -90,6 +90,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1293264513303784526">Peranti USB-C (port kiri)</translation>
 <translation id="1293556467332435079">Fail</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Buka Teroka</translation>
 <translation id="1294929383540927798">Tukar tetapan pemberitahuan kunci skrin</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APL YANG DISYORKAN</translation>
@@ -365,6 +366,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Buka kunci tetingkap</translation>
 <translation id="2528111225373402384">Tetapan tempat liputan</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Hidupkan atau matikan semak imbas karet</translation>
 <translation id="2531025035050312891">peranti perlahan</translation>
 <translation id="2531107890083353124">Tekan <ph name="KEY_ONE" /> sambil menyeret tab</translation>
@@ -387,6 +389,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2612614436418177118">Alihkan apl ikon dalam grid apl</translation>
 <translation id="2620016719323068571">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi...</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2620900772667816510">Peleraian Super Bluetooth</translation>
 <translation id="2621713457727696555">Selamat</translation>
 <translation id="2624588537172718173">Audio dan mikrofon peranti</translation>
 <translation id="263399434338050016">"Pilih semua"</translation>
@@ -511,6 +514,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3161500364292033097">Tutup meja dan tetingkap</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sedang mengundurkan <ph name="DEVICE_TYPE" /> anda. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
 <translation id="3171170659304083361">Tetapan kaedah input</translation>
+<translation id="3176221688814061633">Chromebook atau peranti Bluetooth anda menggunakan versi Bluetooth yang lama. Hidupkan Peleraian Super Bluetooth atau gunakan mikrofon dalaman untuk kualiti audio yang lebih baik.</translation>
 <translation id="3181441307743005334">Proses mula semula mungkin mengambil sedikit masa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Disambungkan ke peranti}other{Disambungkan ke # peranti}}</translation>
 <translation id="320207200541803018">Tetapkan pemasa</translation>
@@ -1499,6 +1503,7 @@ Pemasangan baharu</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
 <translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="7219573373513695352">Tiada peranti disambungkan</translation>
+<translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulakan semula untuk menerapkan kemas kini. Proses ini boleh mengambil masa sehingga 1 minit.</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7258828758145722155">Diedit semalam</translation>
@@ -1524,6 +1529,7 @@ Pemasangan baharu</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
 <translation id="736045644501761622">Tetapkan hiasan latar &amp; gaya</translation>
 <translation id="7371404428569700291">Rakam tetingkap</translation>
+<translation id="7372069265635026568"><ph name="AVAILABLE_MEMORY" /> memori tersedia daripada jumlah <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ini membenarkan akses mikrofon untuk semua apl dan laman web yang mempunyai kebenaran mikrofon</translation>
 <translation id="7377169924702866686">Caps Lock dihidupkan.</translation>
 <translation id="7377481913241237033">Sambung menggunakan kod</translation>
@@ -1853,6 +1859,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8731487213223706745">Tamat jam <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Papan kekunci mungkin sedang cuba mencuri ketukan kekunci anda</translation>
 <translation id="8735678380411481005">Warna cahaya belakang papan kekunci</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Mengaktifkan...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Sahkan identiti anda: <ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>

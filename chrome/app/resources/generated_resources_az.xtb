@@ -10,6 +10,7 @@
 <translation id="1005274289863221750">Mikrofonunuzu və kameranızı istifadə edin</translation>
 <translation id="1005333234656240382">ADB sazlaması aktivləşdirilsin?</translation>
 <translation id="1005671386794704751">Qızılgül</translation>
+<translation id="1006557561787696884">Apple cihazlarında giriş açarlarından istifadə edin</translation>
 <translation id="1006873397406093306">Bu artırma saytlardakı datanı oxuya və dəyişə bilər Artırmaların hansı saytlara girişinin olduğuna nəzarət edə bilərsiniz</translation>
 <translation id="1007057452468855774">Google Play Marketi aktiv edin</translation>
 <translation id="1008186147501209563">Əlfəcinləri eksport edin</translation>
@@ -276,6 +277,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1203559206734265703">Qorunan auditoriya sazlaması aktivləşdirilib.</translation>
 <translation id="120368089816228251">Musiqi notu</translation>
 <translation id="1203942045716040624">Ortaq İşçi: <ph name="SCRIPT_URL" /></translation>
+<translation id="1210678701920254279">Printerlərə baxın, onları əlavə edin və aktiv çap işləri görün</translation>
 <translation id="1211769675100312947">Qısayolları siz seçirsiniz</translation>
 <translation id="1213254615020057352">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google'a göndərməklə uşağınızın Android təcrübəsini təkmilləşdirməyə kömək edin. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üzrə diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data onun Google Hesabında yadda saxlanıla bilər.</translation>
 <translation id="1213726621272705156">Bu səhifədə kartları bir daha görməyəcəksiniz</translation>
@@ -2131,6 +2133,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2658941648214598230">Orijinal kontent göstərilsin?</translation>
 <translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funksiyalar cihaza görə dəyişir</translation>
 <translation id="2659971421398561408">Crostini disk ölçüsünün dəyişdirilməsi</translation>
+<translation id="2660309468936690885"><ph name="RECIPIENT_NAME" /> Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2660779039299703961">Tədbir</translation>
 <translation id="266079277508604648">Printeri qoşmaq mümkün deyil. Printerin aktiv olmasını, Wi-Fi və ya USB ilə Chromebook'a qoşulu olub-olmamasını yoxlayın.</translation>
 <translation id="2661315027005813059">Geri/İrəli Keşlənmiş Səhifə: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
@@ -2255,6 +2258,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2743387203779672305">Buferə kopyalayın</translation>
 <translation id="274362947316498129">Tətbiq <ph name="DEVICE_NAME" /> cihazına giriş etməyə çalışır. Girişə icazə vermək üçün <ph name="DEVICE_NAME" /> məxfilik keçiricisini deaktiv edin.</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
+<translation id="2749026027885331579">Ailə üzvləriniz Google Parol Meneceri ilə <ph name="WEBSITE" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> məhsuluna daxil olun</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Qrammatikanı Orfoqrafiya ilə yoxlayın</translation>
@@ -4350,6 +4354,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4449948729197510913">İstifadəçi adınız təşkilatınızın müəssisə hesabına məxsusdur. Cihazları bu hesabda qeydiyyatdan keçirmək üçün Admin konsolunda domen sahibliyini doğrulayın. Doğrulamaq üçün hesab üzərində admin hüquqlarına sahib olmalısınız.</translation>
 <translation id="4450974146388585462">Diaqnoz edin</translation>
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> datanızı daha etibarlı şəkildə saxlaya biləcək aktiv TPM aşkar etdi.</translation>
+<translation id="4451203458188403050">PDF-dən mətn çıxarın</translation>
 <translation id="4451479197788154834">Parolunuz bu cihazda və Google Hesabınızda saxlanılıb</translation>
 <translation id="4452898361839215358">və ya PPD seçin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Klaviaturanızın yuxarı sağ küncündə olan barmaq izi sensoruna toxunun. Barmaq izi datanız təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazınızdan kənara ötürülmür.</translation>
@@ -4419,6 +4424,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4510195992002502722">Rəy göndərilmədi. Yenidən cəhd edilir...</translation>
 <translation id="4510479820467554003">Valideyn hesabı siyahısı</translation>
 <translation id="451102079304155829">arabalar</translation>
+<translation id="4511344327646819192">Digərlərinin parolunuzdan istifadə etməməsi üçün <ph name="WEBSITE" /> veb-saytında onu dəyişin</translation>
 <translation id="4513872120116766993">Proqnozlaşdırıcı yazı</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4515872537870654449">Texniki baxış üçün Dell ilə əlaqə saxlayın. Ventilyasiya işləmirsə, dok sönəcək.</translation>
@@ -4682,6 +4688,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4728558894243024398">Platforma</translation>
 <translation id="4730492586225682674">Kilid ekranında ən son stilus qeydi</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> üçün bildirişlərə icazə verilib</translation>
+<translation id="4731306954230393087">Haqqınızda yadda saxlanan məlumatdan istifadə icazəsi verilib</translation>
 <translation id="473140019006744096">Bu güncəlləməni tamamlamaq üçün bu cihazda kifayət qədər yer yoxdur. Cihazınızda <ph name="NECESSARY_SPACE" /> yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% qalıb</translation>
 <translation id="4733793249294335256">Məkan</translation>
@@ -5571,6 +5578,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5478520208448702555">Başqa taba dəyişəndə saytlar şəkildə şəkil pəncərəsi aça bilər</translation>
 <translation id="5481273127572794904">Çoxsaylı faylların avtomatik endirilməsinə icazə verilmədi</translation>
 <translation id="5481941284378890518">Yaxınlıqdakı Printerləri əlavə edin</translation>
+<translation id="5484181871714116891">Aktiv olduqda giriş açarları iCloud Keychain-də yaradılır və Apple cihazlarında əlçatan olur. Deaktiv olduqda giriş açarları bu cihazdakı Chrome profilində yaradılır.</translation>
 <translation id="5484462543003267273">Ailəni idarə edin</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> bugün datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}other{<ph name="MANAGER" /> {NUM_DAYS} gün ərzində datanızı yedəkləmənizi və bu <ph name="DEVICE_TYPE" /> cihazını qaytarmanızı tələb edir. <ph name="LINK_BEGIN" />Detallara baxın<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Tətbiq əlavə edin</translation>
@@ -6196,6 +6204,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5990386583461751448">Tərcümə edildi</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Vebdə axtarışa davam etmək üçün administratordan bu tətbiqi silməyi tələb edin.}other{Vebdə axtarışa davam etmək üçün administratordan bu tətbiqləri silməyi tələb edin.}}</translation>
 <translation id="5992225669837656567">Mauslar ayrılıb</translation>
+<translation id="5992652489368666106">Sərhəd yoxdur</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 sayt üçün nəzərdən keçirilmə tamamlandı}other{{NUM_SITES} sayt üçün nəzərdən keçirilmə tamamlandı}}</translation>
 <translation id="5997337190805127100">Sayta Giriş Barədə Ətraflı Öyrənin</translation>
 <translation id="5998458948782718639">Avto doldurmanı təkmilləşdirməyə yardım edin</translation>
@@ -7009,6 +7018,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6671497123040790595"><ph name="MANAGER" /> tərəfindən idarəetmənin ayarlanması</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> əlavə edin</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
+<translation id="6673797129585578649">Parlaqlığı azaltmaqla, arxa fon fəaliyyəti və vizual effektləri məhdudlaşdırmaqla, bildirişləri gecikdirməklə və Chrome Enerjiyə Qənaəti aktiv etməklə batareya ömrünü uzadır.</translation>
 <translation id="6674571176963658787">Sinxronizasiyanı başlatmaq üçün parol ifadənizi daxil edin</translation>
 <translation id="6675665718701918026">Cihazın qoşulu olduğu göstərilir</translation>
 <translation id="6676212663108450937">Səsinizi yazarkən qulaqlıqlardan istifadə etməyiniz tövsiyə edilir</translation>
@@ -7384,6 +7394,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6970543303783413625">Parolları import etmək mümkün deyil. Hər dəfə maksimum <ph name="COUNT" /> parol import edə bilərsiniz.</translation>
 <translation id="6970856801391541997">Xüsusi Səhifələri Çap edin</translation>
 <translation id="6970861306198150268">Bu sayt üçün cari parolunuzu saxladığınıza əmin olun</translation>
+<translation id="6971184043765343932">Yüklənmiş şəkil</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="697312151395002334">Ani bildirişlər göndərmək və yönləndirmələrdən istifadə etmək icazəsi verilib</translation>
 <translation id="6973611239564315524">Debian 10 (Buster) üçün güncəlləmə əlçatandır</translation>
@@ -7586,6 +7597,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonunuzdan istifadə edir</translation>
 <translation id="7141105143012495934">Sign-sizin hesab ayrıntıları alına bilməz, çünki uğursuz oldu. Sizin administratoru ilə əlaqə və ya yenidən cəhd edin.</translation>
 <translation id="7141844554192012199">Yoxlanış</translation>
+<translation id="714301620504747562">Baxış və axtarış əvvəlcədən yükləmənin standart versiyasından sürətlidir</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7143409552554575716">ChromeOS bayraqları</translation>
 <translation id="714447804011008506">Endirmələr artıq alətlər panelindədir</translation>
@@ -7623,6 +7635,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7181117767881540376">&amp;Əlfəcin panelini gizlədin</translation>
 <translation id="7182791023900310535">Parolunuzu daşıyın</translation>
+<translation id="718427252411067142">Digərlərinin parolunuzdan istifadə etməməsi üçün tətbiqi açaraq parolu dəyişin</translation>
 <translation id="7186088072322679094">Alətlər panelində saxlayın</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> sistem faylları ehtiva etdiyinə görə bu qovluğu aça bilmir</translation>
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
@@ -8421,6 +8434,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7803657407897251194">Android cihazı ilə ayarlamağa davam etmək üçün <ph name="DEVICE_TYPE" /> cihazını şəbəkəyə qoşun</translation>
 <translation id="7804072833593604762">Tab bağlanıb</translation>
+<translation id="780446144738273886">PDF-i skanlayaraq ekran oxuyucusu üçün mətn çıxarın. Yalnız Chrome brauzerində dəstəklənir</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tövsiyəni bağlayın</translation>
 <translation id="7807067443225230855">Axtarış və Assistent</translation>
@@ -9027,6 +9041,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="828642162569365647">Bu parol və ya PIN bu <ph name="DEVICE_TYPE" /> cihazındakı məlumatlarınızı və telefonunuzdan giriş etdiyiniz hər hansı məzmunu qoruyur. Hər dəfə <ph name="DEVICE_TYPE" /> yuxudan oyananda kilidi açmalısınız.</translation>
 <translation id="8287902281644548111">API zəngi/Link tərəfindən Axtarış</translation>
 <translation id="8288032458496410887"><ph name="APP" /> tətbiqini sistemdən silin...</translation>
+<translation id="8288553158681886528">PDF-dən mətn çıxarın</translation>
 <translation id="8289128870594824098">Disk ölçüsü</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> cihazına xoş gəlmisiniz</translation>
 <translation id="8291415872436043161">Chrome'u endirin</translation>
@@ -9302,6 +9317,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Uşağın ChromeOS cihazı ayarlarında bu hesabatlara icazə verə və ya onları dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">Başqa təhlükəsizlik açarından istifadə edin</translation>
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>
+<translation id="8515580632187889788">Davam edərək üçüncü tərəflərə şəbəkədə bu cihazı müəyyən edən məlumatları doğrulamaq imkanı verirsiniz. Üçüncü tərəflərə cihaz məlumatına giriş icazəsi vermək istəmirsinizsə, <ph name="BEGIN_LINK" />manual qaydada<ph name="END_LINK" /> eSIM profili ayarlaya bilərsiniz.</translation>
 <translation id="8517759303731677493">Redaktə edin…</translation>
 <translation id="8518942514525208851">Söyüşü gizlədin</translation>
 <translation id="8519895319663397036">Parolları import etmək mümkün deyil. Faylın ölçüsü 150 KB-dan kiçik olmalıdır.</translation>
