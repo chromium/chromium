@@ -55,6 +55,7 @@
 //components/test/data/password_manager/login_db_v37.sql
 //components/test/data/password_manager/login_db_v38.sql
 //components/test/data/password_manager/login_db_v38_with_keychain_id.sql
+//components/test/data/password_manager/login_db_v38_with_keychain_ids.sql
 //components/test/data/password_manager/login_db_v39.sql
 //components/test/data/password_manager/login_db_v3_broken.sql
 //components/test/data/password_manager/login_db_v4.sql

@@ -72146,6 +72146,9 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Migration failed: can't encrypt password with OSCrypt"/>
   <int value="4" label="Migration failed: can't update password value"/>
   <int value="5" label="Migration succeeded"/>
+  <int value="6"
+      label="Migration failed: can't delete missing password from the
+             database"/>
 </enum>
 
 <enum name="MigrationUIFirstScreen">
