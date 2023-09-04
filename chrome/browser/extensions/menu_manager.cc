@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -857,8 +856,6 @@ void MenuManager::ReadFromStorage(const std::string& extension_id,
     return;
 
   MenuItem::OwnedList items = MenuItemsFromValue(extension_id, value);
-  base::UmaHistogramCounts1000("Extensions.MenuManager.MenuItemsCount",
-                               items.size());
   for (auto& item : items) {
     if (item->parent_id()) {
       // Parent IDs are stored in the parent_id field for convenience, but
