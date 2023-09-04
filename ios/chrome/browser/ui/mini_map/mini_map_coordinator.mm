@@ -178,20 +178,13 @@
     NSString* iphTitle = l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_TITLE);
     NSString* iphSubtitle =
         l10n_util::GetNSString(IDS_IOS_MINI_MAP_IPH_SUBTITLE);
-    NSDictionary* textAttributes = @{
-      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-      NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-    };
 
     NSDictionary* linkAttributes = @{
       NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
-      NSFontAttributeName :
-          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
       NSLinkAttributeName : net::NSURLWithGURL(GURL("chrome://settings")),
     };
-    NSAttributedString* attrSubtitle = AttributedStringFromStringWithLink(
-        iphSubtitle, textAttributes, linkAttributes);
+    NSAttributedString* attrSubtitle =
+        AttributedStringFromStringWithLink(iphSubtitle, nil, linkAttributes);
 
     [self.miniMapController configureIPHWithTitle:[[NSAttributedString alloc]
                                                       initWithString:iphTitle]
