@@ -2135,9 +2135,12 @@ export class DirectoryTree extends Tree {
       }
       // Remove ODFS volumes from the directoryTree so that they get redrawn
       // with the right attributes.
-      for (const treeItem of this.items) {
+      for (let i = 0; i < this.items.length; ++i) {
+        const treeItem = this.items[i];
         if (util.isOneDrive(treeItem.modelItem.volumeInfo)) {
           this.remove(treeItem);
+          // Decrement to account for the removed item.
+          --i;
         }
       }
       // Force-redraw directory tree.
