@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 539 tests; 477 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 539 tests; 480 PASS, 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Element: original interface defined
@@ -482,10 +482,10 @@ PASS CSS namespace: operation percent(double)
 PASS CSS namespace: operation em(double)
 PASS CSS namespace: operation ex(double)
 PASS CSS namespace: operation ch(double)
-FAIL CSS namespace: operation ic(double) assert_own_property: namespace object missing operation "ic" expected property "ic" missing
+PASS CSS namespace: operation ic(double)
 PASS CSS namespace: operation rem(double)
-FAIL CSS namespace: operation lh(double) assert_own_property: namespace object missing operation "lh" expected property "lh" missing
-FAIL CSS namespace: operation rlh(double) assert_own_property: namespace object missing operation "rlh" expected property "rlh" missing
+PASS CSS namespace: operation lh(double)
+PASS CSS namespace: operation rlh(double)
 PASS CSS namespace: operation vw(double)
 PASS CSS namespace: operation vh(double)
 PASS CSS namespace: operation vi(double)

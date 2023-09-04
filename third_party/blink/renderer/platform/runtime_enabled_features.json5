@@ -972,6 +972,13 @@
       name: "CSSNestingIdent",
     },
     {
+      // Support for typed om numeric factory methods for various units that
+      // were otherwise shipped: rex, rch, ic, ric, lh, rlh, x (cap and rcap
+      // covered by separate runtime flag).
+      name: "CSSNumericFactoryCompleteness",
+      status: "stable",
+    },
+    {
       name: "CSSObjectViewBox",
       status: "stable",
       base_feature: "none",
