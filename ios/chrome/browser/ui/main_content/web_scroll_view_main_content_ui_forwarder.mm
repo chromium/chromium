@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
@@ -127,23 +128,30 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 
 - (void)webViewScrollViewFrameDidChange:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK(webViewScrollViewProxy == self.proxy);
   // Frame changes may move the scroll view relative to its safe area, so check
   // for content inset adjustments.
-  [self checkForContentInsetAdjustment];
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [self checkForContentInsetAdjustment];
+  }
 
   [self.updater scrollViewSizeDidChange:webViewScrollViewProxy.frame.size];
 }
 
 - (void)webViewScrollViewDidScroll:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK(webViewScrollViewProxy == self.proxy);
   // Check whether this scroll is due to a content inset adjustment.
-  [self checkForContentInsetAdjustment];
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [self checkForContentInsetAdjustment];
+  }
 
   [self.updater scrollViewDidScrollToOffset:self.proxy.contentOffset];
 }
 
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK(webViewScrollViewProxy == self.proxy);
   [self.updater
       scrollViewWillBeginDraggingWithGesture:self.proxy.panGestureRecognizer];
 }
@@ -152,6 +160,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                             withVelocity:(CGPoint)velocity
                      targetContentOffset:(inout CGPoint*)targetContentOffset {
+  CHECK(webViewScrollViewProxy == self.proxy);
   [self.updater
       scrollViewDidEndDraggingWithGesture:self.proxy.panGestureRecognizer
                       targetContentOffset:*targetContentOffset];
@@ -159,18 +168,23 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 
 - (void)webViewScrollViewDidEndDecelerating:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK(webViewScrollViewProxy == self.proxy);
   [self.updater scrollViewDidEndDecelerating];
 }
 
 - (void)webViewScrollViewDidResetContentSize:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  CHECK(webViewScrollViewProxy == self.proxy);
   [self.updater
       scrollViewDidResetContentSize:webViewScrollViewProxy.contentSize];
 }
 
 - (void)webViewScrollViewDidResetContentInset:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  [self checkForContentInsetAdjustment];
+  CHECK(webViewScrollViewProxy == self.proxy);
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [self checkForContentInsetAdjustment];
+  }
 }
 
 #pragma mark - WebStateListObserving
@@ -188,6 +202,7 @@ void UpdateStateWithProxy(MainContentUIStateUpdater* updater,
 // Checks whether the content inset has been updated, notifying the updater of
 // any changes.
 - (void)checkForContentInsetAdjustment {
+  CHECK(base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   UIEdgeInsets inset = self.proxy.contentInset;
   inset = self.proxy.adjustedContentInset;
   if (!UIEdgeInsetsEqualToEdgeInsets(inset, self.updater.state.contentInset))

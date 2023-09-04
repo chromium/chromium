@@ -20,10 +20,10 @@ void StartBroadcastingMainContentUI(id<MainContentUI> main_content,
   [broadcaster broadcastValue:@"contentInset"
                      ofObject:main_content.mainContentUIState
                      selector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster broadcastValue:@"yContentOffset"
-                     ofObject:main_content.mainContentUIState
-                     selector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [broadcaster broadcastValue:@"yContentOffset"
+                       ofObject:main_content.mainContentUIState
+                       selector:@selector(broadcastContentScrollOffset:)];
     [broadcaster broadcastValue:@"scrolling"
                        ofObject:main_content.mainContentUIState
                        selector:@selector(broadcastScrollViewIsScrolling:)];
@@ -42,9 +42,9 @@ void StopBroadcastingMainContentUI(ChromeBroadcaster* broadcaster) {
       stopBroadcastingForSelector:@selector(broadcastScrollViewContentSize:)];
   [broadcaster
       stopBroadcastingForSelector:@selector(broadcastScrollViewContentInset:)];
-  [broadcaster
-      stopBroadcastingForSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [broadcaster
+        stopBroadcastingForSelector:@selector(broadcastContentScrollOffset:)];
     [broadcaster
         stopBroadcastingForSelector:@selector(broadcastScrollViewIsScrolling:)];
     [broadcaster

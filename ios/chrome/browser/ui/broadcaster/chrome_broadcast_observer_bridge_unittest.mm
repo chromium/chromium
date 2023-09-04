@@ -80,6 +80,9 @@ class ChromeBroadcastObserverBridgeTest : public PlatformTest {
 // Tests that `-broadcastContentScrollOffset:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ContentOffset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      web::features::kSmoothScrollingDefault);
   ASSERT_EQ(observer().scroll_offset(), 0.0);
   const CGFloat kOffset = 50.0;
   [bridge() broadcastContentScrollOffset:kOffset];
