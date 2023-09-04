@@ -526,6 +526,12 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     params.Set("rart", gaia_reauth_request_token_);
   }
 
+  if (features::IsPasswordlessGaiaEnabledForConsumers() &&
+      !is_gaia_password_required_) {
+    params.Set("pwl",
+               static_cast<int>(PasswordlessSupportLevel::kConsumersOnly));
+  }
+
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->IsManagedPreference(
           prefs::kUrlParameterToAutofillSAMLUsername)) {
@@ -1614,6 +1620,10 @@ void GaiaScreenHandler::ToggleLoadingUI(bool is_shown) {
 
 void GaiaScreenHandler::SetQuickStartEnabled() {
   CallExternalAPI("setQuickStartEnabled");
+}
+
+void GaiaScreenHandler::SetIsGaiaPasswordRequired(bool is_required) {
+  is_gaia_password_required_ = is_required;
 }
 
 // static

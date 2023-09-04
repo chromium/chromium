@@ -225,6 +225,9 @@ export const SUPPORTED_PARAMS = [
   // username.
   'urlParameterToAutofillSAMLUsername',
   'forceDarkMode',
+  // A tri-state value which indicates the support level for passwordless login.
+  // Refer to `GaiaView::PasswordlessSupportLevel` for details.
+  'pwl',
 ];
 
 // Timeout in ms to wait for the message from Gaia indicating end of the flow.
@@ -859,6 +862,9 @@ export class Authenticator extends EventTarget {
     }
     if (data.forceDarkMode) {
       url = appendParam(url, 'color_scheme', 'dark');
+    }
+    if (data.pwl) {
+      url = appendParam(url, 'pwl', data.pwl);
     }
 
     return url;
