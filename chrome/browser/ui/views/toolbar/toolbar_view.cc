@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -76,7 +75,6 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -95,7 +93,6 @@
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -344,10 +341,8 @@ void ToolbarView::Init() {
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
-    extensions_container = std::make_unique<ExtensionsToolbarContainer>(
-        browser_, base::FeatureList::IsEnabled(features::kResponsiveToolbar)
-                      ? ExtensionsToolbarContainer::DisplayMode::kCompact
-                      : ExtensionsToolbarContainer::DisplayMode::kNormal);
+    extensions_container =
+        std::make_unique<ExtensionsToolbarContainer>(browser_);
 
     if (features::IsChromeRefresh2023()) {
       toolbar_divider = std::make_unique<views::View>();
@@ -889,19 +884,6 @@ void ToolbarView::InitLayout() {
   if (toolbar_divider_) {
     toolbar_divider_->SetProperty(views::kMarginsKey,
                                   gfx::Insets::VH(0, kToolbarDividerSpacing));
-  }
-
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    // Order 1 is reserved for omnibox and transient buttons.
-    constexpr int kToolbarFlexOrderStart = 2;
-
-    toolbar_controller_ = std::make_unique<ToolbarController>(
-        std::vector<ui::ElementIdentifier>{
-            kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
-            kToolbarExtensionsContainerElementId,
-            kToolbarSidePanelContainerElementId, kToolbarHomeButtonElementId,
-            kToolbarChromeLabsButtonElementId},
-        kToolbarFlexOrderStart, container_view_);
   }
 
   LayoutCommon();
