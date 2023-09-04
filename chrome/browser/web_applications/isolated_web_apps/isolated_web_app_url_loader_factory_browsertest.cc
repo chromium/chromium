@@ -10,15 +10,20 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/url_constants.h"
@@ -41,6 +46,7 @@ namespace web_app {
 
 namespace {
 
+using base::test::HasValue;
 using ::testing::Eq;
 using ::testing::IsFalse;
 using ::testing::IsNull;
@@ -79,12 +85,17 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
     : public WebAppControllerBrowserTest {
  public:
   explicit IsolatedWebAppURLLoaderFactoryBrowserTest(
-      bool enable_isolated_web_apps_feature = true)
+      bool enable_isolated_web_apps_feature = true,
+      bool use_fake_web_app_provider = true)
       : enable_isolated_web_apps_feature_(enable_isolated_web_apps_feature) {
-    provider_creator_ =
-        std::make_unique<FakeWebAppProviderCreator>(base::BindRepeating(
-            &IsolatedWebAppURLLoaderFactoryBrowserTest::CreateWebAppProvider,
-            base::Unretained(this)));
+    // TODO(b/298618746): Do not use the `FakeWebAppProvider`, instead install
+    // IWAs properly.
+    if (use_fake_web_app_provider) {
+      provider_creator_ =
+          std::make_unique<FakeWebAppProviderCreator>(base::BindRepeating(
+              &IsolatedWebAppURLLoaderFactoryBrowserTest::CreateWebAppProvider,
+              base::Unretained(this)));
+    }
   }
 
  protected:
@@ -109,14 +120,14 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
     return provider;
   }
 
-  FakeWebAppProvider* provider() {
-    return static_cast<FakeWebAppProvider*>(
-        WebAppProvider::GetForTest(browser()->profile()));
-  }
-
   void RegisterWebApp(std::unique_ptr<WebApp> web_app) {
-    provider()->GetRegistrarMutable().registry().emplace(web_app->app_id(),
-                                                         std::move(web_app));
+    ASSERT_TRUE(provider_creator_)
+        << "Can only use method using fake WebAppProvider if "
+           "`provider_creator_` is not `nullptr`.";
+    FakeWebAppProvider* fake_provider = static_cast<FakeWebAppProvider*>(
+        WebAppProvider::GetForTest(browser()->profile()));
+    fake_provider->GetRegistrarMutable().registry().emplace(web_app->app_id(),
+                                                            std::move(web_app));
   }
 
   void TrustWebBundleId() {
@@ -130,16 +141,17 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
                                                    kTestPrivateKey);
     auto signed_bundle =
         web_package::WebBundleSigner::SignBundle(unsigned_bundle, {key_pair});
+    return WriteBundleToDisk(signed_bundle);
+  }
 
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      CHECK(temp_dir_.CreateUniqueTempDir());
-      base::FilePath web_bundle_path;
-      CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
+  base::FilePath WriteBundleToDisk(const std::vector<uint8_t>& signed_bundle) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    base::FilePath web_bundle_path;
+    CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path));
 
-      CHECK(base::WriteFile(web_bundle_path, signed_bundle));
-      return web_bundle_path;
-    }
+    CHECK(base::WriteFile(web_bundle_path, signed_bundle));
+    return web_bundle_path;
   }
 
   Browser* CreateAppWindow() {
@@ -410,6 +422,45 @@ self.addEventListener('activate', (event) => {
 
   NavigateAndWaitForTitle(GURL(kUrl),
                           u"data from web bundle data from service worker");
+}
+
+// TODO(b/298618746): Refactor `IsolatedWebAppURLLoaderFactoryBrowserTest` to
+// never use the `FakeWebAppProvider`.
+class IsolatedWebAppURLLoaderFactoryNoFakeWebAppProviderBrowserTest
+    : public IsolatedWebAppURLLoaderFactoryBrowserTest {
+ public:
+  IsolatedWebAppURLLoaderFactoryNoFakeWebAppProviderBrowserTest()
+      : IsolatedWebAppURLLoaderFactoryBrowserTest(
+            /*enable_isolated_web_apps_feature=*/true,
+            /*use_fake_web_app_provider=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppURLLoaderFactoryNoFakeWebAppProviderBrowserTest,
+    NoCrashIfBrowserIsClosed) {
+  auto bundle = TestSignedWebBundleBuilder::BuildDefault();
+  base::FilePath bundle_path = WriteBundleToDisk(bundle.data);
+  EXPECT_THAT(bundle.id.id(), Eq(kTestEd25519WebBundleId));
+  TrustWebBundleId();
+
+  base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
+                                        InstallIsolatedWebAppCommandError>>
+      future;
+  provider().scheduler().InstallIsolatedWebApp(
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id),
+      InstalledBundle{.path = bundle_path}, base::Version("1.0.0"),
+      /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
+      future.GetCallback());
+  EXPECT_THAT(future.Take(), HasValue());
+
+  Browser* app_window = CreateAppWindow();
+  AttachWebContents(app_window);
+  // Do not wait for the request to complete, and immediately close the browser.
+  // No crash should occur due to this.
+  NavigateToURLWithDisposition(app_window, kUrl,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_NO_WAIT);
+  chrome::CloseAllBrowsers();
 }
 
 class IsolatedWebAppURLLoaderFactoryFrameBrowserTest
