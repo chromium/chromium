@@ -1704,6 +1704,11 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
+    int type_id = s.ColumnInt(0);
+    // TODO(crbug.com/1478823): Remove these special cases.
+    if (type_id == 111 || type_id == 112) {
+      continue;
+    }
     ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
     DCHECK(type != UNKNOWN_TYPE);
     profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
