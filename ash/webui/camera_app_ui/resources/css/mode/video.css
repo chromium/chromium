@@ -50,8 +50,7 @@ body.video.taking.enable-gif-recording:not(.recording) #shutter-progress-bar>cir
   cx: 50%;
   cy: 50%;
   r: calc(var(--outer-radius) - var(--bar-width));
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  stroke: var(--cros-ref-primary100);
+  stroke: var(--cros-sys-white);
   stroke-width: var(--bar-width);
   /* The dash strip will appear from 3 o'clock direction while we want to start
    * from 12 o'clock. Rotate 90deg counterclockwise accordingly. */
@@ -110,8 +109,7 @@ body.video.record-type-time-lapse.recording-ui-paused {
 #time-lapse-progress .ticks {
   mask: url(#loop-mask);
   r: var(--ticks-circle-radius);
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  stroke: var(--cros-ref-primary100);
+  stroke: var(--cros-sys-white);
   stroke-dasharray: var(--tick-length) var(--tick-gap-length);
   stroke-linejoin: round;
   stroke-width: 4px;

@@ -68,6 +68,7 @@
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
   --cros-sys-tertiary_container: var(--blue-300);
   --cros-sys-warning: #ffb960;
+  --cros-sys-white: #000000;
 }
 
 .mode-item > input:checked + span {

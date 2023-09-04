@@ -360,8 +360,7 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 
 :is(#start-takephoto, #video-snapshot) svg-wrapper {
   color: var(--cros-sys-inverse_surface);
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  --secondary-color: var(--cros-ref-primary100);
+  --secondary-color: var(--cros-sys-white);
 }
 
 :is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:hover::after {
@@ -417,8 +416,7 @@ body.taking #start-takephoto:active {
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
 
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  background: var(--cros-ref-primary100);
+  background: var(--cros-sys-white);
   border-radius: 50%;
   height: var(--size);
   position: relative;
@@ -463,8 +461,7 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
 }
 
 #recordvideo .white-square {
-  /* TODO(pihsun): Use cros.sys.white when it's available. */
-  background: var(--cros-ref-primary100);
+  background: var(--cros-sys-white);
   border-radius: 2px;
   height: 0;
   left: 50%;
@@ -963,8 +960,8 @@ body:not(.custom-video-parameters) #expert-controls>.video-option-row {
 }
 
 #preview-grid-horizontal {
-  border-bottom: 1px solid var(--cros-ref-primary100);
-  border-top: 1px solid var(--cros-ref-primary100);
+  border-bottom: 1px solid var(--cros-sys-white);
+  border-top: 1px solid var(--cros-sys-white);
   height: 100%;
   left: 0;
   position: absolute;
@@ -978,7 +975,7 @@ body.grid #preview-grid {
 }
 
 body.grid.grid-4x4 #preview-grid-horizontal::before {
-  border-bottom: 1px solid var(--cros-ref-primary100);
+  border-bottom: 1px solid var(--cros-sys-white);
   content: '';
   height: 0;
   left: 0;
@@ -1001,8 +998,8 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 }
 
 #preview-grid-vertical {
-  border-inline-end: 1px solid var(--cros-ref-primary100);
-  border-inline-start: 1px solid var(--cros-ref-primary100);
+  border-inline-end: 1px solid var(--cros-sys-white);
+  border-inline-start: 1px solid var(--cros-sys-white);
   bottom: 0;
   left: 50%;
   position: absolute;
@@ -1013,7 +1010,7 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 
 body.grid-4x4 #preview-grid-vertical::before {
   border-right:  /* csschecker-disable-line left-right */
-      1px solid var(--cros-ref-primary100);
+      1px solid var(--cros-sys-white);
   bottom: 0;
   content: '';
   left: 0;
