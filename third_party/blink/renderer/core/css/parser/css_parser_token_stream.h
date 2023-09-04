@@ -255,13 +255,9 @@ class CORE_EXPORT CSSParserTokenStream {
   // CSSParserTokenStream has limited restart capabilities through the
   // Save and Restore functions.
   //
-  // Saving the stream is allowed under the following conditions:
-  //
-  //  1. There are no boundaries, except for the regular EOF boundary.
-  //     (See inner class Boundary). This avoids having to store the boundaries
-  //     in the stream snapshot.
-  //  2. The lookahead token is present. (See HasLookAhead). This avoids having
-  //     to store whether or not we have a lookahead token.
+  // Saving the stream is allowed under the condition that the lookahead token
+  // is present. (See HasLookAhead). This avoids having to store whether or not
+  // we have a lookahead token.
   //
   // Restoring the stream is allowed under the following conditions:
   //
@@ -269,6 +265,8 @@ class CORE_EXPORT CSSParserTokenStream {
   //     important for undoing mutations to the tokenizer's block stack (see
   //     CSSTokenizer::Restore).
   //  2. The Save/Restore pair does not cross a BlockGuard.
+  //  3. The Save/Restore pair does not cross a Boundary. (See section below).
+  //     This limitation avoids having to store the boundary.
   //
   //
   // Restoring
@@ -351,17 +349,71 @@ class CORE_EXPORT CSSParserTokenStream {
   // current block during a BlockGuard. For these reasons, we only ever need to
   // undo at most one mutation to the block stack: the block stack mutation
   // caused by the "final" lookahead before the restore process.
+  //
+  // Boundaries
+  // ==========
+  //
+  // The state may be saved and restored during a Boundary, but the boundary
+  // conditions must be the same during the call to Restore as they were
+  // during the call to Save. For example, can you use a boundary that's
+  // created and destroyed between the Save/Restore calls:
+  //
+  //  State s = stream.Save();
+  //  {
+  //    CSSParserTokenStream::Boundary boundary(...);
+  //    ConsumeSomething(stream);
+  //  }
+  //  stream.Restore(s);
+  //
+  // Or you can use a boundary that exists during both Save and Restore calls:
+  //
+  //  CSSParserTokenStream::Boundary boundary(...);
+  //  State s = stream.Save();
+  //  ConsumeSomething(stream);
+  //  stream.Restore(s);
+  //
+  // However, a Save/Restore pair must not cross the boundary. The following
+  // will trigger a DCHECK:
+  //
+  //  State s = stream.Save();
+  //  ConsumeSomething(stream);
+  //  {
+  //    CSSParserTokenStream::Boundary boundary(...);
+  //    stream.Restore(s);
+  //  }
 
-  wtf_size_t Save() const {
-    DCHECK_EQ(boundaries_, FlagForTokenType(kEOFToken));
+#if DCHECK_IS_ON()
+  struct State {
+    STACK_ALLOCATED();
+
+   private:
+    friend class CSSParserTokenStream;
+    State(wtf_size_t offset, uint64_t boundaries)
+        : offset_(offset), boundaries_(boundaries) {}
+    wtf_size_t offset_;
+    uint64_t boundaries_;
+  };
+#else   // !DCHECK_IS_ON()
+  using State = wtf_size_t;
+#endif  // DCHECK_IS_ON()
+
+  State Save() const {
     DCHECK(has_look_ahead_);
+#if DCHECK_IS_ON()
+    return State(offset_, boundaries_);
+#else   // !DCHECK_IS_ON()
     return offset_;
+#endif  // DCHECK_IS_ON()
   }
 
-  void Restore(wtf_size_t offset) {
+  void Restore(State state) {
     DCHECK(has_look_ahead_);
-    offset_ = offset;
-    boundaries_ = FlagForTokenType(kEOFToken);
+#if DCHECK_IS_ON()
+    offset_ = state.offset_;
+    DCHECK_EQ(state.boundaries_, boundaries_) << "Boundary-crossing restore";
+#else   // !DCHECK_IS_ON()
+    offset_ = state;
+#endif  // DCHECK_IS_ON()
     next_ = tokenizer_.Restore(next_, offset_);
   }
 

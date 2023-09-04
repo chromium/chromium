@@ -412,18 +412,18 @@ void TokenizeInto(CSSParserTokenStream& stream,
                   wtf_size_t restart_target,
                   wtf_size_t restart_offset,
                   Vector<CSSParserToken, 32>& tokens) {
-  absl::optional<wtf_size_t> saved_offset;
+  absl::optional<CSSParserTokenStream::State> saved_state;
 
   while (true) {
     stream.EnsureLookAhead();
 
     if (restart_target == stream.Offset()) {
-      saved_offset = stream.Save();
+      saved_state = stream.Save();
     }
 
-    if (saved_offset.has_value() && restart_offset == stream.Offset()) {
-      stream.Restore(saved_offset.value());
-      saved_offset.reset();
+    if (saved_state.has_value() && restart_offset == stream.Offset()) {
+      stream.Restore(saved_state.value());
+      saved_state.reset();
       // Do not restart again:
       restart_target = std::numeric_limits<wtf_size_t>::max();
       continue;
@@ -604,6 +604,44 @@ TEST_P(RestartTest, All) {
   String input(param.input);
   CSSTokenizer tokenizer(input);
   CSSParserTokenStream stream(tokenizer);
+
+  auto [restart_target, restart_offset] = ParseRestart(String(param.restart));
+  Vector<CSSParserToken, 32> actual_tokens;
+  TokenizeInto(stream, restart_target, restart_offset, actual_tokens);
+
+  SCOPED_TRACE(testing::Message()
+               << "Expected (serialized): "
+               << CSSParserTokenRange(ref_tokens).Serialize());
+  SCOPED_TRACE(testing::Message()
+               << "Actual (serialized): "
+               << CSSParserTokenRange(actual_tokens).Serialize());
+
+  SCOPED_TRACE(param.ref);
+  SCOPED_TRACE(param.restart);
+  SCOPED_TRACE(param.input);
+
+  EXPECT_EQ(actual_tokens, ref_tokens);
+}
+
+// Same as RestartTest, except performs all restarts during a boundary.
+class BoundaryRestartTest : public testing::Test,
+                            public testing::WithParamInterface<RestartData> {};
+
+INSTANTIATE_TEST_SUITE_P(CSSParserTokenStreamTest,
+                         BoundaryRestartTest,
+                         testing::ValuesIn(restart_data));
+
+TEST_P(BoundaryRestartTest, All) {
+  RestartData param = GetParam();
+
+  String ref(param.ref);
+  Vector<CSSParserToken, 32> ref_tokens = TokenizeAll(ref);
+
+  String input(param.input);
+  CSSTokenizer tokenizer(input);
+  CSSParserTokenStream stream(tokenizer);
+
+  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
 
   auto [restart_target, restart_offset] = ParseRestart(String(param.restart));
   Vector<CSSParserToken, 32> actual_tokens;

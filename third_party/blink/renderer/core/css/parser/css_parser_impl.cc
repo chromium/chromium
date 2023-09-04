@@ -2106,7 +2106,7 @@ void CSSParserImpl::ConsumeDeclarationList(
         ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleInvalid);
         break;
       case kIdentToken: {
-        wtf_size_t state = stream.Save();
+        CSSParserTokenStream::State state = stream.Save();
         bool consumed_declaration = false;
         {
           CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
