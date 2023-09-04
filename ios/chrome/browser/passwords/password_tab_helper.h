@@ -18,7 +18,6 @@
 @protocol PasswordsUiDelegate;
 
 namespace password_manager {
-class PasswordGenerationFrameHelper;
 class PasswordManager;
 class PasswordManagerClient;
 }
@@ -48,9 +47,6 @@ class PasswordTabHelper : public web::WebStateObserver,
   // notice is removed.
   id<PasswordsAccountStorageNoticeHandler>
   GetPasswordsAccountStorageNoticeHandler();
-
-  // Returns the PasswordGenerationFrameHelper owned by the PasswordController.
-  password_manager::PasswordGenerationFrameHelper* GetGenerationHelper();
 
   // Returns the PasswordManager owned by the PasswordController.
   password_manager::PasswordManager* GetPasswordManager();

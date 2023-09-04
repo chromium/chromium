@@ -35,11 +35,6 @@ PasswordTabHelper::GetPasswordsAccountStorageNoticeHandler() {
   return controller_;
 }
 
-password_manager::PasswordGenerationFrameHelper*
-PasswordTabHelper::GetGenerationHelper() {
-  return controller_.passwordManagerDriver->GetPasswordGenerationHelper();
-}
-
 password_manager::PasswordManager* PasswordTabHelper::GetPasswordManager() {
   return controller_.passwordManager;
 }
