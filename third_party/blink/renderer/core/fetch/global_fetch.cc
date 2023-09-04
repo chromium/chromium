@@ -100,10 +100,16 @@ class GlobalFetchImpl final : public GarbageCollected<GlobalFetchImpl<T>>,
       return MakeGarbageCollected<FetchLaterResult>();
     }
 
-    // https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+    // https://whatpr.org/fetch/1647/53e4c3d...71fd383.html#fetch-later-method
     // Run the fetchLater(input, init) method steps:
 
-    // Step 1: Let `r` be the result of invoking the initial value of Request as
+    // 1. If the user-agent has determined that deferred fetching is not
+    // allowed in this context, then throw a NotAllowedError.
+    // TODO(crbug.com/1465781): Define Permissions-Policy to allow disabling
+    // this feature. It should be enabled by default:
+    // https://github.com/WICG/pending-beacon/issues/77.
+
+    // 2. Let `r` be the result of invoking the initial value of Request as
     // constructor with `input` and `init` as arguments. This may throw an
     // exception.
     Request* r =
@@ -206,7 +212,7 @@ FetchLaterResult* GlobalFetch::fetchLater(ScriptState* script_state,
   UseCounter::Count(window.GetExecutionContext(), WebFeature::kFetchLater);
   if (!window.GetFrame()) {
     exception_state.ThrowTypeError("The global scope is shutting down.");
-    return MakeGarbageCollected<FetchLaterResult>();
+    return nullptr;
   }
   return ScopedFetcher::From(window)->FetchLater(script_state, input, init,
                                                  exception_state);

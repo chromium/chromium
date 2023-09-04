@@ -12,17 +12,23 @@
 
 namespace blink {
 
+// FetchLaterResult represents the state of a fetchLater API call.
+// https://whatpr.org/fetch/1647/53e4c3d...71fd383.html#fetch-later-method
+//
+// The state in this class is read-only and may be updated by C++ world.
 class CORE_EXPORT FetchLaterResult final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit FetchLaterResult(bool sent = false);
+  FetchLaterResult();
+
+  void SetActivated(bool activated);
 
   // From fetch_later.idl:
-  bool sent() const;
+  bool activated() const;
 
  private:
-  const bool sent_;
+  bool activated_ = false;
 };
 
 }  // namespace blink

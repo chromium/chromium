@@ -1,5 +1,8 @@
 This is a testharness.js-based test.
 PASS fetchLater() cannot be called without request.
+PASS fetchLater() throws TypeError on non-HTTPS URL.
 PASS fetchLater()'s return tells the deferred request is not yet sent.
+PASS fetchLater() throws TypeError when mutating its returned state.
+PASS fetchLater() throws AbortError when its initial abort signal is aborted.
 Harness: the test ran to completion.
 

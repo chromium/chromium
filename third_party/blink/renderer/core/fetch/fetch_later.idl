@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://whatpr.org/fetch/1647/094ea69...152d725.html#fetch-later-method
+// https://whatpr.org/fetch/1647/53e4c3d...71fd383.html#fetch-later-method
 
 [
     ImplementedAs=FetchLaterResult,
@@ -10,7 +10,7 @@
     SecureContext
 ]
 interface FetchLaterResult {
-  readonly attribute boolean sent;
+  readonly attribute boolean activated;
 };
 
 [

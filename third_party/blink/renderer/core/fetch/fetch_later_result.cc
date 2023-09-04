@@ -6,11 +6,14 @@
 
 namespace blink {
 
-FetchLaterResult::FetchLaterResult(bool sent) : sent_(sent) {}
+FetchLaterResult::FetchLaterResult() = default;
 
-bool FetchLaterResult::sent() const {
-  // TODO(crbug.com/1465781): Dynamically ask FetchManager to decide the state.
-  return sent_;
+void FetchLaterResult::SetActivated(bool activated) {
+  activated_ = activated;
+}
+
+bool FetchLaterResult::activated() const {
+  return activated_;
 }
 
 }  // namespace blink
