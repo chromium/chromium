@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -1159,8 +1160,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
 }
 
 // Tests the page title, which is used for accessibility.
-// Disabled due to conflict with memory usage; https://crbug.com/1477857.
-IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_PageTitle) {
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
@@ -1178,15 +1178,18 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_PageTitle) {
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
 
-  EXPECT_EQ(browser_view->GetAccessibleTabLabel(0),
-            u"Tab Strip Customizations - Pinned");
+  // The tab title starts with the tab name, followed by whether it is pinned
+  // but may also have more things after that.
+  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(0),
+                               u"Tab Strip Customizations - Pinned"));
 
   chrome::NewTab(app_browser);
   content::WaitForLoadStop(tab_strip->GetActiveWebContents());
 
-  EXPECT_EQ(browser_view->GetAccessibleTabLabel(0),
-            u"Tab Strip Customizations - Pinned");
-  EXPECT_EQ(browser_view->GetAccessibleTabLabel(1), u"Favicon only");
+  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(0),
+                               u"Tab Strip Customizations - Pinned"));
+  EXPECT_TRUE(base::StartsWith(browser_view->GetAccessibleTabLabel(1),
+                               u"Favicon only"));
 }
 
 }  // namespace web_app
