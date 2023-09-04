@@ -17,12 +17,16 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("autofill::features")
 public class AndroidAutofillFeatures extends Features {
+    public static final String ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME =
+            "AndroidAutofillFormSubmissionCheckById";
     public static final String ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME =
             "AndroidAutofillViewStructureWithFormHierarchyLayer";
 
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID =
+            new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME);
     public static final AndroidAutofillFeatures
             ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER = new AndroidAutofillFeatures(
-                    0, ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME);
+                    1, ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME);
 
     private final int mOrdinal;
 

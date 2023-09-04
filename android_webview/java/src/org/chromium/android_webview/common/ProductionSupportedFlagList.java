@@ -174,6 +174,10 @@ public final class ProductionSupportedFlagList {
                     "Enables retrieval of the emoji font through GMS Core "
                             + "improving emoji glyph coverage."),
             Flag.baseFeature(
+                    AndroidAutofillFeatures.ANDROID_AUTOFILL_FORM_SUBMISSION_CHECK_BY_ID_NAME,
+                    "When enabled, form submissions are reported to AutofillManager iff the form "
+                            + "global ids match."),
+            Flag.baseFeature(
                     AndroidAutofillFeatures
                             .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME,
                     "When enabled, Android Autofill ViewStructures contain an additional "

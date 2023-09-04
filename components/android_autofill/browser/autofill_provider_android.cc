@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
+#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/form_data_android.h"
 #include "components/android_autofill/browser/jni_headers/AutofillProvider_jni.h"
@@ -296,8 +297,25 @@ void AutofillProviderAndroid::OnFormSubmitted(AndroidAutofillManager* manager,
                                               bool known_success,
                                               SubmissionSource source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form))
+  if (!IsCurrentlyLinkedManager(manager) || !form_) {
     return;
+  }
+
+  // In the case of form submissions, we want to perform less strict form
+  // comparisons than for other form events (focus change, scroll change, etc.):
+  // Even if the page modifies the form between the user interaction and the
+  // form submission, we want to inform `AutofillManager` about the submission.
+  // Otherwise no saving prompt can be offered.
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidAutofillFormSubmissionCheckById)) {
+    if (form_->form().global_id() != form.global_id()) {
+      return;
+    }
+  } else {
+    if (!form_->SimilarFormAs(form)) {
+      return;
+    }
+  }
 
   if (known_success || source == SubmissionSource::FORM_SUBMISSION) {
     FireSuccessfulSubmission(source);

@@ -756,6 +756,52 @@ public class AwAutofillTest {
         assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
     }
 
+    // Test that `AutofillManager.commit()` is called after form submission even
+    // if the web page dynamically modified the form after the last user interaction.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=AndroidAutofillFormSubmissionCheckById"})
+    public void testCommitWithChangedFormProperties() throws Throwable {
+        final String data =
+                "<html><head></head><body><form action='a.html' name='formname' id='formid'>"
+                + "<input type='text' id='text1' name='username'"
+                + " placeholder='placeholder@placeholder.com' autocomplete='username name'>"
+                + "<input type='password' id='passwordid' name='passwordname'"
+                + "<input type='submit'>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
+        invokeOnProvideAutoFillVirtualStructure();
+        // Fill the password.
+        executeJavaScriptAndWaitForResult("document.getElementById('passwordid').select();");
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {
+                        AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        cnt += waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
+        clearChangedValues();
+
+        // Change the form name.
+        executeJavaScriptAndWaitForResult("document.getElementById('formid').name = 'othername';");
+
+        // The form submission is detected despite the change in form properties.
+        executeJavaScriptAndWaitForResult("document.getElementById('formid').submit();");
+        waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
+        ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
+        assertEquals(2, values.size());
+        assertEquals("a", values.get(0).second.getTextValue());
+        assertEquals("b", values.get(1).second.getTextValue());
+        assertEquals(SubmissionSource.FORM_SUBMISSION, mSubmissionSource);
+    }
+
     /**
      * Tests that when a multi-frame form is submitted in a subframe, we register the submission of
      * the overall form.
@@ -1061,7 +1107,6 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testNoSubmissionWithoutFillingForm() throws Throwable {
-        int cnt = 0;
         final String data = "<!DOCTYPE html>"
                 + "<html>"
                 + "<body>"
@@ -1077,7 +1122,7 @@ public class AwAutofillTest {
                 + "<body>"
                 + "</body>"
                 + "</html>";
-        final String successUrl = mWebServer.setResponse("/success.html", success, null);
+        mWebServer.setResponse("/success.html", success, null);
         final String url = mWebServer.setResponse(FILE, data, null);
         loadUrlSync(url);
         executeJavaScriptAndWaitForResult("window.location.href = 'success.html'; ");
