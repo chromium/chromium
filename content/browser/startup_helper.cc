@@ -47,26 +47,33 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
 }
 
 namespace {
-#if BUILDFLAG(IS_ANDROID)
-// Mobile config, for iOS see ios/web/app/web_main_loop.cc.
-constexpr size_t kThreadPoolDefaultMin = 6;
-constexpr size_t kThreadPoolMax = 8;
-constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr size_t kThreadPoolOffset = 0;
-#else
-// Desktop config.
-constexpr size_t kThreadPoolDefaultMin = 16;
-constexpr size_t kThreadPoolMax = 32;
-constexpr double kThreadPoolCoresMultiplier = 0.6;
-constexpr size_t kThreadPoolOffset = 0;
-#endif
 
 BASE_FEATURE(kBrowserThreadPoolAdjustment,
              "BrowserThreadPoolAdjustment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kBrowserThreadPoolMin{
-    &kBrowserThreadPoolAdjustment, "min", kThreadPoolDefaultMin};
+// For iOS see ios/web/app/web_main_loop.cc.
+constexpr base::FeatureParam<int> kBrowserThreadPoolMin {
+  &kBrowserThreadPoolAdjustment, "BrowserThreadPoolMin",
+#if BUILDFLAG(IS_ANDROID)
+      6
+#else
+      16
+#endif
+};
+constexpr base::FeatureParam<int> kBrowserThreadPoolMax {
+  &kBrowserThreadPoolAdjustment, "BrowserThreadPoolMax",
+#if BUILDFLAG(IS_ANDROID)
+      8
+#else
+      32
+#endif
+};
+constexpr base::FeatureParam<double> kBrowserThreadPoolCoresMultiplier{
+    &kBrowserThreadPoolAdjustment, "BrowserThreadPoolCoresMultiplier", 0.6};
+constexpr base::FeatureParam<int> kBrowserThreadPoolOffset{
+    &kBrowserThreadPoolAdjustment, "BrowserThreadPoolOffset", 0};
+
 }  // namespace
 
 // TODO(scheduler-dev): Standardize thread pool logic and remove the need for
@@ -77,7 +84,9 @@ void StartBrowserThreadPool() {
   auto min = static_cast<size_t>(std::max(kBrowserThreadPoolMin.Get(), 1));
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
-          min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};
+          min, kBrowserThreadPoolMax.Get(),
+          kBrowserThreadPoolCoresMultiplier.Get(),
+          kBrowserThreadPoolOffset.Get())};
 
 #if BUILDFLAG(IS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::
