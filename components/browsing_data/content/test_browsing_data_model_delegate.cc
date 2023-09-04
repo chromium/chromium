@@ -46,4 +46,18 @@ TestBrowsingDataModelDelegate::GetDataOwner(
   return absl::nullopt;
 }
 
+absl::optional<bool>
+TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    BrowsingDataModel::StorageType storage_type) const {
+  switch (
+      static_cast<TestBrowsingDataModelDelegate::StorageType>(storage_type)) {
+    case StorageType::kTestDelegateType:
+      return true;
+    case StorageType::kTestDelegateTypePartitioned:
+      return false;
+    default:
+      return absl::nullopt;
+  }
+}
+
 }  // namespace browsing_data

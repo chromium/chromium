@@ -181,6 +181,25 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
   }
 }
 
+absl::optional<bool>
+ChromeBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    BrowsingDataModel::StorageType storage_type) const {
+  // Values below the first delegate type are handled in the model itself.
+  if (static_cast<int>(storage_type) <
+      static_cast<int>(StorageType::kFirstType)) {
+    return absl::nullopt;
+  }
+  switch (
+      static_cast<ChromeBrowsingDataModelDelegate::StorageType>(storage_type)) {
+    case StorageType::kTopics:
+    case StorageType::kIsolatedWebApp:
+    case StorageType::kMediaDeviceSalt:
+      return false;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 void ChromeBrowsingDataModelDelegate::GetAllMediaDeviceSaltDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback,
     std::vector<DelegateEntry> entries) {

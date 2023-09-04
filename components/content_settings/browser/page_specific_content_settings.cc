@@ -1122,18 +1122,12 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
   model->AddBrowsingData(data_key, storage_type, /*storage_size=*/0);
 
   if (blocked) {
+    // Reduce the set of items reported for block to things that are obviously
+    // related to cookies, as that is the icon that is displayed.
     // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
-    // correctly reflects site data, stop ignoring these types.
-    constexpr base::EnumSet<BrowsingDataModel::StorageType,
-                            BrowsingDataModel::StorageType::kFirstType,
-                            BrowsingDataModel::StorageType::kLastType>
-        ignored_types_for_block = {
-            BrowsingDataModel::StorageType::kTrustTokens,
-            BrowsingDataModel::StorageType::kSharedStorage,
-            BrowsingDataModel::StorageType::kInterestGroup,
-            BrowsingDataModel::StorageType::kAttributionReporting,
-        };
-    if (!ignored_types_for_block.Has(storage_type)) {
+    // correctly reflects site data, reconsider limiting the types.
+    if (blocked_browsing_data_model_->IsBlockedByThirdPartyCookieBlocking(
+            storage_type)) {
       OnContentBlocked(ContentSettingsType::COOKIES);
     }
   } else {

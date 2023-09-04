@@ -27,6 +27,9 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
               1,      // Not fetched from disk.
     kIsolatedWebApp,  // Not yet deletable.
     kMediaDeviceSalt,
+
+    kFirstType = kTopics,
+    kLastType = kMediaDeviceSalt,
   };
 
   static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
@@ -51,6 +54,8 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
                      base::OnceClosure callback) override;
   absl::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       BrowsingDataModel::DataKey data_key,
+      BrowsingDataModel::StorageType storage_type) const override;
+  absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       BrowsingDataModel::StorageType storage_type) const override;
 
  private:

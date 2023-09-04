@@ -125,7 +125,6 @@ class BrowsingDataModel {
   // A delegate to handle non components/ data type retrieval and deletion.
   class Delegate {
    public:
-    //
     struct DelegateEntry {
       DelegateEntry(DataKey data_key,
                     StorageType storage_type,
@@ -140,16 +139,25 @@ class BrowsingDataModel {
     // Retrieves all possible data keys with its associated storage size.
     virtual void GetAllDataKeys(
         base::OnceCallback<void(std::vector<DelegateEntry>)> callback) = 0;
+
     // Removes all data that matches the data key.
     virtual void RemoveDataKey(DataKey data_key,
                                StorageTypeSet storage_types,
                                base::OnceClosure callback) = 0;
+
     // Returns the owner of the data identified by the given DataKey and
     // StorageType, or nullopt if the delegate does not manage the entity that
     // owns the given data.
     virtual absl::optional<DataOwner> GetDataOwner(
         DataKey data_key,
         StorageType storage_type) const = 0;
+
+    // Returns whether the delegate considers `storage_type` to be blocked by
+    // third party cookie blocking. Returns nullopt if the delegate does not
+    // manage the storage type.
+    virtual absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+        StorageType storage_type) const = 0;
+
     virtual ~Delegate() = default;
   };
 
@@ -244,6 +252,10 @@ class BrowsingDataModel {
       const DataOwner& data_owner,
       const net::SchemefulSite& top_level_site,
       base::OnceClosure completed);
+
+  // Returns whether the provided `storage_type` is blocked when third party
+  // cookies are blocked.
+  bool IsBlockedByThirdPartyCookieBlocking(StorageType storage_type) const;
 
  protected:
   friend class BrowsingDataModelTest;

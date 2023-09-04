@@ -369,6 +369,11 @@ class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
     return absl::nullopt;
   }
 
+  absl::optional<bool> IsBlockedByThirdPartyCookieBlocking(
+      BrowsingDataModel::StorageType storage_type) const override {
+    return false;
+  }
+
  private:
   std::string origin_owned_host_;
 };
@@ -454,6 +459,52 @@ TEST_F(BrowsingDataModelTest, RemovePartitionedBrowsingData) {
   };
   browsing_data_model_test_util::ValidateBrowsingDataEntries(model.get(),
                                                              expected_entries);
+}
+
+TEST_F(BrowsingDataModelTest, ThirdPartyCookieTypes) {
+  std::unique_ptr<BrowsingDataModel> model = BrowsingDataModel::BuildEmpty(
+      storage_partition(),
+      std::make_unique<browsing_data::TestBrowsingDataModelDelegate>());
+
+  constexpr BrowsingDataModel::StorageTypeSet third_party_cookie_types = {
+      BrowsingDataModel::StorageType::kLocalStorage,
+      BrowsingDataModel::StorageType::kSessionStorage,
+      BrowsingDataModel::StorageType::kQuotaStorage,
+  };
+
+  constexpr BrowsingDataModel::StorageTypeSet non_third_party_cookie_types = {
+      BrowsingDataModel::StorageType::kTrustTokens,
+      BrowsingDataModel::StorageType::kSharedStorage,
+      BrowsingDataModel::StorageType::kInterestGroup,
+      BrowsingDataModel::StorageType::kAttributionReporting,
+      BrowsingDataModel::StorageType::kPrivateAggregation,
+      BrowsingDataModel::StorageType::kSharedDictionary};
+
+  for (int i = static_cast<int>(BrowsingDataModel::StorageType::kFirstType);
+       i < static_cast<int>(BrowsingDataModel::StorageType::kLastType); i++) {
+    auto type = static_cast<BrowsingDataModel::StorageType>(i);
+
+    EXPECT_TRUE(third_party_cookie_types.Has(type) ||
+                non_third_party_cookie_types.Has(type))
+        << "All storage types should be tested";
+
+    bool is_considered_third_party_cookie =
+        model->IsBlockedByThirdPartyCookieBlocking(type);
+    EXPECT_EQ(third_party_cookie_types.Has(type),
+              is_considered_third_party_cookie);
+    EXPECT_EQ(non_third_party_cookie_types.Has(type),
+              !is_considered_third_party_cookie);
+  }
+
+  // Ensure the delegate is also consulted.
+  EXPECT_TRUE(model->IsBlockedByThirdPartyCookieBlocking(
+      static_cast<BrowsingDataModel::StorageType>(
+          browsing_data::TestBrowsingDataModelDelegate::StorageType::
+              kTestDelegateType)));
+  EXPECT_FALSE(model->IsBlockedByThirdPartyCookieBlocking(
+      static_cast<BrowsingDataModel::StorageType>(
+          browsing_data::TestBrowsingDataModelDelegate::StorageType::
+              kTestDelegateTypePartitioned)));
 }
 
 class BrowsingDataModelSharedDictionaryTest : public BrowsingDataModelTest {
