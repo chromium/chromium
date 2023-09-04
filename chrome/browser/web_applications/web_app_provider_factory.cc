@@ -56,10 +56,11 @@ WebAppProviderFactory::WebAppProviderFactory()
 
 WebAppProviderFactory::~WebAppProviderFactory() = default;
 
-KeyedService* WebAppProviderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebAppProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  WebAppProvider* provider = new WebAppProvider(profile);
+  auto provider = std::make_unique<WebAppProvider>(profile);
   provider->Start();
 
   return provider;
