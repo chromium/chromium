@@ -18,20 +18,24 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-class Profile;
 class PrefService;
 
 namespace base {
@@ -113,7 +117,8 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
                                 public drivefs::DriveFsHost::MountObserver,
-                                public drivefs::pinning::PinManager::Observer {
+                                drivefs::pinning::PinManager::Observer,
+                                ash::NetworkStateHandlerObserver {
  public:
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
       std::unique_ptr<drivefs::DriveFsBootstrapListener>()>;
@@ -143,7 +148,7 @@ class DriveIntegrationService : public KeyedService,
 
   ~DriveIntegrationService() override;
 
-  // KeyedService override:
+  // KeyedService override.
   void Shutdown() override;
 
   void SetEnabled(bool enabled);
@@ -336,7 +341,7 @@ class DriveIntegrationService : public KeyedService,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
-  void UpdateNetworkState();
+  void OnNetworkChanged();
 
  private:
   enum class State {
@@ -348,7 +353,7 @@ class DriveIntegrationService : public KeyedService,
 
   class DriveFsHolder;
 
-  PrefService* GetPrefs() const;
+  PrefService* GetPrefs() const { return profile_->GetPrefs(); }
 
   // Returns true if Drive is enabled.
   // Must be called on UI thread.
@@ -457,9 +462,17 @@ class DriveIntegrationService : public KeyedService,
                                    drive::FileError error,
                                    int64_t total_size);
 
+  void OnDrivePrefChanged();
+  void OnMirroringPrefChanged();
+
+  // NetworkStateHandlerObserver implementation.
+  void DefaultNetworkChanged(const ash::NetworkState*) override;
+  void OnShuttingDown() override;
+
   friend class DriveIntegrationServiceFactory;
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
+
   State state_ = State::kNone;
   bool enabled_ = false;
   bool mount_failed_ = false;
@@ -467,12 +480,12 @@ class DriveIntegrationService : public KeyedService,
 
   // Is the bulk-pinning preference sampling task currently scheduled?
   bool bulk_pinning_pref_sampling_ = false;
+  bool mirroring_enabled_ = false;
+  bool is_online_ = true;
+  bool remount_when_online_ = false;
 
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;
-
-  bool mirroring_enabled_ = false;
-
   base::FilePath cache_root_directory_;
   EventLogger logger_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
@@ -483,14 +496,16 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
+  PrefChangeRegistrar registrar_;
+  raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
+      nullptr;
+
   class PrefWatcher;
-  std::unique_ptr<PrefWatcher> pref_watcher_;
+  std::unique_ptr<const PrefWatcher> pref_watcher_;
   std::unique_ptr<PinManager> pin_manager_;
 
   int drivefs_total_failures_count_ = 0;
   int drivefs_consecutive_failures_count_ = 0;
-  bool is_online_ = true;
-  bool remount_when_online_ = false;
 
   // Used to fetch authentication and refresh tokens from Drive.
   std::unique_ptr<google_apis::AuthServiceInterface> auth_service_;

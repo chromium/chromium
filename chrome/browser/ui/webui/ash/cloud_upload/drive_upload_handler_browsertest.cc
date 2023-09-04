@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
     content::NetworkConnectionChangeSimulator().SetConnectionType(
         CONNECTION_NONE);
     SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
-    drive_integration_service()->UpdateNetworkState();
+    drive_integration_service()->OnNetworkChanged();
   });
 
   base::RunLoop run_loop;
