@@ -743,14 +743,14 @@ void IdentityTestEnvironment::SimulateSuccessfulFetchOfAccountInfo(
       given_name, locale, picture_url);
 }
 
-void IdentityTestEnvironment::SimulateMergeSessionFailure(
+void IdentityTestEnvironment::SimulateGaiaLogOutFailure(
     const GoogleServiceAuthError& auth_error) {
   // GaiaCookieManagerService changes the visibility of inherited method
-  // OnMergeSessionFailure from public to private. Cast to a base class
+  // `OnLogOutFailure` from public to private. Cast to a base class
   // pointer to call the method.
   static_cast<GaiaAuthConsumer*>(
       identity_manager()->GetGaiaCookieManagerService())
-      ->OnMergeSessionFailure(auth_error);
+      ->OnLogOutFailure(auth_error);
 }
 
 void IdentityTestEnvironment::SetTestURLLoaderFactory(

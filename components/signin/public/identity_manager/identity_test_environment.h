@@ -355,8 +355,8 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
                                             const std::string& locale,
                                             const std::string& picture_url);
 
-  // Simulates a merge session failure with |auth_error| as the error.
-  void SimulateMergeSessionFailure(const GoogleServiceAuthError& auth_error);
+  // Simulates a log out failure with |auth_error| as the error.
+  void SimulateGaiaLogOutFailure(const GoogleServiceAuthError& auth_error);
 
   // Sets the TestURLLoaderFactory used for cookie-related requests. This
   // factory is expected to be the same factory as the one used by SigninClient.
