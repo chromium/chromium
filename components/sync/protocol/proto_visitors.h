@@ -241,7 +241,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(address_home_dependent_locality);
   VISIT(address_home_thoroughfare_name);
   VISIT(address_home_thoroughfare_number);
-  VISIT(address_home_dependent_thoroughfare_name);
   VISIT(address_home_subpremise_name);
 
   VISIT_ENUM(address_home_city_status);
@@ -256,7 +255,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT_ENUM(address_home_dependent_locality_status);
   VISIT_ENUM(address_home_thoroughfare_name_status);
   VISIT_ENUM(address_home_thoroughfare_number_status);
-  VISIT_ENUM(address_home_dependent_thoroughfare_name_status);
   VISIT_ENUM(address_home_subpremise_name_status);
 
   VISIT(address_home_language_code);
@@ -352,7 +350,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_dependent_locality);
   VISIT(address_thoroughfare_name);
   VISIT(address_thoroughfare_number);
-  VISIT(address_dependent_thoroughfare_name);
   VISIT(address_thoroughfare_and_dependent_thoroughfare_name);
   VISIT(address_subpremise_name);
   VISIT(address_apt_num);

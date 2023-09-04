@@ -154,9 +154,9 @@ message ContactInfoSpecifics {
   optional StringToken address_thoroughfare_name = 25;
   // The house number, which may be alphanumeric.
   optional StringToken address_thoroughfare_number = 26;
-  // Describes a crossing street as it is used in some countries to describe a
-  // location.
-  optional StringToken address_dependent_thoroughfare_name = 27;
+  // Deprecated in M118.
+  reserved 27;
+  reserved "address_dependent_thoroughfare_name";
   // Contains both the thoroughfare and the dependent thoroughfare name.
   optional StringToken address_thoroughfare_and_dependent_thoroughfare_name =
       28;

@@ -80,9 +80,6 @@ AutofillProfile ConstructCompleteProfile() {
       ADDRESS_HOME_STREET_NAME, u"Fake St.", VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"123",
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                                           u"Dep",
-                                           VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"Fake St. Dep",
       VerificationStatus::kFormatted);
@@ -190,8 +187,6 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_address_thoroughfare_name(), "Fake St.",
            ContactInfoSpecifics::FORMATTED);
   SetToken(specifics.mutable_address_thoroughfare_number(), "123",
-           ContactInfoSpecifics::FORMATTED);
-  SetToken(specifics.mutable_address_dependent_thoroughfare_name(), "Dep",
            ContactInfoSpecifics::FORMATTED);
   SetToken(
       specifics.mutable_address_thoroughfare_and_dependent_thoroughfare_name(),

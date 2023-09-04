@@ -53,13 +53,6 @@ StreetNameNode::StreetNameNode(AddressComponent* parent)
 
 StreetNameNode::~StreetNameNode() = default;
 
-DependentStreetNameNode::DependentStreetNameNode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                       parent,
-                       MergeMode::kDefault) {}
-
-DependentStreetNameNode::~DependentStreetNameNode() = default;
-
 StreetAndDependentStreetNameNode::StreetAndDependentStreetNameNode(
     AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,

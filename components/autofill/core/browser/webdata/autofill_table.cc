@@ -809,8 +809,6 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
                     kStreetAddressStatus,
                     kStreetName,
                     kStreetNameStatus,
-                    kDependentStreetName,
-                    kDependentStreetNameStatus,
                     kHouseNumber,
                     kHouseNumberStatus,
                     kSubpremise,
@@ -866,11 +864,10 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
       int index = 1;
       for (ServerFieldType type :
            {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_NAME,
-            ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
-            ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_DEPENDENT_LOCALITY,
-            ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,
-            ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY,
-            ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
+            ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_SUBPREMISE,
+            ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
+            ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
+            ADDRESS_HOME_COUNTRY, ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
         profile->SetRawInfoWithVerificationStatusInt(
             type, s.ColumnString16(index), s.ColumnInt(index + 1));
         index += 2;
@@ -1136,7 +1133,6 @@ AutofillTable::GetStoredTypesForAutofillProfile() {
       NAME_FULL_WITH_HONORIFIC_PREFIX,
       ADDRESS_HOME_STREET_ADDRESS,
       ADDRESS_HOME_STREET_NAME,
-      ADDRESS_HOME_DEPENDENT_STREET_NAME,
       ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_SUBPREMISE,

@@ -306,9 +306,7 @@ enum ServerFieldType {
 
   // ADDRESS_HOME_PREMISE_NAME value 111 is deprecated.
 
-  // Type that describes a crossing street as it is used in some countries to
-  // describe a location.
-  ADDRESS_HOME_DEPENDENT_STREET_NAME = 112,
+  // ADDRESS_HOME_DEPENDENT_STREET_NAME value 112 is deprecated.
 
   // Compound type to join the street and dependent street names.
   ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME = 113,

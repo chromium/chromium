@@ -112,9 +112,6 @@ AutofillProfile ConstructCompleteProfile() {
 
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_NAME, u"Fake St.", VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_STREET_NAME,
-                                           u"Dep",
-                                           VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"123",
                                            VerificationStatus::kFormatted);
@@ -214,10 +211,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 
   specifics.set_address_home_thoroughfare_name("Fake St.");
   specifics.set_address_home_thoroughfare_name_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
-
-  specifics.set_address_home_dependent_thoroughfare_name("Dep");
-  specifics.set_address_home_dependent_thoroughfare_name_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
   specifics.set_address_home_thoroughfare_number("123");

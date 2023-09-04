@@ -53,15 +53,8 @@ class StreetNameNode : public AddressComponent {
   ~StreetNameNode() override;
 };
 
-// In some countries, addresses use the intersection of two streets.
-// The DependentStreetName is represents the second street of the intersections.
-class DependentStreetNameNode : public AddressComponent {
- public:
-  explicit DependentStreetNameNode(AddressComponent* parent);
-  ~DependentStreetNameNode() override;
-};
-
-// Contains both the StreetName and the DependentStreetName of an address.
+// Contains the StreetName of an address.
+// TODO(crbug.com/1464568): Update to StreetLocationNode.
 class StreetAndDependentStreetNameNode : public AddressComponent {
  public:
   explicit StreetAndDependentStreetNameNode(AddressComponent* parent);
@@ -69,7 +62,6 @@ class StreetAndDependentStreetNameNode : public AddressComponent {
 
  private:
   StreetNameNode thoroughfare_name_{this};
-  DependentStreetNameNode dependent_thoroughfare_name_{this};
 };
 
 // The house number. It also contains the subunit descriptor, e.g. the 'a' in
