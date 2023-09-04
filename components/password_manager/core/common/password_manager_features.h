@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_FEATURES_H_
 
 // DON'T ADD NEW FEATURES here.
-// If the feature doesn't logically belong to the browser process, put it into
+// If the feature belongs logically to the browser process, put it into
 // components/password_manager/core/browser/features/password_features.h.
 
 #include "base/feature_list.h"
