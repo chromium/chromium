@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
@@ -28,6 +29,8 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
@@ -40,6 +43,7 @@ using testing::_;
 
 namespace {
 
+const std::string kCustomSearchEngineDomain = "bar.com";
 // Class that mocks `SearchEngineChoiceService`.
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
@@ -78,6 +82,21 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  private:
   unsigned int number_of_browsers_with_dialogs_open_ = 0;
 };
+
+void SetUserSelectedDefaultSearchProvider(
+    TemplateURLService* template_url_service) {
+  TemplateURLData data;
+  data.SetShortName(base::UTF8ToUTF16(kCustomSearchEngineDomain));
+  data.SetKeyword(base::UTF8ToUTF16(kCustomSearchEngineDomain));
+  data.SetURL("https://" + kCustomSearchEngineDomain + "url?bar={searchTerms}");
+  data.new_tab_url = "https://" + kCustomSearchEngineDomain + "newtab";
+  data.alternate_urls.push_back("https://" + kCustomSearchEngineDomain +
+                                "alt#quux={searchTerms}");
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+}
 
 }  // namespace
 
@@ -356,3 +375,26 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_FALSE(service->IsShowingDialog(browser()));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       ChooseCustomDefaultSearchProvider) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  SetUserSelectedDefaultSearchProvider(template_url_service);
+  auto* search_engine_choice_service =
+      static_cast<MockSearchEngineChoiceService*>(
+          SearchEngineChoiceServiceFactory::GetForProfile(
+              browser()->profile()));
+
+  // Navigate to a URL to display the dialog.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUIVersionURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  search_engine_choice_service->NotifyChoiceMade(/*prepopulate_id=*/0);
+  const TemplateURL* default_search_provider =
+      template_url_service->GetDefaultSearchProvider();
+  EXPECT_EQ(default_search_provider->short_name(),
+            base::UTF8ToUTF16(kCustomSearchEngineDomain));
+}

@@ -52,9 +52,8 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
         },
       },
 
-      // The choice will always be > 0 when selected.
-      // TODO(b/280753754): Handle custom search engines that do not have a
-      // prepopulate_id.
+      // The choice will always be > 0 when selected for prepopulated engines
+      // and == 0 for a custom search engine.
       selectedChoice_: {
         type: Number,
         value: -1,

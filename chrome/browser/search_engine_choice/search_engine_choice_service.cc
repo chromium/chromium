@@ -8,11 +8,14 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/util.h"
 
 namespace {
@@ -48,13 +51,26 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
 
-  // TODO(b/280753754): Handle custom search engines that do not have a
-  // prepopulate_id
-  std::unique_ptr<TemplateURLData> search_engine =
-      TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
-                                                        prepopulate_id);
-  CHECK(search_engine);
-  SetDefaultSearchProviderPrefValue(*pref_service, search_engine->sync_guid);
+  // A custom search engine would have a `prepopulate_id` of 0.
+  // Having a custom search engine displayed on the choice screen would mean
+  // that it is already the default search engine so we don't need to change
+  // anything.
+  const int kCustomSearchEngineId = 0;
+  if (prepopulate_id != kCustomSearchEngineId) {
+    std::unique_ptr<TemplateURLData> search_engine =
+        TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
+                                                          prepopulate_id);
+    CHECK(search_engine);
+    SetDefaultSearchProviderPrefValue(*pref_service, search_engine->sync_guid);
+  } else {
+    // Make sure that the default search engine is a custom search engine.
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(&profile_.get());
+    const TemplateURL* default_search_provider =
+        template_url_service->GetDefaultSearchProvider();
+
+    CHECK_EQ(default_search_provider->prepopulate_id(), 0);
+  }
 
   // Closes the dialogs that are open on other browser windows that
   // have the same profile as the one on which the choice was made.
