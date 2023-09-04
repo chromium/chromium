@@ -6,7 +6,10 @@
 
 namespace gl {
 
-ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api, GLenum target)
+ScopedRestoreTexture::ScopedRestoreTexture(
+    gl::GLApi* api,
+    GLenum target,
+    bool restore_prev_even_if_invalid /*=false*/)
     : api_(api), target_(target) {
   DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES);
   GLint binding = 0;
@@ -16,8 +19,9 @@ ScopedRestoreTexture::ScopedRestoreTexture(gl::GLApi* api, GLenum target)
                        &binding);
   // The bound texture could be already deleted by another context, and the
   // texture ID |binding| could be reused and points to a different texture.
-  if (api->glIsTextureFn(binding))
+  if (api->glIsTextureFn(binding) || restore_prev_even_if_invalid) {
     prev_binding_ = binding;
+  }
 }
 
 ScopedRestoreTexture::~ScopedRestoreTexture() {

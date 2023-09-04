@@ -15,7 +15,15 @@ namespace gl {
 // creation when this object is destroyed.
 class GL_EXPORT ScopedRestoreTexture {
  public:
-  ScopedRestoreTexture(gl::GLApi* api, GLenum target);
+  // Clients can pass true for `restore_prev_even_if_invalid` to have the
+  // construction-time binding restored at destruction even if that binding did
+  // not refer to a valid texture at the time of construction, rather than the
+  // default behavior of restoring to 0 at destruction in that case.
+  // TODO(crbug.com/1367187): Eliminate this boolean once all clients are
+  // converted to the default behavior.
+  ScopedRestoreTexture(gl::GLApi* api,
+                       GLenum target,
+                       bool restore_prev_even_if_invalid = false);
 
   ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
   ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;

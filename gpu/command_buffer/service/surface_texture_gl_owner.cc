@@ -19,6 +19,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
 namespace {
@@ -107,7 +108,14 @@ void SurfaceTextureGLOwner::UpdateTexImage() {
     // UpdateTexImage might change gl binding and we never should alter gl
     // binding without updating state tracking, which we can't do here, so
     // restore previous after we done.
-    ScopedRestoreTextureBinding scoped_restore_texture;
+    // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain behavior
+    // from when this class was using a custom implementation rather than the
+    // common utility.
+    // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
+    // killswitch.
+    gl::ScopedRestoreTexture scoped_restore_texture(
+        gl::g_current_gl_context, GL_TEXTURE_EXTERNAL_OES,
+        /*restore_prev_even_if_invalid=*/true);
     surface_texture_->UpdateTexImage();
   }
 }
