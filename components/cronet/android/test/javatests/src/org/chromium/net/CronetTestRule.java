@@ -307,9 +307,19 @@ public class CronetTestRule implements TestRule {
         // because that would break ContextUtils.initApplicationContext(). We work around this by
         // using a static MutableContextWrapper whose identity is constant, but the wrapped
         // Context isn't.
+        //
+        // TODO: in theory, no code under test should be running in between tests, and we should be
+        // able to enforce that by rejecting all Context calls in between tests (e.g. by resetting
+        // the base context to null while not running a test). Unfortunately, it's not that simple
+        // because the code under test doesn't currently wait for all asynchronous operations to
+        // complete before the test finishes (e.g. ProxyChangeListener can call back into the
+        // CronetInit thread even while a test isn't running), so we have to keep that context
+        // working even in between tests to prevent crashes. This is problematic as that makes tests
+        // non-hermetic/racy/brittle. Ideally, we should ensure that no code under test can run in
+        // between tests.
         @SuppressWarnings("StaticFieldLeak")
         private static final MutableContextWrapper sContextWrapper =
-                new MutableContextWrapper(null) {
+                new MutableContextWrapper(ApplicationProvider.getApplicationContext()) {
                     @Override
                     public Context getApplicationContext() {
                         // Ensure the code under test (in particular, the CronetEngineBuilderImpl
@@ -332,7 +342,7 @@ public class CronetTestRule implements TestRule {
             this.mContextWrapperWithoutFlags =
                     new MutableContextWrapper(ApplicationProvider.getApplicationContext());
             this.mContextWrapper = new MutableContextWrapper(mContextWrapperWithoutFlags);
-            assert sContextWrapper.getBaseContext() == null;
+            assert sContextWrapper.getBaseContext() == ApplicationProvider.getApplicationContext();
             sContextWrapper.setBaseContext(mContextWrapper);
             this.mBuilder = implementation.createBuilder(sContextWrapper)
                                     .setUserAgent(UserAgent.from(sContextWrapper))
@@ -493,7 +503,7 @@ public class CronetTestRule implements TestRule {
             }
             shutdownEngine();
             assert sContextWrapper.getBaseContext() == mContextWrapper;
-            sContextWrapper.setBaseContext(null);
+            sContextWrapper.setBaseContext(ApplicationProvider.getApplicationContext());
             mClosed = true;
 
             if (mHttpFlagsInterceptor != null) mHttpFlagsInterceptor.close();
