@@ -179,6 +179,10 @@ class SupervisedUserService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
+  FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
+
+  FirstTimeInterstitialBannerState GetUpdatedBannerState(
+      FirstTimeInterstitialBannerState original_state);
 
   void SetActive(bool active);
 

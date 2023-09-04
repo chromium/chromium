@@ -11,6 +11,13 @@
 
 class ChromeBrowserState;
 
+namespace supervised_user {
+// Factory helper method that returns true if we need to show the first
+// time banner on the interstitial. The banner informs existing Desktop/iOS
+// users about the application of parental controls.
+bool ShouldShowFirstTimeBanner(ChromeBrowserState* browser_state);
+}  // namespace supervised_user
+
 // Singleton that owns SupervisedUserService object and associates
 // them with ChromeBrowserState.
 class SupervisedUserServiceFactory : public BrowserStateKeyedServiceFactory {
