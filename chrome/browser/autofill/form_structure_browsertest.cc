@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
@@ -237,6 +238,8 @@ void FormStructureBrowserTest::SetUpCommandLine(
   // Suppress most output logs because we can't really control the output for
   // arbitrary test sites.
   command_line->AppendSwitchASCII(switches::kLoggingLevel, "2");
+  command_line->AppendSwitchASCII(
+      variations::switches::kVariationsOverrideCountry, "us");
 }
 
 void FormStructureBrowserTest::SetUpOnMainThread() {
