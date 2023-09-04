@@ -16,6 +16,7 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/session_storage_usage_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -72,6 +73,7 @@ class BrowsingDataModel {
                         content::InterestGroupManager::InterestGroupDataKey,
                         content::AttributionDataModel::DataKey,
                         content::PrivateAggregationDataModel::DataKey,
+                        content::SessionStorageUsageInfo,
                         net::SharedDictionaryIsolationKey,
                         browsing_data::SharedWorkerInfo
                         // TODO(crbug.com/1271155): Additional backend keys.

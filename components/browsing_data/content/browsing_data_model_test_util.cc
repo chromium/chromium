@@ -94,6 +94,19 @@ DataKeyDebugStringVisitor::operator()<browsing_data::SharedWorkerInfo>(
   return debug_string.str();
 }
 
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<content::SessionStorageUsageInfo>(
+    const content::SessionStorageUsageInfo& session_storage_usage_info) {
+  std::stringstream debug_string;
+  debug_string << "SessionStorageUsageInfo: ";
+  debug_string << "{namespace_id: " << session_storage_usage_info.namespace_id;
+  debug_string << " blink::StorageKey: ";
+  debug_string << session_storage_usage_info.storage_key.GetDebugString()
+               << "}";
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);

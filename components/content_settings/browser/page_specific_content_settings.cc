@@ -665,8 +665,24 @@ void PageSpecificContentSettings::StorageAccessed(
             return BrowsingDataModel::StorageType::kQuotaStorage;
         }
       })();
-      settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
-                                       blocked_by_policy);
+
+      if (storage_type == StorageType::SESSION_STORAGE) {
+        auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+        const auto& session_storage_namespace_map =
+            web_contents->GetController().GetSessionStorageNamespaceMap();
+        const auto& storage_partition_config =
+            web_contents->GetSiteInstance()->GetStoragePartitionConfig();
+        const auto& namespace_id =
+            session_storage_namespace_map.at(storage_partition_config);
+
+        content::SessionStorageUsageInfo session_storage_usage_info{
+            storage_key, namespace_id->id()};
+        settings->OnBrowsingDataAccessed(session_storage_usage_info,
+                                         bdm_storage_type, blocked_by_policy);
+      } else {
+        settings->OnBrowsingDataAccessed(storage_key, bdm_storage_type,
+                                         blocked_by_policy);
+      }
     } else {
       settings->OnStorageAccessed(storage_type, storage_key, blocked_by_policy);
     }
@@ -1160,6 +1176,14 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
       absl::holds_alternative<blink::StorageKey>(data_key)
           ? absl::get<blink::StorageKey>(data_key).origin().GetURL()
           : GURL();
+
+  // Session storage uses a different DataKey than other storage types.
+  if (storage_type == BrowsingDataModel::StorageType::kSessionStorage) {
+    accessing_url = absl::get<content::SessionStorageUsageInfo>(data_key)
+                        .storage_key.origin()
+                        .GetURL();
+  }
+
   AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
                                accessing_url, blocked,
                                originating_page->IsPrimary()};

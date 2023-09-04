@@ -933,29 +933,44 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
       content_settings->allowed_browsing_data_model();
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+  if (!GetParam()) {
+    return;
+  }
 
   SetDataForType("SessionStorage", web_contents());
-  if (GetParam()) {
-    WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
+  WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
-    // Validate Session Storage is reported.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntries(
-        allowed_browsing_data_model,
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kSessionStorage},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+  // Validate Session Storage is reported.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto storage_key = blink::StorageKey::CreateFirstParty(testOrigin);
 
-    // Delete Session Storage
-    RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
-  }
+  // Obtaining Session Storage namespace_id from the navigation controller.
+  const auto& session_storage_namespace_map =
+      web_contents()->GetController().GetSessionStorageNamespaceMap();
+  const auto& storage_partition_config =
+      content::StoragePartitionConfig::CreateDefault(
+          web_contents()->GetBrowserContext());
+  const auto& namespace_id =
+      session_storage_namespace_map.at(storage_partition_config);
+
+  content::SessionStorageUsageInfo data_key{storage_key, namespace_id->id()};
+
+  ValidateBrowsingDataEntries(
+      allowed_browsing_data_model,
+      {{kTestHost,
+        data_key,
+        {{BrowsingDataModel::StorageType::kSessionStorage},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+
+  // Delete Session Storage
+  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
+
   // Validate that the allowed browsing data model is empty.
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+  ASSERT_FALSE(HasDataForType("SessionStorage", web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,

@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/private_aggregation_data_model.h"
+#include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -111,13 +112,20 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
-    case BrowsingDataModel::StorageType::kSessionStorage:
       return GetOwnerBasedOnScheme(data_key.origin());
     default:
       NOTREACHED() << "Unexpected StorageType: "
                    << static_cast<int>(storage_type_);
       return "";
   }
+}
+
+template <>
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<content::SessionStorageUsageInfo>(
+    const content::SessionStorageUsageInfo& session_storage_usage_info) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kSessionStorage, storage_type_);
+  return GetOwnerBasedOnScheme(session_storage_usage_info.storage_key.origin());
 }
 
 template <>
@@ -272,6 +280,16 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
   if (types.Has(BrowsingDataModel::StorageType::kLocalStorage)) {
     helper->storage_partition_->GetDOMStorageContext()->DeleteLocalStorage(
         storage_key, helper->GetCompleteCallback());
+  }
+}
+
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    content::SessionStorageUsageInfo>(
+    const content::SessionStorageUsageInfo& session_storage_usage_info) {
+  if (types.Has(BrowsingDataModel::StorageType::kSessionStorage)) {
+    helper->storage_partition_->GetDOMStorageContext()->DeleteSessionStorage(
+        session_storage_usage_info, helper->GetCompleteCallback());
   }
 }
 
