@@ -114,7 +114,7 @@ class CertProvisioningWorker {
       const = 0;
   // Return a message describing the reason for failure when the worker fails.
   // In case the worker did not fail, the message is empty.
-  virtual const std::string& GetFailureMessage() const = 0;
+  virtual std::string GetFailureMessage() const = 0;
 };
 
 }  // namespace cert_provisioning

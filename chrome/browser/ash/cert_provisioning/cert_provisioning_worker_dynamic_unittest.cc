@@ -85,7 +85,7 @@ sDkn58N5eWm+hZADOAKROHR47j85VcsmYGK7z2x479YzsyWyOm0dbACXv7/HvFkz
 mMhGDBfgEskdbM+0agsZrJupoQMBUbD5gflcJlW3kwlboi3dTtiGixfYWw==
 -----END CERTIFICATE-----)";
 
-// Extracted from the certificate using the command:
+// Extracted from kFakeCertificate using the command:
 // openssl x509 -pubkey -noout -in cert.pem
 // and reformatted as a single line.
 constexpr char kPublicKeyBase64[] =
@@ -96,6 +96,28 @@ constexpr char kPublicKeyBase64[] =
     "oXgkA0mhyPygJwF3HMJfJHRrkxJ73c23R6kKvKTxqRKswvzTo5O5AzZFLdCe+"
     "GVTJuPo4VToGd+ZhS7QvsY38nAYG57fMnzzs5jjMF042AzzWiMt9gGbeuqCE6LXqFuSJYPo+"
     "TLaN7pwQx68PK5pd/lv58B7jjxCIAai0BX1rV6bl/Am3EukhTSuIcQiTr5c1G4E6bKwIDAQAB";
+
+// A certificate that doesn't match the public key kPublicKeyBase64.
+// Taken from net/data/ssl/certificates/client_1.pem
+constexpr char kFakeCertificatePubKeyMismatch[] = R"(-----BEGIN CERTIFICATE-----
+MIIDEjCCAfqgAwIBAgICEAAwDQYJKoZIhvcNAQELBQAwDzENMAsGA1UEAwwEQiBD
+QTAeFw0yMjEwMTkxNjU4NTVaFw0zMjEwMTYxNjU4NTVaMBgxFjAUBgNVBAMMDUNs
+aWVudCBDZXJ0IEEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDa+Dq7
+TTFSw1AxRkaftrCM8tuPbYH7NTxLdHil0F2y4G+PvrlqN0qB43tRaKJPQEYhG+Rn
+ppXeOk6/AbgOFXBQCPoVJWOjxwMX3ea3rSLM5C9xUP9Rsnf/fkngD6G6pOo2nYin
+fgpINQDhGB/r8BJs69RNhvgdbN4aV7Bz8WGYqKF3DVhV+Di5zIOPNC9zoZQPey4d
+uMS06OERG7Op8fFws3QoCzEywVdAbe/R+m5oeg875vLVvmONwDi52mqv4rgbfl+a
+PhyyPzoR3hdIPEi13AQB5hmyLAcTDtvcib3beNLw586NXcYgQZdcbLmDkjVRDK4u
+niE4QaRUGeRJD2+xAgMBAAGjbzBtMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYI
+KwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBSQ42eTfRBubU1JKWU45fWcZmLd
+aTAfBgNVHSMEGDAWgBRvxexARA9ceASOZhFOoe4eODj9cjANBgkqhkiG9w0BAQsF
+AAOCAQEAPvOKn7eKh09kVgjmoAfkufGKiFCgzJW9q34Clw/OG/5W/EQ8+rKY+c+0
+pgeetMVkmkmQS4Fc7e7MOk/KNujdPOfBK2u5Yin4bcphU0AgMhuF+VUOhVXPv+m4
+XewWqo0dhdgYGmqq4pHPuotGLejUqSSYILX34Ln+Lu/plBfDVFePf/gEkWrTDDof
+UBwYwQj+yYNPIy/EuI3b0/JFVCcpK/NQfXkfOBcJijiQY4spjBJ/G9oOAbXHfZtl
+mVs+3guwg9eBsA20CbRjbSqwJfUfz9+x/IrEKSk70yy6rYMhVtwee4G4d0rLCeIV
+Mjt4aTOX/y/glIOdbSfQj/SunXs1GA==
+-----END CERTIFICATE-----)";
 
 constexpr char kCertProfileId[] = "cert_profile_1";
 constexpr char kCertProfileName[] = "Certificate Profile 1";
@@ -1149,6 +1171,79 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoVaTooManyTwoProofsOfPossession) {
     EXPECT_GET_NEXT_INSTRUCTION(
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         NextInstructionProofOfPossession());
+
+    EXPECT_CALL(
+        *platform_keys_service_,
+        RemoveKey(TokenId::kUser,
+                  /*public_key_spki_der=*/GetPublicKeyBin(), /*callback=*/_))
+        .Times(1)
+        .WillOnce(RunOnceCallback<2>(Status::kSuccess));
+
+    EXPECT_CALL(callback_observer_,
+                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
+        .Times(1);
+  }
+
+  worker.DoStep();
+}
+
+// Checks that the worker makes all necessary requests to other modules during
+// success scenario when VA challenge is not enabled.
+// Provides one proof of possession .
+TEST_F(CertProvisioningWorkerDynamicTest, PublicKeyMismatch) {
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/false, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kDynamic);
+  const CertProvisioningClient::ProvisioningProcess provisioning_process(
+      CertScope::kUser, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
+
+  CertProvisioningWorkerDynamic worker(
+      CertScope::kUser, GetProfile(), &testing_pref_service_, cert_profile,
+      &cert_provisioning_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(*platform_keys_service_,
+                GenerateRSAKey(TokenId::kUser, kNonVaKeyModulusLengthBits,
+                               /*sw_backed=*/false,
+                               /*callback=*/_))
+        .Times(1)
+        .WillOnce(RunOnceCallback<3>(GetPublicKeyBin(), Status::kSuccess));
+
+    EXPECT_CALL(*key_permissions_manager_,
+                AllowKeyForUsage(/*callback=*/_, KeyUsage::kCorporate,
+                                 GetPublicKeyBin()));
+
+    EXPECT_SET_ATTRIBUTE_FOR_KEY_OK(
+        SetAttributeForKey(TokenId::kUser, GetPublicKeyBin(),
+                           KeyAttributeType::kCertificateProvisioningId,
+                           GetCertProfileIdBin(), _));
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 StartResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionProofOfPossession());
+
+    EXPECT_SIGN_RSAPKC1_RAW_OK(
+        SignRSAPKCS1Raw(::testing::Optional(TokenId::kUser), GetDataToSignBin(),
+                        GetPublicKeyBin(), /*callback=*/_));
+
+    EXPECT_UPLOAD_PROOF_OF_POSSESSION(
+        UploadProofOfPossession(Eq(std::ref(provisioning_process)),
+                                GetSignatureStr(),
+                                /*callback=*/_),
+        NoDataResultOk());
+
+    EXPECT_GET_NEXT_INSTRUCTION(
+        GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
+        NextInstructionImportCertificate(kFakeCertificatePubKeyMismatch));
 
     EXPECT_CALL(
         *platform_keys_service_,

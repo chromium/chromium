@@ -267,8 +267,8 @@ CertProvisioningWorkerStatic::GetLastBackendServerError() const {
   return last_backend_server_error_;
 }
 
-const std::string& CertProvisioningWorkerStatic::GetFailureMessage() const {
-  return failure_message_;
+std::string CertProvisioningWorkerStatic::GetFailureMessage() const {
+  return failure_message_ui_.value_or(failure_message_);
 }
 
 void CertProvisioningWorkerStatic::Stop(CertProvisioningWorkerState state) {
@@ -701,6 +701,11 @@ void CertProvisioningWorkerStatic::ImportCert(
   if (public_key_from_cert != public_key_) {
     failure_message_ =
         "Downloaded certificate does not match the expected key pair";
+    failure_message_ui_ = base::StrCat(
+        {"Downloaded certificate does not match the expected key pair. ",
+         "Expected: ", base::Base64Encode(public_key_), " ",
+         "Public key from cert: ", base::Base64Encode(public_key_from_cert),
+         "\n", "Cert: ", pem_encoded_certificate});
     UpdateState(FROM_HERE, CertProvisioningWorkerState::kFailed);
     return;
   }

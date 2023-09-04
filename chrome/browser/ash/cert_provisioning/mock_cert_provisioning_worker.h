@@ -82,7 +82,7 @@ class MockCertProvisioningWorker : public CertProvisioningWorker {
               (),
               (const override));
   MOCK_METHOD(base::Time, GetLastUpdateTime, (), (const override));
-  MOCK_METHOD(const std::string&, GetFailureMessage, (), (const override));
+  MOCK_METHOD(std::string, GetFailureMessage, (), (const override));
 
   void SetExpectations(testing::Cardinality do_step_times,
                        bool is_waiting,

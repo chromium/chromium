@@ -56,7 +56,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const absl::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  const std::string& GetFailureMessage() const override;
+  std::string GetFailureMessage() const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -235,8 +235,15 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   std::string pem_encoded_certificate_;
 
   // Holds a message describing the reason for failure when the worker fails.
+  // This may not contain PII or stable identifiers as it will be logged.
   // If the worker did not fail, this message is empty.
   std::string failure_message_;
+  // Optionally holds a message like `failure_message_` but containing PII or
+  // stable identifiers for display on the UI.
+  // If the worker did not fail, this is absent.
+  // If the worker did fail and this is absent, the UI should display
+  // failure_message_.
+  absl::optional<std::string> failure_message_ui_;
 
   // IMPORTANT:
   // Increment this when you add/change any member in
