@@ -1043,7 +1043,13 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // to the preferred formats. There's no need to allocate frames.
     // This is not compatible with VdVideoDecodeAccelerator, which
     // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
-    frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+    //
+    // frame_converter_ is only expected to be nullptr when running tests.
+    // Currently this is because the frame converter doesn't work, and since
+    // the tests don't need to render the frame, it can be bypassed.
+    if (frame_converter_) {
+      frame_converter_->set_unwrap_frame_cb(base::NullCallback());
+    }
     main_frame_pool_.reset();
     return *viable_candidate;
   }
