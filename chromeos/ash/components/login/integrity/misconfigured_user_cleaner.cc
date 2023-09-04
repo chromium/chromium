@@ -35,6 +35,7 @@ void MisconfiguredUserCleaner::CleanMisconfiguredUser() {
       integrity_manager.GetMisconfiguredUserAccountId();
 
   if (misconfigured_user.has_value()) {
+    LOG(ERROR) << "Found a user without credentials set up at creation.";
     DoCleanup(integrity_manager, misconfigured_user.value());
   }
 }
@@ -57,9 +58,11 @@ void MisconfiguredUserCleaner::DoCleanup(
     // We were not able to get the number of existing users, log error.
     LOG(ERROR) << "Unable to retrieve the number of existing users";
   } else if (!is_enterprise_managed && existing_users_count.value() == 0) {
+    LOG(WARNING) << "User is owner, removing the user requires powerwash.";
     // user is owner, TPM ownership was established, powerwash the device.
     SessionManagerClient::Get()->StartDeviceWipe();
   } else {
+    LOG(WARNING) << "User is non-owner, trigger user removal.";
     integrity_manager.RemoveUser(account_id);
     integrity_manager.ClearPrefs();
   }
