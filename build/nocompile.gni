@@ -114,7 +114,17 @@ if (enable_nocompile_tests) {
       } else {
         cxx = "clang++"
       }
-      args = [
+
+      depfile = "${result_path}.d"
+
+      args = []
+      if (is_win) {
+        args += [
+          "--depfile",
+          rebased_result_path + ".d",
+        ]
+      }
+      args += [
         rebase_path("$clang_base_path/bin/$cxx", root_build_dir),
         "4",  # number of compilers to invoke in parallel.
         "{{source}}",
@@ -152,17 +162,12 @@ if (enable_nocompile_tests) {
           "-Wno-unused-parameter",
           "-I" + rebase_path("$libcxx_prefix/include", root_build_dir),
           "/std:c++20",
-
-          # TODO(crbug.com/1442625): Uncomment this, then filter and process the
-          # output appropriately to track dependencies.
-          # "/showIncludes:user"
-
+          "/showIncludes",
           "/Fo" + nulldevice,
           "/c",
           "/Tp",
         ]
       } else {
-        depfile = "${result_path}.d"
         args += [
           "-Wall",
           "-nostdinc++",
