@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -85,6 +86,14 @@ bool IsClickable(PopupItemId id) {
   DCHECK(base::Contains(kClickablePopupItemIds, id) ^
          base::Contains(kUnclickablePopupItemIds, id));
   return base::Contains(kClickablePopupItemIds, id);
+}
+
+Suggestion CreateSuggestionWithChildren(
+    std::vector<Suggestion> children,
+    const std::u16string& name = u"Suggestion") {
+  Suggestion parent(name);
+  parent.children = std::move(children);
+  return parent;
 }
 
 }  // namespace
@@ -698,6 +707,60 @@ TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
 
   EXPECT_TRUE(!sub_widget || sub_widget->IsClosed())
       << "The sub-widget should be closed as its parent is closed.";
+}
+
+TEST_F(PopupViewViewsTest, CellOpensClosesSubPopupWithDelay) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+
+  CellIndex cell_0 = CellIndex{0, CellType::kControl};
+
+  view().SetSelectedCell(cell_0);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), absl::nullopt)
+      << "Should be no sub-popups initially.";
+
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), cell_0)
+      << "Selected cell should have a sub-popup after the delay.";
+
+  view().SetSelectedCell(absl::nullopt);
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), cell_0)
+      << "The cell should have no sub-popup by unselecting it.";
+}
+
+TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl});
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  EXPECT_NE(test_api(view()).GetOpenSubPopupCell(), absl::nullopt)
+      << "Openning a sub-popup should happen.";
+
+  UpdateSuggestions({PopupItemId::kAddressEntry});
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), absl::nullopt)
+      << "The cell's sub-popup should be closed.";
+}
+
+TEST_F(PopupViewViewsTest, NoSubPopupOpenIfNotEligible) {
+  controller().set_suggestions({
+      // Regular suggestion with no children,
+      Suggestion(u"Suggestion #1"),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl});
+  task_environment()->FastForwardBy(PopupViewViews::kOpenSubPopupDelay);
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupCell(), absl::nullopt)
+      << "Opening a sub-popup should happen.";
 }
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)

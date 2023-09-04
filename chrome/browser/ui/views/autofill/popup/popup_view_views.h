@@ -56,6 +56,9 @@ class PopupViewViews : public PopupBaseView,
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
 
+  // The time it takes for a selected cell to open a sub-popup if it has one.
+  static constexpr base::TimeDelta kOpenSubPopupDelay = base::Milliseconds(250);
+
   PopupViewViews(
       base::WeakPtr<AutofillPopupController> controller,
       absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent,
@@ -144,6 +147,10 @@ class PopupViewViews : public PopupBaseView,
 
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
+  // Opens a sub-popup on a new cell (and closes the open one if any), or just
+  // closes the existing if `absl::nullopt` is passed.
+  void SetCellWithOpenSubPopup(absl::optional<CellIndex> cell_index);
+
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
 
@@ -152,10 +159,17 @@ class PopupViewViews : public PopupBaseView,
 
   // The index of the row with a selected cell.
   absl::optional<size_t> row_with_selected_cell_;
+
+  // The latest cell which was set as having a sub-popup open. Storing it
+  // is required to maintain the invariant of at most one such a cell.
+  absl::optional<CellIndex> open_sub_popup_cell_;
+
   std::vector<RowPointer> rows_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> footer_container_ = nullptr;
+
+  base::OneShotTimer open_sub_popup_timer_;
 
   base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };

@@ -66,6 +66,15 @@ void PopupCellView::SetSelected(bool selected) {
   }
 }
 
+void PopupCellView::SetPermanentlyHighlighted(bool permanently_highlighted) {
+  permanently_highlighted_ = permanently_highlighted;
+  RefreshStyle();
+}
+
+bool PopupCellView::IsHighlighted() const {
+  return selected_ || permanently_highlighted_;
+}
+
 void PopupCellView::SetTooltipText(std::u16string tooltip_text) {
   if (tooltip_text_ == tooltip_text) {
     return;
@@ -218,7 +227,7 @@ void PopupCellView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void PopupCellView::RefreshStyle() {
-  ui::ColorId kBackgroundColorId = GetSelected()
+  ui::ColorId kBackgroundColorId = IsHighlighted()
                                        ? ui::kColorDropdownBackgroundSelected
                                        : ui::kColorDropdownBackground;
   if (base::FeatureList::IsEnabled(

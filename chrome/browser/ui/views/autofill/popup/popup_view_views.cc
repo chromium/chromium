@@ -198,11 +198,24 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
     GetPopupRowViewAt(old_index->first).SetSelectedCell(absl::nullopt);
   }
 
+  if (open_sub_popup_timer_.IsRunning()) {
+    open_sub_popup_timer_.Stop();
+  }
+
   if (cell_index && HasPopupRowViewAt(cell_index->first)) {
     row_with_selected_cell_ = cell_index->first;
     PopupRowView& new_row = GetPopupRowViewAt(cell_index->first);
     new_row.SetSelectedCell(cell_index->second);
     new_row.ScrollViewToVisible();
+
+    if (cell_index->second == PopupRowView::CellType::kControl &&
+        !controller_->GetSuggestionAt(cell_index->first).children.empty()) {
+      open_sub_popup_timer_.Start(
+          FROM_HERE, kOpenSubPopupDelay,
+          base::BindOnce(&PopupViewViews::SetCellWithOpenSubPopup,
+                         weak_ptr_factory_.GetWeakPtr(), cell_index));
+    }
+
   } else {
     row_with_selected_cell_ = absl::nullopt;
   }
@@ -341,6 +354,11 @@ bool PopupViewViews::RemoveSelectedCell() {
 }
 
 void PopupViewViews::OnSuggestionsChanged() {
+  if (open_sub_popup_timer_.IsRunning()) {
+    open_sub_popup_timer_.Stop();
+  }
+  SetCellWithOpenSubPopup(absl::nullopt);
+
   CreateChildViews();
   DoUpdateBoundsAndRedrawPopup();
 }
@@ -675,6 +693,27 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
   }
 
   return CanShowDropdownHere(min_height, bounds, element_bounds);
+}
+
+void PopupViewViews::SetCellWithOpenSubPopup(
+    absl::optional<CellIndex> cell_index) {
+  if (open_sub_popup_cell_ == cell_index) {
+    return;
+  }
+
+  // Close previously open sub-popup if any.
+  if (open_sub_popup_cell_ && HasPopupRowViewAt(open_sub_popup_cell_->first)) {
+    GetPopupRowViewAt(open_sub_popup_cell_->first)
+        .SetCellPermanentlyHighlighted(open_sub_popup_cell_->second, false);
+    open_sub_popup_cell_ = absl::nullopt;
+  }
+
+  // Open a sub-popup on the new cell if provided.
+  if (cell_index && HasPopupRowViewAt(cell_index->first)) {
+    GetPopupRowViewAt(cell_index->first)
+        .SetCellPermanentlyHighlighted(cell_index->second, true);
+    open_sub_popup_cell_ = cell_index;
+  }
 }
 
 base::WeakPtr<AutofillPopupView> PopupViewViews::GetWeakPtr() {
