@@ -93,6 +93,12 @@ void CloudUploadPageHandler::IsODFSMounted(IsODFSMountedCallback callback) {
 void CloudUploadPageHandler::SignInToOneDrive(
     SignInToOneDriveCallback callback) {
   web_ui_->GetWebContents()->GetTopLevelNativeWindow()->Hide();
+  if (!odfs_mount_called_) {
+    // Log only once per setup flow.
+    odfs_mount_called_ = true;
+    UMA_HISTOGRAM_BOOLEAN("FileBrowser.OfficeFiles.Setup.ODFSAvailability",
+                          IsODFSInstalled(profile_));
+  }
   RequestODFSMount(
       profile_,
       base::BindOnce(&CloudUploadPageHandler::OnMountResponse,
