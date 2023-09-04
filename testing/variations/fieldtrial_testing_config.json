@@ -8439,24 +8439,6 @@
             ]
         }
     ],
-    "IOSPinnedTabs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "overflow_param": "false"
-                    },
-                    "enable_features": [
-                        "EnablePinnedTabs"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSPromosManagerMigration": [
         {
             "platforms": [

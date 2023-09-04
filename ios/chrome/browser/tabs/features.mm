@@ -10,8 +10,7 @@
 
 BASE_FEATURE(kEnablePinnedTabs,
              "EnablePinnedTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPinnedTabsEnabled() {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
