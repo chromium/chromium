@@ -1309,6 +1309,7 @@ public class UrlOverridingTest {
             {"FencedFrames<Study,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:implementation_type/mparch"})
+    @DisabledTest(message = "crbug.com/1477829")
     public void
     testNavigationFromFencedFrame() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
