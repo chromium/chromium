@@ -1766,9 +1766,11 @@ public class TabImpl implements Tab {
         boolean alwaysRequestDesktopSite =
                 commandLine.hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES);
 
-        boolean shouldRequestDesktopSite =
-                TabUtils.readRequestDesktopSiteContentSettings(profile, url)
-                || alwaysRequestDesktopSite;
+        boolean shouldRequestDesktopSite = alwaysRequestDesktopSite
+                || (TabUtils.readRequestDesktopSiteContentSettings(profile, url)
+                        && !RequestDesktopUtils.shouldApplyWindowSetting(
+                                profile, url, getContext()));
+
         if (!shouldRequestDesktopSite
                 && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             // TODO(shuyng): Make additional setting compatible with site level setting.

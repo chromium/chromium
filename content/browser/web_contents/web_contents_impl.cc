@@ -2943,7 +2943,6 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.viewport_enabled = command_line.HasSwitch(switches::kEnableViewport);
 
 #if BUILDFLAG(IS_ANDROID)
-  constexpr int kTabletWidthThreshold = 600;
   // TODO(crbug.com/1469720): GetPrimaryDisplay() won't be correct for
   // externally connected displays. Get the display where Chrome is opened
   // instead.
@@ -2955,7 +2954,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (prefs.viewport_enabled &&
       base::FeatureList::IsEnabled(
           blink::features::kDefaultViewportIsDeviceWidth) &&
-      min_width_in_dp >= kTabletWidthThreshold &&
+      min_width_in_dp >= kAndroidMinimumTabletWidthDp &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TV) {
     prefs.viewport_style = blink::mojom::ViewportStyle::kDefault;
   }

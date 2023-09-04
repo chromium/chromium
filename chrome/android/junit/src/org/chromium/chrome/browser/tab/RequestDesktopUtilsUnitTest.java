@@ -19,9 +19,13 @@ import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_WI
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -34,12 +38,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowBuild;
+import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.util.ReflectionHelpers;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.SysUtils;
@@ -58,6 +65,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroidManager;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowTabUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -98,7 +106,8 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowSysUtils.class, ShadowProfile.class, ShadowUmaSessionStats.class,
-                ShadowDisplayAndroid.class, ShadowDisplayAndroidManager.class})
+                ShadowDisplayAndroid.class, ShadowDisplayAndroidManager.class,
+                ShadowTabUtils.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -185,12 +194,32 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(TabUtils.class)
+    static class ShadowTabUtils {
+        private static boolean sIsGlobalSetting;
+
+        public static void setIsGlobalSetting(Boolean isGlobalSetting) {
+            sIsGlobalSetting = isGlobalSetting;
+        }
+
+        @Implementation
+        public static boolean isRequestDesktopSiteContentSettingsGlobal(Profile profile, GURL url) {
+            return sIsGlobalSetting;
+        }
+    }
+
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
     private MessageDispatcher mMessageDispatcher;
     @Mock
     private Activity mActivity;
+    @Mock
+    private Window mWindow;
+    @Mock
+    private WindowManager.LayoutParams mLayoutParams;
+    @Mock
+    private DisplayMetrics mDisplayMetrics;
     @Mock
     private Profile mProfile;
     @Mock
@@ -227,6 +256,7 @@ public class RequestDesktopUtilsUnitTest {
     private static final String GOOGLE_COM = "[*.]google.com/";
     private static String sGlobalDefaultsExperimentTrialName;
     private static String sGlobalDefaultsExperimentGroupName;
+    private ShadowPackageManager mShadowPackageManager;
 
     @Before
     public void setup() {
@@ -290,6 +320,17 @@ public class RequestDesktopUtilsUnitTest {
         doAnswer(invocation -> mWindowSetting)
                 .when(mPrefService)
                 .getBoolean(eq(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
+        ShadowTabUtils.setIsGlobalSetting(true);
+        when(mActivity.getWindow()).thenReturn(mWindow);
+        when(mWindow.getAttributes()).thenReturn(mLayoutParams);
+        mLayoutParams.width = -1;
+        mDisplayMetrics.density = 1.0f;
+        mDisplayMetrics.widthPixels = 800;
+        mShadowPackageManager =
+                Shadows.shadowOf(ContextUtils.getApplicationContext().getPackageManager());
+        mShadowPackageManager.setSystemFeature(
+                PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ false);
+        RequestDesktopUtils.setTestDisplayMetrics(mDisplayMetrics);
     }
 
     @After
@@ -634,7 +675,8 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 mActivity);
         Assert.assertFalse(
-                "Desktop site global setting should not be default-enabled on devices below the memory threshold.",
+                "Desktop site global setting should not be default-enabled on devices below the "
+                        + "memory threshold.",
                 shouldDefaultEnable);
     }
 
@@ -647,7 +689,8 @@ public class RequestDesktopUtilsUnitTest {
         enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
-        Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
+        Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ "
+                        + "devices.",
                 shouldDefaultEnable);
     }
 
@@ -683,7 +726,8 @@ public class RequestDesktopUtilsUnitTest {
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, true);
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
-        Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
+        Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ "
+                        + "devices.",
                 shouldDefaultEnable);
         Assert.assertTrue(
                 "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC "
@@ -717,7 +761,8 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 mActivity);
         Assert.assertFalse(
-                "Desktop site global setting should not be default-enabled if it has been previously updated by the user.",
+                "Desktop site global setting should not be default-enabled if it has been "
+                        + "previously updated by the user.",
                 shouldDefaultEnable);
     }
 
@@ -730,10 +775,12 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 mActivity);
         Assert.assertFalse(
-                "Desktop site global setting should not be default-enabled in the control experiment group.",
+                "Desktop site global setting should not be default-enabled in the control "
+                        + "experiment group.",
                 shouldDefaultEnable);
         Assert.assertTrue(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be true.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "true.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)
                         && mSharedPreferencesManager.readBoolean(
@@ -866,7 +913,8 @@ public class RequestDesktopUtilsUnitTest {
                                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                                 false));
         Assert.assertTrue(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be true.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "true.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT)
                         && mSharedPreferencesManager.readBoolean(
@@ -893,7 +941,8 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
                 mProfile, mActivity);
         Assert.assertFalse(
-                "Desktop site global setting should not be default-enabled when opt-in is enabled.",
+                "Desktop site global setting should not be default-enabled when opt-in is "
+                        + "enabled.",
                 didDefaultEnable);
     }
 
@@ -973,7 +1022,8 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
@@ -1005,7 +1055,8 @@ public class RequestDesktopUtilsUnitTest {
         boolean didDisable = RequestDesktopUtils.maybeDisableGlobalSetting(mProfile);
 
         Assert.assertFalse(
-                "Desktop site global setting should not be disabled on downgrade if the user updated the setting.",
+                "Desktop site global setting should not be disabled on downgrade if the user "
+                        + "updated the setting.",
                 didDisable);
         Assert.assertEquals("Desktop site content setting should be set correctly.",
                 ContentSettingValues.ALLOW, mRdsDefaultValue);
@@ -1014,7 +1065,8 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
@@ -1048,7 +1100,8 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
@@ -1088,7 +1141,8 @@ public class RequestDesktopUtilsUnitTest {
                     mSharedPreferencesManager.contains(
                             ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
             Assert.assertFalse(
-                    "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                    "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should "
+                            + "be removed.",
                     mSharedPreferencesManager.contains(
                             ChromePreferenceKeys
                                     .DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
@@ -1128,7 +1182,8 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
@@ -1164,7 +1219,8 @@ public class RequestDesktopUtilsUnitTest {
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING));
         Assert.assertFalse(
-                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be removed.",
+                "SharedPreference DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT should be "
+                        + "removed.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT));
     }
@@ -1183,10 +1239,12 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
                 mProfile, mActivity);
         Assert.assertFalse(
-                "Opt-in message for desktop site global setting should not be shown in the control experiment group.",
+                "Opt-in message for desktop site global setting should not be shown in the "
+                        + "control experiment group.",
                 shouldShowOptIn);
         Assert.assertTrue(
-                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be true.",
+                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be "
+                        + "true.",
                 mSharedPreferencesManager.contains(
                         ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT)
                         && mSharedPreferencesManager.readBoolean(
@@ -1224,7 +1282,8 @@ public class RequestDesktopUtilsUnitTest {
         Assert.assertEquals("Message icon resource ID should match.", R.drawable.ic_desktop_windows,
                 message.getValue().get(MessageBannerProperties.ICON_RESOURCE_ID));
         Assert.assertTrue(
-                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be true.",
+                "SharedPreference DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT should be "
+                        + "true.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                         false));
@@ -1248,7 +1307,8 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
                 mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
         Assert.assertFalse(
-                "Desktop site global setting opt-in message should not be shown when the setting is already enabled.",
+                "Desktop site global setting opt-in message should not be shown when the setting "
+                        + "is already enabled.",
                 shown);
     }
 
@@ -1267,7 +1327,8 @@ public class RequestDesktopUtilsUnitTest {
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
                 mProfile, mMessageDispatcher, mActivity, mCurrentTabSupplier);
         Assert.assertFalse(
-                "Desktop site global setting opt-in message should not be shown on devices below the memory threshold.",
+                "Desktop site global setting opt-in message should not be shown on devices below "
+                        + "the memory threshold.",
                 shown);
     }
 
@@ -1366,6 +1427,96 @@ public class RequestDesktopUtilsUnitTest {
         verify(clickedTab).loadIfNeeded(anyInt());
     }
 
+    @Test
+    public void testShouldApplyWindowSetting_FeatureOff() {
+        mWindowSetting = true;
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse("Desktop site window setting should not be applied when feature is off",
+                shouldApplyWindowSetting);
+    }
+
+    @Test
+    public void testShouldApplyWindowSetting_IsAutomotive() {
+        mShadowPackageManager.setSystemFeature(
+                PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse("Desktop site window setting should not be applied on automotive",
+                shouldApplyWindowSetting);
+    }
+
+    @Test
+    public void testShouldApplyWindowSetting_SettingOff() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = false;
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse(
+                "Desktop site window setting should not be applied when window setting is off",
+                shouldApplyWindowSetting);
+    }
+
+    @Test
+    public void testShouldApplyWindowSetting_isNotGlobalSetting() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        ShadowTabUtils.setIsGlobalSetting(false);
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse(
+                "Desktop site window setting should not be applied when the current RDS setting "
+                        + "is domain setting",
+                shouldApplyWindowSetting);
+    }
+
+    @Test
+    public void testShouldApplyWindowSetting_windowAttributesWidthValid() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        ShadowTabUtils.setIsGlobalSetting(true);
+        mLayoutParams.width = 800;
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse(
+                "Desktop site window setting should not be applied when window width in dp is "
+                        + "larger than 600",
+                shouldApplyWindowSetting);
+
+        mLayoutParams.width = 400;
+        shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertTrue(
+                "Desktop site window setting should be applied when window width in dp is "
+                        + "smaller than 600",
+                shouldApplyWindowSetting);
+    }
+
+    @Test
+    public void testShouldApplyWindowSetting_windowAttributesWidthInvalid() {
+        enableFeature(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING, true);
+        mWindowSetting = true;
+        ShadowTabUtils.setIsGlobalSetting(true);
+        mDisplayMetrics.density = 2.0f;
+        mDisplayMetrics.widthPixels = 1600;
+        boolean shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertFalse(
+                "Desktop site window setting should not be applied when window width in dp is "
+                        + "larger than 600",
+                shouldApplyWindowSetting);
+
+        mDisplayMetrics.widthPixels = 1000;
+        shouldApplyWindowSetting =
+                RequestDesktopUtils.shouldApplyWindowSetting(mProfile, mGoogleUrl, mActivity);
+        Assert.assertTrue(
+                "Desktop site window setting should be applied when window width in dp is "
+                        + "smaller than 600",
+                shouldApplyWindowSetting);
+    }
+
     private Tab createTab() {
         Tab tab = mock(Tab.class);
         UserDataHost tabDataHost = new UserDataHost();
@@ -1395,7 +1546,8 @@ public class RequestDesktopUtilsUnitTest {
                 requestDesktopSite ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK,
                 mRdsDefaultValue);
         Assert.assertEquals(
-                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be set correctly.",
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should "
+                        + "be set correctly.",
                 requestDesktopSite,
                 mSharedPreferencesManager.readBoolean(
                         SingleCategorySettingsConstants

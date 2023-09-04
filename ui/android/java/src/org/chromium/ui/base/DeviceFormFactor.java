@@ -21,7 +21,7 @@ import org.chromium.ui.display.DisplayUtil;
  */
 public class DeviceFormFactor {
     /**
-     * Miniumum screen size in dp to be considered a tablet. Matches the value
+     * Minimum screen size in dp to be considered a tablet. Matches the value
      * used by res/ directories. E.g.: res/values-sw600dp/values.xml
      */
     public static final int MINIMUM_TABLET_WIDTH_DP = 600;

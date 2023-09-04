@@ -4,6 +4,7 @@
 
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 
+#include "base/android/build_info.h"
 #include "base/command_line.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +34,9 @@ RequestDesktopSiteWebContentsObserverAndroid::
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
+  if (base::FeatureList::IsEnabled(
+          features::kRequestDesktopSiteWindowSetting) ||
+      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
     pref_service_ = profile->GetPrefs();
     tab_android_ = TabAndroid::FromWebContents(contents);
   }
@@ -59,20 +62,36 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   content_settings::SettingInfo setting_info;
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, &setting_info);
-  bool use_rds = setting == CONTENT_SETTING_ALLOW;
+  bool desktop_mode = setting == CONTENT_SETTING_ALLOW;
   // For --request-desktop-sites, always override the user agent.
-  use_rds |= base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kRequestDesktopSites);
+  bool always_request_desktop_site =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kRequestDesktopSites);
+  desktop_mode |= always_request_desktop_site;
   bool is_global_setting = setting_info.primary_pattern.MatchesAllHosts();
 
+  // RDS Window Setting support.
+  if (base::FeatureList::IsEnabled(
+          features::kRequestDesktopSiteWindowSetting) &&
+      !base::android::BuildInfo::GetInstance()->is_automotive() &&
+      pref_service_->GetBoolean(prefs::kDesktopSiteWindowSettingEnabled) &&
+      desktop_mode && !always_request_desktop_site && is_global_setting) {
+    int web_contents_width_dp =
+        web_contents()->GetContainerBounds().size().width();
+    if (web_contents_width_dp > 0 &&
+        web_contents_width_dp < content::kAndroidMinimumTabletWidthDp) {
+      desktop_mode = false;
+    }
+  }
+
   // Take secondary settings into account if ContentSetting is global setting.
-  if (!use_rds &&
+  if (!desktop_mode &&
       base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions) &&
       is_global_setting) {
-    bool use_rds_peripheral =
+    bool desktop_mode_peripheral =
         pref_service_->GetBoolean(prefs::kDesktopSitePeripheralSettingEnabled);
-    if (use_rds_peripheral) {
-      use_rds = TabAndroid::isHardwareKeyboardAvailable(tab_android_);
+    if (desktop_mode_peripheral) {
+      desktop_mode = TabAndroid::isHardwareKeyboardAvailable(tab_android_);
     }
   }
 
@@ -80,7 +99,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   // initiated navigation is handled on Java side. This is to workaround known
   // issues crbug.com/1265751 and crbug.com/1261939.
   if (navigation_handle->IsRendererInitiated()) {
-    navigation_handle->SetIsOverridingUserAgent(use_rds);
+    navigation_handle->SetIsOverridingUserAgent(desktop_mode);
   }
 
   // Only record UKM for site settings and primary main frame.
@@ -88,7 +107,7 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     return;
   }
   rds_web_contents_observer::UserAgentRequestType user_agent_request_type;
-  if (use_rds) {
+  if (desktop_mode) {
     user_agent_request_type =
         rds_web_contents_observer::UserAgentRequestType::RequestDesktop;
   } else {
