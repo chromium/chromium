@@ -3454,6 +3454,7 @@
       name: "SoftNavigationHeuristics",
       status: "experimental",
       depends_on: ["NavigationId"],
+      origin_trial_allows_third_party: true,
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },
     {
