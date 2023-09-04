@@ -33,9 +33,17 @@ namespace blink {
 namespace {
 
 using testing::_;
+using testing::ByMove;
+using testing::DoAll;
 using testing::Invoke;
 using testing::Return;
+using testing::SaveArg;
 using testing::WithArgs;
+
+ACTION_P(RunClosure, closure) {
+  scheduler::GetSequencedTaskRunnerForTesting()->PostTask(FROM_HERE,
+                                                          std::move(closure));
+}
 
 class MockVideoEncoder : public VideoEncoder {
  public:
@@ -48,8 +56,13 @@ class MockVideoEncoder : public VideoEncoder {
   MOCK_METHOD(std::unique_ptr<media::VideoEncoder>,
               CreateMediaVideoEncoder,
               (const ParsedConfig& config,
-               media::GpuVideoAcceleratorFactories* gpu_factories),
+               media::GpuVideoAcceleratorFactories* gpu_factories,
+               bool& is_platform_encoder),
               (override));
+  MOCK_METHOD(std::unique_ptr<media::VideoEncoderMetricsProvider>,
+              CreateVideoEncoderMetricsProvider,
+              (),
+              (const));
 
   // CallOnMediaENcoderInfoChanged() is necessary for VideoEncoderTest to call
   // VideoEncoder::OnMediaEncoderInfoChanged() because the function is a private
@@ -66,11 +79,13 @@ class VideoEncoderTest : public testing::Test {
   ~VideoEncoderTest() override = default;
 };
 
+constexpr gfx::Size kEncodeSize(80, 60);
+
 VideoEncoderConfig* CreateConfig() {
   auto* config = MakeGarbageCollected<VideoEncoderConfig>();
   config->setCodec("vp8");
-  config->setWidth(80);
-  config->setHeight(60);
+  config->setWidth(kEncodeSize.width());
+  config->setHeight(kEncodeSize.height());
   return config;
 }
 
@@ -201,16 +216,17 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     auto media_encoder = std::make_unique<media::MockVideoEncoder>();
     media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
 
-    EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _))
-        .WillOnce(::testing::DoAll(
-            ::testing::Invoke([encoder = encoder]() {
-              media::VideoEncoderInfo info;
-              info.implementation_name = "MockEncoderName";
-              info.is_hardware_accelerated = true;
-              encoder->CallOnMediaEncoderInfoChanged(info);
-            }),
-            ::testing::Return(::testing::ByMove(std::move(media_encoder)))));
-
+    EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+        .WillOnce(DoAll(Invoke([encoder = encoder]() {
+                          media::VideoEncoderInfo info;
+                          info.implementation_name = "MockEncoderName";
+                          info.is_hardware_accelerated = true;
+                          encoder->CallOnMediaEncoderInfoChanged(info);
+                        }),
+                        Return(ByMove(std::move(media_encoder)))));
+    EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+        .WillOnce(Return(ByMove(
+            std::make_unique<media::MockVideoEncoderMetricsProvider>())));
     EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
         .WillOnce(WithArgs<4>(
             Invoke([quit_closure = run_loop.QuitClosure()](
@@ -240,16 +256,14 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
     auto media_encoder = std::make_unique<media::MockVideoEncoder>();
     media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
 
-    EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _))
-        .WillOnce(::testing::DoAll(
-            ::testing::Invoke([encoder = encoder]() {
-              media::VideoEncoderInfo info;
-              info.implementation_name = "MockEncoderName";
-              info.is_hardware_accelerated = false;
-              encoder->CallOnMediaEncoderInfoChanged(info);
-            }),
-            ::testing::Return(::testing::ByMove(std::move(media_encoder)))));
-
+    EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+        .WillOnce(DoAll(Invoke([encoder = encoder]() {
+                          media::VideoEncoderInfo info;
+                          info.implementation_name = "MockEncoderName";
+                          info.is_hardware_accelerated = false;
+                          encoder->CallOnMediaEncoderInfoChanged(info);
+                        }),
+                        Return(ByMove(std::move(media_encoder)))));
     EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
         .WillOnce(WithArgs<4>(
             Invoke([quit_closure = run_loop.QuitClosure()](
@@ -272,6 +286,200 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
   ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 }
 
+TEST_F(
+    VideoEncoderTest,
+    ConfigureAndEncode_CallVideoEncoderMetricsProviderInitializeAndIncrementEncodedFrameCount) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+
+  // Create a video encoder.
+  auto* init =
+      CreateInit(mock_function.ExpectCall(), mock_function.ExpectNoCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+
+  auto* config = CreateConfig();
+  base::RunLoop run_loop;
+  media::VideoEncoder::OutputCB output_cb;
+  auto media_encoder = std::make_unique<media::MockVideoEncoder>();
+  media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+  auto encoder_metrics_provider =
+      std::make_unique<media::MockVideoEncoderMetricsProvider>();
+  media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
+      encoder_metrics_provider.get();
+  EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+      .WillOnce(DoAll(Invoke([encoder = encoder]() {
+                        media::VideoEncoderInfo info;
+                        info.implementation_name = "MockEncoderName";
+                        info.is_hardware_accelerated = false;
+                        encoder->CallOnMediaEncoderInfoChanged(info);
+                      }),
+                      Return(ByMove(std::move(media_encoder)))));
+  EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+  EXPECT_CALL(
+      *mock_encoder_metrics_provider,
+      MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
+                     false, media::SVCScalabilityMode::kL1T1));
+  EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+      .WillOnce(DoAll(
+          SaveArg<3>(&output_cb),
+          WithArgs<4>(Invoke([quit_closure = run_loop.QuitClosure()](
+                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                         media::EncoderStatus::Codes::kOk));
+          }))));
+  encoder->configure(config, es);
+  EXPECT_CALL(*mock_media_encoder, Encode(_, _, _))
+      .WillOnce(
+          WithArgs<2>(Invoke([output_cb = &output_cb](
+                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                         media::EncoderStatus::Codes::kOk));
+            media::VideoEncoderOutput out;
+            out.data = std::make_unique<uint8_t[]>(100);
+            out.size = 100;
+            out.key_frame = true;
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE,
+                WTF::BindOnce(*output_cb, std::move(out), absl::nullopt));
+          })));
+
+  EXPECT_CALL(*mock_encoder_metrics_provider, MockIncrementEncodedFrameCount())
+      .WillOnce([quit_closure = run_loop.QuitClosure()] {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, std::move(quit_closure));
+      });
+  encoder->encode(
+      MakeVideoFrame(script_state, config->width(), config->height(), 1),
+      MakeGarbageCollected<VideoEncoderEncodeOptions>(), es);
+  run_loop.Run();
+}
+
+TEST_F(VideoEncoderTest,
+       ConfigureTwice_CallVideoEncoderMetricsProviderInitializeTwice) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+
+  // Create a video encoder.
+  auto* init =
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+
+  auto* config = CreateConfig();
+  base::RunLoop run_loop;
+  media::VideoEncoder::OutputCB output_cb;
+  auto media_encoder = std::make_unique<media::MockVideoEncoder>();
+  media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+  auto encoder_metrics_provider =
+      std::make_unique<media::MockVideoEncoderMetricsProvider>();
+  media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
+      encoder_metrics_provider.get();
+  EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+      .WillOnce(DoAll(Invoke([encoder = encoder]() {
+                        media::VideoEncoderInfo info;
+                        info.implementation_name = "MockEncoderName";
+                        info.is_hardware_accelerated = false;
+                        encoder->CallOnMediaEncoderInfoChanged(info);
+                      }),
+                      Return(ByMove(std::move(media_encoder)))));
+  EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+  EXPECT_CALL(
+      *mock_encoder_metrics_provider,
+      MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
+                     false, media::SVCScalabilityMode::kL1T1));
+  EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+      .WillOnce(DoAll(
+          SaveArg<3>(&output_cb),
+          WithArgs<4>(Invoke([](media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                         media::EncoderStatus::Codes::kOk));
+          }))));
+  encoder->configure(config, es);
+  EXPECT_CALL(*mock_media_encoder, Flush(_))
+      .WillOnce([](media::VideoEncoder::EncoderStatusCB done_cb) {
+        scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+            FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                     media::EncoderStatus::Codes::kOk));
+      });
+  EXPECT_CALL(
+      *mock_encoder_metrics_provider,
+      MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
+                     false, media::SVCScalabilityMode::kL1T1));
+  EXPECT_CALL(*mock_media_encoder, ChangeOptions(_, _, _))
+      .WillOnce(
+          WithArgs<2>(Invoke([quit_closure = run_loop.QuitClosure()](
+                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, WTF::BindOnce(std::move(done_cb),
+                                         media::EncoderStatus::Codes::kOk));
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE, std::move(quit_closure));
+          })));
+  encoder->configure(config, es);
+  run_loop.Run();
+}
+
+TEST_F(VideoEncoderTest,
+       InitializeFailure_CallVieoEncoderMetricsProviderSetError) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+
+  // Create a video encoder.
+  auto* init =
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+
+  auto* config = CreateConfig();
+  base::RunLoop run_loop;
+  media::VideoEncoder::OutputCB output_cb;
+  auto media_encoder = std::make_unique<media::MockVideoEncoder>();
+  media::MockVideoEncoder* mock_media_encoder = media_encoder.get();
+  auto encoder_metrics_provider =
+      std::make_unique<media::MockVideoEncoderMetricsProvider>();
+  media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
+      encoder_metrics_provider.get();
+  EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+      .WillOnce(DoAll(Invoke([encoder = encoder]() {
+                        media::VideoEncoderInfo info;
+                        info.implementation_name = "MockEncoderName";
+                        info.is_hardware_accelerated = false;
+                        encoder->CallOnMediaEncoderInfoChanged(info);
+                      }),
+                      Return(ByMove(std::move(media_encoder)))));
+  EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
+      .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
+  EXPECT_CALL(
+      *mock_encoder_metrics_provider,
+      MockInitialize(media::VideoCodecProfile::VP8PROFILE_ANY, kEncodeSize,
+                     false, media::SVCScalabilityMode::kL1T1));
+  EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
+      .WillOnce(
+          WithArgs<4>(Invoke([quit_closure = run_loop.QuitClosure()](
+                                 media::VideoEncoder::EncoderStatusCB done_cb) {
+            scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
+                FROM_HERE,
+                WTF::BindOnce(
+                    std::move(done_cb),
+                    media::EncoderStatus::Codes::kEncoderUnsupportedConfig));
+          })));
+  EXPECT_CALL(*mock_encoder_metrics_provider, MockSetError(_))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  encoder->configure(config, es);
+  run_loop.Run();
+}
 }  // namespace
 
 }  // namespace blink
