@@ -66,7 +66,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
           profile));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile);
 }
 
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
@@ -83,7 +83,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
           testing::_));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined, profile);
 }
 
 // This is testing that closing all tabs (which effectively destroys the web

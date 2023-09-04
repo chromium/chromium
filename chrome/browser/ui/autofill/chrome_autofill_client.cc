@@ -841,9 +841,12 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   CHECK(controller);
-  controller->OfferEdit(profile, /*original_profile=*/nullptr,
-                        /*footer_message=*/u"", base::DoNothing(),
-                        /*is_migration_to_account=*/false);
+  controller->OfferEdit(
+      profile, /*original_profile=*/nullptr,
+      /*footer_message=*/u"",
+      /*address_profile_save_prompt_callback=*/base::DoNothing(),
+      /*on_cancel_callback=*/base::DoNothing(),
+      /*is_migration_to_account=*/false);
 #else
   // Edit address profile dialog is only available is desktop.
   NOTREACHED_NORETURN();

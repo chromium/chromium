@@ -176,11 +176,13 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      controller->GetProfileToSave()));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      controller->GetProfileToSave()));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());

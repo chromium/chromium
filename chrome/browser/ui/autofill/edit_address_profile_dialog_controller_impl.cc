@@ -37,8 +37,9 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     const std::u16string& footer_message,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback,
+    base::OnceClosure on_cancel_callback,
     bool is_migration_to_account) {
-  // Don't show the bubble if it's already visible, and inform the backend.
+  // Don't show the editor if it's already visible, and inform the backend.
   if (dialog_view_) {
     std::move(address_profile_save_prompt_callback)
         .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
@@ -50,6 +51,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   footer_message_ = footer_message;
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
+  on_cancel_callback_ = std::move(on_cancel_callback);
   is_migration_to_account_ = is_migration_to_account;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   dialog_view_ = browser->window()
@@ -91,25 +93,17 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
 void EditAddressProfileDialogControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
     const AutofillProfile& profile_with_edits) {
-  // If the user accepted the flow, save the changes directly.
   if (decision ==
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
+    // If the user accepted the flow, save the changes directly.
     std::move(address_profile_save_prompt_callback_)
         .Run(decision, profile_with_edits);
     return;
   }
-  // If the user hits "Cancel", reopen the previous prompt.
-  SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
-      web_contents());
-  SaveUpdateAddressProfileBubbleControllerImpl* controller =
-      SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
-          web_contents());
-  controller->OfferSave(
-      address_profile_to_edit_, base::OptionalToPtr(original_profile_),
-      AutofillClient::SaveAddressProfilePromptOptions{
-          .show_prompt = true,
-          .is_migration_to_account = is_migration_to_account_},
-      std::move(address_profile_save_prompt_callback_));
+  // Save callback must get invalidated to not get triggered in the destructor.
+  address_profile_save_prompt_callback_.Reset();
+  // If the user hits "Cancel", run the corresponding callback.
+  std::move(on_cancel_callback_).Run();
 }
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed() {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
@@ -323,21 +324,30 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillProfile profile) {
   if (address_profile_save_prompt_callback_) {
-    std::move(address_profile_save_prompt_callback_)
-        .Run(decision, address_profile_);
+    std::move(address_profile_save_prompt_callback_).Run(decision, profile);
   }
+}
+
+void SaveUpdateAddressProfileBubbleControllerImpl::OnUserCanceledEditing() {
+  shown_by_user_gesture_ = false;
+  Show();
 }
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->OfferEdit(address_profile_, GetOriginalProfile(),
-                        GetEditorFooterMessage(),
-                        std::move(address_profile_save_prompt_callback_),
-                        is_migration_to_account_);
+  controller->OfferEdit(
+      address_profile_, GetOriginalProfile(), GetEditorFooterMessage(),
+      base::BindOnce(&SaveUpdateAddressProfileBubbleController::OnUserDecision,
+                     GetWeakPtr()),
+      base::BindOnce(
+          &SaveUpdateAddressProfileBubbleController::OnUserCanceledEditing,
+          GetWeakPtr()),
+      is_migration_to_account_);
   HideBubble();
 }
 
@@ -375,7 +385,8 @@ bool SaveUpdateAddressProfileBubbleControllerImpl::IsSaveBubble() const {
 void SaveUpdateAddressProfileBubbleControllerImpl::WebContentsDestroyed() {
   AutofillBubbleControllerBase::WebContentsDestroyed();
 
-  OnUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
+  OnUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+                 address_profile_);
 }
 
 PageActionIconType
@@ -413,6 +424,11 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetEditorFooterMessage() const {
   }
 
   return GetFooterMessage();
+}
+
+base::WeakPtr<SaveUpdateAddressProfileBubbleController>
+SaveUpdateAddressProfileBubbleControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveUpdateAddressProfileBubbleControllerImpl);

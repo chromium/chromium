@@ -31,15 +31,16 @@ class EditAddressProfileDialogControllerImpl
 
   // Sets up the controller and offers to edit the `profile` before saving it.
   // If `original_profile` is not nullptr, this indicates that this dialog is
-  // opened from an update prompt. The originating prompt (save or update) will
-  // be re-opened once the user makes a decision with respect to the
-  // offer-to-edit prompt. The `is_migration_to_account` argument is used to
-  // re-open the original prompt in a correct state.
+  // opened from an update prompt. The `address_profile_save_prompt_callback`
+  // will be called if the user saves the changes. `on_cancel_callback` will be
+  // called if the user cancels the editing process. `is_migration_to_account`
+  // is used to determine if a subset of editor fields should be made required.
   void OfferEdit(const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
                  const std::u16string& footer_message,
                  AutofillClient::AddressProfileSavePromptCallback
                      address_profile_save_prompt_callback,
+                 base::OnceClosure on_cancel_callback,
                  bool is_migration_to_account);
 
   // EditAddressProfileDialogController:
@@ -75,6 +76,9 @@ class EditAddressProfileDialogControllerImpl
   // address profile currently being edited.
   AutofillClient::AddressProfileSavePromptCallback
       address_profile_save_prompt_callback_;
+
+  // Callback to run once the user clicks the "Cancel" editor button.
+  base::OnceClosure on_cancel_callback_;
 
   // Contains the details of the address profile that the user requested to edit
   // before saving.
