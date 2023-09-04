@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +29,13 @@ namespace blink {
 
 namespace {
 
+BASE_FEATURE(kConfigurableV8CodeCacheHotHours,
+             "ConfigurableV8CodeCacheHotHours",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int>
+    kV8CodeCacheHotHours(&kConfigurableV8CodeCacheHotHours, "HotHours", 72);
+
 enum CacheTagKind { kCacheTagCode = 0, kCacheTagTimeStamp = 1, kCacheTagLast };
 
 static const int kCacheTagKindSize = 1;
@@ -50,7 +58,7 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
 
 // Check previously stored timestamp.
 bool IsResourceHotForCaching(const CachedMetadataHandler* cache_handler) {
-  static constexpr base::TimeDelta kHotHours = base::Hours(72);
+  const base::TimeDelta kHotHours = base::Hours(kV8CodeCacheHotHours.Get());
   scoped_refptr<CachedMetadata> cached_metadata =
       cache_handler->GetCachedMetadata(
           V8CodeCache::TagForTimeStamp(cache_handler));
