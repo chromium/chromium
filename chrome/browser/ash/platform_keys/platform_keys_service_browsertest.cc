@@ -293,6 +293,8 @@ class PlatformKeysServicePerProfileBrowserTest
   ProfileToUse GetProfileToUse() override { return GetParam().profile_to_use; }
 };
 
+using CallbackIfCallableBrowserTest = InProcessBrowserTest;
+
 // Tests that GetTokens() is callable and returns the expected tokens.
 IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetTokens) {
   test_util::GetTokensExecutionWaiter get_tokens_waiter;
@@ -469,6 +471,47 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
       base::as_bytes(base::make_span(public_key_spki_der))));
   signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
+}
+
+class RunLoopQuiter {
+ public:
+  explicit RunLoopQuiter(base::RunLoop* rl) : runloop_(rl) {}
+  void Quit() { runloop_->Quit(); }
+  void QuitWithFail() {
+    Quit();
+    FAIL();
+  }
+  base::WeakPtr<RunLoopQuiter> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  const raw_ptr<base::RunLoop> runloop_;
+  base::WeakPtrFactory<RunLoopQuiter> weak_factory_{this};
+};
+
+// Verifies that RunCallBackIfCallableElseCleanup will run the cleanup callback
+// if the given callback is canceled. RunCallBackIfCallableElseCleanup is
+// specially helpful in PlatformKeyService when PKS is asked to generate a key
+// and by the time the key is generated the asker is gone.
+IN_PROC_BROWSER_TEST_F(CallbackIfCallableBrowserTest,
+                       CallCleanUpWhenCallBackIsCanceled) {
+  base::RunLoop loop;
+  base::OnceCallback<void()> canceled_cb, quit_loop_cb;
+
+  RunLoopQuiter main_quiter(&loop);
+  quit_loop_cb = base::BindOnce(&RunLoopQuiter::Quit, main_quiter.GetWeakPtr());
+
+  {
+    RunLoopQuiter canceled_quiter(&loop);
+    // If the canceled_cb runs then test will fail.
+    canceled_cb = base::BindOnce(&RunLoopQuiter::QuitWithFail,
+                                 canceled_quiter.GetWeakPtr());
+  }
+
+  RunCallBackIfCallableElseRunCleanUp(std::move(canceled_cb),
+                                      std::move(quit_loop_cb));
+  loop.Run();
 }
 
 // Generates a Rsa key pair and tests signing using the SignRSAPKCS1Raw

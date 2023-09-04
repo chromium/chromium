@@ -408,6 +408,8 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   base::WeakPtrFactory<PlatformKeysServiceImpl> weak_factory_{this};
 };
 
+void RunCallBackIfCallableElseRunCleanUp(base::OnceCallback<void()> callback,
+                                         base::OnceCallback<void()> cleanup);
 }  // namespace ash::platform_keys
 
 #endif  // CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_H_
