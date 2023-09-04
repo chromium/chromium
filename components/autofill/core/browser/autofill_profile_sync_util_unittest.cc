@@ -126,9 +126,6 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_FLOOR, u"2",
                                            VerificationStatus::kParsed);
-
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kFormatted);
   profile.set_language_code("en");
 
   // Set testing values for the birthdate.
@@ -238,10 +235,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_floor("2");
   specifics.set_address_home_floor_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
-
-  specifics.set_address_home_premise_name("Premise");
-  specifics.set_address_home_premise_name_status(
-      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
   specifics.set_address_home_city("Mountain View");
   specifics.set_address_home_city_status(

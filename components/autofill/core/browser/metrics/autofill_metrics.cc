@@ -74,7 +74,6 @@ constexpr auto kStructuredAddressTypeToNameMap =
          {ADDRESS_HOME_HOUSE_NUMBER, "HouseNumber"},
          {ADDRESS_HOME_FLOOR, "FloorNumber"},
          {ADDRESS_HOME_APT_NUM, "ApartmentNumber"},
-         {ADDRESS_HOME_PREMISE_NAME, "Premise"},
          {ADDRESS_HOME_SUBPREMISE, "SubPremise"}});
 
 // Note: if adding an enum value here, update the corresponding description for
@@ -93,7 +92,6 @@ enum FieldTypeGroupForMetrics {
   GROUP_ADDRESS_HOME_STREET_NAME,
   GROUP_ADDRESS_HOME_DEPENDENT_STREET_NAME,
   GROUP_ADDRESS_HOME_HOUSE_NUMBER,
-  GROUP_ADDRESS_HOME_PREMISE_NAME,
   GROUP_ADDRESS_HOME_SUBPREMISE,
   GROUP_PHONE,
   GROUP_FAX,  // Deprecated.
@@ -224,9 +222,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
           break;
         case ADDRESS_HOME_HOUSE_NUMBER:
           group = GROUP_ADDRESS_HOME_HOUSE_NUMBER;
-          break;
-        case ADDRESS_HOME_PREMISE_NAME:
-          group = GROUP_ADDRESS_HOME_PREMISE_NAME;
           break;
         case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
           group = GROUP_ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME;

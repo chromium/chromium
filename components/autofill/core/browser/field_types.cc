@@ -88,7 +88,6 @@ static constexpr auto kTypeNameToFieldType =
          {"NAME_LAST_CONJUNCTION", NAME_LAST_CONJUNCTION},
          {"NAME_LAST_SECOND", NAME_LAST_SECOND},
          {"NAME_HONORIFIC_PREFIX", NAME_HONORIFIC_PREFIX},
-         {"ADDRESS_HOME_PREMISE_NAME", ADDRESS_HOME_PREMISE_NAME},
          {"ADDRESS_HOME_DEPENDENT_STREET_NAME",
           ADDRESS_HOME_DEPENDENT_STREET_NAME},
          {"ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME",
@@ -147,7 +146,7 @@ ServerFieldType ToSafeServerFieldType(
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
-           t != 127 && !(130 <= t && t <= 132) && t != 134 &&
+           t != 111 && t != 127 && !(130 <= t && t <= 132) && t != 134 &&
            !(137 <= t && t <= 139) && !(145 <= t && t <= 150) && t != 153 &&
            t != 155;
   };
@@ -195,7 +194,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_DEPENDENT_STREET_NAME:
     case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
     case ADDRESS_HOME_HOUSE_NUMBER:
-    case ADDRESS_HOME_PREMISE_NAME:
     case ADDRESS_HOME_SUBPREMISE:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS:
@@ -419,8 +417,6 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Address line 2";
     case ADDRESS_HOME_LINE3:
       return "Address line 3";
-    case ADDRESS_HOME_PREMISE_NAME:
-      return "Address premise";
     case ADDRESS_HOME_SUBPREMISE:
       return "Address subpremise";
     case ADDRESS_HOME_OTHER_SUBUNIT:

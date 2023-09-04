@@ -125,7 +125,6 @@ message AutofillProfileSpecifics {
   optional string address_home_thoroughfare_name = 38;
   optional string address_home_thoroughfare_number = 39;
   optional string address_home_dependent_thoroughfare_name = 40;
-  optional string address_home_premise_name = 41;
   optional string address_home_subpremise_name = 42;
   optional string address_home_apt_num = 56;
   optional string address_home_floor = 57;
@@ -146,7 +145,6 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_thoroughfare_number_status = 52;
   optional VerificationStatus address_home_dependent_thoroughfare_name_status =
       53;
-  optional VerificationStatus address_home_premise_name_status = 54;
   optional VerificationStatus address_home_subpremise_name_status = 55;
   optional VerificationStatus address_home_apt_num_status = 58;
   optional VerificationStatus address_home_floor_status = 59;
@@ -170,6 +168,11 @@ message AutofillProfileSpecifics {
   // been removed in M100.
   optional int64 validity_state_bitfield = 24 [deprecated = true];
   optional bool is_client_validity_states_updated = 25 [deprecated = true];
+  // Removed in M118.
+  reserved 41;
+  reserved "address_home_premise_name";
+  reserved 54;
+  reserved "address_home_premise_name_status";
 }
 
 message AutofillSpecifics {

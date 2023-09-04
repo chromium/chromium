@@ -177,7 +177,6 @@ TEST_F(AddressTest, StructuredAddressTokens) {
   address.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
   address.SetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME,
                      u"DependentStreetName");
-  address.SetRawInfo(ADDRESS_HOME_PREMISE_NAME, u"PremiseNmae");
   address.SetRawInfo(ADDRESS_HOME_SUBPREMISE, u"SubPremise");
 
   // Retrieve the tokens and verify that they are correct.
@@ -185,7 +184,6 @@ TEST_F(AddressTest, StructuredAddressTokens) {
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_HOUSE_NUMBER), u"HouseNumber");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_DEPENDENT_STREET_NAME),
             u"DependentStreetName");
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_PREMISE_NAME), u"PremiseNmae");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_SUBPREMISE), u"SubPremise");
 }
 

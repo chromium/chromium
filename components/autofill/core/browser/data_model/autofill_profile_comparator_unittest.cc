@@ -325,11 +325,6 @@ class AutofillProfileComparatorTest : public testing::Test {
                            kLocale),
           actual.GetInfo(AutofillType(autofill::ADDRESS_HOME_HOUSE_NUMBER),
                          kLocale));
-      EXPECT_EQ(
-          expected.GetInfo(AutofillType(autofill::ADDRESS_HOME_PREMISE_NAME),
-                           kLocale),
-          actual.GetInfo(AutofillType(autofill::ADDRESS_HOME_PREMISE_NAME),
-                         kLocale));
       EXPECT_EQ(expected.GetInfo(
                     AutofillType(autofill::ADDRESS_HOME_SUBPREMISE), kLocale),
                 actual.GetInfo(AutofillType(autofill::ADDRESS_HOME_SUBPREMISE),
@@ -1063,7 +1058,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
   p1.SetRawInfo(autofill::ADDRESS_HOME_STREET_NAME, u"Some Street");
   p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME, u"");
   p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"");
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"");
   p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Unit 3");
 
   AutofillProfile p2 = CreateProfileWithAddress(
@@ -1074,7 +1068,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesMostUniqueTokens) {
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
                 u"DependentStreetName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   Address expected;
@@ -1097,7 +1090,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
   p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
                 u"DependentStreetName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
   AutofillProfile p2 = CreateProfileWithAddress(
@@ -1107,7 +1099,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithStructure) {
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
                 u"DependentStreetName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   Address expected;
@@ -1130,7 +1121,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   p1.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
                 u"DependentStreetName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber");
-  p1.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName");
   p1.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise");
 
   AutofillProfile p2 = CreateProfileWithAddress(
@@ -1139,7 +1129,6 @@ TEST_F(AutofillProfileComparatorTest, MergeAddressesWithRewrite) {
   p2.SetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_STREET_NAME,
                 u"DependentStreetName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_HOUSE_NUMBER, u"HouseNumber2");
-  p2.SetRawInfo(autofill::ADDRESS_HOME_PREMISE_NAME, u"PremiseName2");
   p2.SetRawInfo(autofill::ADDRESS_HOME_SUBPREMISE, u"Subpremise2");
 
   p2.set_use_date(p1.use_date() + base::Minutes(1));

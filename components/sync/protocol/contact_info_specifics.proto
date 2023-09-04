@@ -160,9 +160,8 @@ message ContactInfoSpecifics {
   // Contains both the thoroughfare and the dependent thoroughfare name.
   optional StringToken address_thoroughfare_and_dependent_thoroughfare_name =
       28;
-  // A premise name corresponds to the name of a place or a building below the
-  // granularity of a street.
-  optional StringToken address_premise_name = 29;
+  reserved 29;
+  reserved "address_premise_name";
   // Contains the floor, staircase or apartment number within a building.
   optional StringToken address_subpremise_name = 30;
   // The apartment number within a building.

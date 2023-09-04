@@ -108,7 +108,6 @@ constexpr std::string_view kSubpremise = "subpremise";
 constexpr std::string_view kZipCode = "zip_code";
 // kCountryCode = "country_code"
 // kSortingCode = "sorting_code"
-constexpr std::string_view kPremiseName = "premise_name";
 constexpr std::string_view kApartmentNumber = "apartment_number";
 constexpr std::string_view kFloor = "floor";
 constexpr std::string_view kStreetAddressStatus = "street_address_status";
@@ -117,7 +116,6 @@ constexpr std::string_view kDependentStreetNameStatus =
     "dependent_street_name_status";
 constexpr std::string_view kHouseNumberStatus = "house_number_status";
 constexpr std::string_view kSubpremiseStatus = "subpremise_status";
-constexpr std::string_view kPremiseNameStatus = "premise_name_status";
 constexpr std::string_view kDependentLocalityStatus =
     "dependent_locality_status";
 constexpr std::string_view kCityStatus = "city_status";
@@ -817,8 +815,6 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
                     kHouseNumberStatus,
                     kSubpremise,
                     kSubpremiseStatus,
-                    kPremiseName,
-                    kPremiseNameStatus,
                     kDependentLocality,
                     kDependentLocalityStatus,
                     kCity,
@@ -871,10 +867,10 @@ bool AddAutofillProfileAddressesToProfile(sql::Database* db,
       for (ServerFieldType type :
            {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_NAME,
             ADDRESS_HOME_DEPENDENT_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
-            ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_PREMISE_NAME,
-            ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
-            ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
-            ADDRESS_HOME_COUNTRY, ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
+            ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_DEPENDENT_LOCALITY,
+            ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,
+            ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY,
+            ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
         profile->SetRawInfoWithVerificationStatusInt(
             type, s.ColumnString16(index), s.ColumnInt(index + 1));
         index += 2;
@@ -1144,7 +1140,6 @@ AutofillTable::GetStoredTypesForAutofillProfile() {
       ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_SUBPREMISE,
-      ADDRESS_HOME_PREMISE_NAME,
       ADDRESS_HOME_DEPENDENT_LOCALITY,
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE,
@@ -3889,13 +3884,13 @@ bool AutofillTable::InitLegacyProfileAddressesTable() {
        {kDependentStreetName, "VARCHAR"},
        {kHouseNumber, "VARCHAR"},
        {kSubpremise, "VARCHAR"},
-       {kPremiseName, "VARCHAR"},
+       {"premise_name", "VARCHAR"},
        {kStreetAddressStatus, "INTEGER DEFAULT 0"},
        {kStreetNameStatus, "INTEGER DEFAULT 0"},
        {kDependentStreetNameStatus, "INTEGER DEFAULT 0"},
        {kHouseNumberStatus, "INTEGER DEFAULT 0"},
        {kSubpremiseStatus, "INTEGER DEFAULT 0"},
-       {kPremiseNameStatus, "INTEGER DEFAULT 0"},
+       {"premise_name_status", "INTEGER DEFAULT 0"},
        {kDependentLocality, "VARCHAR"},
        {kCity, "VARCHAR"},
        {kState, "VARCHAR"},

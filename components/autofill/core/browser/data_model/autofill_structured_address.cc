@@ -74,12 +74,6 @@ HouseNumberNode::HouseNumberNode(AddressComponent* parent)
 
 HouseNumberNode::~HouseNumberNode() = default;
 
-PremiseNode::PremiseNode(AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_PREMISE_NAME, parent, MergeMode::kDefault) {
-}
-
-PremiseNode::~PremiseNode() = default;
-
 FloorNode::FloorNode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_FLOOR, parent, MergeMode::kDefault) {}
 

@@ -304,9 +304,7 @@ enum ServerFieldType {
   // Type to catch name additions like "Mr.", "Ms." or "Dr.".
   NAME_HONORIFIC_PREFIX = 110,
 
-  // Type that corresponds to the name of a place or a building below the
-  // granularity of a street.
-  ADDRESS_HOME_PREMISE_NAME = 111,
+  // ADDRESS_HOME_PREMISE_NAME value 111 is deprecated.
 
   // Type that describes a crossing street as it is used in some countries to
   // describe a location.

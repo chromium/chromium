@@ -80,13 +80,6 @@ class HouseNumberNode : public AddressComponent {
   ~HouseNumberNode() override;
 };
 
-// The name of the premise.
-class PremiseNode : public AddressComponent {
- public:
-  explicit PremiseNode(AddressComponent* parent);
-  ~PremiseNode() override;
-};
-
 // The floor the apartment is located in.
 class FloorNode : public AddressComponent {
  public:
@@ -135,7 +128,7 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
 };
 
 // The StreetAddress incorporates the StreetAndDependentStreetName, the
-// HouseNumber, the PremiseName and SubPremise.
+// HouseNumber and SubPremise.
 // This class inherits from AddressComponentWithRewriter to implement rewriting
 // values for comparison.
 class StreetAddressNode : public AddressComponentWithRewriter {
@@ -189,7 +182,6 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   StreetAndDependentStreetNameNode streets_{this};
   BetweenStreetsNode between_streets_{this};
   HouseNumberNode number_{this};
-  PremiseNode premise_{this};
   SubPremiseNode sub_premise_{this};
   LandmarkNode landmark_code_{this};
 
