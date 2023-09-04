@@ -29,6 +29,7 @@ class WvrApi {
                  int32_t texture_handle,
                  int32_t width,
                  int32_t height);
+  void PullSystemState();
 
   mozilla::gfx::VRSystemState get_system_state() { return system_state_; }
 

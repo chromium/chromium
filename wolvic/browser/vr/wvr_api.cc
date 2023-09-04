@@ -119,4 +119,11 @@ bool WvrApi::SyncState(uint64_t frame_index,
   return true;
 }
 
+void WvrApi::PullSystemState() {
+  PullState([&]() {
+    return !system_state_.displayState.suppressFrames &&
+           system_state_.displayState.isConnected;
+  });
+}
+
 }  // namespace wolvic

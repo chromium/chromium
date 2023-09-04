@@ -78,6 +78,8 @@ class WvrManager : public device::mojom::XRPresentationProvider,
       base::OnceClosure exit_callback);
   void ExitWebXRPresentation(base::OnceClosure callback);
 
+  gfx::Size GetSuggestedFrameSize() const;
+
  private:
   bool IsOnWvrThread() const;
 
