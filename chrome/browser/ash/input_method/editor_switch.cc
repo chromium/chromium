@@ -66,29 +66,26 @@ bool IsTriggerableFromConsentStatus(ConsentStatus consent_status) {
 }  // namespace
 
 EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
-    : profile_(profile) {
-  bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
-
-  is_allowed_for_use_ =
-      // Conditions required for dogfooding.
-      (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
-      // Conditions required for the feature to be enabled for non-dogfood
-      // population.
-      (chromeos::features::IsOrcaEnabled() && !is_managed &&
-       IsCountryAllowed(country_code));
-}
+    : profile_(profile), country_code_(country_code) {}
 
 EditorSwitch::~EditorSwitch() = default;
 
 bool EditorSwitch::IsAllowedForUse() {
-  return is_allowed_for_use_;
+  bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
+
+  return  // Conditions required for dogfooding.
+      (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
+      // Conditions required for the feature to be enabled for non-dogfood
+      // population.
+      (chromeos::features::IsOrcaEnabled() && !is_managed &&
+       IsCountryAllowed(country_code_));
 }
 
 bool EditorSwitch::CanBeTriggered() {
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
       profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
-  return is_allowed_for_use_ && IsInputMethodEngineAllowed(active_engine_id_) &&
+  return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
          !tablet_mode_enabled_ &&
