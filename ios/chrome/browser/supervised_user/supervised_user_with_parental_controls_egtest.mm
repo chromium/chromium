@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
@@ -50,12 +51,16 @@ static const char* kInterstitialFirstTimeBanner =
   return config;
 }
 
-- (void)signInSupervisedUser {
+- (void)signInSupervisedUserWithSync:(BOOL)withSync {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:withSync];
+}
+
+- (void)signInSupervisedUser {
+  [self signInSupervisedUserWithSync:YES];
 }
 
 - (void)setUp {
@@ -119,6 +124,26 @@ static const char* kInterstitialFirstTimeBanner =
   // for pemission" message is visible instead.
   [self checkBlockPageHeaderVisibility:NO];
   [self checkRequestSentMessageVisibility:YES];
+}
+
+- (void)clearBrowsingData {
+  // Clear the browsing data.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
+  // "Browsing history", "Cookies, Site Data" and "Cached Images and Files"
+  // are the default checked options when the prefs are registered. No need to
+  // modify them.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        chrome_test_util::ClearBrowsingDataButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ConfirmClearBrowsingDataButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that the user is signed in.
@@ -475,6 +500,34 @@ static const char* kInterstitialFirstTimeBanner =
   [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
   [self checkElementDisplayStyleVisibility:@"banner" isVisible:NO];
+}
+
+#pragma mark - Clear Content Behaviour
+
+// Tests that a logged in user with enabled "Sync" remains logged in after
+// clearing the browsing data (Cookies and BrowsingHistory).
+- (void)testSupervisedUserWithSyncIsLoggedInAfterClearingBrowsingData {
+  [self signInSupervisedUserWithSync:YES];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [self clearBrowsingData];
+
+  // The user should be still logged in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a logged in user with disabled "Sync" remains logged in after
+// clearing the browsing data (Cookies and BrowsingHistory).
+- (void)testSupervisedUserWithoutSyncIsLoggedInAfterClearingBrowsingData {
+  [self signInSupervisedUserWithSync:NO];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+
+  [self clearBrowsingData];
+
+  // The user should be still logged in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 @end
