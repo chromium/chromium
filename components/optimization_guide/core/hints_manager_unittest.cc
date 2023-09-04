@@ -89,6 +89,8 @@ std::unique_ptr<proto::GetHintsResponse> BuildHintsResponse(
     proto::Hint* hint = get_hints_response->add_hints();
     hint->set_key_representation(proto::HOST);
     hint->set_key(host);
+    hint->add_allowlisted_optimizations()->set_optimization_type(
+        proto::NOSCRIPT);
     proto::PageHint* page_hint = hint->add_page_hints();
     page_hint->set_page_pattern("page pattern");
     proto::Optimization* opt = page_hint->add_allowlisted_optimizations();
@@ -229,10 +231,11 @@ class TestHintsFetcher : public HintsFetcher {
       case HintsFetcherEndState::kFetchSuccessWithURLHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
-            base::BindOnce(&RunHintsFetchedCallbackWithResponse,
-                           std::move(hints_fetched_callback),
-                           BuildHintsResponse(
-                               {}, {"https://somedomain.org/news/whatever"})));
+            base::BindOnce(
+                &RunHintsFetchedCallbackWithResponse,
+                std::move(hints_fetched_callback),
+                BuildHintsResponse({"somedomain.org"},
+                                   {"https://somedomain.org/news/whatever"})));
         return true;
       case HintsFetcherEndState::kFetchSuccessWithNoHints:
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -3172,7 +3175,7 @@ TEST_F(HintsManagerFetchingTest,
 
             it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
 
             run_loop->Quit();
           },
@@ -3242,9 +3245,8 @@ TEST_F(HintsManagerFetchingTest,
             ASSERT_EQ(decisions.size(), 2u);
             auto it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            // Even though this is cached/loaded, the on-demand call does not
-            // have a result from the server.
-            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
+            // The server has a response for this.
+            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
 
             it = decisions.find(proto::COMPRESS_PUBLIC_IMAGES);
             ASSERT_TRUE(it != decisions.end());
@@ -3324,10 +3326,9 @@ TEST_F(HintsManagerFetchingTest,
             ASSERT_TRUE(it != decisions.end());
             EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
 
-            // Should still populate with what's on device.
             it = decisions.find(proto::NOSCRIPT);
             ASSERT_TRUE(it != decisions.end());
-            EXPECT_EQ(OptimizationGuideDecision::kTrue, it->second.decision);
+            EXPECT_EQ(OptimizationGuideDecision::kFalse, it->second.decision);
 
             run_loop->Quit();
           },
