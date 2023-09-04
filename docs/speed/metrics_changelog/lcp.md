@@ -2,6 +2,8 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 116
+  * Metric definition improvement: [Changes to how LCP handles animated content](2023_08_lcp.md)
 * Chrome 112
   * Metric definition improvement: [Largest Contentful Paint ignores low-entropy images](2023_04_lcp.md)
 * Chrome 111
