@@ -276,8 +276,8 @@ class RestoreToDestinationIOTaskWithDLPTest
  protected:
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   std::unique_ptr<policy::FilesPolicyNotificationManager> fpnm_;
-  raw_ptr<file_manager::io_task::IOTaskController, DanglingUntriaged>
-      io_task_controller_ = nullptr;
+  raw_ptr<file_manager::io_task::IOTaskController> io_task_controller_ =
+      nullptr;
 
  private:
   std::unique_ptr<KeyedService> SetDlpRulesManager(
