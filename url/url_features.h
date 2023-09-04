@@ -28,6 +28,11 @@ BASE_DECLARE_FEATURE(kStrictIPv4EmbeddedIPv6AddressParsing);
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical);
 
+// When enabled, percent-encoded ASCII characters in URL path are not decoded
+// automatically. See https://crbug.com/125231.
+COMPONENT_EXPORT(URL)
+BASE_DECLARE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath);
+
 }  // namespace url
 
 #endif  // URL_URL_FEATURES_H_

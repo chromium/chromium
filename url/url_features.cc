@@ -25,6 +25,11 @@ BASE_FEATURE(kResolveBareFragmentWithColonOnNonHierarchical,
              "ResolveBareFragmentWithColonOnNonHierarchical",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for crbug.com/1252531.
+BASE_FEATURE(kDontDecodeAsciiPercentEncodedURLPath,
+             "DontDecodeAsciiPercentEncodedURLPath",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsUsingIDNA2008NonTransitional() {
   // If the FeatureList isn't available yet, fall back to the feature's default
   // state. This may happen during early startup, see crbug.com/1441956.

@@ -1804,8 +1804,10 @@ class FormatUrlForClipboardTest
 
 const FormatUrlForClipboardTestData kFormatUrlForClipboardTestData[]{
     {"http://www.foo.com/", "http://www.foo.com/", "HttpNoEscapes"},
-    {"http://www.foo.com/%61%62%63", "http://www.foo.com/abc",
-     "HttpSafeUnescapes"},
+    // Percent-encoded ASCII characters are no longer unescaped.
+    // See https://crbug.com/1252531.
+    {"http://www.foo.com/%61%62%63", "http://www.foo.com/%61%62%63",
+     "HttpNoEscape"},
     {"https://www.foo.com/abc%20def", "https://www.foo.com/abc%20def",
      "HttpsEscapedSpecialCharacters"},
     {"https://www.foo.com/%CE%B1%CE%B2%CE%B3",
@@ -1814,8 +1816,10 @@ const FormatUrlForClipboardTestData kFormatUrlForClipboardTestData[]{
      "FileEscapedUnicodeCharacters"},
     {"file://stuff.host.co/my%2Bshare/foo.txt",
      "file://stuff.host.co/my%2Bshare/foo.txt", "FileEscapedSpecialCharacters"},
+    // Percent-encoded ASCII characters are no longer unescaped.
+    // See https://crbug.com/1252531.
     {"file://stuff.host.co/my%2Dshare/foo.txt",
-     "file://stuff.host.co/my-share/foo.txt", "FileSafeUnescapes"},
+     "file://stuff.host.co/my%2Dshare/foo.txt", "FileNoEscape"},
     {"mailto:me@foo.com", "me@foo.com", "MailToNoEscapes"},
     {"mailto:me@foo.com,you@bar.com?subject=Hello%20world",
      "me@foo.com,you@bar.com", "MailToWithQuery"},

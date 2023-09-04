@@ -239,8 +239,8 @@ TEST_F(SupervisedUserURLFilterTest, Canonicalization) {
   EXPECT_TRUE(IsURLAllowlisted(
       "http://www.example.com/\xc3\x85t\xc3\xb8mstr\xc3\xb6m"));
 
-  // Verify that unnecessary URI escapes are unescaped.
-  EXPECT_TRUE(IsURLAllowlisted("http://www.example.com/%66%6F%6F/"));
+  // Verify that unnecessary URI escapes remain escaped.
+  EXPECT_TRUE(!IsURLAllowlisted("http://www.example.com/%66%6F%6F/"));
 
   // Verify that the default port are removed.
   EXPECT_TRUE(IsURLAllowlisted("http://www.example.com:80/foo/"));

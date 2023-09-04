@@ -40,13 +40,12 @@ cases = [
   // (Disabled because requires UTF8)
   // ["/foo%2\xc2\xa9zbar", "/foo%2%C2%A9zbar"],
   ["/foo%2\u00c2\u00a9zbar", "/foo%2%C3%82%C2%A9zbar"],
-  // Regular characters that are escaped should be unescaped
-  ["/foo%41%7a", "/fooAz"],
+  // Regular characters that are escaped should not be unescaped
+  ["/foo%41%7a", "/foo%41%7a"],
   // Funny characters that are unescaped should be escaped
   ["/foo\u0009\u0091%91", "/foo%C2%91%91"],
   // Null character that is escaped should not cause a failure.
-  // See also https://crbug.com/1252531.
-  ["/foo%00%51", "/foo%00Q"],
+  ["/foo%00%51", "/foo%00%51"],
   // Some characters should be passed through unchanged regardless of esc.
   ["/(%28:%3A%29)", "/(%28:%3A%29)"],
   // Characters that are properly escaped should not have the case changed

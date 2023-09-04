@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 673 tests; 503 PASS, 170 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 673 tests; 505 PASS, 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -127,9 +127,9 @@ PASS Parsing: <http://example.com/foo%> against <about:blank>
 PASS Parsing: <http://example.com/foo%2> against <about:blank>
 PASS Parsing: <http://example.com/foo%2zbar> against <about:blank>
 PASS Parsing: <http://example.com/foo%2Â©zbar> against <about:blank>
-FAIL Parsing: <http://example.com/foo%41%7a> against <about:blank> assert_equals: href expected "http://example.com/foo%41%7a" but got "http://example.com/fooAz"
+PASS Parsing: <http://example.com/foo%41%7a> against <about:blank>
 PASS Parsing: <http://example.com/foo	%91> against <about:blank>
-FAIL Parsing: <http://example.com/foo%00%51> against <about:blank> assert_equals: href expected "http://example.com/foo%00%51" but got "http://example.com/foo%00Q"
+PASS Parsing: <http://example.com/foo%00%51> against <about:blank>
 PASS Parsing: <http://example.com/(%28:%3A%29)> against <about:blank>
 PASS Parsing: <http://example.com/%3A%3a%3C%3c> against <about:blank>
 PASS Parsing: <http://example.com/foo	bar> against <about:blank>

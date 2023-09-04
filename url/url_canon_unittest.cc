@@ -1275,13 +1275,13 @@ DualComponentCase kCommonPathCases[] = {
     {"/foo%2\xc2\xa9zbar", nullptr, "/foo%2%C2%A9zbar", Component(0, 16), true},
     {nullptr, L"/foo%2\xc2\xa9zbar", "/foo%2%C3%82%C2%A9zbar", Component(0, 22),
      true},
-    // Regular characters that are escaped should be unescaped
-    {"/foo%41%7a", L"/foo%41%7a", "/fooAz", Component(0, 6), true},
+    // Regular characters that are escaped should remain escaped
+    {"/foo%41%7a", L"/foo%41%7a", "/foo%41%7a", Component(0, 10), true},
     // Funny characters that are unescaped should be escaped
     {"/foo\x09\x91%91", nullptr, "/foo%09%91%91", Component(0, 13), true},
     {nullptr, L"/foo\x09\x91%91", "/foo%09%C2%91%91", Component(0, 16), true},
     // %00 should not cause failures.
-    {"/foo%00%51", L"/foo%00%51", "/foo%00Q", Component(0, 8), true},
+    {"/foo%00%51", L"/foo%00%51", "/foo%00%51", Component(0, 10), true},
     // Some characters should be passed through unchanged regardless of esc.
     {"/(%28:%3A%29)", L"/(%28:%3A%29)", "/(%28:%3A%29)", Component(0, 13),
      true},
@@ -1302,21 +1302,20 @@ DualComponentCase kCommonPathCases[] = {
      "/%7Ffp3%3Eju%3Dduvgw%3Dd", Component(0, 24), true},
     // @ should be passed through unchanged (escaped or unescaped).
     {"/@asdf%40", L"/@asdf%40", "/@asdf%40", Component(0, 9), true},
-    // Nested escape sequences should result in escaping the leading '%' if
-    // unescaping would result in a new escape sequence.
-    {"/%A%42", L"/%A%42", "/%25AB", Component(0, 6), true},
-    {"/%%41B", L"/%%41B", "/%25AB", Component(0, 6), true},
-    {"/%%41%42", L"/%%41%42", "/%25AB", Component(0, 6), true},
+    // Nested escape sequences no longer happen. See https://crbug.com/1252531.
+    {"/%A%42", L"/%A%42", "/%A%42", Component(0, 6), true},
+    {"/%%41B", L"/%%41B", "/%%41B", Component(0, 6), true},
+    {"/%%41%42", L"/%%41%42", "/%%41%42", Component(0, 8), true},
     // Make sure truncated "nested" escapes don't result in reading off the
     // string end.
-    {"/%%41", L"/%%41", "/%A", Component(0, 3), true},
+    {"/%%41", L"/%%41", "/%%41", Component(0, 5), true},
     // Don't unescape the leading '%' if unescaping doesn't result in a valid
     // new escape sequence.
-    {"/%%470", L"/%%470", "/%G0", Component(0, 4), true},
-    {"/%%2D%41", L"/%%2D%41", "/%-A", Component(0, 4), true},
+    {"/%%470", L"/%%470", "/%%470", Component(0, 6), true},
+    {"/%%2D%41", L"/%%2D%41", "/%%2D%41", Component(0, 8), true},
     // Don't erroneously downcast a UTF-16 character in a way that makes it
     // look like part of an escape sequence.
-    {nullptr, L"/%%41\x0130", "/%A%C4%B0", Component(0, 9), true},
+    {nullptr, L"/%%41\x0130", "/%%41%C4%B0", Component(0, 11), true},
 
     // ----- encoding tests -----
     // Basic conversions
@@ -1622,7 +1621,7 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
        "ws://%29w%1ew%81/", false},
       // Regression test for the last_invalid_percent_index bug described in
       // https://crbug.com/1080890#c10.
-      {R"(HTTP:S/5%\../>%41)", "http://s/%3EA", true},
+      {R"(HTTP:S/5%\../>%41)", "http://s/%3E%41", true},
   };
 
   for (size_t i = 0; i < std::size(cases); i++) {
@@ -2742,7 +2741,29 @@ TEST(URLCanonTest, IDNToASCII) {
   output.set_length(0);
 }
 
-TEST(URLCanonTest, UnescapePathCharHistogram) {
+class URLCanonAsciiPercentEncodePathTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  URLCanonAsciiPercentEncodePathTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kDontDecodeAsciiPercentEncodedURLPath);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kDontDecodeAsciiPercentEncodedURLPath);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         URLCanonAsciiPercentEncodePathTest,
+                         ::testing::Bool());
+
+TEST_P(URLCanonAsciiPercentEncodePathTest, UnescapePathCharHistogram) {
   struct TestCase {
     base::StringPiece path;
     base::HistogramBase::Count cnt;
@@ -2760,8 +2781,13 @@ TEST(URLCanonTest, UnescapePathCharHistogram) {
     StdStringCanonOutput output(&out_str);
     bool success = CanonicalizePath(c.path.data(), in_comp, &output, &out_comp);
     ASSERT_TRUE(success);
-    histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1,
-                                       c.cnt);
+    if (base::FeatureList::IsEnabled(
+            url::kDontDecodeAsciiPercentEncodedURLPath)) {
+      histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1, 0);
+    } else {
+      histogram_tester.ExpectBucketCount("URL.Path.UnescapeEscapedChar", 1,
+                                         c.cnt);
+    }
   }
 }
 

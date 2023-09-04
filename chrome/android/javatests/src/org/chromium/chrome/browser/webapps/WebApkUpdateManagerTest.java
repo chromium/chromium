@@ -339,33 +339,21 @@ public class WebApkUpdateManagerTest {
      * Test that the canonicalized URLs are used in determining whether the fetched Web Manifest
      * data differs from the metadata in the WebAPK's Android Manifest. This is important because
      * the URLs in the Web Manifest have been modified by the WebAPK server prior to being stored in
-     * the WebAPK Android Manifest. Chrome and the WebAPK server parse URLs differently.
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebApk"})
-    public void testCanonicalUrlsIdenticalShouldNotUpgrade() throws Exception {
-        // URL canonicalization should replace "%74" with 't'.
-        CreationData creationData = defaultCreationData();
-        creationData.startUrl =
-                mTestServer.getURL("/chrome/test/data/banners/manifest_%74est_page.html");
-
-        WebappTestPage.navigateToServiceWorkerPageWithManifest(
-                mTestServer, mTab, WEBAPK_MANIFEST_URL);
-        Assert.assertFalse(checkUpdateNeeded(creationData, /* acceptDialogIfAppears= */ false));
-    }
-
-    /**
-     * Test that an upgraded WebAPK is requested if the canonicalized "start URLs" are different.
+     * the WebAPK Android Manifest. Chrome and the WebAPK server used to parse URLs differently.
+     *
+     * TODO(https://crbug.com/1475509): We probably no longer need this test
+     * because https://crbug.com/1252531 was fixed. Someone familiar with the
+     * context of this test might want to update or remove this test.
      */
     @Test
     @MediumTest
     @Feature({"WebApk"})
     public void testCanonicalUrlsDifferentShouldUpgrade() throws Exception {
-        // URL canonicalization should replace "%62" with 'b'.
+        // URL canonicalization in Chrome used to replace "%74" with 't', however, that is no longer
+        // true. "%74" should not be replaced with 't'.
         CreationData creationData = defaultCreationData();
         creationData.startUrl =
-                mTestServer.getURL("/chrome/test/data/banners/manifest_%62est_page.html");
+                mTestServer.getURL("/chrome/test/data/banners/manifest_%74est_page.html");
 
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);

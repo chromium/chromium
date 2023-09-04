@@ -594,8 +594,14 @@ TEST(UrlFormatterTest, FormatUrlRoundTripPathASCII) {
 }
 
 // Make sure that calling FormatUrl on a GURL and then converting back to a GURL
-// results in the original GURL, for each escaped ASCII character in the path.
+// results in a different GURL, for each escaped ASCII character in the path.
+// GURL no longer unescapes percent-encoded ASCII characters. See
+// https://crbug.com/1252531
 TEST(UrlFormatterTest, FormatUrlRoundTripPathEscaped) {
+  // A full list of characters which FormatURL should unescape.
+  const std::string_view kUnescapedCharacters =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_~";
+
   for (unsigned char test_char = 32; test_char < 128; ++test_char) {
     std::string original_url("http://www.google.com/");
     original_url.push_back('%');
@@ -606,7 +612,12 @@ TEST(UrlFormatterTest, FormatUrlRoundTripPathEscaped) {
     std::u16string formatted =
         FormatUrl(url, kFormatUrlOmitUsernamePassword,
                   base::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
-    EXPECT_EQ(url.spec(), GURL(formatted).spec());
+    if (test_char && kUnescapedCharacters.find(static_cast<char>(test_char)) !=
+                         kUnescapedCharacters.npos) {
+      EXPECT_NE(url.spec(), GURL(formatted).spec());
+    } else {
+      EXPECT_EQ(url.spec(), GURL(formatted).spec());
+    }
   }
 }
 

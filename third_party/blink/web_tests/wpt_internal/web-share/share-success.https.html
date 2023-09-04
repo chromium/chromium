@@ -44,9 +44,9 @@ share_test(mock => {
 
 share_test(mock => {
   const url = 'http://example.com/foo\\ab%63\r\n\t "<>`{}';
-  // Expect '\' to normalize to '/', "%63" to normalize to 'c', '\r\n\t'
-  // to be removed, and all the other illegal characters to be percent-escaped.
-  const url_encoded = 'http://example.com/foo/abc%20%22%3C%3E%60%7B%7D';
+  // Expect '\' to normalize to '/', '\r\n\t' to be removed, and all the
+  // other illegal characters to be percent-escaped.
+  const url_encoded = 'http://example.com/foo/ab%63%20%22%3C%3E%60%7B%7D';
   mock.pushShareResult('', '', url_encoded, ShareError.OK);
   return callWithKeyDown(() => navigator.share({url: url}));
 }, 'successful share with percent-encoded URL characters');

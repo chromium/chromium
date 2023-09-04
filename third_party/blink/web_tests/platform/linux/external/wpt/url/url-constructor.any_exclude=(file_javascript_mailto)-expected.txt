@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 674 tests; 506 PASS, 168 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 674 tests; 508 PASS, 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -129,9 +129,9 @@ PASS Parsing: <http://example.com/foo%> without base
 PASS Parsing: <http://example.com/foo%2> without base
 PASS Parsing: <http://example.com/foo%2zbar> without base
 PASS Parsing: <http://example.com/foo%2Â©zbar> without base
-FAIL Parsing: <http://example.com/foo%41%7a> without base assert_equals: href expected "http://example.com/foo%41%7a" but got "http://example.com/fooAz"
+PASS Parsing: <http://example.com/foo%41%7a> without base
 PASS Parsing: <http://example.com/foo	%91> without base
-FAIL Parsing: <http://example.com/foo%00%51> without base assert_equals: href expected "http://example.com/foo%00%51" but got "http://example.com/foo%00Q"
+PASS Parsing: <http://example.com/foo%00%51> without base
 PASS Parsing: <http://example.com/(%28:%3A%29)> without base
 PASS Parsing: <http://example.com/%3A%3a%3C%3c> without base
 PASS Parsing: <http://example.com/foo	bar> without base

@@ -75,9 +75,10 @@ TEST(WebAppHelpers, IsValidWebAppUrl) {
 
 TEST(WebAppHelpers, ManifestIdEncoding) {
   GURL start_url("https://example.com/abc");
-  // ASCII character.
-  EXPECT_EQ(GenerateAppId("j", start_url), GenerateAppId("%6a", start_url));
-  EXPECT_EQ(GenerateAppId("%6Ax", start_url), GenerateAppId("%6ax", start_url));
+  // ASCII character. URL parser no longer unescapes percent encoded ASCII
+  // characters. See https://crbug.com/1252531.
+  EXPECT_EQ(GenerateAppId("j", start_url), GenerateAppId("j", start_url));
+  EXPECT_EQ(GenerateAppId("%6Ax", start_url), GenerateAppId("%6Ax", start_url));
 
   // Special characters.
   EXPECT_EQ(GenerateAppId("a😀b", start_url),
