@@ -5842,6 +5842,7 @@ source_set("unit_tests") {
     "system_web_apps/apps/face_ml/chrome_face_ml_user_provider_unittest.cc",
     "system_web_apps/apps/help_app/help_app_discover_tab_notification_unittest.cc",
     "system_web_apps/apps/help_app/help_app_notification_controller_unittest.cc",
+    "system_web_apps/apps/help_app/help_app_ui_delegate_unittest.cc",
     "system_web_apps/apps/os_settings_web_app_info_unittest.cc",
     "system_web_apps/apps/personalization_app/ambient_video_albums_unittest.cc",
     "system_web_apps/apps/personalization_app/mock_personalization_app_manager.cc",

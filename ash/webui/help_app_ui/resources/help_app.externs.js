@@ -185,6 +185,11 @@ helpApp.DeviceInfo.prototype.model;
  * @type {string}
  */
 helpApp.DeviceInfo.prototype.userType;
+/**
+ * If Steam is allowed for the device, regardless of install status.
+ * @type {boolean}
+ */
+helpApp.DeviceInfo.prototype.isSteamAllowed;
 
 /**
  * The delegate which exposes open source privileged WebUi functions to

@@ -18,6 +18,9 @@ struct DeviceInfo {
   // The possible values for this can be found at
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/apps/user_type_filter.cc;l=27;drc=0d0b76e40dfff0f4ad58d0640cdf2c4df72030d3.
   string user_type;
+
+  // If Steam is allowed for the device, regardless of install status.
+  bool is_steam_allowed;
 };
 
 /**

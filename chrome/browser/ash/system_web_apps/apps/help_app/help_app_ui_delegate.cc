@@ -11,8 +11,11 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -39,13 +42,39 @@
 namespace ash {
 
 namespace {
-void DeviceInfoCallback(
+void BorealisFeaturesCallback(
     ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback,
-    apps::DeviceInfo device_info) {
+    const apps::DeviceInfo& device_info,
+    borealis::BorealisFeatures::AllowStatus allow_status) {
+  bool is_steam_allowed =
+      allow_status == borealis::BorealisFeatures::AllowStatus::kAllowed;
   std::move(callback).Run(help_app::mojom::DeviceInfo::New(
       /*board=*/device_info.board,
       /*model=*/device_info.model,
-      /*user_type=*/device_info.user_type));
+      /*user_type=*/device_info.user_type,
+      /*is_steam_allowed=*/is_steam_allowed));
+}
+
+void DeviceInfoCallback(
+    ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback,
+    base::WeakPtr<Profile> profile,
+    apps::DeviceInfo device_info) {
+  if (!profile) {
+    BorealisFeaturesCallback(
+        std::move(callback), device_info,
+        borealis::BorealisFeatures::AllowStatus::kFailedToDetermine);
+    return;
+  }
+  auto* borealis_service =
+      borealis::BorealisService::GetForProfile(profile.get());
+  if (!borealis_service) {
+    BorealisFeaturesCallback(
+        std::move(callback), device_info,
+        borealis::BorealisFeatures::AllowStatus::kBlockedOnNonPrimaryProfile);
+    return;
+  }
+  borealis_service->Features().IsAllowed(base::BindOnce(
+      &BorealisFeaturesCallback, std::move(callback), device_info));
 }
 }  // namespace
 
@@ -130,8 +159,9 @@ void ChromeHelpAppUIDelegate::MaybeShowReleaseNotesNotification() {
 
 void ChromeHelpAppUIDelegate::GetDeviceInfo(
     ash::help_app::mojom::PageHandler::GetDeviceInfoCallback callback) {
-  device_info_manager_->GetDeviceInfo(
-      base::BindOnce(&DeviceInfoCallback, std::move(callback)));
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  device_info_manager_->GetDeviceInfo(base::BindOnce(
+      &DeviceInfoCallback, std::move(callback), profile->GetWeakPtr()));
 }
 
 absl::optional<std::string>

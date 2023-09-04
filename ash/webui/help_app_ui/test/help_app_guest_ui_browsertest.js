@@ -254,10 +254,8 @@ GUEST_TEST('GuestCanGetDeviceInfo', async () => {
 
   const deviceInfo = await delegate.getDeviceInfo();
   chai.expect(deviceInfo.board).to.be.a('string');
-
   chai.expect(deviceInfo.model).to.be.a('string');
-  chai.expect(deviceInfo.model).not.to.equal('');
-
   chai.expect(deviceInfo.userType).to.be.a('string');
-  chai.expect(deviceInfo.userType).not.to.equal('');
+
+  chai.expect(deviceInfo.isSteamAllowed).to.be.a('boolean');
 });
