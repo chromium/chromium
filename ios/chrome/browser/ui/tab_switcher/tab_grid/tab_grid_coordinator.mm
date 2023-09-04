@@ -1468,7 +1468,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
-         didCloseWithDeclinedByUser:(BOOL)declined {
+        didFinishWithDeclinedByUser:(BOOL)declined {
   _historySyncPopupCoordinator.delegate = nil;
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator = nil;

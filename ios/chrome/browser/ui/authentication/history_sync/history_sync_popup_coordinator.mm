@@ -63,7 +63,7 @@
     [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
                                             accessPoint:_accessPoint];
     [self.delegate historySyncPopupCoordinator:self
-                    didCloseWithDeclinedByUser:NO];
+                   didFinishWithDeclinedByUser:NO];
     return;
   }
 
@@ -86,6 +86,11 @@
                                       completion:nil];
 }
 
+- (void)dealloc {
+  // TODO(crbug.com/1454777)
+  DUMP_WILL_BE_CHECK(!_historySyncCoordinator);
+}
+
 - (void)stop {
   [_historySyncCoordinator stop];
   _historySyncCoordinator = nil;
@@ -95,9 +100,38 @@
   [super stop];
 }
 
-- (void)dealloc {
-  // TODO(crbug.com/1454777)
-  DUMP_WILL_BE_CHECK(!_historySyncCoordinator);
+#pragma mark - InterruptibleChromeCoordinator
+
+- (void)interruptWithAction:(SigninCoordinatorInterrupt)action
+                 completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissCompletion = ^() {
+    [weakSelf viewWasDismissedWithDeclinedByUser:NO];
+    if (completion) {
+      completion();
+    }
+  };
+  switch (action) {
+    case SigninCoordinatorInterrupt::DismissWithAnimation:
+      [_navigationController dismissViewControllerAnimated:YES
+                                                completion:dismissCompletion];
+      break;
+    case SigninCoordinatorInterrupt::DismissWithoutAnimation:
+      [_navigationController dismissViewControllerAnimated:NO
+                                                completion:dismissCompletion];
+      break;
+    case SigninCoordinatorInterrupt::UIShutdownNoDismiss:
+      // The view should be ignored and leave it being presented.
+      _navigationController.presentationController.delegate = nil;
+      _navigationController = nil;
+      // This coordinator is now done, and its owner can now stop it.
+      [self.delegate historySyncPopupCoordinator:self
+                     didFinishWithDeclinedByUser:NO];
+      if (completion) {
+        completion();
+      }
+      break;
+  }
 }
 
 #pragma mark - Private
@@ -113,7 +147,7 @@
         /*force_clear_browsing_data=*/false, nil);
   }
   [self.delegate historySyncPopupCoordinator:self
-                  didCloseWithDeclinedByUser:declined];
+                 didFinishWithDeclinedByUser:declined];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate

@@ -225,8 +225,6 @@ using signin_metrics::PromoAction;
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion {
-  // This method needs to be implemented in the subclass.
-  NOTREACHED();
 }
 
 #pragma mark - SigninCoordinator
