@@ -500,7 +500,7 @@ BASE_FEATURE(kAutofillPassRendererFormsToPasswordManager,
 // verify that a user's cursor has been outside the cell before accepting it)
 // are disabled.
 BASE_FEATURE(kAutofillPopupDisablePaintChecks,
-             "kutofillPopupDisablePaintChecks",
+             "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the autofill popup is hidden when the context menu is open.
