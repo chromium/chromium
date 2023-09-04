@@ -577,6 +577,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
       break;
     case State::kCompleted:
       CHECK(state_ == State::kWaitForBody ||
+            state_ == State::kResponseReceived ||
             state_ == State::kDataTransferStarted ||
             state_ == State::kResponseCommitted ||
             state_ == State::kDataTransferFinished)
