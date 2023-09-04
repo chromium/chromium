@@ -33,7 +33,9 @@ constexpr const char* const kKeysExemptOfRedaction[] = {
     "cros_ec_panicinfo",
     "i915_error_state",
     "perf-data",
-    "perfetto-data"
+    "perfetto-data",
+    // Contains URL-like app-ids which should not be redacted.
+    "app_service",
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -110,6 +110,8 @@ std::string GetDataCollectorName(
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_SIGN_IN);
     case support_tool::PERFORMANCE:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_PERFORMANCE);
+    case support_tool::CHROMEOS_APP_SERVICE:
+      return "ChromeOS App Service";
     default:
       return "Error: Undefined";
   }

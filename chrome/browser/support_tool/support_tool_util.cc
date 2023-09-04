@@ -26,6 +26,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/system_logs/app_service_log_source.h"
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
@@ -73,7 +74,8 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
     support_tool::CHROMEOS_CONNECTED_INPUT_DEVICES,
     support_tool::CHROMEOS_TRAFFIC_COUNTERS,
     support_tool::CHROMEOS_VIRTUAL_KEYBOARD,
-    support_tool::CHROMEOS_NETWORK_HEALTH};
+    support_tool::CHROMEOS_NETWORK_HEALTH,
+    support_tool::CHROMEOS_APP_SERVICE};
 
 // Data collector types that can only work on if IS_CHROMEOS_WITH_HW_DETAILS
 // flag is turned on. IS_CHROMEOS_WITH_HW_DETAILS flag will be turned on for
@@ -255,6 +257,13 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
       case support_tool::CHROMEOS_NETWORK_HEALTH:
         handler->AddDataCollector(
             std::make_unique<NetworkHealthDataCollector>());
+        break;
+      case support_tool::CHROMEOS_APP_SERVICE:
+        handler->AddDataCollector(
+            std::make_unique<SystemLogSourceDataCollectorAdaptor>(
+                "Gathers information from app service about installed and "
+                "running apps.",
+                std::make_unique<system_logs::AppServiceLogSource>()));
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
