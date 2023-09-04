@@ -4977,8 +4977,9 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, MultiPortSessionWithMigration) {
-  // Turning on MPQC will implicitly turn on port migration.
+  // Turning on both MPQC and MPQM will implicitly turn on port migration.
   quic_params_->client_connection_options.push_back(quic::kMPQC);
+  quic_params_->client_connection_options.push_back(quic::kMPQM);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
