@@ -115,6 +115,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeDemoTools);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeTour);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularCarrierLock);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<int> kCellularCarrierLockLastConfig;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularUseSecondEuicc);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
@@ -857,6 +860,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptivePortalErrorPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeAudioMixingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeTourEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularCarrierLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryFooterEnabled();

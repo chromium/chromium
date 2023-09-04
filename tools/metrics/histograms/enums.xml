@@ -63705,6 +63705,7 @@ from previous Chrome versions.
   <int value="-446560063" label="finch-seed-min-update-period"/>
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
+  <int value="-444758854" label="CellularCarrierLock:disabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
   <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
@@ -67214,6 +67215,7 @@ from previous Chrome versions.
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1314797690"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>
+  <int value="1315158510" label="CellularCarrierLock:enabled"/>
   <int value="1316142697" label="canvas-2d-layers"/>
   <int value="1316607485" label="MultiProfileAccountConsistency:enabled"/>
   <int value="1316844889" label="ScreenshotsForAndroidV2:disabled"/>

@@ -1143,6 +1143,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "cellular-carrier-lock",
+    "owners": [ "ejcaruso", "michamazur", "ujjwalpande", "cros-cellular-core@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cellular-use-second-euicc",
     "owners": [ "azeemarshad", "khorimoto", "cros-connectivity@google.com" ],
     // Never expires. This used in ChromeOS to switch to removable EUICC for
