@@ -175,23 +175,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
   if (preferred_match && !not_sign_in_form) {
-    using FormMatchType =
-        password_manager::PasswordFormMetricsRecorder::MatchedFormType;
-    switch (GetMatchType(*preferred_match)) {
-      case GetLoginMatchType::kExact:
-        metrics_recorder->RecordMatchedFormType(FormMatchType::kExactMatch);
-        break;
-      case GetLoginMatchType::kAffiliated:
-        metrics_recorder->RecordMatchedFormType(
-            IsValidAndroidFacetURI(preferred_match->signon_realm)
-                ? FormMatchType::kAffiliatedApp
-                : FormMatchType::kAffiliatedWebsites);
-        break;
-      case GetLoginMatchType::kPSL:
-        metrics_recorder->RecordMatchedFormType(
-            FormMatchType::kPublicSuffixMatch);
-        break;
-    }
+    metrics_recorder->RecordMatchedFormType(*preferred_match);
   }
 
 // This metric will always record kReauthRequired on iOS and Android. So we can

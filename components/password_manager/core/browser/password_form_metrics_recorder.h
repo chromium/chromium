@@ -384,7 +384,7 @@ class PasswordFormMetricsRecorder
 
   void RecordFirstFillingResult(int32_t result);
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
-  void RecordMatchedFormType(MatchedFormType type);
+  void RecordMatchedFormType(const PasswordForm& form);
 
   // Calculates FillingAssistance metric for |submitted_form|. The result is
   // stored in |filling_assistance_| and recorded in the destructor in case when
