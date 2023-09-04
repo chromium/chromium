@@ -2389,6 +2389,12 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 
   AddUIThreadInterface(
       registry.get(),
+      base::BindRepeating(
+          &RenderProcessHostImpl::BindVideoEncoderMetricsProvider,
+          instance_weak_factory_.GetWeakPtr()));
+
+  AddUIThreadInterface(
+      registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::BindAecDumpManager,
                           instance_weak_factory_.GetWeakPtr()));
 
@@ -2444,6 +2450,12 @@ void RenderProcessHostImpl::BindMediaInterfaceProxy(
     media_interface_proxy_ =
         std::make_unique<FramelessMediaInterfaceProxy>(this);
   media_interface_proxy_->Add(std::move(receiver));
+}
+
+void RenderProcessHostImpl::BindVideoEncoderMetricsProvider(
+    mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
+  media::MojoVideoEncoderMetricsProviderService::Create(ukm::NoURLSourceId(),
+                                                        std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindWebDatabaseHostImpl(

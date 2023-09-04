@@ -45,6 +45,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
+#include "media/mojo/mojom/video_encoder_metrics_provider.mojom-forward.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -912,6 +913,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver);
   void BindMediaInterfaceProxy(
       mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
+  void BindVideoEncoderMetricsProvider(
+      mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider>
+          receiver);
   void BindWebDatabaseHostImpl(
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
   void BindAecDumpManager(
