@@ -317,9 +317,14 @@ class SettingsDetailedBuildInfoSubpageElement extends
       // the indicator should be invisible.
       return '';
     }
-    return loadTimeData.getBoolean('aboutEnterpriseManaged') ?
-        '' :
-        loadTimeData.getString('ownerEmail');
+
+    if (loadTimeData.getBoolean('aboutEnterpriseManaged')) {
+      return '';
+    }
+
+    return loadTimeData.valueExists('ownerEmail') ?
+        loadTimeData.getString('ownerEmail') :
+        '';
   }
 
   private getChangeChannelIndicatorType_(canChangeChannel: boolean):
