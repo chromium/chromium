@@ -373,7 +373,7 @@ enum class IOSOverflowMenuActionType {
       popoverPresentationController.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
 
-      [self setupSheetForMenu:menu isCustomizationScreen:NO];
+      [self setupSheetForMenu:menu isCustomizationScreen:NO animated:NO];
 
       __weak __typeof(self) weakSelf = self;
       [self.baseViewController
@@ -522,12 +522,33 @@ enum class IOSOverflowMenuActionType {
                                         .destinationCustomizationModel];
 
   [self setupSheetForMenu:self.baseViewController.presentedViewController
-      isCustomizationScreen:YES];
+      isCustomizationScreen:YES
+                   animated:YES];
+}
+
+- (void)showMenuCustomizationFromActionType:
+    (overflow_menu::ActionType)actionType {
+  for (OverflowMenuAction* action in _overflowMenuOrderer
+           .actionCustomizationModel.actionsGroup.actions) {
+    if (action.actionType == static_cast<NSInteger>(actionType)) {
+      action.highlighted = YES;
+    }
+  }
+  [_overflowMenuModel
+      startCustomizationWithActions:_overflowMenuOrderer
+                                        .actionCustomizationModel
+                       destinations:_overflowMenuOrderer
+                                        .destinationCustomizationModel];
+
+  [self setupSheetForMenu:self.baseViewController.presentedViewController
+      isCustomizationScreen:YES
+                   animated:YES];
 }
 
 - (void)hideMenuCustomization {
   [self setupSheetForMenu:self.baseViewController.presentedViewController
-      isCustomizationScreen:NO];
+      isCustomizationScreen:NO
+                   animated:YES];
 
   [_overflowMenuModel endCustomization];
 }
@@ -628,7 +649,8 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)setupSheetForMenu:(UIViewController*)menu
-    isCustomizationScreen:(BOOL)isCustomizationScreen {
+    isCustomizationScreen:(BOOL)isCustomizationScreen
+                 animated:(BOOL)animated {
   // The adaptive controller adjusts styles based on window size: sheet
   // for slim windows on iPhone and iPad, popover for larger windows on
   // iPad.
@@ -639,29 +661,38 @@ enum class IOSOverflowMenuActionType {
   }
 
   sheetPresentationController.delegate = self;
-  sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-      YES;
 
-  if (isCustomizationScreen) {
-    sheetPresentationController.prefersGrabberVisible = NO;
-    sheetPresentationController.detents =
-        @[ [UISheetPresentationControllerDetent largeDetent] ];
+  void (^changes)(void) = ^{
+    sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+    sheetPresentationController
+        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+
+    if (isCustomizationScreen) {
+      sheetPresentationController.prefersGrabberVisible = NO;
+      sheetPresentationController.detents =
+          @[ [UISheetPresentationControllerDetent largeDetent] ];
+    } else {
+      sheetPresentationController.prefersGrabberVisible = YES;
+
+      NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
+        [UISheetPresentationControllerDetent mediumDetent],
+        [UISheetPresentationControllerDetent largeDetent]
+      ];
+
+      NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
+          @[ [UISheetPresentationControllerDetent largeDetent] ];
+
+      BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
+          menu.traitCollection.preferredContentSizeCategory);
+      sheetPresentationController.detents =
+          hasLargeText ? largeTextDetents : regularDetents;
+    }
+  };
+
+  if (animated) {
+    [sheetPresentationController animateChanges:changes];
   } else {
-    sheetPresentationController.prefersGrabberVisible = YES;
-
-    NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
-      [UISheetPresentationControllerDetent mediumDetent],
-      [UISheetPresentationControllerDetent largeDetent]
-    ];
-
-    NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
-        @[ [UISheetPresentationControllerDetent largeDetent] ];
-
-    BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
-        menu.traitCollection.preferredContentSizeCategory);
-    sheetPresentationController.detents =
-        hasLargeText ? largeTextDetents : regularDetents;
+    changes();
   }
 }
 

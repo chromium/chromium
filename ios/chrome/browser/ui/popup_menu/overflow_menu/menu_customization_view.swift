@@ -82,7 +82,8 @@ struct MenuCustomizationView: View {
           }
         }
         OverflowMenuActionSection(
-          actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil)
+          actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil
+        )
       }
       .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
     }

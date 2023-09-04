@@ -5,11 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OVERFLOW_MENU_CUSTOMIZATION_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OVERFLOW_MENU_CUSTOMIZATION_COMMANDS_H_
 
+namespace overflow_menu {
+enum class ActionType;
+}
+
 // Commands relating to showing or hiding the overflow menu customization
 // process.
 @protocol OverflowMenuCustomizationCommands
 
 - (void)showMenuCustomization;
+
+- (void)showMenuCustomizationFromActionType:
+    (overflow_menu::ActionType)actionType;
 
 - (void)hideMenuCustomization;
 

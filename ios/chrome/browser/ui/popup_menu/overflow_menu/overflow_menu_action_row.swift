@@ -41,6 +41,9 @@ struct OverflowMenuActionRow: View {
   /// The size of the "N" IPH icon.
   private static let newLabelIconWidth: CGFloat = 15
 
+  // The duration that the view's highlight should persist.
+  private static let highlightDuration: DispatchTimeInterval = .seconds(2)
+
   /// The action for this row.
   @ObservedObject var action: OverflowMenuAction
 
@@ -54,6 +57,16 @@ struct OverflowMenuActionRow: View {
 
   var body: some View {
     button
+      .if(action.highlighted) { view in
+        view.listRowBackground(Color("destination_highlight_color"))
+          .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.highlightDuration) {
+              withAnimation {
+                action.highlighted = false
+              }
+            }
+          }
+      }
       .accessibilityIdentifier(action.accessibilityIdentifier)
       .disabled(!action.enabled || action.enterpriseDisabled)
       .if(!isEditing) { view in

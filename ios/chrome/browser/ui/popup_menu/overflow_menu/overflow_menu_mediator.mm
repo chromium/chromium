@@ -1078,7 +1078,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                             IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
              symbolName:@"pencil"
                 handler:^{
-                  [weakSelf beginCustomization];
+                  [weakSelf beginCustomizationFromActionType:actionType];
                 }],
     ];
   }
@@ -1944,6 +1944,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Begins the action edit flow.
 - (void)beginCustomization {
   [self.dispatcher showMenuCustomization];
+}
+- (void)beginCustomizationFromActionType:(overflow_menu::ActionType)actionType {
+  [self.dispatcher showMenuCustomizationFromActionType:actionType];
 }
 
 - (void)hideDestination:(overflow_menu::Destination)destination {
