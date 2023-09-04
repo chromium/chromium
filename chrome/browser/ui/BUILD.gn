@@ -6085,6 +6085,7 @@ static_library("ui") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/app_service",
       "//chrome/browser/web_share_target",
       "//chrome/common/extensions/api",
       "//components/drive",

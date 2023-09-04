@@ -41,6 +41,8 @@ class WebAppUiManagerImpl;
 using UninstallScheduledCallback = base::OnceCallback<void(bool)>;
 using UninstallCompleteCallback =
     base::OnceCallback<void(webapps::UninstallResultCode code)>;
+using WebAppLaunchAcceptanceCallback =
+    base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 
 // Overrides the app identity update dialog's behavior for testing, allowing the
 // test to auto-accept or auto-skip the dialog.
@@ -146,6 +148,13 @@ class WebAppUiManager {
                                       const AppId& app_id,
                                       bool shortcut_created) = 0;
 
+  // Shows the pre-launch dialog for a file handling web app launch. The user
+  // can allow or block the launch.
+  virtual void ShowWebAppFileLaunchDialog(
+      const std::vector<base::FilePath>& file_paths,
+      const web_app::AppId& app_id,
+      WebAppLaunchAcceptanceCallback launch_callback) = 0;
+
   virtual void ShowWebAppIdentityUpdateDialog(
       const std::string& app_id,
       bool title_change,
@@ -156,6 +165,9 @@ class WebAppUiManager {
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
       AppIdentityDialogCallback callback) = 0;
+
+  // Show the settings UI for the given app.
+  virtual void ShowWebAppSettings(const AppId& app_id) = 0;
 
   // This launches the web app in the appropriate configuration, the behavior of
   // which depends on the given configuration here and the configuration of the

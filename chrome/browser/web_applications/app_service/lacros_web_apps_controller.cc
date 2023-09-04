@@ -20,7 +20,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/startup/first_run_service.h"
+// TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
+#include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"

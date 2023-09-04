@@ -59,6 +59,10 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void ReparentAppTabToWindow(content::WebContents* contents,
                               const AppId& app_id,
                               bool shortcut_created) override;
+  void ShowWebAppFileLaunchDialog(
+      const std::vector<base::FilePath>& file_paths,
+      const web_app::AppId& app_id,
+      WebAppLaunchAcceptanceCallback launch_callback) override {}
   void ShowWebAppIdentityUpdateDialog(
       const std::string& app_id,
       bool title_change,
@@ -69,6 +73,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const SkBitmap& new_icon,
       content::WebContents* web_contents,
       AppIdentityDialogCallback callback) override;
+  void ShowWebAppSettings(const AppId& app_id) override {}
 
   base::Value LaunchWebApp(apps::AppLaunchParams params,
                            LaunchWebAppWindowSetting launch_setting,

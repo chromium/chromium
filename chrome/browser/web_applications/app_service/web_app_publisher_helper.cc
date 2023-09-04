@@ -5,11 +5,11 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
 #include <stddef.h>
-#include <atomic>
 #include <iterator>
 #include <memory>
 #include <ostream>
 #include <set>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -31,44 +31,38 @@
 #include "base/functional/identity.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
-#include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -80,6 +74,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -89,17 +84,16 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/clear_site_data_utils.h"
-#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -107,16 +101,17 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
-#include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -144,6 +139,10 @@ using apps::IconEffects;
 
 namespace content {
 class BrowserContext;
+}
+
+namespace ui {
+enum ResourceScaleFactor : int;
 }
 
 namespace web_app {
@@ -885,6 +884,41 @@ void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
   return paused_apps_.IsPaused(app_id);
 }
+
+void WebAppPublisherHelper::StopApp(const std::string& app_id) {
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  if (!IsWebAppsCrosapiEnabled()) {
+    provider_->ui_manager().CloseAppWindows(app_id);
+    return;
+  }
+
+  CHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+
+  apps::BrowserAppInstanceTracker* instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->BrowserAppInstanceTracker();
+  CHECK(instance_tracker);
+
+  instance_tracker->StopInstancesOfApp(app_id);
+}
+
+void WebAppPublisherHelper::GetCompressedIconData(
+    const std::string& app_id,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    apps::LoadIconCallback callback) {
+  DCHECK(provider_);
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  apps::GetWebAppCompressedIconData(profile_, app_id, size_in_dip, scale_factor,
+                                    std::move(callback));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
@@ -900,22 +934,6 @@ void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
   LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
                      icon_effects, std::move(callback));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void WebAppPublisherHelper::GetCompressedIconData(
-    const std::string& app_id,
-    int32_t size_in_dip,
-    ui::ResourceScaleFactor scale_factor,
-    apps::LoadIconCallback callback) {
-  DCHECK(provider_);
-  if (IsShuttingDown()) {
-    return;
-  }
-
-  apps::GetWebAppCompressedIconData(profile_, app_id, size_in_dip, scale_factor,
-                                    std::move(callback));
-}
-#endif
 
 void WebAppPublisherHelper::Launch(
     const std::string& app_id,
@@ -1168,40 +1186,12 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
       url, url, permission_type, permission_value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void WebAppPublisherHelper::StopApp(const std::string& app_id) {
-  if (IsShuttingDown()) {
-    return;
-  }
-
-  if (!IsWebAppsCrosapiEnabled()) {
-    provider_->ui_manager().CloseAppWindows(app_id);
-    return;
-  }
-
-  CHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-
-  apps::BrowserAppInstanceTracker* instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->BrowserAppInstanceTracker();
-  CHECK(instance_tracker);
-
-  instance_tracker->StopInstancesOfApp(app_id);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void WebAppPublisherHelper::OpenNativeSettings(const std::string& app_id) {
   if (IsShuttingDown()) {
     return;
   }
 
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  chrome::ShowSiteSettings(profile(), web_app->start_url());
+  provider_->ui_manager().ShowWebAppSettings(app_id);
 }
 
 apps::WindowMode WebAppPublisherHelper::GetWindowMode(
@@ -1841,8 +1831,8 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
   switch (
       provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id)) {
     case ApiApprovalState::kRequiresPrompt:
-      chrome::ShowWebAppFileLaunchDialog(file_paths, profile(), app_id,
-                                         std::move(launch_callback));
+      provider_->ui_manager().ShowWebAppFileLaunchDialog(
+          file_paths, app_id, std::move(launch_callback));
       break;
     case ApiApprovalState::kAllowed:
       std::move(launch_callback)
