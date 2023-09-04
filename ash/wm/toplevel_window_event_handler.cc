@@ -649,6 +649,10 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
     const gfx::PointF& point_in_parent,
     int window_component,
     ToplevelWindowEventHandler::EndClosure end_closure) {
+  if (first_finger_hittest_ == HTNOWHERE) {
+    first_finger_hittest_ = window_component;
+  }
+
   // This function is called from client to start either a drag or a
   // pinch gesture. There is a delay from when `this` first receives a
   // gesture begin event to when the client asks the gesture to be
@@ -692,8 +696,9 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
 
   end_closure_ = std::move(end_closure);
   in_gesture_drag_ = (source == ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-  // |gesture_target_| needs to be updated if the drag originated from a
-  // client (i.e. |this| never handled ET_GESTURE_EVENT_BEGIN).
+  // `gesture_target_` and `first_finger_hittest_` need to be updated if the
+  // drag originated from a client (i.e. `this` never handled
+  // ET_GESTURE_EVENT_BEGIN).
   if (in_gesture_drag_ && (!gesture_target_ || update_gesture_target)) {
     UpdateGestureTarget(window);
   }
@@ -750,8 +755,9 @@ bool ToplevelWindowEventHandler::AttemptToStartPinch(
 
   in_gesture_drag_ = true;
 
-  // `gesture_target_` needs to be updated if the drag originated from a
-  // client (i.e. `this` never handled ET_GESTURE_EVENT_BEGIN).
+  // `gesture_target_` and `first_finger_hittest_` need to be updated if
+  // the drag originated from a client (i.e. `this` never handled
+  // ET_GESTURE_EVENT_BEGIN).
   if (!gesture_target_ || update_gesture_target) {
     UpdateGestureTarget(window);
   }
@@ -771,16 +777,20 @@ bool ToplevelWindowEventHandler::PrepareForPinch(
   // Reset `window_resizer_` if there is an ongoing drag move.
   if (window_resizer_ && in_gesture_drag_ && window_resizer_->IsMove()) {
     window_resizer_.reset();
+    window_component = first_finger_hittest_;
   }
 
-  in_pinch_ = true;
-  std::unique_ptr<WindowResizer> resizer(
-      CreateWindowResizer(window, point_in_parent, window_component,
-                          ::wm::WINDOW_MOVE_SOURCE_TOUCH));
+  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
+      window, point_in_parent, window_component, wm::WINDOW_MOVE_SOURCE_TOUCH));
+  if (!resizer) {
+    return false;
+  }
   window_resizer_ =
       std::make_unique<ScopedWindowResizer>(this, std::move(resizer), false);
   Shell::Get()->multi_display_metrics_controller()->OnWindowMovedOrResized(
       window);
+
+  in_pinch_ = true;
   return true;
 }
 
@@ -856,12 +866,12 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
   }
 
   // If an ongoing resizing event exists (e.g. during transition from pinch to
-  // drag), reset the resizer here.
+  // drag), reset the resizer here, but use the old `window_component`.
   if (window_resizer_) {
     window_resizer_.reset();
+    window_component = first_finger_hittest_;
   }
 
-  requires_reinitialization_ = false;
   std::unique_ptr<WindowResizer> resizer(
       CreateWindowResizer(window, point_in_parent, window_component, source));
   if (!resizer)
@@ -870,6 +880,8 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
       this, std::move(resizer), grab_capture);
   Shell::Get()->multi_display_metrics_controller()->OnWindowMovedOrResized(
       window);
+
+  requires_reinitialization_ = false;
   return true;
 }
 
