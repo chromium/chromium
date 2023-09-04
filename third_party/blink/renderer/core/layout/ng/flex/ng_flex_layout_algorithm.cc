@@ -2302,8 +2302,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  if (RuntimeEnabledFeatures::LayoutFlexNewColumnAlgorithmEnabled() &&
-      is_column_ && algorithm_.IsMultiline()) {
+  if (is_column_ && algorithm_.IsMultiline()) {
     return ComputeMinMaxSizeOfMultilineColumnContainer();
   }
 
