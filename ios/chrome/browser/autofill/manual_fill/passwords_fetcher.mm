@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
 #import "base/containers/cxx20_erase.h"
+#import "base/timer/timer.h"
 #import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_list_sorter.h"
@@ -35,6 +36,12 @@
   // Last results of fetchLoginsFromStore: for `_accountPasswordStore`.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       _lastFetchedAccountStoreLogins;
+
+  // Timers for retrieving passwords again when the store has changed.
+  // It's done with a delay to react to bulk password storage modifications
+  // only once.
+  base::OneShotTimer _refetchProfilePasswordsTimer;
+  base::OneShotTimer _refetchAccountPasswordsTimer;
 }
 
 // Delegate to send the fetchted passwords.
@@ -103,6 +110,22 @@
   }
 }
 
+- (void)fetchDelayedLoginsFromStore:
+            (password_manager::PasswordStoreInterface*)store
+                              timer:(base::OneShotTimer&)timer {
+  if (_numPendingStoreFetches > 0 || timer.IsRunning()) {
+    // Looks like bulk changes to the password store happening, delay the
+    // request.
+    __weak PasswordFetcher* weakSelf = self;
+    // TODO(crbug.com/1477208): This hack should go away with the entire class.
+    timer.Start(FROM_HERE, base::Seconds(5), base::BindOnce(^{
+                  [weakSelf fetchLoginsFromStore:store];
+                }));
+  } else {
+    [self fetchLoginsFromStore:store];
+  }
+}
+
 #pragma mark - SavePasswordsConsumerDelegate
 
 - (void)
@@ -153,7 +176,10 @@
 
 - (void)loginsDidChangeInStore:
     (password_manager::PasswordStoreInterface*)store {
-  [self fetchLoginsFromStore:store];
+  base::OneShotTimer& timer = store == _profilePasswordStore
+                                  ? _refetchProfilePasswordsTimer
+                                  : _refetchAccountPasswordsTimer;
+  [self fetchDelayedLoginsFromStore:store timer:timer];
 }
 
 @end
