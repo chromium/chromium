@@ -443,12 +443,6 @@ public interface WebContents extends Parcelable {
     void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler);
 
     /**
-     * @return {@link StylusWritingImeCallback} which is used to implement the
-     * IME functionality for the Stylus handwriting feature.
-     */
-    StylusWritingImeCallback getStylusWritingImeCallback();
-
-    /**
      * Returns {@link EventForwarder} which is used to forward input/view events
      * to native content layer.
      */

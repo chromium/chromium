@@ -24,6 +24,7 @@ import org.chromium.base.Log;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.StylusWritingHandler;
+import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate.StylusWritingCursorHandler;
 
@@ -115,7 +116,7 @@ public class AndroidStylusWritingHandler
     }
 
     @Override
-    public boolean requestStartStylusWriting() {
+    public boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback) {
         Log.d(TAG, "Requesting Stylus Writing");
         StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
         mInputMethodManager.startStylusHandwriting(mTargetView);
