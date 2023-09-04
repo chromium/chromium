@@ -3279,7 +3279,7 @@
     {
       name: "SecurePaymentConfirmationAllowOneActivationlessShow",
       public: true,
-      status: "test",
+      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationDebug",
