@@ -180,7 +180,7 @@
   "devDependencies": {
     "@actions/core": "1.10.0",
     "@puppeteer/browsers": "1.5.0",
-    "@rollup/plugin-commonjs": "25.0.3",
+    "@rollup/plugin-commonjs": "25.0.4",
     "@rollup/plugin-node-resolve": "15.1.0",
     "@rollup/plugin-terser": "0.4.3",
     "@types/argparse": "2.0.10",
