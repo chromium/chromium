@@ -209,8 +209,9 @@ namespace os.diagnostics {
     // clients should use methods which return `SupportStatus` for
     // support status check.
     unsupported,
-    // The PWA was closed and thus stopped the routine execution.
-    pwa_closed
+    // The corresponding App UI was closed and thus stopped the routine
+    // execution.
+    app_ui_closed
   };
 
   dictionary ExceptionInfo {
