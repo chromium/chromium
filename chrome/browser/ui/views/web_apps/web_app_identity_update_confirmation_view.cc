@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
@@ -172,7 +172,7 @@ void WebAppIdentityUpdateConfirmationView::OnDialogAccepted() {
 bool WebAppIdentityUpdateConfirmationView::Cancel() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
-  web_app::WebAppUiManagerImpl::Get(provider)->PresentUserUninstallDialog(
+  provider->ui_manager().PresentUserUninstallDialog(
       app_id_, webapps::WebappUninstallSource::kAppMenu,
       GetWidget()->GetNativeWindow(), base::DoNothing(),
       base::BindOnce(

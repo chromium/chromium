@@ -31,16 +31,13 @@ class NativeWindowTracker;
 
 namespace web_app {
 
-class WebAppProvider;
 class WebAppDialogManager;
 
-// This KeyedService is a UI counterpart for WebAppProvider.
-// TODO(calamity): Rename this to WebAppProviderDelegate to better reflect that
-// this class serves a wide range of Web Applications <-> Browser purposes.
+// Implementation of WebAppUiManager that depends upon //c/b/ui.
+// Allows //c/b/web_applications code to call into //c/b/ui without directly
+// depending on UI.
 class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
  public:
-  static WebAppUiManagerImpl* Get(WebAppProvider* provider);
-
   explicit WebAppUiManagerImpl(Profile* profile);
   WebAppUiManagerImpl(const WebAppUiManagerImpl&) = delete;
   WebAppUiManagerImpl& operator=(const WebAppUiManagerImpl&) = delete;

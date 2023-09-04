@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -74,6 +73,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
@@ -433,15 +433,14 @@ void UninstallImpl(WebAppProvider* provider,
                    const std::string& app_id,
                    apps::UninstallSource uninstall_source,
                    gfx::NativeWindow parent_window) {
-  WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(provider);
-  if (!web_app_ui_manager) {
+  if (!provider) {
     return;
   }
 
   if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
     webapps::WebappUninstallSource webapp_uninstall_source =
         ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
-    web_app_ui_manager->PresentUserUninstallDialog(
+    provider->ui_manager().PresentUserUninstallDialog(
         app_id, webapp_uninstall_source, parent_window, base::DoNothing());
   }
 }

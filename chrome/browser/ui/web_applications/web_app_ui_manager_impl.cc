@@ -102,7 +102,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
       std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_UNINSTALL,
                                         KeepAliveRestartOption::DISABLED);
   if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
-    WebAppUiManagerImpl::Get(provider)->PresentUserUninstallDialog(
+    provider->ui_manager().PresentUserUninstallDialog(
         app_id, webapps::WebappUninstallSource::kOsSettings,
         gfx::NativeWindow(),
         base::BindOnce([](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
@@ -140,12 +140,6 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
 // static
 std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
   return std::make_unique<WebAppUiManagerImpl>(profile);
-}
-
-// static
-WebAppUiManagerImpl* WebAppUiManagerImpl::Get(
-    web_app::WebAppProvider* provider) {
-  return provider ? provider->ui_manager().AsImpl() : nullptr;
 }
 
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
