@@ -101,7 +101,9 @@ class MockRequestClient : public ResourceRequestClient {
   std::string data() { return data_; }
   bool received_response() { return received_response_; }
   bool complete() { return complete_; }
-  net::LoadTimingInfo last_load_timing() { return last_load_timing_; }
+  const net::LoadTimingInfo& last_load_timing() const {
+    return last_load_timing_;
+  }
   network::URLLoaderCompletionStatus completion_status() {
     return completion_status_;
   }
@@ -204,6 +206,7 @@ class TimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(network::mojom::URLResponseHeadPtr response_head) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
+    mock_client_ = base::MakeRefCounted<MockRequestClient>();
     StartAsync(std::move(request), mock_client_);
 
     ASSERT_EQ(1u, loader_and_clients_.size());
@@ -213,19 +216,15 @@ class TimeConversionTest : public ResourceRequestSenderTest {
     client->OnReceiveResponse(std::move(response_head),
                               mojo::ScopedDataPipeConsumerHandle(),
                               absl::nullopt);
+    base::RunLoop().RunUntilIdle();
   }
-
-  const network::mojom::URLResponseHead& response_info() const {
-    return *response_info_;
+  const net::LoadTimingInfo& received_load_timing() const {
+    CHECK(mock_client_);
+    return mock_client_->last_load_timing();
   }
-
- private:
-  network::mojom::URLResponseHeadPtr response_info_ =
-      network::mojom::URLResponseHead::New();
 };
 
-// TODO(simonjam): Enable this when 10829031 lands.
-TEST_F(TimeConversionTest, DISABLED_ProperlyInitialized) {
+TEST_F(TimeConversionTest, ProperlyInitialized) {
   auto response_head = network::mojom::URLResponseHead::New();
   response_head->request_start = TicksFromMicroseconds(5);
   response_head->response_start = TicksFromMicroseconds(15);
@@ -237,11 +236,10 @@ TEST_F(TimeConversionTest, DISABLED_ProperlyInitialized) {
   auto request_start = response_head->load_timing.request_start;
   PerformTest(std::move(response_head));
 
-  EXPECT_LT(base::TimeTicks(), response_info().load_timing.request_start);
+  EXPECT_LT(base::TimeTicks(), received_load_timing().request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.domain_lookup_start);
-  EXPECT_LE(request_start,
-            response_info().load_timing.connect_timing.connect_start);
+            received_load_timing().connect_timing.domain_lookup_start);
+  EXPECT_LE(request_start, received_load_timing().connect_timing.connect_start);
 }
 
 TEST_F(TimeConversionTest, PartiallyInitialized) {
@@ -251,9 +249,9 @@ TEST_F(TimeConversionTest, PartiallyInitialized) {
 
   PerformTest(std::move(response_head));
 
-  EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
+  EXPECT_EQ(base::TimeTicks(), received_load_timing().request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.domain_lookup_start);
+            received_load_timing().connect_timing.domain_lookup_start);
 }
 
 TEST_F(TimeConversionTest, NotInitialized) {
@@ -261,9 +259,9 @@ TEST_F(TimeConversionTest, NotInitialized) {
 
   PerformTest(std::move(response_head));
 
-  EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
+  EXPECT_EQ(base::TimeTicks(), received_load_timing().request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.domain_lookup_start);
+            received_load_timing().connect_timing.domain_lookup_start);
 }
 
 class CompletionTimeConversionTest : public ResourceRequestSenderTest {
