@@ -3993,7 +3993,13 @@ test("base_unittests") {
       sources += [ "profiler/win32_stack_frame_unwinder_unittest.cc" ]
       deps += [ ":base_profiler_test_support_library" ]
     }
-    sources += [ "files/os_validation_win_unittest.cc" ]
+
+    # These tests are not built by default because they make heavy use of
+    # parameterized tests. Even when disabled, they incur a startup penalty on
+    # base_unittests. See comments in the file as for why they are disabled by
+    # default, and https://crbug.com/1475518 for one consequence of the process
+    # startup penalty.
+    # sources += [ "files/os_validation_win_unittest.cc" ]
 
     if (toolchain_has_rust && win_enable_cfg_guards) {
       deps += [ ":rust_cfg_win_test" ]

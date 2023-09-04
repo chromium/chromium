@@ -871,8 +871,7 @@ TEST(Expected, EqualityOperators) {
   EXPECT_NE(unexpected(123), ExInt(123));
 }
 
-// TODO(crbug.com/1475518): Re-enable this test
-TEST(ExpectedTest, DISABLED_DeathTests) {
+TEST(ExpectedDeathTest, UseAfterMove) {
   using ExpectedInt = expected<int, int>;
   using ExpectedDouble = expected<double, double>;
 
