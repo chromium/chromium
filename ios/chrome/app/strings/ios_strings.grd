@@ -623,6 +623,62 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BRING_ANDROID_TABS_REVIEW_TABLE_TITLE" desc="Title of the table that shows a list of recently active tabs from Android for the Android switcher to review and open. [iOS only]">
         Tabs from Android
       </message>
+      <message name="IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites with local bookmarks and two examples of such sites.">
+        {count, plural,
+          =1 {{website_1}}
+          =2 {{website_1}, {website_2}}
+          =3 {{website_1}, {website_2}, and 1 more}
+          other {{website_1}, {website_2}, and {more_count} more}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_BOOKMARK_TITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This switch label explains how many  bookmarks are saved locally.">
+        {count, plural,
+          =1 {{count} Bookmark}
+          other {{count} Bookmarks}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_BUTTON_TITLE" desc="The text is the primary button in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        Save in Account
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_PASSWORD_AUTHENTIFY_MESSAGE" desc="After the user selected to bulk upload passwords, the iPhone request the user to identify, and this message explains what will occurs if they identify.">
+        Save passwords in account
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_PASSWORD_AND_OTHER_TYPE_AUTHENTIFY_MESSAGE" desc="After the user selected to bulk upload passwords and one other type of items, the iPhone request the user to identify, and this message explains what will occurs if they identify.">
+        Save passwords and other items in account
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_PASSWORD_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites with local passwords and two examples of such sites.">
+        {count, plural,
+          =1 {For {website_1}}
+          =2 {For {website_1}, {website_2}}
+          =3 {For {website_1}, {website_2}, and 1 more}
+          other {For {website_1}, {website_2}, and {more_count} more}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_PASSWORD_TITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This switch label explains how many passwords are saved locally.">
+        {count, plural,
+          =1 {{count} Password}
+          other {{count} Passwords}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_ON_THIS_DEVICE_SETTINGS_HEADER" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This note explains where the user can go to view and manage individual items. like individual bookmarks or passwords.">
+        You can also view and manage these items in your bookmarks, Reading List, or password manager.
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_READING_LIST_SUBTITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This line give the number of sites with local reading list pages and two examples of such sites.">
+        {count, plural,
+          =1 {{website_1}}
+          =2 {{website_1}, {website_2}}
+          =3 {{website_1}, {website_2}, and 1 more}
+          other {{website_1}, {website_2}, and {more_count} more}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_READING_LIST_TITLE" desc="The text appears as a note in a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome. This switch label explains how many local reading list pages are saved locally.">
+        {count, plural,
+          =1 {{count} page on your Reading List}
+          other {{count} pages on your Reading List}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_SNACKBAR_MESSAGE" desc="The message appears in a small confirmation bubble with limited space after the user chose to save some data to their Google Account. [iOS] only">
+        {count, plural,
+          =1 {Item saved in your Google Account, {email}}
+          other {Items saved in your Google Account, {email}}}
+      </message>
+      <message name="IDS_IOS_BULK_UPLOAD_ON_THIS_DEVICE_TITLE" desc="The text appears as the title of a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        On This Device
+      </message>
       <message name="IDS_IOS_CALENDARS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's calendar while the app is in use [Length: unlimited] [iOS only].">
           This will be used to create events in your Apple Calendar from Chrome and Google Lens.
       </message>
