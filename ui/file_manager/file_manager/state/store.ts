@@ -11,6 +11,7 @@ import {androidAppsSlice} from './ducks/android_apps.js';
 import {bulkPinningSlice} from './ducks/bulk_pinning.js';
 import {currentDirectorySlice} from './ducks/current_directory.js';
 import {deviceSlice} from './ducks/device.js';
+import {driveSlice} from './ducks/drive.js';
 import {folderShortcutsSlice} from './ducks/folder_shortcuts.js';
 import {navigationSlice} from './ducks/navigation.js';
 import {preferencesSlice} from './ducks/preferences.js';
@@ -53,6 +54,7 @@ export function getStore(): Store {
       navigationSlice,
       preferencesSlice,
       deviceSlice,
+      driveSlice,
       currentDirectorySlice,
       allEntriesSlice,
     ]);
@@ -68,6 +70,10 @@ export function getEmptyState(): State {
     currentDirectory: undefined,
     device: {
       connection: chrome.fileManagerPrivate.DeviceConnectionState.ONLINE,
+    },
+    drive: {
+      connectionType: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+      offlineReason: undefined,
     },
     search: {
       query: undefined,

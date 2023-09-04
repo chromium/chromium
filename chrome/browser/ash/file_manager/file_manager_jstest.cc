@@ -335,6 +335,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerDevice) {
   RunTestURL("state/ducks/device_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerDrive) {
+  RunTestURL("state/ducks/drive_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerFolderShortcuts) {
   RunTestURL("state/ducks/folder_shortcuts_unittest.js");
 }
