@@ -1820,6 +1820,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarCloudIconShouldShowOnStartupEvenIfSyncing")
             .EnableBulkPinning(),
         TestCase("toolbarCloudIconShouldShowWhenPausedState")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconShouldShowWhenOnMeteredNetwork")
             .EnableBulkPinning()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

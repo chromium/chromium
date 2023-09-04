@@ -36,6 +36,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -3478,6 +3479,44 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         net::NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
             net::NetworkChangeNotifier::SUBTYPE_HSPA),
         net::NetworkChangeNotifier::CONNECTION_3G);
+    return;
+  }
+
+  if (name == "setDriveConnectionStatus") {
+    using drive::util::ConnectionStatus;
+    using drive::util::SetDriveConnectionStatusForTesting;
+
+    const std::string* status = value.FindString("status");
+    ASSERT_TRUE(status) << "Require status to update drive connection state";
+
+    if (*status == "none") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kNone);
+    } else if (*status == "no_service") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kNoService);
+    } else if (*status == "no_network") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
+    } else if (*status == "not_ready") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kNotReady);
+    } else if (*status == "metered") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kMetered);
+    } else if (*status == "connected") {
+      SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
+    } else {
+      NOTREACHED() << "Unknown status (" << *status << ") provided";
+    }
+
+    auto* const service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(service, nullptr);
+    service->OnNetworkChanged();
+    return;
+  }
+
+  if (name == "setSyncOnMeteredNetwork") {
+    absl::optional<bool> enabled = value.FindBool("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDriveOverCellular,
+                                      !enabled.value());
     return;
   }
 

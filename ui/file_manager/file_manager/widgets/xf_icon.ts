@@ -47,6 +47,8 @@ export class XfIcon extends XfBase {
           svg`<use xlink:href="foreground/images/files/ui/cloud_error.svg#cloud_error"></use>`,
       [constants.ICON_TYPES.CLOUD_OFFLINE]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_offline.svg#cloud_offline"></use>`,
+      [constants.ICON_TYPES.CLOUD_PAUSED]:
+          svg`<use xlink:href="foreground/images/files/ui/cloud_paused.svg#cloud_paused"></use>`,
       [constants.ICON_TYPES.CLOUD_SYNC]:
           svg`<use xlink:href="foreground/images/files/ui/cloud_sync.svg#cloud_sync"></use>`,
       [constants.ICON_TYPES.ERROR]:
@@ -118,6 +120,7 @@ function getCSS() {
       --xf-icon-positive-color: var(--cros-sys-positive);
       --xf-icon-error-color: var(--cros-sys-error);
       --xf-icon-progress-color: var(--cros-sys-progress);
+      --xf-secondary-color: var(--cros-sys-secondary);
       display: inline-block;
     }
 
@@ -453,6 +456,7 @@ function getCSS() {
     :host([type='cloud_done']) span,
     :host([type='cloud_error']) span,
     :host([type='cloud_offline']) span,
+    :host([type='cloud_paused']) span,
     :host([type='cloud_sync']) span {
       margin-inline-start: 10px;
       margin-top: 8px;

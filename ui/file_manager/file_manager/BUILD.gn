@@ -50,6 +50,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/cloud_error.svg",
     "foreground/images/files/ui/cloud_offline.svg",
     "foreground/images/files/ui/cloud.svg",
+    "foreground/images/files/ui/cloud_paused.svg",
     "foreground/images/files/ui/cloud_sync.svg",
     "foreground/images/files/ui/delete_ng.svg",
     "foreground/images/files/ui/delete.svg",

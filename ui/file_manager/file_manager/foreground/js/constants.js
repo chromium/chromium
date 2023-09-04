@@ -151,6 +151,7 @@ constants.ICON_TYPES = {
   CLOUD_DONE: 'cloud_done',
   CLOUD_ERROR: 'cloud_error',
   CLOUD_OFFLINE: 'cloud_offline',
+  CLOUD_PAUSED: 'cloud_paused',
   CLOUD_SYNC: 'cloud_sync',
   CLOUD: 'cloud',
   COMPUTER: 'computer',

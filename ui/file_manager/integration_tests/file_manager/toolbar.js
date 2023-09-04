@@ -647,3 +647,27 @@ testcase.toolbarCloudIconShouldShowOnStartupEvenIfSyncing = async () => {
   await remoteCall.waitForCloudPanelState(
       appId, /*items=*/ 1, /*percentage=*/ 100);
 };
+
+/**
+ * Tests that the cloud icon should show if bulk pinning is paused due to being
+ * on a metered network.
+ */
+testcase.toolbarCloudIconShouldShowWhenOnMeteredNetwork = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Force the bulk pinning preference on.
+  await remoteCall.setSpacedFreeSpace(4n << 30n);
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+
+  // Update the drive connection status to return metered and then disable the
+  // sync on metered property.
+  await sendTestMessage({name: 'setSyncOnMeteredNetwork', enabled: false});
+  await sendTestMessage({name: 'setDriveConnectionStatus', status: 'metered'});
+
+  // Assert the cloud icon should have the paused subicon.
+  await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
+  await remoteCall.waitForElement(
+      appId, '#cloud-button > xf-icon[type="cloud_paused"]');
+};
