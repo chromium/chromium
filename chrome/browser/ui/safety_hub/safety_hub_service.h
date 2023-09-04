@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
@@ -67,6 +68,9 @@ class SafetyHubService : public KeyedService,
   // Indicates whether the update process is currently running.
   bool IsUpdateRunning();
 
+  // Returns the latest result that is available in memory.
+  absl::optional<SafetyHubService::Result*> GetCachedResult();
+
   // KeyedService implementation.
   void Shutdown() override;
 
@@ -76,6 +80,9 @@ class SafetyHubService : public KeyedService,
   void StartRepeatedUpdates();
 
   // SafetyHubService overrides.
+
+  // Initializes the latest result such that it is available in memory.
+  virtual void InitializeLatestResult() = 0;
 
   // The value returned by this function determines the interval of how often
   // the Update function will be called.
@@ -97,6 +104,9 @@ class SafetyHubService : public KeyedService,
       std::unique_ptr<Result> result) = 0;
 
   virtual base::WeakPtr<SafetyHubService> GetAsWeakRef() = 0;
+
+  // The latest available result, which is initialized at the start.
+  std::unique_ptr<Result> latest_result_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, ManageObservers);

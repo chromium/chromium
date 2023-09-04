@@ -144,9 +144,14 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content_settings_observation_.Observe(hcsm);
   StartRepeatedUpdates();
+  InitializeLatestResult();
 }
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
+
+void UnusedSitePermissionsService::InitializeLatestResult() {
+  latest_result_ = GetRevokedPermissions();
+}
 
 void UnusedSitePermissionsService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,

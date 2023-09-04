@@ -49,8 +49,8 @@ void SafetyHubService::UpdateAsyncInternal() {
 void SafetyHubService::OnUpdateFinished(
     std::unique_ptr<SafetyHubService::Result> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<Result> final_result = UpdateOnUIThread(std::move(result));
-  NotifyObservers(final_result.get());
+  latest_result_ = UpdateOnUIThread(std::move(result));
+  NotifyObservers(latest_result_.get());
   if (--pending_updates_) {
     UpdateAsyncInternal();
   }
@@ -72,4 +72,11 @@ void SafetyHubService::NotifyObservers(Result* result) {
 
 bool SafetyHubService::IsUpdateRunning() {
   return pending_updates_ > 0;
+}
+
+absl::optional<SafetyHubService::Result*> SafetyHubService::GetCachedResult() {
+  if (latest_result_ != nullptr) {
+    return latest_result_.get();
+  }
+  return absl::nullopt;
 }

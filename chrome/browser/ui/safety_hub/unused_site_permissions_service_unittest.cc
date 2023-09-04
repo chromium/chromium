@@ -634,3 +634,35 @@ TEST_F(UnusedSitePermissionsServiceTest,
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS);
   EXPECT_EQ(1U, revoked_permissions_list.size());
 }
+
+TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
+  const std::string url1 = "https://example1.com:443";
+  const std::string url2 = "https://example2.com:443";
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+
+  auto dict = base::Value::Dict().Set(
+      permissions::kRevokedKey,
+      base::Value::List().Append(static_cast<int32_t>(type)));
+
+  // Add `url1` and `url2` to revoked permissions list.
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url1), GURL(url1),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+  hcsm()->SetWebsiteSettingDefaultScope(
+      GURL(url2), GURL(url2),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      base::Value(dict.Clone()));
+
+  // When we start up a new service instance, the latest result (i.e. the list
+  // of revoked permissions) should be immediately available.
+  auto new_service = std::make_unique<UnusedSitePermissionsService>(hcsm());
+  absl::optional<SafetyHubService::Result*> opt_result =
+      new_service->GetCachedResult();
+  EXPECT_TRUE(opt_result.has_value());
+
+  UnusedSitePermissionsService::UnusedSitePermissionsResult* result =
+      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
+          opt_result.value());
+  EXPECT_EQ(2U, result->GetRevokedPermissions().size());
+}

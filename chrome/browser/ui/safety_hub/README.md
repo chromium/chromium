@@ -37,8 +37,19 @@ unnecessary overhead, it is suggested that the final result does not contain any
 of the intermediate results, e.g. by creating a new `SafetyHubService::Result`
 in `UpdateOnUIThread()`.
 
+In order make the latest result of the service always available just after
+initialization of the service, the `InitializeLatestResult()` needs to be called
+in the constructor of the derived services.  This function, which also needs to
+be implemented by each service, has to set the `latest_result_` property.
+
+Similarly, the `StartRepeatedUpdates()` function should also be called in the
+constructor of each service. This method will start up the timer that
+periodically run the update.
+
 In summary, each Safety Hub service should implement the following functions:
 
+ - `InitializeLatestResult()`: set the `latest_result_` property to the latest
+   available result.
  - `GetRepeatedUpdateInterval()`: returns a `base::TimeDelta` that determines
    the minimal frequency of how often the service is updated.
  - `GetBackgroundTask()`: returns a bound (static) function that will be

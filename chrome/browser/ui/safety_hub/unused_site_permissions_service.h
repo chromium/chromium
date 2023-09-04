@@ -171,6 +171,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
       base::Clock* clock,
       const scoped_refptr<HostContentSettingsMap> hcsm);
 
+  // SafetyHubService implementation
+
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 
@@ -204,6 +206,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const ContentSettingsPattern& secondary_pattern);
 
   // SafetyHubService implementation
+
+  void InitializeLatestResult() override;
 
   // Returns the interval at which the repeated updates will be run.
   base::TimeDelta GetRepeatedUpdateInterval() override;
