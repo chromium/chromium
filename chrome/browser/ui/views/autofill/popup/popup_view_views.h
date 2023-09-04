@@ -59,10 +59,10 @@ class PopupViewViews : public PopupBaseView,
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kOpenSubPopupDelay = base::Milliseconds(250);
 
-  PopupViewViews(
-      base::WeakPtr<AutofillPopupController> controller,
-      absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent,
-      views::Widget* parent_widget);
+  PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
+                 base::WeakPtr<ExpandablePopupParentView> parent,
+                 views::Widget* parent_widget);
+  explicit PopupViewViews(base::WeakPtr<AutofillPopupController> controller);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -104,6 +104,9 @@ class PopupViewViews : public PopupBaseView,
 
   // Returns whether the row at `index` exists and is a `PopupRowView`.
   bool HasPopupRowViewAt(size_t index) const;
+
+  // Instantiates the content of the popup.
+  void InitViews();
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer

@@ -80,9 +80,7 @@ class PopupViewViewsBrowsertestBase
 
  protected:
   PopupViewViews* CreateView(MockAutofillPopupController& controller) override {
-    return new PopupViewViews(controller.GetWeakPtr(), absl::nullopt,
-                              views::Widget::GetWidgetForNativeWindow(
-                                  browser()->window()->GetNativeWindow()));
+    return new PopupViewViews(controller.GetWeakPtr());
   }
 
  private:

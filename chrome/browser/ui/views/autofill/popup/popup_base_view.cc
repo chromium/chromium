@@ -135,9 +135,16 @@ class PopupBaseView::Widget : public views::Widget {
   }
 };
 
-PopupBaseView::PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
-                             views::Widget* parent_widget)
-    : delegate_(delegate), parent_widget_(parent_widget) {}
+PopupBaseView::PopupBaseView(
+    base::WeakPtr<AutofillPopupViewDelegate> delegate,
+    views::Widget* parent_widget,
+    base::span<const views::BubbleArrowSide> preferred_popup_sides,
+    bool show_arrow_pointer)
+    : delegate_(delegate),
+      parent_widget_(parent_widget),
+      preferred_popup_sides_(
+          {preferred_popup_sides.begin(), preferred_popup_sides.end()}),
+      show_arrow_pointer_(show_arrow_pointer) {}
 
 PopupBaseView::~PopupBaseView() {
   if (delegate_) {
@@ -370,17 +377,19 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       maximum_pixel_offset_to_center,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
-      /*popup_bounds=*/popup_bounds);
+      /*popup_bounds=*/popup_bounds, preferred_popup_sides_);
 
   // Those values are not supported for adding an arrow.
   // Currently, they can not be returned by GetOptimalPopupPlacement().
   DCHECK(arrow != views::BubbleBorder::Arrow::NONE);
   DCHECK(arrow != views::BubbleBorder::Arrow::FLOAT);
 
-  // Set the arrow position to the border.
-  border->set_arrow(arrow);
-  border->AddArrowToBubbleCornerAndPointTowardsAnchor(element_bounds,
-                                                      popup_bounds);
+  if (show_arrow_pointer_) {
+    // Set the arrow position to the border.
+    border->set_arrow(arrow);
+    border->AddArrowToBubbleCornerAndPointTowardsAnchor(element_bounds,
+                                                        popup_bounds);
+  }
 
   return popup_bounds;
 }

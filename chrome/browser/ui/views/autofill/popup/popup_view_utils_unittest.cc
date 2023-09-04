@@ -4,11 +4,17 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 
-#include <algorithm>
+#include <vector>
 
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+std::vector<views::BubbleArrowSide> GetDefaultPopupSides() {
+  return {PopupBaseView::kDefaultPreferredPopupSides.begin(),
+          PopupBaseView::kDefaultPreferredPopupSides.end()};
+}
 
 TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
   const gfx::Size default_preferred_size{200, 600};
@@ -18,6 +24,8 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
     gfx::Rect content_area_bounds;
     gfx::Rect element_bounds;
     gfx::Size preferred_size;
+    std::vector<views::BubbleArrowSide> preferred_sides =
+        GetDefaultPopupSides();
   } test_cases[]{
       // Default case where there is enough space on all sides.
       // In this case, the popup is placed below meaning that the arrow is on
@@ -28,6 +36,13 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
           gfx::Rect(400, 0, 200, 200),
           default_preferred_size,
       },
+      // Default case where there is enough space on all sides.
+      // A different set of the preferred sides.
+      {views::BubbleArrowSide::kLeft,
+       gfx::Rect(0, 0, 1000, 2000),
+       gfx::Rect(400, 0, 200, 200),
+       default_preferred_size,
+       {views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight}},
       // The popup cannot be placed below the element and needs to be placed on
       // top, meaning the arrow is on the bottom of the popup.
       {
@@ -67,13 +82,20 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
       // the element than below resulting in a placement above with the arrow
       // below the popup.
       {views::BubbleArrowSide::kBottom, gfx::Rect(0, 0, 1000, 1000),
-       gfx::Rect(0, 900, 200, 200), gfx::Size(1200, 1200)}};
+       gfx::Rect(0, 900, 200, 200), gfx::Size(1200, 1200)},
+      // There is enough space, but the preferred sides list is empty,
+      // the popup should still be placed with no exceptions.
+      {views::BubbleArrowSide::kTop,
+       gfx::Rect(0, 0, 1000, 1000),
+       gfx::Rect(0, 100, 200, 200),
+       gfx::Size(200, 200),
+       {}}};
 
   for (auto& test_case : test_cases) {
     EXPECT_EQ(test_case.expected_arrow_side,
-              GetOptimalArrowSide(test_case.content_area_bounds,
-                                  test_case.element_bounds,
-                                  test_case.preferred_size));
+              GetOptimalArrowSide(
+                  test_case.content_area_bounds, test_case.element_bounds,
+                  test_case.preferred_size, test_case.preferred_sides));
   }
 }
 
@@ -326,7 +348,7 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupArrowSide) {
 
   for (TestCase& test_case : test_cases) {
     EXPECT_EQ(GetOptimalArrowSide(content_area_bounds, test_case.element_bounds,
-                                  preferred_popup_size),
+                                  preferred_popup_size, GetDefaultPopupSides()),
               test_case.expected_arrow_side);
   }
 }
@@ -399,7 +421,8 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
                   kContentsAreaBounds, test_case.element_bounds,
                   kPreferredPopupSize, test_case.right_to_left, kScrollbarWidth,
                   kMaximumPixelOffsetTowardsCenter,
-                  kMaximumWidthPercentageTowardsCenter, popup_bounds));
+                  kMaximumWidthPercentageTowardsCenter, popup_bounds,
+                  GetDefaultPopupSides()));
 
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }

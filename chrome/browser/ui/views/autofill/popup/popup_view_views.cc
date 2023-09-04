@@ -77,6 +77,12 @@ static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
 
+// Preferred position relative to the control sides of the sub-popup.
+constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSides = {
+    views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight};
+constexpr std::array<views::BubbleArrowSide, 2> kDefaultSubPopupSidesRTL = {
+    views::BubbleArrowSide::kRight, views::BubbleArrowSide::kLeft};
+
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
@@ -125,15 +131,25 @@ bool CanShowRootPopup(base::WeakPtr<AutofillPopupController> controller) {
 // see `Widget::InitParams::parent` doc comment for details.
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
-    absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent,
+    base::WeakPtr<ExpandablePopupParentView> parent,
     views::Widget* parent_widget)
-    : PopupBaseView(controller, parent_widget), controller_(controller) {
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+    : PopupBaseView(controller,
+                    parent_widget,
+                    base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
+                                        : kDefaultSubPopupSides,
+                    /*show_arrow_pointer=*/false),
+      controller_(controller),
+      parent_(parent) {
+  InitViews();
+}
 
-  CreateChildViews();
+PopupViewViews::PopupViewViews(
+    base::WeakPtr<AutofillPopupController> controller)
+    : PopupBaseView(controller,
+                    views::Widget::GetTopLevelWidgetForNativeView(
+                        controller->container_view())),
+      controller_(controller) {
+  InitViews();
 }
 
 PopupViewViews::~PopupViewViews() = default;
@@ -423,6 +439,15 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
 bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
          absl::holds_alternative<PopupRowView*>(rows_[index]);
+}
+
+void PopupViewViews::InitViews() {
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+
+  CreateChildViews();
 }
 
 void PopupViewViews::CreateChildViews() {
@@ -744,10 +769,7 @@ base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     return nullptr;
   }
 
-  return (new PopupViewViews(controller, absl::nullopt,
-                             views::Widget::GetTopLevelWidgetForNativeView(
-                                 controller->container_view())))
-      ->GetWeakPtr();
+  return (new PopupViewViews(controller))->GetWeakPtr();
 }
 
 }  // namespace autofill

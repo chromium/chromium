@@ -134,8 +134,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   }
 
   void CreateAndShowView() {
-    view_ = std::make_unique<PopupViewViews>(controller().GetWeakPtr(),
-                                             absl::nullopt, widget_.get());
+    view_ = std::make_unique<PopupViewViews>(controller().GetWeakPtr());
     ShowView(*view_, *widget_);
   }
 
@@ -692,7 +691,7 @@ TEST_F(PopupViewViewsTest, SubViewIsShownInChildWidget) {
 
 TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
   controller().set_suggestions({PopupItemId::kAddressEntry});
-  PopupViewViews view(controller().GetWeakPtr(), absl::nullopt, &widget());
+  PopupViewViews view(controller().GetWeakPtr());
   views::Widget* widget = CreateTestWidget().release();
   ShowView(view, *widget);
 

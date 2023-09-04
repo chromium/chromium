@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -103,17 +104,19 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
                                      int spacing,
                                      views::BubbleArrowSide side);
 
-// Returns the first side within this order kTop, kBottom, kLeft, kRight, for
-// which which the popup with a |popup_preferred_size| fits on the side of the
-// |element_bounds| in the |content_area_bounds| taking the arrow length into
-// account. If neither side bits, the function returns kBottom.
+// Returns the first side from popup_preferred_sides, for which the popup with
+// a |popup_preferred_size| fits on the side of the |element_bounds| in
+// the |content_area_bounds| taking the arrow length into account.
+// If neither side bits, the function returns kBottom.
 views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
-    const gfx::Size& popup_preferred_size);
+    const gfx::Size& popup_preferred_size,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides);
 
 // Determines the optimal position of a popup with |popup_preferred_size| next
-// to an UI element with |element_bounds|. |content_area_bounds| are the
+// to an UI element with |element_bounds|. The arrow pointer dimensions are
+// not taken into account if it is present. |content_area_bounds| are the
 // boundaries of the view port, |right_to_left| indicates if the website uses
 // text written from right to left. |scrollbar_width| is the width of a scroll
 // bar and |maximum_offset_to_center| is the maximum number of pixels the popup
@@ -130,7 +133,8 @@ views::BubbleBorder::Arrow GetOptimalPopupPlacement(
     int scrollbar_width,
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
-    gfx::Rect& popup_bounds);
+    gfx::Rect& popup_bounds,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides);
 
 // Returns whether there is an open permissions prompt in |web_contents| with
 // bounds that overlap |screen_bounds|.

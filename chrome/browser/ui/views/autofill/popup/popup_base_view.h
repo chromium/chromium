@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_BASE_VIEW_H_
 
+#include <array>
 #include <memory>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +21,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -36,6 +40,13 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // top and at the bottom in order to reposition the dropdown, so that it
   // doesn't look too close to the element.
   static constexpr int kElementBorderPadding = 1;
+
+  // Default list of the preferred popup sides adjacent to the target element.
+  // The sides are tried one-by-one until a side with enough space is found.
+  static constexpr std::array<views::BubbleArrowSide, 4>
+      kDefaultPreferredPopupSides = {
+          views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
+          views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight};
 
   METADATA_HEADER(PopupBaseView);
 
@@ -57,7 +68,10 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
  protected:
   PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
-                views::Widget* parent_widget);
+                views::Widget* parent_widget,
+                base::span<const views::BubbleArrowSide> preferred_popup_sides =
+                    kDefaultPreferredPopupSides,
+                bool show_arrow_pointer = true);
   ~PopupBaseView() override;
 
   // Show this popup. Idempotent. Returns |true| if popup is shown, |false|
@@ -135,6 +149,10 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // The widget of the window that triggered this popup. Weak reference.
   raw_ptr<views::Widget> parent_widget_ = nullptr;
+
+  const std::vector<views::BubbleArrowSide> preferred_popup_sides_;
+
+  const bool show_arrow_pointer_;
 
   // Ensures that the menu start event is not fired redundantly.
   bool is_ax_menu_start_event_fired_ = false;

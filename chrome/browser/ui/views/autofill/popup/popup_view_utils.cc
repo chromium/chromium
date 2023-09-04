@@ -409,12 +409,10 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
 views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
-    const gfx::Size& popup_preferred_size) {
+    const gfx::Size& popup_preferred_size,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
   // Probe for a side of the element on which the popup can be shown entirely.
-  const std::vector<views::BubbleArrowSide> sides_by_preference(
-      {views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
-       views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight});
-  for (views::BubbleArrowSide possible_side : sides_by_preference) {
+  for (views::BubbleArrowSide possible_side : popup_preferred_sides) {
     if (IsPopupPlaceableOnSideOfElement(
             content_area_bounds, element_bounds, popup_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
@@ -442,11 +440,13 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
     int scrollbar_width,
     int maximum_pixel_offset_to_center,
     int maximum_width_percentage_to_center,
-    gfx::Rect& popup_bounds) {
+    gfx::Rect& popup_bounds,
+    base::span<const views::BubbleArrowSide> popup_preferred_sides) {
   // Determine the best side of the element to put the popup and get a
   // corresponding arrow.
-  views::BubbleArrowSide side = GetOptimalArrowSide(
-      content_area_bounds, element_bounds, popup_preferred_size);
+  views::BubbleArrowSide side =
+      GetOptimalArrowSide(content_area_bounds, element_bounds,
+                          popup_preferred_size, popup_preferred_sides);
   BubbleBorder::Arrow arrow =
       GetBubbleArrowForBubbleArrowSide(side, right_to_left);
 
