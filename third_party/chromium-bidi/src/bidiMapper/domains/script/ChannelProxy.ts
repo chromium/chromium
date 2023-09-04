@@ -195,7 +195,7 @@ export class ChannelProxy {
         eventManager.registerEvent(
           {
             type: 'event',
-            method: ChromiumBidi.Script.EventNames.MessageEvent,
+            method: ChromiumBidi.Script.EventNames.Message,
             params: {
               channel: this.#properties.channel,
               data: realm.cdpToBidiValue(

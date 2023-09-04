@@ -59,7 +59,7 @@ class EventWrapper {
  * Maps event name to a desired buffer length.
  */
 const eventBufferLength: ReadonlyMap<ChromiumBidi.EventNames, number> = new Map(
-  [[ChromiumBidi.Log.EventNames.LogEntryAddedEvent, 100]]
+  [[ChromiumBidi.Log.EventNames.LogEntryAdded, 100]]
 );
 
 export class EventManager {

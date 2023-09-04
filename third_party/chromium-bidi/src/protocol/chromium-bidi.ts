@@ -40,7 +40,7 @@ export enum BiDiModule {
 export namespace Script {
   export enum EventNames {
     // keep-sorted start
-    MessageEvent = 'script.message',
+    Message = 'script.message',
     RealmCreated = 'script.realmCreated',
     RealmDestroyed = 'script.realmDestroyed',
     // keep-sorted end
@@ -49,18 +49,21 @@ export namespace Script {
 
 export namespace Log {
   export enum EventNames {
-    LogEntryAddedEvent = 'log.entryAdded',
+    LogEntryAdded = 'log.entryAdded',
   }
 }
 
 export namespace BrowsingContext {
   export enum EventNames {
     // keep-sorted start
-    ContextCreatedEvent = 'browsingContext.contextCreated',
-    ContextDestroyedEvent = 'browsingContext.contextDestroyed',
-    DomContentLoadedEvent = 'browsingContext.domContentLoaded',
+    ContextCreated = 'browsingContext.contextCreated',
+    ContextDestroyed = 'browsingContext.contextDestroyed',
+    DomContentLoaded = 'browsingContext.domContentLoaded',
+    DownloadWillBegin = 'browsingContext.downloadWillBegin',
     FragmentNavigated = 'browsingContext.fragmentNavigated',
-    LoadEvent = 'browsingContext.load',
+    Load = 'browsingContext.load',
+    NavigationAborted = 'browsingContext.navigationAborted',
+    NavigationFailed = 'browsingContext.navigationFailed',
     NavigationStarted = 'browsingContext.navigationStarted',
     UserPromptClosed = 'browsingContext.userPromptClosed',
     UserPromptOpened = 'browsingContext.userPromptOpened',
@@ -71,10 +74,11 @@ export namespace BrowsingContext {
 export namespace Network {
   export enum EventNames {
     // keep-sorted start
-    BeforeRequestSentEvent = 'network.beforeRequestSent',
-    FetchErrorEvent = 'network.fetchError',
-    ResponseCompletedEvent = 'network.responseCompleted',
-    ResponseStartedEvent = 'network.responseStarted',
+    AuthRequired = 'network.authRequired',
+    BeforeRequestSent = 'network.beforeRequestSent',
+    FetchError = 'network.fetchError',
+    ResponseCompleted = 'network.responseCompleted',
+    ResponseStarted = 'network.responseStarted',
     // keep-sorted end
   }
 }

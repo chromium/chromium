@@ -108,7 +108,7 @@ export class LogManager {
             kind: 'success',
             value: {
               type: 'event',
-              method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+              method: ChromiumBidi.Log.EventNames.LogEntryAdded,
               params: {
                 level: getLogLevel(params.type),
                 source: {
@@ -126,7 +126,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          ChromiumBidi.Log.EventNames.LogEntryAddedEvent
+          ChromiumBidi.Log.EventNames.LogEntryAdded
         );
       }
     );
@@ -157,7 +157,7 @@ export class LogManager {
             kind: 'success',
             value: {
               type: 'event',
-              method: ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+              method: ChromiumBidi.Log.EventNames.LogEntryAdded,
               params: {
                 level: Log.Level.Error,
                 source: {
@@ -174,7 +174,7 @@ export class LogManager {
             },
           })),
           realm?.browsingContextId ?? 'UNKNOWN',
-          ChromiumBidi.Log.EventNames.LogEntryAddedEvent
+          ChromiumBidi.Log.EventNames.LogEntryAdded
         );
       }
     );

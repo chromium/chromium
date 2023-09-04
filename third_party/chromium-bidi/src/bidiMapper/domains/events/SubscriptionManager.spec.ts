@@ -31,11 +31,10 @@ import {
 } from './SubscriptionManager.js';
 
 const ALL_EVENTS = ChromiumBidi.BiDiModule.BrowsingContext;
-const SOME_EVENT = ChromiumBidi.BrowsingContext.EventNames.LoadEvent;
-const ANOTHER_EVENT =
-  ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent;
+const SOME_EVENT = ChromiumBidi.BrowsingContext.EventNames.Load;
+const ANOTHER_EVENT = ChromiumBidi.BrowsingContext.EventNames.ContextCreated;
 const YET_ANOTHER_EVENT =
-  ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent;
+  ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded;
 
 const SOME_CONTEXT = 'SOME_CONTEXT';
 const SOME_NESTED_CONTEXT = 'SOME_NESTED_CONTEXT';
@@ -428,11 +427,14 @@ describe('SubscriptionManager', () => {
       expect(
         unrollEvents([ChromiumBidi.BiDiModule.BrowsingContext])
       ).to.have.members([
-        ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
-        ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
-        ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent,
+        ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+        ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+        ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+        ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
         ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-        ChromiumBidi.BrowsingContext.EventNames.LoadEvent,
+        ChromiumBidi.BrowsingContext.EventNames.Load,
+        ChromiumBidi.BrowsingContext.EventNames.NavigationAborted,
+        ChromiumBidi.BrowsingContext.EventNames.NavigationFailed,
         ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
         ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
         ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
@@ -441,22 +443,23 @@ describe('SubscriptionManager', () => {
 
     it('all Log events', () => {
       expect(unrollEvents([ChromiumBidi.BiDiModule.Log])).to.have.members([
-        ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+        ChromiumBidi.Log.EventNames.LogEntryAdded,
       ]);
     });
 
     it('all Network events', () => {
       expect(unrollEvents([ChromiumBidi.BiDiModule.Network])).to.have.members([
-        ChromiumBidi.Network.EventNames.BeforeRequestSentEvent,
-        ChromiumBidi.Network.EventNames.FetchErrorEvent,
-        ChromiumBidi.Network.EventNames.ResponseCompletedEvent,
-        ChromiumBidi.Network.EventNames.ResponseStartedEvent,
+        ChromiumBidi.Network.EventNames.AuthRequired,
+        ChromiumBidi.Network.EventNames.BeforeRequestSent,
+        ChromiumBidi.Network.EventNames.FetchError,
+        ChromiumBidi.Network.EventNames.ResponseCompleted,
+        ChromiumBidi.Network.EventNames.ResponseStarted,
       ]);
     });
 
     it('all Script events', () => {
       expect(unrollEvents([ChromiumBidi.BiDiModule.Script])).to.have.members([
-        ChromiumBidi.Script.EventNames.MessageEvent,
+        ChromiumBidi.Script.EventNames.Message,
         ChromiumBidi.Script.EventNames.RealmCreated,
         ChromiumBidi.Script.EventNames.RealmDestroyed,
       ]);
@@ -466,11 +469,11 @@ describe('SubscriptionManager', () => {
       expect(
         unrollEvents([
           ChromiumBidi.Script.EventNames.RealmCreated,
-          ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
         ])
       ).to.have.members([
         ChromiumBidi.Script.EventNames.RealmCreated,
-        ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+        ChromiumBidi.Log.EventNames.LogEntryAdded,
       ]);
     });
 
@@ -478,9 +481,9 @@ describe('SubscriptionManager', () => {
       expect(
         unrollEvents([
           ChromiumBidi.BiDiModule.Log,
-          ChromiumBidi.Log.EventNames.LogEntryAddedEvent,
+          ChromiumBidi.Log.EventNames.LogEntryAdded,
         ])
-      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAddedEvent]);
+      ).to.have.members([ChromiumBidi.Log.EventNames.LogEntryAdded]);
     });
   });
 });

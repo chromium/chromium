@@ -125,7 +125,7 @@ export class BrowsingContextImpl {
     eventManager.registerEvent(
       {
         type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreatedEvent,
+        method: ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
         params: context.serializeToBidiValue(),
       },
       context.id
@@ -164,7 +164,7 @@ export class BrowsingContextImpl {
     this.#eventManager.registerEvent(
       {
         type: 'event',
-        method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyedEvent,
+        method: ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
         params: this.serializeToBidiValue(),
       },
       this.id
@@ -404,7 +404,7 @@ export class BrowsingContextImpl {
               {
                 type: 'event',
                 method:
-                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoadedEvent,
+                  ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
                 params: {
                   context: this.id,
                   navigation: this.#loaderId ?? null,
@@ -423,7 +423,7 @@ export class BrowsingContextImpl {
             this.#eventManager.registerEvent(
               {
                 type: 'event',
-                method: ChromiumBidi.BrowsingContext.EventNames.LoadEvent,
+                method: ChromiumBidi.BrowsingContext.EventNames.Load,
                 params: {
                   context: this.id,
                   navigation: this.#loaderId ?? null,

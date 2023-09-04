@@ -189,7 +189,7 @@ export class NetworkRequest {
     this.#eventManager.registerEvent(
       {
         type: 'event',
-        method: ChromiumBidi.Network.EventNames.FetchErrorEvent,
+        method: ChromiumBidi.Network.EventNames.FetchError,
         params: {
           ...this.#getBaseEventParams(),
           errorText: event.errorText,
@@ -306,7 +306,7 @@ export class NetworkRequest {
           return result;
         }),
         this.#requestWillBeSentEvent?.frameId ?? null,
-        ChromiumBidi.Network.EventNames.BeforeRequestSentEvent
+        ChromiumBidi.Network.EventNames.BeforeRequestSent
       );
     }
   }
@@ -317,7 +317,7 @@ export class NetworkRequest {
     }
 
     return {
-      method: ChromiumBidi.Network.EventNames.BeforeRequestSentEvent,
+      method: ChromiumBidi.Network.EventNames.BeforeRequestSent,
       params: {
         ...this.#getBaseEventParams(),
         initiator: {
@@ -344,7 +344,7 @@ export class NetworkRequest {
           return result;
         }),
         this.#responseReceivedEvent?.frameId ?? null,
-        ChromiumBidi.Network.EventNames.ResponseCompletedEvent
+        ChromiumBidi.Network.EventNames.ResponseCompleted
       );
     }
   }
@@ -369,7 +369,7 @@ export class NetworkRequest {
     );
 
     return {
-      method: ChromiumBidi.Network.EventNames.ResponseCompletedEvent,
+      method: ChromiumBidi.Network.EventNames.ResponseCompleted,
       params: {
         ...this.#getBaseEventParams(),
         response: {
