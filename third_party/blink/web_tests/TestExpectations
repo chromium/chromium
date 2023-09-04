@@ -2709,8 +2709,6 @@ crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ 
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/rch-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/ric-in-monospace.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/text-transform/text-transform-full-size-kana-008.html [ Failure ]
@@ -6651,3 +6649,7 @@ crbug.com/1477701 [ Mac13-arm64 Release ] http/tests/devtools/tracing/frame-mode
 
 # Gardener 2023-09-01
 crbug.com/1477586 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/anonymous-image-object.js [ Failure Pass ]
+
+# Gardener 2023-09-04
+crbug.com/1478028 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
+crbug.com/1478028 [ Linux ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
