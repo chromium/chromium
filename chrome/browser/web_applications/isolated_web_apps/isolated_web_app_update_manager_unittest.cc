@@ -247,11 +247,19 @@ class IsolatedWebAppUpdateManagerUpdateTest
   }
 
   base::Value::List UpdateDiscoveryLog() {
-    return debug_log().GetDict().FindList("update_discovery_log")->Clone();
+    return debug_log()
+        .GetDict()
+        .FindDict("task_queue")
+        ->FindList("update_discovery_log")
+        ->Clone();
   }
 
   base::Value::List UpdateApplyLog() {
-    return debug_log().GetDict().FindList("update_apply_log")->Clone();
+    return debug_log()
+        .GetDict()
+        .FindDict("task_queue")
+        ->FindList("update_apply_log")
+        ->Clone();
   }
 
   base::Value::List UpdateApplyWaitersLog() {

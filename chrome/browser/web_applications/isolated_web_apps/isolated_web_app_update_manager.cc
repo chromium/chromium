@@ -5,14 +5,16 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 
 #include <memory>
+#include <type_traits>
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -52,7 +55,8 @@ IsolatedWebAppUpdateManager::IsolatedWebAppUpdateManager(
           content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(&profile) &&
           base::FeatureList::IsEnabled(
               features::kIsolatedWebAppAutomaticUpdates)),
-      update_discovery_frequency_(std::move(update_discovery_frequency)) {}
+      update_discovery_frequency_(std::move(update_discovery_frequency)),
+      task_queue_{*this} {}
 
 IsolatedWebAppUpdateManager::~IsolatedWebAppUpdateManager() = default;
 
@@ -102,7 +106,7 @@ void IsolatedWebAppUpdateManager::DelayedStart() {
   // Kick-off task processing. The task queue can already contain
   // `IsolatedWebAppUpdateApplyTask`s for updates that are pending from the last
   // browser session and were created in `IsolatedWebAppUpdateManager::Start`.
-  MaybeStartNextTask();
+  task_queue_.MaybeStartNextTask();
 
   QueueUpdateDiscoveryTasks();
   MaybeStartUpdateDiscoveryTimer();
@@ -114,9 +118,8 @@ void IsolatedWebAppUpdateManager::Shutdown() {
   // Stop all potentially ongoing tasks and avoid scheduling new tasks.
   install_manager_observation_.Reset();
   update_discovery_timer_.Stop();
-  update_discovery_tasks_.clear();
+  task_queue_.Clear();
   update_apply_waiters_.clear();
-  update_apply_tasks_.clear();
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
@@ -125,19 +128,9 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
   double next_update_check_in_minutes =
       next_update_check.InSecondsF() / base::Time::kSecondsPerMinute;
 
-  base::Value::List update_discovery_tasks;
-  for (const auto& task : update_discovery_tasks_) {
-    update_discovery_tasks.Append(task->AsDebugValue());
-  }
-
   base::Value::List update_apply_waiters;
   for (const auto& [app_id, waiter] : update_apply_waiters_) {
     update_apply_waiters.Append(waiter->AsDebugValue());
-  }
-
-  base::Value::List update_apply_tasks;
-  for (const auto& task : update_apply_tasks_) {
-    update_apply_tasks.Append(task->AsDebugValue());
   }
 
   return base::Value(
@@ -151,11 +144,8 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
                    .Set("running", update_discovery_timer_.IsRunning())
                    .Set("next_update_check_in_minutes",
                         next_update_check_in_minutes))
-          .Set("update_discovery_tasks", std::move(update_discovery_tasks))
-          .Set("update_discovery_log", update_discovery_results_log_.Clone())
-          .Set("update_apply_waiters", std::move(update_apply_waiters))
-          .Set("update_apply_tasks", std::move(update_apply_tasks))
-          .Set("update_apply_log", update_apply_results_log_.Clone()));
+          .Set("task_queue", task_queue_.AsDebugValue())
+          .Set("update_apply_waiters", std::move(update_apply_waiters)));
 }
 
 void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
@@ -215,7 +205,7 @@ IsolatedWebAppUpdateManager::GetForceInstalledBundleIdToUpdateManifestUrlMap() {
 void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
   // Clear the log of previously finished update discovery tasks when queueing
   // new tasks so that it doesn't grow forever.
-  update_discovery_results_log_.clear();
+  task_queue_.ClearUpdateDiscoveryLog();
 
   base::flat_map<web_package::SignedWebBundleId, GURL>
       id_to_update_manifest_map =
@@ -244,37 +234,12 @@ void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       continue;
     }
 
-    update_discovery_tasks_.push_back(
-        std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-            update_manifest_url, url_info, provider_->scheduler(),
-            provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
+    task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
+        update_manifest_url, url_info, provider_->scheduler(),
+        provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
   }
 
-  MaybeStartNextTask();
-}
-
-void IsolatedWebAppUpdateManager::MaybeStartNextTask() {
-  if (IsAnyTaskRunning()) {
-    return;
-  }
-
-  if (!update_apply_tasks_.empty()) {
-    update_apply_tasks_.front()->Start(
-        base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted,
-                       // We can use `base::Unretained` here, because `this`
-                       // owns `update_apply_tasks_`.
-                       base::Unretained(this)));
-    return;
-  }
-
-  if (!update_discovery_tasks_.empty()) {
-    update_discovery_tasks_.front()->Start(base::BindOnce(
-        &IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted,
-        // We can use `base::Unretained` here, because `this` owns
-        // `update_discovery_tasks_`.
-        base::Unretained(this)));
-    return;
-  }
+  task_queue_.MaybeStartNextTask();
 }
 
 void IsolatedWebAppUpdateManager::MaybeStartUpdateDiscoveryTimer() {
@@ -307,37 +272,16 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
                      weak_factory_.GetWeakPtr(), url_info));
 }
 
-bool IsolatedWebAppUpdateManager::IsAnyTaskRunning() const {
-  return (!update_apply_tasks_.empty() &&
-          update_apply_tasks_.front()->has_started()) ||
-         (!update_discovery_tasks_.empty() &&
-          update_discovery_tasks_.front()->has_started());
-}
-
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
+    std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task,
     IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
-  base::Value task_debug_value =
-      update_discovery_tasks_.front()->AsDebugValue();
-  IsolatedWebAppUrlInfo url_info = update_discovery_tasks_.front()->url_info();
-  update_discovery_tasks_.pop_front();
-
-  update_discovery_results_log_.Append(task_debug_value.Clone());
-  if (!status.has_value()) {
-    LOG(ERROR) << "Isolated Web App update discovery for "
-               << url_info.web_bundle_id().id() << " failed: " << status.error()
-               << " debug log: " << task_debug_value;
-  } else {
-    VLOG(1) << "Isolated Web App update discovery for "
-            << url_info.web_bundle_id().id()
-            << " succeeded: " << status.value();
-
-    if (*status == IsolatedWebAppUpdateDiscoveryTask::Success::
-                       kUpdateFoundAndSavedInDatabase) {
-      CreateUpdateApplyWaiter(url_info);
-    }
+  if (status.has_value() && *status ==
+                                IsolatedWebAppUpdateDiscoveryTask::Success::
+                                    kUpdateFoundAndSavedInDatabase) {
+    CreateUpdateApplyWaiter(task->url_info());
   }
 
-  MaybeStartNextTask();
+  task_queue_.MaybeStartNextTask();
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
@@ -346,30 +290,155 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
   update_apply_waiters_.erase(url_info.app_id());
 
-  update_apply_tasks_.push_back(std::make_unique<IsolatedWebAppUpdateApplyTask>(
+  task_queue_.Push(std::make_unique<IsolatedWebAppUpdateApplyTask>(
       url_info, std::move(keep_alive), std::move(profile_keep_alive),
       provider_->scheduler()));
 
-  MaybeStartNextTask();
+  task_queue_.MaybeStartNextTask();
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
+    std::unique_ptr<IsolatedWebAppUpdateApplyTask> task,
     IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
-  base::Value task_debug_value = update_apply_tasks_.front()->AsDebugValue();
-  IsolatedWebAppUrlInfo url_info = update_apply_tasks_.front()->url_info();
-  update_apply_tasks_.pop_front();
+  task_queue_.MaybeStartNextTask();
+}
 
-  update_apply_results_log_.Append(task_debug_value.Clone());
-  if (status.has_value()) {
-    VLOG(1) << "Applying an Isolated Web App update for "
-            << url_info.web_bundle_id().id() << " succeeded.";
-  } else {
-    LOG(ERROR) << "Applying an Isolated Web App update for "
-               << url_info.web_bundle_id().id() << " failed: " << status.error()
-               << " debug log: " << task_debug_value;
+IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(
+    IsolatedWebAppUpdateManager& update_manager)
+    : update_manager_(update_manager) {}
+
+IsolatedWebAppUpdateManager::TaskQueue::~TaskQueue() = default;
+
+base::Value IsolatedWebAppUpdateManager::TaskQueue::AsDebugValue() const {
+  base::Value::List update_discovery_tasks;
+  for (const auto& task : update_discovery_tasks_) {
+    update_discovery_tasks.Append(task->AsDebugValue());
   }
 
-  MaybeStartNextTask();
+  base::Value::List update_apply_tasks;
+  for (const auto& task : update_apply_tasks_) {
+    update_apply_tasks.Append(task->AsDebugValue());
+  }
+
+  return base::Value(
+      base::Value::Dict()
+          .Set("update_discovery_tasks", std::move(update_discovery_tasks))
+          .Set("update_discovery_log", update_discovery_results_log_.Clone())
+          .Set("update_apply_tasks", std::move(update_apply_tasks))
+          .Set("update_apply_log", update_apply_results_log_.Clone()));
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::ClearUpdateDiscoveryLog() {
+  update_discovery_results_log_.clear();
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::Push(
+    std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task) {
+  update_discovery_tasks_.push_back(std::move(task));
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::Push(
+    std::unique_ptr<IsolatedWebAppUpdateApplyTask> task) {
+  update_apply_tasks_.push_back(std::move(task));
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::Clear() {
+  update_discovery_tasks_.clear();
+  update_apply_tasks_.clear();
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::MaybeStartNextTask() {
+  if (IsAnyTaskRunning()) {
+    return;
+  }
+
+  auto next_update_apply_task_it = update_apply_tasks_.begin();
+  if (next_update_apply_task_it != update_apply_tasks_.end()) {
+    StartUpdateApplyTask(next_update_apply_task_it->get());
+    return;
+  }
+
+  auto next_update_discovery_task_it = update_discovery_tasks_.begin();
+  if (next_update_discovery_task_it != update_discovery_tasks_.end()) {
+    StartUpdateDiscoveryTask(next_update_discovery_task_it->get());
+    return;
+  }
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::StartUpdateDiscoveryTask(
+    IsolatedWebAppUpdateDiscoveryTask* task_ptr) {
+  task_ptr->Start(base::BindOnce(
+      &TaskQueue::OnUpdateDiscoveryTaskCompleted,
+      // We can use `base::Unretained` here, because `this` owns the task.
+      base::Unretained(this), task_ptr));
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::StartUpdateApplyTask(
+    IsolatedWebAppUpdateApplyTask* task_ptr) {
+  task_ptr->Start(base::BindOnce(
+      &TaskQueue::OnUpdateApplyTaskCompleted,
+      // We can use `base::Unretained` here, because `this` owns the task.
+      base::Unretained(this), task_ptr));
+}
+
+bool IsolatedWebAppUpdateManager::TaskQueue::IsAnyTaskRunning() const {
+  return base::ranges::any_of(
+             update_discovery_tasks_,
+             [](const auto& task) { return task->has_started(); }) ||
+         base::ranges::any_of(update_apply_tasks_, [](const auto& task) {
+           return task->has_started();
+         });
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateDiscoveryTaskCompleted(
+    IsolatedWebAppUpdateDiscoveryTask* task_ptr,
+    IsolatedWebAppUpdateDiscoveryTask::CompletionStatus status) {
+  auto task_it = base::ranges::find_if(update_discovery_tasks_,
+                                       base::MatchesUniquePtr(task_ptr));
+  CHECK(task_it != update_discovery_tasks_.end());
+  std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask> task = std::move(*task_it);
+  update_discovery_tasks_.erase(task_it);
+
+  update_discovery_results_log_.Append(task->AsDebugValue());
+  if (!status.has_value()) {
+    LOG(ERROR) << "Isolated Web App update discovery for "
+               << task->url_info().web_bundle_id().id()
+               << " failed: " << status.error()
+               << " debug log: " << task->AsDebugValue();
+  } else {
+    VLOG(1) << "Isolated Web App update discovery for "
+            << task->url_info().web_bundle_id().id()
+            << " succeeded: " << status.value();
+  }
+
+  update_manager_->OnUpdateDiscoveryTaskCompleted(std::move(task), status);
+}
+
+void IsolatedWebAppUpdateManager::TaskQueue::OnUpdateApplyTaskCompleted(
+    IsolatedWebAppUpdateApplyTask* task_ptr,
+    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  auto task_it = base::ranges::find_if(update_apply_tasks_,
+                                       base::MatchesUniquePtr(task_ptr));
+  CHECK(task_it != update_apply_tasks_.end());
+  std::unique_ptr<IsolatedWebAppUpdateApplyTask> task = std::move(*task_it);
+  update_apply_tasks_.erase(task_it);
+
+  update_apply_results_log_.Append(task->AsDebugValue());
+  if (!status.has_value()) {
+    LOG(ERROR) << "Applying an Isolated Web App update for "
+               << task->url_info().web_bundle_id().id()
+               << " failed: " << status.error()
+               << " debug log: " << task->AsDebugValue();
+  } else {
+    VLOG(1) << "Applying an Isolated Web App update for "
+            << task->url_info().web_bundle_id().id() << " succeeded.";
+    static_assert(
+        std::is_void_v<
+            IsolatedWebAppUpdateApplyTask::CompletionStatus::value_type>,
+        "Log `status.value()` above should it become non-void.");
+  }
+
+  update_manager_->OnUpdateApplyTaskCompleted(std::move(task), status);
 }
 
 }  // namespace web_app
