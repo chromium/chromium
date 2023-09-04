@@ -21,6 +21,12 @@ class CSSPaintInterpolationType : public CSSInterpolationType {
                                   StyleResolverState&) const final;
 
  private:
+  // This method confirms that the two colors are in the same colorspace for
+  // interpolation and converts them if necessary.
+  PairwiseInterpolationValue MaybeMergeSingles(
+      InterpolationValue&& start,
+      InterpolationValue&& end) const final;
+
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
