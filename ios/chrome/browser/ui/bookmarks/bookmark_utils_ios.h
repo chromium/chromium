@@ -115,14 +115,6 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
 
-// Checks if `account_model` is available and returns true if all the available
-// bookmark models are loaded. Note that `profile_model` is always available.
-// `profile_model` must not be `nullptr`. `account_model` may be `nullptr` if
-// it is not available. Otherwise it must not be `nullptr`.
-bool AreAllAvailableBookmarkModelsLoaded(
-    bookmarks::BookmarkModel* profile_model,
-    bookmarks::BookmarkModel* account_model);
-
 // Returns true if the user is signed in and they opted in for the account
 // bookmark storage.
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);

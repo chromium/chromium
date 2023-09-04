@@ -299,8 +299,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack {
   // This method is only designed to be called for the view controller
   // associated with the root node.
-  CHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-      _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get()));
+  CHECK(AreAllAvailableBookmarkModelsLoaded(_browserState));
   DCHECK([self isDisplayingBookmarkRoot]);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
@@ -412,8 +411,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.searchTerm = @"";
 
-  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get())) {
+  if (AreAllAvailableBookmarkModelsLoaded(_browserState)) {
     [self loadBookmarkViews];
   } else {
     [self showLoadingSpinnerBackground];
@@ -428,8 +426,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
   // Hide the toolbar if we're displaying the root node.
-  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get()) &&
+  if (AreAllAvailableBookmarkModelsLoaded(_browserState) &&
       (![self isDisplayingBookmarkRoot] ||
        self.mediator.currentlyShowingSearchResults)) {
     self.navigationController.toolbarHidden = NO;
@@ -535,8 +532,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-      _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get()));
+  DCHECK(AreAllAvailableBookmarkModelsLoaded(_browserState));
   DCHECK([self isViewLoaded]);
 }
 
@@ -1145,8 +1141,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
-  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get())) {
+  if (!AreAllAvailableBookmarkModelsLoaded(_browserState)) {
     return;
   }
   DCHECK(!self.displayedFolderNode);

@@ -21,6 +21,11 @@ enum class StorageType;
 // It means that the user has not set a folder for bookmarks explicitly.
 extern const int64_t kLastUsedBookmarkFolderNone;
 
+// Checks whether all available bookmark models are loaded.
+// Return true if the bookmarks model are loaded, false otherwise.
+[[nodiscard]] bool AreAllAvailableBookmarkModelsLoaded(
+    ChromeBrowserState* browser_state);
+
 // Removes all user bookmarks and clears bookmark-related pref. Requires
 // bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.

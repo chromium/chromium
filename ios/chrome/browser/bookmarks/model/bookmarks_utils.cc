@@ -38,8 +38,21 @@ bookmarks::BookmarkModel* GetBookmarkModelForType(
 
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
-// Removes all user bookmarks. Requires
-// bookmark model to be loaded.
+bool AreAllAvailableBookmarkModelsLoaded(ChromeBrowserState* browser_state) {
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          browser_state);
+  CHECK(local_or_syncable_bookmark_model);
+  bookmarks::BookmarkModel* account_bookmark_model =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state);
+  if (!account_bookmark_model) {
+    return local_or_syncable_bookmark_model->loaded();
+  }
+  return local_or_syncable_bookmark_model->loaded() &&
+         account_bookmark_model->loaded();
+}
+
+// Removes all user bookmarks. Requires bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.
 bool RemoveAllUserBookmarksIOS(BookmarkModel* bookmark_model) {
   if (!bookmark_model->loaded()) {

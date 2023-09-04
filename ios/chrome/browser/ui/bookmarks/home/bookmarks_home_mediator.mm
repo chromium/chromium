@@ -21,6 +21,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -115,8 +116,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   if ((self = [super init])) {
     DCHECK(browser);
     CHECK(displayedNode);
-    CHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
-        localOrSyncableBookmarkModel, accountBookmarkModel));
+    CHECK(AreAllAvailableBookmarkModelsLoaded(browser->GetBrowserState()));
 
     _browser = browser->AsWeakPtr();
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel->AsWeakPtr();
