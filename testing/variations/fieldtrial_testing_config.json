@@ -14371,6 +14371,25 @@
             ]
         }
     ],
+    "SearchEnginePromoV3": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "filter_locale": "false",
+                        "trigger_by_device_feature": "false"
+                    },
+                    "enable_features": [
+                        "SearchEnginePromoV3"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchPrefetchHighPriorityPrefetches": [
         {
             "platforms": [
