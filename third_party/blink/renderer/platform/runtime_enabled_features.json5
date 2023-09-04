@@ -2786,7 +2786,7 @@
     {
       name: "PaymentRequestAllowOneActivationlessShow",
       public: true,
-      status: "test",
+      status: "stable",
     },
     {
       name: "PaymentRequestMerchantValidationEvent",

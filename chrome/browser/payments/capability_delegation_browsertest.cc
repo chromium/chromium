@@ -82,6 +82,15 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
               main_instance == subframe_instance);
   }
 
+  // One activationless show is allowed and then successfully aborted by the
+  // script.
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
   EXPECT_EQ(
@@ -144,6 +153,15 @@ IN_PROC_BROWSER_TEST_F(CapabilityDelegationBrowserTest,
   ASSERT_TRUE(frame_host);
   EXPECT_EQ(subframe_url, frame_host->GetLastCommittedURL());
   EXPECT_FALSE(frame_host->IsCrossProcessSubframe());
+
+  // One activationless show is allowed and then successfully aborted by the
+  // script.
+  EXPECT_EQ(
+      "AbortError",
+      content::EvalJs(active_web_contents,
+                      content::JsReplace("sendRequestToSubframe(false, $1, $2)",
+                                         payment_method, subframe_origin),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Without either user activation or payment request token, PaymentRequest
   // dialog is not allowed.
