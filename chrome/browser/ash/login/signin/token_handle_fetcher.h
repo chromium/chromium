@@ -53,6 +53,11 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // Fetch token handle for an existing user.
   void BackfillToken(TokenFetchingCallback callback);
 
+  void DiagnoseTokenHandleMapping(const AccountId& account_id,
+                                  const std::string& token);
+  void OnGetTokenHash(const std::string& token,
+                      const std::string& account_manager_stored_hash);
+
   static void EnsureFactoryBuilt();
 
  private:

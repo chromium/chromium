@@ -200,6 +200,34 @@ void TokenHandleFetcher::StoreTokenHandleMapping(
   update->Set(token_handle, refresh_token_hash_);
 }
 
+void TokenHandleFetcher::DiagnoseTokenHandleMapping(const AccountId& account_id,
+                                                    const std::string& token) {
+  GetAccountManager(profile_)->GetTokenHash(
+      account_manager::AccountKey(account_id.GetGaiaId(),
+                                  account_manager::AccountType::kGaia),
+      base::BindOnce(&TokenHandleFetcher::OnGetTokenHash,
+                     weak_factory_.GetWeakPtr(), token));
+}
+
+void TokenHandleFetcher::OnGetTokenHash(
+    const std::string& token,
+    const std::string& account_manager_stored_hash) {
+  PrefService* prefs = profile_->GetPrefs();
+  const base::Value::Dict& token_handle_map = prefs->GetDict(kTokenHandleMap);
+  const std::string* pref_stored_hash_val = token_handle_map.FindString(token);
+  if (!pref_stored_hash_val) {
+    return;
+  }
+
+  const bool hashes_match =
+      (*pref_stored_hash_val == account_manager_stored_hash);
+  if (!hashes_match) {
+    LOG(ERROR) << "Token handle check was performed against an older token";
+  }
+  base::UmaHistogramBoolean("Login.IsTokenHandleInSyncWithRefreshToken",
+                            hashes_match);
+}
+
 void TokenHandleFetcher::OnProfileDestroyed() {
   std::move(callback_).Run(account_id_, false);
 }

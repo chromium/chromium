@@ -184,6 +184,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Login.IsTokenHandleInSyncWithRefreshToken" enum="Boolean"
+    expires_after="2024-01-31">
+  <owner>sinhak@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Boolean histogram that indicates if token handle is in sync with the user's
+    current refresh token - i.e. if token handle checks are performed for token
+    handles that actually belong to the user's current refresh token. If this is
+    not the case, it can result in users getting unnecessary logout
+    notifications. This histogram is logged once at the start of a user's
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Login.LeastUsedAccountDays" units="days" expires_after="M77">
   <obsolete>
     Removed in M103.
