@@ -911,6 +911,7 @@
       "external/wpt/css/css-highlight-api/highlight-pseudo-computed.html",
       "external/wpt/css/css-text/parsing/text-autospace-computed.html",
       "external/wpt/css/css-text/parsing/text-autospace-valid.html",
+      "external/wpt/css/css-text/text-autospace/",
       "external/wpt/css/css-text/text-spacing-trim/",
       "external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html",
