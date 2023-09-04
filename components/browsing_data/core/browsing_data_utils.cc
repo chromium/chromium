@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -19,7 +18,6 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -170,14 +168,11 @@ std::u16string GetCounterTextFromResult(
     BrowsingDataCounter::ResultInt profile_passwords = password_result->Value();
 
     if (profile_passwords) {
-      // Whether the text should use the "synced".
-      bool uses_synced = password_result->is_sync_enabled() &&
-                         !base::FeatureList::IsEnabled(
-                             syncer::kReplaceSyncPromosWithSignInPromos);
       parts.emplace_back(base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
-              uses_synced ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
-                          : IDS_DEL_PASSWORDS_COUNTER,
+              password_result->is_sync_enabled()
+                  ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
+                  : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
           {CreateDomainExamples(profile_passwords,
                                 password_result->domain_examples())},
@@ -283,29 +278,25 @@ std::u16string GetCounterTextFromResult(
     }
 
     bool synced = autofill_result->is_sync_enabled();
-    // Whether the text should use the "synced".
-    bool uses_synced =
-        synced && !base::FeatureList::IsEnabled(
-                      syncer::kReplaceSyncPromosWithSignInPromos);
 
     // Construct the resulting string from the sections in |displayed_strings|.
     switch (displayed_strings.size()) {
       case 0:
         return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
       case 1:
-        return uses_synced ? l10n_util::GetStringFUTF16(
-                                 IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
-                                 displayed_strings[0])
-                           : displayed_strings[0];
+        return synced ? l10n_util::GetStringFUTF16(
+                            IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
+                            displayed_strings[0])
+                      : displayed_strings[0];
       case 2:
         return l10n_util::GetStringFUTF16(
-            uses_synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
-                        : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
+            synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
+                   : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
             displayed_strings[0], displayed_strings[1]);
       case 3:
         return l10n_util::GetStringFUTF16(
-            uses_synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
-                        : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
+            synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
+                   : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
             displayed_strings[0], displayed_strings[1], displayed_strings[2]);
       default:
         NOTREACHED();
