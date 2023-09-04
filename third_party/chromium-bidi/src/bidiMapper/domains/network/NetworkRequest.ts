@@ -62,6 +62,18 @@ export class NetworkRequest {
     this.#eventManager = eventManager;
   }
 
+  /** Returns the URL associated with this request. */
+  get url(): string | undefined {
+    if (this.#requestWillBeSentEvent) {
+      return this.#requestWillBeSentEvent.request.url;
+    }
+    if (this.#responseReceivedEvent) {
+      return this.#responseReceivedEvent.response.url;
+    }
+
+    return undefined;
+  }
+
   onRequestWillBeSentEvent(event: Protocol.Network.RequestWillBeSentEvent) {
     if (this.#requestWillBeSentEvent !== undefined) {
       // TODO: Handle redirect event, requestId is same for the redirect chain
@@ -237,7 +249,7 @@ export class NetworkRequest {
     return {
       request:
         this.#requestWillBeSentEvent?.requestId ?? NetworkRequest.#unknown,
-      url: this.#requestWillBeSentEvent?.request.url ?? NetworkRequest.#unknown,
+      url: this.url ?? NetworkRequest.#unknown,
       method:
         this.#requestWillBeSentEvent?.request.method ?? NetworkRequest.#unknown,
       headers: NetworkRequest.#getHeaders(
@@ -361,7 +373,7 @@ export class NetworkRequest {
       params: {
         ...this.#getBaseEventParams(),
         response: {
-          url: this.#responseReceivedEvent.response.url,
+          url: this.url ?? NetworkRequest.#unknown,
           protocol: this.#responseReceivedEvent.response.protocol ?? '',
           status:
             this.#responseReceivedExtraInfoEvent?.statusCode ??
