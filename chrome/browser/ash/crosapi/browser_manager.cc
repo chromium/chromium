@@ -1664,6 +1664,8 @@ void BrowserManager::ResumeLaunch() {
   if (!is_lacros_enabled) {
     LOG(WARNING) << "Lacros is not enabled for the current user. "
                     "Terminating pre-launched instance";
+    // We need to tell the server that Lacros does not run in this session.
+    RecordLacrosLaunchMode();
     unload_requested_ = true;
     if (lacros_process_.IsValid()) {
       lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
@@ -1683,6 +1685,8 @@ void BrowserManager::ResumeLaunch() {
            "User selection: "
         << static_cast<int>(user_lacros_selection.value()) << ". "
         << "Terminating pre-launched instance";
+    // Note: No need to trigger the LaunchMode recording now as we do that upon
+    // the relaunch.
     reload_requested_ = true;
     lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
     return;
