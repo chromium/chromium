@@ -97,8 +97,6 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // PolicyDialogBase overrides:
   views::Label* AddTitle(const std::u16string& title) override;
   views::Label* AddMessage(const std::u16string& message) override;
-
-  base::WeakPtrFactory<FilesPolicyDialog> weak_factory_{this};
 };
 
 }  // namespace policy
