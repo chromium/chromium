@@ -320,8 +320,6 @@ source_set("ios_web_net_unittests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "navigation/navigation_item_storage_test_util.h",
-    "navigation/navigation_item_storage_test_util.mm",
     "public/test/crw_fake_web_state_delegate.h",
     "public/test/crw_fake_web_state_delegate.mm",
   ]

@@ -12,10 +12,10 @@
 #import "components/sessions/core/session_id.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/navigation/navigation_item_storage_test_util.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/proto_util.h"
@@ -28,36 +28,6 @@
 #import "ui/base/page_transition_types.h"
 
 namespace {
-
-// Checks for equality between the item storages in `items1` and `items2`.
-BOOL ItemStorageListsAreEqual(NSArray* items1, NSArray* items2) {
-  __block BOOL items_are_equal = items1.count == items2.count;
-  if (!items_are_equal)
-    return NO;
-  [items1 enumerateObjectsUsingBlock:^(CRWNavigationItemStorage* item,
-                                       NSUInteger idx, BOOL* stop) {
-    items_are_equal &= web::ItemStoragesAreEqual(item, items2[idx]);
-    *stop = !items_are_equal;
-  }];
-  return items_are_equal;
-}
-
-// Checks for equality between `session1` and `session2`.
-BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
-                             CRWSessionStorage* session2) {
-  // Check the rest of the properties.
-  NSArray<CRWNavigationItemStorage*>* items1 = session1.itemStorages;
-  NSArray<CRWNavigationItemStorage*>* items2 = session2.itemStorages;
-  return ItemStorageListsAreEqual(items1, items2) &&
-         session1.hasOpener == session2.hasOpener &&
-         session1.lastCommittedItemIndex == session2.lastCommittedItemIndex &&
-         session1.userAgentType == session2.userAgentType &&
-         [session1.userData isEqual:session2.userData] &&
-         session1.lastActiveTime == session2.lastActiveTime &&
-         session1.creationTime == session2.creationTime &&
-         session1.uniqueIdentifier == session2.uniqueIdentifier &&
-         [session1.stableIdentifier isEqual:session2.stableIdentifier];
-}
 
 // Creates a CRWSessionUserData from an NSDictionary.
 CRWSessionUserData* SessionUserDataFromDictionary(
@@ -81,6 +51,8 @@ class CRWSessionStorageTest : public PlatformTest {
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;
     session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
     session_storage_.uniqueIdentifier = SessionID::NewUnique();
+    session_storage_.certPolicyCacheStorage =
+        [[CRWSessionCertificatePolicyCacheStorage alloc] init];
     session_storage_.userData =
         SessionUserDataFromDictionary(@{@"key" : @"value"});
 
@@ -128,7 +100,7 @@ TEST_F(CRWSessionStorageTest, EncodeDecode) {
   CRWSessionStorage* decoded =
       DecodeSessionStorage(EncodeSessionStorage(session_storage_));
 
-  EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
+  EXPECT_NSEQ(session_storage_, decoded);
 }
 
 // Tests that conversion to/from proto results in an equivalent storage.
@@ -155,16 +127,15 @@ TEST_F(CRWSessionStorageTest, EncodeDecodeToProto) {
   EXPECT_FALSE(decoded.userData);
 
   // Copy the properties that are not serialized by the protobuf message
-  // format from the original object to the decoded value, then use
-  // SessionStoragesAreEqual() to ensure the other fields are properly
-  // deserialized.
-  ASSERT_FALSE(SessionStoragesAreEqual(session_storage_, decoded));
+  // format from the original object to the decoded value, then compare
+  // the object to ensure the object is correctly deserialized.
+  ASSERT_NSNE(session_storage_, decoded);
 
   decoded.uniqueIdentifier = session_storage_.uniqueIdentifier;
   decoded.stableIdentifier = session_storage_.stableIdentifier;
   decoded.userData = session_storage_.userData;
 
-  EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
+  EXPECT_NSEQ(session_storage_, decoded);
 }
 
 // Tests that when converting to proto, the metadata information are correct.
@@ -207,7 +178,7 @@ TEST_F(CRWSessionStorageTest, EncodeDecodeAutomatic) {
   CRWSessionStorage* decoded =
       DecodeSessionStorage(EncodeSessionStorage(session_storage_));
 
-  EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
+  EXPECT_NSEQ(session_storage_, decoded);
 }
 
 // Tests that unarchiving CRWSessionStorage correctly creates a fresh
