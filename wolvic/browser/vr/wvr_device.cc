@@ -103,10 +103,9 @@ bool WvrDevice::IsOnMainThread() {
 
 void WvrDevice::OnWvrThreadReady(
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   PostTaskToWvrThread(base::BindOnce(
       &WvrGraphicsDelegate::InitializeGl, wvr_thread_->GetWvrGraphics()->GetWeakPtr(),
-      display.GetSizeInPixel(),
+      wvr_thread_->GetWvrManager()->GetSuggestedFrameSize(),
       CreateMainThreadCallback(
           base::BindOnce(&WvrDevice::OnWvrGlInitializationComplete,
                          GetWeakPtr(), std::move(options)))));

@@ -220,6 +220,18 @@ bool WvrManager::IsOnWvrThread() const {
   return task_runner_->BelongsToCurrentThread();
 }
 
+gfx::Size WvrManager::GetSuggestedFrameSize() const {
+  // Make sure we're fetching an up to date state.
+  wvr_api_->PullSystemState();
+
+  const mozilla::gfx::VRDisplayState& ds =
+      wvr_api_->get_system_state().displayState;
+
+  // We compute the suggested frame size based on eye resolution.
+  gfx::Size frame_size(ds.eyeResolution.width * 2, ds.eyeResolution.height);
+  return frame_size;
+}
+
 void WvrManager::CreateOrResizeWebXrSurface(const gfx::Size& size) {
   DCHECK(IsOnWvrThread());
   if (!graphics_->CreateOrResizeWebXrSurface(
