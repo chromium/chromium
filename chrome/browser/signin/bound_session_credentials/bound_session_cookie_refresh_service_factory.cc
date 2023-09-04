@@ -22,10 +22,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/network_service_instance.h"
 
-BASE_FEATURE(kEnableBoundSessionCredentialsOnDiceProfiles,
-             "EnableBoundSessionCredentialsOnDiceProfiles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // static
 BoundSessionCookieRefreshServiceFactory*
 BoundSessionCookieRefreshServiceFactory::GetInstance() {

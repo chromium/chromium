@@ -15,6 +15,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -157,6 +158,12 @@ class DiceResponseHandlerTest : public testing::Test,
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
             identity_test_env_.identity_manager()) {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    feature_list_.InitWithFeatures(
+        {switches::kEnableBoundSessionCredentials,
+         kEnableBoundSessionCredentialsOnDiceProfiles},
+        {});
+#endif
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());
     auto account_reconcilor_delegate =
@@ -259,8 +266,7 @@ class DiceResponseHandlerTest : public testing::Test,
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  base::test::ScopedFeatureList feature_list_{
-      switches::kEnableBoundSessionCredentials};
+  base::test::ScopedFeatureList feature_list_;
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;
