@@ -138,9 +138,9 @@ enum TelemetryDiagnosticMemtesterTestItemEnum {
 
   // These tests test writing random n bit words across the memory regions.
   // Test Pattern: 8 bit random words.
-  k8BitWrites = 18,
+  kEightBitWrites = 18,
   // Test Pattern: 16 bit random words.
-  k16BitWrites = 19,
+  kSixteenBitWrites = 19,
 };
 
 // Result from running memtester.

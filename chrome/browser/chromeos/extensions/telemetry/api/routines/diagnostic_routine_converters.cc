@@ -147,10 +147,10 @@ cx_diag::MemtesterTestItemEnum Convert(
       return cx_diag::MemtesterTestItemEnum::kWalkingOnes;
     case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes:
       return cx_diag::MemtesterTestItemEnum::kWalkingZeroes;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites:
-      return cx_diag::MemtesterTestItemEnum::kByteWrites;
-    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites:
-      return cx_diag::MemtesterTestItemEnum::kWordWrites;
+    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites:
+      return cx_diag::MemtesterTestItemEnum::kEightBitWrites;
+    case crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites:
+      return cx_diag::MemtesterTestItemEnum::kSixteenBitWrites;
   }
   NOTREACHED_NORETURN();
 }

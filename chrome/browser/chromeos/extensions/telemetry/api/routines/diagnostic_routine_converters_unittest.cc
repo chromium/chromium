@@ -213,11 +213,13 @@ TEST(TelemetryExtensionDiagnosticRoutineConvertersTest, MemtesterTestItemEnum) {
           crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes),
       cx_diag::MemtesterTestItemEnum::kWalkingZeroes);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites),
-      cx_diag::MemtesterTestItemEnum::kByteWrites);
+      Convert(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites),
+      cx_diag::MemtesterTestItemEnum::kEightBitWrites);
   EXPECT_EQ(
-      Convert(crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites),
-      cx_diag::MemtesterTestItemEnum::kWordWrites);
+      Convert(
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites),
+      cx_diag::MemtesterTestItemEnum::kSixteenBitWrites);
 }
 
 }  // namespace chromeos::converters::routines

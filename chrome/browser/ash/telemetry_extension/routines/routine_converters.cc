@@ -167,9 +167,10 @@ crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
     case healthd::MemtesterTestItemEnum::kWalkingZeroes:
       return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes;
     case healthd::MemtesterTestItemEnum::k8BitWrites:
-      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites;
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites;
     case healthd::MemtesterTestItemEnum::k16BitWrites:
-      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites;
+      return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+          kSixteenBitWrites;
   }
   NOTREACHED_NORETURN();
 }

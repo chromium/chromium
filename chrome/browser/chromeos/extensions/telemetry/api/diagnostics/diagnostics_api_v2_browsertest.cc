@@ -194,9 +194,9 @@ IN_PROC_BROWSER_TEST_F(
 
     auto memtester_result = crosapi::TelemetryDiagnosticMemtesterResult::New();
     memtester_result->passed_items = {
-        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites};
+        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites};
     memtester_result->failed_items = {
-        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites};
+        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites};
 
     auto memory_detail = crosapi::TelemetryDiagnosticMemoryRoutineDetail::New();
     memory_detail->bytes_tested = 42;
@@ -242,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(
             "bytesTested": 42,
             "has_passed": true,
             "result": {
-                "failed_items": ["byte_writes"],
-                "passed_items": ["word_writes"]
+                "failed_items": ["eight_bit_writes"],
+                "passed_items": ["sixteen_bit_writes"]
             },
             "uuid": await uuid,
           });

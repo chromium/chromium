@@ -126,9 +126,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
       {healthd::MemtesterTestItemEnum::kWalkingZeroes,
        crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kWalkingZeroes},
       {healthd::MemtesterTestItemEnum::k8BitWrites,
-       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites},
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites},
       {healthd::MemtesterTestItemEnum::k16BitWrites,
-       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites},
+       crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kSixteenBitWrites},
   };
 
   EXPECT_EQ(
@@ -153,8 +153,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_THAT(
       result->passed_items,
       testing::ElementsAre(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+              kSixteenBitWrites));
 
   EXPECT_THAT(
       result->failed_items,
@@ -185,8 +186,9 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
   EXPECT_THAT(
       result->result->passed_items,
       testing::ElementsAre(
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k8BitWrites,
-          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::k16BitWrites));
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::kEightBitWrites,
+          crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
+              kSixteenBitWrites));
 
   EXPECT_THAT(
       result->result->failed_items,

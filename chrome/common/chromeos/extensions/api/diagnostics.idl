@@ -268,9 +268,9 @@ namespace os.diagnostics {
 
     // These tests test writing random n bit words across the memory regions.
     // Test Pattern: 8 bit random words.
-    byte_writes,
+    eight_bit_writes,
     // Test Pattern: 16 bit random words.
-    word_writes
+    sixteen_bit_writes
   };
 
   dictionary MemtesterResult {
