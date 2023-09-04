@@ -9,6 +9,7 @@ export interface PerformanceBrowserProxy {
   getDeviceHasBattery(): Promise<boolean>;
   openBatterySaverFeedbackDialog(): void;
   openHighEfficiencyFeedbackDialog(): void;
+  openSpeedFeedbackDialog(): void;
   validateTabDiscardExceptionRule(rule: string): Promise<boolean>;
 }
 
@@ -27,6 +28,10 @@ export class PerformanceBrowserProxyImpl implements PerformanceBrowserProxy {
 
   openHighEfficiencyFeedbackDialog() {
     chrome.send('openHighEfficiencyFeedbackDialog');
+  }
+
+  openSpeedFeedbackDialog() {
+    chrome.send('openSpeedFeedbackDialog');
   }
 
   validateTabDiscardExceptionRule(rule: string) {

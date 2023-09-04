@@ -40,6 +40,10 @@ void PerformanceHandler::RegisterMessages() {
           &PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "openSpeedFeedbackDialog",
+      base::BindRepeating(&PerformanceHandler::HandleOpenSpeedFeedbackDialog,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "validateTabDiscardExceptionRule",
       base::BindRepeating(
           &PerformanceHandler::HandleValidateTabDiscardExceptionRule,
@@ -126,6 +130,11 @@ void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
 void PerformanceHandler::HandleOpenHighEfficiencyFeedbackDialog(
     const base::Value::List& args) {
   HandleOpenFeedbackDialog("performance_tabs");
+}
+
+void PerformanceHandler::HandleOpenSpeedFeedbackDialog(
+    const base::Value::List& args) {
+  HandleOpenFeedbackDialog("performance_speed");
 }
 
 void PerformanceHandler::HandleOpenFeedbackDialog(

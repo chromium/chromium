@@ -447,6 +447,10 @@ suite('Performance', () => {
     return page.shadowRoot!.querySelector('#batterySettingsSection');
   }
 
+  function querySpeedSettingsSection(): SettingsSectionElement|null {
+    return page.shadowRoot!.querySelector('#speedSettingsSection');
+  }
+
   async function createNewBasicPage() {
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
@@ -462,6 +466,9 @@ suite('Performance', () => {
   }
 
   test('performanceVisibilityTestFeaturesAvailable', async function() {
+    loadTimeData.overrideValues({
+      isPerformanceSettingsPreloadingSubpageEnabled: true,
+    });
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
     page.pageVisibility = pageVisibility;
@@ -470,6 +477,9 @@ suite('Performance', () => {
     assertTrue(
         !!queryBatterySettingsSection(),
         'Battery section should exist with default page visibility');
+    assertTrue(
+        !!querySpeedSettingsSection(),
+        'Speed section should exist with default page visibility');
     assertTrue(
         !!queryPerformanceSettingsSection(),
         'Performance section should exist with default page visibility');
@@ -484,8 +494,25 @@ suite('Performance', () => {
         !!queryBatterySettingsSection(),
         'Battery section should not exist when visibility is false');
     assertFalse(
+        !!querySpeedSettingsSection(),
+        'Speed section should not exist when visibility is false');
+    assertFalse(
         !!queryPerformanceSettingsSection(),
         'Performance section should not exist when visibility is false');
+  });
+
+  test('performanceVisibilityTestSpeedSectionNotEnabled', async function() {
+    loadTimeData.overrideValues({
+      isPerformanceSettingsPreloadingSubpageEnabled: false,
+    });
+    await createNewBasicPage();
+    // Set the visibility of the pages under test to their default value.
+    page.pageVisibility = pageVisibility;
+    flush();
+
+    assertFalse(
+        !!querySpeedSettingsSection(),
+        'Speed section should not be visible when feature flag is off');
   });
 
   test('performanceVisibilityTestDeviceHasBattery', async function() {

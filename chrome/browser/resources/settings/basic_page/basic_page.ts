@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
+import '../privacy_page/preloading_page.js';
 import '../privacy_page/privacy_guide/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
 import '../safety_check_page/safety_check_page.js';
@@ -34,6 +35,7 @@ import '../languages_page/languages.js';
 // </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -55,8 +57,8 @@ import {MainPageMixin} from '../settings_page/main_page_mixin.js';
 import {getTemplate} from './basic_page.html.js';
 
 const SettingsBasicPageElementBase =
-    PrefsMixin(MainPageMixin(RouteObserverMixin(
-        PrivacyGuideAvailabilityMixin(WebUiListenerMixin(PolymerElement)))));
+    PrefsMixin(MainPageMixin(RouteObserverMixin(PrivacyGuideAvailabilityMixin(
+        WebUiListenerMixin(I18nMixin(PolymerElement))))));
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {
@@ -380,6 +382,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     return visibility !== false;
   }
 
+  private showSpeedPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean(
+               'isPerformanceSettingsPreloadingSubpageEnabled') &&
+        this.showPage_(visibility);
+  }
+
   private showSafetyCheckPage_(visibility?: boolean): boolean {
     return !loadTimeData.getBoolean('enableSafetyHub') &&
         this.showPage_(visibility);
@@ -405,7 +413,19 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     e.stopPropagation();
     this.performanceBrowserProxy_.openBatterySaverFeedbackDialog();
   }
+
+  private onSendSpeedFeedbackClick_(e: Event) {
+    e.stopPropagation();
+    this.performanceBrowserProxy_.openSpeedFeedbackDialog();
+  }
   // </if>
+
+  private getPerformancePageTitle_(): string {
+    return loadTimeData.getBoolean(
+               'isPerformanceSettingsPreloadingSubpageEnabled') ?
+        this.i18n('memoryPageTitle') :
+        this.i18n('performancePageTitle');
+  }
 }
 
 declare global {

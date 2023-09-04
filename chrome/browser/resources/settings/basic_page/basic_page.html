@@ -69,7 +69,7 @@
         <template is="dom-if"
             if="[[showPerformancePage_(pageVisibility.performance)]]"
             restamp>
-          <settings-section page-title="$i18n{performancePageTitle}"
+          <settings-section page-title="[[getPerformancePageTitle_()]]"
 <if expr="_google_chrome">
               show-send-feedback-button
               on-send-feedback="onSendHighEfficiencyFeedbackClick_"
@@ -91,6 +91,20 @@
               id="batterySettingsSection" hidden="[[!showBatterySettings_]]">
             <settings-battery-page prefs="{{prefs}}">
             </settings-battery-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showSpeedPage_(pageVisibility.performance)]]"
+            restamp>
+          <settings-section page-title="$i18n{speedPageTitle}"
+              section="speed" nest-under-section="performance"
+<if expr="_google_chrome">
+              show-send-feedback-button
+              on-send-feedback="onSendSpeedFeedbackClick_"
+</if>
+              id="speedSettingsSection">
+            <settings-preloading-page prefs="{{prefs}}">
+            </settings-preloading-page>
           </settings-section>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.appearance)]]"

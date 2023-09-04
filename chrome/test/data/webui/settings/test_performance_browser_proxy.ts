@@ -16,6 +16,7 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
       'getDeviceHasBattery',
       'openBatterySaverFeedbackDialog',
       'openHighEfficiencyFeedbackDialog',
+      'openSpeedFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
   }
@@ -40,6 +41,10 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
 
   openHighEfficiencyFeedbackDialog() {
     this.methodCalled('openHighEfficiencyFeedbackDialog');
+  }
+
+  openSpeedFeedbackDialog() {
+    this.methodCalled('openSpeedFeedbackDialog');
   }
 
   setValidationResults(results: Record<string, boolean>) {

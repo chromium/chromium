@@ -3,6 +3,10 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  .settings-title {
+    padding-top: var(--cr-section-vertical-padding);
+  }
+
   settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
     --settings-collapse-separator-line: 0;
   }
@@ -12,7 +16,13 @@
     padding-inline-end: 12px;
   }
 </style>
-<div class="settings-header secondary">$i18n{preloadingPageSummary}</div>
+<template is="dom-if" if="[[isEmbeddedOnPerformancePage_]]">
+  <div class="settings-title">$i18n{preloadingPageTitle}</div>
+  <div class="secondary">$i18n{preloadingPageSummary}</div>
+</template>
+<template is="dom-if" if="[[!isEmbeddedOnPerformancePage_]]">
+  <div class="settings-header secondary">$i18n{preloadingPageSummary}</div>
+</template>
 <settings-radio-group id="preloadingRadioGroup" no-set-pref
     pref="{{prefs.net.network_prediction_options}}"
     selectable-elements="settings-collapse-radio-button"
