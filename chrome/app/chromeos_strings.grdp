@@ -6516,7 +6516,19 @@ You can manage this account’s settings by installing the Family Link app on yo
     Please try again.
   </message>
 
-  <!-- PIN keyboard-->
+  <!-- Shared (OOBE, settings) auth setup webuis -->
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER" desc="Placeholder text for the input that lets the user enter a new local password.">
+    Password
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER" desc="Placeholder text for the input where the user should enter a new local password for a second time for confirmation.">
+    Confirm password
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
+    Password must be at least 8 characters
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR" desc="Error message shown when the user sets a password but the first entry does not match the second entry.">
+    Passwords do not match
+  </message>
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_WEAK_PIN" desc="Message shown below the title that warns the user they have entered a PIN that is easy to guess.">
     PIN may be easy to guess
   </message>

@@ -303,6 +303,14 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_MESSAGE},
       {"recoveryNotSupportedMessage",
        IDS_SETTINGS_PEOPLE_RECOVERY_NOT_SUPPORTED_MESSAGE},
+      {"setLocalPasswordPlaceholder",
+       IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER},
+      {"setLocalPasswordConfirmPlaceholder",
+       IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER},
+      {"setLocalPasswordMinCharsHint",
+       IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT},
+      {"setLocalPasswordNoMatchError",
+       IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

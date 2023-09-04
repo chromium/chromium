@@ -150,7 +150,7 @@ non_web_component_files = [
 ]
 
 web_component_files_ts = [
-  "auth_setup/local_password_input.ts",
+  "auth_setup/set_local_password_input.ts",
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
   "quick_unlock/fingerprint_progress.ts",
@@ -379,7 +379,7 @@ grit("resources") {
 
 generate_definitions_js_files = [
   "assert.js",
-  "auth_setup/local_password_input.html.js",
+  "auth_setup/set_local_password_input.html.js",
   "bluetooth/bluetooth_metrics_utils.js",
   "bluetooth/bluetooth_types.js",
   "bluetooth/bluetooth_utils.js",
