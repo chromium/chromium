@@ -282,11 +282,24 @@ PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
   for (auto& stored_form : forms) {
     if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
       bool password_changed = form.password_value != stored_form.password_value;
+      bool insecure_credentials_changed = false;
+
+      for (auto insecure_type : {InsecureType::kLeaked, InsecureType::kPhished,
+                                 InsecureType::kWeak, InsecureType::kReused}) {
+        if (form.password_issues.contains(insecure_type) !=
+            stored_form.password_issues.contains(insecure_type)) {
+          insecure_credentials_changed = true;
+          break;
+        }
+      }
+
       stored_form = form;
       stored_form.in_store = is_account_store()
                                  ? PasswordForm::Store::kAccountStore
                                  : PasswordForm::Store::kProfileStore;
-      changes.emplace_back(PasswordStoreChange::UPDATE, form, password_changed);
+      changes.emplace_back(
+          PasswordStoreChange::UPDATE, form, password_changed,
+          InsecureCredentialsChanged(insecure_credentials_changed));
     }
   }
   if (changes.empty() && update_always_succeeds_) {

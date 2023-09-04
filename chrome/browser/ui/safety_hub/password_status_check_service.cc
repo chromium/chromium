@@ -54,6 +54,19 @@ bool ShouldFindNewCheckTime(Profile* profile) {
 
 PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
     : profile_(profile) {
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::IMPLICIT_ACCESS);
+
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store =
+      AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
+
+  profile_password_store_observation_.Observe(profile_store.get());
+  if (account_store) {
+    account_password_store_observation_.Observe(account_store.get());
+  }
+
   StartRepeatedUpdates();
   UpdateInsecureCredentialCountAsync();
 }
@@ -64,6 +77,9 @@ void PasswordStatusCheckService::Shutdown() {
   password_check_timer_.Stop();
   saved_passwords_presenter_observation_.Reset();
   bulk_leak_check_observation_.Reset();
+  profile_password_store_observation_.Reset();
+  account_password_store_observation_.Reset();
+
   password_check_delegate_.reset();
   saved_passwords_presenter_.reset();
   credential_id_generator_.reset();
@@ -198,6 +214,23 @@ void PasswordStatusCheckService::OnStateChanged(
 void PasswordStatusCheckService::OnCredentialDone(
     const password_manager::LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {}
+
+void PasswordStatusCheckService::OnLoginsChanged(
+    password_manager::PasswordStoreInterface* store,
+    const password_manager::PasswordStoreChangeList& changes) {
+  for (const auto& change : changes) {
+    if (change.type() == password_manager::PasswordStoreChange::ADD ||
+        change.type() == password_manager::PasswordStoreChange::REMOVE ||
+        change.password_changed() || change.insecure_credentials_changed()) {
+      UpdateInsecureCredentialCountAsync();
+      return;
+    }
+  }
+}
+
+void PasswordStatusCheckService::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* store,
+    const std::vector<password_manager::PasswordForm>& retained_passwords) {}
 
 void PasswordStatusCheckService::InitializePasswordCheckInfrastructure() {
   if (IsInfrastructureReady()) {

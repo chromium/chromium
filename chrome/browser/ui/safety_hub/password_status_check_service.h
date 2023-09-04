@@ -10,12 +10,14 @@
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStatusCheckService
     : public KeyedService,
       public password_manager::SavedPasswordsPresenter::Observer,
-      public password_manager::BulkLeakCheckServiceInterface::Observer {
+      public password_manager::BulkLeakCheckServiceInterface::Observer,
+      public password_manager::PasswordStoreInterface::Observer {
  public:
   explicit PasswordStatusCheckService(Profile* profile);
 
@@ -93,6 +95,16 @@ class PasswordStatusCheckService
   void OnCredentialDone(const password_manager::LeakCheckCredential& credential,
                         password_manager::IsLeaked is_leaked) override;
 
+  // PasswordStoreInterface::Observer implementation.
+  // Used to trigger an update of the password issue counts when passwords
+  // change.
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
+
   // This is called when weak and reuse checks are complete and
   // `InsecureCredentialsManager` is ready to be queried for credential issues.
   void OnWeakAndReuseChecksDone();
@@ -146,6 +158,16 @@ class PasswordStatusCheckService
       password_manager::BulkLeakCheckServiceInterface,
       password_manager::BulkLeakCheckServiceInterface::Observer>
       bulk_leak_check_observation_{this};
+
+  // Scoped observer for profile and account `PasswordStore`s. This is used
+  // to trigger an update of the password issue counts when passwords have
+  // changed. We're notified of this with `OnLoginsChanged`.
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      profile_password_store_observation_{this};
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      account_password_store_observation_{this};
 
   // Cached results of the password check.
   size_t compromised_credential_count_ = 0;

@@ -32,6 +32,7 @@ constexpr char16_t kUsername2[] = u"bob";
 constexpr char16_t kUsername3[] = u"charlie";
 constexpr char16_t kUsername4[] = u"dora";
 constexpr char16_t kPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
+constexpr char16_t kPassword2[] = u"new_fnlsr4@cm^mls@fkspnsg3d";
 constexpr char16_t kWeakPassword[] = u"1234";
 
 using password_manager::BulkLeakCheckDelegateInterface;
@@ -83,16 +84,16 @@ class MockObserver : public BulkLeakCheckService::Observer {
   raw_ptr<BulkLeakCheckService> leak_check_service_;
 };
 
-PasswordForm MakeCredential(base::StringPiece16 username,
-                            base::StringPiece16 password,
-                            std::string origin = kOrigin1,
-                            bool is_leaked = false) {
+PasswordForm MakeForm(base::StringPiece16 username,
+                      base::StringPiece16 password,
+                      std::string origin = kOrigin1,
+                      bool is_leaked = false) {
   PasswordForm form;
   form.username_value = username;
   form.password_value = password;
   form.signon_realm = origin;
   form.url = GURL(origin);
-  form.in_store = PasswordForm::Store::kProfileStore;
+
   if (is_leaked) {
     // Credential issues for weak and reused are detected automatically and
     // don't need to be specified explicitly.
@@ -105,6 +106,22 @@ PasswordForm MakeCredential(base::StringPiece16 username,
   return form;
 }
 
+PasswordForm WeakForm() {
+  return MakeForm(kUsername1, kWeakPassword);
+}
+
+PasswordForm LeakedForm() {
+  return MakeForm(kUsername2, kPassword, kOrigin1, true);
+}
+
+PasswordForm ReusedForm1() {
+  return MakeForm(kUsername3, kPassword);
+}
+
+PasswordForm ReusedForm2() {
+  return MakeForm(kUsername4, kPassword, kOrigin2);
+}
+
 }  // namespace
 
 class PasswordStatusCheckServiceBaseTest : public testing::Test {
@@ -114,29 +131,6 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void StoreUndetectedWeakCredential() {
-    PasswordForm form = MakeCredential(kUsername1, kWeakPassword);
-    password_store_->AddLogin(form);
-  }
-
-  void StoreLeakedCredential() {
-    PasswordForm form = MakeCredential(kUsername2, kPassword, kOrigin1, true);
-    password_store_->AddLogin(form);
-  }
-
-  void StoreUndetectedReusedCredentials() {
-    PasswordForm form1 = MakeCredential(kUsername3, kPassword);
-    PasswordForm form2 = MakeCredential(kUsername4, kPassword, kOrigin2);
-    password_store_->AddLogin(form1);
-    password_store_->AddLogin(form2);
-  }
-
-  void StoreCredential(base::StringPiece16 username,
-                       base::StringPiece16 password) {
-    PasswordForm form = MakeCredential(username, password);
-    password_store_->AddLogin(form);
-  }
-
   void UpdateInsecureCredentials() {
     service()->UpdateInsecureCredentialCountAsync();
     RunUntilIdle();
@@ -144,6 +138,8 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
+  TestPasswordStore& profile_store() { return *profile_store_; }
+  TestPasswordStore& account_store() { return *account_store_; }
   TestingProfile& profile() { return profile_; }
   PasswordStatusCheckService* service() { return service_.get(); }
   signin::IdentityTestEnvironment& identity_test_env() {
@@ -178,8 +174,11 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
 
   TestingProfile profile_;
 
-  scoped_refptr<TestPasswordStore> password_store_ =
+  scoped_refptr<TestPasswordStore> profile_store_ =
       CreateAndUseTestPasswordStore(&profile_);
+
+  scoped_refptr<TestPasswordStore> account_store_ =
+      CreateAndUseTestAccountPasswordStore(&profile_);
 
   raw_ptr<BulkLeakCheckService> bulk_leak_check_service_ =
       CreateAndUseBulkLeakCheckService(identity_test_env_.identity_manager(),
@@ -188,7 +187,7 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
   std::unique_ptr<PasswordStatusCheckService> service_;
 };
 
-class PasswordStatusCheckServiceParameterizedTest
+class PasswordStatusCheckServiceParameterizedIssueTest
     : public PasswordStatusCheckServiceBaseTest,
       public testing::WithParamInterface<
           testing::tuple</*include_weak*/ bool,
@@ -200,6 +199,15 @@ class PasswordStatusCheckServiceParameterizedTest
   bool include_reused() const { return std::get<2>(GetParam()); }
 };
 
+class PasswordStatusCheckServiceParameterizedStoreTest
+    : public PasswordStatusCheckServiceBaseTest,
+      public testing::WithParamInterface</*use_profile_store*/ bool> {
+ public:
+  TestPasswordStore& password_store() {
+    return GetParam() ? profile_store() : account_store();
+  }
+};
+
 TEST_F(PasswordStatusCheckServiceBaseTest, NoIssuesInitially) {
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->weak_credential_count(), 0UL);
@@ -207,17 +215,18 @@ TEST_F(PasswordStatusCheckServiceBaseTest, NoIssuesInitially) {
   EXPECT_EQ(service()->reused_credential_count(), 0UL);
 }
 
-TEST_P(PasswordStatusCheckServiceParameterizedTest,
-       GetPreexistingMultipleIssueCounts) {
+TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
+       DetectIssuesDuringConstruction) {
   // Based on test parameters, add different credential issues to the store.
   if (include_weak()) {
-    StoreUndetectedWeakCredential();
+    profile_store().AddLogin(WeakForm());
   }
   if (include_compromised()) {
-    StoreLeakedCredential();
+    profile_store().AddLogin(LeakedForm());
   }
   if (include_reused()) {
-    StoreUndetectedReusedCredentials();
+    profile_store().AddLogin(ReusedForm1());
+    profile_store().AddLogin(ReusedForm2());
   }
 
   // Service is restarted and existing issues are found during construction.
@@ -228,24 +237,120 @@ TEST_P(PasswordStatusCheckServiceParameterizedTest,
   EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
 }
 
-TEST_P(PasswordStatusCheckServiceParameterizedTest, GetMultipleIssueCounts) {
+TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
+       DetectIssuesWhileActive) {
   // Based on test parameters, add different credential issues to the store.
   if (include_weak()) {
-    StoreUndetectedWeakCredential();
+    profile_store().AddLogin(WeakForm());
   }
   if (include_compromised()) {
-    StoreLeakedCredential();
+    profile_store().AddLogin(LeakedForm());
   }
   if (include_reused()) {
-    StoreUndetectedReusedCredentials();
+    profile_store().AddLogin(ReusedForm1());
+    profile_store().AddLogin(ReusedForm2());
   }
 
-  // Expect to find credential issues that were added while service is active.
+  // Expect to find credential issues that were added while service is active
+  // when updating the count.
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->weak_credential_count(), include_weak() ? 1UL : 0UL);
   EXPECT_EQ(service()->compromised_credential_count(),
             include_compromised() ? 1UL : 0UL);
   EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
+}
+
+TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
+       DetectAddedAndRemovedIssuesAutomatically) {
+  PasswordForm weak_form = WeakForm();
+  PasswordForm leaked_form = LeakedForm();
+  PasswordForm reused_form_1 = ReusedForm1();
+  PasswordForm reused_form_2 = ReusedForm2();
+
+  // Based on test parameters, add different credential issues to the store.
+  if (include_weak()) {
+    profile_store().AddLogin(weak_form);
+  }
+  if (include_compromised()) {
+    profile_store().AddLogin(leaked_form);
+  }
+  if (include_reused()) {
+    profile_store().AddLogin(reused_form_1);
+    profile_store().AddLogin(reused_form_2);
+  }
+  RunUntilIdle();
+
+  // Service is able to pick up on the new password issues automatically.
+  EXPECT_EQ(service()->weak_credential_count(), include_weak() ? 1UL : 0UL);
+  EXPECT_EQ(service()->compromised_credential_count(),
+            include_compromised() ? 1UL : 0UL);
+  EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
+
+  // Removing the credentials with the issues is also detected.
+  profile_store().RemoveLogin(weak_form);
+  profile_store().RemoveLogin(leaked_form);
+  profile_store().RemoveLogin(reused_form_1);
+  profile_store().RemoveLogin(reused_form_2);
+  RunUntilIdle();
+
+  EXPECT_EQ(service()->weak_credential_count(), 0UL);
+  EXPECT_EQ(service()->compromised_credential_count(), 0UL);
+  EXPECT_EQ(service()->reused_credential_count(), 0UL);
+}
+
+TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
+       DetectChangingWeakPassword) {
+  password_store().AddLogin(MakeForm(kUsername1, kWeakPassword));
+  RunUntilIdle();
+  EXPECT_EQ(service()->weak_credential_count(), 1UL);
+
+  // When changing the password for this credential from the weak password to a
+  // stronger password, it is no longer counted as weak.
+  password_store().UpdateLogin(MakeForm(kUsername1, kPassword));
+  RunUntilIdle();
+  EXPECT_EQ(service()->weak_credential_count(), 0UL);
+
+  // When the strong password changes to a weak one is is counted as such.
+  password_store().UpdateLogin(MakeForm(kUsername1, kWeakPassword));
+  RunUntilIdle();
+  EXPECT_EQ(service()->weak_credential_count(), 1UL);
+}
+
+TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
+       DetectChangingLeakedPassword) {
+  password_store().AddLogin(MakeForm(kUsername2, kPassword, kOrigin1, true));
+  RunUntilIdle();
+  EXPECT_EQ(service()->compromised_credential_count(), 1UL);
+
+  // When a leaked password is changed it is no longer leaked.
+  password_store().UpdateLogin(MakeForm(kUsername2, kPassword2));
+  RunUntilIdle();
+  EXPECT_EQ(service()->compromised_credential_count(), 0UL);
+
+  // If an existing credential get leaked again the service picks up on that.
+  password_store().UpdateLogin(
+      MakeForm(kUsername2, kPassword2, kOrigin1, true));
+  RunUntilIdle();
+  EXPECT_EQ(service()->compromised_credential_count(), 1UL);
+}
+
+TEST_P(PasswordStatusCheckServiceParameterizedStoreTest,
+       DetectChangingReusedPassword) {
+  // Two credentials share the same password. The service counts them as reused.
+  password_store().AddLogin(MakeForm(kUsername3, kPassword));
+  password_store().AddLogin(MakeForm(kUsername4, kPassword, kOrigin2));
+  RunUntilIdle();
+  EXPECT_EQ(service()->reused_credential_count(), 2UL);
+
+  // After changing one the reused passwords, there are now 0.
+  password_store().UpdateLogin(MakeForm(kUsername3, kPassword2));
+  RunUntilIdle();
+  EXPECT_EQ(service()->reused_credential_count(), 0UL);
+
+  // Changing a password to be the same as an existing one should be picked up.
+  password_store().UpdateLogin(MakeForm(kUsername4, kPassword2, kOrigin2));
+  RunUntilIdle();
+  EXPECT_EQ(service()->reused_credential_count(), 2UL);
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, RepeatedlyUpdatingDoesNotCrash) {
@@ -268,7 +373,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheckNoPasswords) {
 
 TEST_F(PasswordStatusCheckServiceBaseTest,
        PasswordCheckSignedOutWithPasswords) {
-  StoreCredential(kUsername1, kPassword);
+  profile_store().AddLogin(MakeForm(kUsername1, kPassword));
 
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
@@ -283,7 +388,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
 
   // Store credential that has no issue associated with it.
-  StoreCredential(kUsername1, kPassword);
+  profile_store().AddLogin(MakeForm(kUsername1, kPassword));
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
 
@@ -307,8 +412,8 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_FindCompromised) {
 
 TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCheck_Error) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
+  profile_store().AddLogin(MakeForm(kUsername1, kPassword));
 
-  StoreCredential(kUsername1, kPassword);
   UpdateInsecureCredentials();
   EXPECT_EQ(service()->compromised_credential_count(), 0UL);
 
@@ -447,7 +552,11 @@ TEST_F(PasswordStatusCheckServiceBaseTest, ScheduledCheckRunsRepeatedly) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PasswordStatusCheckServiceParameterizedTest,
+    PasswordStatusCheckServiceParameterizedIssueTest,
     ::testing::Combine(/*include_weak*/ ::testing::Bool(),
                        /*include_compromised*/ ::testing::Bool(),
                        /*include_reused*/ ::testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(AccountOrProfileStore,
+                         PasswordStatusCheckServiceParameterizedStoreTest,
+                         testing::Bool());
