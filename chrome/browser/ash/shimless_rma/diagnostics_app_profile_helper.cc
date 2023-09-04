@@ -12,8 +12,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -192,9 +194,7 @@ void OnCheckExtensionIsReadyResponse(
           kExtensionReadyPollingInterval);
       return;
     }
-    ReportError(std::move(state),
-                "Can't activate the extension. Extension's service worker is "
-                "not registered.");
+    ReportError(std::move(state), k3pDiagErrorCannotActivateExtension);
     return;
   }
 
@@ -235,8 +235,9 @@ void OnExtensionInstalled(
   state->crx_installer.reset();
 
   if (!chromeos::IsChromeOSSystemExtension(extension->id())) {
-    ReportError(std::move(state), "Extension " + extension->id() +
-                                      " is not a ChromeOS system extension.");
+    ReportError(std::move(state),
+                base::StringPrintf(k3pDiagErrorNotChromeOSSystemExtension,
+                                   extension->id().c_str()));
     return;
   }
 

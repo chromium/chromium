@@ -3039,6 +3039,7 @@ source_set("ash") {
     "shimless_rma/chrome_shimless_rma_delegate.h",
     "shimless_rma/diagnostics_app_profile_helper.cc",
     "shimless_rma/diagnostics_app_profile_helper.h",
+    "shimless_rma/diagnostics_app_profile_helper_constants.h",
     "shortcut_mapping_pref_service.cc",
     "shortcut_mapping_pref_service.h",
     "smb_client/discovery/host_locator.h",
