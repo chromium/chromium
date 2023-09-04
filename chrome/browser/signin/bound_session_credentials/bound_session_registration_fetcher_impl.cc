@@ -45,7 +45,7 @@ bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
 BoundSessionRegistrationFetcherImpl::BoundSessionRegistrationFetcherImpl(
     BoundSessionRegistrationFetcherParam registration_params,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    unexportable_keys::UnexportableKeyService* key_service)
+    unexportable_keys::UnexportableKeyService& key_service)
     : registration_params_(std::move(registration_params)),
       key_service_(key_service),
       url_loader_factory_(std::move(loader_factory)) {}
@@ -56,24 +56,15 @@ BoundSessionRegistrationFetcherImpl::~BoundSessionRegistrationFetcherImpl() =
 void BoundSessionRegistrationFetcherImpl::Start(
     RegistrationCompleteCallback callback) {
   callback_ = std::move(callback);
-  // TODO: Make `key_service_` not optional. It was made optional to facilitate
-  // testing but we now have a feature flag for software emulation, so this
-  // should be no longer needed.
-  if (key_service_) {
-    // base::Unretained() is safe since `this` owns
-    // `registration_token_helper_`.
-    registration_token_helper_ =
-        RegistrationTokenHelper::CreateForSessionBinding(
-            *key_service_, registration_params_.Challenge(),
-            registration_params_.RegistrationEndpoint(),
-            base::BindOnce(&BoundSessionRegistrationFetcherImpl::
-                               OnRegistrationTokenCreated,
-                           base::Unretained(this)));
-    registration_token_helper_->Start();
-  } else {
-    // Early fail of request, object is invalid after this
-    std::move(callback_).Run(absl::nullopt);
-  }
+  // base::Unretained() is safe since `this` owns
+  // `registration_token_helper_`.
+  registration_token_helper_ = RegistrationTokenHelper::CreateForSessionBinding(
+      key_service_.get(), registration_params_.Challenge(),
+      registration_params_.RegistrationEndpoint(),
+      base::BindOnce(
+          &BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated,
+          base::Unretained(this)));
+  registration_token_helper_->Start();
 }
 
 void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(

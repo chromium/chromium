@@ -8,9 +8,10 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_param.h"
@@ -35,7 +36,7 @@ class BoundSessionRegistrationFetcherImpl
   explicit BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherParam registration_params,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      unexportable_keys::UnexportableKeyService* key_service);
+      unexportable_keys::UnexportableKeyService& key_service);
 
   BoundSessionRegistrationFetcherImpl(
       BoundSessionRegistrationFetcherImpl&& other) = delete;
@@ -59,7 +60,7 @@ class BoundSessionRegistrationFetcherImpl
   void StartFetchingRegistration(const std::string& registration_token);
 
   BoundSessionRegistrationFetcherParam registration_params_;
-  const raw_ptr<unexportable_keys::UnexportableKeyService> key_service_;
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   std::string wrapped_key_str_;
 
   // Non-null after a fetch has started.

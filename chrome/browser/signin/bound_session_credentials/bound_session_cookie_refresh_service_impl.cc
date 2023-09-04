@@ -126,7 +126,7 @@ void BoundSessionCookieRefreshServiceImpl::CreateRegistrationRequest(
       std::make_unique<BoundSessionRegistrationFetcherImpl>(
           std::move(registration_params),
           storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
-          &key_service_.get());
+          key_service_.get());
   // `base::Unretained(this)` is safe here because `this` owns the fetcher via
   // `active_registration_requests_`
   active_registration_request_->Start(base::BindOnce(
