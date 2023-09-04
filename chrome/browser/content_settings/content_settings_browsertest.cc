@@ -1670,7 +1670,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWithFencedFrameBrowserTest,
     EXPECT_EQ(container.indexed_dbs()->GetCount(), expected_size);
     EXPECT_EQ(container.shared_workers()->GetSharedWorkerCount(),
               expected_size);
-    EXPECT_EQ(container.service_workers()->GetCount(), 1u);
+    EXPECT_EQ(container.service_workers()->GetCount(), expected_size);
   }
 }
 

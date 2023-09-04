@@ -298,8 +298,9 @@ void WebContentsHandler::OnCookiesAccessed(
     content::RenderFrameHost* rfh,
     const content::CookieAccessDetails& details) {
   auto* pscs = PageSpecificContentSettings::GetForPage(rfh->GetPage());
-  if (pscs)
+  if (pscs) {
     pscs->OnCookiesAccessed(details);
+  }
 }
 
 void WebContentsHandler::OnTrustTokensAccessed(
@@ -355,8 +356,9 @@ void WebContentsHandler::OnServiceWorkerAccessed(
     const GURL& scope,
     content::AllowServiceWorkerResult allowed) {
   auto* pscs = PageSpecificContentSettings::GetForPage(frame->GetPage());
-  if (pscs)
-    pscs->OnServiceWorkerAccessed(scope, allowed);
+  if (pscs) {
+    pscs->OnServiceWorkerAccessed(scope, frame->GetStorageKey(), allowed);
+  }
 }
 
 void WebContentsHandler::OnSharedDictionaryAccessed(
@@ -1033,31 +1035,38 @@ void PageSpecificContentSettings::OnCookiesAccessed(
 
 void PageSpecificContentSettings::OnServiceWorkerAccessed(
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed,
+    const blink::StorageKey& storage_key,
+    content::AllowServiceWorkerResult allowed_result,
     content::Page* originating_page) {
   DCHECK(scope.is_valid());
   originating_page = originating_page ? originating_page : &page();
-  if (allowed) {
-    allowed_local_shared_objects_.service_workers()->Add(
-        url::Origin::Create(scope));
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kMigrateStorageToBDM)) {
+    auto& model = allowed_result ? allowed_browsing_data_model_
+                                 : blocked_browsing_data_model_;
+    // The size isn't relevant here and won't be displayed in the UI.
+    model->AddBrowsingData(storage_key,
+                           BrowsingDataModel::StorageType::kQuotaStorage,
+                           /*storage_size=*/0);
   } else {
-    blocked_local_shared_objects_.service_workers()->Add(
-        url::Origin::Create(scope));
+    auto& local_shared_objects = allowed_result ? allowed_local_shared_objects_
+                                                : blocked_local_shared_objects_;
+    local_shared_objects.service_workers()->Add(url::Origin::Create(scope));
   }
 
-  if (allowed.javascript_blocked_by_policy()) {
+  if (allowed_result.javascript_blocked_by_policy()) {
     OnContentBlocked(ContentSettingsType::JAVASCRIPT);
   } else {
     OnContentAllowed(ContentSettingsType::JAVASCRIPT);
   }
-  if (allowed.cookies_blocked_by_policy()) {
+  if (allowed_result.cookies_blocked_by_policy()) {
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnServiceWorkerAccessed,
-                    scope, allowed, originating_page);
+                    scope, storage_key, allowed_result, originating_page);
 }
 
 void PageSpecificContentSettings::OnSharedWorkerAccessed(

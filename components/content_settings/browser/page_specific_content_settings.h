@@ -436,6 +436,7 @@ class PageSpecificContentSettings
   void OnCookiesAccessed(const content::CookieAccessDetails& details,
                          content::Page* originating_page = nullptr);
   void OnServiceWorkerAccessed(const GURL& scope,
+                               const blink::StorageKey& storage_key,
                                content::AllowServiceWorkerResult allowed,
                                content::Page* originating_page = nullptr);
 

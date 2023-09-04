@@ -709,17 +709,20 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, ServiceWorkerAccessed) {
   // Verify that site data access through CookiesTreeModel is correctly
   // displayed in the dialog.
   auto* content_settings = GetContentSettings();
-
+  auto current_url = GURL(kCurrentUrl);
   content_settings->OnServiceWorkerAccessed(
-      GURL(kCurrentUrl), content::AllowServiceWorkerResult::Yes());
+      current_url, CreateUnpartitionedStorageKey(current_url),
+      content::AllowServiceWorkerResult::Yes());
+  auto third_party_url = GURL(kThirdPartyUrl);
   content_settings->OnServiceWorkerAccessed(
-      GURL(kThirdPartyUrl), content::AllowServiceWorkerResult::Yes());
+      third_party_url, CreateUnpartitionedStorageKey(third_party_url),
+      content::AllowServiceWorkerResult::Yes());
 
   auto delegate =
       std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
 
   ValidateAllowedUnpartitionedSites(delegate.get(),
-                                    {GURL(kCurrentUrl), GURL(kThirdPartyUrl)});
+                                    {current_url, third_party_url});
 }
 
 class PageSpecificSiteDataDialogStorageUnitTest
