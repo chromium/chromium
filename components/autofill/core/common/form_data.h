@@ -182,10 +182,6 @@ struct FormData {
   // compare fields.
   bool SimilarFormAs(const FormData& other) const;
 
-  // TODO(crbug/1211834): This function is deprecated.
-  // Allow FormData to be a key in STL containers.
-  bool operator<(const FormData& form) const;
-
   // The id attribute of the form.
   std::u16string id_attribute;
 
