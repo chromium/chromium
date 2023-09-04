@@ -55,6 +55,7 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
   // ConfirmInfoBarDelegate implementation.
+  std::u16string GetTitleText() const override;
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;

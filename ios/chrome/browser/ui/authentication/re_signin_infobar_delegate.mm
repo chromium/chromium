@@ -113,6 +113,14 @@ ReSignInInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
 }
 
+std::u16string ReSignInInfoBarDelegate::GetTitleText() const {
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? l10n_util::GetStringUTF16(
+                   IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_ENCRYPTION_FIX_NOW)
+             : std::u16string();
+}
+
 std::u16string ReSignInInfoBarDelegate::GetMessageText() const {
   return base::FeatureList::IsEnabled(
              syncer::kReplaceSyncPromosWithSignInPromos)
@@ -127,8 +135,12 @@ int ReSignInInfoBarDelegate::GetButtons() const {
 
 std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  return l10n_util::GetStringUTF16(
-      IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? l10n_util::GetStringUTF16(
+                   IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL)
+             : l10n_util::GetStringUTF16(
+                   IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
 }
 
 ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
