@@ -660,7 +660,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Autofill.AutocompleteAttributeForFieldsWith.{FieldType}.{PredictionType}.Prediction"
     enum="AutocompleteValueForStructuredAddressPredictedFields"
-    expires_after="2023-09-13">
+    expires_after="2024-03-30">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2916,7 +2916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.NewerStreetAddressWithSameStatusIsChosen"
-    enum="Boolean" expires_after="2023-12-04">
+    enum="Boolean" expires_after="2024-03-30">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -5801,7 +5801,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.{PrecedenceType}Precedence.OverAutocompleteForStructuredAddressFields.{FieldType}.AutocompleteIs.{AutocompleteStatus}"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2023-09-13">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2024-03-30">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
