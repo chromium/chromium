@@ -116,7 +116,7 @@ bool ShouldContinueFetchingFavicon() {
 void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
                              const GURL& site_url,
                              NSString* filename,
-                             bool sync_enabled,
+                             bool fallback_to_google_server,
                              bool continue_fetching) {
   FaviconLoader* favicon_loader = weak_favicon_loader.get();
   if (!continue_fetching || !favicon_loader) {
@@ -125,8 +125,8 @@ void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
   }
   // Fallback to Google server for synced user only.
   favicon_loader->FaviconForPageUrl(
-      site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt, sync_enabled,
-      ^(FaviconAttributes* attributes) {
+      site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      fallback_to_google_server, ^(FaviconAttributes* attributes) {
         SaveFaviconToSharedAppContainer(attributes, filename);
       });
 }
@@ -135,18 +135,19 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               const GURL& site_url,
                               NSString* filename,
                               bool skip_max_verification,
-                              bool sync_enabled) {
+                              bool fallback_to_google_server) {
   DCHECK(favicon_loader);
   DCHECK(filename);
   if (skip_max_verification) {
     ContinueFetchingFavicon(favicon_loader->AsWeakPtr(), site_url, filename,
-                            sync_enabled, /* continue_fetching */ YES);
+                            fallback_to_google_server,
+                            /* continue_fetching */ YES);
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ShouldContinueFetchingFavicon),
         base::BindOnce(&ContinueFetchingFavicon, favicon_loader->AsWeakPtr(),
-                       site_url, filename, sync_enabled));
+                       site_url, filename, fallback_to_google_server));
   }
 }
 
@@ -212,7 +213,8 @@ void CleanUpFavicons(NSSet* excess_favicons_filenames) {
   SetFaviconsLastSyncDate(base::Time::Now());
 }
 
-void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
+void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
+                           bool fallback_to_google_server) {
   // Verify if the app group storage for favicons needs to be synced and
   // cleaned up by checking the last sync date.
   const base::TimeDelta time_elapsed_since_last_sync =
@@ -280,7 +282,8 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
     // Fetch the favicon and save it to the app group storage.
     if (filename) {
       FetchFaviconForURLToPath(favicon_loader, url, filename,
-                               /*skip_max_verification=*/YES, sync_enabled);
+                               /*skip_max_verification=*/YES,
+                               fallback_to_google_server);
 
       // Remove file name duplicate because it is part of the top
       // `kMaxNumberOfFavicons` credentials used by the user.
@@ -301,12 +304,12 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
 
 void UpdateFaviconsStorageForBrowserState(
     base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    bool sync_enabled) {
+    bool fallback_to_google_server) {
   ChromeBrowserState* browser_state = weak_browser_state.get();
   if (!browser_state) {
     return;
   }
   UpdateFaviconsStorage(
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state),
-      sync_enabled);
+      fallback_to_google_server);
 }

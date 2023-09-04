@@ -24,6 +24,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
@@ -105,6 +106,17 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
   };
   [ASCredentialIdentityStore.sharedStore
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];
+}
+
+bool CanSendHistoryData(syncer::SyncService* sync_service) {
+  // SESSIONS and HISTORY both contain history-like data, so it's sufficient if
+  // either of them is being uploaded.
+  return syncer::GetUploadToGoogleState(sync_service,
+                                        syncer::ModelType::SESSIONS) ==
+             syncer::UploadState::ACTIVE ||
+         syncer::GetUploadToGoogleState(sync_service,
+                                        syncer::ModelType::HISTORY) ==
+             syncer::UploadState::ACTIVE;
 }
 
 }  // namespace
@@ -232,14 +244,14 @@ void CredentialProviderService::AddCredentials(
     std::vector<std::unique_ptr<PasswordForm>> forms) {
   // User is adding a password (not batch add from user login).
   const bool should_skip_max_verification = forms.size() == 1;
-  const bool sync_enabled = sync_service_->IsSyncFeatureEnabled();
+  const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
 
   for (const auto& form : forms) {
     NSString* favicon_key = GetFaviconFileKey(form->url);
     // Fetch the favicon and save it to the storage.
-    // TODO(crbug.com/1441024): `sync_enabled` is not the correct check.
     FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
-                             should_skip_max_verification, sync_enabled);
+                             should_skip_max_verification,
+                             fallback_to_google_server);
 
     ArchivableCredential* credential =
         [[ArchivableCredential alloc] initWithPasswordForm:*form

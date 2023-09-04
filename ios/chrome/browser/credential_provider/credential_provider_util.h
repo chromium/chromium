@@ -22,7 +22,7 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                               const GURL& site_url,
                               NSString* filename,
                               bool skip_max_verification,
-                              bool sync_enabled);
+                              bool fallback_to_google_server);
 
 // Returns the favicon file key.
 NSString* GetFaviconFileKey(const GURL& url);
@@ -30,6 +30,6 @@ NSString* GetFaviconFileKey(const GURL& url);
 // Update favicons in the Chrome app group storage.
 void UpdateFaviconsStorageForBrowserState(
     base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    bool sync_enabled);
+    bool fallback_to_google_server);
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_UTIL_H_

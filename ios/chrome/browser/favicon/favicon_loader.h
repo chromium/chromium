@@ -41,7 +41,15 @@ class FaviconLoader : public KeyedService {
   //   2. Use `large_icon_service_` to fetch from Google Favicon server if
   //      `fallback_to_google_server=true` (`size_in_points` is ignored when
   //      fetching from the Google server);
+  //      ======================================================================
+  //      IMPORTANT NOTE: You must only set `fallback_to_google_server` if it's
+  //      acceptable to send history data to Google, per `CanSendHistoryData()`
+  //      or equivalent checks.
+  //      ======================================================================
   //   3. Create a favicon base on the fallback style from `large_icon_service`.
+  // TODO(crbug.com/1441024): Remove the `fallback_to_google_server` param, and
+  // instead have FaviconLoader determine this internally, based on
+  // `CanSendHistoryData()`.
   void FaviconForPageUrl(
       const GURL& page_url,
       float size_in_points,
