@@ -87,12 +87,12 @@ var validShapeValues = [
     ["polygon(nonzero, 10px 10px, 20px 20px, 30px 30px) content-box", "polygon(10px 10px, 20px 20px, 30px 30px) content-box"],
     ["polygon(nonzero, 10px 10px, 20px 20px, 30px 30px) padding-box", "polygon(10px 10px, 20px 20px, 30px 30px) padding-box"],
     ["polygon(nonzero, 10px 10px, 20px 20px, 30px 30px) border-box",  "polygon(10px 10px, 20px 20px, 30px 30px) border-box"],
-    ["polygon(nonzero, 10px 10px, 20px 20px, 30px 30px) margin-box",  "polygon(10px 10px, 20px 20px, 30px 30px) margin-box"],
+    ["polygon(nonzero, 10px 10px, 20px 20px, 30px 30px) margin-box",  "polygon(10px 10px, 20px 20px, 30px 30px)"],
 
     ["content-box polygon(nonzero, 10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px) content-box", "polygon(10px 10px, 20px 20px, 30px 30px) content-box"],
     ["padding-box polygon(nonzero, 10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px) padding-box", "polygon(10px 10px, 20px 20px, 30px 30px) padding-box"],
     ["border-box polygon(nonzero, 10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px) border-box", "polygon(10px 10px, 20px 20px, 30px 30px) border-box"],
-    ["margin-box polygon(nonzero, 10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px) margin-box", "polygon(10px 10px, 20px 20px, 30px 30px) margin-box"],
+    ["margin-box polygon(nonzero, 10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px)", "polygon(10px 10px, 20px 20px, 30px 30px)"],
 
     ["linear-gradient(to right, red, blue)", "linear-gradient(to right, red, blue)", "linear-gradient(to right, rgb(255, 0, 0), rgb(0, 0, 255))"],
     ["radial-gradient(at 10px 20px, red 0%, blue 50%, green 95%)", "radial-gradient(at 10px 20px, red 0%, blue 50%, green 95%)", "radial-gradient(at 10px 20px, rgb(255, 0, 0) 0%, rgb(0, 0, 255) 50%, rgb(0, 128, 0) 95%)"],

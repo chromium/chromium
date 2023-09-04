@@ -7400,15 +7400,19 @@ const CSSValue* ShapeOutside::ParseSingleValue(
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* box_value = css_parsing_utils::ConsumeShapeBox(range);
-  if (CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
-          range, context, css_parsing_utils::AllowPathValue::kForbid)) {
+  CSSValue* shape_value = css_parsing_utils::ConsumeBasicShape(
+      range, context, css_parsing_utils::AllowPathValue::kForbid);
+  if (shape_value) {
     list->Append(*shape_value);
     if (!box_value) {
       box_value = css_parsing_utils::ConsumeShapeBox(range);
     }
   }
   if (box_value) {
-    list->Append(*box_value);
+    if (!shape_value || To<CSSIdentifierValue>(box_value)->GetValueID() !=
+                            CSSValueID::kMarginBox) {
+      list->Append(*box_value);
+    }
   }
   if (!list->length()) {
     return nullptr;
