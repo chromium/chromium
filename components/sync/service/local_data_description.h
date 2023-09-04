@@ -14,15 +14,22 @@ namespace syncer {
 
 struct LocalDataDescription {
   ModelType type = syncer::UNSPECIFIED;
-  // Count of local items.
-  size_t item_count = 0;
-  // Preferably contains up to 3 items for preview.
-  std::vector<std::string> item_preview;
+  // Actual count of local items.
+  int item_count = 0;
+  // Preferably contains up to 3 distinct domains corresponding to some of the
+  // local items, to be used for a preview.
+  std::vector<std::string> domains;
+  // Count of distinct domains for preview.
+  // Note: This may be different from the count of items(`item_count`), since a
+  // user might have, for e.g., multiple bookmarks or passwords for the same
+  // domain.
+  int domain_count = 0;
 
   LocalDataDescription();
   LocalDataDescription(ModelType type,
-                       size_t item_count,
-                       const std::vector<std::string>& item_preview);
+                       int item_count,
+                       const std::vector<std::string>& domains,
+                       int domain_count);
   LocalDataDescription(const LocalDataDescription&);
   LocalDataDescription& operator=(const LocalDataDescription&);
   LocalDataDescription(LocalDataDescription&&);

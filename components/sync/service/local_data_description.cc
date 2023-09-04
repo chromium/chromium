@@ -10,9 +10,13 @@ LocalDataDescription::LocalDataDescription() = default;
 
 LocalDataDescription::LocalDataDescription(
     ModelType type,
-    size_t item_count,
-    const std::vector<std::string>& item_preview)
-    : type(type), item_count(item_count), item_preview(item_preview) {}
+    int item_count,
+    const std::vector<std::string>& domains,
+    int domain_count)
+    : type(type),
+      item_count(item_count),
+      domains(domains),
+      domain_count(domain_count) {}
 
 LocalDataDescription::LocalDataDescription(const LocalDataDescription&) =
     default;
