@@ -77,8 +77,9 @@ bool EditorSwitch::IsAllowedForUse() {
       (base::FeatureList::IsEnabled(features::kOrcaDogfood) && is_managed) ||
       // Conditions required for the feature to be enabled for non-dogfood
       // population.
-      (chromeos::features::IsOrcaEnabled() && !is_managed &&
-       IsCountryAllowed(country_code_));
+      (chromeos::features::IsOrcaEnabled() &&
+       base::FeatureList::IsEnabled(features::kFeatureManagementOrca) &&
+       !is_managed && IsCountryAllowed(country_code_));
 }
 
 bool EditorSwitch::CanBeTriggered() {
