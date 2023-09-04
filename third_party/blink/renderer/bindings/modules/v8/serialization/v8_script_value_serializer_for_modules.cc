@@ -679,8 +679,11 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
 
 bool V8ScriptValueSerializerForModules::WriteCropTarget(
     CropTarget* crop_target) {
+  CHECK(crop_target);
+  const String& id = crop_target->GetId();
+  CHECK(!id.empty());
   WriteAndRequireInterfaceTag(kCropTargetTag);
-  WriteUTF8String(crop_target->GetId());
+  WriteUTF8String(id);
   return true;
 }
 

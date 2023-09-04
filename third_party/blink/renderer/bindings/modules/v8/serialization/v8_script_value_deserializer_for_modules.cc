@@ -643,7 +643,7 @@ CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {
   }
 
   String crop_id;
-  if (!ReadUTF8String(&crop_id)) {
+  if (!ReadUTF8String(&crop_id) || crop_id.empty()) {
     return nullptr;
   }
 
