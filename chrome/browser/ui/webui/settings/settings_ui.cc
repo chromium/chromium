@@ -390,37 +390,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   // Add a handler to provide pluralized strings.
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString(
-      "compromisedPasswords", IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT);
-  plural_string_handler->AddLocalizedString(
-      "insecurePasswords", IDS_SETTINGS_INSECURE_PASSWORDS_COUNT);
-  plural_string_handler->AddLocalizedString("weakPasswords",
-                                            IDS_SETTINGS_WEAK_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString("securityKeysNewPIN",
                                             IDS_SETTINGS_SECURITY_KEYS_NEW_PIN);
-  plural_string_handler->AddLocalizedString(
-      "movePasswordsToAccount",
-      IDS_SETTINGS_PASSWORD_MOVE_PASSWORDS_TO_ACCOUNT_COUNT);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckPasswordsCompromised",
-      IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT);
-  plural_string_handler->AddLocalizedString(
-      "safetyCheckPasswordsWeak", IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT);
-  plural_string_handler->AddLocalizedString(
-      "importPasswordsSuccessSummaryDevice",
-      IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE);
-  plural_string_handler->AddLocalizedString(
-      "importPasswordsConflictsTitle",
-      IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_TITLE);
-  plural_string_handler->AddLocalizedString(
-      "importPasswordsSuccessSummaryAccount",
-      IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT);
-  plural_string_handler->AddLocalizedString(
-      "importPasswordsBadRowsFormat",
-      IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT);
-  plural_string_handler->AddLocalizedString(
-      "importPasswordsFailuresSummary",
-      IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY);
   plural_string_handler->AddLocalizedString(
       "safetyCheckExtensionsReviewLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS);

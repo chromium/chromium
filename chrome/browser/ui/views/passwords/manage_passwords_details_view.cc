@@ -404,7 +404,7 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   AlignTextfieldWithRowIcon(*textfield);
   *error_label = username_with_error_label_view->AddChildView(
       CreateErrorLabel(l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED,
+          IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED,
           base::UTF8ToUTF16(password_manager::GetShownOrigin(
               url::Origin::Create(form.url))))));
   AlignErrorLabelWithTextFieldContents(*error_label);

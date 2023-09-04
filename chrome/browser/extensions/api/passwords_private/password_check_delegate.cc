@@ -172,7 +172,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
 std::string FormatElapsedTime(base::Time time) {
   const base::TimeDelta elapsed_time = base::Time::Now() - time;
   if (elapsed_time < base::Minutes(1))
-    return l10n_util::GetStringUTF8(IDS_SETTINGS_PASSWORDS_JUST_NOW);
+    return l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_UI_JUST_NOW);
 
   return base::UTF16ToUTF8(TimeFormat::SimpleWithMonthAndYear(
       TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, elapsed_time, true));
