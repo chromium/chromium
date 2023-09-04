@@ -69,6 +69,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     return {
       password: Object,
       groupName: String,
+      iconUrl: String,
       toastMessage_: String,
       usernameCopyInteraction_: {
         type: PasswordViewPageInteractions,
@@ -96,6 +97,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
   groupName: string;
+  iconUrl: string;
   private toastMessage_: string;
   private showEditPasswordDialog_: boolean;
   private showDeletePasswordDialog_: boolean;
