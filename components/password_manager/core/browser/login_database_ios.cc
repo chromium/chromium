@@ -15,6 +15,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base64.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/sync/os_crypt.h"
@@ -150,9 +151,8 @@ void DeleteEncryptedPasswordFromKeychain(
   CFDictionarySetValue(query, kSecAttrAccount, item_ref);
 
   OSStatus status = SecItemDelete(query);
-  if (status != errSecSuccess && status != errSecItemNotFound) {
-    NOTREACHED() << "Unable to remove password from keychain: " << status;
-  }
+  base::UmaHistogramSparse("PasswordManager.LoginDatabase.DeleteFromKeychain",
+                           static_cast<int>(status));
 
   // Delete the temporary passwords directory, since there might be leftover
   // temporary files used for password export that contain the password being

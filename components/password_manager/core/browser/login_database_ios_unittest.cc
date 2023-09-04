@@ -238,6 +238,76 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   DeleteEncryptedPasswordFromKeychain(logins[2]->keychain_identifier);
 }
 
+TEST_F(LoginDatabaseIOSTest, DeleteAndRecreateDatabaseFile) {
+  PasswordForm forms[3];
+  forms[0].url = GURL("http://0.com");
+  forms[0].signon_realm = "http://www.example.com";
+  forms[0].username_element = u"login0";
+  forms[0].date_created = base::Time::FromDoubleT(100);
+  forms[0].password_value = u"pass0";
+  forms[0].in_store = PasswordForm::Store::kProfileStore;
+
+  forms[1].url = GURL("http://1.com");
+  forms[1].signon_realm = "http://www.example.com";
+  forms[1].username_element = u"login1";
+  forms[1].date_created = base::Time::FromDoubleT(200);
+  forms[1].password_value = u"pass1";
+  forms[1].in_store = PasswordForm::Store::kProfileStore;
+
+  forms[2].url = GURL("http://2.com");
+  forms[2].signon_realm = "http://www.example.com";
+  forms[2].username_element = u"login2";
+  forms[2].date_created = base::Time::FromDoubleT(300);
+  forms[2].password_value = u"pass2";
+  forms[2].in_store = PasswordForm::Store::kProfileStore;
+
+  for (size_t i = 0; i < std::size(forms); i++) {
+    std::ignore = login_db_->AddLogin(forms[i]);
+  }
+
+  PasswordFormDigest form = {PasswordForm::Scheme::kHtml,
+                             "http://www.example.com", GURL()};
+  std::vector<std::unique_ptr<PasswordForm>> logins;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &logins));
+  ASSERT_EQ(3U, logins.size());
+  // Verify that for each password exist a keychain item with a password.
+  for (const auto& login : logins) {
+    std::u16string password_value;
+    EXPECT_EQ(errSecSuccess, GetTextFromKeychainIdentifier(
+                                 login->keychain_identifier, &password_value));
+    EXPECT_EQ(login->password_value, password_value);
+  }
+
+  // Delete one keychain item to verify that nothing happens when trying to
+  // delete it again.
+  DeleteEncryptedPasswordFromKeychain(logins[0]->keychain_identifier);
+
+  base::HistogramTester histogram_tester;
+  login_db_->DeleteAndRecreateDatabaseFile();
+
+  // Verify that all passwords are gone.
+  std::vector<std::unique_ptr<PasswordForm>> remaining_logins;
+  EXPECT_TRUE(login_db_->GetLogins(form, true, &remaining_logins));
+  EXPECT_THAT(remaining_logins, testing::IsEmpty());
+
+  // Verify that keychain entry is removed.
+  std::u16string password_value;
+  EXPECT_EQ(errSecItemNotFound,
+            GetTextFromKeychainIdentifier(logins[0]->keychain_identifier,
+                                          &password_value));
+  EXPECT_EQ(errSecItemNotFound,
+            GetTextFromKeychainIdentifier(logins[1]->keychain_identifier,
+                                          &password_value));
+  EXPECT_EQ(errSecItemNotFound,
+            GetTextFromKeychainIdentifier(logins[2]->keychain_identifier,
+                                          &password_value));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "PasswordManager.LoginDatabase.DeleteFromKeychain"),
+      BucketsInclude(Bucket(errSecSuccess, 2), Bucket(errSecItemNotFound, 1)));
+}
+
 class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
  public:
   void SetUp() override {

@@ -1825,6 +1825,20 @@ bool LoginDatabase::IsEmpty() {
 bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteAndRecreateDatabaseFile");
   DCHECK(db_.is_open());
+
+#if BUILDFLAG(IS_IOS)
+  {  // Scope the statement so the database closes properly.
+    // Clear keychain on iOS before deleting passwords.
+    sql::Statement s(
+        db_.GetUniqueStatement("SELECT keychain_identifier FROM logins"));
+    while (s.Step()) {
+      std::string keychain_identifier;
+      s.ColumnBlobAsString(0, &keychain_identifier);
+      DeleteEncryptedPasswordFromKeychain(keychain_identifier);
+    }
+  }
+#endif
+
   meta_table_.Reset();
   db_.Close();
   sql::Database::Delete(db_path_);
