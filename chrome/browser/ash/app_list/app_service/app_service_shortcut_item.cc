@@ -73,7 +73,7 @@ void AppServiceShortcutItem::GetContextMenuModel(
     ash::AppListItemContext item_context,
     GetMenuModelCallback callback) {
   context_menu_ = std::make_unique<AppServiceShortcutContextMenu>(
-      this, profile(), shortcut_id_, GetController());
+      this, profile(), shortcut_id_, GetController(), item_context);
   context_menu_->GetMenuModel(std::move(callback));
 }
 

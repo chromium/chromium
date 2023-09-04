@@ -41,14 +41,7 @@ class AppServicePromiseAppContextMenu : public app_list::AppContextMenu {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  // The SimpleMenuModel that contains reorder options. Could be nullptr if
-  // sorting is not available.
-  std::unique_ptr<ui::SimpleMenuModel> reorder_submenu_;
-
   const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
-
-  // Where this item is being shown (e.g. the apps grid or recent apps).
-  const ash::AppListItemContext item_context_;
 
   const apps::PackageId& package_id_;
 };
