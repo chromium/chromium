@@ -1415,27 +1415,52 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - SnackbarCoordinatorDelegate
 
 - (CGFloat)snackbarCoordinatorBottomOffsetForCurrentlyPresentedView:
-    (SnackbarCoordinator*)snackbarCoordinator {
-  NSString* bottomToolbarGuideName;
-  if ([self.bvcContainer currentBVC]) {
-    // Use the BVC bottom bar as the offset as it is currently presented.
-    bottomToolbarGuideName = kSecondaryToolbarGuide;
-  } else {
+               (SnackbarCoordinator*)snackbarCoordinator
+                                                forceBrowserToolbar:
+                                                    (BOOL)forceBrowserToolbar {
+  if (!self.bvcContainer.currentBVC) {
     // The tab grid is being show so use tab grid bottom bar.
-    bottomToolbarGuideName = kTabGridBottomToolbarGuide;
+    // kTabGridBottomToolbarGuide is stored in the shared layout guide center.
+    UIView* tabGridBottomToolbarView = [LayoutGuideCenterForBrowser(nil)
+        referencedViewUnderName:kTabGridBottomToolbarGuide];
+    return CGRectGetHeight(tabGridBottomToolbarView.bounds);
   }
 
+  if (!forceBrowserToolbar &&
+      self.bvcContainer.currentBVC.presentedViewController) {
+    UIViewController* presentedViewController =
+        self.bvcContainer.currentBVC.presentedViewController;
+
+    // When the presented view is a navigation controller, return the navigation
+    // controller's toolbar height.
+    if ([presentedViewController isKindOfClass:UINavigationController.class]) {
+      UINavigationController* navigationController =
+          base::apple::ObjCCastStrict<UINavigationController>(
+              presentedViewController);
+
+      if (navigationController.toolbar &&
+          !navigationController.isToolbarHidden) {
+        CGFloat toolbarHeight =
+            CGRectGetHeight(presentedViewController.view.frame) -
+            CGRectGetMinY(navigationController.toolbar.frame);
+        return toolbarHeight;
+      } else {
+        return 0.0;
+      }
+    }
+  }
+
+  // Use the BVC bottom bar as the offset.
   Browser* browser = nil;
   if (snackbarCoordinator == self.snackbarCoordinator) {
     browser = self.regularBrowser;
   } else if (snackbarCoordinator == self.incognitoSnackbarCoordinator) {
     browser = self.incognitoBrowser;
   }
-
-  DCHECK(browser);
+  CHECK(browser);
 
   UIView* bottomToolbar = [LayoutGuideCenterForBrowser(browser)
-      referencedViewUnderName:bottomToolbarGuideName];
+      referencedViewUnderName:kSecondaryToolbarGuide];
 
   return CGRectGetHeight(bottomToolbar.bounds);
 }

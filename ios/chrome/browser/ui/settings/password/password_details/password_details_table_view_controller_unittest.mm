@@ -183,6 +183,9 @@ constexpr char kNote[] = "note";
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
 }
 
+- (void)showSnackbarMessageOverBrowserToolbar:(MDCSnackbarMessage*)message {
+}
+
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
              withHapticType:(UINotificationFeedbackType)type {
 }

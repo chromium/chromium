@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
@@ -234,11 +235,12 @@
     [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
   }
 
-  [self.delegate showSnackbarMessage:
-                     bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
-                         [self bookmark], name, url, [self folder],
-                         _localOrSyncableBookmarkModel.get(),
-                         _accountBookmarkModel.get(), _browserState)];
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:
+          bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
+              [self bookmark], name, url, [self folder],
+              _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get(),
+              _browserState)];
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _localOrSyncableBookmarkModel.get(),
@@ -265,9 +267,10 @@
     // TODO (crbug.com/1445455): figure out why it is sometime empty and ensure
     // it is not the case.
     //  Temporary fix for crbug.com/1444667
-    [self.delegate
-        showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
-                                nodes, {[self bookmarkModel]}, _browserState)];
+    [self.snackbarCommandsHandler
+        showSnackbarMessageOverBrowserToolbar:
+            bookmark_utils_ios::DeleteBookmarksWithUndoToast(
+                nodes, {[self bookmarkModel]}, _browserState)];
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }
