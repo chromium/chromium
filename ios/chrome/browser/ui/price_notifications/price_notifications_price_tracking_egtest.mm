@@ -38,6 +38,12 @@
 }
 
 - (void)testPriceTrackingDismissButton {
+  // TODO(crbug.com/1478755): Investigate why this test fails with
+  // ReplaceSyncWithSignin.
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"crbug.com/1478755: Temporarily disabled.");
+  }
+
   [self signinPriceTrackingUser];
   [self openTrackingPriceUI];
 
