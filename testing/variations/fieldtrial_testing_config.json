@@ -8329,7 +8329,8 @@
                         "kReducedSpaceParam": "-30"
                     },
                     "enable_features": [
-                        "MagicStack"
+                        "MagicStack",
+                        "TabResumption"
                     ]
                 }
             ]

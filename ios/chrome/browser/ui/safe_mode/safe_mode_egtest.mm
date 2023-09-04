@@ -168,7 +168,7 @@ void AssertTryAgainButtonOnPage() {
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+                                   IDS_IOS_TAB_RESUMPTION_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
 }
