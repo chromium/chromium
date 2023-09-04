@@ -44,22 +44,26 @@ class RmadClientImpl : public RmadClient {
       chromeos::DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionPreviousState(
       chromeos::DBusMethodCallback<rmad::GetStateReply> callback) override;
-
   void AbortRma(
       chromeos::DBusMethodCallback<rmad::AbortRmaReply> callback) override;
-
   void GetLog(
       chromeos::DBusMethodCallback<rmad::GetLogReply> callback) override;
-
   void SaveLog(
       const std::string& diagnostics_log_text,
       chromeos::DBusMethodCallback<rmad::SaveLogReply> callback) override;
-
   void RecordBrowserActionMetric(
       const rmad::RecordBrowserActionMetricRequest request,
       chromeos::DBusMethodCallback<rmad::RecordBrowserActionMetricReply>
           callback) override;
-
+  void ExtractExternalDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::ExtractExternalDiagnosticsAppReply>
+          callback) override;
+  void InstallExtractedDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::InstallExtractedDiagnosticsAppReply>
+          callback) override;
+  void GetInstalledDiagnosticsApp(
+      chromeos::DBusMethodCallback<rmad::GetInstalledDiagnosticsAppReply>
+          callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
@@ -509,6 +513,45 @@ void RmadClientImpl::RecordBrowserActionMetric(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(
           &RmadClientImpl::OnProtoReply<rmad::RecordBrowserActionMetricReply>,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::ExtractExternalDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::ExtractExternalDiagnosticsAppReply>
+        callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kExtractExternalDiagnosticsAppMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<
+                         rmad::ExtractExternalDiagnosticsAppReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::InstallExtractedDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::InstallExtractedDiagnosticsAppReply>
+        callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kInstallExtractedDiagnosticsAppMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(&RmadClientImpl::OnProtoReply<
+                         rmad::InstallExtractedDiagnosticsAppReply>,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void RmadClientImpl::GetInstalledDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::GetInstalledDiagnosticsAppReply>
+        callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
+                               rmad::kGetInstalledDiagnosticsAppMethod);
+  dbus::MessageWriter writer(&method_call);
+  rmad_proxy_->CallMethod(
+      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+      base::BindOnce(
+          &RmadClientImpl::OnProtoReply<rmad::GetInstalledDiagnosticsAppReply>,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 

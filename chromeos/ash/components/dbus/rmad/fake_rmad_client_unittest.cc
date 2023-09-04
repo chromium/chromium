@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -17,6 +18,7 @@
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -469,6 +471,81 @@ TEST_F(FakeRmadClientTest, RecordBrowserActionMetric) {
   const auto& response = future.Get();
   EXPECT_TRUE(response.has_value());
   EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+}
+
+TEST_F(FakeRmadClientTest, ExtractExternalDiagnosticsApp_NotFound) {
+  base::test::TestFuture<
+      absl::optional<rmad::ExtractExternalDiagnosticsAppReply>>
+      future;
+  client_->ExtractExternalDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, ExtractExternalDiagnosticsApp_Found) {
+  fake_client_()->external_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<
+      absl::optional<rmad::ExtractExternalDiagnosticsAppReply>>
+      future;
+  client_->ExtractExternalDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  EXPECT_EQ(response->diagnostics_app_swbn_path(), "/example/diag_app.swbn");
+  EXPECT_EQ(response->diagnostics_app_crx_path(), "/example/diag_app.crx");
+}
+
+TEST_F(FakeRmadClientTest, InstallExtractedDiagnosticsApp_NotFound) {
+  base::test::TestFuture<
+      absl::optional<rmad::InstallExtractedDiagnosticsAppReply>>
+      future;
+  client_->InstallExtractedDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, InstallExtractedDiagnosticsApp_Found) {
+  fake_client_()->external_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<
+      absl::optional<rmad::InstallExtractedDiagnosticsAppReply>>
+      future;
+  client_->InstallExtractedDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  // The installed path was set so the next `GetInstalledDiagnosticsApp` will
+  // get the installed package path.
+  EXPECT_EQ(fake_client_()->installed_diag_app_path(),
+            fake_client_()->external_diag_app_path());
+}
+
+TEST_F(FakeRmadClientTest, GetInstalledDiagnosticsApp_NotFound) {
+  base::test::TestFuture<absl::optional<rmad::GetInstalledDiagnosticsAppReply>>
+      future;
+  client_->GetInstalledDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+}
+
+TEST_F(FakeRmadClientTest, GetInstalledDiagnosticsApp_Found) {
+  fake_client_()->installed_diag_app_path() =
+      base::FilePath{"/example/diag_app"};
+
+  base::test::TestFuture<absl::optional<rmad::GetInstalledDiagnosticsAppReply>>
+      future;
+  client_->GetInstalledDiagnosticsApp(future.GetCallback());
+  const auto& response = future.Get();
+  EXPECT_TRUE(response.has_value());
+  EXPECT_EQ(response->error(), rmad::RMAD_ERROR_OK);
+  EXPECT_EQ(response->diagnostics_app_swbn_path(), "/example/diag_app.swbn");
+  EXPECT_EQ(response->diagnostics_app_crx_path(), "/example/diag_app.crx");
 }
 
 // Tests that synchronous observers are notified about errors that occur outside

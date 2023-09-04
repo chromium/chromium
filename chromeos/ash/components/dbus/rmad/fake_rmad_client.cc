@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/rmad/fake_rmad_client.h"
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -232,6 +233,63 @@ void FakeRmadClient::RecordBrowserActionMetric(
                          record_browser_action_metric_reply_)));
 }
 
+void FakeRmadClient::ExtractExternalDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::ExtractExternalDiagnosticsAppReply>
+        callback) {
+  rmad::ExtractExternalDiagnosticsAppReply reply;
+  if (external_diag_app_path_.empty()) {
+    reply.set_error(rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+  } else {
+    reply.set_error(rmad::RMAD_ERROR_OK);
+    reply.set_diagnostics_app_swbn_path(
+        external_diag_app_path_.AddExtension("swbn").value());
+    reply.set_diagnostics_app_crx_path(
+        external_diag_app_path_.AddExtension("crx").value());
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          absl::optional<rmad::ExtractExternalDiagnosticsAppReply>(reply)));
+}
+
+void FakeRmadClient::InstallExtractedDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::InstallExtractedDiagnosticsAppReply>
+        callback) {
+  rmad::InstallExtractedDiagnosticsAppReply reply;
+  if (external_diag_app_path_.empty()) {
+    reply.set_error(rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+  } else {
+    installed_diag_app_path_ = external_diag_app_path_;
+    reply.set_error(rmad::RMAD_ERROR_OK);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          absl::optional<rmad::InstallExtractedDiagnosticsAppReply>(reply)));
+}
+
+void FakeRmadClient::GetInstalledDiagnosticsApp(
+    chromeos::DBusMethodCallback<rmad::GetInstalledDiagnosticsAppReply>
+        callback) {
+  rmad::GetInstalledDiagnosticsAppReply reply;
+  if (installed_diag_app_path_.empty()) {
+    reply.set_error(rmad::RMAD_ERROR_DIAGNOSTICS_APP_NOT_FOUND);
+  } else {
+    reply.set_error(rmad::RMAD_ERROR_OK);
+    reply.set_diagnostics_app_swbn_path(
+        installed_diag_app_path_.AddExtension("swbn").value());
+    reply.set_diagnostics_app_crx_path(
+        installed_diag_app_path_.AddExtension("crx").value());
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          std::move(callback),
+          absl::optional<rmad::GetInstalledDiagnosticsAppReply>(reply)));
+}
+
 void FakeRmadClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -381,8 +439,9 @@ std::string FakeRmadClient::GetDiagnosticsLogsText() const {
 }
 
 void FakeRmadClient::TriggerErrorObservation(rmad::RmadErrorCode error) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.Error(error);
+  }
 }
 
 void FakeRmadClient::TriggerCalibrationProgressObservation(
@@ -393,14 +452,16 @@ void FakeRmadClient::TriggerCalibrationProgressObservation(
   componentStatus.set_component(component);
   componentStatus.set_status(status);
   componentStatus.set_progress(progress);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.CalibrationProgress(componentStatus);
+  }
 }
 
 void FakeRmadClient::TriggerCalibrationOverallProgressObservation(
     rmad::CalibrationOverallStatus status) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.CalibrationOverallProgress(status);
+  }
 }
 
 void FakeRmadClient::TriggerProvisioningProgressObservation(
@@ -411,24 +472,28 @@ void FakeRmadClient::TriggerProvisioningProgressObservation(
   status_proto.set_status(status);
   status_proto.set_progress(progress);
   status_proto.set_error(error);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.ProvisioningProgress(status_proto);
+  }
 }
 
 void FakeRmadClient::TriggerHardwareWriteProtectionStateObservation(
     bool enabled) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.HardwareWriteProtectionState(enabled);
+  }
 }
 
 void FakeRmadClient::TriggerPowerCableStateObservation(bool plugged_in) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.PowerCableState(plugged_in);
+  }
 }
 
 void FakeRmadClient::TriggerExternalDiskStateObservation(bool detected) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.ExternalDiskState(detected);
+  }
 }
 
 void FakeRmadClient::TriggerHardwareVerificationResultObservation(
@@ -437,8 +502,9 @@ void FakeRmadClient::TriggerHardwareVerificationResultObservation(
   rmad::HardwareVerificationResult verificationStatus;
   verificationStatus.set_is_compliant(is_compliant);
   verificationStatus.set_error_str(error_str);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.HardwareVerificationResult(verificationStatus);
+  }
 }
 
 void FakeRmadClient::TriggerFinalizationProgressObservation(
@@ -449,14 +515,16 @@ void FakeRmadClient::TriggerFinalizationProgressObservation(
   finalizationStatus.set_status(status);
   finalizationStatus.set_progress(progress);
   finalizationStatus.set_error(error);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.FinalizationProgress(finalizationStatus);
+  }
 }
 
 void FakeRmadClient::TriggerRoFirmwareUpdateProgressObservation(
     rmad::UpdateRoFirmwareStatus status) {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.RoFirmwareUpdateProgress(status);
+  }
 }
 
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {
