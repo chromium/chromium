@@ -3992,21 +3992,6 @@
             ]
         }
     ],
-    "ConsistencyNewAccountInterface": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConsistencyNewAccountInterface"
-                    ]
-                }
-            ]
-        }
-    ],
     "ConsolidatedIPCForProxyCreation": [
         {
             "platforms": [
@@ -16352,6 +16337,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UnifiedSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UnoPhase2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledUno",
+                    "enable_features": [
+                        "ConsistencyNewAccountInterface",
+                        "FeedBottomSyncStringRemoval",
+                        "ReplaceSyncPromosWithSignInPromos",
+                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
+                        "SyncEnableContactInfoDataTypeInTransportMode"
                     ]
                 }
             ]
