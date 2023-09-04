@@ -227,6 +227,12 @@ tast_disabled_tests_from_chrome_all = [
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
+  # b/297113736
+  "wmp.AdminTemplatesLaunch",
+  "wmp.DesksTemplatesBasic",
+  "wmp.DesksTemplatesLaunch",
+  "wmp.SavedDeskDelete",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
