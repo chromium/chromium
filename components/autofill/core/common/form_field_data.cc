@@ -211,9 +211,8 @@ struct LabelInfo {
   FormFieldData::LabelSource source = FormFieldData::LabelSource::kLabelTag;
 };
 
-// CommonTuple(), SimilarityTuple(), DynamicIdentityTuple(), IdentityTuple()
-// return values should be used as temporaries only because they include a
-// StringPiece.
+// `CommonTuple()`, `SimilarityTuple()`, and `IdentityTuple()` return values
+// should be used as temporaries only because they include a `std::string_view`.
 
 auto CommonTuple(const FormFieldData& f) {
   return std::tuple_cat(
@@ -224,10 +223,6 @@ auto CommonTuple(const FormFieldData& f) {
 auto SimilarityTuple(const FormFieldData& f) {
   return std::tuple_cat(CommonTuple(f),
                         std::make_tuple(IsCheckable(f.check_status)));
-}
-
-auto DynamicIdentityTuple(const FormFieldData& f) {
-  return std::tuple_cat(CommonTuple(f), std::make_tuple(f.IsFocusable()));
 }
 
 auto IdentityTuple(const FormFieldData& f) {
@@ -397,10 +392,6 @@ bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
 
 bool FormFieldData::SimilarFieldAs(const FormFieldData& field) const {
   return SimilarityTuple(*this) == SimilarityTuple(field);
-}
-
-bool FormFieldData::DynamicallySameFieldAs(const FormFieldData& field) const {
-  return DynamicIdentityTuple(*this) == DynamicIdentityTuple(field);
 }
 
 bool FormFieldData::IsTextInputElement() const {

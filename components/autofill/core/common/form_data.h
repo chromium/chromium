@@ -183,10 +183,6 @@ struct FormData {
   bool SimilarFormAs(const FormData& other) const;
 
   // TODO(crbug/1211834): This function is deprecated.
-  // If |form| is the same as this from the POV of dynamic refills.
-  bool DynamicallySameFormAs(const FormData& form) const;
-
-  // TODO(crbug/1211834): This function is deprecated.
   // Allow FormData to be a key in STL containers.
   bool operator<(const FormData& form) const;
 

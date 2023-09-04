@@ -131,19 +131,6 @@ bool FormData::SimilarFormAs(const FormData& form) const {
   return true;
 }
 
-bool FormData::DynamicallySameFormAs(const FormData& form) const {
-  if (name != form.name || id_attribute != form.id_attribute ||
-      name_attribute != form.name_attribute ||
-      fields.size() != form.fields.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < fields.size(); ++i) {
-    if (!fields[i].DynamicallySameFieldAs(form.fields[i]))
-      return false;
-  }
-  return true;
-}
-
 // static
 bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   // We compare all unique identifiers first, including the field renderer IDs,

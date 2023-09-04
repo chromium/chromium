@@ -202,12 +202,6 @@ struct FormFieldData {
   // Strictly weaker than SameFieldAs().
   bool SimilarFieldAs(const FormFieldData& field) const;
 
-  // TODO(crbug/1211834): This function is deprecated.
-  // Returns true if both forms are equivalent from the POV of dynamic refills.
-  // Strictly weaker than SameFieldAs(): replaces equality of |is_focusable| and
-  // |role| with equality of IsVisible().
-  bool DynamicallySameFieldAs(const FormFieldData& field) const;
-
   // Returns true for all of textfield-looking types: text, password,
   // search, email, url, and number. It must work the same way as Blink function
   // WebInputElement::IsTextField(), and it returns false if |*this| represents
