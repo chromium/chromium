@@ -133,6 +133,16 @@ class PopupBaseView::Widget : public views::Widget {
 
     return browser_view->GetWidget()->GetPrimaryWindowWidget();
   }
+
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    // All move events go into the parent, so that there is no covering at all
+    // and mouse enter/exit events are detected and triggered properly.
+    if (event->type() == ui::EventType::ET_MOUSE_MOVED && parent()) {
+      parent()->SynthesizeMouseMoveEvent();
+    }
+
+    views::Widget::OnMouseEvent(event);
+  }
 };
 
 PopupBaseView::PopupBaseView(
