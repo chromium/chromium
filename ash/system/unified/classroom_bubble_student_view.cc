@@ -132,6 +132,12 @@ void ClassroomBubbleStudentView::RegisterUserProfilePrefs(
       base::to_underlying(StudentAssignmentsListType::kAssigned));
 }
 
+// static
+void ClassroomBubbleStudentView::ClearUserStatePrefs(
+    PrefService* pref_service) {
+  pref_service->ClearPref(kLastSelectedAssignmentsListPref);
+}
+
 void ClassroomBubbleStudentView::OnSeeAllPressed() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));

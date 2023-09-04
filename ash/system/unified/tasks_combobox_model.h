@@ -33,6 +33,9 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
   // Registers syncable user profile prefs with the specified `registry`.
   static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears tasks glanceables state saved in user prefs.
+  static void ClearUserStatePrefs(PrefService* pref_service);
+
   // ui::ComboboxModel:
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;

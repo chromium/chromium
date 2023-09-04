@@ -40,6 +40,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
   // Registers syncable user profile prefs with the specified `registry`.
   static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
+  // Clears glanceables user state set in `prefs` - for example, the most
+  // recently selected glanceable list.
+  static void ClearUserStatePrefs(PrefService* prefs);
+
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 

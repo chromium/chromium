@@ -8,6 +8,7 @@
 #include "ash/system/unified/classroom_bubble_base_view.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
@@ -24,6 +25,9 @@ class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
 
   // Registers syncable user profile prefs with the specified `registry`.
   static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
+
+  // Clears any student glanceables state from user `pref_services`.
+  static void ClearUserStatePrefs(PrefService* pref_service);
 
  private:
   // ClassroomBubbleBaseView:

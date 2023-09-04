@@ -38,6 +38,12 @@ void GlanceablesV2Controller::RegisterUserProfilePrefs(
   TasksComboboxModel::RegisterUserProfilePrefs(registry);
 }
 
+// static
+void GlanceablesV2Controller::ClearUserStatePrefs(PrefService* prefs) {
+  ClassroomBubbleStudentView::ClearUserStatePrefs(prefs);
+  TasksComboboxModel::ClearUserStatePrefs(prefs);
+}
+
 void GlanceablesV2Controller::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;

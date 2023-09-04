@@ -138,6 +138,7 @@ void GlanceablesKeyedService::UpdateRegistration() {
   CHECK(prefs);
 
   if (!AreGlanceablesEnabled()) {
+    Shell::Get()->glanceables_v2_controller()->ClearUserStatePrefs(prefs);
     ClearClients();
     return;
   }

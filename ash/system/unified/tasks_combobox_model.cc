@@ -39,6 +39,12 @@ void TasksComboboxModel::RegisterUserProfilePrefs(
   registry->RegisterTimePref(kLastSelectedTaskListTimePref, base::Time());
 }
 
+// static
+void TasksComboboxModel::ClearUserStatePrefs(PrefService* pref_service) {
+  pref_service->ClearPref(kLastSelectedTaskListIdPref);
+  pref_service->ClearPref(kLastSelectedTaskListTimePref);
+}
+
 size_t TasksComboboxModel::GetItemCount() const {
   return task_lists_->item_count();
 }
@@ -54,7 +60,7 @@ absl::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
   const size_t most_recently_updated_task_list_index =
       most_recently_updated_task_list_iter - task_lists_->begin();
 
-  const auto* const pref_service =
+  auto* const pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
   const auto& last_selected_task_list_id =
       pref_service->GetString(kLastSelectedTaskListIdPref);
@@ -72,6 +78,11 @@ absl::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
     if (last_selected_task_list_iter != task_lists_->end()) {
       return last_selected_task_list_iter - task_lists_->begin();
     }
+  }
+
+  if (!last_selected_task_list_id.empty()) {
+    pref_service->ClearPref(kLastSelectedTaskListIdPref);
+    pref_service->ClearPref(kLastSelectedTaskListTimePref);
   }
 
   return most_recently_updated_task_list_index;
