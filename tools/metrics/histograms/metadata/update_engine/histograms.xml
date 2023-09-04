@@ -415,6 +415,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UpdateEngine.EnterpriseRollback.BlockedByFSI"
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-01-01">
+  <owner>mpolzer@google.com</owner>
+  <owner>crisguerrero@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    First section of the ChromeOS version to which an enterprise rollback
+    (rollback initiated by the admin of the device) has failed because Omaha
+    determined the device may not be able to run the rollback image based on
+    FSI.
+
+    This is a sparse histogram, since the possible valid values are stable
+    ChromeOS version prefixes (usually one per milestone).
+
+    Example value: 10323 (meaning M65 stable).
+
+    This is reported after an Omaha response with no rollback because of FSI.
+
+    This metric is specific to ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="UpdateEngine.EnterpriseRollback.Failure"
     enum="UpdateEngineChromeOsVersionPrefix" expires_after="2023-11-30">
   <owner>mpolzer@google.com</owner>
