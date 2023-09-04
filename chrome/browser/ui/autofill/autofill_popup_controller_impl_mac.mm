@@ -46,7 +46,8 @@ AutofillPopupControllerImplMac::AutofillPopupControllerImplMac(
                                   container_view,
                                   element_bounds,
                                   text_direction,
-                                  base::DoNothing()),
+                                  base::DoNothing(),
+                                  absl::nullopt),
       touch_bar_controller_(nil),
       is_credit_card_popup_(delegate->GetPopupType() ==
                             PopupType::kCreditCards) {}

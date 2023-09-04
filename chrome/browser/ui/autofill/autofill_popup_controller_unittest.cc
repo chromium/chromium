@@ -146,6 +146,10 @@ class MockAutofillPopupView : public AutofillPopupView {
   MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const override));
   MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
   MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
+  MOCK_METHOD(base::WeakPtr<AutofillPopupView>,
+              CreateSubPopupView,
+              (base::WeakPtr<AutofillPopupController>),
+              (override));
 
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -165,14 +169,17 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
           gfx::NativeWindow,
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          show_pwd_migration_warning_callback)
+          show_pwd_migration_warning_callback,
+      absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>>
+          parent = absl::nullopt)
       : AutofillPopupControllerImpl(
             external_delegate,
             web_contents,
             nullptr,
             element_bounds,
             base::i18n::UNKNOWN_DIRECTION,
-            std::move(show_pwd_migration_warning_callback)) {}
+            std::move(show_pwd_migration_warning_callback),
+            parent) {}
   ~TestAutofillPopupController() override = default;
 
   // Making protected functions public for testing
@@ -759,6 +766,17 @@ TEST_F(AutofillPopupControllerUnitTest, AcceptAddressNoPwdWarningAndroid) {
   EXPECT_CALL(*delegate(), DidAcceptSuggestion).Times(1);
   EXPECT_CALL(show_pwd_migration_warning_callback_, Run).Times(0);
   popup_controller().AcceptSuggestionWithoutThreshold(0);
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(AutofillPopupControllerUnitTest, SubPopupIsCreatedWithViewFromParent) {
+  NiceMock<MockAutofillPopupView> autofill_popup_sub_view;
+  EXPECT_CALL(*autofill_popup_view(), CreateSubPopupView)
+      .WillRepeatedly(Return(autofill_popup_sub_view.GetWeakPtr()));
+  base::WeakPtr<AutofillPopupController> sub_controller =
+      popup_controller().OpenSubPopup({0, 0, 10, 10}, {});
+  EXPECT_TRUE(sub_controller);
 }
 #endif
 

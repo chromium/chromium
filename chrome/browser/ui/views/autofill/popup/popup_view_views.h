@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class BoxLayoutView;
@@ -34,18 +35,31 @@ class AutofillPopupController;
 class PopupSeparatorView;
 class PopupWarningView;
 
+// Sub-popups and their parent popups are connected by providing children
+// with links to their parents. This interface defines the API exposed by
+// these links.
+class ExpandablePopupParentView {
+ private:
+  friend class PopupViewViews;
+
+  // TODO(crbug.com/1466116): Add parent's methods.
+};
+
 // Views implementation for the autofill and password suggestion.
 class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
-                       public PopupRowView::SelectionDelegate {
+                       public PopupRowView::SelectionDelegate,
+                       public ExpandablePopupParentView {
  public:
   METADATA_HEADER(PopupViewViews);
 
   using RowPointer =
       absl::variant<PopupRowView*, PopupSeparatorView*, PopupWarningView*>;
 
-  PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
-                 views::Widget* parent_widget);
+  PopupViewViews(
+      base::WeakPtr<AutofillPopupController> controller,
+      absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent,
+      views::Widget* parent_widget);
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -65,6 +79,8 @@ class PopupViewViews : public PopupBaseView,
   bool OverlapsWithPictureInPictureWindow() const override;
   absl::optional<int32_t> GetAxUniqueId() override;
   void AxAnnounce(const std::u16string& text) override;
+  base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> controller) override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
   // PopupBaseView:
@@ -130,6 +146,10 @@ class PopupViewViews : public PopupBaseView,
 
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
+
+  // Parent's popup view. Present in sub-popups (non-root) only.
+  absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
+
   // The index of the row with a selected cell.
   absl::optional<size_t> row_with_selected_cell_;
   std::vector<RowPointer> rows_;
@@ -137,7 +157,7 @@ class PopupViewViews : public PopupBaseView,
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> footer_container_ = nullptr;
 
-  base::WeakPtrFactory<AutofillPopupView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PopupViewViews> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

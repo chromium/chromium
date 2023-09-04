@@ -77,9 +77,7 @@ class PopupPixelTest : public UiBrowserTest,
   }
 
   void ShowUi(const std::string& name) override {
-    view_ = new View(controller_.GetWeakPtr(),
-                     views::Widget::GetWidgetForNativeWindow(
-                         browser()->window()->GetNativeWindow()));
+    view_ = CreateView(controller());
   }
 
   bool VerifyUi() override {
@@ -106,6 +104,7 @@ class PopupPixelTest : public UiBrowserTest,
   }
 
  protected:
+  virtual View* CreateView(Controller& controlled) = 0;
   Controller& controller() { return controller_; }
   raw_ptr<View>& view() { return view_; }
 

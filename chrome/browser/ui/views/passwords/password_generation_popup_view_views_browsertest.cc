@@ -117,6 +117,15 @@ class PasswordGenerationPopupViewBrowsertest
     view()->PasswordSelectionUpdated();
   }
 
+ protected:
+  // autofill::PopupPixelTest:
+  PasswordGenerationPopupViewViews* CreateView(
+      MockPasswordGenerationPopupController& controller) override {
+    return new PasswordGenerationPopupViewViews(
+        controller.GetWeakPtr(), views::Widget::GetWidgetForNativeWindow(
+                                     browser()->window()->GetNativeWindow()));
+  }
+
  private:
   static constexpr gfx::RectF kElementBounds{100, 100, 250, 50};
   const std::u16string password_{u"123!-scfFGamFD"};

@@ -60,6 +60,8 @@ class AutofillPopupViewAndroid : public AutofillPopupView {
   void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
+  base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> controller) override;
 
  private:
   friend class AutofillPopupView;

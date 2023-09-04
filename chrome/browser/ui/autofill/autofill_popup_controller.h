@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -85,6 +86,17 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // Returns whether the popup should ignore the check that the mouse was
   // observed out of bounds - see PopupCellView for more detail.
   virtual bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const = 0;
+
+  // Creates and shows a sub-popup adjacent to `anchor_bounds`. The sub-popup
+  // represents another level of `suggestions` which must be semantically
+  // connected to a parent level suggestion, e.g. an address suggestion
+  // break down providing more granular fillings.
+  // The popup created via this method and this popup instance are linked
+  // as child-parent. The child's lifetime depends on its parent, i.e. when
+  // the parent dies the child dies also.
+  virtual base::WeakPtr<AutofillPopupController> OpenSubPopup(
+      const gfx::RectF& anchor_bounds,
+      std::vector<Suggestion> suggestions) = 0;
 
  protected:
   ~AutofillPopupController() override = default;

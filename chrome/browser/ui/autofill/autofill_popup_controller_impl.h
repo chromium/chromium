@@ -52,13 +52,29 @@ class AutofillPopupDelegate;
 class AutofillPopupView;
 class ContentAutofillDriver;
 
+// Sub-popups and their parent popups are connected by providing children
+// with links to their parents. This interface defines the API exposed by
+// these links.
+class ExpandablePopupParentControllerImpl {
+ private:
+  friend class AutofillPopupControllerImpl;
+
+  // Creates a view for a sub-popup. On rare occasions opening the sub-popup
+  // may fail (e.g. when there is no room to open the sub-popup or the popup
+  // is in the middle of destroying and  has no widget already),
+  // `nullptr` is returned in these cases.
+  virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> sub_controller) = 0;
+};
+
 // This class is a controller for an AutofillPopupView. It implements
 // AutofillPopupController to allow calls from AutofillPopupView. The
 // other, public functions are available to its instantiator.
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public content::WebContentsObserver,
-      public PictureInPictureWindowManager::Observer {
+      public PictureInPictureWindowManager::Observer,
+      public ExpandablePopupParentControllerImpl {
  public:
   AutofillPopupControllerImpl(const AutofillPopupControllerImpl&) = delete;
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
@@ -106,6 +122,9 @@ class AutofillPopupControllerImpl
   // AutofillPopupController:
   std::vector<Suggestion> GetSuggestions() const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
+  base::WeakPtr<AutofillPopupController> OpenSubPopup(
+      const gfx::RectF& anchor_bounds,
+      std::vector<Suggestion> suggestions) override;
 
   // Disables show thresholds. See the documentation of the member for details.
   void DisableThresholdForTesting(bool disable_threshold) {
@@ -129,7 +148,9 @@ class AutofillPopupControllerImpl
           gfx::NativeWindow,
           Profile*,
           password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-          show_pwd_migration_warning_callback);
+          show_pwd_migration_warning_callback,
+      absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>>
+          parent);
   ~AutofillPopupControllerImpl() override;
 
   gfx::NativeView container_view() const override;
@@ -237,6 +258,10 @@ class AutofillPopupControllerImpl
                 password_manager::ContentPasswordManagerDriver*>
   GetDriver();
 
+  // ExpandablePopupParentControllerImpl
+  base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> controller) override;
+
   friend class AutofillPopupControllerUnitTest;
   friend class AutofillPopupControllerAccessibilityUnitTest;
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view);
@@ -293,6 +318,11 @@ class AutofillPopupControllerImpl
 
   // Whether the popup should ignore mouse observed outside check.
   bool should_ignore_mouse_observed_outside_item_bounds_check_ = false;
+
+  // Parent's popup controller. The root popup doesn't have a parent, but in
+  // sub-popups it must be present.
+  const absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>>
+      parent_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

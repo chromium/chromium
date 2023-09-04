@@ -97,11 +97,12 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
 #if BUILDFLAG(IS_ANDROID)
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, container_view, element_bounds, text_direction,
-      base::BindRepeating(&local_password_migration::ShowWarning));
+      base::BindRepeating(&local_password_migration::ShowWarning),
+      /*parent=*/absl::nullopt);
 #else
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
       delegate, web_contents, container_view, element_bounds, text_direction,
-      base::DoNothing());
+      base::DoNothing(), /*parent=*/absl::nullopt);
 #endif
   return controller->GetWeakPtr();
 }
@@ -117,12 +118,14 @@ AutofillPopupControllerImpl::AutofillPopupControllerImpl(
         void(gfx::NativeWindow,
              Profile*,
              password_manager::metrics_util::PasswordMigrationWarningTriggers)>
-        show_pwd_migration_warning_callback)
+        show_pwd_migration_warning_callback,
+    absl::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent)
     : content::WebContentsObserver(web_contents),
       controller_common_(element_bounds, text_direction, container_view),
       delegate_(delegate),
       show_pwd_migration_warning_callback_(
-          std::move(show_pwd_migration_warning_callback)) {
+          std::move(show_pwd_migration_warning_callback)),
+      parent_(parent) {
   ClearState();
   delegate->RegisterDeletionCallback(base::BindOnce(
       &AutofillPopupControllerImpl::HideViewAndDie, GetWeakPtr()));
@@ -179,7 +182,9 @@ void AutofillPopupControllerImpl::Show(
   if (view_) {
     OnSuggestionsChanged();
   } else {
-    view_ = AutofillPopupView::Create(GetWeakPtr());
+    bool has_parent = parent_ && parent_->get();
+    view_ = has_parent ? parent_->get()->CreateSubPopupView(GetWeakPtr())
+                       : AutofillPopupView::Create(GetWeakPtr());
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.
@@ -464,6 +469,21 @@ std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
   return suggestions_;
 }
 
+base::WeakPtr<AutofillPopupController>
+AutofillPopupControllerImpl::OpenSubPopup(const gfx::RectF& anchor_bounds,
+                                          std::vector<Suggestion> suggestions) {
+  AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
+      delegate_, web_contents(), controller_common_.container_view,
+      anchor_bounds, controller_common_.text_direction, base::DoNothing(),
+      /*parent=*/GetWeakPtr());
+
+  // Show() can fail and cause controller deletion. Therefore store the weak
+  // pointer before, so that this method returns null when that happens.
+  base::WeakPtr<AutofillPopupController> result = controller->GetWeakPtr();
+  controller->Show(std::move(suggestions), trigger_source_);
+  return result;
+}
+
 void AutofillPopupControllerImpl::OnEnterPictureInPicture() {
   if (view_.Call(&AutofillPopupView::OverlapsWithPictureInPictureWindow)) {
     Hide(PopupHidingReason::kOverlappingWithPictureInPictureWindow);
@@ -636,6 +656,14 @@ bool AutofillPopupControllerImpl::IsMouseLocked() const {
   content::RenderWidgetHostView* rwhv;
   return web_contents() && (rfh = web_contents()->GetFocusedFrame()) &&
          (rwhv = rfh->GetView()) && rwhv->IsMouseLocked();
+}
+
+base::WeakPtr<AutofillPopupView>
+AutofillPopupControllerImpl::CreateSubPopupView(
+    base::WeakPtr<AutofillPopupController> controller) {
+  auto sub_view =
+      view_.Call(&AutofillPopupView::CreateSubPopupView, controller);
+  return sub_view.value_or(nullptr);
 }
 
 void AutofillPopupControllerImpl::SetViewForTesting(

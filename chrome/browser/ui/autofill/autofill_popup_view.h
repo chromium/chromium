@@ -53,6 +53,12 @@ class AutofillPopupView {
   // Return the autofill popup view's ax unique id.
   virtual absl::optional<int32_t> GetAxUniqueId() = 0;
 
+  // Creates a sub-popup (child) view linked to this (parent) view.
+  // The child's lifetime depends on its parent, i.e. when the parent dies
+  // the child dies also.
+  virtual base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> sub_controller) = 0;
+
   // Returns a weak pointer to itself.
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;
 

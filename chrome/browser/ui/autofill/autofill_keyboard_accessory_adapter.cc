@@ -120,6 +120,13 @@ AutofillKeyboardAccessoryAdapter::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<AutofillPopupView>
+AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
+    base::WeakPtr<AutofillPopupController> controller) {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
+  return nullptr;
+}
+
 // AutofillPopupController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(
@@ -183,6 +190,14 @@ bool AutofillKeyboardAccessoryAdapter::
   CHECK(controller_) << "Call ShouldIgnoreMouseObservedOutsideItemBoundsCheck "
                         "only from its owner!";
   return controller_->ShouldIgnoreMouseObservedOutsideItemBoundsCheck();
+}
+
+base::WeakPtr<AutofillPopupController>
+AutofillKeyboardAccessoryAdapter::OpenSubPopup(
+    const gfx::RectF& anchor_bounds,
+    std::vector<Suggestion> suggestions) {
+  NOTIMPLEMENTED() << "No sub-popups on Keyboard Accessory";
+  return nullptr;
 }
 
 bool AutofillKeyboardAccessoryAdapter::GetRemovalConfirmationText(

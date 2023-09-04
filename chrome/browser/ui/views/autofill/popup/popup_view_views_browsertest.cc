@@ -78,6 +78,13 @@ class PopupViewViewsBrowsertestBase
     }
   }
 
+ protected:
+  PopupViewViews* CreateView(MockAutofillPopupController& controller) override {
+    return new PopupViewViews(controller.GetWeakPtr(), absl::nullopt,
+                              views::Widget::GetWidgetForNativeWindow(
+                                  browser()->window()->GetNativeWindow()));
+  }
+
  private:
   // The index of the selected cell. No cell is selected by default.
   absl::optional<CellIndex> selected_cell_;

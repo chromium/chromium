@@ -9,12 +9,14 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
@@ -114,11 +116,15 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  void ShowView(PopupViewViews& view, views::Widget& widget) {
+    widget.SetContentsView(&view);
+    view.Show(AutoselectFirstSuggestion(false));
+  }
+
   void CreateAndShowView() {
     view_ = std::make_unique<PopupViewViews>(controller().GetWeakPtr(),
-                                             widget_.get());
-    widget().SetContentsView(view_.get());
-    view().Show(AutoselectFirstSuggestion(false));
+                                             absl::nullopt, widget_.get());
+    ShowView(*view_, *widget_);
   }
 
   void CreateAndShowView(const std::vector<PopupItemId>& ids) {
@@ -657,6 +663,41 @@ TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {
   CreateAndShowView({PopupItemId::kAddressEntry, PopupItemId::kSeparator,
                      PopupItemId::kAutofillOptions});
   UpdateSuggestions({PopupItemId::kAddressEntry});
+}
+
+TEST_F(PopupViewViewsTest, SubViewIsShownInChildWidget) {
+  CreateAndShowView({PopupItemId::kAddressEntry});
+  NiceMock<MockAutofillPopupController> sub_controller;
+  base::WeakPtr<AutofillPopupView> sub_view =
+      view().CreateSubPopupView(sub_controller.GetWeakPtr());
+  sub_view->Show(AutoselectFirstSuggestion(false));
+  views::Widget* sub_widget =
+      static_cast<PopupViewViews*>(sub_view.get())->GetWidget();
+
+  EXPECT_EQ(view().GetWidget(), sub_widget->parent());
+}
+
+TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
+  controller().set_suggestions({PopupItemId::kAddressEntry});
+  PopupViewViews view(controller().GetWeakPtr(), absl::nullopt, &widget());
+  views::Widget* widget = CreateTestWidget().release();
+  ShowView(view, *widget);
+
+  NiceMock<MockAutofillPopupController> sub_controller;
+  base::WeakPtr<AutofillPopupView> sub_view =
+      view.CreateSubPopupView(sub_controller.GetWeakPtr());
+  sub_view->Show(AutoselectFirstSuggestion(false));
+  base::WeakPtr<views::Widget> sub_widget =
+      static_cast<PopupViewViews*>(sub_view.get())->GetWidget()->GetWeakPtr();
+
+  ASSERT_FALSE(sub_widget->IsClosed());
+
+  EXPECT_CALL(controller(), ViewDestroyed());
+
+  widget->CloseNow();
+
+  EXPECT_TRUE(!sub_widget || sub_widget->IsClosed())
+      << "The sub-widget should be closed as its parent is closed.";
 }
 
 #if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)

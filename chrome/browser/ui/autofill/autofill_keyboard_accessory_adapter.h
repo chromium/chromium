@@ -87,6 +87,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void OnSuggestionsChanged() override;
   void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;
+  base::WeakPtr<AutofillPopupView> CreateSubPopupView(
+      base::WeakPtr<AutofillPopupController> controller) override;
 
   // AutofillPopupController:
   // Hidden: void OnSuggestionsChanged() override;
@@ -107,6 +109,10 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   AutofillSuggestionTriggerSource GetAutofillSuggestionTriggerSource()
       const override;
   bool ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const override;
+  base::WeakPtr<AutofillPopupController> OpenSubPopup(
+      const gfx::RectF& anchor_bounds,
+      std::vector<Suggestion> suggestions) override;
+
   void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
   gfx::NativeView container_view() const override;

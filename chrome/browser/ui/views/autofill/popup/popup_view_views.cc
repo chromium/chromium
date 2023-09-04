@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
@@ -96,10 +97,35 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
              : IsFooterPopupItemId(popup_item_id);
 }
 
+bool CanShowRootPopup(base::WeakPtr<AutofillPopupController> controller) {
+#if BUILDFLAG(IS_MAC)
+  // It's possible for the container_view to not be in a window. In that case,
+  // cancel the popup since we can't fully set it up.
+  if (!platform_util::GetTopLevel(controller->container_view())) {
+    return false;
+  }
+#else
+  // If the top level widget can't be found, cancel the popup since we can't
+  // fully set it up. On Mac Cocoa browser, |observing_widget| is null
+  // because the parent is not a views::Widget.
+  if (!views::Widget::GetTopLevelWidgetForNativeView(
+          controller->container_view())) {
+    return false;
+  }
+#endif
+
+  return true;
+}
+
 }  // namespace
 
+// Creates a new popup view instance. The Widget parent is taken either from
+// the top level widget for the root popup or from the parent for sub-popups.
+// Setting Widget's parent enables its internal child-lifetime management,
+// see `Widget::InitParams::parent` doc comment for details.
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
+    absl::optional<base::WeakPtr<ExpandablePopupParentView>> parent,
     views::Widget* parent_widget)
     : PopupBaseView(controller, parent_widget), controller_(controller) {
   views::BoxLayout* layout =
@@ -338,6 +364,16 @@ void PopupViewViews::AxAnnounce(const std::u16string& text) {
     return;
   }
   browser_view->GetViewAccessibility().AnnounceText(text);
+}
+
+base::WeakPtr<AutofillPopupView> PopupViewViews::CreateSubPopupView(
+    base::WeakPtr<AutofillPopupController> controller) {
+  if (GetWidget()) {
+    return (new PopupViewViews(controller, weak_ptr_factory_.GetWeakPtr(),
+                               GetWidget()))
+        ->GetWeakPtr();
+  }
+  return nullptr;
 }
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -652,28 +688,14 @@ END_METADATA
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillPopupController> controller) {
-#if BUILDFLAG(IS_MAC)
-  // It's possible for the container_view to not be in a window. In that case,
-  // cancel the popup since we can't fully set it up.
-  if (!platform_util::GetTopLevel(controller->container_view())) {
+  if (!CanShowRootPopup(controller)) {
     return nullptr;
   }
-#endif
 
-  views::Widget* observing_widget =
-      views::Widget::GetTopLevelWidgetForNativeView(
-          controller->container_view());
-
-#if !BUILDFLAG(IS_MAC)
-  // If the top level widget can't be found, cancel the popup since we can't
-  // fully set it up. On Mac Cocoa browser, |observing_widget| is null
-  // because the parent is not a views::Widget.
-  if (!observing_widget) {
-    return nullptr;
-  }
-#endif
-
-  return (new PopupViewViews(controller, observing_widget))->GetWeakPtr();
+  return (new PopupViewViews(controller, absl::nullopt,
+                             views::Widget::GetTopLevelWidgetForNativeView(
+                                 controller->container_view())))
+      ->GetWeakPtr();
 }
 
 }  // namespace autofill

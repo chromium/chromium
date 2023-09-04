@@ -172,6 +172,12 @@ base::WeakPtr<AutofillPopupView> AutofillPopupViewAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+base::WeakPtr<AutofillPopupView> AutofillPopupViewAndroid::CreateSubPopupView(
+    base::WeakPtr<AutofillPopupController> controller) {
+  NOTIMPLEMENTED() << "No sub-popups on Android";
+  return nullptr;
+}
+
 void AutofillPopupViewAndroid::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
