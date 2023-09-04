@@ -5,5 +5,5 @@ pytest==7.4.0
 pytest-asyncio==0.21.1
 pytest-icdiff==0.6
 pytest-timeout==2.1.0
-syrupy==4.0.8
+syrupy==4.4.0
 websockets==11.0.3
