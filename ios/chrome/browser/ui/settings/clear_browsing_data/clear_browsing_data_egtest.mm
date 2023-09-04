@@ -283,11 +283,12 @@ using chrome_test_util::WindowWithNumber;
                   @"Did not navigate to the search activity url.");
 }
 
-// Sign-in without sync. Clear browsing data.
+// Sign-in and clear browsing data.
 - (void)signInOpenCBDAndClearDataWithFakeIdentity:
-    (FakeSystemIdentity*)fakeIdentity {
+            (FakeSystemIdentity*)fakeIdentity
+                                       enableSync:(BOOL)enableSync {
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:enableSync];
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
@@ -302,11 +303,33 @@ using chrome_test_util::WindowWithNumber;
   WaitForActivityOverlayToDisappear();
 }
 
-// Tests that a user in the `ConsentLevel::kSignin` state will be signed out
+// Tests that a user in the `ConsentLevel::kSignin` state will remain signed in
 // after clearing their browsing history.
 - (void)testUserSignedInWhenClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity];
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a supervised user in the `ConsentLevel::kSync` state will remain
+// signed-in after clearing their browsing history.
+- (void)testSupervisedUserSyncingWhenClearingBrowsingData {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:YES];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that a supervised user in the `ConsentLevel::kSignin` state will remain
+// signed-in after clearing their browsing history.
+- (void)testSupervisedUserSignedInWhenClearingBrowsingData {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
+
+  [self signInOpenCBDAndClearDataWithFakeIdentity:fakeIdentity enableSync:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
