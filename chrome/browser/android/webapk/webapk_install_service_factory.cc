@@ -31,7 +31,8 @@ WebApkInstallServiceFactory::WebApkInstallServiceFactory()
 
 WebApkInstallServiceFactory::~WebApkInstallServiceFactory() = default;
 
-KeyedService* WebApkInstallServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebApkInstallServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new WebApkInstallService(context);
+  return std::make_unique<WebApkInstallService>(context);
 }
