@@ -66,6 +66,11 @@ source_set("centipede_runner_no_main") {
   configs += [ ":centipede_internal_config" ]
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
+
+  # sancov symbols need to be exported for centipede to work correctly with
+  # multi-dso.
+  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+  configs += [ "//build/config/gcc:symbol_visibility_default" ]
 }
 
 config("centipede_internal_config") {
