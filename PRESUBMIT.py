@@ -1656,6 +1656,22 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
+      pattern = r'/#include "base/allocator/.*/raw_'
+                r'(ptr|ptr_cast|ptr_exclusion|ref).h"',
+      explanation = (
+        'Please include the corresponding facade headers:',
+        '- #include "base/memory/raw_ptr.h"',
+        '- #include "base/memory/raw_ptr_cast.h"',
+        '- #include "base/memory/raw_ptr_exclusion.h"',
+        '- #include "base/memory/raw_ref.h"',
+      ),
+      treat_as_error = True,
+      excluded_paths = (
+        '^base/',
+        '^tools/',
+      ),
+    ),
+    BanRule(
       pattern = r'ContentSettingsType::COOKIES',
       explanation = (
         'Do not use ContentSettingsType::COOKIES to check whether cookies are '

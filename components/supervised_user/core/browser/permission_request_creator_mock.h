@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
+#include "base/memory/raw_ref.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "url/gurl.h"
 

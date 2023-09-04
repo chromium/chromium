@@ -6,7 +6,7 @@
 #define ASH_ACCELERATORS_ACCELERATOR_LAUNCHER_STATE_MACHINE_H_
 
 #include "ash/ash_export.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/ozone/public/input_controller.h"
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/wm/overview/overview_item_base.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 
 namespace ash {

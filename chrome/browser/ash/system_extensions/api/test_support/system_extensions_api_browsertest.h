@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_TEST_SUPPORT_SYSTEM_EXTENSIONS_API_BROWSERTEST_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "mojo/public/cpp/bindings/binder_map.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_CLIENT_UTIL_TAB_DATA_COLLECTION_UTIL_H_
 
 #include <string>
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"

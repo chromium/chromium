@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"

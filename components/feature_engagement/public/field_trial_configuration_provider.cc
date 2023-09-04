@@ -4,7 +4,7 @@
 
 #include "components/feature_engagement/public/field_trial_configuration_provider.h"
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
