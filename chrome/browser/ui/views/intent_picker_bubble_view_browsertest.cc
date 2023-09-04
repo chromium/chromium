@@ -293,7 +293,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerIconBrowserTest,
 }
 
 // Test that error pages do not show the intent picker icon.
-IN_PROC_BROWSER_TEST_F(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1478654): Fix the test.
+#define MAYBE_DoNotShowIconOnErrorPages Disabled_DoNotShowIconOnErrorPages
+#else
+#define MAYBE_DoNotShowIconOnErrorPages DoNotShowIconOnErrorPages
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(IntentPickerIconBrowserTest,
+                       MAYBE_DoNotShowIconOnErrorPages) {
   InstallTestWebApp();
   InstallTestWebApp("www.google.com", "/");
 
