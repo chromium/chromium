@@ -11,7 +11,7 @@ callback PerformanceObserverCallback = void (PerformanceObserverEntryList entrie
     Exposed=(Window,Worker)
 ] interface PerformanceObserver {
     [CallWith=ScriptState] constructor(PerformanceObserverCallback callback);
-    [RaisesException] void observe(optional PerformanceObserverInit options = {});
+    [RaisesException, CallWith=ScriptState] void observe(optional PerformanceObserverInit options = {});
     void disconnect();
     PerformanceEntryList takeRecords();
     [SameObject, SaveSameObject, CallWith=ScriptState] static readonly attribute FrozenArray<DOMString> supportedEntryTypes;

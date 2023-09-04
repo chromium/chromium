@@ -44,7 +44,7 @@ class CORE_EXPORT PerformanceObserver final
                       Performance*,
                       V8PerformanceObserverCallback*);
 
-  void observe(const PerformanceObserverInit*, ExceptionState&);
+  void observe(ScriptState*, const PerformanceObserverInit*, ExceptionState&);
   void disconnect();
   PerformanceEntryVector takeRecords();
   void EnqueuePerformanceEntry(PerformanceEntry&);
@@ -79,6 +79,8 @@ class CORE_EXPORT PerformanceObserver final
   // Deliver the PerformanceObserverCallback. Receives the number of dropped
   // entries to be passed to the callback.
   void Deliver(absl::optional<int> dropped_entries_count);
+
+  static PerformanceEntryType supportedEntryTypeMask(ScriptState*);
 
   Member<V8PerformanceObserverCallback> callback_;
   WeakMember<Performance> performance_;

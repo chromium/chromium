@@ -2227,6 +2227,7 @@
       name: "LongAnimationFrameMonitoring",
       implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM", "LongTaskFromLongAnimationFrame"],
       status: "experimental",
+      origin_trial_allows_third_party: true,
       origin_trial_feature_name: "LongAnimationFrameTiming"
     },
     {
@@ -2234,6 +2235,7 @@
       // "long-animation-frame" timeline entry)
       name: "LongAnimationFrameTiming",
       status: "experimental",
+      origin_trial_allows_third_party: true,
       origin_trial_feature_name: "LongAnimationFrameTiming"
     },
     {
