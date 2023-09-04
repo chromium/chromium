@@ -74,6 +74,8 @@ void AppServiceShortcutContextMenu::GetMenuModel(
                        static_cast<ash::CommandId>(ash::UNINSTALL),
                        IDS_APP_LIST_REMOVE_SHORTCUT);
 
+  AddReorderMenuOption(menu_model.get());
+
   std::move(callback).Run(std::move(menu_model));
 }
 

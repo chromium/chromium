@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_item.h"
 
+#include <memory>
+
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -19,6 +23,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -39,6 +44,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/views/vector_icons.h"
 
 namespace apps {
@@ -279,6 +285,80 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuRemove) {
   content::RunAllTasksUntilIdle();
   item = model_updater->FindItem(shortcut_id.value());
   EXPECT_FALSE(item);
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuReorder) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kAppsGrid,
+                            future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  ASSERT_EQ(menu_model->GetTypeAt(3u), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu_model->GetSeparatorTypeAt(3u),
+            ui::MenuSeparatorType::NORMAL_SEPARATOR);
+
+  auto reorder_command_index =
+      menu_model->GetIndexOfCommandId(ash::REORDER_SUBMENU);
+  ASSERT_TRUE(reorder_command_index);
+  EXPECT_EQ(reorder_command_index.value(), 4u);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_TITLE),
+            menu_model->GetLabelAt(reorder_command_index.value()));
+  EXPECT_EQ(&ash::kReorderIcon,
+            menu_model->GetIconAt(reorder_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  auto* submenu = menu_model->GetSubmenuModelAt(reorder_command_index.value());
+  ASSERT_TRUE(submenu);
+
+  size_t name_reorder_command_index = 0u;
+  EXPECT_EQ(submenu->GetCommandIdAt(name_reorder_command_index),
+            ash::REORDER_BY_NAME_ALPHABETICAL);
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_NAME),
+      submenu->GetLabelAt(name_reorder_command_index));
+  EXPECT_EQ(&ash::kSortAlphabeticalIcon,
+            submenu->GetIconAt(name_reorder_command_index)
+                .GetVectorIcon()
+                .vector_icon());
+
+  ChromeAppListModelUpdater* chrome_model_updater =
+      static_cast<ChromeAppListModelUpdater*>(
+          app_list::AppListSyncableServiceFactory::GetForProfile(profile())
+              ->GetModelUpdater());
+  ASSERT_TRUE(chrome_model_updater);
+
+  submenu->ActivatedAt(name_reorder_command_index);
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical,
+            chrome_model_updater->GetTemporarySortOrderForTest());
+
+  size_t colour_reorder_command_index = 1u;
+  EXPECT_EQ(submenu->GetCommandIdAt(colour_reorder_command_index),
+            ash::REORDER_BY_COLOR);
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_REORDER_BY_COLOR),
+      submenu->GetLabelAt(colour_reorder_command_index));
+  EXPECT_EQ(&ash::kSortColorIcon,
+            submenu->GetIconAt(colour_reorder_command_index)
+                .GetVectorIcon()
+                .vector_icon());
+  submenu->ActivatedAt(colour_reorder_command_index);
+  EXPECT_EQ(ash::AppListSortOrder::kColor,
+            chrome_model_updater->GetTemporarySortOrderForTest());
 }
 
 }  // namespace apps
