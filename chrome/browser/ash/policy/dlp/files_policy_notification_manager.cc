@@ -270,6 +270,9 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
+  DlpHistogramEnumeration(dlp::kFileActionBlockedUMA, action);
+  DlpCountHistogram10000(dlp::kFilesBlockedCountUMA, blocked_files.size());
+
   // If `task_id` has value, the corresponding IOTask should be updated
   // accordingly.
   if (task_id.has_value()) {

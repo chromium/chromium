@@ -29,4 +29,8 @@ void DlpRestrictionConfiguredHistogram(DlpRulesManager::Restriction value) {
       GetDlpHistogramPrefix() + "RestrictionConfigured", value);
 }
 
+void DlpCountHistogram10000(const std::string& suffix, int sample) {
+  base::UmaHistogramCounts10000(GetDlpHistogramPrefix() + suffix, sample);
+}
+
 }  // namespace policy

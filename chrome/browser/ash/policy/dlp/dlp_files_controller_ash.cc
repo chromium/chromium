@@ -741,7 +741,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     switch (level) {
       case DlpRulesManager::Level::kBlock: {
         files_levels.emplace_back(file, ::dlp::RestrictionLevel::LEVEL_BLOCK);
-        DlpHistogramEnumeration(dlp::kFileActionBlockedUMA, files_action);
         break;
       }
       case DlpRulesManager::Level::kNotSet:
@@ -862,8 +861,6 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   switch (level) {
     case policy::DlpRulesManager::Level::kBlock:
       restricted = true;
-      DlpHistogramEnumeration(dlp::kFileActionBlockedUMA,
-                              dlp::FileAction::kUnknown);
       break;
     case policy::DlpRulesManager::Level::kWarn:
       DlpHistogramEnumeration(dlp::kFileActionWarnedUMA,

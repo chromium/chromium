@@ -536,6 +536,13 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 // Tests that clicking on the error notification, but no button is ignored.
@@ -555,6 +562,13 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileNoButtonIgnored) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 // Tests that closing the error notification (e.g. by X or Dismiss all)
@@ -577,6 +591,13 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 // Tests that clicking the OK button on an error notification for multiple
@@ -640,6 +661,17 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  GetDlpHistogramPrefix() +
+                  std::string(dlp::kFileActionBlockReviewedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 // Tests that clicking the Cancel button on an error notification dismisses
@@ -669,6 +701,13 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, CancelDismisses) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(FPNM,
@@ -1195,6 +1234,13 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 2)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 2)));
 }
 
 // Tests that the IO task info for copy or move with multiple blocked files will
@@ -1239,6 +1285,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissRemovesIOInfo_Error) {
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(2, 1)));
 }
 
 // Tests that the IO task info for copy or move with single blocked file will
@@ -1289,6 +1343,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(1, 1)));
 }
 
 // Tests that clicking the OK button on a warning notification shown for
@@ -1343,6 +1405,14 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->title(), title2);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                      std::string(dlp::kFileActionBlockedUMA)),
+      base::BucketsAre(base::Bucket(action, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
+                                              dlp::kFilesBlockedCountUMA),
+              testing::ElementsAre(base::Bucket(1, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

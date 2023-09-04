@@ -1365,13 +1365,23 @@ chromium-metrics-reviews@google.com.
   <summary>Record whether the kernel supports fanotify delete events.</summary>
 </histogram>
 
-<histogram name="Enterprise.Dlp.FileActionBlocked"
+<histogram name="Enterprise.Dlp.FileActionBlocked2"
     enum="EnterpriseDlpPolicyFileAction" expires_after="2023-12-01">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
-    Records which file action is blocked because of Data Leak Prevention policy
-    restrictions.
+    Records when a file action is blocked because of Data Leak Prevention policy
+    Files restriction. Identifies which file action was blocked.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FileActionBlockReviewed"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2024-03-01">
+  <owner>ayaelattar@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action blocked by Data Leak Prevention policy is
+    reviewed.
   </summary>
 </histogram>
 
@@ -1402,6 +1412,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records True when opening the Files App to show a Data Leak Prevention
     dialog times out, and False when it successfully opens.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FilesBlockedCount" units="entries"
+    expires_after="2024-03-01">
+  <owner>ayaelattar@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records the number of files blocked by Data Leak Prevention policy per file
+    action.
   </summary>
 </histogram>
 

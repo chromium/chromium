@@ -1095,13 +1095,6 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 3),
-                       base::Bucket(dlp::FileAction::kDownload, 0),
-                       base::Bucket(dlp::FileAction::kTransfer, 0)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
                                      std::string(dlp::kFileActionWarnedUMA)),
       base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 3),
                        base::Bucket(dlp::FileAction::kDownload, 0),
@@ -1415,13 +1408,6 @@ TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
       dlp::FileAction::kTransfer, cb.Get());
 
   ASSERT_EQ(events.size(), 0u);
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 0),
-                       base::Bucket(dlp::FileAction::kDownload, 0),
-                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 class DlpFilesExternalDestinationTest
@@ -1519,13 +1505,6 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
                              kExampleSourcePattern3, expected_component,
                              DlpRulesManager::Restriction::kFiles, kRuleName3,
                              kRuleId3, DlpRulesManager::Level::kBlock)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 0),
-                       base::Bucket(dlp::FileAction::kDownload, 0),
-                       base::Bucket(dlp::FileAction::kTransfer, 2)));
 }
 
 TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
@@ -1684,17 +1663,6 @@ TEST_P(DlpFilesUrlDestinationTest, IsFilesTransferRestricted_Url) {
             DlpRulesManager::Restriction::kFiles, triggered_rule_names[i],
             triggered_rule_ids[i], DlpRulesManager::Level::kBlock)));
   }
-
-  int blocked_downloads = disallowed_source_patterns.empty()
-                              ? 0
-                              : disallowed_source_patterns.size();
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionBlockedUMA)),
-      base::BucketsAre(
-          base::Bucket(dlp::FileAction::kDownload, blocked_downloads),
-          base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 class DlpFilesWarningDialogChoiceTest
