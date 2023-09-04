@@ -14356,7 +14356,7 @@
             ]
         }
     ],
-    "SearchEnginePromoV3": [
+    "SearchEnginesPromoV3": [
         {
             "platforms": [
                 "android"
@@ -14369,7 +14369,7 @@
                         "trigger_by_device_feature": "false"
                     },
                     "enable_features": [
-                        "SearchEnginePromoV3"
+                        "SearchEnginesPromoV3"
                     ]
                 }
             ]
