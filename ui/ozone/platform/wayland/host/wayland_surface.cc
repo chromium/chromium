@@ -284,7 +284,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   }
 
   pending_state_.buffer_size_px = buffer_handle->size();
-  pending_state_.buffer = buffer_handle->wl_buffer();
+  pending_state_.buffer = buffer_handle->buffer();
   pending_state_.buffer_id = buffer_handle->id();
 
   if (state_.buffer_id == pending_state_.buffer_id &&

@@ -13,11 +13,10 @@ WaylandBufferHandle::WaylandBufferHandle(WaylandBufferBacking* backing)
 
 WaylandBufferHandle::~WaylandBufferHandle() {
   for (auto& cb : released_callbacks_)
-    std::move(cb.second).Run(wl_buffer());
+    std::move(cb.second).Run(wl_buffer_.get());
 }
 
-void WaylandBufferHandle::OnWlBufferCreated(
-    wl::Object<struct wl_buffer> wl_buffer) {
+void WaylandBufferHandle::OnWlBufferCreated(wl::Object<wl_buffer> wl_buffer) {
   CHECK(wl_buffer) << "Failed to create wl_buffer object.";
 
   wl_buffer_ = std::move(wl_buffer);
@@ -40,7 +39,7 @@ void WaylandBufferHandle::OnExplicitRelease(WaylandSurface* requestor) {
   released_callbacks_.erase(it);
 }
 
-void WaylandBufferHandle::OnWlBufferRelease(struct wl_buffer* wl_buff) {
+void WaylandBufferHandle::OnWlBufferReleased(wl_buffer* wl_buff) {
   DCHECK_EQ(wl_buff, wl_buffer_.get());
   DCHECK(!backing_->UseExplicitSyncRelease());
   DCHECK_LE(released_callbacks_.size(), 1u);
@@ -55,10 +54,10 @@ base::WeakPtr<WaylandBufferHandle> WaylandBufferHandle::AsWeakPtr() {
 }
 
 // static
-void WaylandBufferHandle::OnRelease(void* data, struct wl_buffer* buffer) {
+void WaylandBufferHandle::OnRelease(void* data, wl_buffer* buffer) {
   auto* self = static_cast<WaylandBufferHandle*>(data);
   DCHECK(self);
-  self->OnWlBufferRelease(buffer);
+  self->OnWlBufferReleased(buffer);
 }
 
 }  // namespace ui
