@@ -127,7 +127,16 @@ public class PageInsightsSheetContent implements BottomSheetContent {
         showFeedPage();
     }
 
+    void showLoadingIndicator() {
+        setVisibilityById(mSheetContentView, R.id.page_insights_loading_indicator, View.VISIBLE);
+        setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
+    }
+
     void showFeedPage() {
+        setVisibilityById(mSheetContentView, R.id.page_insights_loading_indicator, View.GONE);
         setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
         setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
         setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.VISIBLE);

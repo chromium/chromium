@@ -142,6 +142,8 @@ public class PageInsightsSheetContentTest {
                     getContentViewById(R.id.page_insights_feed_content).getVisibility());
             assertEquals(View.GONE,
                     getContentViewById(R.id.page_insights_child_content).getVisibility());
+            assertEquals(View.GONE,
+                    getContentViewById(R.id.page_insights_loading_indicator).getVisibility());
         });
     }
 
@@ -182,6 +184,25 @@ public class PageInsightsSheetContentTest {
                     getContentViewById(R.id.page_insights_child_content).getVisibility());
             assertEquals(childTextView.getText(), testChildPageText);
             assertEquals(childContentView.getChildAt(0), testView);
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void showLoadingIndicator() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetContent.showLoadingIndicator();
+
+            assertEquals(View.VISIBLE,
+                    getContentViewById(R.id.page_insights_loading_indicator).getVisibility());
+            assertEquals(View.VISIBLE,
+                    getToolbarViewById(R.id.page_insights_feed_header).getVisibility());
+            assertEquals(
+                    View.GONE, getContentViewById(R.id.page_insights_feed_content).getVisibility());
+            assertEquals(View.GONE,
+                    getToolbarViewById(R.id.page_insights_child_page_header).getVisibility());
+            assertEquals(View.GONE,
+                    getContentViewById(R.id.page_insights_child_content).getVisibility());
         });
     }
 

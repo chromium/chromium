@@ -29,4 +29,18 @@ found in the LICENSE file.
       android:visibility="gone">
   </FrameLayout>
 
+  <!-- Progress Bar for loading until PIH data is fetched from server -->
+  <ProgressBar
+      android:id="@+id/page_insights_loading_indicator"
+      android:layout_width="@dimen/page_insights_loading_indicator_size"
+      android:layout_height="@dimen/page_insights_loading_indicator_size"
+      android:layout_gravity="center"
+      android:layout_marginTop="@dimen/page_insights_loading_indicator_margin"
+      android:paddingVertical="@dimen/page_insights_loading_indicator_padding"
+      android:progressTint="@color/default_bg_color_blue"
+      android:contentDescription="@string/page_insights_loading_indicator_description"
+      android:visibility="visible">
+  </ProgressBar>
+
+
 </LinearLayout>

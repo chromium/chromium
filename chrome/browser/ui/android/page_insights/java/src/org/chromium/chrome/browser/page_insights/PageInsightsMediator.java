@@ -228,14 +228,14 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetController.requestShowContent(mSheetContent, true);
     }
 
-    // TODO(kamalchoudhury): Add logic for opening the sheet with loading indicator before loading
     // data
     void openInExpandedState() {
+        mSheetContent.showLoadingIndicator();
+        mSheetController.requestShowContent(mSheetContent, true);
         mPageInsightsDataLoader.loadInsightsData();
         PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
         mSheetContent.setFeedPage(getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
         mSheetContent.showFeedPage();
-        mSheetController.requestShowContent(mSheetContent, true);
         setCornerRadiusPx(mMaxCornerRadiusPx);
         mSheetController.expandSheet();
     }
