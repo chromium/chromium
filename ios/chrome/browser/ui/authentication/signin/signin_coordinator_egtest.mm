@@ -246,7 +246,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
           isRunningTest:@selector(testSwipeDownSignInViewWithoutAnIdentity)] ||
       [self isRunningTest:@selector(MAYBE_testSwipeDownInAdvancedSettings)] ||
       [self isRunningTest:@selector
-            (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)]) {
+            (MAYBE_testSyncOnWhenPassphraseIntroducedAfterSignIn)] ||
+      [self isRunningTest:@selector(testAddAccountAutomatically)] ||
+      [self isRunningTest:@selector(testCancelFromSyncOffLink)] ||
+      [self isRunningTest:@selector(testSignInOneUser)]) {
+    // TODO(crbug.com/1477295): Evaluate if these tests are relevant with
+    // kReplaceSyncPromosWithSignInPromos enabled.
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -286,6 +291,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Settings and signing in works
 // correctly when there is already an identity on the device.
+// kReplaceSyncPromosWithSignInPromos is disabled.
+// TODO(crbug.com/1477295): Evaluate if the test is relevant with
+// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testSignInOneUser {
   // Set up a fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -821,6 +829,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests the "ADD ACCOUNT" button in the identity chooser view controller.
+// kReplaceSyncPromosWithSignInPromos is disabled.
+// TODO(crbug.com/1477295): Evaluate if the test is relevant with
+// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testAddAccountAutomatically {
   [self openSigninFromView:OpenSigninMethodFromSettings tapSettingsLink:NO];
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1191,6 +1202,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that opening the sign-in screen from the Sync Off tab and canceling the
 // sign-in flow will leave a signed-in with sync off user in the same state.
+// kReplaceSyncPromosWithSignInPromos is disabled.
+// TODO(crbug.com/1477295): Evaluate if the test is relevant with
+// kReplaceSyncPromosWithSignInPromos enabled.
 - (void)testCancelFromSyncOffLink {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
