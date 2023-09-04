@@ -916,7 +916,7 @@ void VotesUploader::SetSingleUsernameVoteOnPasswordForm(
   single_username_data.set_value_type(single_username_vote_data_->value_type);
   single_username_data.set_prompt_edit(single_username_vote_data_->prompt_edit);
 
-  form_structure.set_single_username_data(single_username_data);
+  form_structure.AddSingleUsernameData(single_username_data);
 }
 
 AutofillUploadContents::SingleUsernamePromptEdit

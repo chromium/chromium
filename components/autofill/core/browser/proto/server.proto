@@ -495,9 +495,9 @@ message AutofillUploadContents {
     optional SingleUsernamePromptEdit prompt_edit = 4;
   }
   // This message is recorded on forms that do not have a username field.
-  // The message contains data on a preceding form with potential username
-  // field.
-  optional SingleUsernameData single_username_data = 42;
+  // The message contains data on preceding forms with potential username
+  // fields.
+  repeated SingleUsernameData single_username_data = 42;
 
   // The form signature of related forms, which were submitted on the same
   // origin shortly prior. If set, `last_address_form_submitted` or

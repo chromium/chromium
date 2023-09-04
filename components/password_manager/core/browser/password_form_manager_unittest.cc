@@ -2648,12 +2648,12 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
             : autofill::AutofillUploadContents::USERNAME_LIKE);
     expected_single_username_data.set_prompt_edit(
         autofill::AutofillUploadContents::EDITED_POSITIVE);
-    EXPECT_CALL(
-        mock_autofill_download_manager_,
-        StartUploadRequest(
-            AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
-                  UploadedSingleUsernameDataIs(expected_single_username_data)),
-            _, _, _, _, _, /*observer=*/IsNull()));
+    EXPECT_CALL(mock_autofill_download_manager_,
+                StartUploadRequest(
+                    AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
+                          UploadedSingleUsernameDataIs(
+                              {expected_single_username_data})),
+                    _, _, _, _, _, /*observer=*/IsNull()));
 
     if (is_password_update) {
       // Expect another upload for first login votes. This upload is not related
@@ -2729,7 +2729,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
 
   // Simulate showing the prompt and saving the suggested value.
@@ -2824,7 +2824,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
 
   base::HistogramTester histogram_tester;
@@ -2884,7 +2884,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
 
   form_manager_->Save();

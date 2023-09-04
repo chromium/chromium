@@ -746,7 +746,7 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
 
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
@@ -798,7 +798,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
 
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
@@ -852,7 +852,7 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());
@@ -904,7 +904,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());
@@ -955,7 +955,7 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());
@@ -995,7 +995,7 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());
@@ -1027,7 +1027,7 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
       mock_autofill_download_manager_,
       StartUploadRequest(
           AllOf(SignatureIsSameAs(submitted_form_),
-                UploadedSingleUsernameDataIs(expected_single_username_data)),
+                UploadedSingleUsernameDataIs({expected_single_username_data})),
           _, _, _, _, _, /*observer=*/IsNull()));
   votes_uploader.UploadPasswordVote(submitted_form_, submitted_form_,
                                     autofill::PASSWORD, std::string());

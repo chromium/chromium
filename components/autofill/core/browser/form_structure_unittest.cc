@@ -5035,7 +5035,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
   single_username_data.set_username_field_signature(678910);
   single_username_data.set_value_type(AutofillUploadContents::EMAIL);
   single_username_data.set_prompt_edit(AutofillUploadContents::EDITED_POSITIVE);
-  form_structure.set_single_username_data(single_username_data);
+  form_structure.AddSingleUsernameData(single_username_data);
 
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(
@@ -5044,14 +5044,15 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
           true /* observed_submission */,
           false /* is_raw_metadata_uploading_enabled */);
   ASSERT_EQ(1u, uploads.size());
-  EXPECT_EQ(form_structure.single_username_data()->username_form_signature(),
-            uploads.front().single_username_data().username_form_signature());
-  EXPECT_EQ(form_structure.single_username_data()->username_field_signature(),
-            uploads.front().single_username_data().username_field_signature());
-  EXPECT_EQ(form_structure.single_username_data()->value_type(),
-            uploads.front().single_username_data().value_type());
-  EXPECT_EQ(form_structure.single_username_data()->prompt_edit(),
-            uploads.front().single_username_data().prompt_edit());
+  ASSERT_EQ(1, uploads.front().single_username_data().size());
+  const AutofillUploadContents::SingleUsernameData& uploaded_data =
+      uploads.front().single_username_data()[0];
+  EXPECT_EQ(single_username_data.username_form_signature(),
+            uploaded_data.username_form_signature());
+  EXPECT_EQ(single_username_data.username_field_signature(),
+            uploaded_data.username_field_signature());
+  EXPECT_EQ(single_username_data.value_type(), uploaded_data.value_type());
+  EXPECT_EQ(single_username_data.prompt_edit(), uploaded_data.prompt_edit());
 }
 
 // Test that server overrides get precedence over HTML types.

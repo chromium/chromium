@@ -485,8 +485,11 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   if (!current_page_language_->empty() && randomized_encoder_ != nullptr) {
     upload.set_language(current_page_language_.value());
   }
-  if (single_username_data_)
-    upload.mutable_single_username_data()->CopyFrom(*single_username_data_);
+  for (const auto& form_data : single_username_data_) {
+    AutofillUploadContents::SingleUsernameData* single_username_data =
+        upload.add_single_username_data();
+    single_username_data->CopyFrom(form_data);
+  }
 
   if (form_associations_.last_address_form_submitted) {
     upload.set_last_address_form_submitted(

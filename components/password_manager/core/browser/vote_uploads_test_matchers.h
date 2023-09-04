@@ -73,27 +73,40 @@ MATCHER_P(UploadedSingleUsernameVoteTypeIs, expected_type, "") {
   return true;
 }
 
-inline auto UploadedSingleUsernameDataIs(
-    const autofill::AutofillUploadContents::SingleUsernameData& expected) {
+inline auto EqualsSingleUsernameDataVector(
+    std::vector<autofill::AutofillUploadContents::SingleUsernameData>
+        expected_data) {
   using SingleUsernameData =
       autofill::AutofillUploadContents::SingleUsernameData;
-  return Property(
-      "single_username_data", &autofill::FormStructure::single_username_data,
-      Optional(AllOf(Property("username_form_signature",
-                              &SingleUsernameData::username_form_signature,
-                              expected.username_form_signature()),
-                     Property("username_field_signature",
-                              &SingleUsernameData::username_field_signature,
-                              expected.username_field_signature()),
-                     Property("value_type", &SingleUsernameData::value_type,
-                              expected.value_type()),
-                     Property("prompt_edit", &SingleUsernameData::prompt_edit,
-                              expected.prompt_edit()))));
+  std::vector<testing::Matcher<SingleUsernameData>> matchers;
+  for (auto& expected_form : expected_data) {
+    matchers.push_back(
+        AllOf(Property("username_form_signature",
+                       &SingleUsernameData::username_form_signature,
+                       expected_form.username_form_signature()),
+              Property("username_field_signature",
+                       &SingleUsernameData::username_field_signature,
+                       expected_form.username_field_signature()),
+              Property("value_type", &SingleUsernameData::value_type,
+                       expected_form.value_type()),
+              Property("prompt_edit", &SingleUsernameData::prompt_edit,
+                       expected_form.prompt_edit())));
+  }
+  return testing::ElementsAreArray(matchers);
+}
+
+inline auto UploadedSingleUsernameDataIs(
+    std::vector<autofill::AutofillUploadContents::SingleUsernameData>
+        expected_data) {
+  return Property("single_username_data",
+                  &autofill::FormStructure::single_username_data,
+                  EqualsSingleUsernameDataVector(expected_data));
 }
 
 inline auto SingleUsernameDataNotUploaded() {
   return Property("single_username_data",
-                  &autofill::FormStructure::single_username_data, IsFalse());
+                  &autofill::FormStructure::single_username_data,
+                  testing::IsEmpty());
 }
 
 inline auto PasswordsWereRevealed(bool passwords_were_revealed) {
