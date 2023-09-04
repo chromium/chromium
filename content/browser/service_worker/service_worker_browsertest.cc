@@ -6594,7 +6594,11 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
           if (base::Contains(request.GetURL().path(),
                              "/service_worker/direct") ||
               base::Contains(request.GetURL().path(),
-                             "/service_worker/direct_if_not_running")) {
+                             "/service_worker/direct_if_not_running") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/cache_with_wrong_name") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/cache_miss")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_OK);
@@ -6808,6 +6812,40 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
     }
   }
 }
+
+// TODO(crbug.com/1371756) Add a test for the "cache" enum. The test
+// is flaky now.
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageMissThenNetworkFallback) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/cache_miss";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+// TODO(crbug.com/1371756) Add a test for the "cacheName" field.
+// The test is flaky now.
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceCacheStorageMissDueToNameMismatch) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url = "/service_worker/cache_with_wrong_name";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // Due to the cache miss, the result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
 // Test class for static routing API, if disables starting the ServiceWorker
 // automatically when the request matches the registered route.
 class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest

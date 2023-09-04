@@ -8,7 +8,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_router_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_source_enum.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_routersource_routersourceenum.h"
 #include "third_party/blink/renderer/core/fetch/request_util.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
@@ -202,6 +205,45 @@ ServiceWorkerRouterSource RouterSourceEnumToBlink(
       source.fetch_event_source.emplace();
       return source;
     }
+    case V8RouterSourceEnum::Enum::kCache: {
+      ServiceWorkerRouterSource source;
+      source.type = ServiceWorkerRouterSource::SourceType::kCache;
+      source.cache_source.emplace();
+      return source;
+    }
+  }
+}
+
+absl::optional<ServiceWorkerRouterSource> RouterSourceToBlink(
+    const RouterSource* v8_source,
+    ExceptionState& exception_state) {
+  if (!v8_source) {
+    exception_state.ThrowTypeError("Invalid source input");
+    return absl::nullopt;
+  }
+  ServiceWorkerRouterSource source;
+  if (v8_source->hasCacheName()) {
+    source.type = ServiceWorkerRouterSource::SourceType::kCache;
+    ServiceWorkerRouterCacheSource cache_source;
+    cache_source.cache_name = AtomicString(v8_source->cacheName()).Latin1();
+    source.cache_source = std::move(cache_source);
+    return source;
+  }
+  exception_state.ThrowTypeError(
+      "Got a dictionary for source but no field is set");
+  return absl::nullopt;
+}
+
+absl::optional<ServiceWorkerRouterSource> RouterSourceInputToBlink(
+    const V8RouterSourceInput* router_source_input,
+    ExceptionState& exception_state) {
+  switch (router_source_input->GetContentType()) {
+    case blink::V8RouterSourceInput::ContentType::kRouterSourceEnum:
+      return RouterSourceEnumToBlink(
+          router_source_input->GetAsRouterSourceEnum());
+    case blink::V8RouterSourceInput::ContentType::kRouterSource:
+      return RouterSourceToBlink(router_source_input->GetAsRouterSource(),
+                                 exception_state);
   }
 }
 
@@ -271,7 +313,12 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // explains the first step. It does not cover cases sequence of sources
   // are set. The current IDL has been implemented for this level, but
   // the mojo IPC has been implemented to support the final form.
-  rule.sources.emplace_back(RouterSourceEnumToBlink(input->source()));
+  auto source = RouterSourceInputToBlink(input->source(), exception_state);
+  if (!source) {
+    CHECK(exception_state.HadException());
+    return absl::nullopt;
+  }
+  rule.sources.emplace_back(*source);
   return rule;
 }
 
