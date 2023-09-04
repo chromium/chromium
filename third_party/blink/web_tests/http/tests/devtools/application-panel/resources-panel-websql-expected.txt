@@ -34,6 +34,10 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
+Preloading
+  Speculation Rules
+  Preloads
+  This Page
 Frames
   top
     Scripts
@@ -75,6 +79,10 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
+Preloading
+  Speculation Rules
+  Preloads
+  This Page
 Frames
   top
     Scripts
@@ -116,6 +124,10 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
+Preloading
+  Speculation Rules
+  Preloads
+  This Page
 Frames
   top
     Scripts
