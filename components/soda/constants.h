@@ -33,7 +33,20 @@ enum class LanguageCode {
   kEsEs = 4,
   kFrFr = 5,
   kItIt = 6,
-  kMaxValue = kItIt,
+  kEnCa = 7,
+  kEnAu = 8,
+  kEnGb = 9,
+  kEnIe = 10,
+  kEnSg = 11,
+  kFrBe = 12,
+  kFrCh = 13,
+  kEnIn = 14,
+  kItCh = 15,
+  kDeAt = 16,
+  kDeBe = 17,
+  kDeCh = 18,
+  kEsUs = 19,
+  kMaxValue = kEsUs,
 };
 
 // Describes all metadata needed to dynamically install SODA language pack
