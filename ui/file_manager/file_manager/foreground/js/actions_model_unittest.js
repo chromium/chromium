@@ -169,8 +169,6 @@ export function testDriveDirectoryEntry(callback) {
             assertTrue(!!shareAction);
             volumeManager.driveConnectionState = {
               type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
-              hasCellularNetworkAccess: false,
-              canPinHostedFiles: false,
             };
             assertFalse(shareAction.canExecute());
 

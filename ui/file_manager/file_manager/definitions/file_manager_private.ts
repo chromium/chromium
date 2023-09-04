@@ -44,8 +44,6 @@ declare namespace chrome {
     type DriveConnectionState = {
       type: chrome.fileManagerPrivate.DriveConnectionStateType,
       reason?: chrome.fileManagerPrivate.DriveOfflineReason,
-            hasCellularNetworkAccess: boolean,
-            canPinHostedFiles: boolean,
     }
 
     export type GetDriveConnectionStateCallback =

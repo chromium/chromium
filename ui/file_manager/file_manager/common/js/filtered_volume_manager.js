@@ -406,8 +406,6 @@ export class FilteredVolumeManager extends EventTarget {
       return {
         type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
         reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
-        hasCellularNetworkAccess: false,
-        canPinHostedFiles: false,
       };
     }
 

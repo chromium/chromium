@@ -853,18 +853,6 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
       break;
   }
 
-  result.has_cellular_network_access =
-      ash::NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
-          ash::NetworkTypePattern::Mobile());
-
-  const ExtensionSet& enabled_extensions =
-      extensions::ExtensionRegistry::Get(browser_context())
-          ->enabled_extensions();
-  result.can_pin_hosted_files =
-      enabled_extensions.Contains(extension_misc::kDocsOfflineExtensionId) &&
-      enabled_extensions.Contains(
-          GURL(drive::kDriveFsNativeMessageHostOrigins[0]).host());
-
   return RespondNow(ArgumentList(
       api::file_manager_private::GetDriveConnectionState::Results::Create(
           result)));

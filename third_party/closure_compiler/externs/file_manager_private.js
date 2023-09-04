@@ -752,9 +752,7 @@ chrome.fileManagerPrivate.DriveMetadataSearchResult;
 /**
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.DriveConnectionStateType,
- *   reason: (!chrome.fileManagerPrivate.DriveOfflineReason|undefined),
- *   hasCellularNetworkAccess: boolean,
- *   canPinHostedFiles: boolean
+ *   reason: (!chrome.fileManagerPrivate.DriveOfflineReason|undefined)
  * }}
  */
 chrome.fileManagerPrivate.DriveConnectionState;
@@ -1375,7 +1373,7 @@ chrome.fileManagerPrivate.searchFilesByHashes = function(volumeId, hashList, cal
 chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
 
 /**
- * Retrieves the state of the current device connection. |callback|
+ * Retrieves the current device connection status. |callback|
  * @param {function(!chrome.fileManagerPrivate.DeviceConnectionState): void}
  *     callback
  */

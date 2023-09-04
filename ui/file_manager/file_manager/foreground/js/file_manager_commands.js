@@ -1252,9 +1252,7 @@ CommandHandler.COMMANDS_['drive-sync-settings'] =
 
       /** @override */
       canExecute(event, fileManager) {
-        event.canExecute = fileManager.directoryModel.isOnDrive() &&
-            fileManager.volumeManager.getDriveConnectionState()
-                .hasCellularNetworkAccess;
+        event.canExecute = fileManager.directoryModel.isOnDrive();
         event.command.setHidden(!event.canExecute);
       }
     })();
