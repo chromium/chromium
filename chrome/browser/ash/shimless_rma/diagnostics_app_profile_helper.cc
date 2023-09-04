@@ -89,6 +89,7 @@ struct PrepareDiagnosticsAppProfileState {
   ~PrepareDiagnosticsAppProfileState();
 
   // Arguments
+  raw_ptr<DiagnosticsAppProfileHelperDelegate> delegate;
   base::FilePath crx_path;
   base::FilePath swbn_path;
   ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextCallback callback;
@@ -160,14 +161,12 @@ void InstallIsolatedWebApp(
       state->iwa_id.value());
   web_app::IsolatedWebAppLocation location =
       web_app::InstalledBundle{.path = state->swbn_path};
-  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
-      Profile::FromBrowserContext(state->context));
-  CHECK(web_app_provider);
-  web_app_provider->scheduler().InstallIsolatedWebApp(
-      url_info, location,
-      /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr,
-      base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
+  state->delegate->GetWebAppCommandScheduler(state->context)
+      ->InstallIsolatedWebApp(
+          url_info, location,
+          /*expected_version=*/absl::nullopt, /*optional_keep_alive=*/nullptr,
+          /*optional_profile_keep_alive=*/nullptr,
+          base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
 }
 
 void CheckExtensionIsReady(
@@ -208,7 +207,7 @@ void CheckExtensionIsReady(
     blink::StorageKey storage_key,
     base::Time start_time) {
   content::ServiceWorkerContext* service_worker_context =
-      extensions::util::GetServiceWorkerContextForExtensionId(
+      state->delegate->GetServiceWorkerContextForExtensionId(
           state->extension_id.value(), state->context);
   // Extensions register a service worker. Diagnostics app IWAs need to be
   // started after the service worker is up to communicate with the extensions.
@@ -324,12 +323,37 @@ void PrepareDiagnosticsAppProfileImpl(
 
 }  // namespace
 
+DiagnosticsAppProfileHelperDelegate::DiagnosticsAppProfileHelperDelegate() =
+    default;
+
+DiagnosticsAppProfileHelperDelegate::~DiagnosticsAppProfileHelperDelegate() =
+    default;
+
+content::ServiceWorkerContext*
+DiagnosticsAppProfileHelperDelegate::GetServiceWorkerContextForExtensionId(
+    const extensions::ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  return extensions::util::GetServiceWorkerContextForExtensionId(
+      extension_id, browser_context);
+}
+
+web_app::WebAppCommandScheduler*
+DiagnosticsAppProfileHelperDelegate::GetWebAppCommandScheduler(
+    content::BrowserContext* browser_context) {
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(browser_context));
+  CHECK(web_app_provider);
+  return &web_app_provider->scheduler();
+}
+
 void PrepareDiagnosticsAppProfile(
+    DiagnosticsAppProfileHelperDelegate* delegate,
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextCallback callback) {
   CHECK(::ash::features::IsShimlessRMA3pDiagnosticsEnabled());
   auto state = std::make_unique<PrepareDiagnosticsAppProfileState>();
+  state->delegate = delegate;
   state->crx_path = crx_path;
   state->swbn_path = swbn_path;
   state->callback = std::move(callback);

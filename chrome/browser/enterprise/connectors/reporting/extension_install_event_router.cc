@@ -26,17 +26,17 @@ ExtensionInstallEventRouter::ExtensionInstallEventRouter(
 }
 
 ExtensionInstallEventRouter::~ExtensionInstallEventRouter() {
-  if (extension_registry_) {
+  if (extension_registry_ && reporting_client_) {
     extension_registry_->RemoveObserver(this);
   }
 }
 
 void ExtensionInstallEventRouter::StartObserving() {
-  if (!extension_registry_) {
-    DLOG(ERROR) << "extension_registry_ is null. Observer not added.";
-    return;
+  DLOG_IF(ERROR, !extension_registry_)
+      << "extension_registry_ is null. Observer not added.";
+  if (extension_registry_ && reporting_client_) {
+    extension_registry_->AddObserver(this);
   }
-  extension_registry_->AddObserver(this);
 }
 
 void ExtensionInstallEventRouter::OnExtensionInstalled(

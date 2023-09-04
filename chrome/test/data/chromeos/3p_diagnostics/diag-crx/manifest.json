@@ -1,0 +1,23 @@
+{
+  "name": "ChromeOS Diagnostics Test Extension",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "chromeos_system_extension": {},
+  "icons": {
+    "16": "icon.png"
+  },
+  "permissions": [
+    "os.diagnostics",
+    "os.telemetry",
+    "os.telemetry.serial_number"
+  ],
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://googlechromelabs.github.io/*",
+      "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/*"
+    ]
+  }
+}

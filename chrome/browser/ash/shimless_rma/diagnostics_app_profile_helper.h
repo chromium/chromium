@@ -7,11 +7,38 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
+#include "extensions/common/extension_id.h"
+
+namespace content {
+class BrowserContext;
+class ServiceWorkerContext;
+}  // namespace content
+
+namespace web_app {
+class WebAppCommandScheduler;
+}  // namespace web_app
 
 namespace ash::shimless_rma {
 
+// Delegate to replace operations which are hard to mocked in unit tests.
+class DiagnosticsAppProfileHelperDelegate {
+ public:
+  DiagnosticsAppProfileHelperDelegate();
+  DiagnosticsAppProfileHelperDelegate(
+      const DiagnosticsAppProfileHelperDelegate&) = delete;
+  virtual ~DiagnosticsAppProfileHelperDelegate();
+
+  virtual content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
+      const extensions::ExtensionId& extension_id,
+      content::BrowserContext* browser_context);
+
+  virtual web_app::WebAppCommandScheduler* GetWebAppCommandScheduler(
+      content::BrowserContext* browser_context);
+};
+
 // Implements ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext.
 void PrepareDiagnosticsAppProfile(
+    DiagnosticsAppProfileHelperDelegate* delegate,
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextCallback callback);
