@@ -29,7 +29,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Unrestricted, false);
 
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxManuallyControlled, false,

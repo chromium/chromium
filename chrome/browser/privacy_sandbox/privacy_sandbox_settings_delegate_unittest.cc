@@ -181,16 +181,6 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
-       UnrestrictedPref_UserSignedInWithoutAccountCapability) {
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-  SetPrivacySandboxAccountCapability(kTestEmail, false);
-
-  delegate()->IsPrivacySandboxRestricted();
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
-}
-
-TEST_F(PrivacySandboxSettingsDelegateTest,
        AppropriateTopicsConsent_ConsentNotRequired) {
   // When the V4 consent required parameter is not present, Topics always has
   // an appropriate level of consent.

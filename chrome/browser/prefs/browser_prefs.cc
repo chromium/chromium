@@ -907,6 +907,9 @@ const char kShutdownType[] = "shutdown.type";
 const char kDriveFsBulkPinningMaxQueueSize[] =
     "drivefs.bulk_pinning.max_queue_size";
 
+// Deprecated 09/2023.
+const char kPrivacySandboxM1Unrestricted[] = "privacy_sandbox.m1.unrestricted";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1266,6 +1269,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 08/2023.
   registry->RegisterIntegerPref(kDriveFsBulkPinningMaxQueueSize, 0);
+
+  // Deprecated 09/2023.
+  registry->RegisterBooleanPref(kPrivacySandboxM1Unrestricted, false);
 }
 
 }  // namespace
@@ -2404,6 +2410,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 08/2023.
   profile_prefs->ClearPref(kDriveFsBulkPinningMaxQueueSize);
+
+  // Added 09/2023
+  profile_prefs->ClearPref(kPrivacySandboxM1Unrestricted);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

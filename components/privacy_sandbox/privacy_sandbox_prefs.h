@@ -48,12 +48,6 @@ inline constexpr char kPrivacySandboxM1AdMeasurementEnabled[] =
 inline constexpr char kPrivacySandboxM1Restricted[] =
     "privacy_sandbox.m1.restricted";
 
-// Un-synced boolean pref indicating if the Privacy Sandbox was ever indicated
-// as unrestricted by account capabilities.
-// TODO(crbug.com/1428506): Deprecate this preference
-inline constexpr char kPrivacySandboxM1Unrestricted[] =
-    "privacy_sandbox.m1.unrestricted";
-
 // Synced boolean pref. Privacy Sandbox APIs may only be enabled when this is
 // enabled, but each API will respect its own enabling logic if this pref is
 // true. When this pref is false ALL Privacy Sandbox APIs are disabled.
