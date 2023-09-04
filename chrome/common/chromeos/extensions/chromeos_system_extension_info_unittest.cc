@@ -123,3 +123,11 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
               testing::UnorderedElementsAre("HP"));
   EXPECT_EQ(kIwaIdOverride, hp_extension_info.iwa_id->id());
 }
+
+TEST(ChromeOSSystemExtensionInfo, IsChromeOSSystemExtensionProvider) {
+  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("Google"));
+  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("HP"));
+  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("ASUS"));
+
+  EXPECT_FALSE(chromeos::IsChromeOSSystemExtensionProvider("NotAProvider"));
+}

@@ -47,6 +47,9 @@ bool IsChromeOSSystemExtension(const std::string& id);
 const ChromeOSSystemExtensionInfo& GetChromeOSExtensionInfoById(
     const std::string& id);
 
+// Check if `manufacturer` provides any chromeos system extension.
+bool IsChromeOSSystemExtensionProvider(const std::string& manufacturer);
+
 // Exported for testing.
 // A helper class to restore the allowlist after tests. This should be created
 // before modifying base::CommandLine to avoid changing the original allowlist.

@@ -142,6 +142,15 @@ bool IsChromeOSSystemExtension(const std::string& id) {
   return GetMap()->find(id) != GetMap()->end();
 }
 
+bool IsChromeOSSystemExtensionProvider(const std::string& manufacturer) {
+  for (const auto& [extension_id, info] : *GetMap()) {
+    if (info.manufacturers.contains(manufacturer)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 class ScopedChromeOSSystemExtensionInfoImpl
     : public ScopedChromeOSSystemExtensionInfo {
  public:
