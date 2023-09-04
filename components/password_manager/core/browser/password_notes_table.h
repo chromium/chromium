@@ -33,6 +33,10 @@ class PasswordNotesTable {
   // Initializes `db_`. `db_` should not be null and outlive this class.
   void Init(sql::Database* db);
 
+  // Migrates this table from `current_version` to `kCurrentVersionNumber`
+  // defined in the login db.
+  bool MigrateTable(int current_version, bool is_account_store);
+
   // Adds the note if it doesn't exist.
   // If it does, it removes the previous entry and adds the new one.
   bool InsertOrReplace(FormPrimaryKey parent_id, const PasswordNote& note);

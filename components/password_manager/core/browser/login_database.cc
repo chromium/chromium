@@ -70,10 +70,10 @@ using metrics_util::MigrationToOSCrypt;
 #endif
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 39;
+constexpr int kCurrentVersionNumber = 40;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
-constexpr int kCompatibleVersionNumber = 39;
+constexpr int kCompatibleVersionNumber = 40;
 
 base::Pickle SerializeAlternativeElementVector(
     const AlternativeElementVector& vector) {
@@ -572,8 +572,12 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->AddColumn("keychain_identifier", "BLOB");
   SealVersion(builders, /*expected_version=*/39u);
 
-  static_assert(kCurrentVersionNumber == 39, "Seal the recent version");
-  DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
+  // Version 40.
+  // Migrate password notes encryption to OSCrypt.
+  SealVersion(builders, /*expected_version=*/40u);
+
+  static_assert(kCurrentVersionNumber == 40, "Seal the recent version");
+  CHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
 }
@@ -1119,7 +1123,10 @@ bool LoginDatabase::Init() {
     db_.Close();
     return false;
   }
-
+  if (migration_success) {
+    migration_success = password_notes_table_.MigrateTable(
+        current_version, is_account_store_.value());
+  }
   if (migration_success && current_version <= 15) {
     migration_success = stats_table_.MigrateToVersion(16);
   }

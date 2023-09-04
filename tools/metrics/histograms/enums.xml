@@ -83819,6 +83819,17 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Note did not change"/>
 </enum>
 
+<enum name="PasswordNotesMigrationToOSCryptEnum">
+  <summary>
+    Display migration status of LoginDatabase to OSCrypt on IOS for notes.
+  </summary>
+  <int value="0" label="Migration started"/>
+  <int value="1" label="Migration failed: can't read note from keychain"/>
+  <int value="2" label="Migration failed: can't encrypt note with OSCrypt"/>
+  <int value="3" label="Migration failed: can't update note value"/>
+  <int value="4" label="Migration succeeded"/>
+</enum>
+
 <enum name="PasswordProtectionInterstitialStringType">
   <int value="0" label="Generic string without org name"/>
   <int value="1" label="Generic string with org name"/>

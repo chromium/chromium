@@ -438,6 +438,17 @@ void RecordMigrationToOSCryptStatus(base::TimeTicks migration_start_time,
       base::StrCat({"PasswordManager.MigrationToOSCrypt.", infix_for_store}),
       status);
 }
+
+void RecordPasswordNotesMigrationToOSCryptStatus(
+    bool is_account_store,
+    PasswordNotesMigrationToOSCrypt status) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordNotesMigrationToOSCrypt", status);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PasswordManager.PasswordNotesMigrationToOSCrypt.",
+                    is_account_store ? "AccountStore" : "ProfileStore"}),
+      status);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace password_manager::metrics_util
