@@ -66,8 +66,6 @@ bool FakeLoginDisplayHost::IsFinalizing() {
   return false;
 }
 
-void FakeLoginDisplayHost::Finalize(base::OnceClosure) {}
-
 void FakeLoginDisplayHost::FinalizeImmediately() {}
 
 void FakeLoginDisplayHost::SetStatusAreaVisible(bool visible) {}
@@ -91,9 +89,6 @@ KioskLaunchController* FakeLoginDisplayHost::GetKioskLaunchController() {
 WizardContext* FakeLoginDisplayHost::GetWizardContext() {
   return nullptr;
 }
-
-void FakeLoginDisplayHost::StartUserAdding(
-    base::OnceClosure completion_callback) {}
 
 void FakeLoginDisplayHost::CancelUserAdding() {}
 

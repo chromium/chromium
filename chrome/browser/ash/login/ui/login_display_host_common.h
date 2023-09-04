@@ -148,9 +148,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   // Make sure chrome won't exit while we are at login/oobe screen.
   ScopedKeepAlive keep_alive_;
 
-  // Called after host deletion.
-  std::vector<base::OnceClosure> completion_callbacks_;
-
   KioskAppMenuController kiosk_app_menu_controller_;
 
   std::unique_ptr<LoginFeedback> login_feedback_;

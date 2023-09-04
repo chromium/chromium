@@ -82,17 +82,6 @@ namespace {
 // network requests are made while the system is idle waiting for user input.
 constexpr int64_t kPolicyServiceInitializationDelayMilliseconds = 100;
 
-void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
-  for (auto& callback : callbacks) {
-    if (callback.is_null()) {
-      continue;
-    }
-
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
-}
-
 void PushFrontImIfNotExists(const std::string& input_method_id,
                             std::vector<std::string>* input_method_ids) {
   if (input_method_id.empty()) {
@@ -241,9 +230,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
   BrowserList::AddObserver(this);
 }
 
-LoginDisplayHostCommon::~LoginDisplayHostCommon() {
-  ScheduleCompletionCallbacks(std::move(completion_callbacks_));
-}
+LoginDisplayHostCommon::~LoginDisplayHostCommon() = default;
 
 void LoginDisplayHostCommon::BeforeSessionStart() {
   session_starting_ = true;
@@ -255,12 +242,13 @@ bool LoginDisplayHostCommon::LoginDisplayHostCommon::IsFinalizing() {
 
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
   LOG(WARNING) << "Finalize";
+  LoginDisplayHost::Finalize(std::move(completion_callback));
+
   // If finalize is called twice the LoginDisplayHost instance will be deleted
   // multiple times.
   CHECK(!is_finalizing_);
   is_finalizing_ = true;
 
-  completion_callbacks_.push_back(std::move(completion_callback));
   OnFinalize();
 }
 
@@ -280,7 +268,7 @@ KioskLaunchController* LoginDisplayHostCommon::GetKioskLaunchController() {
 
 void LoginDisplayHostCommon::StartUserAdding(
     base::OnceClosure completion_callback) {
-  completion_callbacks_.push_back(std::move(completion_callback));
+  LoginDisplayHost::StartUserAdding(std::move(completion_callback));
   OnStartUserAdding();
 }
 
