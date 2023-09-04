@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_list_part_traversal.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -1201,8 +1202,30 @@ void HTMLSelectListElement::UpdateSelectedValuePartContents() {
   // they want to show something in the button other than the current value of
   // the <selectlist>.
   if (selected_value_part_) {
-    selected_value_part_->setTextContent(
-        selected_option_ ? selected_option_->innerText() : "");
+    // TODO(crbug.com/1121840): when we remove the old architecture, this
+    // should be a CHECK that selected_value_part_ is a <selectedoption>.
+    if (selected_value_part_->HasTagName(html_names::kSelectedoptionTag) &&
+        selected_option_) {
+      // TODO(crbug.com/1121840): should the label attribute be used instead if
+      // it is specified?
+      auto* clone = selected_option_->cloneNode(/*deep=*/true);
+      VectorOf<Node> nodes;
+      for (Node& child : NodeTraversal::ChildrenOf(*clone)) {
+        nodes.push_back(child);
+      }
+      // TODO(crbug.com/1121840): Instead of using RemoveChildren and
+      // AppendChild, we should be using replaceChildren. replaceChildren is
+      // currently only called from V8 code and uses V8 unions which makes it
+      // hard to call from here but we should make a new ReplaceChildren method
+      // that takes normal nodes.
+      selected_value_part_->RemoveChildren();
+      for (Member<Node> child : nodes) {
+        selected_value_part_->AppendChild(child);
+      }
+    } else {
+      selected_value_part_->setTextContent(
+          selected_option_ ? selected_option_->innerText() : "");
+    }
   }
 }
 
