@@ -699,4 +699,8 @@ bool BackForwardCacheMetrics::DidSwapBrowsingInstance() const {
   }
 }
 
+std::string BackForwardCacheMetrics::GetPageStoredResultString() {
+  return page_store_result_->ToString();
+}
+
 }  // namespace content
