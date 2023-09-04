@@ -444,7 +444,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   auto summarize_sub_section = [](const std::string& caption,
                                   const base::Value::Dict& dict) {
     std::ostringstream result;
-    result << caption << ": Fraction maches " << std::fixed
+    result << caption << ": Fraction matches " << std::fixed
            << std::setprecision(2)
            << (*dict.FindDouble("fraction_machtes") * 100.0) << "%, "
            << "Matches: " << *dict.FindInt("matches") << ", "
@@ -527,7 +527,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       // Allow local heuristics to take precedence.
       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
       // Other improvements.
-      features::kAutofillEnableZipOnlyAddressForms};
+      features::kAutofillEnableZipOnlyAddressForms,
+      features::kAutofillDefaultToCityAndNumber};
   std::vector<base::test::FeatureRef> disabled_features = {};
 
   auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {

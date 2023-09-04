@@ -84,6 +84,12 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
+// PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
+BASE_FEATURE(kAutofillDefaultToCityAndNumber,
+             "AutofillDefaultToCityAndNumber",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // FormStructure::RetrieveFromCache used to preserve an AutofillField's
 // is_autofilled from the cache of previously parsed forms. This makes little
 // sense because the renderer sends us the autofill state and has the most
