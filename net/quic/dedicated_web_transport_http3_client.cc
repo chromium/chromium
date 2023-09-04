@@ -617,7 +617,8 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   }
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
-      socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
+      std::move(socket_), quic_context_->clock(), this,
+      kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
       net_log_);

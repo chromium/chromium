@@ -22,13 +22,13 @@ const size_t kReadBufferSize =
 }  // namespace
 
 QuicChromiumPacketReader::QuicChromiumPacketReader(
-    DatagramClientSocket* socket,
+    std::unique_ptr<DatagramClientSocket> socket,
     const quic::QuicClock* clock,
     Visitor* visitor,
     int yield_after_packets,
     quic::QuicTime::Delta yield_after_duration,
     const NetLogWithSource& net_log)
-    : socket_(socket),
+    : socket_(std::move(socket)),
       visitor_(visitor),
       clock_(clock),
       yield_after_packets_(yield_after_packets),
@@ -76,6 +76,10 @@ void QuicChromiumPacketReader::StartReading() {
   }
 }
 
+void QuicChromiumPacketReader::CloseSocket() {
+  socket_->Close();
+}
+
 bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   read_pending_ = false;
   if (result <= 0 && net_log_.IsCapturing()) {
@@ -93,7 +97,7 @@ bool QuicChromiumPacketReader::ProcessReadResult(int result) {
   }
   if (result < 0) {
     // Report all other errors to the visitor.
-    return visitor_->OnReadError(result, socket_);
+    return visitor_->OnReadError(result, socket_.get());
   }
 
   quic::QuicReceivedPacket packet(read_buffer_->data(), result, clock_->Now());
