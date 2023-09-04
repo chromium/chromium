@@ -80,6 +80,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 
   // Add any features that have been enabled.
   source->AddBoolean("colorThemes", true);
+  source->AddBoolean("HelpAppAppsGamesBannerV2", true);
   source->AddBoolean("HelpAppDynamicHomePageBanner", true);
   source->AddBoolean("HelpAppReleaseNotes", true);
   source->AddBoolean(
