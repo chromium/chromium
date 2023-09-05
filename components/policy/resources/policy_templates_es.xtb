@@ -106,9 +106,6 @@ Si no se define esta política, no se permitirán excepciones de <ph name="DEVIC
       Si se le asigna el valor "true", se enviará la información sobre la retroiluminación del dispositivo.</translation>
 <translation id="1076751984131277498">Lista de dispositivos USB desvinculables permitidos</translation>
 <translation id="1077675271127011209">Inhabilitar informes de uso y de datos sobre fallos</translation>
-<translation id="1079425471279127373">Si se establece la política, se permitirá que algunos orígenes de aplicaciones web de instalación forzada obtengan atributos de dispositivo (por ejemplo, el número de serie o el nombre de host) usando la API Device Attributes.
-
-      La API Device Attributes es una lista de APIs web. Consulta https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles para los orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o la política que esté configurada en la sesión de kiosco.</translation>
 <translation id="1079498696402787191">Usar el valor predeterminado para los hashes permitidos en los handshakes de TLS</translation>
 <translation id="1079801999187584280">No permitir el uso de herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
@@ -370,6 +367,9 @@ Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SET
 <translation id="1312799700549720683">Controla los ajustes de la pantalla.</translation>
 <translation id="131353325527891113">Mostrar los nombres de usuario en la pantalla de inicio de sesión</translation>
 <translation id="1317658068839330898">No permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
+<translation id="1325547947664414578">Cuando un usuario cambie de un dispositivo <ph name="PRODUCT_OS_NAME" /> a otro con el mismo SO, el servicio <ph name="PRODUCT_NAME" /> abrirá las ventanas de navegador y de aplicaciones del dispositivo anterior en el nuevo.
+Si se habilita esta política, se abrirán las ventanas de navegador y de aplicaciones del último dispositivo <ph name="PRODUCT_OS_NAME" /> usado por el usuario actual automáticamente al iniciar sesión.
+Si se inhabilita la política o se deja sin definir, la configuración de restauración completa determinará qué debe abrirse al iniciar sesión.</translation>
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar teclado en pantalla</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
@@ -952,6 +952,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, consulta DeviceMetricsReportingEnab
 
       Si no se configura esta política, no se aplicarán restricciones respecto a qué usuarios pueden iniciar sesión. Ten en cuenta que sigue siendo necesario configurar adecuadamente la política <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> para crear nuevos usuarios.
       Si se habilita <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" />, los usuarios de Family Link podrán iniciar sesión, además de las cuentas que se definan en esta política.</translation>
+<translation id="18186215616223740">Al acceder a documentos de Office gestionados por <ph name="BASIC_EDITOR_NAME" />, forzar su descarga</translation>
 <translation id="1819272352048746487">Habilitar o inhabilitar distintas funciones en el teclado en pantalla</translation>
 <translation id="1823974945066396306">Define la lista de usuarios a los que se permite iniciar sesión en el dispositivo. Las entradas tienen el formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (por ejemplo, <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />). Para permitir usuarios arbitrarios en un dominio, utiliza entradas similares a <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -1052,6 +1053,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
       Nota: Las comprobaciones de <ph name="OCSP_CRL_LABEL" /> no proporcionan una seguridad efectiva.</translation>
 <translation id="1905061765326052857">No permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
+<translation id="1906871416501278476">Inhabilitar el servicio <ph name="PRODUCT_NAME" /> y no iniciar el escritorio remoto al iniciar sesión</translation>
 <translation id="1907696459350079081">No habilitar el salvapantallas en la pantalla de inicio de sesión.</translation>
 <translation id="1910704279188129272">Permite especificar restricciones de uso por aplicación.
         Se pueden aplicar restricciones de uso a las aplicaciones instaladas en <ph name="PRODUCT_OS_NAME" /> para un usuario determinado.
@@ -2436,6 +2438,7 @@ Esta política es temporal y se eliminará más adelante.</translation>
 <translation id="3136550518935590587">Concede permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los IDs de proveedor y producto facilitados en la pantalla de inicio de sesión.</translation>
 <translation id="3138514192363246220">Inhabilitar la obtención de metadatos de carga de páginas y modelos de aprendizaje automático que mejoran la experiencia de navegación</translation>
 <translation id="3142410959002029864">Si se establece esta política, se anula el modo predeterminado de impresión por las dos caras. Si el modo no está disponible, se ignorará esta política.</translation>
+<translation id="3143203373436771188">Al acceder a documentos de Office gestionados por <ph name="BASIC_EDITOR_NAME" />, abrirlos en <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Si se utiliza <ph name="PRINTERS_BLOCKLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />, esta especifica qué impresoras no pueden utilizar los usuarios. Los usuarios podrán utilizar todas las impresoras, excepto aquellas con los ID indicados en la política. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">No permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
 <translation id="3150351525324499342">No mostrar de forma predeterminada el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas, pero dejar que los usuarios elijan</translation>
@@ -5960,6 +5963,7 @@ Consulta https://developer.chrome.com/blog/immutable-document-domain/ para obten
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287128640500683781">Permitir que cualquier usuario inicie sesión</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
+<translation id="6287742528823584153">Habilitar el servicio <ph name="PRODUCT_NAME" /> e iniciar el escritorio remoto al iniciar sesión</translation>
 <translation id="6299147100249359151">Permite la detección del nivel de las políticas.</translation>
 <translation id="6299554629216555326">Configuración de la gestión de ventanas</translation>
 <translation id="6300871921951390976">Solo se permite que los usuarios cambien el canal de lanzamiento del dispositivo si se le asigna el valor "True" a esta política. Si se le asigna el valor "False" o no se le asigna ninguno, los usuarios no podrán cambiar el canal.
@@ -6644,7 +6648,6 @@ Esta política se eliminará de <ph name="PRODUCT_NAME" /> en el futuro.</transl
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="6794083666143216172">Permitir que los orígenes consulten los atributos del dispositivo</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6796215185873669533">Asigna el valor predeterminado de la configuración del navegador a la versión de la cadena user-agent.</translation>
 <translation id="6800111968763383631">Niega el permiso de MIDI en todos los sitios de forma predeterminada</translation>

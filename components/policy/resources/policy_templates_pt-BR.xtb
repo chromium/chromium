@@ -108,9 +108,6 @@ Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTIC
       Se ela for definida como verdadeira, as informações sobre as luzes de fundo do dispositivo serão enviadas.</translation>
 <translation id="1076751984131277498">Lista de permissões de dispositivos USB removíveis</translation>
 <translation id="1077675271127011209">Desativar relatórios de uso e dados relacionados a falhas</translation>
-<translation id="1079425471279127373">Definir a política permite que algumas origens de aplicativos da web de instalação forçada recebam atributos de dispositivo (como número de série, nome do host) usando a API Device Attributes.
-
-      A API Device Attributes é uma lista de APIs da Web. Consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês). Essas APIs estão disponíveis apenas para origens que correspondem a aplicativos da Web de instalação forçada pela <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou para a configurada na sessão de quiosque.</translation>
 <translation id="1079498696402787191">Use o valor padrão para hashes permitidos em handshakes do TLS.</translation>
 <translation id="1079801999187584280">Não permite o uso das Ferramentas para Desenvolvedores</translation>
 <translation id="1082802595100075771">Permitir que os usuários escolham usar um Serviço do Google anônimo para oferecer descrições automáticas para imagens que não têm um texto alternativo</translation>
@@ -6783,7 +6780,6 @@ Esta política pode ser removida de <ph name="PRODUCT_NAME" /> no futuro.</trans
       Se a política for definida como "Desativada", o ícone de recursos experimentais do navegador será removido da barra de ferramentas.
 
       chrome://flags e todas as outras formas de desativar e ativar os recursos do navegador ainda funcionarão como esperado, independentemente de a política ser definida como "Ativada" ou "Desativada".</translation>
-<translation id="6794083666143216172">Permitir que as origens consultem os atributos do dispositivo</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800111968763383631">Nega a permissão de MIDI em todos os sites por padrão</translation>

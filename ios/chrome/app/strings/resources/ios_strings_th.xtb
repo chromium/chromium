@@ -477,6 +477,7 @@
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3688815115226493214">คำแนะนำแท็บ</translation>
 <translation id="3700134753671613714">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กบนอุปกรณ์ทั้งหมดของคุณ</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}other{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}}</translation>
 <translation id="3709582977625132201">ทำเครื่องหมายว่ายังไม่อ่าน</translation>
 <translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="37207012422556617">การค้นหาที่มาแรง</translation>
@@ -1375,6 +1376,7 @@
 <translation id="8855242995793521265">ไม่ทำให้เบราว์เซอร์หรืออุปกรณ์ของคุณทำงานช้าลงอย่างเห็นได้ชัด</translation>
 <translation id="8855781063981781621">หากต้องการปิดใช้โหมดปิดล็อกใน Chrome ให้ปิดโหมดนี้ใน iPad ของคุณ</translation>
 <translation id="8863431381414769983">ขอเส้นทางและข้อมูลในพื้นที่จาก Google Maps</translation>
+<translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>
 <translation id="8870413625673593573">เพิ่งปิด</translation>
 <translation id="8876882697946675716">ซิงค์อุปกรณ์อยู่เสมอ</translation>

@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Reprendre l'installation</translation>
 <translation id="1029669172902658969">Relancer et mettre à jour &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium vous recommande d'examiner cette extension</translation>
+<translation id="1042552502243217427">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chromium utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
 <translation id="1065672644894730302">Impossible de lire vos préférences.
 Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1083934481477628225">Ton parent a désactivé "Autorisations des sites, applications et extensions" pour Chromium</translation>
@@ -130,6 +131,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="3713809861844741608">Ouvrir le lien dans un nouvel ongle&amp;t Chromium</translation>
 <translation id="378917192836375108">Avec Chromium, cliquez sur un numéro de téléphone sur le Web et appelez-le dans Skype !</translation>
 <translation id="3790262771324122253">Découvrez pourquoi Chromium bloque certains téléchargements</translation>
+<translation id="3802055581630249637">Chromium précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="3830894615770080216">Système Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Obtenir de l'aide avec Chromium OS</translation>
@@ -240,6 +242,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6132897690380286411">Chromium se fermera bientôt et supprimera les données</translation>
 <translation id="6134968993075716475">La navigation sécurisée étant désactivée, Chromium vous recommande de l'activer.</translation>
 <translation id="6145820983052037069">Vous pouvez passer d'un profil Chromium à un autre ici</translation>
+<translation id="615103374448673771">Si vous autorisez les cookies, Chromium peut les utiliser pour le préchargement</translation>
 <translation id="6175304430031192654">Selon vos paramètres, Chromium peut aussi envoyer des cookies et votre URL actuelle</translation>
 <translation id="6183079672144801177">Vérifiez si vous êtes bien connecté à Chromium sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="6212496753309875659">Cet ordinateur dispose déjà d'une version plus récente de Chromium. Si le logiciel ne fonctionne pas, veuillez le désinstaller, puis réessayer.</translation>
@@ -264,6 +267,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6400112897226594999">Logo Chromium sur un écran d'ordinateur.</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur le Web en toute sécurité tout en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et de phishing.</translation>
 <translation id="6442900851116057561">Redémarrer Chromium OS</translation>
+<translation id="6443470774889161065">Chromium précharge davantage de pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="6455857529632101747">Bienvenue sur la page de profils Chromium</translation>
 <translation id="6475912303565314141">Elle contrôle également la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="648319183876919572">La navigation sécurisée avec protection renforcée vous protège davantage contre les sites Web et les téléchargements malveillants</translation>

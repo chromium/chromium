@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Gosodwch Chrome fel eich porwr diofyn i gysoni'ch tabiau, eich cyfrineiriau, a'ch gwybodaeth talu ar eich holl ddyfeisiau</translation>
 <translation id="1504372625950710826">Ni allai Chrome wirio am ddiweddariadau. Rhowch gynnig ar wirio'ch cysylltiad rhyngrwyd.</translation>
 <translation id="1511320244449497906">Rydych wedi mewngofnodi ac yn cysoni'ch data â chyfrif a reolir gan <ph name="DOMAIN" /> lle gall ei weinyddwr bellach osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
+<translation id="1516692594929310090">Yn Agor y Grid Tabiau Chrome.</translation>
 <translation id="1526327845902180576">Pan fydd ymlaen:
 <ph name="BEGIN_INDENT" />  • Helpwch i wneud Chrome yn well i bobl sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Pethau i'w hystyried:
 
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="6916015246697034114">Chwilio â Llais yn Chrome</translation>
 <translation id="6964931465519938134">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="6975725306479268850">Dewiswch Chrome ar gyfer Awtolenwi</translation>
 <translation id="7059914902409643750">Personoleiddiwch Chrome</translation>
@@ -150,6 +152,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7400722733683201933">Ynghylch Google Chrome</translation>
 <translation id="7501046334262221972">I wneud Chrome eich porwr diofyn, agorwch y Gosodiadau. Tapiwch Ap Pori Diofyn, a dewiswch Chrome.</translation>
 <translation id="756809126120519699">Wedi clirio data Chrome</translation>
+<translation id="7581063337314642333">Mynd i'r Grid Tabiau yn Chrome</translation>
 <translation id="7662994914830945754">Er mwyn gweld eich tabiau o ble bynnag rydych yn defnyddio Chrome, mewngofnodwch a throwch gysoni ymlaen</translation>
 <translation id="7669869107155339016">Mynd i Osodiadau Chrome.</translation>
 <translation id="7693590760643069321">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
@@ -157,10 +160,13 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="7754633291442704733">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chrome, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chrome.</translation>
 <translation id="7780154209050837198">I gael y gorau o Chrome, mewngofnodwch i Chrome â'ch Cyfrif Google.</translation>
 <translation id="7855730255114109580">Mae Google Chrome yn gyfoes</translation>
+<translation id="7897703007638178753">Gweld Tabiau Diweddar Chrome</translation>
+<translation id="7925119591961387184">Dewiswch "Chrome."</translation>
 <translation id="8022947259858476807">Defnyddiwch Chrome yn ddiofyn i agor dolenni, chwilio o declynnau, ac awtolenwi cyfrineiriau mewn apiau eraill</translation>
 <translation id="804638182476029347">Caniatáu i hysbysiadau Chrome gael rhybuddion gostyngiad mewn prisiau</translation>
 <translation id="81358522153858150">Mae Chrome bellach yn cefnogi polisïau defnyddwyr ar gyfer eich cyfrif a reolir</translation>
 <translation id="8160472928944011082">Ni all Chrome ddiweddaru</translation>
+<translation id="8174679664544842874">Yn Agor Tab Newydd yn Chrome.</translation>
 <translation id="8213758103105806860">Gweld Nodau Tudalen Chrome</translation>
 <translation id="8357607116237445042">Dewiswch a ddylid clirio eich data Chrome o'r ddyfais hon neu eu cadw</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
@@ -174,8 +180,10 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
   2. Tapiwch Ap Pori Diofyn
   3. Dewiswch Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Tapiwch "Chrome" yna "Ap Porwr Diofyn."</translation>
 <translation id="8603022514504485810">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Cadwch yn Ddiogel gyda Google Chrome</translation>
+<translation id="8760668027640688122">Agor Tab Newydd yn Chrome</translation>
 <translation id="8765470054473112089">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chrome yn anfon yr hyn rydych yn ei deipio i'ch peiriant chwilio diofyn i gael awgrymiadau gwell. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="8772179140489533211">Dangos anogwyr i fewngofnodi i Chrome.</translation>
 <translation id="8788269841521769222">Ni fydd angen i chi gofio'r cyfrinair hwn. Bydd yn cael ei gadw i Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
@@ -185,6 +193,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni yfory.</translation>
 <translation id="8897749957032330183">Mae cyfrineiriau'n cael eu cadw i Reolwr Cyfrineiriau Google ar y ddyfais hon.</translation>
+<translation id="8949681853939555434">Gosodwch Chrome fel eich Porwr Diofyn</translation>
 <translation id="8969290730818637510">Pan fydd ymlaen:
 <ph name="BEGIN_INDENT" />  • Helpwch i wneud Chrome yn well i bob sy'n ei ddefnyddio yn yr un ffordd â chi.<ph name="END_INDENT" />
 
@@ -196,4 +205,5 @@ Pethau i'w hystyried:
   • Os ydych yn troi cysoni ymlaen, gall metrigau hefyd gynnwys gwybodaeth am gyfeiriadau URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Gosod Chrome fel y porwr diofyn?</translation>
 <translation id="9122931302567044771">Mae hyn yn golygu y bydd Chrome yn gofyn am y wefan bwrdd gwaith bob tro.</translation>
+<translation id="9181628561061032322">Yn Agor y Tabiau Diweddar Chrome.</translation>
 </translationbundle>

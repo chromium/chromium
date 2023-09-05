@@ -64,6 +64,7 @@ Things to consider:
 <translation id="322254490661677575">To use and save Chrome data in your Google Account, enter your passphrase.</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3345341804167540816">Use Chrome Everywhere</translation>
+<translation id="3472587960215700950">Chrome uses Google Maps to give you directions and local info on detected addresses.</translation>
 <translation id="3503014945441706099">Get Enhanced Safe Browsing for this Chrome profile, too</translation>
 <translation id="3522659714780527202">To see your tabs from wherever you use Chrome, turn on sync</translation>
 <translation id="3533694711092285624">No saved passwords. Chrome can check your passwords when you save them.</translation>
@@ -74,14 +75,17 @@ Things to consider:
 <translation id="3827545470516145620">You're getting standard security protection on this device</translation>
 <translation id="384394811301901750">Google Chrome can't use your camera at the moment.</translation>
 <translation id="3901001113120561395">Get the most out of Chrome.</translation>
+<translation id="3967382818307165056">Manage Payment Methods in Chrome</translation>
 <translation id="3980220367029651214">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chrome data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Your organisation requires you to stay signed out of Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">To use and save Chrome data in your Google Account, verify that it's you.</translation>
+<translation id="4067858366537947361">Open Chrome Incognito Tab</translation>
 <translation id="4093042601582616698">Make Chrome your default browser?</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> was using Chrome and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
+<translation id="4251174643044751591">Opens The Payment Methods Setting Page in Chrome.</translation>
 <translation id="4508370294876102450">Open Chrome from any app</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
 <translation id="4633328489441962921">Chrome can't check for updates</translation>
@@ -121,6 +125,7 @@ Things to consider:
 <translation id="6063091872902370735">Allow Chrome Sign-in</translation>
 <translation id="6110625574506755980">Some Chrome features won’t be available anymore.</translation>
 <translation id="6181930887571472871">Switch to Chrome</translation>
+<translation id="6228768456496298352">Chrome detects addresses using Google Maps to give you directions and local info.</translation>
 <translation id="6238746320622508509">Let Chrome lock your incognito tabs.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
@@ -130,6 +135,7 @@ Things to consider:
 <translation id="6646696210740573446">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.</translation>
 <translation id="6648150602980899529">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
+<translation id="6683891932310469419">Opens your Chrome History Page.</translation>
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
 <translation id="6815466750807582739">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
 
@@ -138,6 +144,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6916015246697034114">Search with Voice in Chrome</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
+<translation id="7056826488869329999">Opens and Runs Safety Check in Chrome.</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
 <translation id="7161390184744336561">Google Chrome is out of date</translation>
@@ -168,6 +175,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8160472928944011082">Chrome can't update</translation>
 <translation id="8174679664544842874">Opens a New Tab in Chrome.</translation>
 <translation id="8213758103105806860">See Chrome bookmarks</translation>
+<translation id="8328903609881776074">Opens a New Chrome Incognito Tab.</translation>
 <translation id="8357607116237445042">Choose whether to clear your Chrome data from this device or keep it</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>

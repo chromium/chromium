@@ -90,6 +90,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1293264513303784526">C-tyypin USB-laite (vasemman sivun portti)</translation>
 <translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Avaa Explore</translation>
 <translation id="1294929383540927798">Muuta lukitusnäytön ilmoitusasetuksia</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">SOVELLUSSUOSITUKSET</translation>
@@ -365,6 +366,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Avaa ikkunoiden lukitus</translation>
 <translation id="2528111225373402384">Hotspot-asetukset</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Laita näppäimistöselaaminen päälle tai pois päältä</translation>
 <translation id="2531025035050312891">hidas laite</translation>
 <translation id="2531107890083353124">Vedä välilehteä ja paina samalla <ph name="KEY_ONE" /></translation>
@@ -387,6 +389,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2612614436418177118">Siirrä sovelluksen kuvaketta sovellusruudukossa</translation>
 <translation id="2620016719323068571">Hae <ph name="CATEGORY" />, tiedostoista, sovelluksista ja muista.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Suojattu</translation>
 <translation id="2624588537172718173">Laitteen audio ja mikrofoni</translation>
 <translation id="263399434338050016">Valitse kaikki</translation>
@@ -511,6 +514,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3161500364292033097">Sulje työpöytä ja ikkunat</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> palauttaa laitteen (<ph name="DEVICE_TYPE" />) aiempaan versioon. Laitteen tehdasasetukset palautetaan ja kaikki data poistetaan.</translation>
 <translation id="3171170659304083361">Syöttötapojen asetukset</translation>
+<translation id="3176221688814061633">Chromebookissa tai Bluetooth-laitteessa on vanhempi Bluetooth-versio. Laita Bluetooth Super Resolution päälle tai käytä sisäistä mikrofonia äänenlaadun parantamiseksi.</translation>
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Yhdistetty 1 laitteeseen}other{Yhdistetty # laitteeseen}}</translation>
 <translation id="320207200541803018">Aseta ajastin</translation>
@@ -524,7 +528,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="324366796737464147">Taustahälyn vaimennus</translation>
 <translation id="3249513730522716925">Ikkuna <ph name="WINDOW_TITLE" /> siirretty työpöydältä <ph name="ACTIVE_DESK" /> työpöydälle <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Määritä</translation>
 <translation id="3253743281242075461">Tehtävätyyppi: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
 <translation id="3256109297135787951">Poista korostus hyllyssä olevasta kohteesta</translation>
@@ -673,6 +676,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3781910048497807059">Siirrä tarkennus edelliseen ruutuun</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Lukitse</translation>
+<translation id="3789841737615482174">Asenna</translation>
 <translation id="3796215473395753611">Alt + ylänuoli</translation>
 <translation id="3796746699333205839">Sovellus käyttää kameraasi ja mikrofoniasi</translation>
 <translation id="3798670284305777884">Kaiutin (sisäinen)</translation>
@@ -1477,7 +1481,6 @@ Uusi asennus</translation>
 <translation id="7086931198345821656">Päivitys edellyttää laitteen (<ph name="DEVICE_TYPE" />) powerwashia. Kaikki data poistetaan. Lue lisää uusimmasta päivityksestä: <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kytkimen käyttö</translation>
 <translation id="709015856939120012">Lähennä sivua</translation>
-<translation id="7098053464892629930">Lataa sovellus (<ph name="NAME" />) Google Playsta, niin näet kaikki saatavilla olevat ominaisuudet</translation>
 <translation id="7098389117866926363">C-tyypin USB-laite (vasemmanpuoleinen takaportti)</translation>
 <translation id="7100906357717321275">Näytä piilotetut tiedostot Tiedostot-sovelluksessa</translation>
 <translation id="7108254681523785542">Valitse liitettävä kohde. Näet leikepöydän painamalla <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1498,6 +1501,7 @@ Uusi asennus</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="7219573373513695352">Ei liitettyjä laitteita</translation>
+<translation id="7229029500464092426">Muisti <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> yhteensä</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tämä Chromebook on käynnistettävä uudelleen, jotta päivitys voidaan ottaa käyttöön. Tämä voi kestää enintään minuutin.</translation>
 <translation id="7256634071279256947">Takamikrofoni</translation>
 <translation id="7258828758145722155">Muokattu eilen</translation>
@@ -1523,6 +1527,7 @@ Uusi asennus</translation>
 <translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
 <translation id="736045644501761622">Aseta taustakuva ja tyyli</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
+<translation id="7372069265635026568">Muistia käytettävissä <ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Sallii mikrofonin käytön kaikille sovelluksille ja verkkosivustoille, joilla on mikrofonilupa</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7377481913241237033">Muodosta yhteys koodilla</translation>
@@ -1838,7 +1843,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8660331759611631213">71:n neliöjuuri</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Ota osittainen kuvakaappaus painamalla Enter</translation>
-<translation id="8666856788528804727">Avaa <ph name="NAME" /> ottaaksesi laitteen käyttöön</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8683506306463609433">Tehokkuuden seuranta aktiivinen</translation>
 <translation id="8703634754197148428">Aloita tallentaminen. Kun tallentaminen on alkanut, avaa hylly painamalla Alt + Vaihto + L ja etsi tallennuksen lopetuspainike</translation>
@@ -1852,6 +1856,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8731487213223706745">Päättyy klo <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivoidaan…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>

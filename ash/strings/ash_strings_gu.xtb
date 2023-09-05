@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C ઉપકરણ (ડાબું પોર્ટ)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">'શોધખોળ કરો' ખોલો</translation>
 <translation id="1294929383540927798">લૉક સ્ક્રીન નોટિફિકેશન સેટિંગ બદલો</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ભલામણ કરેલ ઍપ</translation>
@@ -365,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">વિન્ડો અનલૉક કરો</translation>
 <translation id="2528111225373402384">હૉટસ્પૉટના સેટિંગ</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
 <translation id="2531025035050312891">ડિવાઇસ ધીમું છે</translation>
 <translation id="2531107890083353124">ટૅબને ખેંચતી વખતે, <ph name="KEY_ONE" /> દબાવો</translation>
@@ -387,6 +389,7 @@
 <translation id="2612614436418177118">ઍપ ગ્રિડની અંદર ઍપનું આઇકન ખસેડો</translation>
 <translation id="2620016719323068571">તમારી <ph name="CATEGORY" />, ફાઇલો, ઍપ અને બીજું ઘણું શોધો…</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
+<translation id="2620900772667816510">બ્લૂટૂથ સુપર રિઝોલ્યુશન</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="2624588537172718173">ડિવાઇસનો ઑડિયો અને માઇક્રોફોન</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
@@ -511,6 +514,7 @@
 <translation id="3161500364292033097">ડેસ્ક અને વિન્ડો બંધ કરો</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> તમારા <ph name="DEVICE_TYPE" />ને અગાઉના વર્ઝન પર લઈ જાય છે. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
 <translation id="3171170659304083361">ઇનપુટ પદ્ધતિઓના સેટિંગ</translation>
+<translation id="3176221688814061633">તમારી Chromebook દ્વારા કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઑડિયો ક્વૉલિટી માટે બ્લૂટૂથ સુપર રિઝોલ્યુશનની સુવિધા ચાલુ કરો અથવા આંતરિક માઇક્રોફોનનો ઉપયોગ કરો.</translation>
 <translation id="3181441307743005334">ફરી શરૂ થવામાં થોડો સમય લાગી શકે છે</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ઉપકરણ સાથે કનેક્ટ કર્યું}one{# ઉપકરણો સાથે કનેક્ટ કર્યું}other{# ઉપકરણો સાથે કનેક્ટ કર્યું}}</translation>
 <translation id="320207200541803018">ટાઇમર સેટ કરો</translation>
@@ -524,7 +528,6 @@
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="324366796737464147">અવાજ રદ્દીકરણ</translation>
 <translation id="3249513730522716925">વિડો <ph name="WINDOW_TITLE" />ને ડેસ્ક <ph name="ACTIVE_DESK" />માંથી ડેસ્ક <ph name="TARGET_DESK" />માં ખસેડી</translation>
-<translation id="3252573918265662711">સેટઅપ</translation>
 <translation id="3253743281242075461">ક્લાસવર્કનો પ્રકાર: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">તમે શું કરી શકો?</translation>
 <translation id="3256109297135787951">તમારા શેલ્ફ પર આઇટમમાંથી હાઇલાઇટ કાઢી નાખો</translation>
@@ -673,6 +676,7 @@
 <translation id="3781910048497807059">ફોકસને પાછળના વિભાગ પર ખસેડો</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
+<translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3796215473395753611">alt + ઉપરની ઍરો કી</translation>
 <translation id="3796746699333205839">કોઈ ઍપ્લિકેશન તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="3798670284305777884">સ્પીકર (આંતરિક)</translation>
@@ -1477,7 +1481,6 @@
 <translation id="7086931198345821656">આ અપડેટ માટે તમારા <ph name="DEVICE_TYPE" />ને પાવરવોશ કરવું જરૂરી છે. બધો ડેટા ડિલીટ કરવામાં આવશે. નવીનતમ <ph name="SYSTEM_APP_NAME" /> અપડેટ વિશે વધુ જાણો.</translation>
 <translation id="7088960765736518739">સ્વિચ ઍક્સેસ</translation>
 <translation id="709015856939120012">પેજ પર મોટું કરો</translation>
-<translation id="7098053464892629930">બધી ઉપલબ્ધ સુવિધાઓ જોવા માટે, Google Play પરથી <ph name="NAME" />ની ઍપ ડાઉનલોડ કરો</translation>
 <translation id="7098389117866926363">USB-C ડિવાઇસ (પાછળની બાજુએ ડાબું પોર્ટ)</translation>
 <translation id="7100906357717321275">છુપાવેલી ફાઇલો Files ઍપમાં બતાવો</translation>
 <translation id="7108254681523785542">પેસ્ટ કરવા માટે કોઈ આઇટમ પસંદ કરો. તમે <ph name="SHORTCUT_KEY_NAME" /> + v દબાવીને ક્લિપબોર્ડ જોઈ શકો છો.</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">શુક્રનો ગ્રહ પૃથ્વીથી કેટલી દૂરીએ?</translation>
 <translation id="7198435252016571249">કૅમેરાને નીચેના જમણા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="7219573373513695352">કોઈ ડિવાઇસ કનેક્ટ કરેલું નથી</translation>
+<translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> મેમરી | કુલ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. અપડેટ લાગુ કરવા માટે આ Chromebookને ફરી શરૂ કરવાની જરૂર છે. આમાં 1 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="7256634071279256947">પાછળનો માઇક્રોફોન</translation>
 <translation id="7258828758145722155">ગઈકાલે ફેરફાર કરવામાં આવ્યો હતો</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">પેરિફેરલ સેટિંગ માટે તમારી ડેટા ઍક્સેસની સુરક્ષામાં ફેરફાર કરવાથી કાર્યપ્રદર્શન ઑપ્ટિમાઇઝ થઈ શકે છે</translation>
 <translation id="736045644501761622">વૉલપેપર અને સ્ટાઇલ સેટ કરો</translation>
 <translation id="7371404428569700291">વિન્ડો રેકોર્ડ કરો</translation>
+<translation id="7372069265635026568">કુલ <ph name="TOTAL_MEMORY" />માંથી <ph name="AVAILABLE_MEMORY" />મેમરી ઉપલબ્ધ છે</translation>
 <translation id="737315737514430195">આ માઇક્રોફોનની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="7377169924702866686">Caps Lock ચાલુ છે.</translation>
 <translation id="7377481913241237033">કોડ વડે કનેક્ટ કરો</translation>
@@ -1838,7 +1843,6 @@
 <translation id="8660331759611631213">71નું વર્ગમૂળ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">આંશિક સ્ક્રીનશૉટ કૅપ્ચર કરવા માટે Enter કી દબાવો</translation>
-<translation id="8666856788528804727">તમારા ડિવાઇસનું સેટઅપ કરવા માટે <ph name="NAME" /> ખોલો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>
 <translation id="8683506306463609433">કાર્યપ્રદર્શનની નોંધ રાખવાનું સક્રિય છે</translation>
 <translation id="8703634754197148428">રેકોર્ડિંગ શરૂ કરો. એક વાર રેકોર્ડિંગ શરૂ થાય, પછી શેલ્ફ પર નૅવિગેટ કરવા માટે Alt + Shift + Lનો ઉપયોગ કરો અને રેકોર્ડિંગ બંધ કરો બટન શોધો</translation>
@@ -1852,6 +1856,7 @@
 <translation id="8731487213223706745"><ph name="END_TIME" /> વાગ્યે સમાપ્ત થશે <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">તે તમારા કીસ્ટ્રોકની ચોરી કરવાનો પ્રયાસ કરતું હોઈ શકે છે</translation>
 <translation id="8735678380411481005">કીબોર્ડની બૅકલાઇટનો રંગ</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: સક્રિય કરી રહ્યાં છીએ…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">તમારી ઓળખની ચકાસણી કરો: આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>

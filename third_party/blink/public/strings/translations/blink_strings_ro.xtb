@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">S-a comutat la oglindire</translation>
 <translation id="2031987842108996681">Canalul roșu</translation>
 <translation id="2060505056492490888">Semnul „<ph name="DOT" />” apare poziționat greșit în „<ph name="INVALIDDOMAIN" />”.</translation>
+<translation id="2068711044993563745">Valoarea minimă (<ph name="MINIMUM" />) trebuie să fie mai mică decât valoarea maximă (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2226276347425096477">Micșorează acest text la cel mult <ph name="MAX_CHARACTERS" /> caractere (în prezent utilizezi <ph name="CURRENT_LENGTH" /> caractere).</translation>
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

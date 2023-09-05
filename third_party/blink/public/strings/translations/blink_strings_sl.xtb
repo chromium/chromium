@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Preklopljeno na zrcaljenje</translation>
 <translation id="2031987842108996681">Rdeči kanal</translation>
 <translation id="2060505056492490888">»<ph name="DOT" />« je na napačnem mestu v »<ph name="INVALIDDOMAIN" />«.</translation>
+<translation id="2068711044993563745">Najmanjša vrednost (<ph name="MINIMUM" />) mora biti manjša od največje vrednosti (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Danes</translation>
 <translation id="2226276347425096477">Skrajšajte to besedilo na <ph name="MAX_CHARACTERS" /> znakov ali manj (trenutno uporabljate <ph name="CURRENT_LENGTH" /> znakov).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. teden, <ph name="YEAR" /></translation>

@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">미러링으로 전환됨</translation>
 <translation id="2031987842108996681">빨간색 채널</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'에서 '<ph name="DOT" />'의 위치가 잘못되었습니다.</translation>
+<translation id="2068711044993563745">최솟값(<ph name="MINIMUM" />)은 최댓값(<ph name="MAXIMUM" />)보다 작아야 합니다.</translation>
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
 <translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>

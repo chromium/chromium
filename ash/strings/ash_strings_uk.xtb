@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">Пристрій із портом USB типу C (ліворуч)</translation>
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Відкрити додаток Можливості</translation>
 <translation id="1294929383540927798">Змінити налаштування сповіщень на заблокованому екрані</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Перемістити значок додатка в сітці</translation>
 <translation id="2620016719323068571">Шукайте <ph name="CATEGORY" />, файли, додатки тощо…</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2620900772667816510">Висока роздільна здатність Bluetooth</translation>
 <translation id="2621713457727696555">Захищено</translation>
 <translation id="2624588537172718173">Звук із пристрою і мікрофона</translation>
 <translation id="263399434338050016">"Вибрати все"</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Закрити робочий стіл і вікна</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> повертає на пристрої <ph name="DEVICE_TYPE" /> попередню версію. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="3171170659304083361">Налаштування методів введення</translation>
+<translation id="3176221688814061633">На вашому ноутбуку Chromebook або пристрої з Bluetooth використовується застаріла версія Bluetooth. Увімкніть високу роздільну здатність Bluetooth або використовуйте внутрішній мікрофон для кращої якості аудіо.</translation>
 <translation id="3181441307743005334">Перезапуск може зайняти якийсь час</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Під’єднано до пристрою}one{Під’єднано до # пристрою}few{Під’єднано до # пристроїв}many{Під’єднано до # пристроїв}other{Під’єднано до # пристрою}}</translation>
 <translation id="320207200541803018">Налаштувати таймер</translation>
@@ -524,7 +527,6 @@
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="324366796737464147">Заглушення шумів</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
-<translation id="3252573918265662711">Налаштування</translation>
 <translation id="3253743281242075461">Тип завдання: "<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" />"</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3256109297135787951">Скасувати виділення елемента на полиці</translation>
@@ -673,6 +675,7 @@
 <translation id="3781910048497807059">Виділити попередню панель</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
+<translation id="3789841737615482174">Установити</translation>
 <translation id="3796215473395753611">alt + стрілка вгору</translation>
 <translation id="3796746699333205839">Додаток використовує ваші камеру й мікрофон</translation>
 <translation id="3798670284305777884">Динамік (внутрішній)</translation>
@@ -1477,7 +1480,6 @@
 <translation id="7086931198345821656">Для оновлення потрібно виконати Powerwash на пристрої <ph name="DEVICE_TYPE" />. Усі дані буде видалено. Докладніше про останнє оновлення <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Кнопковий доступ</translation>
 <translation id="709015856939120012">Наблизити контент на сторінці</translation>
-<translation id="7098053464892629930">Завантажте додаток для <ph name="NAME" /> із Google Play, щоб мати доступ до всіх функцій</translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
 <translation id="7100906357717321275">Показати сховані файли в додатку Файли</translation>
 <translation id="7108254681523785542">Виберіть елемент, який потрібно вставити. Щоб відкрити буфер обміну, натисніть комбінацію клавіш <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1498,6 +1500,7 @@
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>
 <translation id="7219573373513695352">Немає підключених пристроїв</translation>
+<translation id="7229029500464092426">Обсяг використаної пам’яті: <ph name="AVAILABLE_MEMORY" /> | Усього: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Щоб оновлення почали діяти, Chromebook потрібно перезапустити. Це може зайняти до 1 хвилини.</translation>
 <translation id="7256634071279256947">Мікрофон на задній панелі</translation>
 <translation id="7258828758145722155">Змінено вчора</translation>
@@ -1523,6 +1526,7 @@
 <translation id="7360036564632145207">Щоб оптимізувати ефективність, змініть налаштування обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="736045644501761622">Налаштувати фоновий малюнок і стиль</translation>
 <translation id="7371404428569700291">Записувати вікно</translation>
+<translation id="7372069265635026568">Доступний обсяг пам’яті: <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Буде надано доступ до мікрофона для всіх додатків і веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="7377169924702866686">Клавішу Caps Lock увімкнено.</translation>
 <translation id="7377481913241237033">Підключити за допомогою коду</translation>
@@ -1838,7 +1842,6 @@
 <translation id="8660331759611631213">Квадратний корінь із 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Щоб зробити знімок частини екрана, натисніть клавішу Enter</translation>
-<translation id="8666856788528804727">Відкрийте <ph name="NAME" />, щоб налаштувати пристрій</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
 <translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>

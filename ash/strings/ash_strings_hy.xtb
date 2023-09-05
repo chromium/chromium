@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C սարք (ձախ միացք)</translation>
 <translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Բացել «Հնարավորություններ» հավելվածը</translation>
 <translation id="1294929383540927798">Փոխել կողպէկրանի ծանուցումների կարգավորումները</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Տեղաշարժել հավելվածի պատկերակը հավելվածների ցանցում</translation>
 <translation id="2620016719323068571">Որոնեք ձեր <ph name="CATEGORY" />ում, ֆայլերում, հավելվածներում և այլն…</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Պաշտպանված է</translation>
 <translation id="2624588537172718173">Սարքի բարձրախոսը և խոսափողը</translation>
 <translation id="263399434338050016">«Select all» (ընտրել բոլորը)</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Փակել աշխատասեղանն ու պատուհանները</translation>
 <translation id="316356270129335934">Համաձայն կառավարչի (<ph name="MANAGER" />) պահանջի՝ ձեր <ph name="DEVICE_TYPE" /> սարքում վերականգնվում է օպերացիոն համակարգի նախորդ տարբերակը։ Սարքը կվերակայվի, և բոլոր տվյալները կջնջվեն։</translation>
 <translation id="3171170659304083361">Ներածման մեթոդների կարգավորումներ</translation>
+<translation id="3176221688814061633">Ձեր Chromebook-ը կամ Bluetooth սարքն օգտագործում է Bluetooth-ի ավելի հին տարբերակ։ Միացրեք Bluetooth Super Resolution-ը կամ օգտագործեք ներքին խոսափողը, որպեսզի ձայնի որակն ավելի լավը լինի։</translation>
 <translation id="3181441307743005334">Վերագործարկման համար կարող է որոշ ժամանակ պահանջվել</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Միացված է մեկ սարքի}one{Միացված է # սարքի}other{Միացված է # սարքի}}</translation>
 <translation id="320207200541803018">Ժամաչափ սահմանիր</translation>
@@ -524,7 +527,6 @@
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="324366796737464147">Աղմուկի նվազեցում</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> պատուհանը տեղափոխվել է աշխատասեղան <ph name="ACTIVE_DESK" />-ից աշխատասեղան <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Կարգավորում</translation>
 <translation id="3253743281242075461">Դասարանային աշխատանքի տեսակ՝ <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Ի՞նչ կարող ես անել:</translation>
 <translation id="3256109297135787951">Չեղարկել տարրի նշումը դարակում</translation>
@@ -672,6 +674,7 @@
 <translation id="3781910048497807059">Անցնել նախորդ փեղկին</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Կողպել</translation>
+<translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3796215473395753611">alt + վերև սլաք</translation>
 <translation id="3796746699333205839">Ինչ-որ հավելված օգտագործում է ձեր տեսախցիկն ու խոսափողը</translation>
 <translation id="3798670284305777884">Բարձրախոս (ներքին)</translation>
@@ -1476,7 +1479,6 @@
 <translation id="7086931198345821656">Այս թարմացումը տեղադրելու համար ձեր <ph name="DEVICE_TYPE" /> սարքում անհրաժեշտ է օգտագործել Powerwash գործառույթը։ Բոլոր տվյալները կջնջվեն։ Իմացեք ավելին <ph name="SYSTEM_APP_NAME" /> հավելվածի վերջին թարմացման մասին։</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Մեծացնել էջի մասշտաբը</translation>
-<translation id="7098053464892629930">Google Play-ում ներբեռնեք <ph name="NAME" />-ի համար հավելվածը՝ բոլոր հասանելի գործառույթները տեսնելու համար</translation>
 <translation id="7098389117866926363">USB-C սարք (հետևի ձախ միացք)</translation>
 <translation id="7100906357717321275">Ցույց տալ թաքցված ֆայլերը «Ֆայլեր» հավելվածում</translation>
 <translation id="7108254681523785542">Ընտրեք տարր՝ տեղադրելու համար։ Սեղմատախտակը տեսնելու համար սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + v։</translation>
@@ -1497,6 +1499,7 @@
 <translation id="7189412385142492784">Որքան հեռու է Վեներան</translation>
 <translation id="7198435252016571249">Տեսախցիկի պատկերն ամրացված է ներքևի աջ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="7219573373513695352">Կապված սարքեր չկան</translation>
+<translation id="7229029500464092426">Օգտագործված հիշողության ծավալը՝ <ph name="AVAILABLE_MEMORY" /> | Ընդամենը՝ <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />։ Այս Chromebook-ը պետք է վերագործարկվի՝ թարմացումը կիրառելու համար։ Դա կարող է տևել մինչև 1 րոպե։</translation>
 <translation id="7256634071279256947">Հետևի խոսափող</translation>
 <translation id="7258828758145722155">Երեկ փոփոխել եք</translation>
@@ -1521,6 +1524,7 @@
 <translation id="7360036564632145207">Եթե արտաքին սարքերի կարգավորումներում փոխեք տվյալների հասանելիության պաշտպանության պարամետրերը, աշխատանքի արդյունավետությունը կարող է բարձրանալ</translation>
 <translation id="736045644501761622">Ընտրել պաստառ և ոճ</translation>
 <translation id="7371404428569700291">Տեսագրել պատուհանը</translation>
+<translation id="7372069265635026568">Հասանելի հիշողությունը՝ <ph name="AVAILABLE_MEMORY" /> (ընդհանուր <ph name="TOTAL_MEMORY" />-ից)</translation>
 <translation id="737315737514430195">Սա հասանելի է դարձնում խոսափողը բոլոր հավելվածներին ու կայքերին, որոնք ունեն խոսափողի օգտագործման թույլտվություն</translation>
 <translation id="7377169924702866686">Caps Lock-ը միացված է:</translation>
 <translation id="7377481913241237033">Միացում կոդով</translation>
@@ -1836,7 +1840,6 @@
 <translation id="8660331759611631213">71 թվից քառակուսի արմատ</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Սեղմեք Enter՝ մասնակի սքրինշոթ անելու համար</translation>
-<translation id="8666856788528804727">Բացեք <ph name="NAME" /> հավելվածը՝ ձեր սարքը կարգավորելու համար</translation>
 <translation id="8676770494376880701">Կապակցվել է թույլ լիցքով լիցքավորիչ</translation>
 <translation id="8683506306463609433">Արդյունավետության հետագծումն ակտիվ է</translation>
 <translation id="8703634754197148428">Սկսել տեսագրումը։ Տեսագրումը սկսելուց հետո կարող եք օգտագործել Alt+Shift+L ստեղների համադրությունը՝ դարակ անցնելու և տեսագրումը կանգնեցնելու կոճակը գտնելու համար։</translation>

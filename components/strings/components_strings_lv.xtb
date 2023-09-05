@@ -221,6 +221,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1413407968866574823">Spraigas darbības un platformas spēles</translation>
 <translation id="1413809658975081374">Konfidencialitātes kļūda</translation>
 <translation id="1414134146594747368">Pirmsskola</translation>
+<translation id="141826476809826269">Iegūtā teksta beigas</translation>
 <translation id="1419305130220238697">Pārlūka Chrome poga “Pārvaldīt lejupielādes”. Aktivizējiet, lai pārvaldītu pārlūkā Chrome lejupielādētos failus.</translation>
 <translation id="1422930527989633628">Var pieprasīt atļauju noteikt tuvumā esošas Bluetooth ierīces</translation>
 <translation id="1426410128494586442">Jā</translation>
@@ -277,6 +278,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1530707389502320859">Vietne, ko tikko mēģinājāt apmeklēt, šķiet viltota. Uzbrucēji dažkārt atdarina vietnes, veicot nelielas un grūti pamanāmas izmaiņas vietrādī URL.</translation>
 <translation id="1532118530259321453">Šajā lapā ir rakstīts</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
+<translation id="1537807545287921620">Šis PDF fails nav pieejams. Atveriet kontekstizvēlni un iespējojiet opciju “Iegūt tekstu no PDF”.</translation>
 <translation id="1539840569003678498">Pārskata nosūtīšanas laiks:</translation>
 <translation id="1542105669288201090">Uzņēmējdarbības izglītība</translation>
 <translation id="1545757265410828525">Cenu vēsture</translation>
@@ -434,6 +436,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1842969606798536927">Maksāt</translation>
 <translation id="1846432862466000825">Plastmasa (arhīva)</translation>
 <translation id="1848982255014129637">Fotopapīrs (augsti glancēts)</translation>
+<translation id="1853392626017747777">Virtuālās kartes reģistrācijas dialoglodziņš ir aizvērts</translation>
 <translation id="1854180393107901205">Apturēt apraidi</translation>
 <translation id="1855370856221982654">Bokss</translation>
 <translation id="1856713167556118146">Kas netiek nodrošināts inkognito režīmā</translation>
@@ -470,6 +473,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1924727005275031552">Jaunā</translation>
 <translation id="1935995810530254458">Tik un tā kopēt</translation>
 <translation id="1939175642807587452">Var pieprasīt atļauju sūtīt paziņojumus</translation>
+<translation id="1940441167050915935">Dzēst saglabātos drošības kodus</translation>
 <translation id="1943994668912612445">Dizains</translation>
 <translation id="1945968466830820669">Varat zaudēt piekļuvi savam organizācijas kontam, vai jūsu identitāte var tikt nozagta. Chromium iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="1946849748901605102">12 x 15 collas</translation>
@@ -864,6 +868,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2803306138276472711">Google drošās pārlūkošanas tehnoloģija vietnē <ph name="SITE" /> nesen <ph name="BEGIN_LINK" />konstatēja ļaunprātīgu programmatūru<ph name="END_LINK" />. Vietnes, kuras parasti ir drošas, dažkārt tiek inficētas ar ļaunprātīgu programmatūru.</translation>
 <translation id="2807052079800581569">Attēla pozīcija uz Y ass</translation>
 <translation id="2808278141522721006">Varat ieslēgt vai izslēgt funkciju Windows Hello sadaļā <ph name="SETTINGS" />.</translation>
+<translation id="2814184336982254349">Šis PDF fails nav pieejams. Vienlaikus nospiediet meklēšanas taustiņu un taustiņu “m”, lai atvērtu kontekstizvēlni, un iespējojiet opciju “Iegūt tekstu no PDF”.</translation>
 <translation id="2818338148457093657">Skaistumkopšanas pakalpojumi un SPA</translation>
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
 <translation id="2824775600643448204">Adreses un meklēšanas josla</translation>
@@ -1168,6 +1173,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3461266716147554923">Vietne <ph name="URL" /> vēlas skatīt starpliktuvē kopēto tekstu un attēlus.</translation>
 <translation id="3461824795358126837">Marķieris</translation>
 <translation id="3462200631372590220">Slēpt papildu informāciju</translation>
+<translation id="3465972433695735758">Šis PDF fails nav pieejams. Teksts iegūts. Pakalpojumu nodrošina Google MI.</translation>
 <translation id="346601286295919445">Ķīmija</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, šobrīd atvērta. Nospiediet tabulēšanas taustiņu, pēc tam — ievadīšanas taustiņu, lai atvērtu cilni.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai aizvērtu visus atvērtos inkognito režīma logus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
@@ -1185,6 +1191,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="350069200438440499">Faila vārds:</translation>
 <translation id="3501300228850242680">Metāls (mūzika)</translation>
 <translation id="350421688684366066">Etiķešu papīrs (augsti glancēts)</translation>
+<translation id="350763432931695541">Notiek teksta iegūšana no dažām nākamajām lapām</translation>
 <translation id="3507869775212388416">Darba piedāvājumi juridiskajā nozarē</translation>
 <translation id="3507936815618196901">Izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju</translation>
 <translation id="3512163584740124171">Šī politika tiek ignorēta, jo citai tās pašas politiku grupas politikai ir augstāka prioritāte.</translation>
@@ -1725,6 +1732,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4628948037717959914">Fotoattēls</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Saistīta skaidras naudas atmaksa</translation>
+<translation id="4631881646528206880">Virtuālās kartes reģistrācija</translation>
 <translation id="4636930964841734540">Informācija</translation>
 <translation id="4638670630777875591">Inkognito režīms pārlūkā Chromium</translation>
 <translation id="464342062220857295">Meklēšanas funkcijas</translation>
@@ -1839,6 +1847,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4854853140771946034">Ātri izveidot jaunu piezīmi lietotnē Google Keep</translation>
 <translation id="485902285759009870">Notiek koda verificēšana…</translation>
 <translation id="4862630594858951805">Vai vēlaties saņemt e-pasta ziņojumus par cenas kritumu?</translation>
+<translation id="4864406669374375262">Versijas virkne tika kopēta starpliktuvē</translation>
 <translation id="486459320933704969">Kādam no vecākiem vai aizbildnim ir jāapstiprina, ka jūs varat apmeklēt šo vietni.</translation>
 <translation id="4866506163384898554">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai parādītu kursoru.</translation>
 <translation id="4873616204573862158">Brilles</translation>
@@ -2849,6 +2858,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6973988895180423160">3,5 x 5 collas</translation>
 <translation id="6978236010531171013">Tomēr kopīgot</translation>
 <translation id="6979158407327259162">Google disks</translation>
+<translation id="6979332652936434520">Iegūtā teksta sākums</translation>
 <translation id="6979440798594660689">Izslēgt skaņu (noklusējums)</translation>
 <translation id="6987806006823772670">Aploksne (pārklāta)</translation>
 <translation id="6989763994942163495">Rādīt papildu iestatījumus...</translation>
@@ -2904,6 +2914,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7102760431686146931">Virtuves un galda piederumi</translation>
 <translation id="7105998430540165694">Piekļuves atslēga no iCloud Keychain</translation>
 <translation id="7106762743910369165">Pārlūku pārvalda jūsu organizācija</translation>
+<translation id="7107249414147762907">Šis PDF fails nav pieejams. Teksts netika iegūts.</translation>
 <translation id="7108338896283013870">Slēpt</translation>
 <translation id="7108634116785509031">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja lietot jūsu kameru.</translation>
 <translation id="7108819624672055576">Atļāva paplašinājums</translation>
@@ -3526,6 +3537,7 @@ Papildu informācija:
 <translation id="8339163506404995330">Lapas šādā valodā: <ph name="LANGUAGE" /> netiks tulkotas.</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Ja apzināties drošības risku, varat arī <ph name="BEGIN_LINK" />apmeklēt šo vietni<ph name="END_LINK" />, pirms ir noņemtas kaitīgās programmas.</translation>
+<translation id="8344776605855290140">Virtuālās kartes reģistrācijas dialoglodziņš ir atvērts pilnā augstumā</translation>
 <translation id="8347658365704983341">Tālmācība</translation>
 <translation id="8349305172487531364">Grāmatzīmju josla</translation>
 <translation id="8351131234907093545">Izveidot piezīmi</translation>
@@ -3916,6 +3928,7 @@ Papildu informācija:
 <translation id="917450738466192189">Servera sertifikāts ir nederīgs.</translation>
 <translation id="9174623988242579721">Pielāgotas un sacīkšu automašīnas</translation>
 <translation id="9174917557437862841">Ciļņu pārslēgšanas poga. Nospiediet ievadīšanas taustiņu, lai pārslēgtu šo cilni.</translation>
+<translation id="9177283544810807743">Šis PDF fails nav pieejams. Notiek teksta iegūšana. Pakalpojumu nodrošina Google MI.</translation>
 <translation id="9179703756951298733">Pārvaldiet savu maksājumu un kredītkaršu informāciju Chrome iestatījumos.</translation>
 <translation id="9179907736442194268">Saņemiet e-pasta brīdinājumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="9183302530794969518">Google dokumenti</translation>

@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">เปลี่ยนเป็นการมิเรอร์</translation>
 <translation id="2031987842108996681">ช่องสีแดง</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" ถูกใช้งานในตำแหน่งที่ไม่ถูกต้องใน "<ph name="INVALIDDOMAIN" />"</translation>
+<translation id="2068711044993563745">ค่าต่ำสุด (<ph name="MINIMUM" />) ต้องน้อยกว่าค่าสูงสุด (<ph name="MAXIMUM" />)</translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
 <translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

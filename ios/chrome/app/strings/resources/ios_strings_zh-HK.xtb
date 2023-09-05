@@ -477,6 +477,7 @@
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3688815115226493214">分頁建議</translation>
 <translation id="3700134753671613714">登入後，即可從任何裝置取得自己的書籤。</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{這 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({EMAIL})。}other{這 {COUNT} 個密碼只會儲存至此裝置。如要在其他裝置上使用，請儲存至 Google 帳戶 ({EMAIL})。}}</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="371230970611282515">在危險事件發生前進行預測並發出警告。</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
@@ -1373,6 +1374,7 @@
 <translation id="8855242995793521265">不會大幅減慢瀏覽器或裝置運作速度。</translation>
 <translation id="8855781063981781621">在 iPad 上關閉「封鎖模式」，就能在 Chrome 中停用此模式。</translation>
 <translation id="8863431381414769983">透過「Google 地圖」規劃路線及取得本地資料</translation>
+<translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓您的裝置保持同步</translation>

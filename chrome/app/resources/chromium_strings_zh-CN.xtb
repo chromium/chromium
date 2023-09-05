@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">继续安装</translation>
 <translation id="1029669172902658969">重新启动以更新 Chromium 操作系统(&amp;C)</translation>
 <translation id="1040916596585577953">Chromium 建议您检查此扩展程序</translation>
+<translation id="1042552502243217427">当某个网站请求以私密方式预加载其网页上的链接时，Chromium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1083934481477628225">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”</translation>
 <translation id="1098170124587656448">Chromium 有助于保护您免受数据泄露、不良扩展程序等问题的影响</translation>
@@ -129,6 +130,7 @@
 <translation id="3713809861844741608">在 Chromium 新标签页中打开链接(&amp;T)</translation>
 <translation id="378917192836375108">您可以在 Chromium 中点击网上的电话号码，然后通过 Skype 拨打！</translation>
 <translation id="3790262771324122253">了解 Chromium 为何会拦截部分下载内容</translation>
+<translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3830894615770080216">Chromium 操作系统</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">获取有关 Chromium 操作系统的帮助</translation>
@@ -239,6 +241,7 @@
 <translation id="6132897690380286411">Chromium 即将关闭并删除数据</translation>
 <translation id="6134968993075716475">“安全浏览”功能已关闭。Chromium 建议开启此功能。</translation>
 <translation id="6145820983052037069">您可在此处切换 Chromium 个人资料</translation>
+<translation id="615103374448673771">如果您允许使用 Cookie，Chromium 便可能会使用 Cookie 进行预加载</translation>
 <translation id="6175304430031192654">Chromium 可能还会发送 Cookie 和当前网址，具体取决于您的设置</translation>
 <translation id="6183079672144801177">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chromium，然后再次尝试发送。</translation>
 <translation id="6212496753309875659">此计算机已安装了更高版本的 Chromium。如果软件无法正常运行，请卸载 Chromium 并重试。</translation>
@@ -263,6 +266,7 @@
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
+<translation id="6443470774889161065">Chromium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6475912303565314141">它还能够控制Chromium启动后显示的页面。</translation>
 <translation id="648319183876919572">“增强型安全浏览”功能有助于保护您免受危险的网站及下载内容的侵害</translation>

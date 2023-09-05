@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="1511320244449497906">Saioa hasita daukazu, eta <ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin sinkronizatzen dituzu datuak. Orain, kontu horretarako erabiltzaile-gidalerro zehatzak ezar ditzake domeinu horren administratzaileak, eta gidalerro horiek Chrome-ren portaera alda dezakete.</translation>
+<translation id="1516692594929310090">Chrome-ren fitxen sareta irekitzen du.</translation>
 <translation id="1526327845902180576">Aktibatuta dagoenean:
 <ph name="BEGIN_INDENT" />  • Chrome zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Kontuan hartu beharrekoak:
 
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
+<translation id="6916015246697034114">Bilatu Voice-rekin Chrome-n</translation>
 <translation id="6964931465519938134">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chrome erabili ahalko duzu.</translation>
 <translation id="6975725306479268850">Aukeratu Chrome betetze automatikorako</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
@@ -150,6 +152,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7400722733683201933">Google Chrome arakatzaileari buruz</translation>
 <translation id="7501046334262221972">Chrome arakatzaile lehenetsi gisa ezartzeko, ireki Ezarpenak. Sakatu Arakatzaile lehenetsia eta, gero, hautatu Chrome.</translation>
 <translation id="756809126120519699">Garbitu dira Chrome-ko datuak</translation>
+<translation id="7581063337314642333">Bisitatu fitxen sareta Chrome-n</translation>
 <translation id="7662994914830945754">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="7669869107155339016">Joan Chrome-ren ezarpenetara.</translation>
 <translation id="7693590760643069321">Orain, Chrome erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
@@ -157,10 +160,13 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7754633291442704733">Chrome-ko datuak, laster-markak, historia, pasahitzak eta kontu honetan gordetzen dituzun bestelako ezarpenak atzitu ahalko ditu zure erakundeak (<ph name="DOMAIN" />). Saioa amaitzen duzunean, datuak garbitu egingo dira gailu honetatik.  Hala ere, Google-ko kontu kudeatuan jarraituko dute, eta erakundea haiek atzitzeko gai izango da. Halaber, erabiltzaile-gidalerro jakin batzuk ezar ditzake erakundeak kontu horretarako, eta gidalerro horiek Chrome-ren portaera alda dezakete.</translation>
 <translation id="7780154209050837198">Chrome-ri etekinik handiena ateratzeko, hasi saioa Chrome-n Google-ko kontuarekin.</translation>
 <translation id="7855730255114109580">Eguneratuta dago Google Chrome</translation>
+<translation id="7897703007638178753">Ikusi Chrome-ren azken fitxak</translation>
+<translation id="7925119591961387184">Hautatu "Chrome".</translation>
 <translation id="8022947259858476807">Erabili Chrome modu lehenetsian estekak irekitzeko, widgetetatik bilaketak egiteko eta beste aplikazio batzuetako pasahitzak automatikoki betetzeko</translation>
 <translation id="804638182476029347">Prezio-jaitsierei buruzko alertak jasotzeko, eman jakinarazpenak bidaltzeko baimena Chrome-ri</translation>
 <translation id="81358522153858150">Orain, Chrome-k kontu kudeaturako erabiltzaile-gidalerroak onartzen ditu</translation>
 <translation id="8160472928944011082">Ezin da eguneratu Chrome</translation>
+<translation id="8174679664544842874">Chrome-n fitxa berri bat irekitzen du.</translation>
 <translation id="8213758103105806860">Ikusi Chrome-ko laster-markak</translation>
 <translation id="8357607116237445042">Erabaki Chrome-ko datuak garbitu nahi dituzun ala ez gailu honetatik</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
@@ -174,8 +180,10 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
   2. Sakatu Arakatzaile lehenetsia.
   3. Hautatu Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Sakatu "Chrome" eta, gero, "Arakatzaile lehenetsia".</translation>
 <translation id="8603022514504485810">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Egon babestuta Google Chrome-rekin</translation>
+<translation id="8760668027640688122">Ireki fitxa berri bat Chrome-n</translation>
 <translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
 <translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
@@ -185,6 +193,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="8897749957032330183">Pasahitzak gailu honetan gordetzen dira, Google-ren Pasahitz-kudeatzailea zerbitzuan.</translation>
+<translation id="8949681853939555434">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="8969290730818637510">Aktibatuta dagoenean:
 <ph name="BEGIN_INDENT" />  • Chrome zuk bezala erabiltzen dutenentzat hobetzen laguntzen duzu.<ph name="END_INDENT" />
 
@@ -194,4 +203,5 @@ Kontuan hartu beharrekoak:
   • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 <translation id="9122931302567044771">Ondorioz, Chrome-k beti eskatuko du ordenagailuetarako webgunea.</translation>
+<translation id="9181628561061032322">Chrome-ren azken fitxak irekitzen ditu.</translation>
 </translationbundle>

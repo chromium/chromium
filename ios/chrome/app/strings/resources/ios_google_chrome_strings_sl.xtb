@@ -36,6 +36,7 @@ Kaj je treba upoštevati:
 <translation id="2120238739383482109">Odpre zaznamke v Chromu.</translation>
 <translation id="2147651015520127414">Chrome je preveril, da je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="2199719347983604670">Podatki iz Sinhronizacije za Chrome</translation>
+<translation id="2311240109311056604">Odpre igro Dino za Chrome.</translation>
 <translation id="2339201583852607431">Geslo bo shranjeno v računu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome vašo lokacijo deli s spletnimi mesti, ki jih dovolite.</translation>
 <translation id="2347208864470321755">Kadar je vklopljena ta funkcija, bo Chrome ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -95,10 +96,12 @@ Kaj je treba upoštevati:
 <translation id="484033449593719797">Ni podprto v Chromu Beta</translation>
 <translation id="4840404732697892756">Googlov upravitelj gesel lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
 <translation id="4903674399067644695">Na tej kartici so prikazani predlogi, kako izkoristiti Chrome na najboljši način.</translation>
+<translation id="49200511069271369">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega se prijavljate, in način uporabe Chroma. Nekatere funkcije lahko nastavi ali omeji skrbnik.</translation>
 <translation id="5030102366287574140">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
 <translation id="5108659628347594808">Izboljšajte Chrome</translation>
 <translation id="5112925986883715005">Ogled bralnega seznama v Chromu</translation>
 <translation id="5119391094379141756">Izberite Chrome.</translation>
+<translation id="5156818928311866442">Odpre nastavitev za Chrome za nastavitev Chromiuma kot privzetega brskalnika.</translation>
 <translation id="5162467219239570114">Chrome je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chroma.</translation>
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
 <translation id="5389212809648216794">Google Chrome ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
@@ -145,6 +148,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="7173660919484573146">Chrome uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
+<translation id="7254380941803999489">Nastavi Chrome kot privzeti brskalnik</translation>
 <translation id="7261678641327190792">Chrome ne more preveriti vaših gesel</translation>
 <translation id="7272930098487145294">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chrome dodaja fotografijam</translation>
 <translation id="7275945473750112644">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromu izbrisani iz te naprave.</translation>

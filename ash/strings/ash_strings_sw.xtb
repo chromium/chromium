@@ -90,6 +90,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1293264513303784526">Kifaa cha USB-C (mlango wa kushoto)</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Fungua programu ya Gundua</translation>
 <translation id="1294929383540927798">Badilisha mipangilio ya arifa za kufunga skrini</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">PROGRAMU ZINAZOPENDEKEZWA</translation>
@@ -387,6 +388,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2612614436418177118">Sogeza aikoni ya programu katika gridi ya programu</translation>
 <translation id="2620016719323068571">Tafuta <ph name="CATEGORY" /> yako, faili, programu na zaidi...</translation>
 <translation id="2620436844016719705">Mfumo</translation>
+<translation id="2620900772667816510">Ubora Thabiti wa Bluetooth</translation>
 <translation id="2621713457727696555">Unalindwa</translation>
 <translation id="2624588537172718173">Maikrofoni na sauti ya kifaa</translation>
 <translation id="263399434338050016">"Chagua zote"</translation>
@@ -511,6 +513,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3161500364292033097">Funga eneokazi na madirisha</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> inarejesha toleo la awali kwenye <ph name="DEVICE_TYPE" /> yako. Mipangilio ya kifaa chako itawekwa upya na data yote itafutwa.</translation>
 <translation id="3171170659304083361">Mipangilio ya mbinu za kuingiza data</translation>
+<translation id="3176221688814061633">Chromebook yako au kifaa chako chenye Bluetooth kinatumia toleo la zamani la Bluetooth. Washa kipengele cha Ubora Thabiti wa Bluetooth au utumie maikrofoni ya ndani ili upate ubora wa sauti unaofaa.</translation>
 <translation id="3181441307743005334">Shughuli ya kuzima kisha uwashe inaweza kuchukua muda</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Imeunganishwa kwenye kifaa kimoja}other{Imeunganishwa kwenye vifaa #}}</translation>
 <translation id="320207200541803018">Weka kipima muda</translation>
@@ -524,7 +527,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="324366796737464147">Udhibiti wa kelele</translation>
 <translation id="3249513730522716925">Dirisha la <ph name="WINDOW_TITLE" /> limehamishwa kutoka Kiolesura cha <ph name="ACTIVE_DESK" /> hadi Kiolesura cha <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Usanidi</translation>
 <translation id="3253743281242075461">Aina ya kazi ya darasani: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
 <translation id="3256109297135787951">Acha kuangazia kipengee kwenye rafu yako</translation>
@@ -673,6 +675,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3781910048497807059">Sogeza uangaziaji hadi kwenye kijisehemu kilichotangulia</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Imefungwa</translation>
+<translation id="3789841737615482174">Sakinisha</translation>
 <translation id="3796215473395753611">alt + kishale cha juu</translation>
 <translation id="3796746699333205839">Kuna programu inayotumia kamera na maikrofoni yako</translation>
 <translation id="3798670284305777884">Spika (ya ndani)</translation>
@@ -1477,7 +1480,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7086931198345821656">Sasisho hili linahitaji utumie powerwash kwenye <ph name="DEVICE_TYPE" /> yako. Data yote itafutwa. Pata maelezo zaidi kuhusu sasisho jipya zaidi la <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Kufikia Kupitia Swichi</translation>
 <translation id="709015856939120012">Vuta karibu ukurasa</translation>
-<translation id="7098053464892629930">Pakua programu ya <ph name="NAME" /> kwenye Google Play ili uone vipengele vyote vinavyopatikana</translation>
 <translation id="7098389117866926363">Kifaa cha USB-C (mlango wa kushoto nyuma)</translation>
 <translation id="7100906357717321275">Onyesha faili zilizofichwa kwenye programu ya Faili</translation>
 <translation id="7108254681523785542">Chagua kipengee ili ukibandike. Unaweza kuangalia ubao wa kunakili kwa kubofya <ph name="SHORTCUT_KEY_NAME" /> pamoja na v.</translation>
@@ -1498,6 +1500,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7189412385142492784">Sayari ya Zuhura iko umbali gani</translation>
 <translation id="7198435252016571249">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia. Linakinzana na mfumo wa kiolesura uliopo.</translation>
 <translation id="7219573373513695352">Hakuna vifaa vilivyounganishwa</translation>
+<translation id="7229029500464092426">Hifadhi ya <ph name="AVAILABLE_MEMORY" /> kati ya jumla ya hifadhi ya <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ili utumie sasisho, unahitaji kuzima kisha uwashe Chromebook hii. Hatua hii inaweza kuchukua hadi dakika moja.</translation>
 <translation id="7256634071279256947">Maikrofoni ya nyuma</translation>
 <translation id="7258828758145722155">Ilibadilishwa jana</translation>
@@ -1523,6 +1526,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7360036564632145207">Hatua ya kubadilisha mipangilio yako ya kulinda data inayoweza kufikiwa na vifaa vinavyounganishwa kwenye kompyuta inaweza kuboresha utendaji</translation>
 <translation id="736045644501761622">Weka mandhari na mtindo</translation>
 <translation id="7371404428569700291">Rekodi dirisha</translation>
+<translation id="7372069265635026568">Umebakisha hifadhi ya <ph name="AVAILABLE_MEMORY" /> kati ya jumla ya hifadhi ya <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Hatua hii huruhusu ufikiaji wa maikrofoni kwa programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="7377169924702866686">Caps Lock imewashwa.</translation>
 <translation id="7377481913241237033">Unganisha kwa kutumia msimbo</translation>
@@ -1839,7 +1843,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8660331759611631213">Kipeo cha pili cha 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Bonyeza enter ili upige picha sehemu ya skrini</translation>
-<translation id="8666856788528804727">Fungua <ph name="NAME" /> ili uweke mipangilio ya kifaa chako</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
 <translation id="8683506306463609433">Kipengele cha ufuatiliaji wa utendaji kinatumika</translation>
 <translation id="8703634754197148428">Anza kurekodi. Ukishaanza kurekodi, tumia vitufe vya Alt + Shift + L kwenda kwenye rafu ili upate kitufe cha kuacha kurekodi</translation>

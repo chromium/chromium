@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ऐक्शन और प्लैटफ़ॉर्म गेम</translation>
 <translation id="1413809658975081374">निजता गड़बड़ी</translation>
 <translation id="1414134146594747368">प्रीस्कूल</translation>
+<translation id="141826476809826269">निकाले गए टेक्स्ट का आखिरी हिस्सा</translation>
 <translation id="1419305130220238697">'Chrome में डाउनलोड मैनेज करें' बटन, Chrome में डाउनलोड की गई फ़ाइलों को मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="1422930527989633628">साइट, आस-पास के ब्लूटूथ डिवाइसों को खोजने की अनुमति मांग सकती है</translation>
 <translation id="1426410128494586442">हां</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">जिस साइट पर आपने जाने की कोशिश की, वह नकली लग रही है. हमलावर कभी-कभी यूआरएल में छोटे और नज़र न आने वाले बदलाव करके साइट की नकल कर लेते हैं.</translation>
 <translation id="1532118530259321453">इस पेज का कहना है कि</translation>
 <translation id="1536390784834419204">पेज का अनुवाद करें</translation>
+<translation id="1537807545287921620">इस PDF को ऐक्सेस नहीं किया जा सकता. संदर्भ मेन्यू खोलें और "PDF फ़ाइल से टेक्स्ट निकालें" को चालू करें</translation>
 <translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1545757265410828525">कीमत का इतिहास</translation>
@@ -435,6 +437,7 @@
 <translation id="1842969606798536927">पैसे चुकाएं</translation>
 <translation id="1846432862466000825">प्लास्टिक (आर्काइवल)</translation>
 <translation id="1848982255014129637">फ़ोटो (हाई-ग्लॉस)</translation>
+<translation id="1853392626017747777">वर्चुअल कार्ड का रजिस्ट्रेशन बंद किया गया</translation>
 <translation id="1854180393107901205">कास्ट करना रोकें</translation>
 <translation id="1855370856221982654">मुक्केबाज़ी</translation>
 <translation id="1856713167556118146">गुप्त मोड क्या नहीं करता है</translation>
@@ -471,6 +474,7 @@
 <translation id="1924727005275031552">नया</translation>
 <translation id="1935995810530254458">फिर भी कॉपी करें</translation>
 <translation id="1939175642807587452">साइट, सूचनाएं भेजने की अनुमति मांग सकती है</translation>
+<translation id="1940441167050915935">सेव किए गए सुरक्षा कोड मिटाएं</translation>
 <translation id="1943994668912612445">डिज़ाइन</translation>
 <translation id="1945968466830820669">आपके संगठन के खाते का एक्सेस खो सकता है या आपकी पहचान चोरी हो सकती है. Chromium आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="1946849748901605102">12 x 15 इंच</translation>
@@ -865,6 +869,7 @@
 <translation id="2803306138276472711">Google सुरक्षित ब्राउज़िंग को <ph name="SITE" /> पर हाल ही में <ph name="BEGIN_LINK" />मैलवेयर का पता चला<ph name="END_LINK" /> है. आमतौर पर सुरक्षित रहने वाली वेबसाइटें कभी-कभी मैलवेयर से संक्रमित हो जाती हैं.</translation>
 <translation id="2807052079800581569">इमेज Y की स्थिति</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> में, Windows Hello को चालू या बंद किया जा सकता है</translation>
+<translation id="2814184336982254349">इस PDF को ऐक्सेस नहीं किया जा सकता. संदर्भ मेन्यू खोलने के लिए, खोज बटन के साथ m बटन दबाएं और "PDF फ़ाइल से टेक्स्ट निकालें" को चालू करें</translation>
 <translation id="2818338148457093657">सौंदर्य सेवाएं और स्पा</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
@@ -1168,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> वे लेख और इमेज देखना चाहता है जिन्हें क्लिपबोर्ड पर कॉपी किया गया है</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
 <translation id="3462200631372590220">बेहतर को छिपाएं</translation>
+<translation id="3465972433695735758">इस PDF को ऐक्सेस नहीं किया जा सकता. Google के एआई की मदद से टेक्स्ट निकाला गया</translation>
 <translation id="346601286295919445">रसायन विज्ञान</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, फ़िलहाल खुला है, 'टैब' दबाएं फिर खुले टैब पर जाने के लिए Enter दबाएं</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, सभी खुली हुई गुप्त विंडो को बंद करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
@@ -1185,6 +1191,7 @@
 <translation id="350069200438440499">फ़ाइल नाम:</translation>
 <translation id="3501300228850242680">मेटल (संगीत)</translation>
 <translation id="350421688684366066">लेबल (हाई-ग्लॉस)</translation>
+<translation id="350763432931695541">अगले कुछ पेजों से टेक्स्ट निकाला जा रहा है</translation>
 <translation id="3507869775212388416">कानूनी क्षेत्र की नौकरियां</translation>
 <translation id="3507936815618196901">आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
 <translation id="3512163584740124171">इस नीति को अनदेखा कर दिया गया है, क्योंकि इसी नीति समूह की दूसरी नीति को ज़्यादा प्राथमिकता दी गई है.</translation>
@@ -1726,6 +1733,7 @@
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
+<translation id="4631881646528206880">वर्चुअल कार्ड रजिस्टर करना</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4638670630777875591">Chromium में गुप्त मोड</translation>
 <translation id="464342062220857295">खोज सुविधाएं</translation>
@@ -1840,6 +1848,7 @@
 <translation id="4854853140771946034">Google Keep में जल्दी से नया नोट बनाएं</translation>
 <translation id="485902285759009870">कोड की पुष्टि की जा रही है...</translation>
 <translation id="4862630594858951805">क्या कीमत में गिरावट होने पर आपको ईमेल से सूचना चाहिए?</translation>
+<translation id="4864406669374375262">वर्शन स्ट्रिंग को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="486459320933704969">इस वेबसाइट पर जाने के लिए, आपके पास अपने माता-पिता या अभिभावक की अनुमति होनी चाहिए</translation>
 <translation id="4866506163384898554">अपना कर्सर दिखाने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
 <translation id="4873616204573862158">चश्मे और सनग्लास</translation>
@@ -2850,6 +2859,7 @@
 <translation id="6973988895180423160">3.5 x 5 इंच</translation>
 <translation id="6978236010531171013">फिर भी शेयर करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">निकाले गए टेक्स्ट का शुरुआती हिस्सा</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6987806006823772670">एन्वेलप (कोटेड)</translation>
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>
@@ -2905,6 +2915,7 @@
 <translation id="7102760431686146931">खाना बनाने और खाने वाले बर्तन</translation>
 <translation id="7105998430540165694">iCloud Keychain की पासकी</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
+<translation id="7107249414147762907">इस PDF को ऐक्सेस नहीं किया जा सकता. टेक्स्ट नहीं निकाला गया</translation>
 <translation id="7108338896283013870">छुपाएं</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> को आपके कैमरे का इस्तेमाल करना है</translation>
 <translation id="7108819624672055576">किसी एक्सटेंशन ने अनुमति दी है</translation>
@@ -3527,6 +3538,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> भाषा के पेज का अनुवाद नहीं किया जाएगा</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">अगर आप अपनी सुरक्षा संबंधी जोखिमों को समझते हैं तो, खतरनाक प्रोग्राम हटाए जाने से पहले आप <ph name="BEGIN_LINK" />इस साइट पर विज़िट<ph name="END_LINK" /> कर सकते हैं.</translation>
+<translation id="8344776605855290140">वर्चुअल कार्ड रजिस्टर करने की सुविधा पूरी स्क्रीन पर खुली है</translation>
 <translation id="8347658365704983341">डिस्टेंस लर्निंग</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
@@ -3917,6 +3929,7 @@
 <translation id="917450738466192189">सर्वर का प्रमाणपत्र अमान्य है.</translation>
 <translation id="9174623988242579721">कस्टमाइज़ किए गए और खास परफ़ॉर्मेंस वाले वाहन</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
+<translation id="9177283544810807743">इस PDF को ऐक्सेस नहीं किया जा सकता. Google के एआई की मदद से टेक्स्ट निकाला जा रहा है</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>
 <translation id="9179907736442194268">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर ईमेल से सूचना पाएं</translation>
 <translation id="9183302530794969518">Google Docs</translation>

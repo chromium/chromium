@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Пребачено је на пресликавање</translation>
 <translation id="2031987842108996681">Црвени канал</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />“ је стављено на погрешно место у „<ph name="INVALIDDOMAIN" />“.</translation>
+<translation id="2068711044993563745">Минимална вредност (<ph name="MINIMUM" />) мора да буде мања од максималне вредности (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2226276347425096477">Скратите овај текст на <ph name="MAX_CHARACTERS" /> знак(ов)а или мање (тренутно користите <ph name="CURRENT_LENGTH" /> знак(ов)а).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. недеља, <ph name="YEAR" />.</translation>

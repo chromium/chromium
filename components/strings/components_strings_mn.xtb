@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">Төлөх</translation>
 <translation id="1846432862466000825">Хуванцар (архивын)</translation>
 <translation id="1848982255014129637">Гэрэл зураг (маш гялгар)</translation>
+<translation id="1853392626017747777">Виртуал картын бүртгэлийг хаасан</translation>
 <translation id="1854180393107901205">Каст хийхийг зогсоох</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Нууцлалтай горимын хийдэггүй зүйлс</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">Шинэ</translation>
 <translation id="1935995810530254458">Ямартай ч хуулах</translation>
 <translation id="1939175642807587452">Мэдэгдэл илгээхийг хүсэх боломжтой</translation>
+<translation id="1940441167050915935">Хадгалсан аюулгүй байдлын кодуудыг устгах</translation>
 <translation id="1943994668912612445">Дизайн</translation>
 <translation id="1945968466830820669">Та байгууллагынхаа бүртгэлд хандах эрх эсвэл нууц үгээ бусдад алдаж болзошгүй. Chromium-с таныг нууц үгээ өөрчлөхийг зөвлөж байна.</translation>
 <translation id="1946849748901605102">12 x 15 инч</translation>
@@ -1732,6 +1734,7 @@
 <translation id="4628948037717959914">Зураг</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Бэлэн мөнгө олгох маягтыг холбосон</translation>
+<translation id="4631881646528206880">Виртуал картын бүртгэл</translation>
 <translation id="4636930964841734540">Мэдээлэл</translation>
 <translation id="4638670630777875591">Chromium дахь Нууцлалтай горим</translation>
 <translation id="464342062220857295">Онцлогийг хайх</translation>
@@ -1846,6 +1849,7 @@
 <translation id="4854853140771946034">Google Keep-д шинэ тэмдэглэл шуурхай үүсгээрэй</translation>
 <translation id="485902285759009870">Кодыг баталгаажуулж байна...</translation>
 <translation id="4862630594858951805">Үнэ буурах үед имэйл авахыг хүсэж байна уу?</translation>
+<translation id="4864406669374375262">Хувилбарын мөрийг түр санах ойд хуулсан</translation>
 <translation id="486459320933704969">Эцэг эх эсвэл асран хамгаалагч таныг энэ вебсайтад зочилж БОЛНО гэж хэлэх ёстой</translation>
 <translation id="4866506163384898554">Курсороо харуулахын тулд |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| дээр дарна уу</translation>
 <translation id="4873616204573862158">Нүдний шил</translation>
@@ -3534,6 +3538,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> хэл дээрх хуудсыг орчуулахгүй</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Гэмтэл учруулж болох програмуудыг устгахаас өмнө та энэ сайтад зочилсноор гарч болох эрсдлийг ойлгож байгаа бол <ph name="BEGIN_LINK" />энэ сайтад зочилно уу<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">Виртуал картын бүртгэлийг бүтэн өндрөөр нь нээсэн</translation>
 <translation id="8347658365704983341">Алсын сургалт</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>

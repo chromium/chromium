@@ -524,7 +524,6 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="324366796737464147">Шумоподавление</translation>
 <translation id="3249513730522716925">Окно "<ph name="WINDOW_TITLE" />" перемещено с рабочего стола "<ph name="ACTIVE_DESK" />" на рабочий стол "<ph name="TARGET_DESK" />".</translation>
-<translation id="3252573918265662711">Настройка</translation>
 <translation id="3253743281242075461">Тип задания: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Что ты умеешь?</translation>
 <translation id="3256109297135787951">Снять выделение с объекта на панели запуска.</translation>
@@ -673,6 +672,7 @@
 <translation id="3781910048497807059">Перейти к предыдущей панели</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
+<translation id="3789841737615482174">Установить</translation>
 <translation id="3796215473395753611">Alt + Стрелка вверх</translation>
 <translation id="3796746699333205839">Приложение использует вашу камеру и микрофон</translation>
 <translation id="3798670284305777884">Динамик (встроенный)</translation>
@@ -1477,7 +1477,6 @@
 <translation id="7086931198345821656">Чтобы установить это обновление, на устройстве <ph name="DEVICE_TYPE" /> необходимо воспользоваться функцией Powerwash. Все данные будут удалены. Узнайте больше о последнем обновлении <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Функция Switch Access</translation>
 <translation id="709015856939120012">Увеличить масштаб страницы</translation>
-<translation id="7098053464892629930">Скачайте приложение "<ph name="NAME" />" в Google Play, чтобы использовать все доступные функции</translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
 <translation id="7100906357717321275">Показать скрытые файлы в приложении "Файлы"</translation>
 <translation id="7108254681523785542">Выберите элемент, который нужно вставить. Чтобы открыть историю буфера обмена, нажмите <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
@@ -1838,7 +1837,6 @@
 <translation id="8660331759611631213">Квадратный корень из 71</translation>
 <translation id="8663756353922886599">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Нажмите Ввод, чтобы сделать скриншот части экрана</translation>
-<translation id="8666856788528804727">Откройте "<ph name="NAME" />", чтобы настроить устройство</translation>
 <translation id="8676770494376880701">Подключено маломощное зарядное устройство</translation>
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
 <translation id="8703634754197148428">Начать запись. Чтобы найти кнопку остановки записи, перейдите к панели запуска, используя сочетание клавиш Alt + Shift + L.</translation>

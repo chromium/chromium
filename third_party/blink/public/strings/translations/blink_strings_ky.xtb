@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Күзгүдөй чагылдырууга которулду</translation>
 <translation id="2031987842108996681">Кызыл канал</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' ичинде '<ph name="DOT" />' туура эмес жерде колдонулду.</translation>
+<translation id="2068711044993563745">Эң төмөнкү маани (<ph name="MINIMUM" />) эң жогорку мааниден (<ph name="MAXIMUM" />) аз болушу керек.</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
 <translation id="2226276347425096477">Бул текстти <ph name="MAX_CHARACTERS" /> белгиге же андан кыскараак кылып кыскартыңыз (учурда <ph name="CURRENT_LENGTH" /> белги турат).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>

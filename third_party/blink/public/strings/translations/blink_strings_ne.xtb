@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">प्रतिविम्ब गर्ने सुविधामा बदल्ने कार्य गरियो</translation>
 <translation id="2031987842108996681">रातो च्यानल</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' मा '<ph name="DOT" />' एक गलत स्थानको रूपमा प्रयोग गरिन्छ।</translation>
+<translation id="2068711044993563745">न्यूनतम मान (<ph name="MINIMUM" />) अनिवार्य रूपमा अधिकतम मान (<ph name="MAXIMUM" />) भन्दा कम हुनु पर्छ।</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2226276347425096477">कृपया यस टेक्स्टलाई <ph name="MAX_CHARACTERS" /> वर्णहरू वा कम गर्नुहोस् (तपाईंले हाल <ph name="CURRENT_LENGTH" /> वर्णहरू प्रयोग गरिरहनुभएको छ)।</translation>
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

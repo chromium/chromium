@@ -233,6 +233,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur "Gestionnaire de mots de passe de Google"</translation>
 <translation id="5098668839038261629">Si l'option est activée, vous serez également déconnecté de Chrome</translation>
+<translation id="5126049312684316860">Chrome précharge davantage de pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="5132929315877954718">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels pour Google Chrome.</translation>
 <translation id="5139423532931106058">Personnalisez votre profil Chrome</translation>
 <translation id="5163087008893166964">Bienvenue dans Chrome, une nouvelle fenêtre du navigateur a été ouverte</translation>
@@ -242,6 +243,7 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chrome selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="5239627039202700673">Utilisez Chrome chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="5251420635869119124">Les invités peuvent utiliser Chrome sans laisser aucune trace.</translation>
+<translation id="5320351714793324716">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement</translation>
 <translation id="5334309298019785904">Impossible de synchroniser vos données dans Chrome OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="5334487786912937552">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="5337648990166757586">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chrome OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>

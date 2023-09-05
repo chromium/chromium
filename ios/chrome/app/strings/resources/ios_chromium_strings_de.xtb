@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">Dieses Konto funktioniert in Chromium nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="1507010443238049608">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
 <translation id="1531155317299575425">Aufforderungen für die Anmeldung in Chromium werden angezeigt.</translation>
+<translation id="1591119736686995611">Öffnet das Chromium-Tabraster.</translation>
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
 <translation id="1647558790457890304">Chromium-Einstellungen</translation>
 <translation id="1722370509450468186">Dein Passwort wird in deinem Konto (<ph name="EMAIL" />) gespeichert.</translation>
@@ -42,6 +43,7 @@
 <translation id="2942241131342758843">Standardmäßig Chromium verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
 <translation id="3102849287235003384">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chromium abmeldest<ph name="END_LINK" />.</translation>
+<translation id="3219277919172823720">Sprachsuche in Chromium</translation>
 <translation id="3256316712990552818">In Chromium kopiert</translation>
 <translation id="3344973607274501920">Chromium konnte deine Passwörter nicht prüfen. Prüfe deine Internetverbindung.</translation>
 <translation id="3472200483164753384">Wird von Chromium Canary nicht unterstützt</translation>
@@ -61,6 +63,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="3955621079070267756">Chromium über jede App öffnen</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
+<translation id="4195557071150719219">Zuletzt geöffnete Tabs in Chromium ansehen</translation>
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -87,6 +90,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="5453478652154926037">Chromium kann deine Passwörter nicht prüfen.</translation>
 <translation id="5521125884468363740">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="5522297504975449419">Einige Chromium-Funktionen sind dann nicht mehr verfügbar.</translation>
+<translation id="5571094606370987472">Öffnet die zuletzt geöffneten Chromium-Tabs.</translation>
 <translation id="5688047395118852662">Auf dieser Karte findest du Vorschläge, wie du Chromium optimal nutzen kannst.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
@@ -110,6 +114,7 @@ Wichtige Hinweise:
 3. Wähle Chromium aus.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
+<translation id="6324041800010509197">Tab-Raster in Chromium aufrufen</translation>
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="6407399265324739055">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chromium-Browserverlauf wird nicht synchronisiert.
@@ -134,10 +139,12 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7313655110045230863">Wenn du Chromium als deinen Standardbrowser festlegen möchtest, öffne die Einstellungen. Tippe dort auf „Standard-Browser-App“ und wähle Chromium aus.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell findest du unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
+<translation id="7387082980875012885">Neuen Tab in Chromium öffnen</translation>
 <translation id="7395825497086981028">Dein Passwort wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="7400689562045506105">Chromium überall nutzen</translation>
 <translation id="7523464085759699266">Aktiviere die Option „Inkognitotabs sperren, wenn Chromium geschlossen wird“.</translation>
 <translation id="7674213385180944843">Öffne „Einstellungen“ &gt; „Datenschutz“ &gt; „Kamera“ &gt; „Chromium“ und aktiviere die Kamera.</translation>
+<translation id="7710137812207066069">Öffnet einen neuen Tab in Chromium.</translation>
 <translation id="7763454117143368771">Wenn du Chromium als Standardbrowser verwendest, bist du bestmöglich vor gefährlichen Websites geschützt und kannst auch deine Passwörter besser schützen</translation>
 <translation id="7812317783196516890">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chromium verändern können.</translation>
 <translation id="7859018312476869945">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>

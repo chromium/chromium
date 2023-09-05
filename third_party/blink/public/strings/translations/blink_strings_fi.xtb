@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Peilaus käynnissä</translation>
 <translation id="2031987842108996681">Punainen kanava</translation>
 <translation id="2060505056492490888"><ph name="DOT" />-merkkiä on käytetty väärässä kohdassa osoitteessa <ph name="INVALIDDOMAIN" />.</translation>
+<translation id="2068711044993563745">Vähimmäisarvon (<ph name="MINIMUM" />) on oltava enimmäisarvoa (<ph name="MAXIMUM" />) pienempi.</translation>
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2226276347425096477">Lyhennä tämä teksti alle <ph name="MAX_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
 <translation id="2247351761944213033">Viikko <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

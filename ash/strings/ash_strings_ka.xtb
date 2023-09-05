@@ -528,7 +528,6 @@
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="324366796737464147">ხმაურის შემცირება</translation>
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">დაყენება</translation>
 <translation id="3253743281242075461">საკლასო სამუშაოს ტიპი: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3256109297135787951">თაროზე ერთეულის გამოყოფის გაუქმება</translation>
@@ -677,6 +676,7 @@
 <translation id="3781910048497807059">წინა არის მოქცევა ფოკუსში</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
+<translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="3796215473395753611">alt + ზემოთ მიმართული ისარი</translation>
 <translation id="3796746699333205839">აპლიკაცია იყენებს თქვენს კამერასა და მიკროფონს</translation>
 <translation id="3798670284305777884">დინამიკი (შიდა)</translation>
@@ -1481,7 +1481,6 @@
 <translation id="7086931198345821656">ამ განახლების ფარგლებში საჭიროა თქვენი <ph name="DEVICE_TYPE" />-ის Powerwash. ყველა მონაცემი წაიშლება. შეიტყვეთ მეტი <ph name="SYSTEM_APP_NAME" />-ის ბოლო განახლების შესახებ.</translation>
 <translation id="7088960765736518739">გადამრთველით წვდომა</translation>
 <translation id="709015856939120012">გვერდზე მასშტაბის გაზრდა</translation>
-<translation id="7098053464892629930">ყველა ხელმისაწვდომი ფუნქციის სანახავად ჩამოტვირთეთ აპი <ph name="NAME" />-ისთვის Google Play-დან</translation>
 <translation id="7098389117866926363">USB-C მოწყობილობა (უკან მდებარე მარცხენა პორტი)</translation>
 <translation id="7100906357717321275">დამალული ფაილების ჩვენება Files აპში</translation>
 <translation id="7108254681523785542">აირჩიეთ ერთეული მის ჩასასმელად. გაცვლის ბუფერის ნახვა შეგიძლიათ კლავიშთა კომბინაციით <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1622,6 +1621,7 @@
 <translation id="7714767791242455379">ახალი ფიჭური ქსელის დამატება</translation>
 <translation id="7720400844887872976">ჩართულია <ph name="TIME" />-მდე</translation>
 <translation id="7720410380936703141">ხელახლა ცდა</translation>
+<translation id="7721132362314201794">სამუშაო მაგიდის სახელი</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7723703419796509666">დეველოპერის ხელსაწყოების კონსოლის ჩვენება ან დამალვა</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
@@ -1844,7 +1844,6 @@
 <translation id="8660331759611631213">71-ის კვადრატული ფესვი</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">ეკრანის ნაწილობრივი ანაბეჭდის აღსაბეჭდად დააჭირეთ Enter-ს</translation>
-<translation id="8666856788528804727">თქვენი მოწყობილობის დასაყენებლად გახსენით <ph name="NAME" /></translation>
 <translation id="8676770494376880701">დაბალი სიმძლავრის დამტენი დაკავშირებულია</translation>
 <translation id="8683506306463609433">ეფექტურობის ტრასირება გააქტიურებულია</translation>
 <translation id="8703634754197148428">ჩაწერის დაწყება. ჩაწერის დაწყების შემდეგ თაროზე გადასასვლელად და ჩაწერის შეწყვეტის ღილაკის საპოვნელად გამოიყენეთ კლავიშთა კომბინაცია Alt + Shift + L</translation>

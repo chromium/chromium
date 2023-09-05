@@ -477,6 +477,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
 <translation id="3688815115226493214">Suggeriments de pestanyes</translation>
 <translation id="3700134753671613714">Inicieu la sessió per accedir a les adreces d'interès des de tots els dispositius</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {EMAIL}.}other{{COUNT} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Marca com a no llegit</translation>
 <translation id="371230970611282515">Prediu esdeveniments perillosos abans que es produeixin i t'hi avisa.</translation>
 <translation id="37207012422556617">Tendències</translation>
@@ -1375,6 +1376,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8855242995793521265">No redueix significativament la velocitat del navegador ni del dispositiu.</translation>
 <translation id="8855781063981781621">Per desactivar el mode d’aïllament a Chrome, l'has de desactivar a l'iPad.</translation>
 <translation id="8863431381414769983">Obtén indicacions i informació local de Google Maps</translation>
+<translation id="8865415417596392024">Dades de Chrome al teu compte</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>

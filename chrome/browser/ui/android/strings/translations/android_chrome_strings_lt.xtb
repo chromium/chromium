@@ -58,6 +58,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
 <translation id="1258753120186372309">„Google“ papuoštas logotipas: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263063910731171689">Dabar matysite turinį iš kanalo <ph name="SITE_NAME" /> ir apie jį skiltyje „Stebima“. Stebimos svetainės ir paieškos išsaugomos „Google“ paskyroje. Stebimą turinį galite bet kada tvarkyti nustatymuose.</translation>
 <translation id="1263231323834454256">Skaitymo sąrašas</translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269129608791067105">Čia rasite istoriją</translation>
@@ -136,6 +137,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1671236975893690980">Laukiama atsisiuntimo...</translation>
 <translation id="1672586136351118594">Daugiau neberodyti</translation>
 <translation id="1680919990519905526">Pirkti „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
+<translation id="1687482373098770139">Netrukus skiltyje „Stebima“ matysite turinį iš kanalo <ph name="SITE_NAME" /> ir apie jį. Stebimos svetainės ir paieškos išsaugomos „Google“ paskyroje. Stebimą turinį galite bet kada tvarkyti nustatymuose.</translation>
 <translation id="1702543251015153180">Pakeisti tamsiosios temos nustatymus?</translation>
 <translation id="1702907158640575240">Tvarkoma naršyklė</translation>
 <translation id="1710099199314114079">Perjungti arba uždaryti skirtukus</translation>
@@ -1472,6 +1474,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8497242791509864205">Išskleisti rūšiavimo parinktis</translation>
 <translation id="8497480609928300907">Privatumo vadovo paaiškinimas</translation>
 <translation id="8497726226069778601">Čia dar nėra nieko, ką galėtumėte peržiūrėti…</translation>
+<translation id="8501423924927196358">Puslapio įžvalgų įkėlimo indikatorius</translation>
 <translation id="8503559462189395349">„Chrome“ slaptažodžiai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8505766168025405649">Žr. pranešimą apie atsisiuntimo būseną</translation>

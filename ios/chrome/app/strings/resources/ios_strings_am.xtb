@@ -455,6 +455,7 @@
 <translation id="3533202363250687977">ሁሉንም ማንነት የማያሳውቅ ትሮችን ዝጋ</translation>
 <translation id="3533436815740441613">አዲስ ትር</translation>
 <translation id="3540141921715814660">ወደ እልባቶች አክል</translation>
+<translation id="355101282835380364">በመለያ ውስጥ አስቀምጥ…</translation>
 <translation id="3551320343578183772">ትር ዝጋ</translation>
 <translation id="3565207542107370586">የአሰሳ ውሂብን አጽዳ…</translation>
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
@@ -468,6 +469,7 @@
 <translation id="3609785682760573515">በማመሳሰል ላይ...</translation>
 <translation id="3631443864840848029">ለዚህ ጣቢያ የአሁኑን የይለፍ ቃልዎን ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="3638472932233958418">ድረ-ገጾችን አስቀድመው ይጫኑ</translation>
+<translation id="3643338347976071250">{count,plural, =1{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="364480321352456989">የእርስዎ Chrome ጊዜው አልፎበታል።</translation>
 <translation id="3646736009628185125">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chrome እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">የውቅረት መገለጫ ይገኛል</translation>
@@ -475,6 +477,7 @@
 <translation id="368329460027487650">ዘግተው ወጥተዋል። በመለያ ለመግባት አማራጮችን ይክፈቱ።</translation>
 <translation id="3688815115226493214">የትር ጥቆማዎች</translation>
 <translation id="3700134753671613714">በሁሉም መሣሪያዎችዎ ላይ ያሉ የእርስዎን ዕልባቶች ለማግኘት ይግቡ።</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {EMAIL} ውስጥ ያስቀምጡት።}one{{COUNT} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {EMAIL} ውስጥ ያስቀምጡት።}other{{COUNT} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {EMAIL} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="3709582977625132201">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="371230970611282515">አደገኛ ክስተቶች ከመፈጠራቸው በፊት ይገምት እና እርስዎን ያስጠነቅቀዎታል።</translation>
 <translation id="37207012422556617">በመታየት ላይ ያሉ ፍለጋዎች</translation>
@@ -547,6 +550,7 @@
 <translation id="418156467088430727">የመስመር ውጭ ስሪቱን በአዲስ ትር ውስጥ ይመልከቱ</translation>
 <translation id="4181841719683918333">ቋንቋዎች</translation>
 <translation id="4187450337729239226">ለጥፍ እና ፈልግ</translation>
+<translation id="4197456013861852807">{count,plural, =1{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="4216918546378735658">ይቅር</translation>
 <translation id="4223967053752765281">ድርጅትዎ በመለያ መግባትን አጥፍቷል። አሁንም በዚህ መሣሪያ ላይ የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮችን ማየት ይችላሉ። ለውጦችን ካደረጉ ከመለያዎ ጋር አይሰምሩም።</translation>
 <translation id="422474357428465195">የእርስዎን ደህንነትን ስጋት ውስጥ ሊያስገቡ የሚችሉ በርካታ የይለፍ ቃል ችግሮች አሉብዎት።</translation>
@@ -1311,6 +1315,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="850600235656508448">ማንነት በማያሳውቅ ሁነታ ይክፈቱ</translation>
 <translation id="8517375800490286174">የክፍት ምንጭ ፍቃዶች</translation>
+<translation id="8522147671363140027">{count,plural, =1{{count} የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት እና ሌሎች ንጥሎች ብቻ በዚህ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="8524799873541103884">ከ<ph name="NUMBER_OF_OPEN_TABS" /> <ph name="INCOGNITO" /> ትሮች ውስጥ ከ<ph name="FIRST_VISIBLE_TAB" /> እስከ <ph name="LAST_VISIBLE_TAB" /> ያሉት</translation>
 <translation id="8528009254289981965">ከሌሎች መተግበሪያዎች የሚመጡ አገናኞችን ማንነት የማያሳውቅ ውስጥ ይክፈቱ</translation>
 <translation id="8529767659511976195">አዲስ</translation>
@@ -1371,6 +1376,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8855242995793521265">በሚታወቅ መልኩ የእርስዎን አሳሸ ወይም መሣሪያ ቀስ አይደርግም።</translation>
 <translation id="8855781063981781621">ቆልፍ እና ዝጋ ሁነታን በChrome ውስጥ ለማሰናከል በእርስዎ iPad ላይ ያጥፉት።</translation>
 <translation id="8863431381414769983">ከGoogle ካርታዎች አቅጣጫዎችን እና አካባቢያዊ መረጃ ያግኙ</translation>
+<translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ትር}one{{count} ትሮች}other{{count} ትሮች}}</translation>
 <translation id="8870413625673593573">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="8876882697946675716">መሳሪያዎችዎን በስምረት ላይ ያቆዩዋቸው</translation>

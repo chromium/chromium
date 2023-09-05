@@ -64,6 +64,7 @@
 <translation id="322254490661677575">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາໃສ່ລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="3282568296779691940">ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome</translation>
 <translation id="3345341804167540816">ໃຊ້ Chrome ຢູ່​ທຸກ​ບ່ອນ</translation>
+<translation id="3472587960215700950">Chrome ໃຊ້ Google ແຜນທີ່ເພື່ອບອກເສັ້ນທາງ ແລະ ຂໍ້ມູນໃນທ້ອງຖິ່ນໃຫ້ທ່ານຢູ່ທີ່ຢູ່ທີ່ກວດພົບ.</translation>
 <translation id="3503014945441706099">ຮັບSafe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chrome ນີ້ນຳ</translation>
 <translation id="3522659714780527202">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="3533694711092285624">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
@@ -71,17 +72,22 @@
 <translation id="3655656110921623717">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊເດັສທັອບທຸກເທື່ອ.</translation>
 <translation id="3720541637541300822">ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານປິດ Chrome</translation>
 <translation id="3741995255368156336">ເປີດລາຍຊື່ການອ່ານ Chrome.</translation>
+<translation id="3744018071945602754">ຈັດການລະຫັດຜ່ານໃນ Chrome</translation>
 <translation id="3827545470516145620">ທ່ານຈະໄດ້ຮັບການປົກປ້ອງຄວາມປອດໄພມາດຕະຖານຢູ່ອຸປະກອນນີ້</translation>
 <translation id="384394811301901750">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ໃນຂະນະນີ້</translation>
 <translation id="3901001113120561395">ໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome.</translation>
+<translation id="3967382818307165056">ຈັດການວິທີການຈ່າຍເງິນໃນ Chrome</translation>
 <translation id="3980220367029651214">ທ່ານກຳລັງປ່ຽນບັນຊີຊິ້ງຂໍ້ມູນຈາກ <ph name="USER_EMAIL1" /> ເປັນ <ph name="USER_EMAIL2" />. ຂໍ້ມູນ Chrome ທີ່ມີຢູ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" />. ນີ້ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນ <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານສືບຕໍ່ອອກຈາກລະບົບ Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome ບໍ່​ມີ​ການ​ເຂົ້າເຖິງຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າ​ເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">ເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ.</translation>
+<translation id="4067858366537947361">ເປີດແຖບບໍ່ເປີດເຜີຍຕົວຕົນ Chrome</translation>
 <translation id="4093042601582616698">ກຳນົດໃຫ້ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານບໍ?</translation>
 <translation id="417201473131094001">ບໍ່ຮອງຮັບໃນ Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> ກຳລັງໃຊ້ Chrome ຢູ່ ແລະ ເປີດບຸກມາກ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆປະໄວ້ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="424864128008805179">ອອກຈາກລະບົບ Chrome ບໍ?</translation>
+<translation id="4251174643044751591">ເປີດໜ້າການຕັ້ງຄ່າວິທີການຈ່າຍເງິນໃນ Chrome.</translation>
+<translation id="4453284704333523777">ຈັດການການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4508370294876102450">ເປີດ Chrome ຈາກແອັບໃດກໍໄດ້</translation>
 <translation id="4523886039239821078">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ຖອນ​ຕິດ​ຕັ້ງ​.</translation>
 <translation id="4633328489441962921">Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
@@ -116,11 +122,13 @@
 <translation id="571296537125272375">ອອບລາຍຢູ່, Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5716154293141027663">ເປີດ Chrome ຕອນໃດກໍໄດ້ທີ່ທ່ານແຕະໃສ່ລິ້ງໃນແອັບອື່ນ</translation>
 <translation id="5808435672482059465">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
+<translation id="589695154992054845">ເປີດຕົວຈັດການລະຫັດຜ່ານໃນ Chrome.</translation>
 <translation id="5998675059699164418">ອົງການຂອງທ່ານຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Chrome.</translation>
 <translation id="6054613632208573261">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="6063091872902370735">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6110625574506755980">ຄຸນສົມບັດບາງຢ່າງຂອງ Chrome ຈະບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="6181930887571472871">ປ່ຽນເປັນ Chrome</translation>
+<translation id="6228768456496298352">Chrome ກວດພົບທີ່ຢູ່ໂດຍໃຊ້ Google ແຜນທີ່ເພື່ອບອກເສັ້ນທາງ ແລະ ຂໍ້ມູນທ້ອງຖິ່ນໃຫ້ທ່ານ.</translation>
 <translation id="6238746320622508509">ອະນຸຍາດໃຫ້ Chrome ລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="6412673304250309937">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ເກັບໄວ້ໃນ Chrome. ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing.</translation>
@@ -130,6 +138,7 @@
 <translation id="6646696210740573446">ເອົາສະເພາະບາງສ່ວນຂອງ URL ມາສ້າງຄວາມສັບສົນແລ້ວສົ່ງໄປໃຫ້ Google ຜ່ານເຊີບເວີຄວາມເປັນສ່ວນຕົວທີ່ເຊື່ອງທີ່ຢູ່ IP ຂອງທ່ານ. ຫາກເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ທີ່ເປັນອັນຕະລາຍ, Chrome ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Google ນຳ.</translation>
 <translation id="6648150602980899529">ທ່ານກຳລັງເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຈັດການໂດຍ <ph name="DOMAIN" /> ແລະ ກຳລັງໃຫ້ການຄວບຄຸມຂໍ້ມູນ Chrome ຂອງທ່ານແກ່ຜູ້ເບິ່ງແຍງລະບົບຂອງມັນ. ຂໍ້ມູນຂອງທ່ານຈະຖືກເຊື່ອມໂຍງຢ່າງຖາວອນກັບບັນຊີນີ້. ການອອກຈາກລະບົບ Chrome ຈະລຶບຂໍ້ມູນຂອງທ່ານອອກຈາກອຸປະກອນນີ້, ແຕ່ຂໍ້ມູນຈະຍັງຄົງຖືກຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="6676840375528380067">ລຶບລ້າງຂໍ້ມູນ Chrome ຂອງທ່ານຈາກອຸປະກອນນີ້?</translation>
+<translation id="6683891932310469419">ເປີດໜ້າປະຫວັດ Chrome ຂອງທ່ານ.</translation>
 <translation id="6709398533399187136">ລະຫັດຜ່ານຂອງທ່ານຖືກເປີດເຜີຍໃນການຮົ່ວໄຫຼຂໍ້ມູນ. ຕົວຈັດການລະຫັດຜ່ານ Google ແນະນຳໃຫ້ປ່ຽນມັນດຽວນີ້.</translation>
 <translation id="6815466750807582739">ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈະບໍ່ຖືກເຂົ້າລະຫັດໄວ້. ປະຫວັດການທ່ອງເວັບຈາກ Chrome ຈະບໍ່ຊິ້ງຂໍ້ມູນ.
 
@@ -138,6 +147,7 @@
 <translation id="6916015246697034114">ຊອກຫາດ້ວຍສຽງໃນ Chrome</translation>
 <translation id="6964931465519938134">ຕອນນີ້ທ່ານສາມາດໃຊ້ Chrome ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
 <translation id="6975725306479268850">ເລືອກ Chrome ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="7056826488869329999">ເປີດ ແລະ ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chrome.</translation>
 <translation id="7059914902409643750">ຕັ້ງຄ່າ Chrome ແບບກຳນົດເອງ</translation>
 <translation id="7124339256045485976">ຮັກສາໃຫ້ Chrome ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="7161390184744336561">Google Chrome ເກົ່າແລ້ວ</translation>
@@ -168,6 +178,7 @@
 <translation id="8160472928944011082">Chrome ບໍ່ສາມາດອັບເດດໄດ້</translation>
 <translation id="8174679664544842874">ເປີດແຖບໃໝ່ໃນ Chrome.</translation>
 <translation id="8213758103105806860">ເບິ່ງບຸກມາກ Chrome</translation>
+<translation id="8328903609881776074">ເປີດແຖບບໍ່ເປີດເຜີຍຕົວຕົນ Chrome ໃໝ່.</translation>
 <translation id="8357607116237445042">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chrome ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="840168496893712993">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ລອງຖອນ​ຕິດ​ຕັ້ງ​ພວກ​ມັນ.</translation>
@@ -203,6 +214,7 @@
   • ຫາກ Chrome ຫຼົ້ມ, ລາຍລະອຽດກ່ຽວກັບການຫຼົ້ມອາດຮວມມີຂໍ້ມູນສ່ວນຕົວບາງຢ່າງ.
 
   • ຫາກທ່ານເປີດໃຊ້ການຊິ້ງຂໍ້ມູນ, ການວັດແທກອາດຮວມມີຂໍ້ມູນກ່ຽວກັບ URL ທີ່ທ່ານເຂົ້າເບິ່ງນຳ.<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">ເປີດການຕັ້ງຄ່າໃນ Chrome.</translation>
 <translation id="9112744793181547300">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="9122931302567044771">ນີ້ໝາຍຄວາມວ່າ Chrome ຈະຮ້ອງຂໍເວັບໄຊມືຖືທຸກເທື່ອ.</translation>
 <translation id="9181628561061032322">ເປີດແຖບຫຼ້າສຸດໃນ Chrome.</translation>

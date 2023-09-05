@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-C түзмөгү (сол жактагы оюкча)</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Мүмкүнчүлүктөрдү ачуу</translation>
 <translation id="1294929383540927798">Кулпуланган экрандагы билдирмелердин параметрлерин өзгөртүү</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
@@ -365,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Терезелердин кулпусун ачуу</translation>
 <translation id="2528111225373402384">Байланыш түйүнүнүн параметрлери</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Caret серептөөсүн күйгүзүү же өчүрүү</translation>
 <translation id="2531025035050312891">түзмөк жай</translation>
 <translation id="2531107890083353124">Өтмөктү сүйрөгөндө, <ph name="KEY_ONE" /> баскычын басып туруңуз</translation>
@@ -387,6 +389,7 @@
 <translation id="2612614436418177118">Колдонмонун сүрөтчөсүн колдонмонун торчосунда жылдыруу</translation>
 <translation id="2620016719323068571">Төмөнкү категорияларда издөө: <ph name="CATEGORY" />, файлдар, колдонмолор жана башкалар...</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Корголгон</translation>
 <translation id="2624588537172718173">Түзмөктөгү аудиолор жана микрофон</translation>
 <translation id="263399434338050016">"Баарын тандоо"</translation>
@@ -511,6 +514,7 @@
 <translation id="3161500364292033097">Иш такта менен терезелерди жабуу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
 <translation id="3171170659304083361">Киргизүү ыкмаларынын параметрлери</translation>
+<translation id="3176221688814061633">Chromebook же Bluetooth түзмөгүңүз Bluetooth'дун эски версиясын колдонуп жатат. Аудионун сапатын жакшыртуу үчүн Bluetooth Super Resolution'ду күйгүзүңүз же ички микрофонду колдонуңуз.</translation>
 <translation id="3181441307743005334">Өчүрүп күйгүзүү бир нече убакытка созулушу мүмкүн</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Бир түзмөккө туташты}other{# түзмөккө туташты}}</translation>
 <translation id="320207200541803018">Таймер кой</translation>
@@ -524,7 +528,6 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="324366796737464147">Чуу басар</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> терезеси <ph name="ACTIVE_DESK" /> иш тактасынан <ph name="TARGET_DESK" /> иш тактасына жылдырылды</translation>
-<translation id="3252573918265662711">Орнотуу</translation>
 <translation id="3253743281242075461">Класс ишинин түрү: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3256109297135787951">Текчедеги нерсени бөлүп көрсөтүүнү алып салуу</translation>
@@ -673,6 +676,7 @@
 <translation id="3781910048497807059">Мурунку тактага өтүү</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Кулпулоо</translation>
+<translation id="3789841737615482174">Орнотуу</translation>
 <translation id="3796215473395753611">alt + өйдө жебе</translation>
 <translation id="3796746699333205839">Колдонмо камераңыз менен микрофонуңузду колдонуп жатат</translation>
 <translation id="3798670284305777884">Катуу сүйлөткүч (ички)</translation>
@@ -1477,7 +1481,6 @@
 <translation id="7086931198345821656">Бул жаңыртуу <ph name="DEVICE_TYPE" /> түзмөгүңүздү жууп салууну талап кылууда. Бардык маалымат өчүрүлөт. <ph name="SYSTEM_APP_NAME" /> колдонмосунун акыркы жаңыртуусу жөнүндө кененирээк маалымат.</translation>
 <translation id="7088960765736518739">Switch Access функциясы</translation>
 <translation id="709015856939120012">Баракты жакындатуу</translation>
-<translation id="7098053464892629930">Түзмөктүн жеткиликтүү функцияларынын баарын пайдалануу үчүн Google Play'ден <ph name="NAME" /> колдонмосун жүктөп алыңыз</translation>
 <translation id="7098389117866926363">USB-C түзмөгү (аркасындагы сол жактагы оюкча)</translation>
 <translation id="7100906357717321275">Жашырылган файлдарды Files колдонмосунда көрсөтүү</translation>
 <translation id="7108254681523785542">Чаптоо үчүн объект тандаңыз. <ph name="SHORTCUT_KEY_NAME" /> + v баскычтарын басып, алмашуу буферин көрсөңүз болот.</translation>
@@ -1498,6 +1501,7 @@
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
 <translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="7219573373513695352">Бир да түзмөк туташкан эмес</translation>
+<translation id="7229029500464092426"><ph name="TOTAL_MEMORY" /> ичинен <ph name="AVAILABLE_MEMORY" /> эстутум колдонулду</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256634071279256947">Арткы микрофон</translation>
 <translation id="7258828758145722155">Кечээ түзөтүлгөн</translation>
@@ -1523,6 +1527,7 @@
 <translation id="7360036564632145207">Дайын-даректерге кирүүнү коргоо деңгээли өзгөрсө, перифериялык жөндөөлөр майнаптуулукту арттырат</translation>
 <translation id="736045644501761622">Тушкагаз жана стилди тууралоо</translation>
 <translation id="7371404428569700291">Терезеден видео жаздырып алуу</translation>
+<translation id="7372069265635026568">Эстутумда <ph name="TOTAL_MEMORY" /> ичинен <ph name="AVAILABLE_MEMORY" /> орун жеткиликтүү</translation>
 <translation id="737315737514430195">Микрофонго уруксаты бар колдонмолордун жана вебсайттардын баарына микрофонду пайдалануу мүмкүнчүлүгү берилет</translation>
 <translation id="7377169924702866686">Caps Lock күйүп турат.</translation>
 <translation id="7377481913241237033">Код менен туташуу</translation>
@@ -1838,7 +1843,6 @@
 <translation id="8660331759611631213">71 квадраттык тамыры</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Экрандын жарымынын скриншотун тартып алуу үчүн "Enter" баскычын басыңыз</translation>
-<translation id="8666856788528804727">Түзмөгүңүздү жөндөө үчүн <ph name="NAME" /> колдонмосун ачыңыз</translation>
 <translation id="8676770494376880701">Кубаты төмөн кубаттагыч туташтырылды</translation>
 <translation id="8683506306463609433">Майнаптуулукка көз салуу жигердүү</translation>
 <translation id="8703634754197148428">Жаздырып баштаңыз. Жаздыруу башталгандан кийин Alt + Shift + L баскычтарынын айкалышын колдонуп, текчеге өтүп, жаздырууну токтотуу баскычын издеңиз</translation>
@@ -1852,6 +1856,7 @@
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> бүтөт</translation>
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735678380411481005">Баскычтоптун жарыгынын түсү</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Жандырылууда...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>

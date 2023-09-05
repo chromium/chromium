@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
 <translation id="301521992641321250">Automaticky blokováno</translation>
 <translation id="3069226013421428034">Povolení přihlášení třetích stran na konkrétní web.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Platnost vyprší zítra}few{Platnost vyprší za # dny}many{Platnost vyprší za # dne}other{Platnost vyprší za # dní}}</translation>
 <translation id="310297983047869047">Předchozí snímek</translation>
 <translation id="3109724472072898302">Sbaleno</translation>
 <translation id="3114012059975132928">Přehrávač videa</translation>

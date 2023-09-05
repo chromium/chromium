@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Тусгал үүсгэх рүү сэлгэсэн</translation>
 <translation id="2031987842108996681">Улаан суваг</translation>
 <translation id="2060505056492490888">" <ph name="DOT" /> '' нь <ph name="INVALIDDOMAIN" />-ны хувьд буруу байрлалд ашиглагдаж байна.</translation>
+<translation id="2068711044993563745">Доод утга (<ph name="MINIMUM" />) нь дээд утгаас (<ph name="MAXIMUM" />) бага байх ёстой.</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2226276347425096477">Энэ текстийг <ph name="MAX_CHARACTERS" /> тэмдэгтүүд рүү богиносгох эсвэл  багасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгтүүдийг ашиглаж байна).</translation>
 <translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>

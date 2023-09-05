@@ -108,9 +108,6 @@ Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_
       Si se establece como verdadera, se enviará información sobre la luz de fondo del dispositivo.</translation>
 <translation id="1076751984131277498">Lista de dispositivos USB que se pueden desconectar permitidos</translation>
 <translation id="1077675271127011209">Inhabilitar informes de uso y datos relacionados con fallas</translation>
-<translation id="1079425471279127373">Si estableces la política, se permitirá que algunos orígenes de las aplicaciones web instaladas de manera automática obtengan atributos de dispositivos (p. ej., número de serie o nombre de host) a través de la API de Device Attributes.
-
-      La API de Device Attributes es una lista de API web; consulta la información correspondiente en el siguiente sitio: https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles para orígenes que corresponden a aplicaciones web que se instalaron de forma automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o para la que se configure en la sesión de kiosco.</translation>
 <translation id="1079498696402787191">Usar el valor predeterminado para los hashes permitidos en los protocolos de enlace TLS</translation>
 <translation id="1079801999187584280">No permitir el uso de las Herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permite que los usuarios usen un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
@@ -1922,6 +1919,24 @@ ninguna URL de "más información" en el instalador.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar los comentarios de voz</translation>
 <translation id="2633907568797306353">Permitir que se habiliten las notificaciones de Phone Hub</translation>
+<translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> puede enviar
+las solicitudes de creación de llaves de acceso o WebAuthn directamente al llavero de iCloud en macOS 13.5
+o versiones posteriores. Si aún no se habilitó la sincronización del llavero de iCloud, se le
+solicitará al usuario que acceda con iCloud o que habilite la sincronización del
+llavero de iCloud.
+
+Si estableces esta política como falsa, no se usará el llavero de iCloud de forma predeterminada
+y se podrá usar el comportamiento anterior (crear la credencial en el perfil de <ph name="PRODUCT_NAME" />)
+en su lugar. Los usuarios aún podrán seleccionar el llavero de iCloud como opción y
+es posible que sigan viendo las credenciales del llavero de iCloud cuando accedan.
+
+Si la estableces como verdadera, el llavero de iCloud será la configuración predeterminada
+cuando la solicitud de WebAuthn sea compatible con esa opción.
+
+Si no la estableces, la configuración predeterminada dependerá de factores como
+si iCloud Drive está habilitado y si el usuario usó o
+creó una credencial en su
+perfil de <ph name="PRODUCT_NAME" /> hace poco.</translation>
 <translation id="2635872253077105112">Si estableces esta política, controlará la lista de sitios web que se abrirán en un navegador alternativo. Se tratan todos los elementos como regla para abrirse en un navegador alternativo. <ph name="PRODUCT_NAME" /> utiliza esas reglas cuando se decide si una URL debe abrirse en un navegador alternativo. Si el complemento de <ph name="IE_PRODUCT_NAME" /> está activado, <ph name="IE_PRODUCT_NAME" /> cambiará a <ph name="PRODUCT_NAME" /> cuando las reglas no coinciden. Si las reglas se contradicen, <ph name="PRODUCT_NAME" /> usa la regla más específica.
 
       Si no estableces la política, no se agregarán sitios web a la lista.
@@ -5361,6 +5376,7 @@ Cuando se establece para el kiosco de <ph name="PRODUCT_OS_NAME" />, esta polít
       Si la estableces como falsa o no la estableces, se mostrarán las advertencias de baja.</translation>
 <translation id="5659776687676755342">Habilitar el sonido de batería baja</translation>
 <translation id="5660228672907979869">Bloquear la habilitación de la partición de almacenamiento de terceros</translation>
+<translation id="5660950553460381588">Crear llaves de acceso de forma predeterminada en el llavero de iCloud cuando sea posible</translation>
 <translation id="5666457529647159548">Permite que los usuarios administren los certificados instalados</translation>
 <translation id="567377007899266033">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de extensiones que activan la política. Si la estableces como falsa, no se capturará ningún evento. Si no la estableces, se establecerá el valor predeterminado como verdadero.</translation>
 <translation id="5676740747107495269">Muestra las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de acceso</translation>
@@ -5687,6 +5703,13 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5984237109586500246">Aceptar contenidos web que se presenten como intercambios HTTP firmados</translation>
 <translation id="5987654816293745077">Informar los contadores de tiempo de ejecución del dispositivo</translation>
 <translation id="5991707691018985057">Mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload No mostrar el diálogo de cancelación cuando event.returnValue sea la cadena vacía del evento beforeunload</translation>
+<translation id="5992485316563377005">Si habilitas la política o no la estableces, se activará la integridad del código del renderizador.
+
+      Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en los procesos del renderizador de <ph name="PRODUCT_NAME" />.
+
+      En la versión 118 de Chrome, se quitó esta política; si la estableces, se ignorará.
+
+      Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="5994438001592408007">Habilitar los widgets de consulta rápida para los usuarios</translation>
 <translation id="5997543603646547632">Utilizar reloj con formato de 24 horas de forma predeterminada</translation>
 <translation id="5997846976342452720">Indicar si el buscador de complementos se debe inhabilitar (obsoleto)</translation>
@@ -6390,6 +6413,13 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
           El valor de la política debe especificarse en milisegundos. Se establecerán los valores de modo que sean inferiores a la demora de inactividad.</translation>
 <translation id="6497085755801788141">Usar el verificador de certificados integrado</translation>
+<translation id="65055701428353978">Si estableces esta política, se especificará para cada extensión afectada una lista de las URLs de redireccionamiento de OAuth que pueden
+usar las extensiones con la API de <ph name="IDENTITY_API_NAME" />
+(<ph name="IDENTITY_API_URL" />)
+además de la URL de redireccionamiento estándar https://&lt;extension id&gt;.chromiumapp.org/.
+
+Si no la estableces o proporcionas una lista de URLs vacía, todas las apps o extensiones
+podrán usar solo la URL de redireccionamiento estándar cuando usen la API de <ph name="IDENTITY_API_NAME" />.</translation>
 <translation id="6506486086262398387">Si habilitas la política, la función Network File Shares para <ph name="PRODUCT_OS_NAME" /> utilizará el protocolo NTLM para autenticar archivos compartidos SMB en caso de ser necesario. Si inhabilitas la política, se desactivará la autenticación de archivos compartidos SMB mediante NTLM.
 
       Si no la estableces, de forma predeterminada se desactivará para los usuarios administrados y se activará para los demás usuarios.</translation>
@@ -6620,6 +6650,7 @@ Si la estableces como falsa, se habilitará el comportamiento anterior.</transla
 <translation id="6661178198729301029">Habilitar los informes en la nube para los perfiles administrados</translation>
 <translation id="6665670272107384733">Establecer la frecuencia con la que el usuario debe ingresar la contraseña para usar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para ver la contraseña en la pantalla de inicio o de bloqueo</translation>
+<translation id="6669691206059842248">Configurar URLs de redireccionamiento de OAuth adicionales por extensión</translation>
 <translation id="6669700740683748046">Esta función permite ver la URL completa en la barra de direcciones.
       Si estableces esta política como verdadera, se mostrará la URL completa en la barra de direcciones, incluidos sus esquemas y subdominios.
       Si la estableces como falsa, se aplicará la visualización predeterminada de las URL.
@@ -6761,7 +6792,6 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
       Si la inhabilitas, se quitará el ícono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado independientemente de si esta política está habilitada o inhabilitada.</translation>
-<translation id="6794083666143216172">Permitir que los orígenes busquen atributos de dispositivos</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
 <translation id="6796215185873669533">Establecer la versión del string usuario-agente en el valor predeterminado de la configuración del navegador</translation>
 <translation id="6800111968763383631">Rechazar el permiso de MIDI en todos los sitios de forma predeterminada</translation>
@@ -7404,6 +7434,7 @@ Si estableces esta política como <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTORE
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7317472245305274219">Controlar si la creación de llaves de acceso se establecerá de forma predeterminada en el llavero de iCloud</translation>
 <translation id="7322825363493984512">La contraseña para autenticar los servicios del sistema contra el proxy web remoto.</translation>
 <translation id="7323773727263636287">Habilita la función de accesibilidad de corrección de colores.
 
@@ -7470,6 +7501,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7372831798009983116">Habilita la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reiniciar cuando el usuario sale de su cuenta si se inició Android o una VM</translation>
+<translation id="7374784840090523241">Crear llaves de acceso de forma predeterminada en otros almacenes, como el perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7375785904116479354">Si habilitas la política, se importará el motor de búsqueda predeterminado del navegador predeterminado anterior en la primera ejecución. Si inhabilitas la política o no la estableces, no se importará el motor de búsqueda predeterminado en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente al motor de búsqueda predeterminado estará marcada o desmarcada en función del valor de esta política.</translation>

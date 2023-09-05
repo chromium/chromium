@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">ପ୍ରତିଫଳନକୁ ସ୍ବିଚ୍ କରାଯାଇଛି</translation>
 <translation id="2031987842108996681">ଲାଲ୍ ଚ୍ୟାନେଲ୍</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'ରେ ଏକ ଭୁଲ ସ୍ଥାନରେ '<ph name="DOT" />' ବ୍ୟବହୃତ ହୋଇଛି</translation>
+<translation id="2068711044993563745">ସର୍ବନିମ୍ନ ମୂଲ୍ୟ (<ph name="MINIMUM" />) ସର୍ବାଧିକ ମୂଲ୍ୟ (<ph name="MAXIMUM" />)ଠାରୁ କମ ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2226276347425096477">ଦୟାକରି ଏହି ଟେକ୍ସଟ୍‍କୁ <ph name="MAX_CHARACTERS" />ଟି କିମ୍ବା ତା'ଠାରୁ କମ୍ ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ ଛୋଟ କରନ୍ତୁ (ବର୍ତ୍ତମାନ ଆପଣ <ph name="CURRENT_LENGTH" />ଟି ଅକ୍ଷର ବ୍ୟବହାର କରୁଛନ୍ତି)।</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> ସପ୍ତାହ, <ph name="YEAR" /></translation>

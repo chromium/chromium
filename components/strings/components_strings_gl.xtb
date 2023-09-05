@@ -221,6 +221,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1413407968866574823">Xogos de acción e de plataformas</translation>
 <translation id="1413809658975081374">Erro de privacidade</translation>
 <translation id="1414134146594747368">Preescolar</translation>
+<translation id="141826476809826269">Fin do texto extraído</translation>
 <translation id="1419305130220238697">Botón para xestionar as descargas en Chrome. Actívao para xestionar os ficheiros que descargases en Chrome</translation>
 <translation id="1422930527989633628">Pode pedirche permiso para detectar dispositivos Bluetooth próximos</translation>
 <translation id="1426410128494586442">Si</translation>
@@ -277,6 +278,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1530707389502320859">O sitio que acabas de tentar visitar parece falso. Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
 <translation id="1532118530259321453">Esta páxina di</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
+<translation id="1537807545287921620">Non se pode acceder a este PDF. Abre o menú contextual e activa a opción Extraer texto do PDF</translation>
 <translation id="1539840569003678498">Envío do informe:</translation>
 <translation id="1542105669288201090">Formación empresarial</translation>
 <translation id="1545757265410828525">Historial de prezos</translation>
@@ -434,6 +436,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="1846432862466000825">Plástico (arquivo)</translation>
 <translation id="1848982255014129637">Foto (alto brillo)</translation>
+<translation id="1853392626017747777">Rexistro de tarxeta virtual pechado</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1855370856221982654">Boxeo</translation>
 <translation id="1856713167556118146">Que non fai o modo de incógnito?</translation>
@@ -470,6 +473,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Copiar igualmente</translation>
 <translation id="1939175642807587452">Pode pedirche permiso para enviar notificacións</translation>
+<translation id="1940441167050915935">Eliminar códigos de seguranza gardados</translation>
 <translation id="1943994668912612445">Deseño</translation>
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
 <translation id="1946849748901605102">12 x 15 polgadas</translation>
@@ -864,6 +868,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2803306138276472711">A navegación segura de Google <ph name="BEGIN_LINK" />detectou software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recentemente. Ás veces, os sitios web que adoitan ser seguros inféctanse con software malicioso.</translation>
 <translation id="2807052079800581569">Posición Y de imaxe</translation>
 <translation id="2808278141522721006">Podes activar e desactivar Windows Hello en <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Non se pode acceder a este PDF. Preme as teclas Buscar + M para abrir o menú contextual e activar a opción Extraer texto do PDF</translation>
 <translation id="2818338148457093657">Servizos de beleza e spa</translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="2824775600643448204">Barra de enderezos e de busca</translation>
@@ -1168,6 +1173,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3461266716147554923">O URL <ph name="URL" /> quere ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="3461824795358126837">Marcador</translation>
 <translation id="3462200631372590220">Ocultar detalles</translation>
+<translation id="3465972433695735758">Non se pode acceder a este PDF. Extraeuse o texto coa tecnoloxía da IA de Google</translation>
 <translation id="346601286295919445">Química</translation>
 <translation id="3468054117417088249">A pestana <ph name="TAB_SWITCH_SUFFIX" /> está aberta actualmente, preme o tabulador e despois Intro para cambiar á pestana aberta</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para pechar todas as ventás do modo de incógnito que estean abertas, preme Tabulador e, a continuación, Introducir</translation>
@@ -1185,6 +1191,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="350069200438440499">Nome do ficheiro:</translation>
 <translation id="3501300228850242680">Metal (Música)</translation>
 <translation id="350421688684366066">Etiquetas (alto brillo)</translation>
+<translation id="350763432931695541">Extraendo texto das páxinas seguintes</translation>
 <translation id="3507869775212388416">Postos no sector xurídico</translation>
 <translation id="3507936815618196901">Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="3512163584740124171">Esta política ignórase porque hai outra política do mesmo grupo con máis prioridade.</translation>
@@ -1726,6 +1733,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Devolución de cartos vinculada</translation>
+<translation id="4631881646528206880">Rexistro de tarxeta virtual</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4638670630777875591">Modo de incógnito de Chromium</translation>
 <translation id="464342062220857295">Busca funcións</translation>
@@ -1840,6 +1848,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="485902285759009870">Verificando código…</translation>
 <translation id="4862630594858951805">Queres recibir un correo electrónico cando baixe o prezo?</translation>
+<translation id="4864406669374375262">Copiouse a cadea de versión no portapapeis</translation>
 <translation id="486459320933704969">Para poderes visitar este sitio web, ten que darche permiso o teu pai, nai, titor ou titora</translation>
 <translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">Lentes</translation>
@@ -2850,6 +2859,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6973988895180423160">3,5 x 5 polgadas</translation>
 <translation id="6978236010531171013">Compartir de todos os modos</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Inicio do texto extraído</translation>
 <translation id="6979440798594660689">Silenciar (opción predeterminada)</translation>
 <translation id="6987806006823772670">Sobre (revestido)</translation>
 <translation id="6989763994942163495">Mostrar configuración avanzada...</translation>
@@ -2905,6 +2915,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7102760431686146931">Utensilios de cociña e vaixelas</translation>
 <translation id="7105998430540165694">Clave de acceso de chaveiro de iCloud</translation>
 <translation id="7106762743910369165">A túa organización xestiona o teu navegador</translation>
+<translation id="7107249414147762907">Non se pode acceder a este PDF. Non se extraeu ningún texto</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031">O host <ph name="HOST" /> quere utilizar a túa cámara</translation>
 <translation id="7108819624672055576">Permitido por unha extensión</translation>
@@ -3527,6 +3538,7 @@ Detalles adicionais:
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Se aceptas os riscos para a túa seguranza, podes <ph name="BEGIN_LINK" />acceder a este sitio<ph name="END_LINK" /> antes de que se eliminen os programas prexudiciais.</translation>
+<translation id="8344776605855290140">Rexistro de tarxeta virtual aberto a altura completa</translation>
 <translation id="8347658365704983341">Educación a distancia</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
 <translation id="8351131234907093545">Crear nota</translation>
@@ -3916,6 +3928,7 @@ Detalles adicionais:
 <translation id="917450738466192189">O certificado do servidor non é válido.</translation>
 <translation id="9174623988242579721">Vehículos personalizados e de alto rendemento</translation>
 <translation id="9174917557437862841">Botón de cambio de pestana; preme Intro para cambiar a esta pestana</translation>
+<translation id="9177283544810807743">Non se pode acceder a este PDF. Extraendo texto coa tecnoloxía da IA de Google</translation>
 <translation id="9179703756951298733">Xestionar os teus pagos e a información das tarxetas de crédito na configuración de Chrome</translation>
 <translation id="9179907736442194268">Recibe alertas por correo electrónico se baixa o prezo en calquera sitio</translation>
 <translation id="9183302530794969518">Documentos de Google</translation>

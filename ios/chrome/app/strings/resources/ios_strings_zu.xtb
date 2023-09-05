@@ -477,6 +477,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="368329460027487650">Uphume ngemvume. Ivula okukhethwa kukho kokungena ngemvume.</translation>
 <translation id="3688815115226493214">Iziphakamiso Zethebhu</translation>
 <translation id="3700134753671613714">Ngena ngemvume ukuze uthole amabhukhimakhi wakho kuwo wonke amadivayisi wakho.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{Iphasiwedi engu-{COUNT} ilondoloziwe kule divayisi kuphela. Ukuze uyisebenzise kwamanye amadivayisi, ilondoloze ku-Google Account yakho, {EMAIL}.}one{Amaphasiwedi angu-{COUNT} alondolozwe kule divayisi kuphela. Ukuze uzisebenzise kwamanye amadivayisi akho, zilondoloze ku-Google Account yakho, {EMAIL}.}other{Amaphasiwedi angu-{COUNT} alondolozwe kule divayisi kuphela. Ukuze uzisebenzise kwamanye amadivayisi akho, zilondoloze ku-Google Account yakho, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Maka njengokungafundiwe</translation>
 <translation id="371230970611282515">Ibikezela futhi ikuxwayise ngemicimbi eyingozi ngaphambo kokuba yenzeke.</translation>
 <translation id="37207012422556617">Usesho Oluthrendayo</translation>
@@ -1375,6 +1376,7 @@ Idatha yakho ibethelwe ngomushwana wakho wokungena ngo-<ph name="TIME" />. Ifake
 <translation id="8855242995793521265">Ayinensisi ibhrawuza yakho noma idivayisi yakho.</translation>
 <translation id="8855781063981781621">Ukuze uvale Imodi Yokukhiya ku-Chrome yivale iPad yakho.</translation>
 <translation id="8863431381414769983">Thola izikhombisi-ndlela nolwazi lwendawo ku-Google Maps</translation>
+<translation id="8865415417596392024">Idatha ye-Chrome eku-akhawunti yakho</translation>
 <translation id="8868471676553493380">{count,plural, =1{Ithebhu engu-{count}}one{Amathebhu angu-{count}}other{Amathebhu angu-{count}}}</translation>
 <translation id="8870413625673593573">Okuvalwe kamuva</translation>
 <translation id="8876882697946675716">Gcina Amadivayisi Akho Ekuvumelaniseni</translation>

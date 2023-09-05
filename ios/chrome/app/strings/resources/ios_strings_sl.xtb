@@ -158,6 +158,7 @@
 <translation id="1872096359983322073">Svetilka</translation>
 <translation id="1882901927376062252">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
 <translation id="1883255238294161206">Strni seznam</translation>
+<translation id="1890237935065108104">Ta nastavitev ni na voljo.</translation>
 <translation id="1894023287452300670">Spremljajte ceno tukaj.</translation>
 <translation id="189531189292803889">iPad je bil nedavno obnovljen, zaradi česar se je morda spremenil privzeti brskalnik.</translation>
 <translation id="1910975740091000991">Chrome za iOS</translation>
@@ -477,6 +478,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3688815115226493214">Predlagani zavihki</translation>
 <translation id="3700134753671613714">Prijavite se, da boste lahko dostopali do zaznamkov v vseh napravah.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {EMAIL}.}one{{COUNT} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}two{{COUNT} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}few{{COUNT} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}other{{COUNT} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>
 <translation id="371230970611282515">Predvideva nevarne dogodke, preden se zgodijo, in vas opozarja nanje.</translation>
 <translation id="37207012422556617">Iskanja v trendu</translation>
@@ -1375,6 +1377,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8855242995793521265">Ne upočasni delovanja brskalnika ali naprave.</translation>
 <translation id="8855781063981781621">Če želite onemogočiti način zaklepa v Chromu, ga izklopite v iPadu.</translation>
 <translation id="8863431381414769983">Pridobivanje navodil za pot in lokalnih informacij iz Google Zemljevidov</translation>
+<translation id="8865415417596392024">Podatki v Chromu v računu</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} zavihek}one{{count} zavihek}two{{count} zavihka}few{{count} zavihki}other{{count} zavihkov}}</translation>
 <translation id="8870413625673593573">Nedavno zaprto</translation>
 <translation id="8876882697946675716">Poskrbite za sinhroniziranost naprav</translation>

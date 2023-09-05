@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">U kalua te pasqyrimi</translation>
 <translation id="2031987842108996681">Kanali i kuq</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" përdoret në një pozicion të gabuar në "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Vlera minimale (<ph name="MINIMUM" />) duhet të jetë më e vogël se vlera maksimale (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2226276347425096477">Shkurtoje këtë tekst në <ph name="MAX_CHARACTERS" /> karaktere ose më pak (aktualisht po përdor <ph name="CURRENT_LENGTH" /> karaktere).</translation>
 <translation id="2247351761944213033">Java <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

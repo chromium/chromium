@@ -229,6 +229,7 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="5098668839038261629">若开启此选项，关闭所有窗口的同时您也会退出登录 Chrome 的账号</translation>
+<translation id="5126049312684316860">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>
 <translation id="5139423532931106058">自定义您的 Chrome 个人资料</translation>
 <translation id="5163087008893166964">欢迎使用 Chrome；已打开新的浏览器窗口</translation>
@@ -236,6 +237,7 @@
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chrome</translation>
 <translation id="5239627039202700673">随时使用 Chrome 打开您在消息、文档和其他应用内点击的链接</translation>
 <translation id="5251420635869119124">访客使用Chrome不会留下任何痕迹。</translation>
+<translation id="5320351714793324716">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载</translation>
 <translation id="5334309298019785904">由于您的网域不支持同步，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="5334487786912937552">Chrome 需要获得存储空间使用权限才能下载文件</translation>
 <translation id="5337648990166757586">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 操作系统的功能和性能。</translation>

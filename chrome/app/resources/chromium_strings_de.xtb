@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Installation fortsetzen</translation>
 <translation id="1029669172902658969">Neu starten, um &amp;Chromium OS zu aktualisieren</translation>
 <translation id="1040916596585577953">Chromium empfiehlt, diese Erweiterung zu überprüfen</translation>
+<translation id="1042552502243217427">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chromium dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="1083934481477628225">Dein Elternteil hat „Berechtigungen für Websites, Apps und Erweiterungen“ für Chromium deaktiviert</translation>
 <translation id="1098170124587656448">Chromium kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
@@ -128,6 +129,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="370962675267501463">{COUNT,plural, =0{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen}=1{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3713809861844741608">Link in neuem Chromium-Tab öffnen</translation>
 <translation id="378917192836375108">In Chromium kannst du auf eine Telefonnummer im Web klicken und diese mit Skype anrufen.</translation>
+<translation id="3802055581630249637">Chromium lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="3830894615770080216">Chromium OS-System</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Chromium OS-Hilfe</translation>
@@ -238,6 +240,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6132897690380286411">Browserdaten in Chromium werden bald gelöscht und der Browser geschlossen</translation>
 <translation id="6134968993075716475">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
 <translation id="6145820983052037069">Hier kannst du zwischen Chromium-Profilen wechseln</translation>
+<translation id="615103374448673771">Wenn du Cookies erlaubst, kann Chromium diese beim Vorabladen verwenden</translation>
 <translation id="6175304430031192654">Abhängig von deinen Einstellungen kann Chromium auch Cookies und deine aktuelle URL versenden</translation>
 <translation id="6183079672144801177">Du musst auf deinem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chromium angemeldet sein. Versuche es dann noch einmal.</translation>
 <translation id="6212496753309875659">Auf diesem Computer befindet sich bereits eine neuere Version von Chromium. Falls die Software nicht funktioniert, deinstalliere Chromium bitte und versuche es erneut.</translation>
@@ -262,6 +265,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6400112897226594999">Chromium-Logo auf einem Computerbildschirm.</translation>
 <translation id="6403826409255603130">Chromium ist ein Webbrowser, der Webseiten und Apps in Sekundenschnelle lädt und dabei äußerst stabil und nutzerfreundlich ist. Dank des integrierten Malware- und Phishing-Schutzes kannst du bedenkenlos im Internet surfen.</translation>
 <translation id="6442900851116057561">Chromium OS neu starten</translation>
+<translation id="6443470774889161065">Chromium lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
 <translation id="6455857529632101747">Willkommen bei den Chromium-Profilen</translation>
 <translation id="6475912303565314141">Die Erweiterung legt auch die Seite fest, die beim Start von Chromium angezeigt wird.</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>

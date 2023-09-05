@@ -106,9 +106,6 @@ Việc không đặt chính sách này sẽ không cho phép trường hợp ngo
       Nếu bạn đặt chính sách này thành true, thì thông tin về đèn nền của thiết bị sẽ được báo cáo.</translation>
 <translation id="1076751984131277498">Danh sách thiết bị USB được phép tháo</translation>
 <translation id="1077675271127011209">Tắt tính năng báo cáo về hoạt động sử dụng và dữ liệu liên quan đến sự cố</translation>
-<translation id="1079425471279127373">Đặt chính sách để cho phép một số nguồn gốc của ứng dụng web bị buộc cài đặt nhận các thuộc tính của thiết bị (ví dụ: số sê-ri, tên máy chủ) bằng cách sử dụng API thuộc tính thiết bị.
-
-      API Thuộc tính thiết bị là danh sách các API web, vui lòng xem tại https://wicg.github.io/WebApiDevice/device_attributes. Các API này chỉ có sẵn cho những nguồn tương ứng với các ứng dụng web bị buộc cài đặt qua <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> hoặc ứng dụng được định cấu hình trong phiên Kiosk.</translation>
 <translation id="1079498696402787191">Sử dụng giá trị mặc định cho các hàm băm được phép trong quá trình giao tiếp qua TLS.</translation>
 <translation id="1079801999187584280">Không cho phép sử dụng Công cụ dành cho nhà phát triển</translation>
 <translation id="1082802595100075771">Cho phép người dùng chọn sử dụng một dịch vụ ẩn danh của Google để cung cấp nội dung mô tả tự động cho những hình ảnh chưa gắn nhãn</translation>
@@ -6736,7 +6733,6 @@ Trong tương lai, chúng tôi sẽ loại bỏ chính sách này khỏi <ph nam
       Nếu bạn đặt chính sách này thành Tắt, biểu tượng các tính năng thử nghiệm của trình duyệt sẽ bị xóa khỏi thanh công cụ.
 
       chrome://flags và bất kỳ cách thức nào khác để tắt và bật các tính năng của trình duyệt sẽ vẫn hoạt động như dự kiến, cho dù chính sách này được Bật hay Tắt.</translation>
-<translation id="6794083666143216172">Cho phép nguồn gốc truy vấn các thuộc tính của thiết bị</translation>
 <translation id="6795485990775913659">Chỉ cho phép in khi không có mã PIN</translation>
 <translation id="6796215185873669533">Đặt phiên bản chuỗi User-Agent thành giá trị mặc định của chế độ cài đặt trình duyệt</translation>
 <translation id="6800111968763383631">Từ chối cấp quyền sử dụng MIDI trên mọi trang web theo mặc định</translation>

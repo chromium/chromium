@@ -161,6 +161,7 @@
 <translation id="7780154209050837198">Chrome වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට, ඔබගේ Google ගිණුම සමඟ Chrome වෙත පුරන්න.</translation>
 <translation id="7855730255114109580">Google Chrome යාවත්කාලීනයි</translation>
 <translation id="7897703007638178753">Chrome හි මෑත කාලීන පටිති බලන්න</translation>
+<translation id="7925119591961387184">"Chrome" තෝරන්න.</translation>
 <translation id="8022947259858476807">සබැඳි විවෘත කිරීමට, විජට්වලින් සෙවීමට සහ වෙනත් යෙදුම්වල මුරපද ස්වයං පිරවීමට පෙරනිමියෙන් Chrome භාවිත කරන්න</translation>
 <translation id="804638182476029347">Chrome දැනුම්දීම්වලට මිල පහත වැටීම් ඇඟවීම් ලබා ගැනීමට ඉඩ දෙන්න</translation>
 <translation id="81358522153858150">Chrome දැන් ඔබගේ කළමනාකරණය කළ ගිණුම සඳහා පරිශීලක ප්‍රතිපත්තිවලට සහාය දක්වයි</translation>
@@ -178,6 +179,7 @@
   1. සැකසීම් විවෘත කරන්න පෙරනිමි බ්‍රව්සර යෙදුම තට්ටු කරන්න
   3. Chrome තෝරන්න.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">"Chrome" තට්ටු කර "පෙරනිමි බ්‍රව්සර් යෙදුම" තට්ටු කරන්න.</translation>
 <translation id="8603022514504485810">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න, නැතහොත් <ph name="BEGIN_LINK" />ඔබේ Google ගිණුම තුළ මුරපද පරීක්ෂා කරන්න.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome සමඟ සුරක්ෂිතව සිටින්න</translation>
 <translation id="8760668027640688122">Chrome තුළ නව පටිත්ත විවෘත කරන්න</translation>
@@ -190,6 +192,7 @@
 මෙම සැකසීම වෙනස් කිරීමට <ph name="BEGIN_LINK" />ඔබේ ගිණුම තුළ ඇති Chrome දත්ත හිස් කරන්න<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google මුරපද කළමනාකරු හට සියලු මුරපද පරීක්ෂා කළ නොහැකි විය. හෙට නැවත උත්සාහ කරන්න.</translation>
 <translation id="8897749957032330183">මුරපද මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ සුරැකේ.</translation>
+<translation id="8949681853939555434">Chrome ඔබේ පෙරනිමි බ්‍රවුසරය ලෙස සකසන්න</translation>
 <translation id="8969290730818637510">ක්‍රියාත්මක විට:
 <ph name="BEGIN_INDENT" />  • Chrome ඔබ කරන ආකාරයට භාවිත කරන පුද්ගලයින් සඳහා එය වඩා යහපත් කිරීමට උදවු කරන්න.<ph name="END_INDENT" />
 

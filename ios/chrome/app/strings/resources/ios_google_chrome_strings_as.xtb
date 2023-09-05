@@ -36,6 +36,7 @@
 <translation id="2120238739383482109">Chromeৰ বুকমাৰ্কসমূহ খোলে।</translation>
 <translation id="2147651015520127414">Chromiumএ সত্যাপন কৰিছে যে <ph name="ISSUER" />এ এই ৱেবছাইটৰ প্ৰমাণপত্ৰ প্ৰদান কৰিছে।</translation>
 <translation id="2199719347983604670">Chrome ছিংকৰ ডেটা</translation>
+<translation id="2311240109311056604">Chrome Dino গে’মটো খোলে।</translation>
 <translation id="2339201583852607431">আপোনাৰ পাছৱৰ্ডটো আপোনাৰ Google একাউণ্ট (<ph name="EMAIL" />)ত ছেভ কৰা হ’ব।</translation>
 <translation id="2342919707875585281">আপুনি অনুমতি দিয়া ছাইটসমূহৰ সৈতে Chromeএ আপোনাৰ অৱস্থান শ্বেয়াৰ কৰে।</translation>
 <translation id="2347208864470321755">যেতিয়া এই সুবিধাটো অন কৰা থাকে তেতিয়া Chromeএ অন্য ভাষাত থকা পৃষ্ঠাবোৰ Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ প্ৰস্তাব দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -64,6 +65,7 @@
 <translation id="322254490661677575">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ আপোনাৰ পাছফ্ৰে’জ দিয়ক।</translation>
 <translation id="3282568296779691940">Chromeত ছাইন-ইন কৰক</translation>
 <translation id="3345341804167540816">সকলোতে Chrome ব্যৱহাৰ কৰক</translation>
+<translation id="3472587960215700950">চিনাক্ত কৰা ঠিকনাসমূহৰ বাবে আপোনাক দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য দিবলৈ Chromeএ Google Maps ব্যৱহাৰ কৰে।</translation>
 <translation id="3503014945441706099">Chromeৰ এই প্ৰ’ফাইলটোৰ বাবেও বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধা লাভ কৰক</translation>
 <translation id="3522659714780527202">আপুনি Chrome ব্যৱহাৰ কৰা সকলো ডিভাইচৰ পৰা নিজৰ টেবসমূহ চাবলৈ ছিংক অন কৰক</translation>
 <translation id="3533694711092285624">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি আপোনাৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromeএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
@@ -71,17 +73,22 @@
 <translation id="3655656110921623717">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ম’বাইল ছাইটৰ অনুৰোধ কৰিব।</translation>
 <translation id="3720541637541300822">আপুনি Chrome বন্ধ কৰিলে ইনক’গনিট’ টেবসমূহ লক কৰক</translation>
 <translation id="3741995255368156336">Chromeৰ পঢ়াৰ সূচী খোলে।</translation>
+<translation id="3744018071945602754">Chromeত পাছৱৰ্ড পৰিচালনা কৰক</translation>
 <translation id="3827545470516145620">আপুনি এই ডিভাইচটোত মান্য সুৰক্ষা লাভ কৰি আছে</translation>
 <translation id="384394811301901750">Google Chromeএ বর্তমান আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="3901001113120561395">Chromeৰ পৰা পাৰ্যমানে উপকৃত হওক।</translation>
+<translation id="3967382818307165056">Chromeত পৰিশোধ পদ্ধতি পৰিচালনা কৰক</translation>
 <translation id="3980220367029651214">আপুনি ছিংক কৰা একাউণ্ট <ph name="USER_EMAIL1" />ৰ পৰা <ph name="USER_EMAIL2" />লৈ সলনি কৰিছে। আপোনাৰ বৰ্তমানৰ Chromium ডেটা <ph name="DOMAIN" />এ পৰিচালনা কৰি আছে। এই কাৰ্যই আপোনাৰ ডেটা এই ডিভাইচটোৰপৰা মচি পেলাব কিন্তু আপোনাৰ ডেটাবোৰ <ph name="USER_EMAIL1" />ত থাকিব।</translation>
 <translation id="3984746313391923992">আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি Chromeৰ পৰা ছাইন আউট হৈ থকাৰ আৱশ্যক।</translation>
 <translation id="3988789688219830639">আপোনাৰ ফট’ বা ভিডিঅ’সমূহত Google Chromeৰ এক্সেছ নাই৷ iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
 <translation id="4064699917955374540">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক।</translation>
+<translation id="4067858366537947361">Chrome ইনক’গ্নিট’ টেব খোলক</translation>
 <translation id="4093042601582616698">Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবনে?</translation>
 <translation id="417201473131094001">Chrome Canaryত সমৰ্থিত নহয়</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" />এ Chrome ব্যৱহাৰ কৰি আছিল আৰু এই ডিভাইচটোত বুকমাৰ্ক, পাছৱৰ্ড আৰু অন্য ছেটিং এৰি গৈছে।</translation>
 <translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
+<translation id="4251174643044751591">Chromeত পৰিশোধ পদ্ধতিৰ ছেটিঙৰ পৃষ্ঠাখন খোলে।</translation>
+<translation id="4453284704333523777">Chromeৰ ছেটিং পৰিচালনা কৰক</translation>
 <translation id="4508370294876102450">যিকোনো এপৰ পৰা Chrome খোলক</translation>
 <translation id="4523886039239821078">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="4633328489441962921">Chromeএ আপডে’ট আছেনে নাই পৰীক্ষা কৰিব নোৱাৰে</translation>
@@ -95,10 +102,12 @@
 <translation id="484033449593719797">Chrome বিটাত সমৰ্থিত নহয়</translation>
 <translation id="4840404732697892756">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰিলে Google Password Managerএ আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="4903674399067644695">এই কাৰ্ডখনে আপোনাক Chromeৰ পৰা কেনেকৈ পাৰ্যমানে উপকৃত হ’ব পাৰি তাৰ পৰামৰ্শ দেখুৱায়।</translation>
+<translation id="49200511069271369">আপোনাৰ প্ৰতিষ্ঠান, <ph name="DOMAIN" />এ আপুনি ছাইন ইন কৰি থকা একাউণ্টটো আৰু Chrome কেনেকৈ ব্যৱহাৰ কৰিব পাৰি সেয়া পৰিচালনা কৰে। আপোনাৰ প্ৰশাসকে নিৰ্দিষ্ট কিছুমান সুবিধা ছেট আপ কৰিব অথবা প্ৰতিবন্ধিত কৰিব পাৰে।</translation>
 <translation id="5030102366287574140">Chromeএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
 <translation id="5108659628347594808">Chromeক উন্নত কৰক</translation>
 <translation id="5112925986883715005">Chromeৰ পঢ়াৰ সূচী চাওক</translation>
 <translation id="5119391094379141756">Chrome বাছনি কৰক</translation>
+<translation id="5156818928311866442">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰিবলৈ Chromeৰ ছেটিং খোলে।</translation>
 <translation id="5162467219239570114">Chrome পুৰণি হৈছে। <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ত কোনো আপডে’ট নাথাকিলে এয়া সম্ভৱ যে আপোনাৰ ডিভাইচটোৱে Chromeৰ নতুন সংস্কৰণসমূহ আৰু সমৰ্থন নকৰে।</translation>
 <translation id="5190139289262548459">আপোনাৰ প্ৰতিষ্ঠানে, <ph name="DOMAIN" />, আপুনি ছাইন ইন কৰা একাউণ্টটো আৰু Chrome কেনেকৈ ব্যৱহাৰ কৰা হয় পৰিচালনা কৰে।</translation>
 <translation id="5389212809648216794">অন্য কোনো এপ্লিকেশ্বনে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি থকাৰ বাবে Google Chromeএ সেয়া ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
@@ -116,11 +125,13 @@
 <translation id="571296537125272375">অফলাইন হৈ থাকিলে Chromeএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="5716154293141027663">আপুনি অন্য এপত লিংকসমূহত টিপিলে যিকোনো সময়তে Chrome খোলক</translation>
 <translation id="5808435672482059465">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
+<translation id="589695154992054845">Chromeত Password Manager খোলে।</translation>
 <translation id="5998675059699164418">Chrome ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক।</translation>
 <translation id="6054613632208573261">ডিফ’ল্ট হিচাপে Chrome ব্যৱহাৰ কৰক</translation>
 <translation id="6063091872902370735">Chromeত ছাইন ইন কৰিবলৈ দিয়ক</translation>
 <translation id="6110625574506755980">Chromeৰ কিছুমান সুবিধা আৰু উপলব্ধ হৈ নাথাকিব।</translation>
 <translation id="6181930887571472871">Chromeলৈ সলনি কৰক</translation>
+<translation id="6228768456496298352">আপোনাক দিক্-নিৰ্দেশনা আৰু স্থানীয় তথ্য দিবলৈ Chromeএ Google Maps ব্যৱহাৰ কৰি ঠিকনাসমূহ চিনাক্ত কৰে।</translation>
 <translation id="6238746320622508509">Chromeক আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰিবলৈ দিয়ক।</translation>
 <translation id="6247557882553405851">Google পাছৱৰ্ড পৰিচালক</translation>
 <translation id="6412673304250309937">Chromeত ষ্ট'ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱর্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল'ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
@@ -130,6 +141,7 @@
 <translation id="6646696210740573446">আপোনাৰ IP ঠিকনা লুকুৱাই ৰখা এটা গোপনীয়তা সম্পৰ্কীয় ছাৰ্ভাৰৰ জৰিয়তে Googleলৈ সেই URLটোৰ এটা অস্পষ্ট অংশ পঠিওৱা হয়। যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromeএ পৃষ্ঠাৰ কিছুমান সমলকে ধৰি URLসমূহ Googleলৈ পঠিয়াব পাৰে।</translation>
 <translation id="6648150602980899529">আপুনি <ph name="DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকে আপোনাৰ Chrome ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্ত হৈ থাকিব। Chromeৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
 <translation id="6676840375528380067">এই ডিভাইচটোৰ পৰা Chrome ডেটা মচিবনে?</translation>
+<translation id="6683891932310469419">আপোনাৰ Chromeৰ ইতিহাসৰ পৃষ্ঠা খোলে।</translation>
 <translation id="6709398533399187136">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। Google পাছৱৰ্ড পৰিচালকে এইটো এতিয়াই সলনি কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="6815466750807582739">পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ'ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
 
@@ -138,6 +150,7 @@
 <translation id="6916015246697034114">Chromeত কণ্ঠধ্বনিৰে সন্ধান কৰক</translation>
 <translation id="6964931465519938134">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="6975725306479268850">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটোৰ বাবে Chrome বাছনি কৰক</translation>
+<translation id="7056826488869329999">Chromeত সুৰক্ষা পৰীক্ষা খোলে আৰু চলায়।</translation>
 <translation id="7059914902409643750">আপুনি Chromeত ছাইন ইন কৰক</translation>
 <translation id="7124339256045485976">Chrome আপ টু ডে’ট কৰি ৰাখক</translation>
 <translation id="7161390184744336561">Google Chrome পুৰণি হৈছে</translation>
@@ -145,6 +158,7 @@
 <translation id="7173660919484573146">আপোনাৰ পাছৱর্ডসমূহলৈ কৰ্তৃত্ব প্ৰাপ্ত এক্সেছৰ সম্পর্কে নিশ্চিত কৰিবলৈ Chromeএ মুখমণ্ডলৰ আইডি ব্যৱহাৰ কৰে।</translation>
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="72119412072970160">আপুনি অন্য এপত Google পাছৱৰ্ড পৰিচালকত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ নিজৰ iPadত ব্যৱহাৰ কৰিব পাৰে।</translation>
+<translation id="7254380941803999489">Chromeক ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
 <translation id="7261678641327190792">Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="7272930098487145294">প্ৰতিচ্ছবিসমূহ ছেভ কৰিবলৈ Chromeক আপোনাৰ ফট’সমূহত যোগ দিয়াৰ অনুমতি দিবলৈ ছেটিংসমূহত টিপক</translation>
 <translation id="7275945473750112644">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromeৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব</translation>
@@ -168,6 +182,7 @@
 <translation id="8160472928944011082">Chrome আপডে’ট হ’ব নোৱাৰে</translation>
 <translation id="8174679664544842874">Chromeত এটা নতুন টেব খোলে।</translation>
 <translation id="8213758103105806860">Chromeৰ বুকমাৰ্কসমূহ চাওক</translation>
+<translation id="8328903609881776074">নতুন Chrome ইনক’গ্নিট’ টেব খোলে।</translation>
 <translation id="8357607116237445042">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromeৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰক</translation>
 <translation id="8370517070665726704">স্বত্বাধিকাৰ <ph name="YEAR" /> Google LLC। সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="840168496893712993">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি সেইবোৰ আনইনষ্টল কৰি চাওক।</translation>
@@ -201,6 +216,7 @@
 <ph name="BEGIN_INDENT" />  • আপোনাৰ Chromeৰ ব্যৱহাৰৰ তথ্য Googleলৈ পঠিওৱা হয়, কিন্তু সেয়া আপোনাৰ সৈতে জড়িত কৰা নহয়।
   • যদি Chrome ক্ৰেশ্ব হয়, ক্ৰেশ্বটোৰ সবিশেষত কিছুমান ব্যক্তিগত তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।
   • যদি আপুনি ছিংক অন কৰে, মেট্ৰিক্সত আপুনি চোৱা URLৰ তথ্য অন্তৰ্ভুক্ত হ’ব পাৰে।<ph name="END_INDENT" /></translation>
+<translation id="9071207983537882274">Chromeত ছেটিং খোলে।</translation>
 <translation id="9112744793181547300">Chromeক ডিফ’ল্ট হিচাপে ছেট কৰিবনে?</translation>
 <translation id="9122931302567044771">ইয়াৰ অৰ্থ হৈছে Chromeএ প্ৰত্যেকবাৰ ডেস্কটপ ছাইটৰ অনুৰোধ কৰিব।</translation>
 <translation id="9181628561061032322">Chromeৰ শেহতীয়া টেব খোলে।</translation>

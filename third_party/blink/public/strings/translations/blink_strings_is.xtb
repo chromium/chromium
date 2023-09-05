@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Skipt yfir í speglun</translation>
 <translation id="2031987842108996681">Rauð rás</translation>
 <translation id="2060505056492490888">„<ph name="DOT" />“ er notað á röngum stað í „<ph name="INVALIDDOMAIN" />“.</translation>
+<translation id="2068711044993563745">Lágmarksgildi (<ph name="MINIMUM" />) verður að vera lægra en hámarksgildi (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2226276347425096477">Styttu þennan texta í <ph name="MAX_CHARACTERS" /> stafi eða minna (sem stendur notarðu <ph name="CURRENT_LENGTH" /> stafi).</translation>
 <translation id="2247351761944213033">Vika <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

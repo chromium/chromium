@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Atsākt instalēšanu</translation>
 <translation id="1029669172902658969">Atkārtoti palaist, lai atjauninātu &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium komanda iesaka pārskatīt šo paplašinājumu.</translation>
+<translation id="1042552502243217427">Kad vietnē tiek piedāvāts privāti iepriekš ielādēt saites lapā, pārlūks Chromium izmanto Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem, taču Google uzzina, kādas lapas tiek iepriekš ielādētas.</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="1083934481477628225">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium.</translation>
 <translation id="1098170124587656448">Chromium var palīdzēt aizsargāt jūs pret datu noplūdi, ļaunprātīgiem paplašinājumiem un citiem apdraudējumiem.</translation>
@@ -129,6 +130,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3713809861844741608">Atvērt saiti jaunā Chromium &amp;cilnē</translation>
 <translation id="378917192836375108">Chromium ļauj jums noklikšķināt uz tālruņa numura un zvanīt uz to pakalpojumā Skype!</translation>
 <translation id="3790262771324122253">Uzziniet, kāpēc Chromium bloķē noteiktas lejupielādes</translation>
+<translation id="3802055581630249637">Pārlūkā Chromium tiek iepriekš ielādētas lapas, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="3830894615770080216">Chromium OS sistēma</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> — Chromium</translation>
 <translation id="386822487697155367">Saņemt palīdzību saistībā ar Chromium OS</translation>
@@ -239,6 +241,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6132897690380286411">Chromium drīz tiks aizvērts, un dati tiks izdzēsti</translation>
 <translation id="6134968993075716475">Droša pārlūkošana ir izslēgta. Pārlūkā Chromium tiek ieteikts to ieslēgt.</translation>
 <translation id="6145820983052037069">Šeit varat pārslēgties starp Chromium profiliem.</translation>
+<translation id="615103374448673771">Ja atļaujat sīkfailus, pārlūks Chromium var tos izmantot iepriekšējai ielādei.</translation>
 <translation id="6175304430031192654">Ja to atļauj jūsu iestatījumi, pārlūks Chromium var arī nosūtīt sīkfailus un jūsu pašreizējo URL</translation>
 <translation id="6183079672144801177">Ierīcē <ph name="TARGET_DEVICE_NAME" /> pierakstieties pārlūkā Chromium un pēc tam vēlreiz mēģiniet veikt sūtīšanu.</translation>
 <translation id="6212496753309875659">Šim datoram jau ir jaunākā Chromium versija. Ja programmatūra nedarbojas, atinstalējiet pārlūku Chromium un mēģiniet vēlreiz.</translation>
@@ -263,6 +266,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6400112897226594999">Chromium logotips datora ekrānā.</translation>
 <translation id="6403826409255603130">Chromium ir tīmekļa pārlūks, kas darbina tīmekļa lapas un lietojumprogrammas zibenīgā ātrumā. Tas ir ātrs, stabils un ērti lietojams. Pārlūkojiet tīmekli vēl drošāk ar aizsardzību pret ļaunprātīgu programmatūru un pikšķerēšanu, kas iebūvēta pārlūkā Chromium.</translation>
 <translation id="6442900851116057561">Chromium OS restartēšana</translation>
+<translation id="6443470774889161065">Pārlūkā Chromium tiek iepriekš ielādēts vēl vairāk lapu, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
 <translation id="6455857529632101747">Laipni lūdzam Chromium profilos!</translation>
 <translation id="6475912303565314141">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chromium.</translation>
 <translation id="648319183876919572">Droša pārlūkošana ar papildu aizsardzību nodrošina efektīvāku aizsardzību pret bīstamām vietnēm un lejupielādēm</translation>

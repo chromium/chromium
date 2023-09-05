@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">无法在 Chromium 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
 <translation id="1507010443238049608">帮助我们改进 Chromium 的功能和性能</translation>
 <translation id="1531155317299575425">显示意在引导用户登录 Chromium 的提示。</translation>
+<translation id="1591119736686995611">打开 Chromium 标签页网格。</translation>
 <translation id="1617663976202781617">Chromium 同步功能中的数据</translation>
 <translation id="1647558790457890304">Chromium 设置</translation>
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
@@ -46,6 +47,7 @@
 <translation id="2942241131342758843">默认使用 Chromium 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="3102849287235003384">若要在所有网站上退出您的 Google 账号，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
+<translation id="3219277919172823720">在 Chromium 中使用语音搜索</translation>
 <translation id="3228349498066165585">您的部分 Chromium 数据尚未保存到您的 Google 账号。
         请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
@@ -67,6 +69,7 @@
 <translation id="3955621079070267756">从任意应用内打开 Chromium</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理器中。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
+<translation id="4195557071150719219">查看最近使用 Chromium 打开的标签页</translation>
 <translation id="4432744876818348753">登录即可充分利用 Chromium。</translation>
 <translation id="452436063477828504">请确保您可以一直使用 Google 账号中的 Chromium 数据</translation>
 <translation id="4555020257205549924">启用此功能后，Chromium 将使用 Google 翻译对其他语言的网页进行翻译。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -93,6 +96,7 @@
 <translation id="5453478652154926037">Chromium 无法检查您的密码。</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="5522297504975449419">您将无法再使用某些 Chromium 功能。</translation>
+<translation id="5571094606370987472">打开最近使用 Chromium 打开的标签页。</translation>
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
@@ -117,6 +121,7 @@
 3. 选择“Chromium”。</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6268381023930128611">退出 Chromium？</translation>
+<translation id="6324041800010509197">访问 Chromium 中的标签页网格</translation>
 <translation id="632825460376924298">允许登录 Chromium</translation>
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>
 <translation id="6407399265324739055">付款方式和地址不会加密。Chromium 中的浏览记录不会同步。
@@ -141,10 +146,12 @@
 <translation id="7313655110045230863">若要将 Chromium 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chromium”。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">所选数据已从 Chromium 和同步的设备中移除。不过，您的 Google 账号在 history.google.com 上可能有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
+<translation id="7387082980875012885">在 Chromium 中打开新标签页</translation>
 <translation id="7395825497086981028">系统会将您的密码保存到 <ph name="EMAIL" /> 的密码管理器中。</translation>
 <translation id="7400689562045506105">随时随地使用 Chromium</translation>
 <translation id="7523464085759699266">开启“在您关闭 Chromium 时锁定无痕式标签页”。</translation>
 <translation id="7674213385180944843">打开“设置”&gt;“隐私”&gt;“相机”&gt;“Chromium”，然后开启相机。</translation>
+<translation id="7710137812207066069">在 Chromium 中打开新标签页。</translation>
 <translation id="7763454117143368771">使用 Chromium 作为默认浏览器不仅可让您免受危险网站的侵害，还可保护您的密码</translation>
 <translation id="7812317783196516890">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的账号。此网域的管理员现在可以专门针对该账号设置用户规范，这可能会改变 Chromium 的行为。</translation>
 <translation id="7859018312476869945">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>

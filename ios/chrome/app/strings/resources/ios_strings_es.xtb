@@ -477,6 +477,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="368329460027487650">Has cerrado sesión. Abre las opciones para iniciar sesión.</translation>
 <translation id="3688815115226493214">Sugerencias de pestañas</translation>
 <translation id="3700134753671613714">Te permite iniciar sesión para ver tus marcadores en todos tus dispositivos.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {EMAIL}.}other{{COUNT} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Marcar como no leído</translation>
 <translation id="371230970611282515">Predice y te advierte de eventos peligrosos antes de que se produzcan.</translation>
 <translation id="37207012422556617">Tendencias de búsqueda</translation>
@@ -1375,6 +1376,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8855242995793521265">No ralentiza de forma significativa tu navegador ni tu dispositivo.</translation>
 <translation id="8855781063981781621">Para inhabilitar el modo Bloqueo de seguridad en Chrome, desactívalo en tu iPad.</translation>
 <translation id="8863431381414769983">Obtén indicaciones e información local de Google Maps</translation>
+<translation id="8865415417596392024">Datos de Chrome en tu cuenta</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="8870413625673593573">Cerrado recientemente</translation>
 <translation id="8876882697946675716">Mantén tus dispositivos sincronizados</translation>

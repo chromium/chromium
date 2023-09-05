@@ -2981,6 +2981,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="722454870747268814">New Incognito tab</translation>
 <translation id="7226276626900992675">You allowed this site to use third-party cookies. This means that most site features should work, but you have less protection.</translation>
 <translation id="7227293336683593977">Price history</translation>
+<translation id="7227747683324411744">Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit.</translation>
 <translation id="7233592378249864828">Print confirmation sheet</translation>
 <translation id="7234638337680728591">Gas prices and vehicle fueling</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" />% completed | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3179,6 +3180,7 @@ Additional details:
 <translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages or credit card number.</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to view and manage your passwords in Chrome settings</translation>
@@ -3576,6 +3578,7 @@ Additional details:
 Additional details:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Microphone allowed this time</translation>
+<translation id="8422228580902424274">Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone or credit card number.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 mm x 750 mm</translation>
 <translation id="8428213095426709021">Settings</translation>

@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromeን እንደ ነባሪ ያዘጋጁ</translation>
 <translation id="1504372625950710826">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="1511320244449497906">እርስዎ አስተዳዳሪው አሁን የChrome ባህሪን ሊቀይር የሚችሉ መለያውን የሚመለከቱ የተጠቃሚ መመሪያዎችን ማቀናበር ወደሚችሉበት በ<ph name="DOMAIN" /> የሚተዳደር መለያ ገብተዋል እና ውሂብዎን ከእሱ ጋር እያሰመሩት ነው።</translation>
+<translation id="1516692594929310090">የChrome ትር ፍርግርግን ይከፍታል።</translation>
 <translation id="1526327845902180576">ሲበራ፦
 <ph name="BEGIN_INDENT" />  • እርስዎ Chrome በሚጠቀሙት መንገድ ለሚጠቀሙ ሰዎች የተሻለ እንዲሆን ያግዙ።<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="6822673484890854830">Chrome ሁሉንም የይለፍ ቃላት ማረጋገጥ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
+<translation id="6916015246697034114">በChrome ውስጥ በጽምፅ ይፈልጉ</translation>
 <translation id="6964931465519938134">አገናኞችን በመልእክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="6975725306479268850">ለራስ-ሙላ Chromeን ይምረጡ</translation>
 <translation id="7059914902409643750">Chromeን የራስዎ ያድርጉት</translation>
@@ -150,6 +152,7 @@
 <translation id="7400722733683201933">ስለ Google Chrome</translation>
 <translation id="7501046334262221972">Chrome ን ነባሪ አሳሽዎ ለማድረግ ቅንብሮችን ይክፈቱ። ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ፣ እና ከዚያ Chrome ን ይምረጡ።</translation>
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
+<translation id="7581063337314642333">በChrome ውስጥ የትር ፍርግርን ይጎብኙ</translation>
 <translation id="7662994914830945754">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ሆነዉ ትሮችዎን ለማየት በመለያ ይግቡ እና ስምረትን ያብሩ</translation>
 <translation id="7669869107155339016">ወደ የChrome ቅንብሮች ይሂዱ</translation>
 <translation id="7693590760643069321">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
@@ -157,11 +160,13 @@
 <translation id="7754633291442704733">ድርጅትዎ <ph name="DOMAIN" /> በዚህ መለያ ወደሚያከማቹት የእርስዎ Chrome ውሂብ፣ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መድረስ ይችላል። ዘግተው በሚወጡበት ጊዜ፣ ውሂብዎ ከዚህ መሣሪያ ላይ ይጸዳል።  ሆኖም፣ ውሂብዎ በሚተዳደር የGoogle መለያዎ እንደተከማቸ የሚቆይ እና ለድርጅትዎ የሚገኝ ይሆናል። እንዲሁም ድርጅትዎ የChromeን ባህሪ መቀየር የሚችሉ ለዚያ መለያ የተወሰኑ የተጠቃሚ መመሪያዎችን ማቀናበር ይችላል።</translation>
 <translation id="7780154209050837198">ከChrome የበለጠ ለማግኘት በGoogle መለያዎ ወደ Chrome ይግቡ።</translation>
 <translation id="7855730255114109580">Google Chrome የተዘመነ ነው</translation>
+<translation id="7897703007638178753">የChrome የቅርብ ጊዜ ትሮችን ይመልከቱ</translation>
 <translation id="7925119591961387184">«Chrome» የሚለውን ይምረጡ።</translation>
 <translation id="8022947259858476807">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና በሌሎች መተግበሪያዎች ውስጥ የይለፍ ቃሎችን የራስ-ለመሙላት በነባሪነት Chrome ን ይጠቀሙ</translation>
 <translation id="804638182476029347">የዋጋ ቅናሽ ማንቂያዎችን ለማግኘት የChrome ማሳወቂያዎችን ይፍቀዱ</translation>
 <translation id="81358522153858150">Chrome አሁን ለሚተዳደረው መለያዎ የተጠቃሚ መመሪያዎችን ይደግፋል</translation>
 <translation id="8160472928944011082">Chromeን ማዘመን አልተቻለም</translation>
+<translation id="8174679664544842874">በChrome ውስጥ አዲስ ትር ይከፍታል።</translation>
 <translation id="8213758103105806860">የChrome እልባቶችን ይመልከቱ</translation>
 <translation id="8357607116237445042">የChrome ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
@@ -178,6 +183,7 @@
 <translation id="8587647598504233556">«Chrome» ከዚያ «ነባሪ አሳሽ መተግበሪያ» ላይ መታ ያድርጉ።</translation>
 <translation id="8603022514504485810">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ።<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">በGoogle Chrome አማካኝነት ደህንነትዎን ይጠብቁ</translation>
+<translation id="8760668027640688122">በChrome ውስጥ አዲስ ትር ይክፈቱ</translation>
 <translation id="8765470054473112089">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chrome የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>
 <translation id="8788269841521769222">ይህን የይለፍ ቃል ማስታወስ አያስፈልገዎትም። ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል</translation>
@@ -197,4 +203,5 @@
   • ማስመርን ካበሩት፣ መለኪያዎች እርስዎ ስለሚጎበኟቸው ዩአርኤሎች መረጃንም ሊያካትቱ ይችላሉ።<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Chrome እንደ ነባሪ ይቀናበር?</translation>
 <translation id="9122931302567044771">ይህ ማለት Chrome የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
+<translation id="9181628561061032322">የChrome የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>
 </translationbundle>

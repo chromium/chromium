@@ -106,9 +106,6 @@ Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph na
       Als het beleid is ingesteld op True, wordt informatie over de schermverlichting van het apparaat gerapporteerd.</translation>
 <translation id="1076751984131277498">Toelatingslijst met USB-apparaten die mogen worden ontkoppeld</translation>
 <translation id="1077675271127011209">Rapportage van gebruiks- en crashgegevens uitzetten</translation>
-<translation id="1079425471279127373">Het beleid zo instellen dat sommige herkomsten van afgedwongen geïnstalleerde web-apps apparaatkenmerken (zoals serienummer, hostnaam) kunnen ophalen met behulp van de Device Attributes API.
-
-      De Device Attributes API is een lijst met web-API's, (zie https://wicg.github.io/WebApiDevice/device_attributes). Deze zijn alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of met de web-app die is ingesteld in de Kiosk-sessie.</translation>
 <translation id="1079498696402787191">Gebruik de standaardwaarde voor hashes die zijn toegestaan in TLS-handshakes.</translation>
 <translation id="1079801999187584280">Het gebruik van de hulpprogramma's voor ontwikkelaars niet toestaan</translation>
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
@@ -370,6 +367,9 @@ Dit vervangt het beëindigde beleid <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_P
 <translation id="1312799700549720683">Beheert weergave-instellingen.</translation>
 <translation id="131353325527891113">Gebruikersnamen tonen in het aanmeldscherm</translation>
 <translation id="1317658068839330898">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet niet toestaan</translation>
+<translation id="1325547947664414578">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" />-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
+Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
+Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie tonen als je offline bent</translation>
 <translation id="1330145147221172764">Schermtoetsenbord aanzetten</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
@@ -954,6 +954,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Als dit beleid niet is ingesteld, zijn er geen beperkingen voor welke gebruikers mogen inloggen. Als je nieuwe gebruikers wilt maken, moet het beleid <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> correct zijn ingesteld.
       Als <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> wordt toegepast, zijn Family Link-gebruikers toegestaan naast de accounts die in dit beleid zijn gedefinieerd.</translation>
+<translation id="18186215616223740">Office-documenten die worden verwerkt door de <ph name="BASIC_EDITOR_NAME" />, afgedwongen downloaden als je ernaartoe navigeert</translation>
 <translation id="1819272352048746487">Verschillende functies op het schermtoetsenbord aan- of uitzetten</translation>
 <translation id="1823974945066396306">Definieert de lijst met gebruikers die toestemming hebben om op het apparaat in te loggen. De invoer heeft de vorm <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, zoals <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Als je willekeurige gebruikers toegang wilt geven tot een domein, gebruik je invoer in de vorm <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -1054,6 +1055,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
       Opmerking: Door <ph name="OCSP_CRL_LABEL" />-checks wordt de beveiliging niet aantoonbaar verbeterd.</translation>
 <translation id="1905061765326052857">Niet-aangesloten gebruikers niet toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
+<translation id="1906871416501278476"><ph name="PRODUCT_NAME" />-service uitzetten en geen extern bureau starten bij inloggen</translation>
 <translation id="1907696459350079081">De screensaver op het inlogscherm niet aanzetten.</translation>
 <translation id="1910704279188129272">Hiermee kun je per app gebruiksbeperkingen instellen.
         Gebruiksbeperkingen kunnen worden toegepast op de apps die voor de betreffende gebruiker in <ph name="PRODUCT_OS_NAME" /> zijn geïnstalleerd.
@@ -2433,6 +2435,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3136550518935590587">Automatisch rechten verlenen aan deze sites om verbinding te maken met HID-apparaten met de opgegeven leveranciers- en product-ID's op het inlogscherm.</translation>
 <translation id="3138514192363246220">Ophalen uitzetten van metadata voor het laden van pagina's en machinelearning-modellen die de browsefunctionaliteit verbeteren</translation>
 <translation id="3142410959002029864">Als je dit beleid instelt, wordt de standaardinstelling voor dubbelzijdig afdrukken overschreven. Als deze instelling niet beschikbaar is, wordt dit beleid genegeerd.</translation>
+<translation id="3143203373436771188">Office-documenten die worden verwerkt door de <ph name="BASIC_EDITOR_NAME" />, openen in de <ph name="BASIC_EDITOR_NAME" /> als je ernaartoe navigeert</translation>
 <translation id="3144173889708944482">Als <ph name="PRINTERS_BLOCKLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers niet kunnen gebruiken. Alle printers zijn beschikbaar voor gebruikers, behalve de ID's in dit beleid. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Stemmen voor verbeterde tekst-naar-spraak via netwerk niet toestaan bij gebruik van Selecteer om voor te lezen</translation>
 <translation id="3150351525324499342">Het icoon voor <ph name="PRODUCT_NAME" /> niet standaard tonen in de werkbalk, maar gebruikers laten kiezen</translation>
@@ -5916,6 +5919,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287128640500683781">Elke gebruiker toestaan in te loggen</translation>
 <translation id="6287310684159482272">Instellingen voor cookies</translation>
+<translation id="6287742528823584153"><ph name="PRODUCT_NAME" />-service aanzetten en extern bureau starten bij inloggen</translation>
 <translation id="6299147100249359151">Detectie van beleidsbereik toestaan.</translation>
 <translation id="6299554629216555326">Instellingen voor vensterbeheer</translation>
 <translation id="6300871921951390976">Gebruikers mogen het releasekanaal van het apparaat alleen wijzigen als je dit beleid hebt ingesteld op True. Als je dit beleid hebt ingesteld op False of niet hebt ingesteld, mogen gebruikers het kanaal niet wijzigen.
@@ -6586,7 +6590,6 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
-<translation id="6794083666143216172">Toestaan dat de herkomst query's voor apparaatkenmerken kan uitvoeren</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6796215185873669533">Standaard browserinstellingen gebruiken voor tekenreeksversie van User-agent.</translation>
 <translation id="6800111968763383631">MIDI-rechten worden standaard geweigerd op alle sites</translation>

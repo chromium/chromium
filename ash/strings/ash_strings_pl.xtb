@@ -366,6 +366,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Odblokuj okna</translation>
 <translation id="2528111225373402384">Ustawienia hotspota</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Włącz lub wyłącz przeglądanie przy użyciu kursora</translation>
 <translation id="2531025035050312891">wolne urządzenie</translation>
 <translation id="2531107890083353124">Podczas przeciągania karty naciśnij <ph name="KEY_ONE" /></translation>
@@ -527,7 +528,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="324366796737464147">Wyciszanie szumów</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Konfiguracja</translation>
 <translation id="3253743281242075461">Typ zadania: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
 <translation id="3256109297135787951">Anuluj zaznaczenia elementu na półce</translation>
@@ -676,6 +676,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3781910048497807059">Przenieś zaznaczenie na poprzedni panel</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
+<translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3796215473395753611">Alt + strzałka w górę</translation>
 <translation id="3796746699333205839">Aplikacja używa kamery i mikrofonu</translation>
 <translation id="3798670284305777884">Głośnik (wewnętrzny)</translation>
@@ -1479,7 +1480,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7086931198345821656">Ta aktualizacja wymaga wykonania na urządzeniu <ph name="DEVICE_TYPE" /> procedury Powerwash. Wszystkie dane zostaną usunięte. Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Powiększ na stronie</translation>
-<translation id="7098053464892629930">Pobierz aplikację urządzenia <ph name="NAME" /> z Google Play, żeby zobaczyć wszystkie dostępne funkcje</translation>
 <translation id="7098389117866926363">Urządzenie USB-C (lewy port z tyłu)</translation>
 <translation id="7100906357717321275">Pokazuj ukryte pliki w aplikacji Pliki</translation>
 <translation id="7108254681523785542">Wybierz element, aby go wkleić. Po naciśnięciu klawiszy <ph name="SHORTCUT_KEY_NAME" /> + V wyświetli się schowek.</translation>
@@ -1842,7 +1842,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8660331759611631213">Pierwiastek kwadratowy z 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Aby zrobić częściowy zrzut ekranu, naciśnij Enter</translation>
-<translation id="8666856788528804727">Otwórz aplikację <ph name="NAME" />, aby skonfigurować urządzenie</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
 <translation id="8703634754197148428">Rozpocznij nagrywanie. Po rozpoczęciu nagrywania możesz za pomocą Alt + Shift + L przejść na półkę, na której znajdziesz przycisk zatrzymujący nagrywanie.</translation>
@@ -1856,6 +1855,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8731487213223706745">Zakończenie o <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735678380411481005">Kolor podświetlenia klawiatury</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktywuję…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>

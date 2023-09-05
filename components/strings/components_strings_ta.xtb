@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">பணம் செலுத்துக</translation>
 <translation id="1846432862466000825">ஆர்கைவல் பிளாஸ்டிக்</translation>
 <translation id="1848982255014129637">ஹை க்ளாஸ்ஸி ஃபோட்டோ</translation>
+<translation id="1853392626017747777">விர்ச்சுவல் கார்டைப் பதிவுசெய்யும் உரையாடல் மூடப்பட்டது</translation>
 <translation id="1854180393107901205">அனுப்புவதை நிறுத்து</translation>
 <translation id="1855370856221982654">குத்துச்சண்டை</translation>
 <translation id="1856713167556118146">மறைநிலையில் செய்யப்படாதவை:</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">புதிய முகவரி</translation>
 <translation id="1935995810530254458">பரவாயில்லை நகலெடு</translation>
 <translation id="1939175642807587452">அறிவிப்புகளை அனுப்ப அனுமதி கேட்க வேண்டும்</translation>
+<translation id="1940441167050915935">சேமிக்கப்பட்ட பாதுகாப்புக் குறியீடுகளை நீக்கு</translation>
 <translation id="1943994668912612445">வடிவமைப்பு</translation>
 <translation id="1945968466830820669">உங்கள் நிறுவனத்தின் கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும் அல்லது அடையாளத் திருட்டை எதிர்கொள்ளக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றும்படி Chromium பரிந்துரைக்கிறது.</translation>
 <translation id="1946849748901605102">12 x 15 இன்ச்</translation>
@@ -1727,6 +1729,7 @@
 <translation id="4628948037717959914">படம்</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">கேஷ்பேக் ஆஃபர் உள்ளது</translation>
+<translation id="4631881646528206880">விர்ச்சுவல் கார்டைப் பதிவுசெய்யலாம்</translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4638670630777875591">Chromium மறைநிலைப் பயன்முறை</translation>
 <translation id="464342062220857295">தேடல் அம்சங்கள்</translation>
@@ -1841,6 +1844,7 @@
 <translation id="4854853140771946034">Google Keepபில் புதிய குறிப்பை விரைவாக உருவாக்கும்</translation>
 <translation id="485902285759009870">குறியீட்டைச் சரிபார்க்கிறது...</translation>
 <translation id="4862630594858951805">விலை குறைந்தால் அதுகுறித்து மின்னஞ்சல் பெற விரும்புகிறீர்களா?</translation>
+<translation id="4864406669374375262">பதிப்பு வார்த்தை கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="486459320933704969">இந்த இணையதளத்தை நீங்கள் பார்க்கலாம் எனப் பெற்றோரோ காப்பாளரோ சொல்ல வேண்டும்</translation>
 <translation id="4866506163384898554">கர்சரைக் காட்ட, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| பட்டன்களை அழுத்தவும்</translation>
 <translation id="4873616204573862158">கண்ணாடிகள்</translation>
@@ -3529,6 +3533,7 @@
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> மொழியில் உள்ள பக்கங்கள் மொழிபெயர்க்கப்படாது</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">உங்கள் பாதுகாப்பிற்கான ஆபத்தைப் புரிந்துகொண்டால், தீங்கான நிரல்களை அகற்றும் முன் <ph name="BEGIN_LINK" />இந்தத் தளத்தைப் பார்வையிடலாம்<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">விர்ச்சுவல் கார்டைப் பதிவுசெய்யும் உரையாடல் முழுத் திரையில் திறக்கப்பட்டது</translation>
 <translation id="8347658365704983341">தொலைநிலைக் கல்வி</translation>
 <translation id="8349305172487531364">புக்மார்க் பட்டி</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>

@@ -413,10 +413,12 @@
 <translation id="3328801116991980348">פרטי אתר</translation>
 <translation id="3340938510625667914">‏פעולות ב-Chrome</translation>
 <translation id="3344485292736684439">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘ בחשבון שלך, {email}}one{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}two{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}other{הסימניות נשמרו בתיקייה ’{title}‘ בחשבון שלך, {email}}}</translation>
+<translation id="3365529507898144230">‏שמירה ב-Photos</translation>
 <translation id="3371831930909698441">‏Translate זמין. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="3377063233124932127">עכשיו הסימניות, הסיסמאות ונתונים נוספים ששמרת מופיעים למעלה.</translation>
 <translation id="3393920035788932672">חלונות קופצים מותרים</translation>
 <translation id="3399930248910934354">‏פתיחת ההגדרות של Chrome</translation>
+<translation id="3404232721752787413">‏שמירה ב-Google Photos</translation>
 <translation id="3404744938087714423">היציאה תשבית את הסנכרון.</translation>
 <translation id="3409785640040772790">מפות</translation>
 <translation id="3416023309465857378">25 באוקטובר 2023</translation>
@@ -904,6 +906,7 @@
 <translation id="6289501276895392862">בוטל המעקב אחר <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">‏כדי להפעיל גלישה בטוחה, יש להיכנס ל<ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" /> ולהקיש על 'גלישה בטוחה'.</translation>
 <translation id="629730747756840877">חשבון</translation>
+<translation id="630693926528731525">‏הסיסמה שלך לא שותפה. רצוי לבדוק את החיבור לאינטרנט ולוודא שנכנסת לחשבון ב-Chrome. אחר כך אפשר לנסות שוב.</translation>
 <translation id="6321526113093607004">הוספה לסימניות</translation>
 <translation id="6324669097367352121">הגדרות כניסה</translation>
 <translation id="6328337032497818759">התאמה אישית של התפריט</translation>
@@ -1363,6 +1366,7 @@
 <translation id="8855242995793521265">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
 <translation id="8855781063981781621">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chrome, צריך להשבית אותה ב-iPad.</translation>
 <translation id="8863431381414769983">‏קבלת מסלול הגעה ומידע מקומי ממפות Google</translation>
+<translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8868471676553493380">{count,plural, =1{כרטיסייה אחת ({count})}one{{count} כרטיסיות}two{{count} כרטיסיות}other{{count} כרטיסיות}}</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
 <translation id="8876882697946675716">אפשר לסנכרן בין המכשירים</translation>

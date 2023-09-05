@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Alterado para espelhamento.</translation>
 <translation id="2031987842108996681">Canal vermelho</translation>
 <translation id="2060505056492490888">"<ph name="DOT" />" está a ser utilizado numa posição errada em "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">O valor mínimo (<ph name="MINIMUM" />) tem de ser inferior ao valor máximo (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2226276347425096477">Encurte este texto para <ph name="MAX_CHARACTERS" /> caracteres ou menos (está atualmente a utilizar <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, de <ph name="YEAR" /></translation>

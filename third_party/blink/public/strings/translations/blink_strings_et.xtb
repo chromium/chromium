@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Lülitatud peegeldamisele</translation>
 <translation id="2031987842108996681">Punane kanal</translation>
 <translation id="2060505056492490888">Tähist „<ph name="DOT" />” on aadressis „<ph name="INVALIDDOMAIN" />” valesti kasutatud.</translation>
+<translation id="2068711044993563745">Miinimumväärtus (<ph name="MINIMUM" />) peab olema väiksem kui maksimumväärtus (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2226276347425096477">Lühendage seda teksti <ph name="MAX_CHARACTERS" /> tähemärgini või rohkem (praegu kasutate <ph name="CURRENT_LENGTH" /> tähemärki).</translation>
 <translation id="2247351761944213033">Nädal <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

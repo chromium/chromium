@@ -108,9 +108,6 @@ Jika kebijakan ini tidak disetel, tidak akan ada pengecualian untuk <ph name="DE
       Jika ditetapkan ke true, informasi lampu latar perangkat akan dilaporkan.</translation>
 <translation id="1076751984131277498">Daftar perangkat USB dapat dilepas yang diizinkan</translation>
 <translation id="1077675271127011209">Nonaktifkan pelaporan data penggunaan dan yang terkait error</translation>
-<translation id="1079425471279127373">Jika kebijakan disetel, beberapa asal dari aplikasi web yang diinstal otomatis akan diizinkan mendapatkan atribut perangkat (misalnya, nomor seri, nama host) dengan menggunakan Device Attributes API.
-
-      Device Attributes API adalah daftar API web; harap lihat https://wicg.github.io/WebApiDevice/device_attributes. API ini hanya tersedia untuk asal yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau aplikasi web yang dikonfigurasi dalam sesi Kios.</translation>
 <translation id="1079498696402787191">Gunakan Nilai Default untuk Hash yang Diizinkan di Handshake TLS.</translation>
 <translation id="1079801999187584280">Larang penggunaan Developer Tools</translation>
 <translation id="1082802595100075771">Izinkan pengguna memilih menggunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
@@ -372,6 +369,9 @@ Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1312799700549720683">Mengontrol setelan tampilan.</translation>
 <translation id="131353325527891113">Tampilkan nama pengguna pada layar masuk</translation>
 <translation id="1317658068839330898">Jangan izinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web</translation>
+<translation id="1325547947664414578">Saat pengguna beralih antar-perangkat <ph name="PRODUCT_OS_NAME" />, Layanan <ph name="PRODUCT_NAME" /> akan meluncurkan jendela aplikasi dan browser dari perangkat sebelumnya ke perangkat baru.
+Jika kebijakan disetel ke Aktif, jendela aplikasi dan browser dari perangkat <ph name="PRODUCT_OS_NAME" /> yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
+Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh akan menentukan jendela aplikasi dan browser mana yang diluncurkan saat login.</translation>
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
 <translation id="13356285923490863">Nama Kebijakan</translation>
@@ -964,6 +964,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Jika kebijakan ini tidak dikonfigurasi, semua pengguna akan diizinkan untuk login. Perlu diperhatikan bahwa pembuatan pengguna baru tetap mengharuskan kebijakan <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> dikonfigurasi dengan tepat.
       Jika <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> diaktifkan, selain akun yang ditetapkan dalam kebijakan ini, pengguna Family Link juga akan diizinkan.</translation>
+<translation id="18186215616223740">Saat membuka dokumen Office yang ditangani oleh <ph name="BASIC_EDITOR_NAME" />, otomatis download dokumen tersebut</translation>
 <translation id="1819272352048746487">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual</translation>
 <translation id="1823974945066396306">Menentukan daftar pengguna yang diizinkan untuk login ke perangkat. Entri memiliki format <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, misalnya <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Untuk mengizinkan sembarang pengguna di suatu domain, gunakan entri berformat <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -1066,6 +1067,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Catatan: Pemeriksaan <ph name="OCSP_CRL_LABEL" /> tidak memberikan manfaat keamanan yang efektif.</translation>
 <translation id="1905061765326052857">Jangan izinkan pengguna yang tidak terafiliasi menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
+<translation id="1906871416501278476">Nonaktifkan Layanan <ph name="PRODUCT_NAME" /> dan jangan luncurkan desktop jarak jauh saat login</translation>
 <translation id="1907696459350079081">Jangan aktifkan screensaver di layar login.</translation>
 <translation id="1910704279188129272">Memungkinkan untuk menetapkan pembatasan penggunaan per aplikasi.
         Pembatasan penggunaan dapat diterapkan ke aplikasi yang diinstal di <ph name="PRODUCT_OS_NAME" /> untuk pengguna tertentu.
@@ -1922,6 +1924,24 @@ tidak akan ada URL "pelajari lebih lanjut" di penginstal.</translation>
 <translation id="262740370354162807">Aktifkan penyerahan dokumen ke <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Aktifkan respons lisan</translation>
 <translation id="2633907568797306353">Izinkan pengaktifan notifikasi Phone Hub</translation>
+<translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> dapat mengarahkan
+permintaan pembuatan kunci sandi/WebAuthn langsung ke Rantai Kunci iCloud di macOS 13.5
+atau yang lebih baru. Jika sinkronisasi Rantai Kunci iCloud belum diaktifkan, pengguna akan
+diminta untuk login dengan iCloud atau mungkin diminta untuk mengaktifkan sinkronisasi
+Rantai Kunci iCloud.
+
+Jika kebijakan ini disetel ke salah (false), Rantai Kunci iCloud tidak akan digunakan secara default
+dan perilaku sebelumnya (pembuatan kredensial di profil <ph name="PRODUCT_NAME" />) mungkin akan digunakan
+sebagai gantinya. Pengguna akan tetap dapat memilih Rantai Kunci iCloud sebagai opsi, dan
+mungkin masih melihat kredensial Rantai Kunci iCloud saat login.
+
+Jika kebijakan ini disetel ke "true" (benar), Rantai Kunci iCloud akan menjadi pilihan default
+setiap kali permintaan WebAuthn kompatibel dengan pilihan tersebut.
+
+Jika kebijakan ini tidak disetel, penyimpanan default bergantung pada beberapa faktor seperti
+apakah iCloud Drive diaktifkan dan apakah pengguna baru saja menggunakan atau
+membuat kredensial di
+profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2635872253077105112">Menyetel kebijakan ini akan mengontrol daftar situs untuk dibuka pada browser alternatif. Tiap item diperlakukan sebagai aturan untuk sesuatu yang akan dibuka di browser alternatif. <ph name="PRODUCT_NAME" /> menggunakan aturan tersebut saat memilih apakah URL harus dibuka di browser alternatif. Jika add-in <ph name="IE_PRODUCT_NAME" /> diaktifkan, <ph name="IE_PRODUCT_NAME" /> akan beralih kembali ke <ph name="PRODUCT_NAME" /> saat aturan tidak cocok. Jika aturan bentrok satu sama lain, <ph name="PRODUCT_NAME" /> akan menggunakan aturan yang paling spesifik.
 
       Jika kebijakan tidak disetel, tidak ada situs yang akan ditambahkan ke daftar.
@@ -2462,6 +2482,7 @@ Kebijakan ini bersifat sementara dan akan dihapus pada masa mendatang.</translat
 <translation id="3136550518935590587">Memberikan izin secara otomatis ke situs ini untuk terhubung ke perangkat HID dengan ID vendor dan ID produk tertentu pada layar login.</translation>
 <translation id="3138514192363246220">Nonaktifkan pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan</translation>
 <translation id="3142410959002029864">Jika kebijakan disetel, mode dupleks persentase cetakan default akan ditimpa. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
+<translation id="3143203373436771188">Saat membuka dokumen Office yang ditangani oleh <ph name="BASIC_EDITOR_NAME" />, buka dokumen tersebut di <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Jika <ph name="PRINTERS_BLOCKLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Larang suara text-to-speech enhanced network saat menggunakan Klik untuk Diucapkan</translation>
 <translation id="3150351525324499342">Jangan tampilkan ikon <ph name="PRODUCT_NAME" /> di toolbar secara default, tetapi izinkan pengguna memilih</translation>
@@ -5368,6 +5389,7 @@ Jika disetel untuk <ph name="PRODUCT_OS_NAME" /> Kiosk, kebijakan ini akan menga
       Jika kebijakan ini disetel ke False (Salah) atau tidak disetel, peringatan penghentian akan ditampilkan.</translation>
 <translation id="5659776687676755342">Mengaktifkan Suara Baterai Lemah</translation>
 <translation id="5660228672907979869">Blokir pengaktifan partisi penyimpanan pihak ketiga.</translation>
+<translation id="5660950553460381588">Tetapkan penyimpanan default pembuatan kunci sandi ke Rantai Kunci iCloud jika memungkinkan.</translation>
 <translation id="5666457529647159548">Mengizinkan pengguna mengelola sertifikat klien yang terinstal.</translation>
 <translation id="567377007899266033">Jika kebijakan disetel ke Benar (True), laporan peristiwa penting penginstalan ekstensi Android yang dipicu kebijakan akan dikirimkan ke Google. Jika kebijakan disetel ke Salah (False), tidak ada peristiwa yang direkam. Jika kebijakan tidak disetel, nilai default akan disetel ke Benar (True).</translation>
 <translation id="5676740747107495269">Menampilkan opsi aksesibilitas di menu baki sistem pada layar login</translation>
@@ -5694,6 +5716,13 @@ Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_
 <translation id="5984237109586500246">Terima konten web yang ditayangkan sebagai Signed HTTP Exchange</translation>
 <translation id="5987654816293745077">Laporkan penghitung runtime perangkat</translation>
 <translation id="5991707691018985057">Tampilkan dialog pembatalan saat event.preventDefault() dipanggil untuk peristiwa beforeunload. Jangan tampilkan dialog pembatalan jika event.returnValue berisi string kosong untuk peristiwa beforeunload.</translation>
+<translation id="5992485316563377005">Jika kebijakan ini disetel ke Aktif atau tidak disetel, Integritas Kode Perender akan diaktifkan.
+
+      Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses perender <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses perender <ph name="PRODUCT_NAME" />.
+
+      Kebijakan ini dihapus di Chrome 118 dan akan diabaikan jika disetel.
+
+      Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="5994438001592408007">Widget Sekilas Info diaktifkan untuk pengguna.</translation>
 <translation id="5997543603646547632">Menggunakan 24 jam sebagai default</translation>
 <translation id="5997846976342452720">Menentukan apakah pencari plugin harus dinonaktifkan (tidak digunakan lagi)</translation>
@@ -6066,6 +6095,7 @@ mengetahui detail tambahan.</translation>
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287128640500683781">Izinkan semua pengguna login</translation>
 <translation id="6287310684159482272">Setelan cookie</translation>
+<translation id="6287742528823584153">Aktifkan Layanan <ph name="PRODUCT_NAME" /> dan luncurkan desktop jarak jauh saat login</translation>
 <translation id="6299147100249359151">Izinkan deteksi cakupan Kebijakan.</translation>
 <translation id="6299554629216555326">Setelan Pengelolaan Jendela</translation>
 <translation id="6300871921951390976">Jika kebijakan ini disetel ke Benar (True), pengguna hanya akan diizinkan mengubah saluran rilis perangkat. Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pengguna tidak akan diizinkan mengubah saluran.
@@ -6398,6 +6428,13 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari penundaan waktu tidak ada aktivitas.</translation>
 <translation id="6497085755801788141">Gunakan pemverifikasi sertifikat bawaan</translation>
+<translation id="65055701428353978">Menyetel kebijakan ini akan menentukan, untuk setiap ekstensi yang terpengaruh, daftar URL alihan OAuth yang dapat
+digunakan oleh ekstensi dengan <ph name="IDENTITY_API_NAME" /> API
+(<ph name="IDENTITY_API_URL" />)
+selain URL alihan https://&lt;extension id&gt;.chromiumapp.org/ standar.
+
+Jika kebijakan ini tidak disetel atau Anda memberikan daftar URL kosong, semua aplikasi atau ekstensi
+hanya dapat menggunakan URL alihan standar saat menggunakan <ph name="IDENTITY_API_NAME" /> API.</translation>
 <translation id="6506486086262398387">Menyetel kebijakan ke Aktif berarti fitur Berbagi File Jaringan untuk <ph name="PRODUCT_OS_NAME" /> akan menggunakan NTLM sebagai autentikasi untuk berbagi SMB jika perlu. Jika kebijakan disetel ke Nonaktif, autentikasi NTLM untuk berbagi SMB akan dinonaktifkan.
 
       Jika kebijakan tidak disetel, perilaku default akan dinonaktifkan bagi pengguna terkelola dan aktif bagi pengguna lainnya.</translation>
@@ -6628,6 +6665,7 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
 <translation id="6661178198729301029">Aktifkan pelaporan cloud profil terkelola</translation>
 <translation id="6665670272107384733">Setel seberapa sering pengguna harus memasukkan sandi untuk menggunakan buka kunci cepat.</translation>
 <translation id="6667586534922258705">Memperlihatkan tombol tampilkan sandi pada layar login dan layar kunci</translation>
+<translation id="6669691206059842248">Mengonfigurasi URL alihan OAuth tambahan per ekstensi</translation>
 <translation id="6669700740683748046">Fitur ini memungkinkan tampilan URL lengkap di kolom URL.
       Jika kebijakan ini disetel ke Benar (True), URL lengkap akan ditampilkan di kolom URL, termasuk skema dan subdomain.
       Jika kebijakan ini disetel ke Salah (False), tampilan URL default akan diterapkan.
@@ -6769,7 +6807,6 @@ Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.<
       Jika kebijakan disetel ke Nonaktif, ikon fitur eksperimental browser akan dihapus dari toolbar.
 
       chrome://flags dan cara lain untuk menonaktifkan dan mengaktifkan fitur browser akan tetap berperilaku sebagaimana mestinya terlepas dari apakah kebijakan ini disetel ke Aktif atau Nonaktif.</translation>
-<translation id="6794083666143216172">Mengizinkan asal mengkueri atribut perangkat</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6796215185873669533">Mengembalikan setelan browser untuk versi string Agen Pengguna ke defaultnya.</translation>
 <translation id="6800111968763383631">Tolak izin MIDI di semua situs secara default</translation>
@@ -7415,6 +7452,7 @@ Jika kebijakan ini disetel ke <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONST
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7317472245305274219">Mengontrol apakah pembuatan kunci sandi akan ditetapkan secara default ke Rantai Kunci iCloud.</translation>
 <translation id="7322825363493984512">Sandi untuk mengautentikasi layanan sistem ke proxy web jarak jauh.</translation>
 <translation id="7323773727263636287">Mengaktifkan fitur aksesibilitas koreksi warna.
 
@@ -7481,6 +7519,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7372831798009983116">Mengaktifkan fitur aksesibilitas klik otomatis</translation>
 <translation id="7373200034079131670">Reboot saat pengguna logout jika Android atau VM telah dimulai.</translation>
+<translation id="7374784840090523241">Tetapkan penyimpanan default pembuatan kunci sandi ke penyimpanan lain seperti profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7375785904116479354">Jika kebijakan disetel ke Aktif, mesin telusur default akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada mesin telusur default yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang mesin telusur default akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>

@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Sei passato a mirroring</translation>
 <translation id="2031987842108996681">Canale rosso</translation>
 <translation id="2060505056492490888">Il segno "<ph name="DOT" />" è utilizzato in una posizione errata in "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">Il valore minimo (<ph name="MINIMUM" />) deve essere inferiore al valore massimo (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2226276347425096477">Riduci questo testo a <ph name="MAX_CHARACTERS" /> caratteri o meno (attualmente stai utilizzando <ph name="CURRENT_LENGTH" /> caratteri).</translation>
 <translation id="2247351761944213033">Settimana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

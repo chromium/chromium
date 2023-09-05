@@ -11,6 +11,7 @@
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez communiquer avec l'administrateur de votre domaine ou utiliser un compte Google ordinaire pour vous connecter.</translation>
 <translation id="1507010443238049608">Nous aider à améliorer les fonctionnalités et les performances de Chromium</translation>
 <translation id="1531155317299575425">Affiche les invites de connexion dans Chromium.</translation>
+<translation id="1591119736686995611">Ouvre la grille d'onglets de Chromium.</translation>
 <translation id="1617663976202781617">Données de la synchronisation de Chromium</translation>
 <translation id="1722370509450468186">Votre mot de passe sera enregistré dans votre compte (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Données Chromium effacées</translation>
@@ -44,6 +45,7 @@
 <translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="3102849287235003384">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
+<translation id="3219277919172823720">Effectuer une recherche vocale dans Chromium</translation>
 <translation id="3228349498066165585">Certaines de vos données Chromium n'ont pas encore été enregistrées dans votre compte Google.
         Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="3256316712990552818">Copiée dans Chromium</translation>
@@ -61,6 +63,7 @@
 <translation id="3955621079070267756">Ouvrez Chromium depuis n'importe quelle application</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le gestionnaire de mots de passe sur cet appareil uniquement.</translation>
 <translation id="4099085513035183040">Fonctionnalité non prise en charge par Chromium Beta</translation>
+<translation id="4195557071150719219">Afficher les onglets récents de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="452436063477828504">S'assurer de toujours pouvoir utiliser les données Chromium dans votre compte Google</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée, Chromium vous offre de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -82,6 +85,7 @@
 <translation id="5453478652154926037">Chromium ne peut pas vérifier vos mots de passe.</translation>
 <translation id="5521125884468363740">Pour voir vos onglets partout où vous utilisez Chromium, connectez-vous et activez la synchronisation</translation>
 <translation id="5522297504975449419">Certaines fonctionnalités de Chromium ne seront plus offertes.</translation>
+<translation id="5571094606370987472">Ouvre les onglets récents de Chromium.</translation>
 <translation id="5688047395118852662">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chromium.</translation>
 <translation id="5700709190537129682">Chromium ne peut pas vérifier vos mots de passe</translation>
 <translation id="5777187867430702742">Page Chromium</translation>
@@ -95,6 +99,7 @@
 3. Sélectionnez Chromium.</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
+<translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>
 <translation id="632825460376924298">Autoriser la connexion dans Chromium</translation>
 <translation id="6337530241089703714">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
@@ -116,10 +121,12 @@
 <translation id="7313655110045230863">Pour définir Chromium comme navigateur par défaut, ouvrez l'application Réglages, touchez Navigateur par défaut, puis sélectionnez Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Les données sélectionnées ont été supprimées de Chromium et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
+<translation id="7387082980875012885">Ouvrir un nouvel onglet dans Chromium</translation>
 <translation id="7395825497086981028">Votre mot de passe sera enregistré dans le gestionnaire de mots de passe du compte <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Utiliser Chromium partout</translation>
 <translation id="7523464085759699266">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chromium ».</translation>
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium et activez l'appareil photo.</translation>
+<translation id="7710137812207066069">Ouvre un nouvel onglet dans Chromium.</translation>
 <translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
 <translation id="7812317783196516890">Vous êtes connecté et vous synchronisez vos données avec un compte géré par <ph name="DOMAIN" />. Son administrateur peut désormais définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chromium.</translation>
 <translation id="7859018312476869945">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chromium achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>

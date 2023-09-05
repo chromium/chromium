@@ -366,6 +366,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloquea las ventanas</translation>
 <translation id="2528111225373402384">Ajustes del punto de acceso</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Activar o desactivar la navegación por cursor de texto</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Mientras arrastras la pestaña, pulsa <ph name="KEY_ONE" /></translation>
@@ -527,7 +528,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3249513730522716925">La ventana <ph name="WINDOW_TITLE" /> se ha movido del escritorio <ph name="ACTIVE_DESK" /> al escritorio <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Configurar</translation>
 <translation id="3253743281242075461">Tipo de trabajo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
 <translation id="3256109297135787951">Dejar de destacar un elemento de la estantería</translation>
@@ -677,6 +677,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="3781910048497807059">Mover el enfoque al panel anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
+<translation id="3789841737615482174">Instalar</translation>
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
 <translation id="3796746699333205839">Una aplicación está usando tu cámara y tu micrófono</translation>
 <translation id="3798670284305777884">Altavoz (interno)</translation>
@@ -1481,7 +1482,6 @@ Nueva instalación</translation>
 <translation id="7086931198345821656">Esta actualización requiere que se le haga un Powerwash a tu <ph name="DEVICE_TYPE" />. Se eliminarán todos los datos. Consulta más información sobre la última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="709015856939120012">Ampliar la página</translation>
-<translation id="7098053464892629930">Descarga la aplicación de <ph name="NAME" /> en Google Play para ver todas las funciones disponibles</translation>
 <translation id="7098389117866926363">Dispositivo USB tipo C (puerto izquierdo situado en la parte trasera)</translation>
 <translation id="7100906357717321275">Muestra los archivos ocultos en la aplicación Archivos</translation>
 <translation id="7108254681523785542">Selecciona un elemento para pegarlo. Para ver el portapapeles, pulsa <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
@@ -1844,7 +1844,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8660331759611631213">Raíz cuadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Pulsa Intro para hacer una captura de una parte de la pantalla</translation>
-<translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar tu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8683506306463609433">Control del rendimiento activo</translation>
 <translation id="8703634754197148428">Inicia la grabación. Cuando la grabación haya empezado, pulsa Alt + Mayús + L para ir a la estantería donde se encuentra el botón para pararla.</translation>
@@ -1858,6 +1857,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8731487213223706745">Termina a las <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Es posible que esté intentando captar tus pulsaciones de teclas</translation>
 <translation id="8735678380411481005">Color de retroiluminación del teclado</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: activando...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>

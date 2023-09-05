@@ -234,6 +234,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliciwch 'Rheolwr Cyfrineiriau Google'</translation>
 <translation id="5098668839038261629">Pan fydd ymlaen, byddwch hefyd yn cael eich allgofnodi o Chrome</translation>
+<translation id="5126049312684316860">Mae Chrome yn rhaglwytho hyd yn oed mwy o dudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn gwneud hynny</translation>
 <translation id="5132929315877954718">Darganfyddwch apiau, gemau, estyniadau a themâu gwych ar gyfer Google Chrome.</translation>
 <translation id="5139423532931106058">Personoleiddio'ch proffil Chrome</translation>
 <translation id="5163087008893166964">Croeso i Chrome; agorwyd ffenestr porwr newydd</translation>
@@ -243,6 +244,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol
 <translation id="521447420733633466">Os ydych yn rhannu dyfais, gall ffrindiau a theulu bori ar wahân a gosod Chrome yn yr union ffordd y maent eisiau</translation>
 <translation id="5239627039202700673">Defnyddiwch Chrome unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="5251420635869119124">Gall gwesteion ddefnyddio Chrome heb adael unrhyw beth ar ôl.</translation>
+<translation id="5320351714793324716">Os ydych yn caniatáu cwcis, gall Chrome eu defnyddio ar gyfer rhaglwytho</translation>
 <translation id="5334309298019785904">Nid oedd ChromeOS yn gallu cysoni eich data gan nad yw Cysoni ar gael ar gyfer eich parth.</translation>
 <translation id="5334487786912937552">Mae angen caniatâd mynediad storfa ar Chrome i lawrlwytho ffeiliau</translation>
 <translation id="5337648990166757586">Dewisol: Helpu i wella nodweddion a pherfformiad ChromeOS drwy anfon data diagnostig a data defnydd yn awtomatig at Google.</translation>

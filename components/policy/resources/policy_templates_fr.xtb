@@ -106,9 +106,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="DEVICE_AUTH
       Si elle est définie sur "True", les informations concernant le rétroéclairage de l'appareil sont transmises.</translation>
 <translation id="1076751984131277498">Liste d'autorisation des appareils USB amovibles</translation>
 <translation id="1077675271127011209">Désactiver la création de rapports sur l'utilisation et les plantages</translation>
-<translation id="1079425471279127373">Si cette règle est configurée, certaines origines d'applis Web installées d'office sont autorisées à obtenir les attributs des appareils (ex. : numéro de série, nom d'hôte) à l'aide de l'API Device Attributes.
-
-      Cette API est une liste d'API Web (voir https://wicg.github.io/WebApiDevice/device_attributes). Elles ne sont disponibles que pour les origines qui correspondent aux applis web installées d'office via la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou celle configurée dans la session Kiosque.</translation>
 <translation id="1079498696402787191">Utilisez la valeur par défaut pour les hachages autorisés lors de handshakes TLS.</translation>
 <translation id="1079801999187584280">Interdire l'utilisation des outils pour les développeurs</translation>
 <translation id="1082802595100075771">Laisser les utilisateurs choisir s'ils veulent employer un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
@@ -370,6 +367,9 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
 <translation id="1312799700549720683">Contrôle les paramètres d'affichage.</translation>
 <translation id="131353325527891113">Afficher les noms d'utilisateur sur l'écran de connexion</translation>
 <translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
+<translation id="1325547947664414578">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
+Si cette règle est activée, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
+Si cette règle est désactivée ou n'est pas configurée, les paramètres de restauration complète déterminent ce qui doit être lancé à la connexion.</translation>
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
@@ -954,6 +954,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle n'est pas configurée, aucune restriction ne s'applique quant aux utilisateurs autorisés à se connecter. Notez que la création d'utilisateurs nécessite toujours de configurer correctement la règle <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.
       Si la règle <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> est activée, les utilisateurs de Family Link sont autorisés (en plus des comptes définis dans cette règle).</translation>
+<translation id="18186215616223740">Forcer le téléchargement des documents Office gérés par <ph name="BASIC_EDITOR_NAME" />, auxquels l'utilisateur accède</translation>
 <translation id="1819272352048746487">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran</translation>
 <translation id="1823974945066396306">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
 
@@ -1054,6 +1055,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
       Remarque : Les contrôles <ph name="OCSP_CRL_LABEL" /> ne présentent aucun avantage concret en termes de sécurité.</translation>
 <translation id="1905061765326052857">Ne pas autoriser les utilisateurs non affiliés à utiliser les machines virtuelles nécessaires pour faire fonctionner les applis Linux</translation>
+<translation id="1906871416501278476">Désactiver le service <ph name="PRODUCT_NAME" /> et ne pas lancer le bureau à distance lors de la connexion</translation>
 <translation id="1907696459350079081">Ne pas activer l'économiseur d'écran pour l'écran de connexion.</translation>
 <translation id="1910704279188129272">Permet de configurer des restrictions d'utilisation spécifiques pour chaque application.
         Vous pouvez appliquer des restrictions d'utilisation aux applications installées sur <ph name="PRODUCT_OS_NAME" /> pour l'utilisateur concerné.
@@ -1895,6 +1897,13 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 <translation id="262740370354162807">Activer l'envoi de documents à <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Activer les commentaires audio</translation>
 <translation id="2633907568797306353">Autoriser l'activation des notifications Phone Hub</translation>
+<translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> peut diriger les requêtes de création de clé d'accès/WebAuthn directement vers le trousseau iCloud sous macOS 13.5 ou version ultérieure. Si la synchronisation du trousseau iCloud n'a pas encore été activée, l'utilisateur sera invité à se connecter avec iCloud ou, peut-être, à activer la synchronisation du trousseau iCloud.
+
+Si cette règle est définie sur "False", le trousseau iCloud n'est pas utilisé par défaut, mais le comportement précédent (la création des identifiants dans le profil <ph name="PRODUCT_NAME" />) peut être utilisé à la place. Les utilisateurs pourront toujours sélectionner l'option "Trousseau iCloud", et ils sont susceptibles de voir les identifiants du trousseau iCloud lors de la connexion.
+
+Si cette règle est définie sur "True", le trousseau iCloud est utilisé par défaut chaque fois que la requête WebAuthn est compatible avec ce choix.
+
+Si cette règle n'est pas définie, la valeur par défaut dépend de divers facteurs, par exemple si iCloud Drive est activé ou non, et si l'utilisateur a récemment utilisé ou créé des identifiants dans son profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2635872253077105112">Permet d'établir la liste des sites Web à ouvrir dans un navigateur secondaire. Chaque élément est traité comme une instruction pour un élément à ouvrir dans un navigateur secondaire. <ph name="PRODUCT_NAME" /> utilise ces instructions pour décider si une URL doit être ouverte dans un navigateur secondaire ou non. Si le module complémentaire d'<ph name="IE_PRODUCT_NAME" /> est activé, <ph name="IE_PRODUCT_NAME" /> bascule de nouveau vers <ph name="PRODUCT_NAME" /> lorsque les instructions ne rencontrent pas de correspondance. Si les instructions se contredisent, <ph name="PRODUCT_NAME" /> utilise la plus spécifique.
 
       Si cette règle n'est pas configurée, aucun site Web n'est ajouté à la liste.
@@ -2429,6 +2438,7 @@ Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="3136550518935590587">Autoriser automatiquement ces sites à se connecter aux appareils HID à l'aide des ID de fournisseur et de produit indiqués sur l'écran de connexion.</translation>
 <translation id="3138514192363246220">Désactiver l'extraction des métadonnées de chargement de la page et les modèles de machine learning qui améliorent l'expérience de navigation</translation>
 <translation id="3142410959002029864">Lorsque cette règle est définie, le mode d'impression recto verso par défaut est ignoré. Si le mode est indisponible, cette règle est ignorée.</translation>
+<translation id="3143203373436771188">Ouvrir dans <ph name="BASIC_EDITOR_NAME" /> les documents Office gérés par <ph name="BASIC_EDITOR_NAME" />, auxquels l'utilisateur accède</translation>
 <translation id="3144173889708944482">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Ne pas autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour prononcer</translation>
 <translation id="3150351525324499342">Ne pas afficher par défaut l'icône <ph name="PRODUCT_NAME" /> dans la barre d'outils, mais laisser les utilisateurs choisir</translation>
@@ -5254,6 +5264,7 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
       Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>
 <translation id="5659776687676755342">Activer le son de batterie faible</translation>
 <translation id="5660228672907979869">Empêcher l'activation du partitionnement pour le stockage tiers</translation>
+<translation id="5660950553460381588">Si possible, créer les clés d'accès dans le trousseau iCloud par défaut.</translation>
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
@@ -5579,6 +5590,13 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5984237109586500246">Accepter les contenus Web diffusés via Signed HTTP Exchange</translation>
 <translation id="5987654816293745077">Signaler les compteurs d'exécution de l'appareil</translation>
 <translation id="5991707691018985057">Afficher la boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Ne pas afficher de boîte de dialogue d'annulation quand event.returnValue est la chaîne vide pour l'événement beforeunload.</translation>
+<translation id="5992485316563377005">Si cette règle est activée ou qu'elle n'est pas configurée, l'Intégrité du code du moteur de rendu est activée.
+
+      Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
+
+      Cette règle a été supprimée dans Chrome 118 et est ignorée si elle est définie.
+
+      Remarque : Consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="5994438001592408007">Les Glanceables sont activés pour les utilisateurs.</translation>
 <translation id="5997543603646547632">Utiliser le format d'horloge 24 h par défaut</translation>
 <translation id="5997846976342452720">Indiquer si l'outil de recherche de plug-ins doit être désactivé (obsolète)</translation>
@@ -5927,6 +5945,7 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
+<translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>
 <translation id="6299147100249359151">Autorisez la détection du champ d'application des règles.</translation>
 <translation id="6299554629216555326">Paramètres de gestion des fenêtres</translation>
 <translation id="6300871921951390976">Les utilisateurs ne sont autorisés à modifier la version de l'appareil que si cette règle est définie sur "True". Si elle est définie sur "False" ou si elle n'est pas configurée, les utilisateurs peuvent modifier la version.
@@ -6223,6 +6242,9 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure au délai d'inactivité.</translation>
 <translation id="6497085755801788141">Utiliser l'outil de vérification des certificats intégré</translation>
+<translation id="65055701428353978">Configurer cette règle permet de spécifier, pour chaque extension concernée, une liste d'URL de redirection OAuth pouvant être utilisées par les extensions avec l'API <ph name="IDENTITY_API_NAME" /> (<ph name="IDENTITY_API_URL" />), en plus de l'URL de redirection standard https://&lt;extension id&gt;.chromiumapp.org/.
+
+Si cette règle n'est pas configurée ou si la liste d'URL est vide, toutes les applis ou extensions ne peuvent utiliser l'URL de redirection standard que lors de l'utilisation de l'API <ph name="IDENTITY_API_NAME" />.</translation>
 <translation id="6506486086262398387">Si cette règle est activée, la fonctionnalité Partages de fichiers en réseau de <ph name="PRODUCT_OS_NAME" /> utilise le protocole NTLM pour s'authentifier sur les partages SMB, si nécessaire. Si elle est désactivée, l'authentification NTLM sur les partages SMB l'est également.
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
@@ -6453,6 +6475,7 @@ Si cette règle est définie sur "False", l'ancien comportement est activé.</tr
 <translation id="6661178198729301029">Activer la création de rapports cloud pour un profil géré</translation>
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
+<translation id="6669691206059842248">Configurer des URL de redirection OAuth supplémentaires par extension</translation>
 <translation id="6669700740683748046">Permet d'afficher ou non l'URL complète dans la barre d'adresse.
       Si cette règle est définie sur "True", l'URL complète est affichée dans la barre d'adresse, y compris les schémas et les sous-domaines.
       Si cette règle est définie sur "False", l'URL par défaut s'affiche.
@@ -6594,7 +6617,6 @@ Cette règle sera supprimée prochainement de <ph name="PRODUCT_NAME" />.</trans
       Si cette règle est désactivée, l'icône des fonctionnalités expérimentales du navigateur ne s'affiche pas dans la barre d'outils.
 
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
-<translation id="6794083666143216172">Autoriser les origines à interroger les attributs des appareils</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6796215185873669533">Appliquez les paramètres par défaut du navigateur pour la version de la chaîne user-agent.</translation>
 <translation id="6800111968763383631">Refuse par défaut l'autorisation MIDI pour tous les sites</translation>
@@ -7207,6 +7229,7 @@ Si cette règle est définie sur <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREO
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
+<translation id="7317472245305274219">Contrôler si la création de clés d'accès se fera par défaut dans le trousseau iCloud.</translation>
 <translation id="7322825363493984512">Mot de passe pour authentifier les services système auprès du proxy Web à distance.</translation>
 <translation id="7323773727263636287">Permet d'activer la fonctionnalité d'accessibilité de correction des couleurs.
 
@@ -7275,6 +7298,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="7372831798009983116">Activer la fonctionnalité d'accessibilité de clic automatique</translation>
 <translation id="7373200034079131670">Redémarrage en cas de déconnexion de l'utilisateur si Android ou une VM sont lancés</translation>
+<translation id="7374784840090523241">Créer les clés d'accès dans d'autres magasins par défaut, comme le profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7375785904116479354">Si cette règle est activée, le moteur de recherche par défaut du précédent navigateur par défaut est importé lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, le moteur de recherche par défaut n'est pas importé lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant au moteur de recherche par défaut sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>

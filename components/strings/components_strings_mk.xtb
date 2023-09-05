@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">Игри со акција и со платформи</translation>
 <translation id="1413809658975081374">Грешка во приватност</translation>
 <translation id="1414134146594747368">Забавиште</translation>
+<translation id="141826476809826269">Крај на извлечениот текст</translation>
 <translation id="1419305130220238697">Копче за управување со преземањата во Chrome, активирајте го за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="1422930527989633628">Може да прашува за да открива уреди со Bluetooth во близина</translation>
 <translation id="1426410128494586442">Да</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">Сајтот којшто се обидовте да го посетите изгледа лажно. Напаѓачите понекогаш имитираат сајтови, така што вршат мали, тешко забележливи промени во URL-адресата.</translation>
 <translation id="1532118530259321453">Оваа страница вели</translation>
 <translation id="1536390784834419204">Преведи ја страницата</translation>
+<translation id="1537807545287921620">Не може да се пристапи до оваа PDF-датотека. Отворете го контекстуалното мени и вклучете „Извлекувај текст од PDF“</translation>
 <translation id="1539840569003678498">Извештајот е испратен на:</translation>
 <translation id="1542105669288201090">Бизнис образование</translation>
 <translation id="1545757265410828525">Историја на цените</translation>
@@ -866,6 +868,7 @@
 <translation id="2803306138276472711">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />откри злонамерен софтвер<ph name="END_LINK" /> на <ph name="SITE" />. Веб-локациите што обично се безбедни, некогаш се инфицираат со злонамерен софтвер.</translation>
 <translation id="2807052079800581569">Позиција на сликата Y</translation>
 <translation id="2808278141522721006">Можете да вклучите или исклучите Windows Hello во <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Не може да се пристапи до оваа PDF-датотека. Притиснете Search + M за да го отворите контекстуалното мени и вклучете „Извлекувај текст од PDF“</translation>
 <translation id="2818338148457093657">Услуги за убавина и салони со спа</translation>
 <translation id="2820957248982571256">Се скенира…</translation>
 <translation id="2824775600643448204">Лента за адреса и за пребарување</translation>
@@ -1170,6 +1173,7 @@
 <translation id="3461266716147554923"><ph name="URL" /> сака да гледа текст и слики копирани на привремената меморија</translation>
 <translation id="3461824795358126837">Нагласувач</translation>
 <translation id="3462200631372590220">Скриј напредни</translation>
+<translation id="3465972433695735758">Не може да се пристапи до оваа PDF-датотека. Текстот е извлечен: овозможено од Google AI</translation>
 <translation id="346601286295919445">Хемија</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, отворена во моментов, притиснете Tab, потоа Enter за да се префрлите на отворената картичка</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги затворите сите прозорци „Инкогнито“ што се отворени во моментов</translation>
@@ -1187,6 +1191,7 @@
 <translation id="350069200438440499">Име на датотека:</translation>
 <translation id="3501300228850242680">Метал (музика)</translation>
 <translation id="350421688684366066">Етикети (висок сјај)</translation>
+<translation id="350763432931695541">Се извлекува текст на наредните неколку страници</translation>
 <translation id="3507869775212388416">Правни работни места</translation>
 <translation id="3507936815618196901">да создаде 3D-карта на опкружувањето и да ја следи позицијата на камерата</translation>
 <translation id="3512163584740124171">Правилово се игнорира бидејќи друго правило од истата група правила има поголем приоритет.</translation>
@@ -2854,6 +2859,7 @@
 <translation id="6973988895180423160">3,5 x 5 инчи</translation>
 <translation id="6978236010531171013">Сепак сподели</translation>
 <translation id="6979158407327259162">Google Диск</translation>
+<translation id="6979332652936434520">Почеток на извлечениот текст</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
 <translation id="6987806006823772670">Коверт (обложен)</translation>
 <translation id="6989763994942163495">Напредни поставки...</translation>
@@ -2909,6 +2915,7 @@
 <translation id="7102760431686146931">Садови за готвење и прибор за јадење</translation>
 <translation id="7105998430540165694">Криптографски клуч од iCloud Keychain</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
+<translation id="7107249414147762907">Не може да се пристапи до оваа PDF-датотека. Не е извлечен текст</translation>
 <translation id="7108338896283013870">Скриј</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> сака да ја користи вашата камера</translation>
 <translation id="7108819624672055576">Дозволено од екстензија</translation>
@@ -3921,6 +3928,7 @@
 <translation id="917450738466192189">Сертификатот на серверот е неважечки.</translation>
 <translation id="9174623988242579721">Приспособени возила и возила за изведба</translation>
 <translation id="9174917557437862841">Копче за префрлање помеѓу картички, притиснете Enter за да се префрлите во картичкава</translation>
+<translation id="9177283544810807743">Не може да се пристапи до оваа PDF-датотека. Се извлекува текст: овозможено од Google AI</translation>
 <translation id="9179703756951298733">Управувајте со плаќањата и податоците за кредитните картички во поставките за Chrome</translation>
 <translation id="9179907736442194268">Добивајте предупредувања по е-пошта ако цената се намали на кој било сајт</translation>
 <translation id="9183302530794969518">Документи на Google</translation>

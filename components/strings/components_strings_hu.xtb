@@ -221,6 +221,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1413407968866574823">Akció- és platformjátékok</translation>
 <translation id="1413809658975081374">Adatvédelmi hiba</translation>
 <translation id="1414134146594747368">Óvoda</translation>
+<translation id="141826476809826269">Kinyert szöveg vége</translation>
 <translation id="1419305130220238697">Letöltések kezelése a Chrome-ban gomb. A gombot megnyomva kezelheti a Chrome-ban letöltött fájlokat.</translation>
 <translation id="1422930527989633628">Engedélyt kérhet a közeli Bluetooth-eszközök felfedezésére</translation>
 <translation id="1426410128494586442">Igen</translation>
@@ -277,6 +278,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1530707389502320859">Az éppen felkeresni kívánt webhely hamisnak tűnik. A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy apró, alig észrevehető változtatásokkal rendelkező URL-címeket használnak.</translation>
 <translation id="1532118530259321453">Az oldal közlendője</translation>
 <translation id="1536390784834419204">Oldal fordítása</translation>
+<translation id="1537807545287921620">A PDF nem áll rendelkezésre. Nyissa meg a helyi menüt, és kapcsolja be a „Szöveg kinyerése PDF-ből” beállítást.</translation>
 <translation id="1539840569003678498">Bejelentés elküldve:</translation>
 <translation id="1542105669288201090">Üzleti oktatás</translation>
 <translation id="1545757265410828525">Árelőzmények</translation>
@@ -434,6 +436,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1842969606798536927">Fizetés</translation>
 <translation id="1846432862466000825">Műanyag (archív)</translation>
 <translation id="1848982255014129637">Fotó (magasfényű)</translation>
+<translation id="1853392626017747777">A Virtuális kártya regisztrációja párbeszédpanel be van zárva</translation>
 <translation id="1854180393107901205">Átküldés leállítása</translation>
 <translation id="1855370856221982654">Box</translation>
 <translation id="1856713167556118146">Mire nem képes az inkognitó mód?</translation>
@@ -470,6 +473,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1924727005275031552">Új</translation>
 <translation id="1935995810530254458">Másolás mindenképpen</translation>
 <translation id="1939175642807587452">Engedélyt kérhet értesítések küldésére</translation>
+<translation id="1940441167050915935">Mentett biztonsági kódok törlése</translation>
 <translation id="1943994668912612445">Dizájn</translation>
 <translation id="1945968466830820669">Elveszítheti a hozzáférést szervezete fiókjához, vagy visszaélhetnek személyes adataival. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
 <translation id="1946849748901605102">12 × 15 hüvelyk</translation>
@@ -864,6 +868,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2803306138276472711">A Google – Biztonságos böngészés nemrég <ph name="BEGIN_LINK" />rosszindulatú programot<ph name="END_LINK" /> észlelt a(z) <ph name="SITE" /> webhelyen. A rendes esetben biztonságos webhelyek néha rosszindulatú programokkal fertőzöttek.</translation>
 <translation id="2807052079800581569">Kép Y-pozíciója</translation>
 <translation id="2808278141522721006">A Windows Hello funkciót itt kapcsolhatja be vagy ki: <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">A PDF nem áll rendelkezésre. Nyomja le a Keresés + m billentyűkombinációt a helyi menü megnyitásához, és kapcsolja be a „Szöveg kinyerése PDF-ből” beállítást.</translation>
 <translation id="2818338148457093657">Szépségápolási szolgáltatások és gyógyfürdők</translation>
 <translation id="2820957248982571256">Keresés…</translation>
 <translation id="2824775600643448204">Cím- és keresősáv</translation>
@@ -1166,6 +1171,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3461266716147554923">A(z) <ph name="URL" /> webhely szeretné megtekinteni a vágólapra másolt szövegeket és képeket</translation>
 <translation id="3461824795358126837">Szövegkiemelő</translation>
 <translation id="3462200631372590220">Speciális beállítások elrejtése</translation>
+<translation id="3465972433695735758">A PDF nem áll rendelkezésre. Szöveg kinyerve; a Google AI által.</translation>
 <translation id="346601286295919445">Vegyészet</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, jelenleg meg van nyitva, a Tab, majd az Enter billentyűk lenyomásával válthat a megnyitott lapra</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt az összes jelenleg megnyitott inkognitó ablak bezárásához.</translation>
@@ -1183,6 +1189,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="350069200438440499">Fájlnév?</translation>
 <translation id="3501300228850242680">Metál (zene)</translation>
 <translation id="350421688684366066">Címkék (magas fényű)</translation>
+<translation id="350763432931695541">Szöveg kibontása a következő néhány oldalon</translation>
 <translation id="3507869775212388416">Jogi állások</translation>
 <translation id="3507936815618196901">3D-s térkép készítése az Ön környezetéről és a kamera pozíciójának követése</translation>
 <translation id="3512163584740124171">A böngésző figyelmen kívül hagyja ezt a házirendet, mert magasabb prioritással rendelkezik egy másik házirend ugyanabból a házirendcsoportból.</translation>
@@ -1724,6 +1731,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4628948037717959914">Fénykép</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Pénzvisszatérítéssel összekapcsolva</translation>
+<translation id="4631881646528206880">Virtuális kártya regisztrációja</translation>
 <translation id="4636930964841734540">Információ</translation>
 <translation id="4638670630777875591">Inkognitó a Chromiumban</translation>
 <translation id="464342062220857295">Funkciók keresése</translation>
@@ -1838,6 +1846,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4854853140771946034">Új jegyzet gyors létrehozása a Google Keep szolgáltatással</translation>
 <translation id="485902285759009870">Kód ellenőrzése…</translation>
 <translation id="4862630594858951805">Szeretne e-mailt kapni, ha csökkennek az árak?</translation>
+<translation id="4864406669374375262">Verzió-karakterlánc vágólapra másolva</translation>
 <translation id="486459320933704969">A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését</translation>
 <translation id="4866506163384898554">A kurzor megjelenítéséhez nyomja le a következő billentyűkombinációt: |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4873616204573862158">Szemüvegek</translation>
@@ -2848,6 +2857,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6973988895180423160">3,5 × 5 hüvelyk</translation>
 <translation id="6978236010531171013">Megosztás mindenképp</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Kinyert szöveg eleje</translation>
 <translation id="6979440798594660689">Némítás (alapértelmezett)</translation>
 <translation id="6987806006823772670">Boríték (bevonatolt)</translation>
 <translation id="6989763994942163495">Speciális beállítások megjelenítése...</translation>
@@ -2903,6 +2913,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7102760431686146931">Főzőeszközök és étkészletek</translation>
 <translation id="7105998430540165694">Azonosítókulcs az iCloud-kulcstárból</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
+<translation id="7107249414147762907">A PDF nem áll rendelkezésre. Nincs kinyert szöveg.</translation>
 <translation id="7108338896283013870">Elrejtés</translation>
 <translation id="7108634116785509031">A(z) <ph name="HOST" /> webhely használni szeretné a kamerát</translation>
 <translation id="7108819624672055576">Bővítmény engedélyezi</translation>
@@ -3525,6 +3536,7 @@ További részletek:
 <translation id="8339163506404995330">A(z) <ph name="LANGUAGE" /> nyelvű oldalak nem lesznek lefordítva</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Ha tisztában van a biztonságát fenyegető kockázatokkal, a veszélyes programok eltávolítása előtt is <ph name="BEGIN_LINK" />felkeresheti ezt a webhelyet<ph name="END_LINK" />.</translation>
+<translation id="8344776605855290140">A Virtuális kártya regisztrációja párbeszédpanel teljes magasságban van megnyitva</translation>
 <translation id="8347658365704983341">Távoktatás</translation>
 <translation id="8349305172487531364">Könyvjelzősáv</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
@@ -3915,6 +3927,7 @@ További részletek:
 <translation id="917450738466192189">A szerver tanúsítványa érvénytelen.</translation>
 <translation id="9174623988242579721">Egyedi és nagy teljesítményű járművek</translation>
 <translation id="9174917557437862841">Lapváltó gomb. Az Enter billentyűvel erre a lapra válthat.</translation>
+<translation id="9177283544810807743">A PDF nem áll rendelkezésre. Szöveg kinyerése folyamatban; a Google AI által.</translation>
 <translation id="9179703756951298733">A fizetéssel és a hitelkártyával kapcsolatos adatait a Chrome-beállítások között kezelheti</translation>
 <translation id="9179907736442194268">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="9183302530794969518">Google Dokumentumok</translation>

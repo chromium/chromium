@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">将 Chrome 设为默认同步您所有设备上的标签页、密码和付款信息</translation>
 <translation id="1504372625950710826">Chrome 无法检查是否有更新。请尝试检查您的互联网连接。</translation>
 <translation id="1511320244449497906">您已登录，且正在将您的数据同步到由 <ph name="DOMAIN" /> 管理的账号。此网域的管理员现在可以专门针对该账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
+<translation id="1516692594929310090">打开 Chrome 标签页网格。</translation>
 <translation id="1526327845902180576">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chrome，让所有像您这样使用 Chrome 的用户都能获享更好的体验。<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="6822673484890854830">Chrome 无法检查所有密码。请稍后再试。</translation>
+<translation id="6916015246697034114">在 Chrome 中使用语音搜索</translation>
 <translation id="6964931465519938134">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="6975725306479268850">选择使用 Chrome 的自动填充功能</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
@@ -150,6 +152,7 @@
 <translation id="7400722733683201933">关于Google Chrome</translation>
 <translation id="7501046334262221972">若要将 Chrome 设为默认浏览器，请打开“设置”，点按“默认浏览器应用”，然后选择“Chrome”。</translation>
 <translation id="756809126120519699">已清除 Chrome 数据</translation>
+<translation id="7581063337314642333">访问 Chrome 中的标签页网格</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="7669869107155339016">前往 Chrome 设置。</translation>
 <translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
@@ -157,11 +160,13 @@
 <translation id="7754633291442704733">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此账号中存储的 Chrome 数据、书签、历史记录、密码和其他设置。当您退出账号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 账号中，且可供贵组织访问。贵组织也可专门针对上述账号设置用户规范，这可能会改变 Chrome 的行为。</translation>
 <translation id="7780154209050837198">若要充分利用 Chrome，请使用您的 Google 账号登录 Chrome。</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
+<translation id="7897703007638178753">查看最近使用 Chrome 打开的标签页</translation>
 <translation id="7925119591961387184">选择“Chrome”。</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理账号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
+<translation id="8174679664544842874">在 Chrome 中打开新标签页。</translation>
 <translation id="8213758103105806860">查看 Chrome 书签</translation>
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
@@ -178,6 +183,7 @@
 <translation id="8587647598504233556">依次点按“Chrome”和“默认浏览器应用”。</translation>
 <translation id="8603022514504485810">Google 密码管理工具无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 账号中的密码<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome 为您保驾护航</translation>
+<translation id="8760668027640688122">在 Chrome 中打开新标签页</translation>
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
@@ -199,4 +205,5 @@
   • 如果您开启了同步功能，相关指标可能会包含与您访问的网址有关的信息。<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 <translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
+<translation id="9181628561061032322">打开最近使用 Chrome 打开的标签页。</translation>
 </translationbundle>

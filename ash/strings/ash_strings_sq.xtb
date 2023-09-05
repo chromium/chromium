@@ -90,6 +90,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1293264513303784526">Pajisja USB-C (porta majtas)</translation>
 <translation id="1293556467332435079">Skedarët</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Hap "Eksploro"</translation>
 <translation id="1294929383540927798">Ndrysho cilësimet e njoftimeve të ekranit të kyçjes</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLIKACIONET E REKOMANDUARA</translation>
@@ -365,6 +366,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Shkyç dritaret</translation>
 <translation id="2528111225373402384">Cilësimet e zonës së qasjes për internet</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Aktivizo ose çaktivizo shfletimin me kursor teksti</translation>
 <translation id="2531025035050312891">pajisje e ngadaltë</translation>
 <translation id="2531107890083353124">Ndërkohë që zvarrit skedën, shtyp <ph name="KEY_ONE" /></translation>
@@ -387,6 +389,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2612614436418177118">Zhvendos një ikonë aplikacioni në rrjetën e aplikacioneve</translation>
 <translation id="2620016719323068571">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera...</translation>
 <translation id="2620436844016719705">Sistemi</translation>
+<translation id="2620900772667816510">Superrezolucioni i Bluetooth-it</translation>
 <translation id="2621713457727696555">I siguruar</translation>
 <translation id="2624588537172718173">Audioja e pajisjes dhe mikrofoni</translation>
 <translation id="263399434338050016">"Zgjidh të gjitha"</translation>
@@ -511,6 +514,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3161500364292033097">Mbyll tavolinën e punës dhe dritaret</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> po kthen pas pajisjen tënde <ph name="DEVICE_TYPE" />. Pajisja do të rivendoset dhe të gjitha të dhënat do të fshihen.</translation>
 <translation id="3171170659304083361">Cilësimet e metodave të hyrjes</translation>
+<translation id="3176221688814061633">Pajisja jote Chromebook ose me Bluetooth po përdor një version më të vjetër të Bluetooth-it. Aktivizo "Superrezolucionin e Bluetooth-it" ose përdor mikrofonin e brendshëm për një cilësi më të mirë të audios.</translation>
 <translation id="3181441307743005334">Rindezja mund të zgjasë pak</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Lidhur me një pajisje}other{Lidhur me # pajisje}}</translation>
 <translation id="320207200541803018">Cakto kohëmatësin</translation>
@@ -524,7 +528,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="324366796737464147">Anulimi i zhurmës</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Konfigurimi</translation>
 <translation id="3253743281242075461">Lloji i detyrave të klasës: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
 <translation id="3256109297135787951">Hiq theksimin nga një artikull në raftin tënd</translation>
@@ -673,6 +676,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3781910048497807059">Zhvendos fokusin te paneli i mëparshëm</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Kyçe</translation>
+<translation id="3789841737615482174">Instalo</translation>
 <translation id="3796215473395753611">alt + shigjeta lart</translation>
 <translation id="3796746699333205839">Kamerën dhe mikrofonin tënd po i përdor një aplikacion</translation>
 <translation id="3798670284305777884">Altoparlanti (i brendshëm)</translation>
@@ -1477,7 +1481,6 @@ Instalim i ri</translation>
 <translation id="7086931198345821656">Ky përditësim kërkon që të kryesh Powerwash të <ph name="DEVICE_TYPE" />. Të gjitha të dhënat do të fshihen. Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Qasja me çelës</translation>
 <translation id="709015856939120012">Zmadho faqen</translation>
-<translation id="7098053464892629930">Shkarko aplikacionin për <ph name="NAME" /> në Google Play për të parë të gjitha veçoritë që ofrohen</translation>
 <translation id="7098389117866926363">Pajisja USB-C (porta majtas, prapa)</translation>
 <translation id="7100906357717321275">Shfaq skedarët e fshehur në aplikacionin "Skedarët"</translation>
 <translation id="7108254681523785542">Zgjidh një artikull për ta ngjitur. Mund ta shikosh kujtesën e fragmenteve duke shtypur <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1498,6 +1501,7 @@ Instalim i ri</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="7219573373513695352">Nuk ka pajisje të lidhura</translation>
+<translation id="7229029500464092426">Memoria: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Kjo pajisje Chromebook duhet të riniset për të zbatuar një përditësim. Kjo mund të zgjasë deri në 1 minutë.</translation>
 <translation id="7256634071279256947">Mikrofoni i pasmë</translation>
 <translation id="7258828758145722155">Modifikuar dje</translation>
@@ -1523,6 +1527,7 @@ Instalim i ri</translation>
 <translation id="7360036564632145207">Ndryshimi i mbrojtjes së qasjes te të dhënat e tua për pajisjet periferike mund të optimizojë cilësinë e funksionimit</translation>
 <translation id="736045644501761622">Cakto imazhin e sfondit dhe stilin</translation>
 <translation id="7371404428569700291">Regjistro dritaren</translation>
+<translation id="7372069265635026568">Memoria: <ph name="AVAILABLE_MEMORY" /> në dispozicion nga <ph name="TOTAL_MEMORY" /> në total</translation>
 <translation id="737315737514430195">Kjo lejon qasjen te mikrofoni për të gjitha aplikacionet dhe sajtet e uebit me lejen e mikrofonit</translation>
 <translation id="7377169924702866686">Kyçja e kapitaleve është aktive.</translation>
 <translation id="7377481913241237033">Lidhu me një kod</translation>
@@ -1838,7 +1843,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8660331759611631213">Rrënja katrore e 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Shtyp "Enter" për të nxjerrë një pamje të pjesshme të ekranit</translation>
-<translation id="8666856788528804727">Hap <ph name="NAME" /> për të konfiguruar pajisjen tënde</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8683506306463609433">Gjurmimi i cilësisë së funksionimit është aktiv</translation>
 <translation id="8703634754197148428">Nis regjistrimin. Pasi të ketë filluar regjistrimi, përdor Alt + Shift + L për të shkuar te rafti dhe gjej butonin e ndalimit të regjistrimit</translation>
@@ -1852,6 +1856,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8731487213223706745">Përfundon në <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Po aktivizohet...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>

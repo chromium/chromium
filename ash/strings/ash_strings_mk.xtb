@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">USB-Ц уред (лева порта)</translation>
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Отвори Explore</translation>
 <translation id="1294929383540927798">Променете ги поставките за известувања на заклучен екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
@@ -387,6 +388,7 @@
 <translation id="2612614436418177118">Преместувајте икона за апликација во мрежа со апликации</translation>
 <translation id="2620016719323068571">Пребарувајте ги вашите <ph name="CATEGORY" />, датотеки, апликации и слично…</translation>
 <translation id="2620436844016719705">Систем</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">Заштитена</translation>
 <translation id="2624588537172718173">Аудио од уредот и микрофонот</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
@@ -511,6 +513,7 @@
 <translation id="3161500364292033097">Затворете ги работната површина и прозорците</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> го враќа вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="3171170659304083361">Поставки за методи за внесување</translation>
+<translation id="3176221688814061633">Вашиот Chromebook или уредот со Bluetooth користи постара верзија на Bluetooth. Вклучете Bluetooth Super Resolution или користете го внатрешниот микрофон за подобар квалитет на аудиото.</translation>
 <translation id="3181441307743005334">Рестартирањето може да потрае</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Поврзан со уред}one{Поврзан со # уред}other{Поврзан со # уреди}}</translation>
 <translation id="320207200541803018">Постави тајмер</translation>
@@ -524,7 +527,6 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Поставување</translation>
 <translation id="3253743281242075461">Тип школска работа: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3256109297135787951">Отстранете го нагласувањето од ставка на полицата</translation>
@@ -674,6 +676,7 @@
 <translation id="3781910048497807059">Преместете го фокусот на претходното окно</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Катанец</translation>
+<translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3796215473395753611">alt + стрелка нагоре</translation>
 <translation id="3796746699333205839">Една апликација ги користи камерата и микрофонот</translation>
 <translation id="3798670284305777884">Звучник (внатрешен)</translation>
@@ -1478,7 +1481,6 @@
 <translation id="7086931198345821656">Ажурирањево бара фабричко ресетирање на вашиот <ph name="DEVICE_TYPE" />. Сите податоци ќе се избришат. Дознајте повеќе за најновото ажурирање на <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Пристап со прекинувачи</translation>
 <translation id="709015856939120012">Зумира на страницата</translation>
-<translation id="7098053464892629930">Преземете ја апликацијата за <ph name="NAME" /> на Google Play за да ги видите сите достапни функции</translation>
 <translation id="7098389117866926363">USB-Ц уред (лева порта на задната страна)</translation>
 <translation id="7100906357717321275">Прикажувај ги скриените датотеки во апликацијата „Датотеки“</translation>
 <translation id="7108254681523785542">Изберете ставка за да ја залепите. Привремената меморија може да ја видите со притискање <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1499,6 +1501,7 @@
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>
 <translation id="7219573373513695352">Не се поврзани уреди</translation>
+<translation id="7229029500464092426">Меморија: <ph name="AVAILABLE_MEMORY" /> | вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Треба да го рестартирате овој Chromebook за да се примени ажурирањето. Ова може да потрае 1 минута.</translation>
 <translation id="7256634071279256947">Заден микрофон</translation>
 <translation id="7258828758145722155">Изменето вчера</translation>
@@ -1524,6 +1527,7 @@
 <translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
 <translation id="736045644501761622">Поставете тапет и стил</translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
+<translation id="7372069265635026568">Достапна меморија: <ph name="AVAILABLE_MEMORY" /> од вкупно: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Ова дозволува пристап до микрофонот за сите апликации и веб-сајтови со дозвола за микрофонот</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
 <translation id="7377481913241237033">Поврзете со код</translation>
@@ -1839,7 +1843,6 @@
 <translation id="8660331759611631213">Квадратен корен од 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Притиснете Enter за да снимите делумна слика од екранот</translation>
-<translation id="8666856788528804727">Отворете ја <ph name="NAME" /> за да го поставите уредот</translation>
 <translation id="8676770494376880701">Поврзан е полнач со ниско напојување</translation>
 <translation id="8683506306463609433">Следењето на изведбата е активно</translation>
 <translation id="8703634754197148428">Започни со снимање. Откако ќе започне снимањето, користете Alt + Shift + L за да одите на полицата и најдете го копчето за сопирање на снимањето</translation>

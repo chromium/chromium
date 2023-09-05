@@ -2981,6 +2981,7 @@
 <translation id="722454870747268814">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="7226276626900992675">ທ່ານໄດ້ອະນຸຍາດໃຫ້ເວັບໄຊນີ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ. ເຊິ່ງໝາຍຄວາມວ່າຄຸນສົມບັດສ່ວນໃຫຍ່ຂອງເວັບໄຊຈະເຮັດວຽກໄດ້, ແຕ່ທ່ານຈະໄດ້ຮັບການປົກປ້ອງໜ້ອຍລົງ.</translation>
 <translation id="7227293336683593977">ປະຫວັດລາຄາ</translation>
+<translation id="7227747683324411744">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວອັນຕະລາຍທີ່ສົ່ງຜົນກະທົບຕໍ່ວິທີທີ່ທ່ານທ່ອງເວັບ — ຕົວຢ່າງ: ໂດຍການປ່ຽນໜ້າຫຼັກຂອງທ່ານ ຫຼື ສະແດງໂຄສະນາເພີ່ມເຕີມຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="7233592378249864828">ພິມແຜ່ນວຽກການຢືນຢັນ</translation>
 <translation id="7234638337680728591">ລາຄານ້ຳມັນ ແລະ ເຊື້ອໄຟພາຫະນະ</translation>
 <translation id="7236417832106250253">ສຳເລັດແລ້ວ <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
@@ -3179,6 +3180,7 @@
 <translation id="7599089013883397081">ການດາວໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="7600965453749440009">ຢ່າແປ <ph name="LANGUAGE" /></translation>
 <translation id="7601297359530599375">ປົກກະຕິແລ້ວທ່ານເຊື່ອມຕໍ່ກັບເວັບໄຊນີ້ຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໃນເວລານີ້. ຜູ້ໂຈມຕີອາດຈະພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="7605377493722372900">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວອັນຕະລາຍທີ່ລັກ ຫຼື ລຶບສິ່ງຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ຮູບພາບ, ຂໍ້ຄວາມ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ.</translation>
 <translation id="7610193165460212391">ຄ່າຢູ່ນອກເຂດ <ph name="VALUE" /> .</translation>
 <translation id="7613889955535752492">ໝົດອາຍຸ: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນກົດ Enter ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
@@ -3576,6 +3578,7 @@
 ລາຍລະອຽດເພີ່ມເຕີມ:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">ຂະນະນີ້ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
+<translation id="8422228580902424274">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍສິ່ງຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ໝາຍເລກໂທລະສັບ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 ມມ</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>

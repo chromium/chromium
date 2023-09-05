@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">הועבר לשיקוף מסך</translation>
 <translation id="2031987842108996681">הערוץ האדום</translation>
 <translation id="2060505056492490888">נעשה שימוש ב-'<ph name="DOT" />' במיקום שגוי ב-'<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2068711044993563745">הערך המינימלי (<ph name="MINIMUM" />) חייב להיות קטן מהערך המקסימלי (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2226276347425096477">צריך לקצר את הטקסט ל-<ph name="MAX_CHARACTERS" /> תווים או פחות (כרגע: <ph name="CURRENT_LENGTH" /> תווים).</translation>
 <translation id="2247351761944213033">שבוע <ph name="WEEKNUMBER" />‏, <ph name="YEAR" /></translation>

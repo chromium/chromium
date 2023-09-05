@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Määrake Chrome vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="1504372625950710826">Chrome ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
 <translation id="1511320244449497906">Olete sisse logitud ja andmed sünkroonitakse kontoga, mida haldab <ph name="DOMAIN" />, kus selle administraator saab nüüd määrata konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
+<translation id="1516692594929310090">Avab Chrome'i vahelehtede ruudustiku.</translation>
 <translation id="1526327845902180576">Sisselülitamise korral
 <ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome’i inimeste jaoks, kes kasutavad seda nagu teie.<ph name="END_INDENT" />
 
@@ -35,6 +36,7 @@ Tasub teada
 <translation id="2120238739383482109">Avab Chrome'i järjehoidjad.</translation>
 <translation id="2147651015520127414">Chrome kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Chrome'i sünkroonimise teave</translation>
+<translation id="2311240109311056604">Avab Chrome'i dinosaurusemängu.</translation>
 <translation id="2339201583852607431">Parool salvestatakse teie Google'i kontole (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="2347208864470321755">Kui see funktsioon on sisse lülitatud, pakub Chrome võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -94,10 +96,12 @@ Tasub teada
 <translation id="484033449593719797">Ei toetata Chrome'i beetaversioonis</translation>
 <translation id="4840404732697892756">Google'i paroolihaldur saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga.</translation>
 <translation id="4903674399067644695">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chrome'i parimal moel kasutada.</translation>
+<translation id="49200511069271369">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele sisse logite, ja Chrome'i kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
 <translation id="5030102366287574140">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest.</translation>
 <translation id="5108659628347594808">Chrome'i täiustamine</translation>
 <translation id="5112925986883715005">Kuva Chrome'i lugemisloend</translation>
 <translation id="5119391094379141756">Valige Chrome</translation>
+<translation id="5156818928311866442">Avab Chrome'i seaded, et Chrome vaikebrauseriks määrata.</translation>
 <translation id="5162467219239570114">Chrome on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chrome'i uuemaid versioone.</translation>
 <translation id="5190139289262548459">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chrome’i kasutamist.</translation>
 <translation id="5389212809648216794">Google Chrome ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
@@ -134,6 +138,7 @@ Tasub teada
 
 Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
+<translation id="6916015246697034114">Chrome'is hääle abil otsimine</translation>
 <translation id="6964931465519938134">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="6975725306479268850">Valige automaattäite jaoks Chrome</translation>
 <translation id="7059914902409643750">Isikupärastage Chrome'i</translation>
@@ -143,6 +148,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7173660919484573146">Chrome kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
 <translation id="7187993566681480880">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
 <translation id="72119412072970160">Saate Google'i paroolihaldurisse salvestatud paroole oma iPadi muudes rakendustes kasutada.</translation>
+<translation id="7254380941803999489">Chrome'i määramine vaikebrauseriks</translation>
 <translation id="7261678641327190792">Chrome'ile ei õnnestu teie paroole kontrollida</translation>
 <translation id="7272930098487145294">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chrome'il fotode lisamine</translation>
 <translation id="7275945473750112644">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chrome'i andmed sellest seadmest</translation>
@@ -150,6 +156,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7400722733683201933">Google Chrome'i kohta</translation>
 <translation id="7501046334262221972">Chrome'i vaikebrauseriks määramiseks avage jaotis Seaded. Puudutage valikut Vaikebrauserirakendus ja seejärel valige Chrome.</translation>
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>
+<translation id="7581063337314642333">Ava Chrome'is vahelehtede ruudustik</translation>
 <translation id="7662994914830945754">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="7669869107155339016">Avage Chrome'i seaded.</translation>
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
@@ -157,10 +164,13 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7754633291442704733">Teie organisatsioon <ph name="DOMAIN" /> saab juurdepääsu teie Chrome'i andmetele, järjehoidjatele, ajaloole, paroolidele ja muudele seadetele, mille sellele kontole salvestate. Kui välja logite, kustutatakse teie andmed sellest seadmest.  Teie andmed jäävad teie hallatud Google'i kontole siiski alles ja need on teie organisatsiooni jaoks saadaval. Teie organisatsioon saab määrata ka konto kasutajareegleid, millega saab Chrome'i käitumist muuta.</translation>
 <translation id="7780154209050837198">Chrome'i kasutamiseks parimal moel logige Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
+<translation id="7897703007638178753">Kuva Chrome'i hiljutised vahelehed</translation>
+<translation id="7925119591961387184">Tehke valik Chrome.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="804638182476029347">Hinnaalanduse märguannete saamiseks lubage Chrome’i märguanded</translation>
 <translation id="81358522153858150">Chrome toetab nüüd hallatud konto puhul kasutajareegleid</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
+<translation id="8174679664544842874">Avab Chrome'is uue vahelehe.</translation>
 <translation id="8213758103105806860">Kuva Chrome'i järjehoidjad</translation>
 <translation id="8357607116237445042">Valige, kas soovite oma Chrome'i andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
@@ -174,8 +184,10 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
   2. Puudutage valikut Vaikebrauserirakendus.
   3. Valige Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Puudutage valikuid Chrome ja seejärel Brauseri vaikerakendus.</translation>
 <translation id="8603022514504485810">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Turvalisus Google Chrome'iga</translation>
+<translation id="8760668027640688122">Ava Chrome'is uus vaheleht</translation>
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
 <translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
@@ -185,6 +197,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="8897749957032330183">Paroolid salvestatakse selles seadmes Google'i paroolihaldurisse.</translation>
+<translation id="8949681853939555434">Chrome'i vaikebrauseriks määramine</translation>
 <translation id="8969290730818637510">Kui see on sisse lülitatud
 <ph name="BEGIN_INDENT" />  • Aitate täiustada Chrome'i inimeste jaoks, kes kasutavad seda nagu teie.<ph name="END_INDENT" />
 
@@ -196,4 +209,5 @@ Olulised aspektid
   • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="9122931302567044771">See tähendab, et Chrome taotleb iga kord töölauasaiti.</translation>
+<translation id="9181628561061032322">Avab Chrome'i hiljutised vahelehed.</translation>
 </translationbundle>

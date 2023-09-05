@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Passage à la duplication d'écran</translation>
 <translation id="2031987842108996681">Canal rouge</translation>
 <translation id="2060505056492490888">L'emplacement du caractère "<ph name="DOT" />" est incorrect dans "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2068711044993563745">La valeur minimale (<ph name="MINIMUM" />) doit être inférieure à la valeur maximale (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2226276347425096477">Veuillez réduire ce texte à <ph name="MAX_CHARACTERS" /> caractères maximum (il compte actuellement <ph name="CURRENT_LENGTH" /> caractères).</translation>
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

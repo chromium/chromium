@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">به نمایش صفحه‌نمایش روی دستگاه دیگر تغییر یافت</translation>
 <translation id="2031987842108996681">کانال قرمز</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />» در «<ph name="INVALIDDOMAIN" />» در محل اشتباهی قرار دارد.</translation>
+<translation id="2068711044993563745">کمترین مقدار (<ph name="MINIMUM" />) باید کمتر از بیشترین مقدار (<ph name="MAXIMUM" />) باشد.</translation>
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2226276347425096477">لطفاً این متن را به اندازه <ph name="MAX_CHARACTERS" /> نویسه یا کمتر کوتاه کنید (شما در حال حاضر از <ph name="CURRENT_LENGTH" /> نویسه استفاده می‌کنید).</translation>
 <translation id="2247351761944213033">هفته <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>

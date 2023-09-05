@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">Нулиране на разрешенията</translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
 <translation id="3069226013421428034">Разрешаване на влизането с профили от трети страни за конкретен сайт.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{Изтича утре}other{Изтича след # дни}}</translation>
 <translation id="310297983047869047">Предишният слайд</translation>
 <translation id="3109724472072898302">Свито</translation>
 <translation id="3114012059975132928">Видеоплейър</translation>

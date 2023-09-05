@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">已切換至鏡像模式</translation>
 <translation id="2031987842108996681">紅色色頻</translation>
 <translation id="2060505056492490888">「<ph name="DOT" />」未放在「<ph name="INVALIDDOMAIN" />」的正確位置。</translation>
+<translation id="2068711044993563745">最小值 (<ph name="MINIMUM" />) 必須小於最大值 (<ph name="MAXIMUM" />)。</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2226276347425096477">請將這段文字刪減至 <ph name="MAX_CHARACTERS" /> 個字元以下 (目前的字數為 <ph name="CURRENT_LENGTH" /> 個)。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年，第 <ph name="WEEKNUMBER" /> 週</translation>

@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">付款</translation>
 <translation id="1846432862466000825">塑料（存档用）</translation>
 <translation id="1848982255014129637">相纸（高光）</translation>
+<translation id="1853392626017747777">虚拟卡注册对话框已关闭</translation>
 <translation id="1854180393107901205">停止投放</translation>
 <translation id="1855370856221982654">拳击</translation>
 <translation id="1856713167556118146">无痕模式不会做什么</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">新</translation>
 <translation id="1935995810530254458">仍然复制</translation>
 <translation id="1939175642807587452">可以询问能否向您发送通知</translation>
+<translation id="1940441167050915935">删除已保存的安全码</translation>
 <translation id="1943994668912612445">设计</translation>
 <translation id="1945968466830820669">您可能会无法再访问所属组织的账号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
 <translation id="1946849748901605102">12 x 15 英寸</translation>
@@ -1727,6 +1729,7 @@
 <translation id="4628948037717959914">照片</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">已关联返现</translation>
+<translation id="4631881646528206880">虚拟卡注册</translation>
 <translation id="4636930964841734540">信息</translation>
 <translation id="4638670630777875591">Chromium 中的无痕模式</translation>
 <translation id="464342062220857295">搜索功能</translation>
@@ -1841,6 +1844,7 @@
 <translation id="4854853140771946034">在 Google Keep 中快速创建新记事</translation>
 <translation id="485902285759009870">正在核对动态密码…</translation>
 <translation id="4862630594858951805">想在降价时收到电子邮件通知？</translation>
+<translation id="4864406669374375262">已将版本字符串复制到剪贴板</translation>
 <translation id="486459320933704969">必须先征得家长或监护人的同意，然后你才能访问此网站</translation>
 <translation id="4866506163384898554">按 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 可显示鼠标光标</translation>
 <translation id="4873616204573862158">眼镜</translation>
@@ -3529,6 +3533,7 @@
 <translation id="8339163506404995330">系统不会自动翻译源语言为<ph name="LANGUAGE" />的网页</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">如果您了解自己将面临的安全风险，则可以在有害程序被清除之前<ph name="BEGIN_LINK" />访问此网站<ph name="END_LINK" />。</translation>
+<translation id="8344776605855290140">虚拟卡注册对话框已全屏打开</translation>
 <translation id="8347658365704983341">远程教学</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8351131234907093545">创建记事</translation>

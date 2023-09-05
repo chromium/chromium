@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">ወደ ማንጸባረቅ ተቀይሯል</translation>
 <translation id="2031987842108996681">ቀይ ሰርጥ</translation>
 <translation id="2060505056492490888">«<ph name="DOT" />» በ«<ph name="INVALIDDOMAIN" />» ውስጥ በተሳሳተ ቦታ ላይ ነው የገባው።</translation>
+<translation id="2068711044993563745">ትንሹ እሴት (<ph name="MINIMUM" />) ከከፍተኛው እሴት (<ph name="MAXIMUM" />) ማነስ አለበት።</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
 <translation id="2226276347425096477">እባክዎ ይህ ጽሁፍ ወደ <ph name="MAX_CHARACTERS" /> ወይም ከዚያ በታች ቁምፊዎች ያሳጥሩት (በአሁኑ ጊዜ <ph name="CURRENT_LENGTH" /> ቁምፊዎችን እየተጠቀሙ ነዎት)።</translation>
 <translation id="2247351761944213033">ሳምንት <ph name="WEEKNUMBER" />፣ <ph name="YEAR" /></translation>

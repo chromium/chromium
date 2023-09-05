@@ -11,6 +11,7 @@
 <translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="1511320244449497906">Vous êtes connecté et vous synchronisez vos données avec un compte géré par <ph name="DOMAIN" />. Son administrateur peut désormais définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chrome.</translation>
+<translation id="1516692594929310090">Ouvre la grille d'onglets de Chrome.</translation>
 <translation id="1554731936187952550">Vous disposez de la sécurité la plus robuste de Chrome contre les sites Web dangereux</translation>
 <translation id="1675955119303651351">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
         Essayez d'attendre quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
@@ -115,6 +116,7 @@
 <translation id="6676840375528380067">Effacer vos données Chrome de cet appareil?</translation>
 <translation id="6709398533399187136">Votre mot de passe a été exposé dans une violation de données. Le Gestionnaire de mots de passe Google vous recommande de le modifier maintenant.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="6916015246697034114">Effectuer une recherche vocale dans Chrome</translation>
 <translation id="6964931465519938134">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour le remplissage automatique</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
@@ -131,6 +133,7 @@
 <translation id="7400722733683201933">À propos de Google Chrome</translation>
 <translation id="7501046334262221972">Pour définir Chrome comme navigateur par défaut, ouvrez l'application Réglages, touchez Navigateur par défaut, puis sélectionnez Chrome.</translation>
 <translation id="756809126120519699">Données de Chrome effacées</translation>
+<translation id="7581063337314642333">Consulter la grille d'onglets dans Chrome</translation>
 <translation id="7662994914830945754">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous et activez la synchronisation</translation>
 <translation id="7669869107155339016">Accédez aux paramètres de Chrome.</translation>
 <translation id="7693590760643069321">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
@@ -138,10 +141,12 @@
 <translation id="7754633291442704733">Votre organisation <ph name="DOMAIN" /> aura accès à vos données, favoris, historique, mots de passe et autres paramètres Chrome que vous stockez dans ce compte. Lorsque vous vous déconnectez, vos données sont effacées de cet appareil.  Cependant, vos données restent stockées dans votre compte Google géré et sont disponibles pour votre organisation. Votre organisation peut également définir des politiques relatives aux utilisateurs propres à ce compte, lesquelles peuvent modifier le comportement de Chrome.</translation>
 <translation id="7780154209050837198">Connectez-vous à Chrome avec votre compte Google pour en tirer le meilleur parti.</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
+<translation id="7897703007638178753">Voir les onglets récents de Chrome</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="804638182476029347">Autoriser les notifications de Chrome à vous envoyer des alertes relatives aux réductions de prix</translation>
 <translation id="81358522153858150">Chrome prend désormais en charge les politiques relatives aux utilisateurs pour votre compte géré</translation>
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
+<translation id="8174679664544842874">Ouvre un nouvel onglet dans Chrome.</translation>
 <translation id="8213758103105806860">Voir les favoris Chrome</translation>
 <translation id="8357607116237445042">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
@@ -157,6 +162,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8603022514504485810">Le gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Demeurez en sécurité grâce à Chrome</translation>
+<translation id="8760668027640688122">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome achemine la requête saisie à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="8772179140489533211">Affiche l'invite de connexion dans Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
@@ -174,4 +180,5 @@
   • Si vous activez la synchronisation, les mesures peuvent également inclure des renseignements sur les URL que vous visitez.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Définir Chrome comme navigateur par défaut?</translation>
 <translation id="9122931302567044771">Cela signifie que Chrome demandera toujours la version bureau du site.</translation>
+<translation id="9181628561061032322">Ouvre les onglets récents de Chrome.</translation>
 </translationbundle>

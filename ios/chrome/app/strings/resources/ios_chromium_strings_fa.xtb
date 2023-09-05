@@ -10,6 +10,7 @@
 <translation id="1431818719585918472">‏اجازه دهید Chromium «برگه‌های ناشناس» را قفل کند.</translation>
 <translation id="1472013873724362412">‏حساب شما در Chromium کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="1507010443238049608">‏کمک به بهبود ویژگی‌ها و عملکرد Chromium</translation>
+<translation id="1513122820609681462">‏تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="1531155317299575425">‏برای ورود به سیستم Chromium درخواست نشان می‌دهد.</translation>
 <translation id="1591119736686995611">‏شبکه برگه‌ها را در Chromium باز می‌کند.</translation>
 <translation id="1617663976202781617">‏داده‌های مربوط به همگام‌سازی Chromium</translation>
@@ -131,11 +132,13 @@
 <translation id="6563921047760808519">‏درباره اینکه <ph name="BEGIN_LINK" />Chromium چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="6625409903340039086">‏Chromium اکنون از خط‌مشی‌های کاربر برای حساب مدیریت‌شده شما پشتیبانی می‌کند</translation>
 <translation id="6752854822223394465">‏سازمانتان درحال راه‌اندازی Chromium است…</translation>
+<translation id="6794054469102824109">‏بازی «دایناسور Chromium» را باز می‌کند.</translation>
 <translation id="6820823224820483452">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="6911341667534646387">‏همچنان از داده‌های Chromium ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="7006920032187763988">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه» در برنامه‌های دیگر iPad خودتان استفاده کنید.</translation>
 <translation id="7018284295775193585">‏Chromium به‌روزرسانی نمی‌شود</translation>
 <translation id="7045244423563602563">‏Chromium را برای خود اختصاصی کنید</translation>
+<translation id="7055269218854630176">‏سازمانتان (<ph name="DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chromium را مدیریت می‌کند. سرپرستتان می‌توانید برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
 <translation id="7099326575020694068">‏Chromium نمی‌تواند از دوربین درحالت «نمای تقسیم» استفاده کند</translation>
 <translation id="7165402419892018581">‏انتخاب Chromium برای «تکمیل خودکار»</translation>
 <translation id="7175400662502680481">گذرواژه‌تان به‌دلیل سرقت اطلاعات شبکه لو رفته است. «مدیر گذرواژه» توصیه می‌کند آن را همین‌حالا تغییر دهید.</translation>
@@ -174,6 +177,7 @@
 <translation id="865600487977764604">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chromium حفظ می‌کند و ممکن است برای بهبود امنیت شما در دیگر برنامه‌های Google استفاده شود.</translation>
 <translation id="8663480472502753423">‏به‌روز نگه داشتن Chromium</translation>
 <translation id="8685813584220679697">‏به سیستم این سایت و Chromium وارد شوید.</translation>
+<translation id="8730503818204408000">‏«تنظیمات Chromium» را برای تنظیم کردن Chromium به‌عنوان مرورگر پیش‌فرض باز می‌کند.</translation>
 <translation id="8747378496147986285">‏وقتی روشن است:
 <ph name="BEGIN_INDENT" />  • به بهتر شدن Chromium برای همه کسانی که به‌شیوه‌ای مشابه شما از آن استفاده می‌کنند کمک می‌کند.<ph name="END_INDENT" />
 
@@ -193,5 +197,6 @@
 <translation id="9110075932708282655">‏استفاده از Chromium به‌طور پیش‌فرض</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="971488683725792095">‏وقتی روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها ضربه بزنید، به‌طور خودکار از Chromebook استفاده می‌شود</translation>
+<translation id="981812233959540767">‏انجام بازی «دایناسور Chromium»</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

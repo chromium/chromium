@@ -434,6 +434,7 @@
 <translation id="1842969606798536927">Оплатить</translation>
 <translation id="1846432862466000825">Пластик (архивный)</translation>
 <translation id="1848982255014129637">Фотобумага (с высоким лоском)</translation>
+<translation id="1853392626017747777">Диалоговое окно создания виртуальной карты закрыто</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Что сохраняется в режиме инкогнито</translation>
@@ -470,6 +471,7 @@
 <translation id="1924727005275031552">Новый</translation>
 <translation id="1935995810530254458">Все равно скопировать</translation>
 <translation id="1939175642807587452">Разрешено отправлять запрос на показ уведомлений</translation>
+<translation id="1940441167050915935">Удалить сохраненные защитные коды</translation>
 <translation id="1943994668912612445">Дизайн</translation>
 <translation id="1945968466830820669">Возможно, кто-то пытается получить доступ к вашим личным данным или корпоративному аккаунту. Рекомендуем немедленно сменить пароль.</translation>
 <translation id="1946849748901605102">12 x 15 дюймов</translation>
@@ -1725,6 +1727,7 @@
 <translation id="4628948037717959914">Фото</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">С кешбэком</translation>
+<translation id="4631881646528206880">Создание виртуальной карты</translation>
 <translation id="4636930964841734540">Информация</translation>
 <translation id="4638670630777875591">Режим инкогнито в Chromium</translation>
 <translation id="464342062220857295">Функции поиска</translation>
@@ -1839,6 +1842,7 @@
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
 <translation id="4862630594858951805">Хотите получать электронные письма о снижении цены?</translation>
+<translation id="4864406669374375262">Версия скопирована в буфер обмена</translation>
 <translation id="486459320933704969">Чтобы смотреть этот сайт, тебе нужно разрешение родителя или законного представителя.</translation>
 <translation id="4866506163384898554">Чтобы увидеть курсор, нажмите |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|.</translation>
 <translation id="4873616204573862158">Очки</translation>
@@ -3526,6 +3530,7 @@
 <translation id="8339163506404995330">Страницы на этом языке (<ph name="LANGUAGE" />) не будут переводиться автоматически</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Если вы готовы подвергнуть риску ваши личные данные, вы можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносного ПО.</translation>
+<translation id="8344776605855290140">Диалоговое окно создания виртуальной карты открыто на весь экран</translation>
 <translation id="8347658365704983341">Дистанционное обучение</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8351131234907093545">Создать заметку</translation>

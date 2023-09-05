@@ -418,6 +418,7 @@
 <translation id="3328801116991980348">साइट माहिती</translation>
 <translation id="3340938510625667914">Chrome अ‍ॅक्शन्स</translation>
 <translation id="3344485292736684439">{count,plural, =1{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केला आहे}other{बुकमार्क तुमच्या {email} खात्यामध्ये "{title}" वर सेव्ह केले आहेत}}</translation>
+<translation id="3349676726073650389">तुम्ही फॉलो करत असलेल्या साइट आणि शोध तुमच्या Google खाते मध्ये सेव्ह केले जातात. तुम्ही तुमचे फॉलो करत आहे हे सेटिंग्जमध्ये कधीही व्यवस्थापित करू शकता.</translation>
 <translation id="3365529507898144230">Photos मध्ये सेव्ह करा</translation>
 <translation id="3371831930909698441">भाषांतर उपलब्ध आहे. स्क्रीनच्या खाली पर्याय उपलब्ध आहेत.</translation>
 <translation id="3377063233124932127">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी आता सर्वात वरती आहेत.</translation>
@@ -477,6 +478,7 @@
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
 <translation id="3688815115226493214">टॅब सूचना</translation>
 <translation id="3700134753671613714">आपल्या सर्व डिव्हाइसेस वरील तुमचे बुकमार्क मिळविण्यासाठी साइन इन करा.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {EMAIL} या Google खाते मध्ये सेव्ह करा.}other{{COUNT} पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या {EMAIL} या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="3709582977625132201">न वाचलेले म्हणून मार्क करा</translation>
 <translation id="371230970611282515">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करतो आणि त्यांबद्दल तुम्हाला चेतावणी देतो.</translation>
 <translation id="37207012422556617">ट्रेंडिंग शोध</translation>
@@ -780,6 +782,7 @@
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
+<translation id="5619871095170816857">हे कार्ड तुम्ही मागील २४ तासांमध्ये तुमच्या सर्व सिंक केलेल्या डिव्हाइसवर शेवटचा उघडलेला टॅब दाखवते.</translation>
 <translation id="5626245204502895507">यावेळी फाईल डाऊनलोड केली जाऊ शकली नाही.</translation>
 <translation id="562753339521713441">सुरक्षितता तपासणी रन करा</translation>
 <translation id="5631164295104953411">पेमेंट पद्धत जोडा</translation>
@@ -1086,6 +1089,7 @@
 <translation id="7082853213442715471">सुरू केल्यावर, काही वेब तंत्रज्ञाने ब्लॉक केली जातात, ज्यामुळे काही वेबसाइट अधिक हळू लोड होऊ शकतात किंवा योग्यरीत्या ऑपरेट करू शकत नाहीत.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> साठी Google Password Manager</translation>
 <translation id="7099761977003084116">अलीकडील टॅब</translation>
+<translation id="7101580180124131336">तुम्हाला फॉलो करत आहे यामध्ये <ph name="CHANNEL_NAME" /> मधील आणि त्याबद्दल आशय दिसेल.</translation>
 <translation id="7102005569666697658">डाउनलोड होत आहे… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">लपवा</translation>
 <translation id="7108762695052995889">साइटला भेट द्या</translation>
@@ -1166,6 +1170,7 @@
 <translation id="764827086632467055">डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा</translation>
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7666861622396822790">तुम्ही हे <ph name="BEGIN_LINK" />आशय सेटिंग्ज<ph name="END_LINK" /> मध्ये व्यवस्थापित करू शकता.</translation>
 <translation id="7671141431838911305">स्‍थापित करा</translation>
 <translation id="7679915578945954324">साइट अ‍ॅड्रेस कॉपी केले</translation>
 <translation id="7687508192620387263">कॅलेंडर फाइल उपलब्ध आहे</translation>
@@ -1239,6 +1244,7 @@
 <translation id="8032569120109842252">फॉलो करत आहे</translation>
 <translation id="804225253087497565">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />शोध इतिहास<ph name="END_LINK" /> आणि <ph name="BEGIN_LINK" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
 <translation id="804427445359061970">तुमच्या इतर डिव्हाइसमधील टॅब तुम्हाला येथे सापडतील</translation>
+<translation id="8044568254381073661">एन्क्रिप्शनशिवाय सेव्ह करा</translation>
 <translation id="8059533439631660104">विभाग संकुचित करा.</translation>
 <translation id="8065292699993359127">URL ना Chrome मध्ये गुप्त मोड मध्ये उघडा</translation>
 <translation id="806745655614357130">माझा डेटा स्वतंत्र ठेवा</translation>
@@ -1293,7 +1299,9 @@
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="838867811594159347">पासफ्रेझ एंटर करा…</translation>
 <translation id="8393889347136007944">टॅब <ph name="THRESHOLD" /> दिवस वापरलेले नाहीत</translation>
+<translation id="8395339334550012808">लवकरच, तुम्हाला फॉलो करत आहे यामध्ये <ph name="CHANNEL_NAME" /> मधील आणि त्याबद्दल आशय दिसेल.</translation>
 <translation id="8395378633507873708">अ‍ॅड्रेस बार</translation>
+<translation id="8403629764260204788">"ब्राउझिंग सुरू ठेवा" लपवा</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>
 <translation id="842017693807136194">यासह साइन इन केले</translation>
 <translation id="8423121072346537366">आताच</translation>
@@ -1376,6 +1384,7 @@
 <translation id="8855242995793521265">तुमचा ब्राउझर किंवा डिव्हाइस लक्षणीयरीत्या धीमे करत नाही.</translation>
 <translation id="8855781063981781621">Chrome मध्ये लॉकडाउन मोड बंद करण्यासाठी तो तुमच्या iPad वर बंद करा.</translation>
 <translation id="8863431381414769983">Google Maps वरून दिशानिर्देश आणि स्थानिक माहिती मिळवा</translation>
+<translation id="8865415417596392024">तुमच्या खात्यामधील Chrome डेटा</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} टॅब}other{{count} टॅब}}</translation>
 <translation id="8870413625673593573">अलीकडे बंद</translation>
 <translation id="8876882697946675716">तुमची डिव्हाइस सिंकमध्ये ठेवा</translation>

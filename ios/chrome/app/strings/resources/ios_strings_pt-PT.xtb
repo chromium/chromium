@@ -477,6 +477,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="368329460027487650">Sessão terminada. Abre as opções para iniciar sessão.</translation>
 <translation id="3688815115226493214">Sugestões de separadores</translation>
 <translation id="3700134753671613714">Inicie sessão para obter os seus marcadores em todos os dispositivos.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {EMAIL}.}other{{COUNT} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Marcar como não lido</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="37207012422556617">Pesquisas populares</translation>
@@ -1375,6 +1376,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="8855242995793521265">Não diminui consideravelmente a velocidade do navegador ou dispositivo.</translation>
 <translation id="8855781063981781621">Para desativar o modo de bloqueio no Chrome, desative-o no seu iPad.</translation>
 <translation id="8863431381414769983">Obtenha direções e informações locais do Google Maps</translation>
+<translation id="8865415417596392024">Dados do Chrome na sua conta</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Mantenha os seus dispositivos sincronizados</translation>

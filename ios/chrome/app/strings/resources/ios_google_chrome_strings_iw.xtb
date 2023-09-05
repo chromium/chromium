@@ -23,6 +23,8 @@
 
   • אם הפעלת סנכרון של ההיסטוריה עם חשבון Google, יכול להיות שהמדדים יכללו פרטים לגבי כתובות URL שביקרת בהן.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">‏האבטחה החזקה ביותר של Chrome מגינה עליך מפני אתרים מזיקים</translation>
+<translation id="1675955119303651351">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google.
+        כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="1682483655351012182">‏סנכרון נתוני Chrome שלך</translation>
 <translation id="1733654336159102143">‏נעילת המצב הפרטי כשיוצאים מ-Chrome או עוברים לאפליקציה אחרת.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -30,6 +32,7 @@
 <translation id="1917964099031477364">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chrome ומאפליקציות אחרות של Google במכשיר הזה.</translation>
 <translation id="2009224836393115614">‏Chrome לא הצליח לבדוק את הסיסמאות שלך. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2056123005618757196">‏Google Chrome מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
+<translation id="2120238739383482109">‏פתיחת הסימניות ב-Chrome.</translation>
 <translation id="2147651015520127414">‏Chrome אימת ש-<ph name="ISSUER" /> הנפיק את האישור של אתר זה.</translation>
 <translation id="2199719347983604670">‏נתונים מסנכרון Chrome</translation>
 <translation id="2339201583852607431">‏הסיסמה שלך תישמר בחשבון Google‏ (<ph name="EMAIL" />).</translation>
@@ -66,6 +69,7 @@
 <translation id="3594076341410558780">‏הסתרת האפשרות 'נהנים מהמיטב של Chrome'</translation>
 <translation id="3655656110921623717">‏כלומר, Chrome תמיד יבקש את האתר לנייד.</translation>
 <translation id="3720541637541300822">‏כרטיסיות מצב אנונימי יינעלו כש-Chrome ייסגר</translation>
+<translation id="3741995255368156336">‏פתיחה של רשימת הקריאה ב-Chrome.</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
 <translation id="3901001113120561395">‏ליהנות מכל מה ש-Chrome מציע.</translation>
@@ -92,6 +96,7 @@
 <translation id="4903674399067644695">‏בכרטיס הזה מוצגות הצעות שיעזרו לך ליהנות מהמיטב של Chrome.</translation>
 <translation id="5030102366287574140">‏Chrome יכול להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות.</translation>
 <translation id="5108659628347594808">‏משפרים את Chrome</translation>
+<translation id="5112925986883715005">‏הצגה של רשימת הקריאה ב-Chrome</translation>
 <translation id="5119391094379141756">‏בוחרים באפשרות Chrome</translation>
 <translation id="5162467219239570114">‏Chrome אינו מעודכן. אם אין עדכון זמין ב-<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ייתכן שהמכשיר שלך אינו תומך עוד בגרסאות חדשות של Chrome.</translation>
 <translation id="5190139289262548459">‏הארגון שלך, <ph name="DOMAIN" />, מנהל את החשבון שנכנסת אליו ואת אופן השימוש ב-Chrome.</translation>
@@ -156,6 +161,7 @@
 <translation id="804638182476029347">‏אישור לקבלת התראות על הנחות ב-Chrome</translation>
 <translation id="81358522153858150">‏עכשיו יש ב-Chrome תמיכה במדיניות משתמש בחשבון המנוהל שלך</translation>
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
+<translation id="8213758103105806860">‏הצגת הסימניות ב-Chrome</translation>
 <translation id="8357607116237445042">‏האם למחוק את נתוני Chrome מהמכשיר הזה או לשמור אותם?</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="840168496893712993">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש לנסות להסיר את ההתקנה שלהם.</translation>

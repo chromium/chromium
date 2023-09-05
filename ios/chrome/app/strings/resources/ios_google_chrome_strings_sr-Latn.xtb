@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Podesite Chrome kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome ne može da traži ažuriranja. Proverite internet vezu.</translation>
 <translation id="1511320244449497906">Prijavljeni ste i sinhronizujete podatke sa nalogom kojim upravlja <ph name="DOMAIN" />, pri čemu njegov administrator sada može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
+<translation id="1516692594929310090">Otvara mrežu Chrome kartica.</translation>
 <translation id="1526327845902180576">Kada je ovo uključeno:
 <ph name="BEGIN_INDENT" /> • Pomozite da poboljšamo Chrome za ljude koji ga koriste kao vi.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@
 
 Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
+<translation id="6916015246697034114">Pretražujte glasom u u Chrome-u</translation>
 <translation id="6964931465519938134">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Izaberite Chrome za automatsko popunjavanje</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
@@ -150,6 +152,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7400722733683201933">O programu Google Chrome</translation>
 <translation id="7501046334262221972">Da biste postavili Chrome za podrazumevani pregledač, otvorite podešavanja. Dodirnite podrazumevanu aplikaciju za pregledanje, pa izaberite Chrome.</translation>
 <translation id="756809126120519699">Chrome podaci su obrisani</translation>
+<translation id="7581063337314642333">Posetite mrežu sa karticama u Chrome-u</translation>
 <translation id="7662994914830945754">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="7669869107155339016">Idite u podešavanja Chrome-a.</translation>
 <translation id="7693590760643069321">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -157,11 +160,13 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7754633291442704733">Organizacija <ph name="DOMAIN" /> će imati pristup Chrome podacima, obeleživačima, istoriji, lozinkama i drugim podešavanjima koja čuvate na ovom nalogu. Kada se odjavite, podaci će se obrisati sa ovog uređaja.  Međutim, podaci će se i dalje čuvati na Google nalogu kojim se upravlja i biće dostupni vašoj organizaciji. Organizacija može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chrome-a.</translation>
 <translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
+<translation id="7897703007638178753">Pogledajte nedavne kartice u Chrome-u</translation>
 <translation id="7925119591961387184">Izaberite „Chrome“.</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite Chrome obaveštenja da biste dobijali obaveštenja o sniženjima</translation>
 <translation id="81358522153858150">Chrome sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
+<translation id="8174679664544842874">Otvara novu karticu u Chrome-u.</translation>
 <translation id="8213758103105806860">Prikaži Chrome obeleživače</translation>
 <translation id="8357607116237445042">Odaberite da li ćete obrisati Chrome podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
@@ -178,6 +183,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8587647598504233556">Dodirnite „Chrome“, pa „Podrazumevana aplikacija za pregledač“.</translation>
 <translation id="8603022514504485810">Google menadžer lozinki nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite bezbedni uz Google Chrome</translation>
+<translation id="8760668027640688122">Otvorite novu karticu u Chrome-u</translation>
 <translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavljivanje u Chrome.</translation>
 <translation id="8788269841521769222">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="EMAIL" /></translation>
@@ -197,4 +203,5 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
   • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
+<translation id="9181628561061032322">Otvara nedavne kartice u Chrome-u.</translation>
 </translationbundle>

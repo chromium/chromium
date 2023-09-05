@@ -366,6 +366,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">باز کردن قفل پنجره‌ها</translation>
 <translation id="2528111225373402384">تنظیمات نقطه اتصال</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
 <translation id="2531025035050312891">دستگاه کند است</translation>
 <translation id="2531107890083353124">همان‌طور که برگه را می‌کشید، <ph name="KEY_ONE" /> را فشار دهید</translation>
@@ -527,7 +528,6 @@
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="324366796737464147">حذف نوفه زمینه</translation>
 <translation id="3249513730522716925">پنجره <ph name="WINDOW_TITLE" /> از میز <ph name="ACTIVE_DESK" /> به میز <ph name="TARGET_DESK" /> منتقل شد</translation>
-<translation id="3252573918265662711">راه‌اندازی</translation>
 <translation id="3253743281242075461">نوع کار کلاسی: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">‏What can you do?‎ (چه کاری می‌توانی انجام دهی؟)</translation>
 <translation id="3256109297135787951">حذف برجسته‌سازی از مورد روی قفسه</translation>
@@ -675,6 +675,7 @@
 <translation id="3781910048497807059">انتقال تمرکز به قاب قبلی</translation>
 <translation id="3783640748446814672">دگرساز</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="3789841737615482174">نصب</translation>
 <translation id="3796215473395753611">دگرساز + بالابر</translation>
 <translation id="3796746699333205839">برنامه‌ای درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="3798670284305777884">بلندگو (داخلی)</translation>
@@ -1479,7 +1480,6 @@
 <translation id="7086931198345821656">‏برای این به‌روزرسانی، باید روی <ph name="DEVICE_TYPE" /> شما Powerwash اعمال شود. همه داده‌ها حذف خواهد شد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
 <translation id="709015856939120012">زوم‌پیش کردن در صفحه</translation>
-<translation id="7098053464892629930">‏برای دیدن همه ویژگی‌های موجود، برنامه مرتبط با <ph name="NAME" /> را از Google Play بارگیری کنید.</translation>
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7100906357717321275">‏نمایش فایل‌های پنهان‌شده در برنامه Files</translation>
 <translation id="7108254681523785542">‏موردی انتخاب کنید تا جای‌گذاری شود. با فشار دادن <ph name="SHORTCUT_KEY_NAME" /> + v می‌توانید بریده‌دان را ببینید.</translation>
@@ -1620,6 +1620,7 @@
 <translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
 <translation id="7720400844887872976">روشن تا <ph name="TIME" /></translation>
 <translation id="7720410380936703141">امتحان مجدد</translation>
+<translation id="7721132362314201794">نام میزکار</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7723703419796509666">نشان دادن یا پنهان کردن کنسول «ابزار توسعه‌دهندگان»</translation>
 <translation id="7724603315864178912">برش</translation>
@@ -1842,7 +1843,6 @@
 <translation id="8660331759611631213">‏Square root of 71 (جذر ۷۱)</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">برای ضبط نماگرفت از یک بخش صفحه، کلید «ورود» را فشار دهید</translation>
-<translation id="8666856788528804727">برای راه‌اندازی دستگاه، <ph name="NAME" /> را باز کنید</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
 <translation id="8683506306463609433">ردیابی عملکرد فعال است</translation>
 <translation id="8703634754197148428">شروع ضبط. هروقت ضبط شروع شد، بااستفاده از کلیدهای «دگرساز + تبدیل + م» به قفسه پیمایش کنید و دکمه متوقف کردن ضبط را پیدا کنید</translation>
@@ -1856,6 +1856,7 @@
 <translation id="8731487213223706745">در <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> به‌پایان می‌رسد</translation>
 <translation id="8734991477317290293">ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد</translation>
 <translation id="8735678380411481005">رنگ نور پس‌زمینه صفحه‌کلید</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: درحال فعال‌سازی...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>

@@ -234,7 +234,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite na "Google upravitelj lozinki"</translation>
 <translation id="5098668839038261629">Kada je uključeno, također ćete biti odjavljeni iz Chroma</translation>
-<translation id="5126049312684316860">Chrome predučitava još više stranica koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite.</translation>
+<translation id="5126049312684316860">Chrome predučitava još više stranica za koje postoji vjerovatnoća da ćete ih posjetiti kako bi se brže učitavale prilikom posjete</translation>
 <translation id="5132929315877954718">Otkrijte odlične aplikacije, igre, ekstenzije i teme za Google Chrome.</translation>
 <translation id="5139423532931106058">Prilagodite svoj Chrome profil</translation>
 <translation id="5163087008893166964">Dobro došli u Chrome. Otvoren je novi prozor preglednika</translation>
@@ -244,7 +244,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
 <translation id="5239627039202700673">Koristite Chrome svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="5251420635869119124">Gosti mogu koristiti Chrome, a da pritom ne ostave tragove o korištenju.</translation>
-<translation id="5320351714793324716">Ako dopustite kolačiće, Chrome ih može koristiti prilikom predučitavanja.</translation>
+<translation id="5320351714793324716">Ako dozvolite kolačiće, Chrome ih može koristiti prilikom predučitavanja</translation>
 <translation id="5334309298019785904">ChromeOS nije sinhronizirao vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="5334487786912937552">Chromeu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
 <translation id="5337648990166757586">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse ChromeOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>

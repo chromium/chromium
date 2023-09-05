@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">मिररिंगवर स्विच केले</translation>
 <translation id="2031987842108996681">लाल चॅनल</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' '<ph name="INVALIDDOMAIN" />' मध्ये चुकीच्या स्थितीवर वापरले आहे.</translation>
+<translation id="2068711044993563745">किमान मूल्य (<ph name="MINIMUM" />) हे कमाल मूल्यापेक्षा (<ph name="MAXIMUM" />) कमी असणे आवश्यक आहे.</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2226276347425096477">कृपया हा मजकूर <ph name="MAX_CHARACTERS" /> वर्ण लहान किंवा कमी करा (तुम्ही सध्या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

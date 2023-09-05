@@ -61,6 +61,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1217633719248931900">Ouvrir l'application</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
+<translation id="1226877728704622336">Bureau inactif</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
 <translation id="1235458158152011030">Réseaux connus</translation>
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
@@ -515,7 +516,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="324366796737464147">Suppression du bruit</translation>
 <translation id="3249513730522716925">La fenêtre <ph name="WINDOW_TITLE" /> a passé du bureau <ph name="ACTIVE_DESK" /> au bureau <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Configuration</translation>
 <translation id="3253743281242075461">Type de travaux et devoirs : <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3256109297135787951">Supprimer la mise en évidence d'un élément sur votre étagère</translation>
@@ -663,6 +663,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3781910048497807059">Déplacer la cible vers le volet précédent</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="3789841737615482174">Installer</translation>
 <translation id="3796215473395753611">alt+flèche vers le haut</translation>
 <translation id="3796746699333205839">Une application utilise votre caméra et votre microphone</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
@@ -1001,6 +1002,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
+<translation id="5203299837691351876">Bureau actif</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 autre notification}one{# autre notification}other{# autres notifications}}</translation>
 <translation id="5207949376430453814">Mettre le point d'insertion de texte en surbrillance</translation>
@@ -1395,6 +1397,7 @@ Nouvelle installation</translation>
 <translation id="6819327813400217281">Caméra alignée sur le coin inférieur gauche</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
 <translation id="6827049576281411231">Fermer le panneau d'événements</translation>
+<translation id="6831561626108366035">Accédez au bouton <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6855029042976311970">Modifié au cours des dernières minutes</translation>
@@ -1429,6 +1432,7 @@ Nouvelle installation</translation>
 <translation id="6981291220124935078">Activer l'accès</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
 <translation id="698231206551913481">Tous les fichiers et toutes les données locales associés à l'utilisateur seront définitivement supprimés en même temps que ce dernier.</translation>
+<translation id="6989752354829085073">Regardez une présentation rapide pour vous familiariser avec votre Chromebook. Configurez votre appareil en six étapes.</translation>
 <translation id="7004910047186208204">Se connecter à un réseau de données cellulaires</translation>
 <translation id="7005239792648594238">Ouvrez une application pour commencer</translation>
 <translation id="7007983414944123363">Votre NIP ou votre mot de passe n'a pas pu être vérifié. Réessayez.</translation>
@@ -1454,7 +1458,6 @@ Nouvelle installation</translation>
 <translation id="7086931198345821656">Cette mise à jour requiert l'utilisation de la fonctionnalité Powerwash sur votre <ph name="DEVICE_TYPE" />. Toutes les données qu'il contient seront supprimées. Apprenez-en plus à propos de la dernière mise à jour de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Zoomer sur la page</translation>
-<translation id="7098053464892629930">Téléchargez l'application pour <ph name="NAME" /> sur Google Play pour voir toutes les fonctionnalités offertes</translation>
 <translation id="7098389117866926363">Appareil USB-C (port arrière-gauche)</translation>
 <translation id="7100906357717321275">Afficher les fichiers cachés dans l'application Fichiers</translation>
 <translation id="7116969082764510092">Bureau 11</translation>
@@ -1553,6 +1556,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre microphone</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
+<translation id="7567950130372125778">Bonjour. Le Chromebook est un peu différent.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569886975397378678">Ignorer la configuration de l'affichage des notifications et des applications de votre téléphone</translation>
 <translation id="7571361473021531288">Pile à <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> d'autonomie</translation>
@@ -1811,7 +1815,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8660331759611631213">Racine carrée de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Appuyez sur Entrée pour effectuer une capture d'écran partielle</translation>
-<translation id="8666856788528804727">Ouvrez <ph name="NAME" /> pour configurer votre appareil</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances activé</translation>
 <translation id="8703634754197148428">Commencer l'enregistrement. Une fois que l'enregistrement a commencé, servez-vous des touches Alt+Majuscule+L pour naviguer jusqu'à l'étagère et trouver le bouton d'arrêt de l'enregistrement</translation>

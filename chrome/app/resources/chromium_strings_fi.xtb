@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Jatka asennusta</translation>
 <translation id="1029669172902658969">Päivitä &amp;Chromium-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="1040916596585577953">Chromium suosittelee tämän laajennuksen tarkistamista</translation>
+<translation id="1042552502243217427">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chromium käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1083934481477628225">Vanhempasi on laittanut Chromiumin "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="1098170124587656448">Chromium voi auttaa suojaamaan sinua tietosuojaloukkauksilta, haitallisilta laajennuksilta ja muilta</translation>
@@ -129,6 +130,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3713809861844741608">Avaa linkki uudella Chromiumin välilehdellä</translation>
 <translation id="378917192836375108">Chromiumin avulla voit soittaa Skypellä puhelinnumeroon klikkaamalla sitä verkossa!</translation>
 <translation id="3790262771324122253">Katso, miksi Chromium estää joitakin latauksia</translation>
+<translation id="3802055581630249637">Chromium esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="3830894615770080216">Chromium-käyttöjärjestelmä</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Ohjeita Chromium-käyttöjärjestelmän käyttöön</translation>
@@ -239,6 +241,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6132897690380286411">Chromium suljetaan ja data poistetaan pian</translation>
 <translation id="6134968993075716475">Selaussuoja on pois päältä. Chromium suosittelee laittamaan sen päälle.</translation>
 <translation id="6145820983052037069">Voit vaihdella Chromium-profiilien välillä täällä</translation>
+<translation id="615103374448673771">Jos sallit evästeet, Chromium voi käyttää niitä esilataamisen aikana</translation>
 <translation id="6175304430031192654">Asetuksista riippuen Chromium voi myös lähettää evästeitä ja nykyisen URL-osoitteesi</translation>
 <translation id="6183079672144801177">Varmista, että olet kirjautunut Chromiumiin laitteellasi (<ph name="TARGET_DEVICE_NAME" />) ja yritä sitten lähettämistä uudelleen.</translation>
 <translation id="6212496753309875659">Tälle tietokoneelle on jo asennettu Chromiumin uudempi versio. Jos Chromium ei toimi, poista sen asennus ja yritä uudelleen.</translation>
@@ -263,6 +266,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6400112897226594999">Chromium-logo tietokoneen näytöllä.</translation>
 <translation id="6403826409255603130">Chromium on selain, jolla verkkosivut ja sovellukset toimivat salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Chromiumin sisäänrakennettu haittaohjelma- ja tietojenkalastelusuojaus tekevät verkkoselauksesta turvallisempaa.</translation>
 <translation id="6442900851116057561">Käynnistä Chromium-käyttöjärjestelmä uudelleen</translation>
+<translation id="6443470774889161065">Chromium esilataa enemmän sivuja, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin</translation>
 <translation id="6455857529632101747">Tervetuloa Chromium-profiileihin</translation>
 <translation id="6475912303565314141">Määrittää myös Chromiumin aloitussivun.</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>

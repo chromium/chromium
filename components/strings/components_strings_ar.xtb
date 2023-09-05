@@ -221,6 +221,7 @@
 <translation id="1413407968866574823">ألعاب حركة ومنصات</translation>
 <translation id="1413809658975081374">خطأ في الخصوصية</translation>
 <translation id="1414134146594747368">رياض أطفال</translation>
+<translation id="141826476809826269">نهاية النص المُستخرَج</translation>
 <translation id="1419305130220238697">‏زر إدارة عمليات التنزيل في Chrome: انقر على هذا الزر لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="1422930527989633628">السماح للموقع الإلكتروني بالعثور على الأجهزة المجاورة التي تتضمّن بلوتوث</translation>
 <translation id="1426410128494586442">نعم</translation>
@@ -277,6 +278,7 @@
 <translation id="1530707389502320859">‏يبدو الموقع الإلكتروني الذي حاولت الانتقال إليه مزيفًا. يحاكي المهاجمون أحيانًا المواقع الإلكترونية من خلال إجراء تغييرات بسيطة يصعب رؤيتها على عنوان URL.</translation>
 <translation id="1532118530259321453">تعرض هذه الصفحة</translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
+<translation id="1537807545287921620">‏لا يمكن الوصول إلى ملف PDF هذا. يمكنك فتح قائمة السياق وتفعيل ميزة "استخراج النص من ملف PDF".</translation>
 <translation id="1539840569003678498">تاريخ ووقت إرسال الإبلاغ:</translation>
 <translation id="1542105669288201090">دراسة الأعمال</translation>
 <translation id="1545757265410828525">سجلّ الأسعار</translation>
@@ -867,6 +869,7 @@
 <translation id="2803306138276472711">‏اكتشف التصفح الآمن من Google مؤخرًا <ph name="BEGIN_LINK" />برامج ضارة<ph name="END_LINK" /> على <ph name="SITE" />. أحيانًا تصاب المواقع الإلكترونية الآمنة في الوضع العادي ببرامج ضارة.</translation>
 <translation id="2807052079800581569">الإحداثي الصادي للصورة</translation>
 <translation id="2808278141522721006">‏يمكنك تفعيل ميزة Windows Hello أو إيقافها في <ph name="SETTINGS" />.</translation>
+<translation id="2814184336982254349">‏لا يمكن الوصول إلى ملف PDF هذا. اضغط على مفتاح البحث + M لفتح قائمة السياق ثم فعِّل ميزة "استخراج النص من ملف PDF".</translation>
 <translation id="2818338148457093657">خدمات تجميل ومنتجعات صحية</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="2824775600643448204">شريط العناوين والبحث</translation>
@@ -1171,6 +1174,7 @@
 <translation id="3461266716147554923">يريد <ph name="URL" /> الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
 <translation id="3461824795358126837">أداة تمييز</translation>
 <translation id="3462200631372590220">الإخفاء (خيار متقدم)</translation>
+<translation id="3465972433695735758">‏لا يمكن الوصول إلى ملف PDF هذا. تم استخراج النص من خلال تكنولوجيات الذكاء الاصطناعي من Google.</translation>
 <translation id="346601286295919445">كيمياء</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" /> مفتوحة الآن، يمكنك الضغط على مفتاح Tab ثم مفتاح Enter للتبديل إلى علامة التبويب المفتوحة.</translation>
 <translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
@@ -1188,6 +1192,7 @@
 <translation id="350069200438440499">اسم الملفّ:</translation>
 <translation id="3501300228850242680">ميتال (موسيقى)</translation>
 <translation id="350421688684366066">تصنيفات (شديدة اللمعان)</translation>
+<translation id="350763432931695541">جارٍ استخراج النص في الصفحات القليلة التالية</translation>
 <translation id="3507869775212388416">وظائف قانونية</translation>
 <translation id="3507936815618196901">إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا</translation>
 <translation id="3512163584740124171">يتم تجاهل هذه السياسة بسبب سياسة أخرى من نفس مجموعة السياسة لها أولوية أعلى.</translation>
@@ -2858,6 +2863,7 @@
 <translation id="6973988895180423160">3.5 × 5 بوصة</translation>
 <translation id="6978236010531171013">المشاركة على أي حال</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">بداية النص المُستخرَج</translation>
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
 <translation id="6987806006823772670">ظرف (مطلي)</translation>
 <translation id="6989763994942163495">عرض الإعدادات المتقدمة...</translation>
@@ -2913,6 +2919,7 @@
 <translation id="7102760431686146931">تجهيزات مطبخ وطهي</translation>
 <translation id="7105998430540165694">‏مفتاح المرور من سلسلة مفاتيح iCloud</translation>
 <translation id="7106762743910369165">تتولّى مؤسستك إدارة متصفِّحك.</translation>
+<translation id="7107249414147762907">‏لا يمكن الوصول إلى ملف PDF هذا. لم يتم استخراج أي نص.</translation>
 <translation id="7108338896283013870">إخفاء</translation>
 <translation id="7108634116785509031">يريد <ph name="HOST" /> استخدام الكاميرا.</translation>
 <translation id="7108819624672055576">تم السماح بواسطة إحدى الإضافات</translation>
@@ -3928,6 +3935,7 @@
 <translation id="917450738466192189">شهادة الخادم غير صالحة.</translation>
 <translation id="9174623988242579721">مركبات مخصّصة ومركبات عالية الأداء</translation>
 <translation id="9174917557437862841">‏زر التبديل بين علامات التبويب، اضغط على Enter للتبديل إلى علامة التبويب هذه</translation>
+<translation id="9177283544810807743">‏لا يمكن الوصول إلى ملف PDF هذا. يجري استخراج النص من خلال تكنولوجيات الذكاء الاصطناعي من Google.</translation>
 <translation id="9179703756951298733">‏إدارة معلومات الدفعات وبطاقة الائتمان في إعدادات متصفِّح Chrome</translation>
 <translation id="9179907736442194268">يمكنك الحصول على تنبيهات عبر البريد الإلكتروني في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="9183302530794969518">‏مستندات Google</translation>

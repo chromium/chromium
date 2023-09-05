@@ -1087,6 +1087,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6641780377503683465"><ph name="INTEREST" /> entfernen</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6645629752388991326">Du kannst festlegen, welche Geräte dieses Gerät als Sicherheitsschlüssel für die Anmeldung verwenden können.</translation>
+<translation id="6646696210740573446">Sendet einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs und Teile von Seiteninhalten an Google senden.</translation>
 <translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6648459603387803038">Dein Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}other{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
@@ -1442,6 +1443,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8394720698884623075">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert ist</translation>
 <translation id="8402673309244746971">Zu „Folge ich“</translation>
 <translation id="8413126021676339697">Gesamtverlauf anzeigen</translation>
+<translation id="8413795581997394485">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="8414396119627470038">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> in <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8416347857511542594">Weitere Informationen zur Personalisierung von Werbung in Chrome</translation>
 <translation id="8419244640277402268">Einschließen</translation>

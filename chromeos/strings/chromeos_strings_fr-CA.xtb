@@ -231,6 +231,7 @@
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activer le mode Couleur sombre</translation>
+<translation id="2728460467788544679">Effacer tout l'historique d'impression</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2744221223678373668">Partagé</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
@@ -701,6 +702,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
+<translation id="6461047516875166066">En savoir plus</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Numériser de nouveau la page?}=1{Numériser de nouveau la page {PAGE_NUMBER}?}one{Numériser de nouveau la page {PAGE_NUMBER}?}other{Numériser de nouveau les pages {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>

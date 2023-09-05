@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1511320244449497906">Jy is aangemeld en sinkroniseer tans jou data met ’n rekening wat deur <ph name="DOMAIN" /> bestuur word. Die administrateur kan nou gebruikerbeleide spesifiek vir dié rekening stel, wat die gedrag van Chrome kan verander.</translation>
+<translation id="1516692594929310090">Maak die Chrome-oortjierooster oop.</translation>
 <translation id="1526327845902180576">Wanneer dit aan is:
 <ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Dinge om in ag te neem:
 
 Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="6822673484890854830">Chrome kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
+<translation id="6916015246697034114">Soek met stem in Chrome</translation>
 <translation id="6964931465519938134">Jy kan Chrome nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
 <translation id="6975725306479268850">Kies Chrome vir Outovul</translation>
 <translation id="7059914902409643750">Maak Chrome jou eie</translation>
@@ -150,6 +152,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7400722733683201933">Meer oor Google Chrome</translation>
 <translation id="7501046334262221972">Maak Instellings oop om Chrome jou verstekblaaier te maak. Tik op Verstekblaaierprogram en kies dan Chrome.</translation>
 <translation id="756809126120519699">Het Chrome-data uitgevee</translation>
+<translation id="7581063337314642333">Besoek die oortjierooster in Chrome</translation>
 <translation id="7662994914830945754">Meld aan en skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
 <translation id="7669869107155339016">Gaan na Chrome-instellings.</translation>
 <translation id="7693590760643069321">Jy kan Chrome nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
@@ -157,11 +160,13 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7754633291442704733">Jou organisasie <ph name="DOMAIN" /> sal toegang hê tot jou Chrome-data, -boekmerke, -geskiedenis, -wagwoorde en ander -instellings wat jy in hierdie rekening stoor. Wanneer jy afmeld, sal jou data van hierdie toestel uitgevee word.  Jou data sal egter gestoor bly in jou bestuurde Google-rekening en beskikbaar wees vir jou organisasie. Jou organisasie kan ook gebruikersbeleide spesifiek vir daardie rekening stel wat die gedrag van Chrome kan verander.</translation>
 <translation id="7780154209050837198">Meld met jou Google-rekening by Chrome aan om die meeste voordeel daaruit te trek.</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
+<translation id="7897703007638178753">Sien Chrome se onlangse oortjies</translation>
 <translation id="7925119591961387184">Kies “Chrome.”</translation>
 <translation id="8022947259858476807">Gebruik by verstek Chrome om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="804638182476029347">Laat Chrome-kennisgewings toe om prysverlagingopletberigte te kry</translation>
 <translation id="81358522153858150">Chrome steun nou gebruikerbeleide vir jou bestuurde rekening</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
+<translation id="8174679664544842874">Maak ’n nuwe oortjie in Chrome oop.</translation>
 <translation id="8213758103105806860">Sien Chrome-boekmerke</translation>
 <translation id="8357607116237445042">Kies of jy jou Chrome-data van hierdie toestel wil verwyder, of dit wil hou</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
@@ -178,6 +183,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8587647598504233556">Tik op “Chrome” en dan op “Verstekblaaierapp”.</translation>
 <translation id="8603022514504485810">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Bly veilig met Google Chrome</translation>
+<translation id="8760668027640688122">Maak nuwe oortjie in Chrome oop</translation>
 <translation id="8765470054473112089">Wanneer jy iets in die adresbalk of soekkassie tik, stuur Chrome wat jy tik na jou versteksoekenjin toe om beter voorstelle te kry. Dit is af in Incognito.</translation>
 <translation id="8772179140489533211">Wys porboodskappe om by Chrome aan te meld.</translation>
 <translation id="8788269841521769222">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word</translation>
@@ -199,4 +205,5 @@ Dinge om in ag te neem:
   • As jy sinkronisering aanskakel, kan maatstawwe inligting insluit oor URL'e wat jy besoek.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Stel Chrome as verstek?</translation>
 <translation id="9122931302567044771">Dit beteken dat Chrome elke keer die rekenaarwerf sal versoek.</translation>
+<translation id="9181628561061032322">Maak Chrome se onlangse oortjies oop.</translation>
 </translationbundle>

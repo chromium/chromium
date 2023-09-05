@@ -48,7 +48,7 @@
 <translation id="1073690811593784042">Стакло (у боји)</translation>
 <translation id="1074497978438210769">Није безбедно</translation>
 <translation id="1075079914415273530">Пољопривреда и шумарство</translation>
-<translation id="1075364221219156102">Користите приступни кôд</translation>
+<translation id="1075364221219156102">Користите приступни кључ</translation>
 <translation id="1080116354587839789">Уклопите по ширини</translation>
 <translation id="1081061862829655580">19. фиока</translation>
 <translation id="1089439967362294234">Промена лозинке</translation>
@@ -314,7 +314,7 @@
 <translation id="1594030484168838125">Одабери</translation>
 <translation id="1596296697375291157">Трилери, криминалистички филмови и филмови мистерије</translation>
 <translation id="1597473228022844713">Пратите овај производ. Ова страница је сачувана у: <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
-<translation id="1598816256585174656">Приступни кôд из Windows Hello-а</translation>
+<translation id="1598816256585174656">Приступни кључ из Windows Hello-а</translation>
 <translation id="1599199147673445968">Нова картица? <ph name="BEGIN_LINK" />Унесите податке о картици<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
 <translation id="161042844686301425">Плавозелена</translation>
@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1846432862466000825">Пластика (архивска)</translation>
 <translation id="1848982255014129637">Слика (високи сјај)</translation>
+<translation id="1853392626017747777">Регистрација за виртуелну картицу је затворена</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Шта режим без архивирања не ради</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">Ново</translation>
 <translation id="1935995810530254458">Ипак копирај</translation>
 <translation id="1939175642807587452">Може да тражи да шаље обавештења</translation>
+<translation id="1940441167050915935">Избриши сачуване безбедносне кодове</translation>
 <translation id="1943994668912612445">Дизајн</translation>
 <translation id="1945968466830820669">Могли бисте да изгубите приступ налогу за организацију или би могло да дође до крађе идентитета. Chromium вам препоручује да одмах промените лозинку.</translation>
 <translation id="1946849748901605102">12×15 in</translation>
@@ -1360,7 +1362,7 @@
 <translation id="3827112369919217609">Апсолут</translation>
 <translation id="3827666161959873541">Породични филмови</translation>
 <translation id="3828924085048779000">Није дозвољено да поље за приступну фразу буде празно.</translation>
-<translation id="3830470485672984938">Користите други приступни кôд</translation>
+<translation id="3830470485672984938">Користите други приступни кључ</translation>
 <translation id="3831065134033923230">Проверите сачуване лозинке</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> је инсталирао додатке за додатне функције. Додаци имају приступ некима од података.</translation>
 <translation id="3832522519263485449">Вишеструко бушење на левој страни</translation>
@@ -1418,7 +1420,7 @@
 <translation id="3966044442021752214">Безбедност производа</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> је блокиран</translation>
-<translation id="3983340834939868135">Приступни кôд из услуге <ph name="VENDOR_NAME" /></translation>
+<translation id="3983340834939868135">Приступни кључ из услуге <ph name="VENDOR_NAME" /></translation>
 <translation id="3984581365661308170">Коверта бр. 11</translation>
 <translation id="398470910934384994">Птице</translation>
 <translation id="3985750352229496475">Управљајте адресама…</translation>
@@ -1731,6 +1733,7 @@
 <translation id="4628948037717959914">Слика</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Повезан је повраћај готовине</translation>
+<translation id="4631881646528206880">Регистрација за виртуелну картицу</translation>
 <translation id="4636930964841734540">Информације</translation>
 <translation id="4638670630777875591">Без архивирања у Chromium-у</translation>
 <translation id="464342062220857295">Функције претраге</translation>
@@ -1796,7 +1799,7 @@
 <translation id="4754461935447132332">Није дозвољено за небезбедне сајтове</translation>
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Приступни кôд са вашег Chrome профила</translation>
+<translation id="4757022425116568383">Приступни кључ са вашег Chrome профила</translation>
 <translation id="4757993714154412917">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chromium препоручује да проверите сачуване лозинке.</translation>
 <translation id="4758311279753947758">Додај контакт информације</translation>
 <translation id="4761104368405085019">Коришћење микрофона</translation>
@@ -1845,6 +1848,7 @@
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="485902285759009870">Кôд се верификује...</translation>
 <translation id="4862630594858951805">Желите имејлове када падне цена?</translation>
+<translation id="4864406669374375262">Стринг верзије је копиран у привремену меморију</translation>
 <translation id="486459320933704969">Родитељ или старатељ мора да каже да је у реду да посетите овај веб-сајт</translation>
 <translation id="4866506163384898554">Притисните |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| да би се показивач приказао</translation>
 <translation id="4873616204573862158">Наочаре</translation>
@@ -1953,7 +1957,7 @@
 <translation id="5070838744279127212">Десети котур</translation>
 <translation id="507130231501693183">4. поштанско сандуче</translation>
 <translation id="5074134429918579056">Панталоне и шортсеви</translation>
-<translation id="5077767274537436092">Користите други приступни кôд</translation>
+<translation id="5077767274537436092">Користите други приступни кључ</translation>
 <translation id="5078060223219502807">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Менаџер лозинки препоручује да је одмах промените, па да проверите сачуване лозинке.</translation>
 <translation id="5086225927071063542">Дистрибуирано и рачунарство у клауду</translation>
 <translation id="5087286274860437796">Сертификат сервера тренутно није важећи.</translation>
@@ -2908,7 +2912,7 @@
 <translation id="7102079138917191645">Изградња и одржавање</translation>
 <translation id="7102554173784142865">Играјте игру Chrome диносаурус</translation>
 <translation id="7102760431686146931">Посуђе и прибор за кување и обедовање</translation>
-<translation id="7105998430540165694">Приступни кôд из iCloud Keychain-а</translation>
+<translation id="7105998430540165694">Приступни кључ из iCloud Keychain-а</translation>
 <translation id="7106762743910369165">Организација управља прегледачем</translation>
 <translation id="7107249414147762907">Не можете да приступите овом PDF-у. Текст није издвојен</translation>
 <translation id="7108338896283013870">Сакриј</translation>
@@ -2963,7 +2967,7 @@
 <translation id="7201591969684833065">Администратор може да види:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="7203375778433816396">Подесите Chrome као подразумевани прегледач система</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ниједан}=1{1 приступни кôд}one{# приступни кôд}few{# приступна кода}other{# приступних кодова}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ниједан}=1{1 приступни кључ}one{# приступни кључ}few{# приступна кључа}other{# приступних кључева}}</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не поштује безбедносне стандарде.</translation>
 <translation id="7210993021468939304">Linux активности унутар контејнера и може да инсталира и покреће Linux апликације унутар контејнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о овом проблему.</translation>
@@ -3142,7 +3146,7 @@
 <translation id="7554475479213504905">Ипак поново учитај и прикажи</translation>
 <translation id="7554791636758816595">Нова картица</translation>
 <translation id="7555777498260651025">Породичне ТВ емисије</translation>
-<translation id="7556328470713619625">Користите приступни кôд</translation>
+<translation id="7556328470713619625">Користите приступни кључ</translation>
 <translation id="7559278538486662777">Величина ове апликације не може да се промени.</translation>
 <translation id="7561784249784255101">Дигиталан разноврсни диск</translation>
 <translation id="7564049878696755256">Можете да изгубите приступ налогу за <ph name="ORG_NAME" /> или би могло да дође до крађе идентитета. Chrome вам препоручује да одмах промените лозинку.</translation>
@@ -3163,7 +3167,7 @@
 <translation id="7582602800368606489">Брзо направите нов догађај у Google календару</translation>
 <translation id="7583969447617676942">Правне услуге</translation>
 <translation id="7586676035079382730">Обавештења нису дозвољена</translation>
-<translation id="7588460771338574392">Приступни кôд са телефона <ph name="PHONE_NAME" /></translation>
+<translation id="7588460771338574392">Приступни кључ са телефона <ph name="PHONE_NAME" /></translation>
 <translation id="7588707273764747927">Пренос</translation>
 <translation id="7591288787774558753">Желите да делите поверљиви садржај?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> жели да користи колачиће и податке о сајтовима на <ph name="TOP_LEVEL_URL" /></translation>
@@ -3533,6 +3537,7 @@
 <translation id="8339163506404995330">Странице на језику <ph name="LANGUAGE" /> се неће преводити</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај сајт<ph name="END_LINK" /> пре него што уклонимо штетне програме.</translation>
+<translation id="8344776605855290140">Регистрација за виртуелну картицу је отворена у пуној висини</translation>
 <translation id="8347658365704983341">Учење на даљину</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8351131234907093545">Направите белешку</translation>

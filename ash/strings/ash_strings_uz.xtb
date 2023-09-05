@@ -528,7 +528,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
-<translation id="3252573918265662711">Sozlash</translation>
 <translation id="3253743281242075461">Sinf ishi turi: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3256109297135787951">Javondagi narsaning ajratib belgilanishini bekor qilish</translation>
@@ -677,6 +676,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="3781910048497807059">Avvalgi panelni fokuslash</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Qulflash</translation>
+<translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3796215473395753611">alt + tepaga strelka</translation>
 <translation id="3796746699333205839">Ilova kamera va mikrofoningizni ishlatmoqda</translation>
 <translation id="3798670284305777884">Karnay (ichki)</translation>
@@ -1481,7 +1481,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7086931198345821656">Bu yangilanish oʻrnatilishi uchun <ph name="DEVICE_TYPE" /> butunlay tozalanishi (powerwash) lozim. Barcha maʼlumotlar oʻchirib tashlanadi. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="709015856939120012">Sahifadagi kattalashtirish</translation>
-<translation id="7098053464892629930">Barcha funksiyalardan foydalanish uchun Google Play Market orqali <ph name="NAME" /> ilovasini yuklab oling</translation>
 <translation id="7098389117866926363">USB-C qurilma (orqa tomondagi chap port)</translation>
 <translation id="7100906357717321275">Fayllar ilovasida yashirin fayllarni koʻrsatish</translation>
 <translation id="7108254681523785542">Joylash uchun elementni tanlang. Vaqtincha xotirani <ph name="SHORTCUT_KEY_NAME" /> + v tugmalarini bosib, koʻrish mumkin.</translation>
@@ -1622,6 +1621,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7714767791242455379">Yangi mobil tarmoq kiritish</translation>
 <translation id="7720400844887872976">Yoniqlik muddati: <ph name="TIME" /></translation>
 <translation id="7720410380936703141">QAYTADAN</translation>
+<translation id="7721132362314201794">Ish stoli nomi</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ta bildirishnoma}other{# ta bildirishnoma}}</translation>
 <translation id="7723703419796509666">Dasturchi vositalari terminalini ochish va yopish</translation>
 <translation id="7724603315864178912">Qirqish</translation>
@@ -1844,7 +1844,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8660331759611631213">71 sonining kvadrat ildizi</translation>
 <translation id="8663756353922886599">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Qismni rasmga olish uchun Enter tugmasini bosing</translation>
-<translation id="8666856788528804727">Qurilmani sozlash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8683506306463609433">Unumdorlik kuzatilmoqda</translation>
 <translation id="8703634754197148428">Yozib olish. Yozib olish jarayoni boshlansa, javonga oʻtish va yozib olishni toʻxtatish tugmasini topish uchun Alt + Shift + L tugmalaridan foydalaning</translation>

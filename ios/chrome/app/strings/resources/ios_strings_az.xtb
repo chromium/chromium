@@ -477,6 +477,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
 <translation id="3688815115226493214">Tab təklifləri</translation>
 <translation id="3700134753671613714">Bütün cihazlarınızda əlfəcinləri əldə etmək üçün daxil olun.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({EMAIL}) yadda saxlayın.}other{{COUNT} parol yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({EMAIL}) yadda saxlayın.}}</translation>
 <translation id="3709582977625132201">Oxunmamış kimi qeyd edin</translation>
 <translation id="371230970611282515">Təhlükəli hadisələr baş vermədən əvvəl onları proqnozlaşdırır və sizə xəbərdarlıq edir.</translation>
 <translation id="37207012422556617">Aktual Axtarışlar</translation>
@@ -1375,6 +1376,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8855242995793521265">Brauzer və ya cihazı çox yavaşlatmır.</translation>
 <translation id="8855781063981781621">Chrome-da Kilidləmə rejimini deaktiv etmək üçün onu iPad-də söndürün.</translation>
 <translation id="8863431381414769983">Google Xəritədən istiqamət və yerli məlumat əldə edin</translation>
+<translation id="8865415417596392024">Hesabdakı Chrome datası</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>
 <translation id="8870413625673593573">Son Qapadılan</translation>
 <translation id="8876882697946675716">Cihazlarınızı Sinxronlaşdırın</translation>

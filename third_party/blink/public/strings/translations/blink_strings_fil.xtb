@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">Lumipat sa pag-mirror</translation>
 <translation id="2031987842108996681">Pulang channel</translation>
 <translation id="2060505056492490888">Ginamit ang '<ph name="DOT" />' sa maling posisyon sa '<ph name="INVALIDDOMAIN" />.'</translation>
+<translation id="2068711044993563745">Dapat mas mababa sa maximum na value (<ph name="MAXIMUM" />) ang minimum na value (<ph name="MINIMUM" />).</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2226276347425096477">Mangyaring paikliin ang tekstong ito ng <ph name="MAX_CHARACTERS" /> (na) character o mas mababa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

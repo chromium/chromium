@@ -278,7 +278,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1530707389502320859">Izgleda da je web lokacija koju ste upravo htjeli posjetiti lažna. Napadači ponekad oponašaju web lokacije tako što naprave male, teško primjetne izmjene URL-a.</translation>
 <translation id="1532118530259321453">Na ovoj stranici piše</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
-<translation id="1537807545287921620">Taj PDF nije dostupan. Otvorite kontekstni izbornik i uključite opciju Izdvoji tekst iz PDF-a</translation>
+<translation id="1537807545287921620">Ovaj PDF je nedostupan. Otvorite kontekstni meni i uključite "izdvajanje teksta iz PDF-a"</translation>
 <translation id="1539840569003678498">Prijava je poslana:</translation>
 <translation id="1542105669288201090">Poslovno obrazovanje</translation>
 <translation id="1545757265410828525">Historija cijena</translation>
@@ -436,7 +436,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1842969606798536927">Plati</translation>
 <translation id="1846432862466000825">Plastika (arhivska)</translation>
 <translation id="1848982255014129637">Foto papir (visoki sjaj)</translation>
-<translation id="1853392626017747777">Registracija za virtualnu karticu je zatvorena</translation>
+<translation id="1853392626017747777">Registracija virtuelne kartice je zatvorena</translation>
 <translation id="1854180393107901205">Zaustavi emitiranje</translation>
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1856713167556118146">Šta anonimni način rada ne radi</translation>
@@ -473,7 +473,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1935995810530254458">Ipak kopiraj</translation>
 <translation id="1939175642807587452">Može tražiti da šalje obavještenja</translation>
-<translation id="1940441167050915935">Izbriši spremljene sigurnosne kodove</translation>
+<translation id="1940441167050915935">Izbriši sačuvane sigurnosne kodove</translation>
 <translation id="1943994668912612445">Dizajn</translation>
 <translation id="1945968466830820669">Možete izgubiti pristup računu svoje organizacije ili doživjeti krađu identiteta. Chromium preporučuje da odmah promijenite lozinku.</translation>
 <translation id="1946849748901605102">12 x 15 in</translation>
@@ -868,7 +868,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2803306138276472711">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne, ponekad se zaraze zlonamjernim softverom.</translation>
 <translation id="2807052079800581569">Y položaj slike</translation>
 <translation id="2808278141522721006">Možete uključiti ili isključiti Windows Hello u odjeljku <ph name="SETTINGS" /></translation>
-<translation id="2814184336982254349">Taj PDF nije dostupan. Pritisnite Pretraživanje i m da biste otvorili kontekstni izbornik i uključite opciju Izdvoji tekst iz PDF-a</translation>
+<translation id="2814184336982254349">Ovaj PDF je nedostupan. Da otvorite kontekstni meni i uključite "izdvajanje teksta iz PDF-a", pritisnite tipku za pretraživanje i M</translation>
 <translation id="2818338148457093657">Usluge ljepote i banje</translation>
 <translation id="2820957248982571256">Skeniranje...</translation>
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
@@ -1173,7 +1173,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3461266716147554923"><ph name="URL" /> želi vidjeti tekst i slike kopirane u međumemoriju</translation>
 <translation id="3461824795358126837">Alat za isticanje</translation>
 <translation id="3462200631372590220">Sakrij napredno</translation>
-<translation id="3465972433695735758">Taj PDF nije dostupan. Tekst je izdvojen uz pomoć Googleovog AI-ja</translation>
+<translation id="3465972433695735758">Ovaj PDF je nedostupan. Tekst je izdvojen uz pomoć Google AI-ja</translation>
 <translation id="346601286295919445">Hemija</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, trenutno otvoreno, pritisnite Tab, a zatim Enter da se prebacite na otvorenu karticu.</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da zatvorite sve anonimne prozore koji su trenutno otvoreni</translation>
@@ -1733,7 +1733,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4628948037717959914">Fotografija</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Usluga povrata novca je povezana</translation>
-<translation id="4631881646528206880">Registracija za virtualnu karticu</translation>
+<translation id="4631881646528206880">Registracija virtuelne kartice</translation>
 <translation id="4636930964841734540">Informacije</translation>
 <translation id="4638670630777875591">Anonimni način rada u Chromiumu</translation>
 <translation id="464342062220857295">Funkcije pretraživanja</translation>
@@ -1848,7 +1848,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4854853140771946034">Brzo kreirajte novu bilješku u Google Keepu</translation>
 <translation id="485902285759009870">Potvrda koda...</translation>
 <translation id="4862630594858951805">Želite primati e-poruke kada cijena bude niža?</translation>
-<translation id="4864406669374375262">Niz verzije kopiran je u međuspremnik</translation>
+<translation id="4864406669374375262">Niz s informacijama o verziji je kopiran u međumemoriju</translation>
 <translation id="486459320933704969">Roditelj ili staratelj mora reći da možeš posjetiti ovu web lokaciju</translation>
 <translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da prikažete kursor</translation>
 <translation id="4873616204573862158">Naočale</translation>
@@ -2915,7 +2915,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7102760431686146931">Pribor za kuhanje i ručavanje</translation>
 <translation id="7105998430540165694">Pristupni ključ s iCloud Keychaina</translation>
 <translation id="7106762743910369165">Preglednikom upravlja vaša organizacija</translation>
-<translation id="7107249414147762907">Taj PDF nije dostupan. Tekst nije izdvojen</translation>
+<translation id="7107249414147762907">Ovaj PDF je nedostupan. Nema izdvojenog teksta</translation>
 <translation id="7108338896283013870">Sakrij</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> želi koristiti vašu kameru</translation>
 <translation id="7108819624672055576">Dozvoljava ekstenzija</translation>
@@ -3538,7 +3538,7 @@ Dodatni detalji:
 <translation id="8339163506404995330">Stranice čiji je jezik <ph name="LANGUAGE" /> neće se prevoditi</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Ako razumijete rizike po vašu sigurnost, možete <ph name="BEGIN_LINK" />posjetiti ovu web lokaciju<ph name="END_LINK" /> prije uklanjanja štetnih programa.</translation>
-<translation id="8344776605855290140">Registracija za virtualnu karticu otvorena je u punoj visini</translation>
+<translation id="8344776605855290140">Registracija virtuelne kartice je otvorena u punoj visini</translation>
 <translation id="8347658365704983341">Učenje na daljinu</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
@@ -3928,7 +3928,7 @@ Dodatni detalji:
 <translation id="917450738466192189">Potvrda servera je nevažeća.</translation>
 <translation id="9174623988242579721">Vozila s prilagođenim performansama</translation>
 <translation id="9174917557437862841">Dugme za promjenu kartice. Pritisnite Enter da se prebacite na ovu karticu</translation>
-<translation id="9177283544810807743">Taj PDF nije dostupan. Izdvajanje teksta uz pomoć Googleovog AI-ja</translation>
+<translation id="9177283544810807743">Ovaj PDF je nedostupan. Izdvajanje teksta uz pomoć Google AI-ja</translation>
 <translation id="9179703756951298733">Upravljajte plaćanjima i informacijama o kreditnim karticama u postavkama Chromea</translation>
 <translation id="9179907736442194268">Primajte obavještenja putem e-pošte ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="9183302530794969518">Google Dokumenti</translation>

@@ -90,6 +90,7 @@
 <translation id="1293264513303784526">‏جهاز USB-C (المنفذ الأيسر)</translation>
 <translation id="1293556467332435079">ملفات</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">فتح تطبيق "استكشاف"</translation>
 <translation id="1294929383540927798">تغيير إعدادات الإشعارات لشاشة القفل</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1306549533752902673">تطبيقات مقترحة</translation>
@@ -389,6 +390,7 @@
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
 <translation id="2620016719323068571">البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
 <translation id="2620436844016719705">النظام</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="2621713457727696555">مؤمّنة</translation>
 <translation id="2624588537172718173">صوت الجهاز والميكروفون</translation>
 <translation id="263399434338050016">"اختيار الكل"</translation>
@@ -513,6 +515,7 @@
 <translation id="3161500364292033097">إغلاق سطح المكتب والنوافذ</translation>
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
 <translation id="3171170659304083361">إعدادات أساليب الإدخال</translation>
+<translation id="3176221688814061633">‏يتم حاليًا استخدام إصدار قديم من البلوتوث في جهاز Chromebook أو جهازك الذي يتضمّن بلوتوث. يمكنك تفعيل ميزة Bluetooth Super Resolution أو استخدام الميكروفون الداخلي للحصول على جودة صوت أفضل.</translation>
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
 <translation id="320207200541803018">ضبط موقِّت</translation>
@@ -526,7 +529,6 @@
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="324366796737464147">إلغاء الضجيج</translation>
 <translation id="3249513730522716925">تم نقل النافذة <ph name="WINDOW_TITLE" /> من سطح المكتب <ph name="ACTIVE_DESK" /> إلى سطح المكتب <ph name="TARGET_DESK" />.</translation>
-<translation id="3252573918265662711">الإعداد</translation>
 <translation id="3253743281242075461">نوع الواجب الدراسي: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">ما الإجراء المطلوب؟</translation>
 <translation id="3256109297135787951">إزالة التحديد عن عنصر على الرف</translation>
@@ -676,6 +678,7 @@
 <translation id="3781910048497807059">نقل التركيز إلى اللوحة السابقة</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="3789841737615482174">تثبيت</translation>
 <translation id="3796215473395753611">‏‫alt + السهم المتّجه للأعلى</translation>
 <translation id="3796746699333205839">أحد التطبيقات يستخدم الكاميرا والميكروفون.</translation>
 <translation id="3798670284305777884">سماعة (داخلية)</translation>
@@ -1480,7 +1483,6 @@
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="709015856939120012">تكبير الصفحة</translation>
-<translation id="7098053464892629930">‏يمكنك تنزيل التطبيق لـ <ph name="NAME" /> من Google Play للاطّلاع على جميع الميزات المتاحة.</translation>
 <translation id="7098389117866926363">‏جهاز USB-C (المنفذ الأيسر في الخلف)</translation>
 <translation id="7100906357717321275">إظهار الملفات المخفية في تطبيق "الملفات"</translation>
 <translation id="7108254681523785542">‏اختَر عنصرًا من أجل لصقه. ويمكنك الاطّلاع على الحافظة بالضغط على مفتاح ‎<ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
@@ -1501,6 +1503,7 @@
 <translation id="7189412385142492784">كم يبعد كوكب الزهرة؟</translation>
 <translation id="7198435252016571249">تم توجيه الكاميرا إلى الزاوية السفلية اليمنى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="7219573373513695352">ما مِن أجهزة متصلة.</translation>
+<translation id="7229029500464092426">الذاكرة المستخدمة: <ph name="AVAILABLE_MEMORY" /> | إجمالي الذاكرة: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. يجب إعادة تشغيل جهاز Chromebook لتطبيق التحديث. قد يستغرق هذا الإجراء مدة تصل إلى دقيقة واحدة.</translation>
 <translation id="7256634071279256947">الميكروفون الخلفي</translation>
 <translation id="7258828758145722155">تم تعديله أمس.</translation>
@@ -1526,6 +1529,7 @@
 <translation id="7360036564632145207">يمكن تحسين أداء الأجهزة الملحقة من خلال تغيير إعدادات الحماية من الوصول إلى البيانات.</translation>
 <translation id="736045644501761622">ضبط الخلفية والأسلوب</translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
+<translation id="7372069265635026568">مساحة الذاكرة المتوفّرة: <ph name="AVAILABLE_MEMORY" /> من إجمالي <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">يتيح هذا الإجراء وصول كل التطبيقات والمواقع الإلكترونية إلى الميكروفون من خلال منحها إذن استخدام الميكروفون.</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
 <translation id="7377481913241237033">الربط باستخدام رمز</translation>
@@ -1841,7 +1845,6 @@
 <translation id="8660331759611631213">الجذر التربيعي للعدد 71</translation>
 <translation id="8663756353922886599">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">‏اضغط على المفتاح Enter لالتقاط صورة لجزء من الشاشة</translation>
-<translation id="8666856788528804727">افتَح <ph name="NAME" /> لإعداد الجهاز</translation>
 <translation id="8676770494376880701">تمّ توصيل شاحن منخفض الطاقة</translation>
 <translation id="8683506306463609433">تتبّع الأداء نشط</translation>
 <translation id="8703634754197148428">‏بدأ التسجيل. بعد بدء التسجيل، يمكنك استخدام Alt + Shift + L للانتقال إلى الرف والبحث عن زر إيقاف التسجيل.</translation>

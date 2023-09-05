@@ -436,6 +436,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1842969606798536927">Betaal</translation>
 <translation id="1846432862466000825">Plastiek (argivalies)</translation>
 <translation id="1848982255014129637">Foto (glansryk)</translation>
+<translation id="1853392626017747777">Virtuele kaartinskrywing gesluit</translation>
 <translation id="1854180393107901205">Hou op uitsaai</translation>
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1856713167556118146">Wat Incognito nie doen nie</translation>
@@ -472,6 +473,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1924727005275031552">Nuut</translation>
 <translation id="1935995810530254458">Kopieer in elk geval</translation>
 <translation id="1939175642807587452">Kan vra om kennisgewings te stuur</translation>
+<translation id="1940441167050915935">Vee gestoorde sekuriteitskodes uit</translation>
 <translation id="1943994668912612445">Ontwerp</translation>
 <translation id="1945968466830820669">Jy kan toegang tot jou organisasie se rekening verloor of identiteitdiefstal ervaar. Chromium beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="1946849748901605102">12x15 dm.</translation>
@@ -1731,6 +1733,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Kontantterugbetaling is gekoppel</translation>
+<translation id="4631881646528206880">Virtuele kaartinskrywing</translation>
 <translation id="4636930964841734540">Inligting</translation>
 <translation id="4638670630777875591">Incognito in Chromium</translation>
 <translation id="464342062220857295">Soekkenmerke</translation>
@@ -1845,6 +1848,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4854853140771946034">Skep vinnig 'n nuwe nota in Google Keep</translation>
 <translation id="485902285759009870">Verifieer tans kode …</translation>
 <translation id="4862630594858951805">Wil jy e-posse kry wanneer die prys daal?</translation>
+<translation id="4864406669374375262">Weergawestring na knipbord gekopieer</translation>
 <translation id="486459320933704969">’n Ouer of voog moet sê dat dit aanvaarbaar is vir jou om hierdie webwerf te besoek</translation>
 <translation id="4866506163384898554">Druk |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om jou skermpyltjie te wys</translation>
 <translation id="4873616204573862158">Brille</translation>
@@ -3534,6 +3538,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8339163506404995330">Bladsye in <ph name="LANGUAGE" /> sal nie vertaal word nie</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">As jy die gevare vir jou veiligheid verstaan, kan jy <ph name="BEGIN_LINK" />hierdie werf besoek<ph name="END_LINK" /> voordat die skadelike programme verwyder is.</translation>
+<translation id="8344776605855290140">Virtuele kaartinskrywing is teen volle hoogte oopgemaak</translation>
 <translation id="8347658365704983341">Afstandsonderrig</translation>
 <translation id="8349305172487531364">Boekmerkebalk</translation>
 <translation id="8351131234907093545">Skep nota</translation>

@@ -232,6 +232,7 @@
 <translation id="2712812801627182647">TLS-Authentifizierungsschlüssel</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2717139507051041123">Dunklen Farbmodus aktivieren</translation>
+<translation id="2728460467788544679">Gesamten Druckverlauf löschen</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2744221223678373668">Freigegeben</translation>
 <translation id="2751739896257479635">EAP-Phase 2-Authentifizierung</translation>
@@ -707,6 +708,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
+<translation id="6461047516875166066">Weitere Informationen</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>

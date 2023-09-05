@@ -118,6 +118,7 @@
 <translation id="3008272652534848354">अनुमतियां रीसेट करें</translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
 <translation id="3069226013421428034">किसी साइट पर, तीसरे पक्ष के खाते से साइन इन करने की अनुमति दें.</translation>
+<translation id="3082992102194421695">{COUNT,plural, =1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिन में खत्म हो जाएगी}}</translation>
 <translation id="310297983047869047">पिछली स्लाइड</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
 <translation id="3114012059975132928">वीडियो प्लेयर</translation>

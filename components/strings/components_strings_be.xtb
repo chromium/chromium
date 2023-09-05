@@ -436,6 +436,7 @@
 <translation id="1842969606798536927">Аплаціць</translation>
 <translation id="1846432862466000825">Пластык архіўнай якасці</translation>
 <translation id="1848982255014129637">Высакаглянцавая фотапапера</translation>
+<translation id="1853392626017747777">Дыялогавае акно рэгістрацыі віртуальнай карткі закрыта</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1855370856221982654">Бокс</translation>
 <translation id="1856713167556118146">Чаго рэжым інкогніта не дае</translation>
@@ -472,6 +473,7 @@
 <translation id="1924727005275031552">Новая форма</translation>
 <translation id="1935995810530254458">Усё роўна капіраваць</translation>
 <translation id="1939175642807587452">Сайт можа запытваць дазвол на адпраўку апавяшчэнняў</translation>
+<translation id="1940441167050915935">Выдаліць захаваныя коды бяспекі</translation>
 <translation id="1943994668912612445">Дызайн</translation>
 <translation id="1945968466830820669">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="1946849748901605102">12 x 15 цаляў</translation>
@@ -1730,6 +1732,7 @@
 <translation id="4628948037717959914">Фота</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">З вяртаннем грошай</translation>
+<translation id="4631881646528206880">Дыялогавае акно рэгістрацыі віртуальнай карткі</translation>
 <translation id="4636930964841734540">Інфармацыя</translation>
 <translation id="4638670630777875591">Рэжым інкогніта ў браўзеры Chromium</translation>
 <translation id="464342062220857295">Функцыі пошуку</translation>
@@ -1844,6 +1847,7 @@
 <translation id="4854853140771946034">Хутка стварыць новую нататку ў Google Keep</translation>
 <translation id="485902285759009870">Ідзе спраўджанне кода…</translation>
 <translation id="4862630594858951805">Хочаце атрымліваць электронныя лісты пры зніжэнні цаны?</translation>
+<translation id="4864406669374375262">Радок з версіяй скапіраваны ў буфер абмену</translation>
 <translation id="486459320933704969">Адзін з бацькоў або законны прадстаўнік павінен даць дазвол на наведванне гэтага сайта</translation>
 <translation id="4866506163384898554">Націсніце "<ph name="ACCELERATOR1" />" + "<ph name="ACCELERATOR2" />", каб убачыць курсор</translation>
 <translation id="4873616204573862158">Акуляры</translation>
@@ -3534,6 +3538,7 @@
 <translation id="8339163506404995330">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Калі вы разумееце рызыкі бяспекі, можаце <ph name="BEGIN_LINK" />наведаць гэты сайт<ph name="END_LINK" /> да таго, як шкодныя праграмы будуць выдалены.</translation>
+<translation id="8344776605855290140">Дыялогавае акно рэгістрацыі віртуальнай карткі разгорнута на ўвесь экран</translation>
 <translation id="8347658365704983341">Дыстанцыйнае навучанне</translation>
 <translation id="8349305172487531364">Панэль закладак</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>

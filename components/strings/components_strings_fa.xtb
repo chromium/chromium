@@ -234,6 +234,7 @@
 <translation id="1432187715652018471">این صفحه می‌خواهد کنترل‌کننده سرویس نصب کند.</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
 <translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
+<translation id="1434317006812369578">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />بدافزار در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این بدافزار در سایتی که می‌خواهید بازدید کنید جاسازی شده است.</translation>
 <translation id="1435940442311036198">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1442386063175183758">سمت راست تاخوردگی دروازه‌ای</translation>
@@ -384,6 +385,7 @@
 <translation id="1732445923934584865">درعوض حضوری درخواست شود</translation>
 <translation id="1733064249834771892">قلم‌ها</translation>
 <translation id="1733631169686303142">تجهیزات صوتی</translation>
+<translation id="1733762317901693627">حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. فقط درصورتی از <ph name="BEGIN_LINK" />این سایت غیرایمن<ph name="END_LINK" /> بازدید کنید که مطمئن باشید خطرات آن را درک می‌کنید.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="1736420071277903564">رایانه</translation>
@@ -717,6 +719,7 @@
 <translation id="2480300195898055381">‏در «حساب Google» شما، <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="248348093745724435">خط‌مشی‌های ماشین</translation>
+<translation id="2490199669743245365">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید نرم‌افزار مضری نصب کنند که چیزهایی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری شما را به‌سرقت می‌برد یا حذف می‌کند. ‏Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">گواهی سرور دارای چندین خطاست.</translation>
 <translation id="2491414235131909199">این صفحه را یکی از افزونه‌ها مسدود کرده است</translation>
 <translation id="2495083838625180221">‏تجزیه‌کننده JSON</translation>
@@ -1051,6 +1054,7 @@
 <translation id="3216313131063488104">بلوز</translation>
 <translation id="3218181027817787318">خویشاوند</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{باید اکنون به‌روز شود}=2{باید تا فردا به‌روز شود}one{باید تا # روز دیگر به‌روز شود}other{باید تا # روز دیگر به‌روز شود}}</translation>
+<translation id="3218388919950135939">فقط درصورتی از <ph name="BEGIN_LINK" />این سایت غیرایمن<ph name="END_LINK" /> بازدید کنید که مطمئن باشید خطرات آن را درک می‌کنید.</translation>
 <translation id="3220264767789936523">لباس رسمی</translation>
 <translation id="3223287115535306850">نماد متحرک راه‌اندازی برنامه</translation>
 <translation id="3223425961342298674">مکان مجاز نیست</translation>
@@ -1337,6 +1341,7 @@
 <translation id="3772211998634047851">کاغذ (باند)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3778403066972421603">‏آیا می‌خواهید این کارت در حساب Google شما و این دستگاه ذخیره شود؟</translation>
+<translation id="378026377453746707">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />نرم‌افزار مخربی در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این نرم‌افزار مخرب در سایتی که می‌خواهید بازدید کنید جاسازی شده است.</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783418713923659662">مسترکارت</translation>
@@ -1348,6 +1353,7 @@
 <translation id="3795344968043407227">موسیقی آلترنانیو و مستقل</translation>
 <translation id="3799805948399000906">قلم درخواست شد</translation>
 <translation id="380329542618494757">نام</translation>
+<translation id="3806932344025766608">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزاری را نصب کنید یا چیزهایی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری را فاش کنید. ‏Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807270098669886186">ارائه‌دهنده خدمات تلفن</translation>
 <translation id="3807366285948165054">‏تغییر جهت تصویر حول محور X</translation>
 <translation id="3807873520724684969">محتوای مضر مسدود شد.</translation>
@@ -1413,6 +1419,7 @@
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3953505489397572035">این قیمت معمول است</translation>
 <translation id="3958057596965527988">۴ × ۴ اینچ</translation>
+<translation id="3959121317419633580">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />رمزگیری در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این رمزگیری در سایتی که می‌خواهید بازدید کنید جاسازی شده است.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">برگ کنترل‌کننده پرداخت نیمه‌باز است</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963721102035795474">حالت «خواننده»</translation>
@@ -1436,6 +1443,7 @@
 <translation id="401170183602135785">پاکت سی۶</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏سند PDF {COUNT} صفحه دارد}one{‏سند PDF {COUNT} صفحه دارد}other{‏سند PDF {COUNT} صفحه دارد}}</translation>
 <translation id="4014895360827978999">خدمات بازرگانی و سیستم‌های پرداخت</translation>
+<translation id="4018819349042761761">کلید عمومی</translation>
 <translation id="4023431997072828269">از آنجایی‌که این فرم درحال ارسال ازطریق اتصال ناامنی است، دیگران می‌توانند اطلاعات شما را ببینند.</translation>
 <translation id="4030383055268325496">&amp;واگرد افزودن</translation>
 <translation id="4030545038933060179">وقتی روشن باشد، فهرست موضوعات براساس سابقه مرور اخیرتان در اینجا نشان داده می‌شود</translation>
@@ -1612,6 +1620,7 @@
 <translation id="433013776994920042">میزبانی وب و ثبت دامنه</translation>
 <translation id="4331519897422864041">پشته‌ساز ۵</translation>
 <translation id="4331708818696583467">امن نیست</translation>
+<translation id="4333295216031073611">فهرست خرید</translation>
 <translation id="4333561522337981382">پنجره‌های همه نمایشگرهایتان را مدیریت کند</translation>
 <translation id="4340575312453649552">‏این آگهی از منابع زیادی برای دستگاهتان استفاده کرده بود، بنابراین Chrome آن را حذف کرد.</translation>
 <translation id="4340810192899866471">‏وارد کردن از JSON</translation>
@@ -1664,6 +1673,7 @@
 <translation id="4451684391620232683">نوشتار ارائه‌شده به کاربر:</translation>
 <translation id="4452328064229197696">‏گذرواژه‌ای که اکنون استفاده کردید مورد سرقت قرار گرفته است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="4464826014807964867">وب‌سایت‌های حاوی اطلاعات سازمان شما</translation>
+<translation id="4473643328224505070">‏برای دریافت بالاترین سطح امنیتی Chrome، <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />محافظت بهبودیافته را روشن کنید<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">این فرم ایمن نیست. تکمیل خودکار خاموش شده است.</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
@@ -2382,6 +2392,7 @@
 <translation id="5992805036496113940">دیدن اطلاعاتی که برای نمایش آگهی به شما استفاده می‌شود</translation>
 <translation id="5995727681868049093">‏مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»</translation>
 <translation id="5997247540087773573">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
+<translation id="5999271311987646952">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />بدافزار پیدا کرده است<ph name="END_LINK" />.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6002122790816966947">دستگاه‌های شما</translation>
 <translation id="6005659677094197001">پیوسته</translation>
@@ -2686,6 +2697,7 @@
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">تحصیلات رایانه</translation>
 <translation id="6633476656216409494">نرم‌افزار بهره‌وری و کسب‌وکار</translation>
+<translation id="6638353438328951386">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />نرم‌افزار مخرب پیدا کرده است<ph name="END_LINK" />.</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645291930348198241">به کوکی‌ها و داده‌های سایت دسترسی داشته باشد.</translation>
 <translation id="6645478838938543427">هشدارهای کاهش قیمت به <ph name="EMAIL_ADDRESS" /> ارسال خواهد شد</translation>
@@ -2881,6 +2893,7 @@
 <translation id="702146556168549005">‏نشانی وب صفحه‌هایی که بازدید می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. برای مثال، این نشانی‌ها ممکن است برای شناسایی وب‌سایت‌های غیرایمن اسکن شوند یا وب‌سایت‌ها براساس قوانینی که سرپرست تنظیم می‌کند فیلتر شوند.</translation>
 <translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="7023162328967545559">هشدار سرپرست</translation>
+<translation id="7024932305105294144">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند — مثل «مرور ایمن Google»، که اخیراً در سایتی که می‌خواهید بازدید کنید <ph name="BEGIN_LINK" />رمزگیری پیدا کرده است<ph name="END_LINK" />. سایت‌های رمزگیری وانمود می‌کنند که سایت‌های دیگری هستند تا شما را فریب دهند.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7030436163253143341">گواهی معتبر نیست</translation>
 <translation id="7031646650991750659">‏برنامه‌های Google Play که نصب کرده‌اید</translation>
@@ -2916,6 +2929,7 @@
 <translation id="7105998430540165694">‏گذرکلید از iCloud Keychain</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
 <translation id="7107249414147762907">‏این فایل PDF غیرقابل‌دسترس است. نوشتاری استخراج نشد</translation>
+<translation id="7107427078069498123">‏اثر انگشت SHA-256</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> می‌خواهد از دوربین شما استفاده کند</translation>
 <translation id="7108819624672055576">توسط افزونه مجاز شده است</translation>
@@ -3080,6 +3094,7 @@
 <translation id="7429429656042611765">اجرایی</translation>
 <translation id="7437289804838430631">افرودن اطلاعات تماس</translation>
 <translation id="7437490109271760224">بازی با ورق</translation>
+<translation id="7438338505272634288">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزار مضری را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد — برای مثال، با تغییر صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید. ‏Chrome اکیداً توصیه می‌کند برای جلوگیری از آسیب، به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">کاوش درحالت آفلاین</translation>
 <translation id="7441627299479586546">موضوع خط‌مشی اشتباه است</translation>
 <translation id="7441864845853794192">غذاهای لذیذ و ویژه</translation>
@@ -3406,6 +3421,7 @@
 <translation id="8078006011486731853">{0,plural, =1{فایل محرمانه بارگذاری شود؟}one{فایل محرمانه بارگذاری شود؟}other{فایل‌های محرمانه بارگذاری شود؟}}</translation>
 <translation id="8078141288243656252">در حالت چرخش نمی‌توان حاشیه‌نویسی کرد</translation>
 <translation id="8079031581361219619">سایت بار کردن مجدد شود؟</translation>
+<translation id="8079976827192572403">سایت خطرناک</translation>
 <translation id="8081087320434522107">سدان</translation>
 <translation id="8086971161893892807">پیش‌نویس</translation>
 <translation id="8088680233425245692">مشاهده مقاله ناموفق بود.</translation>
@@ -3688,6 +3704,7 @@
 <translation id="8680536109547170164"><ph name="QUERY" />، پاسخ، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">صفحه وب در <ph name="PAGE" /> نمی‌تواند بارگیری شود، زیرا:</translation>
 <translation id="8686424632716064939">امنیت رایانه</translation>
+<translation id="8687278439622293018">ورودی <ph name="ENTRY_VOICEOVER" /> حذف شده است</translation>
 <translation id="8687429322371626002">دستگاه و حسابتان توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="868922510921656628">صفحه‌های هر مجموعه</translation>
@@ -3899,6 +3916,7 @@
 <translation id="9128870381267983090">اتصال به شبکه</translation>
 <translation id="9131119348384879525">محتوای محرمانه ضبط شود؟</translation>
 <translation id="9133985615769429248">اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، می‌توانید هنگام استفاده از گذرواژه‌های ذخیره‌شده، از قفل صفحه خود برای تأیید هویتتان استفاده کنید</translation>
+<translation id="913552870853451045"><ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS" />، کارت مجازی</translation>
 <translation id="9136861683332321024">وسایل نقلیه گران‌قیمت</translation>
 <translation id="9137013805542155359">نمایش مورد اصلی</translation>
 <translation id="9137248913990643158">‏لطفاً پیش از استفاده از این برنامه، Chrome را باز کنید و به سیستم آن وارد شوید.</translation>

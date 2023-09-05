@@ -106,9 +106,6 @@
       如果此政策设为 true，系统将会报告设备的背光信息。</translation>
 <translation id="1076751984131277498">分离式 USB 设备许可名单</translation>
 <translation id="1077675271127011209">禁止报告与使用情况和崩溃情况相关的数据</translation>
-<translation id="1079425471279127373">通过设置此政策，您可以使用 Device Attributes API 允许强制安装的 Web 应用的某些来源获取设备属性（例如序列号、主机名）。
-
-      Device Attributes API 是一个 Web API 列表，请参阅 https://wicg.github.io/WebApiDevice/device_attributes。这些 API 仅适用于通过 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 强制安装的 Web 应用或在自助服务终端会话中配置的应用所对应的来源。</translation>
 <translation id="1079498696402787191">使用已允许在 TLS 握手时使用的哈希的默认值。</translation>
 <translation id="1079801999187584280">禁止使用开发者工具</translation>
 <translation id="1082802595100075771">允许用户选择使用匿名 Google 服务为无标签图片提供自动说明</translation>
@@ -368,6 +365,9 @@
 <translation id="1312799700549720683">控制显示设置。</translation>
 <translation id="131353325527891113">在登录屏幕上显示用户名</translation>
 <translation id="1317658068839330898">不允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
+<translation id="1325547947664414578">当用户在 <ph name="PRODUCT_OS_NAME" /> 设备之间切换时，<ph name="PRODUCT_NAME" />服务会在新设备上启动上次所用设备上的浏览器窗口和应用窗口。
+如果此政策已启用，系统会在登录时自动启动当前用户上次所用 <ph name="PRODUCT_OS_NAME" /> 设备上的浏览器窗口和应用窗口。
+如果此政策已停用或未设置，登录时要启动什么将取决于完全恢复设置。</translation>
 <translation id="1327466551276625742">离线时，弹出网络配置提示</translation>
 <translation id="1330145147221172764">启用屏幕键盘</translation>
 <translation id="13356285923490863">政策名称</translation>
@@ -947,6 +947,7 @@
 
       如果此政策未配置，任何用户都能登录设备。请注意，倘若涉及到创建新用户，您仍需适当配置 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。
       如果 <ph name="DEVICE_FAMILY_LINK_ACCOUNTS_ALLOWED_POLICY_NAME" /> 已启用，除了此政策中指定的账号之外，Family Link 用户也能登录设备。</translation>
+<translation id="18186215616223740">找到由<ph name="BASIC_EDITOR_NAME" />处理的 Office 文档后，强制下载它们</translation>
 <translation id="1819272352048746487">启用或停用各种屏幕键盘功能</translation>
 <translation id="1823974945066396306">以列表形式指定哪些用户能登录该设备。条目应采用 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> 格式，例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />。若要允许某个网域上的任意用户登录该设备，请使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式的条目。
 
@@ -1045,6 +1046,7 @@
 
       请注意：<ph name="OCSP_CRL_LABEL" /> 检查并不能有效增强安全性。</translation>
 <translation id="1905061765326052857">不允许独立用户使用所需的虚拟机来支持 Linux 应用</translation>
+<translation id="1906871416501278476">停用<ph name="PRODUCT_NAME" />服务，且登录时不启动远程桌面</translation>
 <translation id="1907696459350079081">不为登录屏幕启用屏保。</translation>
 <translation id="1910704279188129272">让您能够设置应用级使用限制。
         使用限制可以针对给定用户应用于 <ph name="PRODUCT_OS_NAME" />上安装的应用。
@@ -2424,6 +2426,7 @@
 <translation id="3136550518935590587">自动授权这些网站在登录界面上连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="3138514192363246220">停用页面加载元数据提取功能和用以提升浏览体验的机器学习模型</translation>
 <translation id="3142410959002029864">通过设置此政策，您可以替换默认双面打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
+<translation id="3143203373436771188">找到由<ph name="BASIC_EDITOR_NAME" />处理的 Office 文档后，在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
 <translation id="3144173889708944482">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="3146711617256415776">不允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
 <translation id="3150351525324499342">默认情况下不在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标，但允许用户选择是否显示</translation>
@@ -5904,6 +5907,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6284362063448764300">TLS 1.1</translation>
 <translation id="6287128640500683781">允许任何用户登录</translation>
 <translation id="6287310684159482272">Cookie 设置</translation>
+<translation id="6287742528823584153">启用<ph name="PRODUCT_NAME" />服务，且登录时启动远程桌面</translation>
 <translation id="6299147100249359151">允许检测政策范围。</translation>
 <translation id="6299554629216555326">窗口管理设置</translation>
 <translation id="6300871921951390976">如果此政策设为 True，用户只能更改设备的发布版本。如果此政策设为 False 或未设置，用户将无法更改版本。
@@ -6575,7 +6579,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用，系统会从工具栏中移除浏览器实验性功能图标。
 
       无论此政策是已启用还是已停用，chrome://flags 和任何其他可用于开启和关闭浏览器功能的方法都能正常起作用。</translation>
-<translation id="6794083666143216172">允许来源查询设备属性</translation>
 <translation id="6795485990775913659">仅允许在没有 PIN 码的情况下打印</translation>
 <translation id="6796215185873669533">将 User-Agent 字符串版本默认设为浏览器设置。</translation>
 <translation id="6800111968763383631">默认拒绝向所有网站授予 MIDI 权限</translation>

@@ -13,7 +13,7 @@
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="1511320244449497906">Prijavljeni ste na račun i sinhronizirate podatke s računom kojim upravlja domena <ph name="DOMAIN" /> čiji administrator sada može postaviti korisnička pravila posebno za taj račun koja mogu promijeniti ponašanje Chromea.</translation>
-<translation id="1516692594929310090">Otvara rešetku kartica u Chromeu.</translation>
+<translation id="1516692594929310090">Otvaranje mreže kartica u Chromeu.</translation>
 <translation id="1526327845902180576">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomažete da Chrome postane bolji za osobe koje ga koriste na isti način kao vi.<ph name="END_INDENT" />
 
@@ -135,7 +135,7 @@ Stvari za razmatranje:
 
 Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz. Pristupni izraz se ne šalje Googleu niti ga Google pohranjuje. Ako zaboravite pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo kasnije.</translation>
-<translation id="6916015246697034114">Glasovno pretraživanje u Chromeu</translation>
+<translation id="6916015246697034114">Pretražujte glasom u Chromeu</translation>
 <translation id="6964931465519938134">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6975725306479268850">Odaberite Chrome za automatsko popunjavanje</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
@@ -152,7 +152,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7400722733683201933">O Google Chromeu</translation>
 <translation id="7501046334262221972">Da postavite Chrome kao zadani preglednik, otvorite Postavke. Dodirnite Zadana aplikacija preglednika, a zatim odaberite Chrome.</translation>
 <translation id="756809126120519699">Chromeovi podaci su obrisani</translation>
-<translation id="7581063337314642333">Otvaranje rešetke kartica u Chromeu</translation>
+<translation id="7581063337314642333">Otvorite mrežu kartica u Chromeu</translation>
 <translation id="7662994914830945754">Da vidite svoje kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se i uključite sinhronizaciju</translation>
 <translation id="7669869107155339016">Idite u Postavke Chromea.</translation>
 <translation id="7693590760643069321">Sada možete koristiti Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -160,13 +160,13 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="7754633291442704733">Vaša organizacija <ph name="DOMAIN" /> će imati pristup podacima Chromea, oznakama, historiji, lozinkama i drugim postavkama koje pohranjujete na ovom računu Kada se odjavite, vaši podaci će biti obrisani s ovog uređaja.  Međutim, vaši podaci će ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija također može postaviti pravila za korisnike koja su specifična za taj račun koja mogu promijeniti ponašanje Chromea.</translation>
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
-<translation id="7897703007638178753">Prikaz nedavnih kartica u Chromeu</translation>
-<translation id="7925119591961387184">Odaberite Chrome.</translation>
+<translation id="7897703007638178753">Pogledajte nedavne kartice u Chromeu</translation>
+<translation id="7925119591961387184">Odaberite "Chrome".</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="804638182476029347">Dozvolite obavještenja Chromea da dobijate obavještenja o padu cijena</translation>
 <translation id="81358522153858150">Chrome sada podržava korisnička pravila za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
-<translation id="8174679664544842874">Otvara novu karticu u Chromeu.</translation>
+<translation id="8174679664544842874">Otvaranje nove kartice u Chromeu.</translation>
 <translation id="8213758103105806860">Prikazivanje oznaka u Chromeu</translation>
 <translation id="8357607116237445042">Odaberite želite li obrisati podatke Chromea s ovog uređaja ili ih želite zadržati</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
@@ -180,10 +180,10 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8587647598504233556">Dodirnite Chrome, a zatim Zadana aplikacija preglednika.</translation>
+<translation id="8587647598504233556">Dodirnite "Chrome", a zatim "Zadana aplikacija preglednika".</translation>
 <translation id="8603022514504485810">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
-<translation id="8760668027640688122">Otvaranje nove kartice u Chromeu</translation>
+<translation id="8760668027640688122">Otvorite novu karticu u Chromeu</translation>
 <translation id="8765470054473112089">Kad pišete u traci za adresu ili u okviru za pretraživanje, Chrome šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
@@ -203,5 +203,5 @@ Stvari za razmatranje:
   • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
-<translation id="9181628561061032322">Otvara nedavne kartice u Chromeu.</translation>
+<translation id="9181628561061032322">Otvaranje nedavne kartice u Chromeu.</translation>
 </translationbundle>

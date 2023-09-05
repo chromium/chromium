@@ -234,6 +234,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicka på Google Lösenordshantering</translation>
 <translation id="5098668839038261629">När inställningen är aktiverad loggas du också ut från Chrome</translation>
+<translation id="5126049312684316860">Chrome läser in ännu fler sidor i förväg som du troligen kommer att besöka, så att de läses in snabbare när du besöker dem</translation>
 <translation id="5132929315877954718">Upptäck fantastiska program, spel, tillägg och teman för Google Chrome.</translation>
 <translation id="5139423532931106058">Anpassa din Chrome-profil</translation>
 <translation id="5163087008893166964">Välkommen till Chrome, ett nytt webbläsarfönster har öppnats</translation>
@@ -243,6 +244,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="521447420733633466">Om du delar en enhet med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
 <translation id="5239627039202700673">Använd Chrome varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5251420635869119124">Gäster kan använda Chrome utan att lämna spår.</translation>
+<translation id="5320351714793324716">Om du tillåter cookies kan Chrome använda dem när innehåll läses in i förväg</translation>
 <translation id="5334309298019785904">Det gick inte att synkronisera data med Chrome OS eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="5334487786912937552">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="5337648990166757586">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome OS.</translation>

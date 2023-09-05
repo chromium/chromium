@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">已切换到镜像</translation>
 <translation id="2031987842108996681">红色通道</translation>
 <translation id="2060505056492490888">“<ph name="INVALIDDOMAIN" />”中“<ph name="DOT" />”的位置不正确。</translation>
+<translation id="2068711044993563745">最小值 (<ph name="MINIMUM" />) 必须小于最大值 (<ph name="MAXIMUM" />)。</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2226276347425096477">请将该文本减少为 <ph name="MAX_CHARACTERS" /> 个字符或更少（您当前使用了 <ph name="CURRENT_LENGTH" /> 个字符）。</translation>
 <translation id="2247351761944213033"><ph name="YEAR" /> 年第 <ph name="WEEKNUMBER" /> 周</translation>

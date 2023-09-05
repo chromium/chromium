@@ -433,6 +433,7 @@
 <translation id="1842969606798536927">Paiement</translation>
 <translation id="1846432862466000825">Plastique (archives)</translation>
 <translation id="1848982255014129637">Photo (haute brillance)</translation>
+<translation id="1853392626017747777">L'inscription de la carte virtuelle est terminée</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
 <translation id="1855370856221982654">Boxe</translation>
 <translation id="1856713167556118146">Ce que la navigation privée ne permet pas</translation>
@@ -468,6 +469,7 @@
 <translation id="1924727005275031552">Nouvelles</translation>
 <translation id="1935995810530254458">Copier quand même</translation>
 <translation id="1939175642807587452">Les sites peuvent demander à envoyer des notifications</translation>
+<translation id="1940441167050915935">Supprimer les codes de sécurité enregistrés</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'un vol d'identité. Chromium recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1946849748901605102">12 po x 15 po</translation>
@@ -1227,6 +1229,7 @@
 <translation id="36224234498066874">Effacer données navigation…</translation>
 <translation id="362276910939193118">Afficher l'historique complet</translation>
 <translation id="3624292976554877583">Étiquettes (mat)</translation>
+<translation id="3625929652356389713">Peut demander d'ouvrir automatiquement les fenêtres d'incrustation d'image</translation>
 <translation id="3628905806504633297">{0,plural, =1{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de transférer ce fichier vers <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de transférer ces fichiers vers <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3630155396527302611">Si la page est déjà répertoriée comme étant un programme autorisé à accéder
     au réseau, essayez de la supprimer de la liste, puis de la rajouter.</translation>
@@ -1360,6 +1363,7 @@
 <translation id="388632593194507180">Surveillance détectée</translation>
 <translation id="3886948180919384617">Empileur 3</translation>
 <translation id="3890664840433101773">Ajouter une adresse de courriel</translation>
+<translation id="3893306401511601929">Incrustation d'image automatique</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3901925938762663762">La carte a expiré.</translation>
 <translation id="390391808978419508">L'ouverture a dépassé le délai</translation>
@@ -1707,6 +1711,7 @@
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4629370161347991046">A4 x 6</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
+<translation id="4631881646528206880">Inscription de la carte virtuelle</translation>
 <translation id="4636930964841734540">Renseignements</translation>
 <translation id="4638670630777875591">Navigation privée dans Chromium</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
@@ -1821,6 +1826,7 @@
 <translation id="4854853140771946034">Créer rapidement une note dans Google Keep</translation>
 <translation id="485902285759009870">Vérification du code en cours…</translation>
 <translation id="4862630594858951805">Vous souhaitez recevoir des courriels lorsque les prix baissent?</translation>
+<translation id="4864406669374375262">Chaîne de version copiée dans le presse-papiers</translation>
 <translation id="486459320933704969">Un parent ou un tuteur doit indiquer que tu as l'autorisation de consulter ce site Web</translation>
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour afficher votre curseur</translation>
 <translation id="4873616204573862158">Lunettes</translation>
@@ -2133,6 +2139,7 @@
 <translation id="5512812358367123529">Mobilier de bureau</translation>
 <translation id="5513528801833998679">Utiliser la connexion à l'appareil</translation>
 <translation id="5515388687005870733">55 mm x 85 mm</translation>
+<translation id="5516095341424241911">Utilisation de la technologie de sécurité de Google pour sécuriser vos renseignements de paiement en cours…</translation>
 <translation id="5518670652865028077">Arts et divertissement</translation>
 <translation id="5519516356611866228">Avec vos modifications</translation>
 <translation id="5519696598216267194">Papier (préperforé)</translation>
@@ -3491,6 +3498,7 @@ Détails supplémentaires :
 <translation id="8339163506404995330">Les pages en <ph name="LANGUAGE" /> ne seront pas traduites</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />vous rendre sur ce site<ph name="END_LINK" /> avant que les programmes malveillants aient été supprimés.</translation>
+<translation id="8344776605855290140">L'inscription à la carte virtuelle est ouverte à pleine hauteur</translation>
 <translation id="8347658365704983341">Apprentissage à distance</translation>
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8351131234907093545">Créer une note</translation>
@@ -3936,5 +3944,6 @@ Détails supplémentaires :
     &lt;li&gt;Essayez de vous connecter à un autre réseau&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">incrustation d'image automatique</translation>
 <translation id="997986563973421916">De Google Pay</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Nastavi instalaciju</translation>
 <translation id="1029669172902658969">Ponovo pokreni da bi se &amp;Chromium OS ažurirao</translation>
 <translation id="1040916596585577953">Chromium preporučuje da pregledate ovaj dodatak</translation>
+<translation id="1042552502243217427">Kada sajt zatraži da privatno predučitava linkove na stranici, Chromium koristi Google servere. Na taj način se vaš identitet krije od predučitanog sajta, ali Google saznaje koji sajtovi su unapred učitani.</translation>
 <translation id="1065672644894730302">Podešavanja ne mogu da se pročitaju.
 
 Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.</translation>
@@ -131,6 +132,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="3713809861844741608">Otvori link u novoj Chromium &amp;kartici</translation>
 <translation id="378917192836375108">Chromium vam omogućava da kliknete na broj telefona na vebu i da ga pozovete pomoću Skype-a!</translation>
 <translation id="3790262771324122253">Saznajte zašto Chromium blokira neka preuzimanja</translation>
+<translation id="3802055581630249637">Chromium predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
 <translation id="3830894615770080216">Sistem Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pronađite pomoć za Chromium OS</translation>
@@ -241,6 +243,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="6132897690380286411">Chromium će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="6134968993075716475">Bezbedno pregledanje je isključeno. Chromium preporučuje da ga uključite.</translation>
 <translation id="6145820983052037069">Ovde možete da prelazite sa jednog Chromium profila na drugi</translation>
+<translation id="615103374448673771">Ako dozvolite kolačiće, Chromium može da ih koristi kada predučitava stranice</translation>
 <translation id="6175304430031192654">U zavisnosti od podešavanja, Chromium može da šalje i kolačiće i aktuelni URL</translation>
 <translation id="6183079672144801177">Uverite se da ste prijavljeni u Chromium na uređaju <ph name="TARGET_DEVICE_NAME" /> i probajte da pošaljete ponovo.</translation>
 <translation id="6212496753309875659">Ovaj računar već ima noviju verziju Chromium-a. Ako softver ne funkcioniše, deinstalirajte Chromium i pokušajte ponovo.</translation>
@@ -265,6 +268,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="6400112897226594999">Chromium logotip na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je veb pregledač koji pokreće veb-stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za korišćenje. Pregledajte Veb bezbednije sa zaštitom od malvera i „pecanja“ koja je ugrađena u Chromium.</translation>
 <translation id="6442900851116057561">Restartujte Chromium OS</translation>
+<translation id="6443470774889161065">Chromium predučitava još više stranica koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite</translation>
 <translation id="6455857529632101747">Dobro došli u Chromium profile</translation>
 <translation id="6475912303565314141">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium.</translation>
 <translation id="648319183876919572">Poboljšano bezbedno pregledanje doprinosi zaštiti od opasnih veb-sajtova i preuzimanja</translation>

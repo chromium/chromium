@@ -221,6 +221,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1413407968866574823">Lojërat aksion dhe në platformë</translation>
 <translation id="1413809658975081374">Gabim i privatësisë</translation>
 <translation id="1414134146594747368">Parashkollorë</translation>
+<translation id="141826476809826269">Fundi i tekstit të nxjerrë</translation>
 <translation id="1419305130220238697">Butoni "Menaxho shkarkimet në Chrome". Aktivizoje për të menaxhuar skedarët që ke shkarkuar në Chrome</translation>
 <translation id="1422930527989633628">Mund të kërkojë të zbulojë pajisjet me Bluetooth në afërsi</translation>
 <translation id="1426410128494586442">Po</translation>
@@ -277,6 +278,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1530707389502320859">Sajti ku sapo u përpoqe të hyje duket i rremë. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
 <translation id="1532118530259321453">Kjo faqe thotë</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
+<translation id="1537807545287921620">Kjo PDF është e paarritshme. Hap menynë kontekstuale dhe aktivizo "nxirr tekstin nga skedari PDF"</translation>
 <translation id="1539840569003678498">Raporti u dërgua:</translation>
 <translation id="1542105669288201090">Edukim për biznesin</translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
@@ -434,6 +436,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1842969606798536927">Paguaj</translation>
 <translation id="1846432862466000825">Plastikë (arkivore)</translation>
 <translation id="1848982255014129637">Fotografi (me shumë shkëlqim)</translation>
+<translation id="1853392626017747777">Regjistrimi i kartës virtuale u mbyll</translation>
 <translation id="1854180393107901205">Ndalo transmetimin</translation>
 <translation id="1855370856221982654">Boksi</translation>
 <translation id="1856713167556118146">Çfarë nuk bën modaliteti "I fshehtë"</translation>
@@ -470,6 +473,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1924727005275031552">I ri</translation>
 <translation id="1935995810530254458">Kopjo gjithsesi</translation>
 <translation id="1939175642807587452">Mund të kërkojë të dërgojë njoftime</translation>
+<translation id="1940441167050915935">Fshi kodet e ruajtura të sigurisë</translation>
 <translation id="1943994668912612445">Dizajni</translation>
 <translation id="1945968466830820669">Mund të humbasësh qasjen në llogarinë e organizatës ose mund të pësosh vjedhje të identitetit. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="1946849748901605102">12 x 15 inç</translation>
@@ -864,6 +868,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2803306138276472711">Kohët e fundit "Shfletimi i sigurt me Google" <ph name="BEGIN_LINK" />zbuloi softuerin keqdashës<ph name="END_LINK" /> në <ph name="SITE" />. Faqet që zakonisht janë të sigurta ndonjëherë infektohen me softuerë keqdashës.</translation>
 <translation id="2807052079800581569">Pozicioni i imazhit në boshtin Y</translation>
 <translation id="2808278141522721006">Mund ta aktivizosh ose çaktivizosh Windows Hello te "<ph name="SETTINGS" />"</translation>
+<translation id="2814184336982254349">Kjo PDF është e paarritshme. Shtyp kërko + m për të hapur menynë kontekstuale dhe aktivizo "nxirr tekstin nga skedari PDF"</translation>
 <translation id="2818338148457093657">Shërbime estetike dhe llixha</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
 <translation id="2824775600643448204">Shiriti i adresës dhe i kërkimit</translation>
@@ -1168,6 +1173,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3461266716147554923"><ph name="URL" /> dëshiron të shikojë tekstin dhe imazhet e kopjuara te kujtesa e fragmenteve</translation>
 <translation id="3461824795358126837">Theksuesi</translation>
 <translation id="3462200631372590220">Fshih të përparuarat</translation>
+<translation id="3465972433695735758">Kjo PDF është e paarritshme. Teksti u nxor, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="346601286295919445">Kimia</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> - aktualisht e hapur. Shtyp "Tab" dhe më pas "Enter" për të kaluar te skeda e hapur</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të mbyllur të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
@@ -1185,6 +1191,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="350069200438440499">Emri i dosjes:</translation>
 <translation id="3501300228850242680">Muzikë metal</translation>
 <translation id="350421688684366066">Etiketa (me shumë shkëlqim)</translation>
+<translation id="350763432931695541">Po nxirret teksti në faqet vijuese</translation>
 <translation id="3507869775212388416">Punë në sektorin ligjor</translation>
 <translation id="3507936815618196901">Të krijojë një hartë 3D të ambientit tënd rrethues dhe të gjurmojë pozicionin e kamerës</translation>
 <translation id="3512163584740124171">Kjo politikë shpërfillet pasi një politikë tjetër nga i njëjti grup politikash ka përparësi më të lartë.</translation>
@@ -1726,6 +1733,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4628948037717959914">Fotografia</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Oferta e kthimit të parave është e lidhur</translation>
+<translation id="4631881646528206880">Regjistrimi i kartës virtuale</translation>
 <translation id="4636930964841734540">Informacion</translation>
 <translation id="4638670630777875591">Modaliteti "I fshehtë" në Chromium</translation>
 <translation id="464342062220857295">Veçoritë e kërkimit</translation>
@@ -1840,6 +1848,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4854853140771946034">Krijo shpejt një shënim të ri në Google Keep</translation>
 <translation id="485902285759009870">Po verifikon kodin...</translation>
 <translation id="4862630594858951805">Dëshiron të marrësh email-e kur të ulet çmimi?</translation>
+<translation id="4864406669374375262">Vargu i versionit u kopjua te kujtesa e fragmenteve</translation>
 <translation id="486459320933704969">Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë sajt uebi</translation>
 <translation id="4866506163384898554">Shtyp |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| për të shfaqur kursorin</translation>
 <translation id="4873616204573862158">Syze</translation>
@@ -2849,6 +2858,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978236010531171013">Ndaj gjithsesi</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
+<translation id="6979332652936434520">Fillimi i tekstit të nxjerrë</translation>
 <translation id="6979440798594660689">Heshtje (e parazgjedhur)</translation>
 <translation id="6987806006823772670">Zarf (i veshur)</translation>
 <translation id="6989763994942163495">Trego cilësimet e përparuara...</translation>
@@ -2904,6 +2914,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7102760431686146931">Enë gatimi dhe artikuj tavoline</translation>
 <translation id="7105998430540165694">Çelësi i kalimit nga iCloud Keychain</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
+<translation id="7107249414147762907">Kjo PDF është e paarritshme. Nuk është nxjerrë asnjë tekst</translation>
 <translation id="7108338896283013870">Fshih</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kërkon të përdorë kamerën</translation>
 <translation id="7108819624672055576">Lejuar nga një shtesë</translation>
@@ -3526,6 +3537,7 @@ Detaje shtesë:
 <translation id="8339163506404995330">Faqet në <ph name="LANGUAGE" /> nuk do të përkthehen</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë sajt<ph name="END_LINK" /> para se të jenë hequr programet e dëmshme.</translation>
+<translation id="8344776605855290140">Regjistrimi i kartës virtuale u hap në lartësi të plotë</translation>
 <translation id="8347658365704983341">Mësimi në distancë</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
 <translation id="8351131234907093545">Krijo një shënim</translation>
@@ -3915,6 +3927,7 @@ Detaje shtesë:
 <translation id="917450738466192189">Certifikata e serverit është e pavlefshme.</translation>
 <translation id="9174623988242579721">Automjetet e personalizuara dhe të performancës</translation>
 <translation id="9174917557437862841">Butoni i ndërrimit të skedës, shtyp "Enter" për të kaluar te kjo skedë</translation>
+<translation id="9177283544810807743">Kjo PDF është e paarritshme. Teksti po nxirret, mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="9179703756951298733">Menaxho informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
 <translation id="9179907736442194268">Merr sinjalizime me email nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="9183302530794969518">Dokumentet e Google</translation>

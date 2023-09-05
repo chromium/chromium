@@ -221,6 +221,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1413407968866574823">Hasar- og hoppleikir</translation>
 <translation id="1413809658975081374">Persónuverndarvilla</translation>
 <translation id="1414134146594747368">Leikskóli</translation>
+<translation id="141826476809826269">Lok útdregins texta</translation>
 <translation id="1419305130220238697">Hnappurinn „Stjórna niðurhali í Chrome“, virkjaðu til að stjórna skrám sem þú hefur sótt í Chrome</translation>
 <translation id="1422930527989633628">Getur beðið um að finna nálæg Bluetooth-tæki</translation>
 <translation id="1426410128494586442">Já</translation>
@@ -277,6 +278,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1530707389502320859">Vefsvæðið sem þú varst að reyna að opna virðist vera falskt. Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera litlar og illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="1532118530259321453">Þessi síða segir</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
+<translation id="1537807545287921620">Ekki er hægt að opna þetta PDF-skjal. Opnaðu efnisvalmyndina og kveiktu á „Draga út texta úr PDF-skjali“</translation>
 <translation id="1539840569003678498">Skýrsla send:</translation>
 <translation id="1542105669288201090">Viðskiptafræðimenntun</translation>
 <translation id="1545757265410828525">Verðferill</translation>
@@ -866,6 +868,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2803306138276472711">Örugg vefnotkun Google <ph name="BEGIN_LINK" />greindi nýlega spilliforrit<ph name="END_LINK" /> á <ph name="SITE" />. Vefsvæði sem allajafna eru örugg smitast stundum af spilliforritum.</translation>
 <translation id="2807052079800581569">Y-staðsetning myndar</translation>
 <translation id="2808278141522721006">Þú getur kveikt eða slökkt á Windows Hello í <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Ekki er hægt að opna þetta PDF-skjal. Ýttu á leitarlykilinn og m til að opna efnisvalmynd og kveikja á „Draga út texta úr PDF-skjali“</translation>
 <translation id="2818338148457093657">Snyrtiþjónusta og heilsulindir</translation>
 <translation id="2820957248982571256">Leitar...</translation>
 <translation id="2824775600643448204">Veffanga- og leitarstika</translation>
@@ -1170,6 +1173,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3461266716147554923"><ph name="URL" /> vill sjá texta og myndir sem þú afritar á klippiborðið.</translation>
 <translation id="3461824795358126837">Yfirstrikun</translation>
 <translation id="3462200631372590220">Fela ítarlegar upplýsingar</translation>
+<translation id="3465972433695735758">Ekki er hægt að opna þetta PDF-skjal. Texti dreginn út í krafti gervigreindar Google</translation>
 <translation id="346601286295919445">Efnafræði</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, opinn, ýttu á flipann og færslulykilinn til að skipta yfir í opinn flipa</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo Enter til að loka öllum huliðsgluggum sem eru opnir</translation>
@@ -1187,6 +1191,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="350069200438440499">Skráarheiti:</translation>
 <translation id="3501300228850242680">Þungarokk</translation>
 <translation id="350421688684366066">Merkimiðar (háglans)</translation>
+<translation id="350763432931695541">Dregur út texta á næstu síðum</translation>
 <translation id="3507869775212388416">Störf innan lögfræði</translation>
 <translation id="3507936815618196901">Búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
 <translation id="3512163584740124171">Þessi regla er hunsuð vegna þess að önnur regla úr sama regluhópi hefur meiri forgang.</translation>
@@ -2854,6 +2859,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6973988895180423160">3,5 x 5 to.</translation>
 <translation id="6978236010531171013">Deila samt</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Upphaf útdregins texta</translation>
 <translation id="6979440798594660689">Slökkva á hljóði (sjálfgefið)</translation>
 <translation id="6987806006823772670">Umslag (húðað)</translation>
 <translation id="6989763994942163495">Sýna ítarlegar stillingar...</translation>
@@ -2909,6 +2915,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7102760431686146931">Eldhúsáhöld og borðbúnaður</translation>
 <translation id="7105998430540165694">Aðgangslykill úr iCloud Keychain</translation>
 <translation id="7106762743910369165">Vafranum er stjórnað af fyrirtækinu þínu</translation>
+<translation id="7107249414147762907">Ekki er hægt að opna þetta PDF-skjal. Enginn texti dreginn út</translation>
 <translation id="7108338896283013870">Fela</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> vill fá að nota myndavélina</translation>
 <translation id="7108819624672055576">Leyft af viðbót</translation>
@@ -3921,6 +3928,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="917450738466192189">Vottorð þjónsins er ógilt.</translation>
 <translation id="9174623988242579721">Sérsmíðaðir bílar og kappakstursbílar</translation>
 <translation id="9174917557437862841">Hnappur til að skipta um flipa; ýttu á færslulykilinn til að skipta yfir í þennan flipa</translation>
+<translation id="9177283544810807743">Ekki er hægt að opna þetta PDF-skjal. Dregur út texta í krafti gervigreindar Google</translation>
 <translation id="9179703756951298733">Stjórnaðu greiðslunum þínum og kreditkortaupplýsingum í stillingum Chrome</translation>
 <translation id="9179907736442194268">Fáðu tilkynningar í tölvupósti ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="9183302530794969518">Google skjöl</translation>

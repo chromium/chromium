@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Riprendi l'installazione</translation>
 <translation id="1029669172902658969">Riavvia per aggiornare &amp;Chromium OS</translation>
 <translation id="1040916596585577953">Chromium ti consiglia di esaminare questa estensione</translation>
+<translation id="1042552502243217427">Quando un sito chiede di precaricare privatamente i link nella sua pagina, Chromium usa i server di Google. In questo modo la tua identità rimane nascosta al sito precaricato, ma Google impara quali siti vengono precaricati.</translation>
 <translation id="1065672644894730302">Impossibile leggere le preferenze. Alcune funzioni potrebbero non essere disponibili e le modifiche alle preferenze non verranno salvate.</translation>
 <translation id="1083934481477628225">Uno dei tuoi genitori ha disattivato l'impostazione "Autorizzazioni per siti, app ed estensioni" per Chromium</translation>
 <translation id="1098170124587656448">Chromium può contribuire a proteggerti da violazioni dei dati, estensioni non valide e non solo</translation>
@@ -129,6 +130,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3713809861844741608">Apri link in una nuova &amp;scheda di Chromium</translation>
 <translation id="378917192836375108">Chromium ti consente di fare clic su un numero di telefono sul Web e di chiamarlo con Skype.</translation>
 <translation id="3790262771324122253">Scopri perché Chromium blocca alcuni download</translation>
+<translation id="3802055581630249637">Chromium precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="3830894615770080216">Sistema Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Ricevi assistenza per Chromium OS</translation>
@@ -239,6 +241,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6132897690380286411">A breve Chromium chiuderà ed eliminerà i dati</translation>
 <translation id="6134968993075716475">Navigazione sicura è disattivata. Chromium consiglia di attivarla.</translation>
 <translation id="6145820983052037069">Puoi passare da un profilo Chromium all'altro qui</translation>
+<translation id="615103374448673771">Se consenti i cookie, Chromium potrebbe usarli durante il precaricamento</translation>
 <translation id="6175304430031192654">In base alle tue impostazioni, Chromium potrebbe anche inviare i cookie e l'URL corrente</translation>
 <translation id="6183079672144801177">Assicurati di aver effettuato l'accesso a Chromium sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
 <translation id="6212496753309875659">Questo computer ha già una versione più recente di Chromium. Se il software non funziona, disinstalla Chromium e riprova.</translation>
@@ -263,6 +266,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6400112897226594999">Logo di Chromium sullo schermo di un computer.</translation>
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
 <translation id="6442900851116057561">Riavvia Chromium OS</translation>
+<translation id="6443470774889161065">Chromium precarica ancora più pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai</translation>
 <translation id="6455857529632101747">Ti diamo il benvenuto nei profili Chromium</translation>
 <translation id="6475912303565314141">Controlla anche la pagina visualizzata all'avvio di Chromium.</translation>
 <translation id="648319183876919572">Navigazione sicura avanzata fa di più per proteggerti da download e siti web pericolosi</translation>

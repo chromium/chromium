@@ -453,6 +453,7 @@
 <translation id="3533202363250687977">关闭所有无痕式标签页</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
 <translation id="3540141921715814660">添加到书签</translation>
+<translation id="355101282835380364">保存在账号中…</translation>
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3565207542107370586">清除浏览数据…</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
@@ -466,6 +467,7 @@
 <translation id="3609785682760573515">正在同步…</translation>
 <translation id="3631443864840848029">请确保您保存的是您目前用于此网站的密码。</translation>
 <translation id="3638472932233958418">预先加载网页</translation>
+<translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="364480321352456989">您的 Chrome 版本过旧。</translation>
 <translation id="3646736009628185125">您的家庭成员目前无法接收密码。请让他们更新 Chrome 并同步其密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3661160521073045932">有可用的配置文件</translation>
@@ -473,6 +475,7 @@
 <translation id="368329460027487650">已退出账号。打开登录选项。</translation>
 <translation id="3688815115226493214">标签页建议</translation>
 <translation id="3700134753671613714">登录后可获取您所有设备上保存的书签。</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="3709582977625132201">标记为未读</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="37207012422556617">热搜字词</translation>
@@ -545,6 +548,7 @@
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4187450337729239226">粘贴并搜索</translation>
+<translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4216918546378735658">取消</translation>
 <translation id="4223967053752765281">贵单位关闭了登录功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的账号。</translation>
 <translation id="422474357428465195">您有多个密码问题，这可能会给您带来安全风险。</translation>
@@ -1303,6 +1307,7 @@
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850600235656508448">在无痕模式下打开</translation>
 <translation id="8517375800490286174">开放源代码许可</translation>
+<translation id="8522147671363140027">{count,plural, =1{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}other{有 {count} 个密码和其他内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />标签页<ph name="FIRST_VISIBLE_TAB" />-<ph name="LAST_VISIBLE_TAB" />（共<ph name="NUMBER_OF_OPEN_TABS" />个）</translation>
 <translation id="8528009254289981965">在无痕模式下打开来自其他应用的链接</translation>
 <translation id="8529767659511976195">新功能</translation>
@@ -1363,6 +1368,7 @@
 <translation id="8855242995793521265">不会致使浏览器或设备的运行速度明显变慢。</translation>
 <translation id="8855781063981781621">若要在 Chrome 中停用锁定模式，请在您的 iPad 上关闭该模式。</translation>
 <translation id="8863431381414769983">通过 Google 地图获取路线和本地信息</translation>
+<translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="8870413625673593573">最近关闭的标签页</translation>
 <translation id="8876882697946675716">让您的各部设备保持同步</translation>

@@ -13,6 +13,7 @@
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
 <translation id="1511320244449497906">Olet kirjautunut sisään ja dataasi synkronoidaan <ph name="DOMAIN" />-osoitteen hallinnoimalle tilille. Sen järjestelmänvalvoja voi nyt asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen käyttäytymistä.</translation>
+<translation id="1516692594929310090">Avaa Chromen välilehtiruudukon.</translation>
 <translation id="1526327845902180576">Kun se on päällä:
 <ph name="BEGIN_INDENT" />  • Auta tekemään Chromesta parempi muille, jotka käyttävät sitä samoin kuin sinä.<ph name="END_INDENT" />
 
@@ -134,6 +135,7 @@ Huomioitavaa:
 
 Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
+<translation id="6916015246697034114">Hae puhumalla Chromesta</translation>
 <translation id="6964931465519938134">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="6975725306479268850">Chromen valinta automaattiseen täyttöön</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>
@@ -150,6 +152,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7400722733683201933">Tietoja Google Chromesta</translation>
 <translation id="7501046334262221972">Voit tehdä Chromesta oletusselaimesi avaamalla Asetukset ja valitsemalla Oletusselainsovellus ja sitten Chrome.</translation>
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
+<translation id="7581063337314642333">Siirry Chromen älilehtiruudukkoon</translation>
 <translation id="7662994914830945754">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="7669869107155339016">Siirry Chromen asetuksiin.</translation>
 <translation id="7693590760643069321">Voit nyt käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
@@ -157,10 +160,13 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="7754633291442704733">Organisaatiosi <ph name="DOMAIN" /> saa pääsyn Chrome-dataasi, kirjanmerkkeihisi, historiaasi, salasanoihisi ja muihin asetuksiisi, jotka olet tallentanut tälle tilille. Kun kirjaudut ulos, datasi tyhjennetään tältä laitteelta.  Data säilyy kuitenkin hallinnoidulla Google-tililläsi ja on organisaation saatavilla. Organisaatiosi voi myös asettaa tilikohtaisia käyttäjäkäytäntöjä, jotka voivat muuttaa Chromen toimintaa.</translation>
 <translation id="7780154209050837198">Kirjaudu sisään Chromeen Google-tililläsi, jotta saat parhaan hyödyn Chromesta.</translation>
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
+<translation id="7897703007638178753">Näytä Chromen viimeaikaiset välilehdet</translation>
+<translation id="7925119591961387184">Valitse Chrome.</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
 <translation id="81358522153858150">Chrome tukee nyt hallinnoidun tilin käyttäjäkäytäntöjä</translation>
 <translation id="8160472928944011082">Chromea ei voi päivittää</translation>
+<translation id="8174679664544842874">Avaa uuden välilehden Chromessa.</translation>
 <translation id="8213758103105806860">Näytä Chrome-kirjanmerkit</translation>
 <translation id="8357607116237445042">Valitse, haluatko poistaa Chrome-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
@@ -174,8 +180,10 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
   2. Valitse Oletusselain
   3. Valitse Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8587647598504233556">Valitse Chrome ja sitten Oletusselainsovellus.</translation>
 <translation id="8603022514504485810">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Pysy turvassa Google Chromen avulla</translation>
+<translation id="8760668027640688122">Avaa uusi välilehti Chromessa</translation>
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="8772179140489533211">Näytä kehotteet kirjautua Chromeen.</translation>
 <translation id="8788269841521769222">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Googlen Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
@@ -185,6 +193,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Salasanat ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
 <translation id="8897749957032330183">Salasanat tallennetaan Google Salasanoihin tällä laitteella.</translation>
+<translation id="8949681853939555434">Valitse Chrome oletusselaimeksi</translation>
 <translation id="8969290730818637510">Kun se on päällä:
 <ph name="BEGIN_INDENT" />  • Auta tekemään Chromesta parempi muille, jotka käyttävät sitä samoin kuin sinä<ph name="END_INDENT" />
 
@@ -194,4 +203,5 @@ Huomioitavaa:
   • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>
 <translation id="9122931302567044771">Tämä tarkoittaa, että Chrome pyytää aina tietokonesivustoa.</translation>
+<translation id="9181628561061032322">Avaa Chromen viimeaikaiset välilehdet.</translation>
 </translationbundle>

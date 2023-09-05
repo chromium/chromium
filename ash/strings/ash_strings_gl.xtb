@@ -90,6 +90,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1293264513303784526">Dispositivo USB‑C (porto esquerdo)</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293699935367580298">Esc</translation>
+<translation id="1294046132466831888">Abrir Explorar</translation>
 <translation id="1294929383540927798">Cambiar a configuración de notificacións da pantalla de bloqueo</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1306549533752902673">APLICACIÓNS RECOMENDADAS</translation>
@@ -365,6 +366,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Desbloquear as ventás</translation>
 <translation id="2528111225373402384">Configuración da zona wifi</translation>
+<translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">Activar ou desactivar a navegación por cursor de texto</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Mentres arrastras a pestana, preme <ph name="KEY_ONE" /></translation>
@@ -387,6 +389,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2612614436418177118">Move a icona dunha aplicación dentro da grade de aplicacións</translation>
 <translation id="2620016719323068571">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis…</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="2620900772667816510">Bluetooth de alta resolución</translation>
 <translation id="2621713457727696555">Protexida</translation>
 <translation id="2624588537172718173">Micrófono e audio do dispositivo</translation>
 <translation id="263399434338050016">"Selecciona todo"</translation>
@@ -511,6 +514,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3161500364292033097">Pechar o escritorio e as ventás</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está cambiando o teu dispositivo (<ph name="DEVICE_TYPE" />) a unha versión anterior. O dispositivo restablecerase e eliminaranse todos os datos.</translation>
 <translation id="3171170659304083361">Configuración dos métodos de introdución de texto</translation>
+<translation id="3176221688814061633">O teu dispositivo Chromebook ou Bluetooth usa unha versión antiga de Bluetooth. Activa o Bluetooth de alta resolución ou usa o micrófono interno para desfrutar dunha mellor calidade de audio.</translation>
 <translation id="3181441307743005334">O reinicio pode tardar uns intres</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Conectado a un dispositivo}other{Conectado a # dispositivos}}</translation>
 <translation id="320207200541803018">Define o temporizador</translation>
@@ -524,7 +528,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
-<translation id="3252573918265662711">Configuración</translation>
 <translation id="3253743281242075461">Tipo de traballo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
@@ -674,6 +677,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3781910048497807059">Mover enfoque ao panel anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloquear</translation>
+<translation id="3789841737615482174">Instalar</translation>
 <translation id="3796215473395753611">alt + frecha arriba</translation>
 <translation id="3796746699333205839">Unha aplicación está utilizando a túa cámara e o teu micrófono</translation>
 <translation id="3798670284305777884">Altofalante (interno)</translation>
@@ -1478,7 +1482,6 @@ Nova instalación</translation>
 <translation id="7086931198345821656">Esta actualización require executar a función Powerwash do teu dispositivo (<ph name="DEVICE_TYPE" />). Eliminaranse todos os datos. Obtén máis información sobre a última actualización de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Acceso con interruptores</translation>
 <translation id="709015856939120012">Afastar páxina</translation>
-<translation id="7098053464892629930">Descarga a aplicación para <ph name="NAME" /> en Google Play e descubre todas as funcións dispoñibles</translation>
 <translation id="7098389117866926363">Dispositivo USB‑C (porto esquerdo posterior)</translation>
 <translation id="7100906357717321275">Mostra os ficheiros ocultos na aplicación Ficheiros</translation>
 <translation id="7108254681523785542">Selecciona o elemento que queiras pegar. Para ver o portapapeis, preme <ph name="SHORTCUT_KEY_NAME" /> + v.</translation>
@@ -1499,6 +1502,7 @@ Nova instalación</translation>
 <translation id="7189412385142492784">A que distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara axustada á esquina inferior dereita. Conflito coa plataforma do sistema.</translation>
 <translation id="7219573373513695352">Non hai ningún dispositivo conectado</translation>
+<translation id="7229029500464092426">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> | Total: <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Tes que reiniciar este Chromebook para aplicar unha actualización. Esta acción pode tardar 1 minuto.</translation>
 <translation id="7256634071279256947">Micrófono traseiro</translation>
 <translation id="7258828758145722155">Editouse onte</translation>
@@ -1524,6 +1528,7 @@ Nova instalación</translation>
 <translation id="7360036564632145207">Para optimizar o rendemento, podes cambiar a opción de configuración da protección para periféricos contra o acceso aos datos</translation>
 <translation id="736045644501761622">Definir estilo e fondo de pantalla</translation>
 <translation id="7371404428569700291">Ventá de gravación</translation>
+<translation id="7372069265635026568">Memoria dispoñible: <ph name="AVAILABLE_MEMORY" /> dun total de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="737315737514430195">Desta forma, poderán acceder ao micrófono todas as aplicacións e sitios web con permiso de acceso ao micrófono</translation>
 <translation id="7377169924702866686">O bloqueo de maiúsculas está activado.</translation>
 <translation id="7377481913241237033">Conectar cun código</translation>
@@ -1839,7 +1844,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8660331759611631213">Raíz cadrada de 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Premer Introducir para facer captura de pantalla parcial</translation>
-<translation id="8666856788528804727">Abre <ph name="NAME" /> para configurar o teu dispositivo</translation>
 <translation id="8676770494376880701">Cargador de baixa potencia conectado</translation>
 <translation id="8683506306463609433">O rastrexo do seguimento está activo</translation>
 <translation id="8703634754197148428">Iniciar gravación. Unha vez iniciada a gravación, utilizar Alt + Maiúsculas + L para ir ao estante e buscar o botón Deter gravación</translation>
@@ -1853,6 +1857,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8731487213223706745">Finalización: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É posible que estea tentando detectar as teclas que premes</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
+<translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Activando...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>

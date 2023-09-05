@@ -221,6 +221,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1413407968866574823">Gemau gweithredu a phlatfformio</translation>
 <translation id="1413809658975081374">Gwall preifatrwydd</translation>
 <translation id="1414134146594747368">Cyn-ysgol</translation>
+<translation id="141826476809826269">Diwedd y testun a echdynnwyd</translation>
 <translation id="1419305130220238697">Botwm rheoli lawrlwythiadau yn Chrome, gweithredwch i reoli ffeiliau rydych wedi'u lawrlwytho yn Chrome</translation>
 <translation id="1422930527989633628">Yn gallu gofyn am ddarganfod dyfeisiau Bluetooth gerllaw</translation>
 <translation id="1426410128494586442">Iawn</translation>
@@ -277,6 +278,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1530707389502320859">Mae'r wefan rydych newydd geisio ymweld â hi yn ymddangos yn ffug. Weithiau mae ymosodwyr yn dynwared gwefannau drwy wneud newidiadau bach, anodd eu gweld i'r URL.</translation>
 <translation id="1532118530259321453">Dywed y dudalen hon</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
+<translation id="1537807545287921620">Mae'r PDF hwn yn anhygyrch. Agorwch y ddewislen cyd-destun a throwch "echdynnu testun o PDF" ymlaen</translation>
 <translation id="1539840569003678498">Anfonwyd yr adroddiad:</translation>
 <translation id="1542105669288201090">Addysg Busnes</translation>
 <translation id="1545757265410828525">Hanes prisiau</translation>
@@ -434,6 +436,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1842969606798536927">Talu</translation>
 <translation id="1846432862466000825">Plastig (Archifal)</translation>
 <translation id="1848982255014129637">Llun (Sglein Uchel)</translation>
+<translation id="1853392626017747777">Cofrestriad cerdyn rhithwir wedi'i gau</translation>
 <translation id="1854180393107901205">Stopio castio</translation>
 <translation id="1855370856221982654">Bocsio</translation>
 <translation id="1856713167556118146">Yr hyn nad yw'r modd Anhysbys yn ei wneud</translation>
@@ -470,6 +473,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1924727005275031552">Newydd</translation>
 <translation id="1935995810530254458">Copïo beth bynnag</translation>
 <translation id="1939175642807587452">Yn gallu gofyn am anfon hysbysiadau</translation>
+<translation id="1940441167050915935">Dileu codau diogelwch sydd wedi'u cadw</translation>
 <translation id="1943994668912612445">Dylunio</translation>
 <translation id="1945968466830820669">Mae'n bosib y byddwch yn colli mynediad at gyfrif eich sefydliad neu brofi dwyn hunaniaeth. Mae Chromium yn argymell newid eich cyfrinair ar unwaith.</translation>
 <translation id="1946849748901605102">12 x 15 modfedd</translation>
@@ -864,6 +868,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2803306138276472711">Yn ddiweddar, gwnaeth Safe Browsing gyda Google ganfod <ph name="BEGIN_LINK" />meddalwedd<ph name="END_LINK" /> ar <ph name="SITE" />. Weithiau mae gwefannau sydd fel arfer yn ddiogel yn cael eu heintio â meddalwedd faleisus.</translation>
 <translation id="2807052079800581569">Safle Y llun</translation>
 <translation id="2808278141522721006">Gallwch chi droi Windows Hello ymlaen neu ei ddiffodd yn <ph name="SETTINGS" /></translation>
+<translation id="2814184336982254349">Mae'r PDF hwn yn anhygyrch. Pwyswch search ac m i agor y ddewislen cyd-destun a throi "echdynnu testun o PDF" ymlaen</translation>
 <translation id="2818338148457093657">Gwasanaethau Harddwch a Sba</translation>
 <translation id="2820957248982571256">Wrthi'n sganio...</translation>
 <translation id="2824775600643448204">Bar cyfeiriad a chwilio</translation>
@@ -1168,6 +1173,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3461266716147554923">Mae <ph name="URL" /> eisiau gweld testun a lluniau sydd wedi'u copïo i'r clipfwrdd</translation>
 <translation id="3461824795358126837">Uwcholeuydd</translation>
 <translation id="3462200631372590220">Cuddio gosodiadau uwch</translation>
+<translation id="3465972433695735758">Mae'r PDF hwn yn anhygyrch. Testun wedi'i echdynnu, wedi'i bweru gan Google AI</translation>
 <translation id="346601286295919445">Cemeg</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, ar agor ar hyn o bryd, pwyswch Tab yna Enter i newid i'r tab sydd ar agor</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i gau pob ffenestr Anhysbys sydd ar agor ar hyn o bryd</translation>
@@ -1185,6 +1191,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="350069200438440499">Enw'r ffeil:</translation>
 <translation id="3501300228850242680">Metel (Cerddoriaeth)</translation>
 <translation id="350421688684366066">Labeli (Sglein Uchel)</translation>
+<translation id="350763432931695541">Wrthi'n echdynnu testun yn yr ychydig dudalennau nesaf</translation>
 <translation id="3507869775212388416">Swyddi Cyfreithiol</translation>
 <translation id="3507936815618196901">Creu map 3D o'ch amgylchoedd ac olrhain safle'r camera</translation>
 <translation id="3512163584740124171">Anwybyddir y polisi hwn oherwydd bod gan bolisi arall o'r un grŵp polisi sydd â blaenoriaeth uwch.</translation>
@@ -1726,6 +1733,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4628948037717959914">Llun</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Mae arian yn ôl wedi'i gysylltu</translation>
+<translation id="4631881646528206880">Cofrestru cerdyn rhithwir</translation>
 <translation id="4636930964841734540">Gwybodaeth</translation>
 <translation id="4638670630777875591">Modd Anhysbys yn Chromium</translation>
 <translation id="464342062220857295">Nodweddion chwilio</translation>
@@ -1840,6 +1848,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4854853140771946034">Creu nodyn newydd yn Google Keep yn gyflym</translation>
 <translation id="485902285759009870">Wrthi'n dilysu'r cod...</translation>
 <translation id="4862630594858951805">Eisiau e-byst pan fo'r pris yn gostwng?</translation>
+<translation id="4864406669374375262">Llinyn fersiwn wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="486459320933704969">Mae'n rhaid i riant neu warcheidwad ddweud ei bod yn iawn i ti ymweld â'r wefan hon</translation>
 <translation id="4866506163384898554">Pwyswch |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| i ddangos eich cyrchwr</translation>
 <translation id="4873616204573862158">Sbectol</translation>
@@ -2850,6 +2859,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6973988895180423160">3.5 x 5 modfedd</translation>
 <translation id="6978236010531171013">Rhannu beth bynnag</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Dechrau'r testun a echdynnwyd</translation>
 <translation id="6979440798594660689">Distewi (diofyn)</translation>
 <translation id="6987806006823772670">Amlen (Wedi'i Gorchuddio)</translation>
 <translation id="6989763994942163495">Dangos gosodiadau uwch...</translation>
@@ -2905,6 +2915,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7102760431686146931">Offer coginio a llestri bwyta</translation>
 <translation id="7105998430540165694">Cod pas o iCloud Keychain</translation>
 <translation id="7106762743910369165">Rheolir eich porwr gan eich sefydliad</translation>
+<translation id="7107249414147762907">Mae'r PDF hwn yn anhygyrch. Dim testun wedi'i echdynnu</translation>
 <translation id="7108338896283013870">Cuddio</translation>
 <translation id="7108634116785509031">Mae <ph name="HOST" /> eisiau defnyddio'ch camera</translation>
 <translation id="7108819624672055576">Caniateir gan estyniad</translation>
@@ -3527,6 +3538,7 @@ Manylion ychwanegol:
 <translation id="8339163506404995330">Ni fydd tudalennau yn <ph name="LANGUAGE" /> yn cael eu cyfieithu</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Os ydych yn deall y risgiau i'ch diogelwch, gallwch <ph name="BEGIN_LINK" />fynd i'r wefan hon<ph name="END_LINK" /> cyn i'r rhaglenni niweidiol gael eu tynnu.</translation>
+<translation id="8344776605855290140">Agorwyd cofrestriad cerdyn rhithwir ar uchder llawn</translation>
 <translation id="8347658365704983341">Dysgu o bell</translation>
 <translation id="8349305172487531364">Bar nodau tudalen</translation>
 <translation id="8351131234907093545">Creu nodyn</translation>
@@ -3916,6 +3928,7 @@ Manylion ychwanegol:
 <translation id="917450738466192189">Mae tystysgrif y gweinydd yn annilys.</translation>
 <translation id="9174623988242579721">Cerbydau perfformiad ac wedi'u personoleiddio</translation>
 <translation id="9174917557437862841">Botwm newid tab, pwyswch Enter i newid i'r tab hwn</translation>
+<translation id="9177283544810807743">Mae'r PDF hwn yn anhygyrch. Echdynnu testun, wedi'i bweru gan Google AI</translation>
 <translation id="9179703756951298733">Rheoli eich taliadau a gwybodaeth cerdyn credyd yn Gosodiadau Chrome</translation>
 <translation id="9179907736442194268">Cael hysbysiadau e-bost os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="9183302530794969518">Dogfennau Google</translation>

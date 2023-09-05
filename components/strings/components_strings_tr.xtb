@@ -221,6 +221,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1413407968866574823">Aksiyon ve platform oyunları</translation>
 <translation id="1413809658975081374">Gizlilik hatası</translation>
 <translation id="1414134146594747368">Okul öncesi</translation>
+<translation id="141826476809826269">Çıkarılan metnin sonu</translation>
 <translation id="1419305130220238697">Chrome'da indirilenleri yönet düğmesi, Chrome'da indirdiğiniz dosyaları yönetmek için etkinleştirin</translation>
 <translation id="1422930527989633628">Yakındaki Bluetooth cihazları bulmak isteyebilir</translation>
 <translation id="1426410128494586442">Evet</translation>
@@ -277,6 +278,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1530707389502320859">Az önce girmeye çalıştığınız site sahte görünüyor. Saldırganlar bazen URL'de görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="1532118530259321453">Bu sayfanın mesajı</translation>
 <translation id="1536390784834419204">Sayfayı çevir</translation>
+<translation id="1537807545287921620">Bu PDF'ye erişilemiyor. İçerik menüsünü açıp "PDF'den Metin Çıkar" ayarını etkinleştirin</translation>
 <translation id="1539840569003678498">Rapor gönderildi:</translation>
 <translation id="1542105669288201090">İşletme Eğitimi</translation>
 <translation id="1545757265410828525">Fiyat geçmişi</translation>
@@ -434,6 +436,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1842969606798536927">Ödeme</translation>
 <translation id="1846432862466000825">Plastik (Arşiv)</translation>
 <translation id="1848982255014129637">Fotoğraf (Çok Parlak)</translation>
+<translation id="1853392626017747777">Sanal kart kaydı kapatıldı</translation>
 <translation id="1854180393107901205">Yayını durdur</translation>
 <translation id="1855370856221982654">Boks</translation>
 <translation id="1856713167556118146">Gizli mod ne yapmaz?</translation>
@@ -470,6 +473,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1924727005275031552">Yeni</translation>
 <translation id="1935995810530254458">Yine de kopyala</translation>
 <translation id="1939175642807587452">Bildirim göndermek isteyebilir</translation>
+<translation id="1940441167050915935">Kayıtlı güvenlik kodlarını sil</translation>
 <translation id="1943994668912612445">Tasarım</translation>
 <translation id="1945968466830820669">Kuruluşunuzun hesabına erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chromium, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="1946849748901605102">12 x 15 inç</translation>
@@ -864,6 +868,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2803306138276472711">Google Güvenli Tarama yakın bir zamanda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />kötü amaçlı yazılım<ph name="END_LINK" /> tespit etti. Normalde güvenli olan web sitelerine bazen kötü amaçlı yazılımlar bulaşır.</translation>
 <translation id="2807052079800581569">Resim Y konumu</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> bölümünden Windows Hello'yu etkinleştirebilir veya devre dışı bırakabilirsiniz</translation>
+<translation id="2814184336982254349">Bu PDF'ye erişilemiyor. Arama artı m tuşlarına basarak içerik menüsünü açıp "PDF'den Metin Çıkar" ayarını etkinleştirin</translation>
 <translation id="2818338148457093657">Güzellik Hizmetleri ve Spa</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
 <translation id="2824775600643448204">Adres ve arama çubuğu</translation>
@@ -1168,6 +1173,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3461266716147554923"><ph name="URL" />, panoya kopyalanan metin ve resimleri görmek istiyor</translation>
 <translation id="3461824795358126837">Vurgulayıcı</translation>
 <translation id="3462200631372590220">Gelişmiş bilgileri gizle</translation>
+<translation id="3465972433695735758">Bu PDF'ye erişilemiyor. Google Yapay Zeka desteğiyle metin çıkarıldı</translation>
 <translation id="346601286295919445">Kimya</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, şu anda açık, açık Sekmeye geçmek için Sekmeye ve sonra enter tuşuna basın</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, açık olan tüm gizli pencereleri kapatmak için sekmeye, ardından Enter'a basın</translation>
@@ -1185,6 +1191,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="350069200438440499">Dosya adı:</translation>
 <translation id="3501300228850242680">Metal (Müzik)</translation>
 <translation id="350421688684366066">Etiketler (Çok Parlak)</translation>
+<translation id="350763432931695541">Sonraki birkaç sayfadaki metin çıkarılıyor</translation>
 <translation id="3507869775212388416">Hukuk İşleri</translation>
 <translation id="3507936815618196901">Çevrenizin 3D haritasını oluşturma ve kamera konumunu takip etme</translation>
 <translation id="3512163584740124171">Aynı politika grubundan farklı bir politika daha yüksek önceliği sahip olduğundan bu politika yok sayılır.</translation>
@@ -1726,6 +1733,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4628948037717959914">Fotoğraf</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Nakit para üstü bağlantısı oluşturuldu</translation>
+<translation id="4631881646528206880">Sanal kart kaydı</translation>
 <translation id="4636930964841734540">Bilgi</translation>
 <translation id="4638670630777875591">Chromium'daki Gizli mod</translation>
 <translation id="464342062220857295">Özellik ara</translation>
@@ -1840,6 +1848,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4854853140771946034">Google Keep'te hızlıca yeni bir not oluşturun</translation>
 <translation id="485902285759009870">Kod doğrulanıyor...</translation>
 <translation id="4862630594858951805">Fiyat düştüğünde e-posta almak ister misiniz?</translation>
+<translation id="4864406669374375262">Sürüm dizesi, panoya kopyalandı</translation>
 <translation id="486459320933704969">Bir anne veya babanın ya da velinin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir</translation>
 <translation id="4866506163384898554">İmlecinizi göstermek için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
 <translation id="4873616204573862158">Gözlükler</translation>
@@ -2850,6 +2859,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978236010531171013">Yine de paylaş</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6979332652936434520">Çıkarılan metnin başı</translation>
 <translation id="6979440798594660689">Sesi kapat (varsayılan)</translation>
 <translation id="6987806006823772670">Zarf (Kaplanmış)</translation>
 <translation id="6989763994942163495">Gelişmiş ayarları göster...</translation>
@@ -2905,6 +2915,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7102760431686146931">Yemek Pişirme Gereçleri ve Yemek Takımları</translation>
 <translation id="7105998430540165694">iCloud Anahtar Zinciri'nden geçiş anahtarı</translation>
 <translation id="7106762743910369165">Tarayıcınız, kuruluşunuz tarafından yönetilmektedir</translation>
+<translation id="7107249414147762907">Bu PDF'ye erişilemiyor. Metin çıkarılamadı</translation>
 <translation id="7108338896283013870">Gizle</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kameranızı kullanmak istiyor</translation>
 <translation id="7108819624672055576">Bir uzantı tarafından izin verildi</translation>
@@ -3527,6 +3538,7 @@ Ek ayrıntılar:
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilindeki sayfalar çevrilmeyecek</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Güvenliğinize ilişkin riskleri anladıysanız <ph name="BEGIN_LINK" />bu siteyi<ph name="END_LINK" /> zararlı programlar kaldırılmadan önce ziyaret edebilirsiniz.</translation>
+<translation id="8344776605855290140">Sanal kart kaydı tam ekranda açıldı</translation>
 <translation id="8347658365704983341">Uzaktan eğitim</translation>
 <translation id="8349305172487531364">Yer işaretleri çubuğu</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
@@ -3917,6 +3929,7 @@ Ek ayrıntılar:
 <translation id="917450738466192189">Sunucunun sertifikası geçersiz.</translation>
 <translation id="9174623988242579721">Özel ve performans amaçlı taşıtlar</translation>
 <translation id="9174917557437862841">Sekme değiştirme düğmesi, bu sekmeye geçmek için Enter tuşuna basın</translation>
+<translation id="9177283544810807743">Bu PDF'ye erişilemiyor. Google Yapay Zeka desteğiyle metin çıkarılıyor</translation>
 <translation id="9179703756951298733">Chrome ayarlarından ödemelerinizi ve kredi kartı bilgilerini yönetin</translation>
 <translation id="9179907736442194268">Herhangi bir sitede fiyatı düştüğünde uyarı alın</translation>
 <translation id="9183302530794969518">Google Dokümanlar</translation>

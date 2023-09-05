@@ -24,6 +24,7 @@
 <translation id="1993104285338243655">ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="2031987842108996681">ಕೆಂಪು ಚಾನಲ್</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' ಅನ್ನು '<ph name="INVALIDDOMAIN" />' ನಲ್ಲಿ ತಪ್ಪಾದ ಸ್ಥಾನದಲ್ಲಿ ಬಳಸಲಾಗಿದೆ.</translation>
+<translation id="2068711044993563745">ಕನಿಷ್ಠ ಮೌಲ್ಯವು (<ph name="MINIMUM" />) ಗರಿಷ್ಠ ಮೌಲ್ಯಕ್ಕಿಂತ (<ph name="MAXIMUM" />) ಕಡಿಮೆಯಿರಬೇಕು.</translation>
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2226276347425096477">ದಯವಿಟ್ಟು ಈ ಪಠ್ಯವನ್ನು <ph name="MAX_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="2247351761944213033">ವಾರ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>

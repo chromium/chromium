@@ -433,6 +433,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1842969606798536927">Bezahlen</translation>
 <translation id="1846432862466000825">Kunststoff (Archiv)</translation>
 <translation id="1848982255014129637">Foto (hochglanz)</translation>
+<translation id="1853392626017747777">Registrierung der virtuellen Karte beendet</translation>
 <translation id="1854180393107901205">Übertragung beenden</translation>
 <translation id="1855370856221982654">Boxen</translation>
 <translation id="1856713167556118146">Was der Inkognitomodus nicht bewirkt</translation>
@@ -469,6 +470,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1935995810530254458">Trotzdem kopieren</translation>
 <translation id="1939175642807587452">Darf nachfragen, wenn sie Benachrichtigungen senden möchte</translation>
+<translation id="1940441167050915935">Gespeicherte Sicherheitscodes löschen</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du könntest den Zugriff auf das Konto deines Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
 <translation id="1946849748901605102">12 × 15 Zoll</translation>
@@ -1241,6 +1243,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="36224234498066874">Browserdaten löschen...</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
 <translation id="3624292976554877583">Etiketten (matt)</translation>
+<translation id="3625929652356389713">Darf nachfragen, ob Fenster automatisch als Bild im Bild geöffnet werden sollen</translation>
 <translation id="3628905806504633297">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei auf „<ph name="DESTINATION_NAME" />“ zu übertragen}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien auf „<ph name="DESTINATION_NAME" />“ zu übertragen}}</translation>
 <translation id="3630155396527302611">Falls das Programm schon in der Liste mit erlaubtem Netzwerkzugriff eingetragen ist, entferne es aus der Liste und füge es noch einmal hinzu.</translation>
 <translation id="3630426379756188722">Schaltfläche „Mein Gerät finden“ – aktivieren, um „Mein Gerät finden“ im Google-Konto zu finden</translation>
@@ -1373,6 +1376,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="388632593194507180">Überwachung erkannt</translation>
 <translation id="3886948180919384617">Stapelfach 3</translation>
 <translation id="3890664840433101773">E-Mail-Adresse hinzufügen</translation>
+<translation id="3893306401511601929">Automatischer Bild-im-Bild-Modus</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3901925938762663762">Die Karte ist abgelaufen.</translation>
 <translation id="390391808978419508">Zeitüberschreitung beim Öffnen</translation>
@@ -1721,6 +1725,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="4631649115723685955">Cashback zugeordnet</translation>
+<translation id="4631881646528206880">Registrierung einer virtuellen Karte</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4638670630777875591">Inkognitomodus in Chromium</translation>
 <translation id="464342062220857295">Suchfunktionen</translation>
@@ -1835,6 +1840,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
 <translation id="485902285759009870">Code wird geprüft...</translation>
 <translation id="4862630594858951805">Du möchtest per E‑Mail benachrichtigt werden, wenn der Preis sinkt?</translation>
+<translation id="4864406669374375262">Versionsstring in Zwischenablage kopiert</translation>
 <translation id="486459320933704969">Ein Elternteil oder Erziehungsberechtigter muss dir erlauben, diese Website zu besuchen</translation>
 <translation id="4866506163384898554">Zum Einblenden des Cursors |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
 <translation id="4873616204573862158">Brillen</translation>
@@ -2147,6 +2153,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5512812358367123529">Büromöbel</translation>
 <translation id="5513528801833998679">Geräteanmeldung verwenden</translation>
 <translation id="5515388687005870733">55 × 85 mm</translation>
+<translation id="5516095341424241911">Die Sicherheitstechnologie von Google schützt deine Zahlungsinformationen</translation>
 <translation id="5518670652865028077">Kunst und Unterhaltung</translation>
 <translation id="5519516356611866228">Mit meinen Änderungen</translation>
 <translation id="5519696598216267194">Papier (vorgestanzt)</translation>
@@ -3520,6 +3527,7 @@ Weitere Details:
 <translation id="8339163506404995330">Seiten auf <ph name="LANGUAGE" /> werden nicht übersetzt</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="834457929814110454">Wenn du die Sicherheitsrisiken kennst, kannst du <ph name="BEGIN_LINK" />diese Website aufrufen<ph name="END_LINK" />, bevor die schädlichen Programme entfernt wurden.</translation>
+<translation id="8344776605855290140">Ansicht zur Registrierung der virtuellen Karte vollständig geöffnet</translation>
 <translation id="8347658365704983341">Fernunterricht</translation>
 <translation id="8349305172487531364">Lesezeichenleiste</translation>
 <translation id="8351131234907093545">Notiz erstellen</translation>
@@ -3973,5 +3981,6 @@ Weitere Details:
     &lt;li&gt;Stelle eine Verbindung zu einem anderen Netzwerk her.&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">automatischer Bild-im-Bild-Modus</translation>
 <translation id="997986563973421916">Aus Google Pay</translation>
 </translationbundle>

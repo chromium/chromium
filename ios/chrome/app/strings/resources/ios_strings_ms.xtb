@@ -477,6 +477,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="368329460027487650">Dilog keluar. Membuka pilihan untuk log masuk.</translation>
 <translation id="3688815115226493214">Cadangan Tab</translation>
 <translation id="3700134753671613714">Log masuk untuk mendapatkan penanda halaman pada semua peranti anda.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {EMAIL}.}other{{COUNT} kata laluan disimpan pada peranti ini sahaja. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan dalam Google Account anda, {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Tandakan Sebagai Belum Dibaca</translation>
 <translation id="371230970611282515">Meramalkan dan memberi anda amaran tentang acara berbahaya sebelum acara itu berlaku.</translation>
 <translation id="37207012422556617">Carian Sohor Kini</translation>

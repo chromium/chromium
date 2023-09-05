@@ -477,6 +477,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="368329460027487650">Utilizator deconectat. Deschide opțiunile pentru a te conecta.</translation>
 <translation id="3688815115226493214">Sugestii de file</translation>
 <translation id="3700134753671613714">Conectează-te pentru a putea accesa marcajele pe toate dispozitivele.</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} parolă se salvează numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul tău Google, {EMAIL}.}few{{COUNT} parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {EMAIL}.}other{{COUNT} de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google {EMAIL}.}}</translation>
 <translation id="3709582977625132201">Marchează ca necitit</translation>
 <translation id="371230970611282515">Anticipează și te avertizează cu privire la evenimente periculoase înainte să aibă loc.</translation>
 <translation id="37207012422556617">Căutări populare</translation>
@@ -1375,6 +1376,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8855242995793521265">Nu încetinește semnificativ browserul sau dispozitivul.</translation>
 <translation id="8855781063981781621">Pentru a dezactiva modul Blocare în Chrome, dezactivează-l pe iPad.</translation>
 <translation id="8863431381414769983">Primește indicații de orientare și informații locale de la Google Maps</translation>
+<translation id="8865415417596392024">Datele Chrome din cont</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} filă}few{{count} file}other{{count} de file}}</translation>
 <translation id="8870413625673593573">Închise recent</translation>
 <translation id="8876882697946675716">Menține dispozitivele sincronizate</translation>

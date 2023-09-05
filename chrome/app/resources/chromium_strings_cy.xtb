@@ -4,6 +4,7 @@
 <translation id="1026101648481255140">Parhau i Osod</translation>
 <translation id="1029669172902658969">Ail-lansiwch i ddiweddaru &amp;ChromiumOS</translation>
 <translation id="1040916596585577953">Mae Chromium yn argymell eich bod yn adolygu'r estyniad hwn</translation>
+<translation id="1042552502243217427">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chromium yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="1065672644894730302">Ni ellir darllen eich dewisiadau.
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
@@ -131,6 +132,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3713809861844741608">Agor y ddolen mewn tab Chromium &amp;newydd</translation>
 <translation id="378917192836375108">Mae Chromium yn gadael i chi glicio rhif ffôn ar y we a'i ffonio gyda Skype!</translation>
 <translation id="3790262771324122253">Dysgu pam fod Chromium yn rhwystro rhai lawrlwythiadau</translation>
+<translation id="3802055581630249637">Mae Chromium yn rhaglwytho tudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn ymweld â nhw</translation>
 <translation id="3830894615770080216">System ChromiumOS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Cael help gyda ChromiumOS</translation>
@@ -241,6 +243,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6132897690380286411">Bydd Chromium yn cau ac yn dileu data yn fuan</translation>
 <translation id="6134968993075716475">Mae Pori'n Ddiogel wedi'i ddiffodd. Mae Chromium yn argymell ei droi ymlaen.</translation>
 <translation id="6145820983052037069">Gallwch newid rhwng proffiliau Chromium yma</translation>
+<translation id="615103374448673771">Os ydych yn caniatáu cwcis, gall Chromium eu defnyddio ar gyfer rhaglwytho</translation>
 <translation id="6175304430031192654">Yn dibynnu ar eich gosodiadau, mae'n bosib y bydd Chromium hefyd yn anfon cwcis a'ch URL presennol</translation>
 <translation id="6183079672144801177">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="6212496753309875659">Mae gan y cyfrifiadur hwn fersiwn fwy diweddar o Chromium eisoes. Os nad yw'r feddalwedd yn gweithio, dadosodwch Chromium a rhowch gynnig arall arni.</translation>
@@ -265,6 +268,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6400112897226594999">Logo Chromium tu mewn i sgrîn gyfrifiadur.</translation>
 <translation id="6403826409255603130">Porwr gwe yw Chromium sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we yn fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Chromium.</translation>
 <translation id="6442900851116057561">Ailgychwyn ChromiumOS</translation>
+<translation id="6443470774889161065">Mae Chromium yn rhaglwytho hyd yn oed mwy o dudalennau rydych yn debygol o ymweld â nhw, fel eu bod yn llwytho yn gyflymach pan rydych yn gwneud hynny</translation>
 <translation id="6455857529632101747">Croeso i broffiliau Chromium</translation>
 <translation id="6475912303565314141">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chromium.</translation>
 <translation id="648319183876919572">Mae Pori'n Ddiogel Uwch yn gwneud rhagor i'ch amddiffyn rhag lawrlwythiadau a gwefannau peryglus</translation>
