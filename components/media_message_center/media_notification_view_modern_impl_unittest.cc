@@ -587,7 +587,7 @@ class MediaNotificationViewModernImplCastTest
     : public MediaNotificationViewModernImplTest {
  public:
   void SetUp() override {
-    EXPECT_CALL(item(), SourceType())
+    EXPECT_CALL(item(), GetSourceType())
         .WillRepeatedly(Return(media_message_center::SourceType::kCast));
     MediaNotificationViewModernImplTest::SetUp();
   }

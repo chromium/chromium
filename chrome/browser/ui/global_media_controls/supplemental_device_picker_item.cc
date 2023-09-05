@@ -60,12 +60,17 @@ void SupplementalDevicePickerItem::UpdateViewWithFaviconImage(
   UpdateViewWithImages();
 }
 
-media_message_center::SourceType SupplementalDevicePickerItem::SourceType() {
-  return media_message_center::SourceType::kPresentationRequest;
-}
-
 bool SupplementalDevicePickerItem::RequestMediaRemoting() {
   return false;
+}
+
+media_message_center::Source SupplementalDevicePickerItem::GetSource() const {
+  return media_message_center::Source::kCastDevicePicker;
+}
+
+media_message_center::SourceType SupplementalDevicePickerItem::GetSourceType()
+    const {
+  return media_message_center::SourceType::kPresentationRequest;
 }
 
 absl::optional<base::UnguessableToken>

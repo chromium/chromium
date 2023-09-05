@@ -344,7 +344,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     util_buttons_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStretch);
 
-    if (item_->SourceType() != SourceType::kCast) {
+    if (item_->GetSourceType() != SourceType::kCast) {
       // The picture-in-picture button appears directly under the media
       // labels.
       auto picture_in_picture_button = std::make_unique<MediaButton>(
@@ -364,7 +364,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
       util_buttons_layout->SetFlexForView(footer_view, 1);
     }
 
-    if (item_->SourceType() == SourceType::kCast) {
+    if (item_->GetSourceType() == SourceType::kCast) {
       auto volume_slider = std::make_unique<MediaNotificationVolumeSliderView>(
           base::BindRepeating(&MediaNotificationViewModernImpl::SetVolume,
                               base::Unretained(this)));

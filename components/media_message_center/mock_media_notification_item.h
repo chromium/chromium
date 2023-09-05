@@ -28,7 +28,8 @@ class MockMediaNotificationItem : public MediaNotificationItem {
   MOCK_METHOD(void, SetVolume, (float));
   MOCK_METHOD(void, SetMute, (bool));
   MOCK_METHOD(bool, RequestMediaRemoting, ());
-  MOCK_METHOD(media_message_center::SourceType, SourceType, ());
+  MOCK_METHOD(media_message_center::Source, GetSource, (), (const));
+  MOCK_METHOD(media_message_center::SourceType, GetSourceType, (), (const));
   MOCK_METHOD((absl::optional<base::UnguessableToken>),
               GetSourceId,
               (),

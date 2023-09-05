@@ -30,7 +30,7 @@ class SupplementalDevicePickerItemTest : public testing::Test {
 
 TEST_F(SupplementalDevicePickerItemTest, GetInfo) {
   EXPECT_EQ(media_message_center::SourceType::kPresentationRequest,
-            item_.SourceType());
+            item_.GetSourceType());
   EXPECT_FALSE(item_.RequestMediaRemoting());
   EXPECT_EQ(source_id_, item_.GetSourceId());
 }

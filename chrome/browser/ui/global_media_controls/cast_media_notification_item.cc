@@ -160,9 +160,6 @@ CastMediaNotificationItem::CastMediaNotificationItem(
                               base::Unretained(this))),
       session_info_(CreateSessionInfo()) {
   metadata_.source_title = GetSourceTitle(route);
-  base::UmaHistogramEnumeration(
-      kSourceHistogramName, route.is_local() ? Source::kLocalCastSession
-                                             : Source::kNonLocalCastSession);
 }
 
 CastMediaNotificationItem::~CastMediaNotificationItem() {
@@ -205,13 +202,19 @@ bool CastMediaNotificationItem::RequestMediaRemoting() {
   return false;
 }
 
+media_message_center::Source CastMediaNotificationItem::GetSource() const {
+  return route_is_local_ ? media_message_center::Source::kLocalCastSession
+                         : media_message_center::Source::kNonLocalCastSession;
+}
+
+media_message_center::SourceType CastMediaNotificationItem::GetSourceType()
+    const {
+  return media_message_center::SourceType::kCast;
+}
+
 absl::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
     const {
   return absl::nullopt;
-}
-
-media_message_center::SourceType CastMediaNotificationItem::SourceType() {
-  return media_message_center::SourceType::kCast;
 }
 
 void CastMediaNotificationItem::OnMediaStatusUpdated(

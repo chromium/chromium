@@ -108,10 +108,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // This will stop the media session associated with this item. The item will
   // then call |MediaNotificationController::RemoveItem()| to ensure removal.
   void Dismiss() override;
-  media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
   bool RequestMediaRemoting() override;
+  media_message_center::Source GetSource() const override;
+  media_message_center::SourceType GetSourceType() const override;
   absl::optional<base::UnguessableToken> GetSourceId() const override;
 
   // Stops the media session.
@@ -186,8 +187,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // to be globally unique.
   const std::string request_id_;
 
-  // The source of the media session (e.g. arc, web).
-  const Source source_;
+  // The source of the media session.
+  const media_message_center::Source source_;
 
   // The ID assigned to `source_`.
   absl::optional<base::UnguessableToken> source_id_;

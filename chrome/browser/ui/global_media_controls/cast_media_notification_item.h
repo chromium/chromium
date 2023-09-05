@@ -55,10 +55,11 @@ class CastMediaNotificationItem
       media_session::mojom::MediaSessionAction action) override;
   void SeekTo(base::TimeDelta time) override;
   void Dismiss() override;
-  media_message_center::SourceType SourceType() override;
   void SetVolume(float volume) override;
   void SetMute(bool mute) override;
   bool RequestMediaRemoting() override;
+  media_message_center::Source GetSource() const override;
+  media_message_center::SourceType GetSourceType() const override;
   absl::optional<base::UnguessableToken> GetSourceId() const override;
 
   // media_router::mojom::MediaStatusObserver:
