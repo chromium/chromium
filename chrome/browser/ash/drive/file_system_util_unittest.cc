@@ -9,9 +9,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace drive {
-namespace util {
-
+namespace drive::util {
 namespace {
 
 // Marks the current thread as UI by BrowserTaskEnvironment. We need the task
@@ -49,5 +47,16 @@ TEST_F(ProfileRelatedFileSystemUtilTest, GetCacheRootPath) {
             util::GetCacheRootPath(&profile));
 }
 
-}  // namespace util
-}  // namespace drive
+TEST_F(ProfileRelatedFileSystemUtilTest, SetDriveConnectionStatusForTesting) {
+  TestingProfile profile;
+  using enum ConnectionStatus;
+  EXPECT_EQ(GetDriveConnectionStatus(&profile), kNoService);
+
+  for (const ConnectionStatus status :
+       {kNoNetwork, kNotReady, kNoService, kMetered, kConnected}) {
+    SetDriveConnectionStatusForTesting(status);
+    EXPECT_EQ(GetDriveConnectionStatus(&profile), status);
+  }
+}
+
+}  // namespace drive::util

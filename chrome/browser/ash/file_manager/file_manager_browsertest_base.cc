@@ -3489,9 +3489,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     const std::string* status = value.FindString("status");
     ASSERT_TRUE(status) << "Require status to update drive connection state";
 
-    if (*status == "none") {
-      SetDriveConnectionStatusForTesting(ConnectionStatus::kNone);
-    } else if (*status == "no_service") {
+    if (*status == "no_service") {
       SetDriveConnectionStatusForTesting(ConnectionStatus::kNoService);
     } else if (*status == "no_network") {
       SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);

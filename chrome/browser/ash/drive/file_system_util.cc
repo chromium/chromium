@@ -180,7 +180,6 @@ std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
 #define PRINT(s)               \
   case ConnectionStatus::k##s: \
     return out << #s;
-    PRINT(None)
     PRINT(NoService)
     PRINT(NoNetwork)
     PRINT(NotReady)
@@ -194,17 +193,22 @@ std::ostream& operator<<(std::ostream& out, const ConnectionStatus status) {
              << ")";
 }
 
-static ConnectionStatus connection_status_for_testing = ConnectionStatus::kNone;
+// For testing.
+static ConnectionStatus connection_status_for_testing;
+static bool has_connection_status_for_testing = false;
 
 void SetDriveConnectionStatusForTesting(const ConnectionStatus status) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "SetDriveConnectionStatusForTesting: " << status;
   connection_status_for_testing = status;
+  has_connection_status_for_testing = true;
 }
 
 ConnectionStatus GetDriveConnectionStatus(Profile* const profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   using enum ConnectionStatus;
 
-  if (connection_status_for_testing != kNone) {
+  if (has_connection_status_for_testing) {
     VLOG(1) << "GetDriveConnectionStatus: for testing: "
             << connection_status_for_testing;
     return connection_status_for_testing;

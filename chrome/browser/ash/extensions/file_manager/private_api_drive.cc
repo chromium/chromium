@@ -833,8 +833,6 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
   using enum api::file_manager_private::DriveOfflineReason;
   switch (drive::util::GetDriveConnectionStatus(
       Profile::FromBrowserContext(browser_context()))) {
-    case kNone:
-      break;
     case kNoService:
       result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
       result.reason = DRIVE_OFFLINE_REASON_NO_SERVICE;
