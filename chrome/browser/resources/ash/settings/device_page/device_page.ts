@@ -31,12 +31,12 @@ import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isExternalStorageEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
@@ -49,12 +49,6 @@ import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_prov
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
 import {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
-
-interface SettingsDevicePageElement {
-  $: {
-    pointersRow: CrLinkRowElement,
-  };
-}
 
 const SettingsDevicePageElementBase =
     RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement)));
@@ -130,6 +124,14 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         readOnly: true,
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
+
       /**
        * Whether storage management info should be hidden.
        */
@@ -143,10 +145,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         readOnly: true,
       },
 
-      androidEnabled_: {
+      isExternalStorageEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('androidEnabled');
+          return isExternalStorageEnabled();
         },
       },
 
@@ -203,6 +205,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private hasHapticTouchpad_: boolean;
   private isDeviceSettingsSplitEnabled_: boolean;
   private isPeripheralCustomizationEnabled: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
@@ -257,7 +260,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
     this.addWebUiListener(
         'storage-android-enabled-changed',
-        this.set.bind(this, 'androidEnabled_'));
+        this.set.bind(this, 'isExternalStorageEnabled_'));
     this.browserProxy_.updateAndroidEnabled();
   }
 
@@ -277,10 +280,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.addFocusConfig(routes.STYLUS, '#stylusRow');
     this.addFocusConfig(routes.DISPLAY, '#displayRow');
     this.addFocusConfig(routes.AUDIO, '#audioRow');
-    this.addFocusConfig(routes.STORAGE, '#storageRow');
-    this.addFocusConfig(
-        routes.EXTERNAL_STORAGE_PREFERENCES, '#externalStoragePreferencesRow');
-    this.addFocusConfig(routes.POWER, '#powerRow');
     this.addFocusConfig(routes.GRAPHICS_TABLET, '#tabletRow');
     this.addFocusConfig(
         routes.CUSTOMIZE_MOUSE_BUTTONS, '#customizeMouseButtonsRow');
@@ -288,6 +287,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         routes.CUSTOMIZE_TABLET_BUTTONS, '#customizeTabletButtonsSubpage');
     this.addFocusConfig(
         routes.CUSTOMIZE_PEN_BUTTONS, '#customizePenButtonsSubpage');
+
+    if (!this.isRevampWayfindingEnabled_) {
+      this.addFocusConfig(routes.STORAGE, '#storageRow');
+      this.addFocusConfig(routes.POWER, '#powerRow');
+    }
   }
 
   private observePointingStickSettings(): void {

@@ -179,7 +179,14 @@ suite('<main-page-container>', () => {
     suite('when enabled', () => {
       suiteSetup(() => {
         // Simulate feature flag enabled
-        loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
+        loadTimeData.overrideValues({
+          isRevampWayfindingEnabled: true,
+
+          // TODO(wesokuhara) Create 2 versions of this test under the
+          // OsSettingsRevampWayfinding feature so that this override can be
+          // removed.
+          storageAndPowerTitle: 'Storage and power',
+        });
         document.body.classList.add('revamp-wayfinding-enabled');
 
         mainPageContainer = init();

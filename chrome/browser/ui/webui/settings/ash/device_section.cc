@@ -955,7 +955,7 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
-                             bool is_external_storage_page_available) {
+                             bool is_external_storage_enabled) {
   static constexpr webui::LocalizedString kStorageStrings[] = {
       {"storageExternal", IDS_SETTINGS_STORAGE_EXTERNAL},
       {"storageExternalStorageEmptyListHeader",
@@ -990,7 +990,8 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kStorageStrings);
 
-  html_source->AddBoolean("androidEnabled", is_external_storage_page_available);
+  html_source->AddBoolean("isExternalStorageEnabled",
+                          is_external_storage_enabled);
 
   html_source->AddString(
       "storageAndroidAppsExternalDrivesNote",
@@ -1129,7 +1130,7 @@ DeviceSection::DeviceSection(Profile* profile,
   } else {
     updater.AddSearchTags(GetKeyboardSearchConcepts());
   }
-  if (ShouldShowExternalStorageSettings(profile)) {
+  if (IsExternalStorageEnabled(profile)) {
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
   }
 
@@ -1252,8 +1253,7 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDeviceStylusStrings(html_source);
   AddDeviceDisplayStrings(html_source);
   AddDeviceAudioStrings(html_source);
-  AddDeviceStorageStrings(html_source,
-                          ShouldShowExternalStorageSettings(profile()));
+  AddDeviceStorageStrings(html_source, IsExternalStorageEnabled(profile()));
   AddDevicePowerStrings(html_source);
 
   html_source->AddBoolean("isAdaptiveChargingEnabled",

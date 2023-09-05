@@ -16,7 +16,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isCrostiniSupported} from '../common/load_time_booleans.js';
+import {isCrostiniSupported, isExternalStorageEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
@@ -53,8 +53,6 @@ class SettingsStorageElement extends SettingsStorageElementBase {
 
   static get properties() {
     return {
-      androidEnabled: Boolean,
-
       showCrostiniStorage_: {
         type: Boolean,
         value: false,
@@ -79,6 +77,13 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isCryptohomeDataEphemeral');
+        },
+      },
+
+      isExternalStorageEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isExternalStorageEnabled();
         },
       },
 
@@ -107,6 +112,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   private isDriveEnabled_: boolean;
   private showGoogleDriveSettingsPage_: boolean;
   private isDriveFsBulkPinningEnabled_: boolean;
+  private isExternalStorageEnabled_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;

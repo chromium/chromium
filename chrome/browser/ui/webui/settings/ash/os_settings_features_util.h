@@ -23,9 +23,8 @@ bool IsPowerwashAllowed();
 // shown for |profile|.
 bool ShouldShowParentalControlSettings(const Profile* profile);
 
-// Determines whether the External Storage section of Device settings should be
-// shown for |profile|.
-bool ShouldShowExternalStorageSettings(const Profile* profile);
+// Determines whether Android External Storage is enabled for |profile|.
+bool IsExternalStorageEnabled(const Profile* profile);
 
 }  // namespace ash::settings
 

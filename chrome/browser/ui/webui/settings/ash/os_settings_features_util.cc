@@ -49,7 +49,7 @@ bool ShouldShowParentalControlSettings(const Profile* profile) {
          !profile->GetProfilePolicyConnector()->IsManaged();
 }
 
-bool ShouldShowExternalStorageSettings(const Profile* profile) {
+bool IsExternalStorageEnabled(const Profile* profile) {
   return base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature) &&
          arc::IsArcPlayStoreEnabledForProfile(profile);
 }

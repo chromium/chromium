@@ -216,4 +216,61 @@ suite('<settings-system-preferences-page>', () => {
           assertNull(subpage, 'Subpage should not be stamped.');
         });
   });
+
+  suite('Storage and power subsection', () => {
+    test('Storage and power settings card is visible', async () => {
+      await createPage();
+
+      const storageAndPowerSettingsCard =
+          page.shadowRoot!.querySelector('storage-and-power-settings-card');
+      assertTrue(
+          isVisible(storageAndPowerSettingsCard),
+          'Storage and power settings card should be visible.');
+    });
+
+    const storageAndPowerSubpages: SubpageData[] = [
+      {
+        routeName: 'STORAGE',
+        elementTagName: 'settings-storage',
+      },
+      {
+        routeName: 'POWER',
+        elementTagName: 'settings-power',
+      },
+    ];
+    storageAndPowerSubpages.forEach(({routeName, elementTagName}) => {
+      test(
+          `${elementTagName} subpage element is visible for route ${routeName}`,
+          async () => {
+            await createPage();
+
+            await navigateToSubpage(routes[routeName]);
+            assertSubpageIsVisible(elementTagName);
+          });
+    });
+
+    test(
+        'External storage subpage is visible if Android external storage ' +
+            'is enabled',
+        async () => {
+          loadTimeData.overrideValues({isExternalStorageEnabled: true});
+          await createPage();
+
+          await navigateToSubpage(routes.EXTERNAL_STORAGE_PREFERENCES);
+          assertSubpageIsVisible('settings-storage-external');
+        });
+
+    test(
+        'External storage subpage is not stamped if Android external storage ' +
+            'is disabled',
+        async () => {
+          loadTimeData.overrideValues({isExternalStorageEnabled: false});
+          await createPage();
+
+          await navigateToSubpage(routes.EXTERNAL_STORAGE_PREFERENCES);
+          const subpage =
+              page.shadowRoot!.querySelector('settings-storage-external');
+          assertNull(subpage, 'Subpage should not be stamped.');
+        });
+  });
 });

@@ -80,13 +80,22 @@
           on-click="onAudioClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-          label="$i18n{storageTitle}" on-click="onStorageClick_"
-          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-      <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-          on-click="onPowerClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <template is="dom-if" if="[[!hideStorageInfo_]]">
+          <cr-link-row id="storageRow"
+              class="hr"
+              label="$i18n{storageTitle}"
+              on-click="onStorageClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+        <cr-link-row id="powerRow"
+            class="hr"
+            label="$i18n{powerTitle}"
+            on-click="onPowerClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
     </settings-card>
   </div>
 
@@ -180,22 +189,6 @@
       </settings-audio>
     </os-settings-subpage>
   </template>
-  <template is="dom-if" route-path="/storage">
-    <os-settings-subpage page-title="$i18n{storageTitle}">
-      <settings-storage prefs="{{prefs}}"
-          android-enabled="[[androidEnabled_]]">
-      </settings-storage>
-    </os-settings-subpage>
-  </template>
-  <template is="dom-if" if="[[androidEnabled_]]">
-    <template is="dom-if" route-path="/storage/externalStoragePreferences">
-      <os-settings-subpage
-          page-title="$i18n{storageExternal}">
-        <settings-storage-external prefs="{{prefs}}">
-        </settings-storage-external>
-      </os-settings-subpage>
-    </template>
-  </template>
   <template is="dom-if"
       route-path="/per-device-keyboard/remap-keys">
     <os-settings-subpage id="perDeviceKeyboardRemapKeysRow"
@@ -220,10 +213,25 @@
       </settings-customize-mouse-buttons-subpage>
     </os-settings-subpage>
   </template>
-  <template is="dom-if" route-path="/power">
-    <os-settings-subpage
-        page-title="$i18n{powerTitle}">
-      <settings-power prefs="{{prefs}}"></settings-power>
-    </os-settings-subpage>
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <template is="dom-if" route-path="/storage">
+      <os-settings-subpage page-title="$i18n{storageTitle}">
+        <settings-storage prefs="{{prefs}}">
+        </settings-storage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" if="[[isExternalStorageEnabled_]]">
+      <template is="dom-if" route-path="/storage/externalStoragePreferences">
+        <os-settings-subpage page-title="$i18n{storageExternal}">
+          <settings-storage-external prefs="{{prefs}}">
+          </settings-storage-external>
+        </os-settings-subpage>
+      </template>
+    </template>
+    <template is="dom-if" route-path="/power">
+      <os-settings-subpage page-title="$i18n{powerTitle}">
+        <settings-power prefs="{{prefs}}"></settings-power>
+      </os-settings-subpage>
+    </template>
   </template>
 </os-settings-animated-pages>

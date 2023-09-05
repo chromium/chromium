@@ -49,6 +49,11 @@ export function isCrostiniSupported(): boolean {
   return loadTimeData.getBoolean('isCrostiniSupported');
 }
 
+// Device page
+export function isExternalStorageEnabled(): boolean {
+  return loadTimeData.getBoolean('isExternalStorageEnabled');
+}
+
 // Kerberos page
 export function isKerberosEnabled(): boolean {
   return loadTimeData.getBoolean('isKerberosEnabled');

@@ -376,13 +376,6 @@ export function createRoutes(): OsSettingsRoutes {
         r.GRAPHICS_TABLET, routesMojom.CUSTOMIZE_PEN_BUTTONS_SUBPAGE_PATH,
         Subpage.kCustomizePenButtons);
   }
-  r.STORAGE = createSubpage(
-      r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
-  r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
-      r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
-      Subpage.kExternalStorage);
-  r.POWER =
-      createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
 
   // Personalization section.
   if (!isGuest()) {
@@ -604,6 +597,16 @@ export function createRoutes(): OsSettingsRoutes {
     r.GOOGLE_ASSISTANT = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
         Subpage.kAssistant);
+
+    // Storage and power subpages.
+    r.STORAGE = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.STORAGE_SUBPAGE_PATH,
+        Subpage.kStorage);
+    r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
+        r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
+        Subpage.kExternalStorage);
+    r.POWER = createSubpage(
+        r.SYSTEM_PREFERENCES, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
   } else {
     // Date and Time section.
     r.DATETIME = createSection(
@@ -611,6 +614,15 @@ export function createRoutes(): OsSettingsRoutes {
         Section.kDateAndTime);
     r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
         r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
+
+    // Device section.
+    r.STORAGE = createSubpage(
+        r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);
+    r.EXTERNAL_STORAGE_PREFERENCES = createSubpage(
+        r.STORAGE, routesMojom.EXTERNAL_STORAGE_SUBPAGE_PATH,
+        Subpage.kExternalStorage);
+    r.POWER =
+        createSubpage(r.DEVICE, routesMojom.POWER_SUBPAGE_PATH, Subpage.kPower);
 
     // Languages and Input section.
     r.OS_LANGUAGES = createSection(

@@ -34,7 +34,7 @@ namespace {
 using disks::Disk;
 using disks::DiskMountManager;
 
-constexpr char kAndroidEnabled[] = "androidEnabled";
+constexpr char kIsExternalStorageEnabled[] = "isExternalStorageEnabled";
 // Dummy UUID for testing. The UUID is taken from
 // ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
@@ -77,12 +77,7 @@ StorageHandler::StorageHandler(Profile* profile,
       other_users_size_calculator_(),
       profile_(profile),
       source_name_(html_source->GetSource()),
-      special_volume_path_pattern_("[a-z]+://.*") {
-  // TODO(khorimoto): Set kAndroidEnabled within DeviceSection, and
-  // updates this value accordingly (see OnArcPlayStoreEnabledChanged()).
-  html_source->AddBoolean(kAndroidEnabled,
-                          ShouldShowExternalStorageSettings(profile));
-}
+      special_volume_path_pattern_("[a-z]+://.*") {}
 
 StorageHandler::~StorageHandler() {
   StopObservingEvents();
@@ -227,7 +222,7 @@ void StorageHandler::UpdateExternalStorages() {
 
 void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   base::Value::Dict update;
-  update.Set(kAndroidEnabled, ShouldShowExternalStorageSettings(profile_));
+  update.Set(kIsExternalStorageEnabled, IsExternalStorageEnabled(profile_));
   content::WebUIDataSource::Update(profile_, source_name_, std::move(update));
 }
 

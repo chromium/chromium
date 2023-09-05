@@ -220,7 +220,7 @@
     </div>
   </div>
 </template>
-<template is="dom-if" if="[[androidEnabled]]">
+<template is="dom-if" if="[[isExternalStorageEnabled_]]">
   <cr-link-row id="externalStoragePreferences" class="hr"
       on-click="onExternalStoragePreferencesClick_"
       label="$i18n{storageExternal}"

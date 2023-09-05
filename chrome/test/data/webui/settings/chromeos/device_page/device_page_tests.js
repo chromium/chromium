@@ -306,12 +306,8 @@ suite('SettingsDevicePage', function() {
     await flushTasks();
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
-
-    // os-settings-animated-pages expects a parent with data-page set.
-    const basicPage = document.createElement('div');
-    basicPage.dataset.page = 'basic';
-    basicPage.appendChild(devicePage);
-    document.body.appendChild(basicPage);
+    document.body.appendChild(devicePage);
+    flush();
   }
 
   /** @return {!Promise<!HTMLElement>} */
@@ -3918,22 +3914,21 @@ suite('SettingsDevicePage', function() {
       return rowItem.querySelector('#subLabel').innerText;
     }
 
-    suiteSetup(function() {
+    async function setupPage() {
+      PolymerTest.clearBody();
+      await init();
+      storagePage = await showAndGetDeviceSubpage('storage', routes.STORAGE);
+      storagePage.stopPeriodicUpdate_();
+    }
+
+    suiteSetup(() => {
       // Disable animations so sub-pages open within one event loop.
       testing.Test.disableAnimationsAndTransitions();
     });
 
-    async function setupPage() {
-      PolymerTest.clearBody();
-      await init();
-      return showAndGetDeviceSubpage('storage', routes.STORAGE)
-          .then(function(page) {
-            storagePage = page;
-            storagePage.stopPeriodicUpdate_();
-          });
-    }
-
-    setup(setupPage);
+    setup(async () => {
+      await setupPage();
+    });
 
     test('storage stats size', async function() {
       // Low available storage space.
@@ -4072,7 +4067,7 @@ suite('SettingsDevicePage', function() {
           showGoogleDriveSettingsPage: params.showGoogleDriveSettingsPage,
         });
         await setupPage();
-        devicePage.prefs.gdata.disabled = !params.isDriveEnabled;
+        devicePage.set('prefs.gdata.disabled.value', !params.isDriveEnabled);
         await flushTasks();
         const expectedState =
             (params.isVisible) ? 'be visible' : 'not be visible';
@@ -4084,61 +4079,79 @@ suite('SettingsDevicePage', function() {
                 JSON.stringify(params)}`);
       }
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: false,
         showGoogleDriveSettingsPage: false,
         isDriveEnabled: false,
         isVisible: false,
       });
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: false,
         showGoogleDriveSettingsPage: false,
         isDriveEnabled: true,
         isVisible: false,
       });
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: false,
         showGoogleDriveSettingsPage: true,
         isDriveEnabled: false,
         isVisible: false,
       });
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: true,
         showGoogleDriveSettingsPage: false,
         isDriveEnabled: false,
         isVisible: false,
       });
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: true,
         showGoogleDriveSettingsPage: true,
         isDriveEnabled: false,
         isVisible: false,
       });
 
-      assertDriveOfflineSizeVisibility({
+      await assertDriveOfflineSizeVisibility({
         enableDriveFsBulkPinning: false,
-        showGoogleDriveSettingsPage: true,
-        isDriveEnabled: true,
-        isVisible: true,
-      });
-
-      assertDriveOfflineSizeVisibility({
-        enableDriveFsBulkPinning: true,
-        showGoogleDriveSettingsPage: false,
-        isDriveEnabled: true,
-        isVisible: true,
-      });
-
-      assertDriveOfflineSizeVisibility({
-        enableDriveFsBulkPinning: true,
         showGoogleDriveSettingsPage: true,
         isDriveEnabled: true,
         isVisible: true,
       });
+
+      await assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: false,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+
+      await assertDriveOfflineSizeVisibility({
+        enableDriveFsBulkPinning: true,
+        showGoogleDriveSettingsPage: true,
+        isDriveEnabled: true,
+        isVisible: true,
+      });
+    });
+  });
+
+  suite('When OsSettingsRevampWayfinding feature is enabled', () => {
+    setup(() => {
+      loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
+    });
+
+    test('Power row is not visible', async () => {
+      await init();
+      const powerRow = devicePage.shadowRoot.getElementById('powerRow');
+      assertFalse(isVisible(powerRow));
+    });
+
+    test('Storage row is not visible', async () => {
+      await init();
+      const storageRow = devicePage.shadowRoot.getElementById('storageRow');
+      assertFalse(isVisible(storageRow));
     });
   });
 });
