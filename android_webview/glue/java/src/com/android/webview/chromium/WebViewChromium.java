@@ -3190,10 +3190,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return;
         }
-        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.COMPUTE_SCROLL")) {
-            recordWebViewApiCall(ApiCall.COMPUTE_SCROLL);
-            mAwContents.computeScroll();
-        }
+        mAwContents.computeScroll();
     }
 
     @Override
