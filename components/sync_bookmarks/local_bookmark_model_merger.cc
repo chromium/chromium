@@ -4,17 +4,63 @@
 
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 
+#include <list>
+#include <string>
 #include <utility>
 
-#include "base/check.h"
+#include "base/hash/hash.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/tree_node_iterator.h"
+#include "url/gurl.h"
 
 namespace sync_bookmarks {
 
 namespace {
+
+// Struct representing a subset of fields of BookmarkNode, such that two nodes
+// with the same parent are considered a semantic match if the
+// SiblingSemanticMatchKey value computed for them are equal.
+struct SiblingSemanticMatchKey {
+  // Bookmarked URL or nullopt for folders. This also means a URL node never
+  // matches semantically with a folder.
+  absl::optional<GURL> url;
+  // Title equality is required, but the fact that Sync used to truncate the
+  // title to a maximum size is incorporated here (i.e. the truncated title is
+  // represented here).
+  std::string canonicalized_sync_title;
+};
+
+struct SiblingSemanticMatchKeyHash {
+  size_t operator()(const SiblingSemanticMatchKey& key) const {
+    // TODO(crbug.com/1451511): Mix in `url` into the hash.
+    return base::FastHash(key.canonicalized_sync_title);
+  }
+};
+
+struct SiblingSemanticMatchKeyEquals {
+  size_t operator()(const SiblingSemanticMatchKey& lhs,
+                    const SiblingSemanticMatchKey& rhs) const {
+    return lhs.url == rhs.url &&
+           lhs.canonicalized_sync_title == rhs.canonicalized_sync_title;
+  }
+};
+
+SiblingSemanticMatchKey GetSiblingSemanticMatchKeyForNode(
+    const bookmarks::BookmarkNode* node) {
+  SiblingSemanticMatchKey key;
+  if (node->is_url()) {
+    key.url = node->url();
+  }
+  key.canonicalized_sync_title =
+      sync_bookmarks::FullTitleToLegacyCanonicalizedTitle(
+          base::UTF16ToUTF8(node->GetTitle()));
+  return key;
+}
 
 bool NodesCompatibleForMatchByUuid(const bookmarks::BookmarkNode* node1,
                                    const bookmarks::BookmarkNode* node2) {
@@ -45,9 +91,24 @@ LocalBookmarkModelMerger::LocalBookmarkModelMerger(
 LocalBookmarkModelMerger::~LocalBookmarkModelMerger() = default;
 
 void LocalBookmarkModelMerger::Merge() {
-  // Match up the roots and recursively.
-  MergeSubtree(/*local_subtree_root=*/local_model_->root_node(),
-               /*account_subtree_root=*/account_model_->root_node());
+  // Algorithm description:
+  // Match up the roots and recursively do the following:
+  // * For each local node for the current local parent node, either
+  //   find an account node with equal UUID anywhere throughout the tree or find
+  //   the best matching bookmark node under the corresponding account bookmark
+  //   parent node using semantics. If the found node has the same UUID as a
+  //   different local bookmark, it is not considered a semantics match, as
+  //   UUID matching takes precedence.
+  // * If no matching node is found, create a new bookmark node by appending it
+  //   last.
+  // * If a matching node is found, update the properties of it from the
+  //   corresponding local node.
+  //
+  // The semantics best match algorithm uses folder title or bookmark title/url
+  // to perform the primary match. If there are multiple match candidates it
+  // selects the first one.
+  MergeSubtree(/*local_node=*/local_model_->root_node(),
+               /*account_node=*/account_model_->root_node());
 }
 
 // static
@@ -124,6 +185,36 @@ void LocalBookmarkModelMerger::MergeSubtree(
   CHECK_EQ(account_subtree_root->is_permanent_node(),
            local_subtree_root->is_permanent_node());
 
+  // Build a lookup table containing account nodes that might be matched by
+  // semantics.
+  std::unordered_map<SiblingSemanticMatchKey,
+                     std::list<const bookmarks::BookmarkNode*>,
+                     SiblingSemanticMatchKeyHash, SiblingSemanticMatchKeyEquals>
+      account_node_candidates_for_semantic_match;
+  for (const auto& account_child_ptr : account_subtree_root->children()) {
+    const bookmarks::BookmarkNode* const account_child =
+        account_child_ptr.get();
+
+    // Special-case managed bookmarks, which don't need merging into the account
+    // model.
+    if (!account_model_->client()->CanSyncNode(account_child)) {
+      continue;
+    }
+
+    // If a UUID match exists, it takes precedence over semantic matching.
+    if (FindMatchingLocalNodeByUuid(account_child)) {
+      continue;
+    }
+
+    // Permanent nodes must have matched by UUID.
+    CHECK(!account_child->is_permanent_node());
+
+    // Register the candidate while maintaining the original order.
+    account_node_candidates_for_semantic_match
+        [GetSiblingSemanticMatchKeyForNode(account_child)]
+            .push_back(account_child);
+  }
+
   // If there are local child nodes, try to match them with account nodes.
   for (const auto& local_child_ptr : local_subtree_root->children()) {
     const bookmarks::BookmarkNode* const local_child = local_child_ptr.get();
@@ -134,12 +225,24 @@ void LocalBookmarkModelMerger::MergeSubtree(
       continue;
     }
 
-    // Try to match by UUID.
+    // Try to match by UUID first.
     const bookmarks::BookmarkNode* matching_account_node =
         FindMatchingAccountNodeByUuid(local_child);
 
-    // TODO(crbug.com/1451511): Find matches by semantics if the UUID-based
-    // matching failed.
+    if (!matching_account_node) {
+      // Permanent nodes must have matched by UUID.
+      CHECK(!local_child->is_permanent_node());
+
+      auto it = account_node_candidates_for_semantic_match.find(
+          GetSiblingSemanticMatchKeyForNode(local_child));
+      if (it != account_node_candidates_for_semantic_match.end() &&
+          !it->second.empty()) {
+        // Semantic match found.
+        matching_account_node = it->second.front();
+        // Avoid that the same candidate would match again.
+        it->second.pop_front();
+      }
+    }
 
     if (local_child->is_permanent_node()) {
       // Permanent nodes must have matched by UUID and don't need updating other
@@ -149,7 +252,6 @@ void LocalBookmarkModelMerger::MergeSubtree(
     } else if (matching_account_node) {
       // If a match was found, update the title and possible other fields.
       CHECK(!matching_account_node->is_permanent_node());
-      CHECK(NodesCompatibleForMatchByUuid(local_child, matching_account_node));
       UpdateAccountNodeFromMatchingLocalNode(local_child,
                                              matching_account_node);
     } else {
@@ -172,7 +274,6 @@ void LocalBookmarkModelMerger::UpdateAccountNodeFromMatchingLocalNode(
   CHECK(account_node);
   CHECK(!local_node->is_permanent_node());
   CHECK(!account_node->is_permanent_node());
-  CHECK(NodesCompatibleForMatchByUuid(local_node, account_node));
 
   // Update all fields, where no-op changes are handled well.
   // The meta-info map is intentionally excluded, since the desired behavior is
