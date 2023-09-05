@@ -35,6 +35,7 @@ class AutofillTestEnvironment {
   ~AutofillTestEnvironment();
 
   LocalFrameToken NextLocalFrameToken();
+  RemoteFrameToken NextRemoteFrameToken();
   FormRendererId NextFormRendererId();
   FieldRendererId NextFieldRendererId();
 
@@ -49,6 +50,8 @@ class AutofillTestEnvironment {
   // Use some distinct 64 bit numbers to start the counters.
   uint64_t local_frame_token_counter_high_ = 0xAAAAAAAAAAAAAAAA;
   uint64_t local_frame_token_counter_low_ = 0xBBBBBBBBBBBBBBBB;
+  uint64_t remote_frame_token_counter_high_ = 0xBBBBBBBBBBBBBBBB;
+  uint64_t remote_frame_token_counter_low_ = 0xAAAAAAAAAAAAAAAA;
   FormRendererId::underlying_type form_renderer_id_counter_ = 10;
   FieldRendererId::underlying_type field_renderer_id_counter_ = 10;
 };
@@ -79,6 +82,17 @@ using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;
 //
 // If `randomize` is false, the LocalFrameToken is stable across multiple calls.
 LocalFrameToken MakeLocalFrameToken(
+    RandomizeFrame randomize = RandomizeFrame(true));
+
+// Creates non-empty RemoteFrameToken.
+//
+// If `randomize` is true, the RemoteFrameToken changes for successive calls.
+// Within each unit test, the generated values are deterministically predictable
+// (because the test's AutofillTestEnvironment restarts the generation).
+//
+// If `randomize` is false, the RemoteFrameToken is stable across multiple
+// calls.
+RemoteFrameToken MakeRemoteFrameToken(
     RandomizeFrame randomize = RandomizeFrame(true));
 
 // Creates new, pairwise distinct FormRendererIds.

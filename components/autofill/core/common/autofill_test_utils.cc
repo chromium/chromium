@@ -57,6 +57,11 @@ LocalFrameToken AutofillTestEnvironment::NextLocalFrameToken() {
       ++local_frame_token_counter_high_, ++local_frame_token_counter_low_));
 }
 
+RemoteFrameToken AutofillTestEnvironment::NextRemoteFrameToken() {
+  return RemoteFrameToken(base::UnguessableToken::CreateForTesting(
+      ++remote_frame_token_counter_high_, ++remote_frame_token_counter_low_));
+}
+
 FormRendererId AutofillTestEnvironment::NextFormRendererId() {
   return FormRendererId(++form_renderer_id_counter_);
 }
@@ -79,6 +84,16 @@ LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
   } else {
     return LocalFrameToken(
         base::UnguessableToken::CreateForTesting(98765, 43210));
+  }
+}
+
+RemoteFrameToken MakeRemoteFrameToken(RandomizeFrame randomize) {
+  if (*randomize) {
+    return RemoteFrameToken(
+        AutofillTestEnvironment::GetCurrent().NextRemoteFrameToken());
+  } else {
+    return RemoteFrameToken(
+        base::UnguessableToken::CreateForTesting(12345, 67890));
   }
 }
 
