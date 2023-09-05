@@ -244,7 +244,18 @@ def FindMatchingTestFiles(target):
       print('Found possible matching file(s):')
       print('\n'.join(close))
 
-  test_files = exact if len(exact) > 0 else close
+  if len(exact) > 1:
+    # Given "Foo", don't ask to disambiguate ModFoo.java vs Foo.java.
+    more_exact = [
+        p for p in exact if os.path.basename(p) in (target, f'{target}.java')
+    ]
+    if len(more_exact) == 1:
+      test_files = more_exact
+    else:
+      test_files = exact
+  else:
+    test_files = close
+
   if len(test_files) > 1:
     if len(test_files) < 10:
       test_files = [HaveUserPickFile(test_files)]
