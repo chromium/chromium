@@ -33,6 +33,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/exo/display.h"
 #include "components/exo/seat.h"
 #include "components/exo/seat_observer.h"
@@ -905,8 +906,22 @@ void AuraToplevel::SetSystemModal(bool modal) {
   shell_surface_->SetSystemModal(modal);
 }
 
-void AuraToplevel::SetFloat() {
-  shell_surface_->SetFloat();
+void AuraToplevel::SetFloatToLocation(uint32_t location) {
+  switch (location) {
+    case ZAURA_TOPLEVEL_FLOAT_START_LOCATION_BOTTOM_RIGHT:
+      shell_surface_->SetFloatToLocation(
+          chromeos::FloatStartLocation::kBottomRight);
+      break;
+    case ZAURA_TOPLEVEL_FLOAT_START_LOCATION_BOTTOM_LEFT:
+      shell_surface_->SetFloatToLocation(
+          chromeos::FloatStartLocation::kBottomLeft);
+      break;
+    default:
+      VLOG(2) << "aura_toplevel_set_float_to_location(): unknown "
+                 "float_start_location: "
+              << location;
+      break;
+  }
 }
 
 void AuraToplevel::UnsetFloat() {
@@ -1425,7 +1440,14 @@ void aura_toplevel_unset_system_modal(wl_client* client,
 }
 
 void aura_toplevel_set_float(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<AuraToplevel>(resource)->SetFloat();
+  GetUserDataAs<AuraToplevel>(resource)->SetFloatToLocation(
+      ZAURA_TOPLEVEL_FLOAT_START_LOCATION_BOTTOM_RIGHT);
+}
+
+void aura_toplevel_set_float_to_location(wl_client* client,
+                                         wl_resource* resource,
+                                         uint32_t location) {
+  GetUserDataAs<AuraToplevel>(resource)->SetFloatToLocation(location);
 }
 
 void aura_toplevel_unset_float(wl_client* client, wl_resource* resource) {
@@ -1615,6 +1637,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_unset_can_maximize,
     aura_toplevel_set_can_fullscreen,
     aura_toplevel_unset_can_fullscreen,
+    aura_toplevel_set_float_to_location,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

@@ -15,6 +15,7 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -249,7 +250,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void UnsetCanGoBack() override;
   void SetPip() override;
   void UnsetPip() override;
-  void SetFloat() override;
+  void SetFloatToLocation(
+      chromeos::FloatStartLocation float_start_location) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void MoveToDesk(int desk_index) override;
   void SetVisibleOnAllWorkspaces() override;

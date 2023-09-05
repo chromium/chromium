@@ -181,7 +181,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void SetSnapSecondary(float snap_ratio) override;
   void SetPip() override;
   void UnsetPip() override;
-  void SetFloat() override;
+  void SetFloatToLocation(
+      chromeos::FloatStartLocation float_start_location) override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMaximize() const override;

@@ -1471,7 +1471,8 @@ void remote_surface_set_resize_lock_type(wl_client* client,
 }
 
 void remote_surface_set_float(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloat();
+  GetUserDataAs<ClientControlledShellSurface>(resource)->SetFloatToLocation(
+      chromeos::FloatStartLocation::kBottomRight);
 }
 
 void remote_surface_set_scale_factor(wl_client* client,

@@ -752,8 +752,9 @@ void ClientControlledShellSurface::UnsetPip() {
   SetRestored();
 }
 
-void ClientControlledShellSurface::SetFloat() {
-  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetFloat");
+void ClientControlledShellSurface::SetFloatToLocation(
+    chromeos::FloatStartLocation float_start_location) {
+  TRACE_EVENT0("exo", "ClientControlledShellSurface::SetFloatToLocation");
   pending_window_state_ = chromeos::WindowStateType::kFloated;
 }
 

@@ -16,6 +16,7 @@
 #include "components/exo/wayland/xdg_shell.h"
 #include "components/exo/xdg_shell_surface.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace exo::wayland {
@@ -487,6 +488,56 @@ TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
     zaura_toplevel_unset_can_fullscreen(zaura_toplevel.get());
   });
   EXPECT_FALSE(widget->widget_delegate()->CanFullscreen());
+}
+
+TEST_F(WaylandAuraShellServerTest, SetUnSetFloat) {
+  UpdateDisplay("800x600");
+
+  auto keys = SetupClientSurfaces();
+  AttachBufferToSurfaces();
+
+  std::unique_ptr<zaura_toplevel> zaura_toplevel;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    zaura_toplevel.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client->globals().aura_shell.get(),
+        data->test_surfaces_list[0].xdg_toplevel.get()));
+  });
+
+  WaylandXdgSurface* xdg_surface =
+      test::server_util::GetUserDataForResource<WaylandXdgSurface>(
+          server_.get(), keys[0].shell_surface_key);
+  ASSERT_TRUE(xdg_surface);
+
+  views::Widget* widget = xdg_surface->shell_surface->GetWidget();
+  auto* window_state = ash::WindowState::Get(widget->GetNativeWindow());
+  window_state->window()->SetProperty(aura::client::kAppType,
+                                      static_cast<int>(ash::AppType::LACROS));
+  ASSERT_FALSE(window_state->IsFloated());
+
+  // Location 0 is bottom right. Test that the window is floated and in the
+  // bottom right quadrant of the display.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_float_to_location(zaura_toplevel.get(), /*location=*/0u);
+  });
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(gfx::Rect(400, 300, 400, 300)
+                  .Contains(widget->GetWindowBoundsInScreen()));
+
+  // Unfloat the window.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_unset_float(zaura_toplevel.get());
+  });
+  EXPECT_FALSE(window_state->IsFloated());
+
+  // Location 1 is bottom left. Test that the window is floated and in the
+  // bottom left quadrant of the display.
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_float_to_location(zaura_toplevel.get(), /*location=*/1u);
+  });
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_TRUE(
+      gfx::Rect(0, 300, 400, 300).Contains(widget->GetWindowBoundsInScreen()));
 }
 
 }  // namespace

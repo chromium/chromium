@@ -146,6 +146,7 @@ source_set("wayland") {
     "//base",
     "//build/config/linux/libdrm",
     "//chromeos/ui/base",
+    "//chromeos/ui/frame",
     "//components/exo",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
