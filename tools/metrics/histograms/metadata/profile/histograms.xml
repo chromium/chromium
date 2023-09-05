@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.AppCount" units="units" expires_after="2023-12-10">
+<histogram name="Profile.AppCount" units="units" expires_after="2024-03-03">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>The number of installed apps when a profile is opened.</summary>
@@ -610,7 +610,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.{Database}Size" units="MB" expires_after="2023-12-30">
+<histogram name="Profile.{Database}Size" units="MB" expires_after="2024-03-03">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

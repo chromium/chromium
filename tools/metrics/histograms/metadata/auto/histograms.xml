@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.AlsReaderStatus"
-    enum="AutoScreenBrightnessAlsReaderStatus" expires_after="2023-12-31">
+    enum="AutoScreenBrightnessAlsReaderStatus" expires_after="2024-03-03">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.GlobalCurveResetOnInitialization"
-    enum="Boolean" expires_after="2023-12-31">
+    enum="Boolean" expires_after="2024-03-03">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>Whether the global curve is reset at initialization.</summary>
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AutoScreenBrightness.UserAdjustmentEffect"
-    enum="AutoScreenBrightnessUserAdjustmentEffect" expires_after="2023-12-31">
+    enum="AutoScreenBrightnessUserAdjustmentEffect" expires_after="2024-03-03">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

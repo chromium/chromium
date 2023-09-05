@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.UserTheme" enum="WebApkUserTheme"
-    expires_after="2024-01-01">
+    expires_after="2024-03-03">
   <owner>johnwes@google.com</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

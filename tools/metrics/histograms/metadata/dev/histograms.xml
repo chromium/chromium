@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.BadgeActivated" enum="DevToolsBadgeActivated"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>ergunsh@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Elements.SidebarTabShown"
-    enum="DevToolsElementsSidebarTab" expires_after="2023-12-31">
+    enum="DevToolsElementsSidebarTab" expires_after="2024-03-03">
   <owner>bmeurer@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <summary>
@@ -501,14 +501,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>bmeurer@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
 <histogram name="DevTools.Sources.SidebarTabShown"
-    enum="DevToolsSourcesSidebarTab" expires_after="2023-12-31">
+    enum="DevToolsSourcesSidebarTab" expires_after="2024-03-03">
   <owner>bmeurer@chromium.org</owner>
   <owner>jarin@chromium.org</owner>
   <summary>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileDebugged" enum="DevToolsMediaType"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>bmeurer@chromium.org</owner>
   <owner>szuend@chromium.org</owner>
   <summary>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SourcesPanelFileOpened" enum="DevToolsMediaType"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>changhaohan@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>

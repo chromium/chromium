@@ -1241,7 +1241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful"
-    enum="Boolean" expires_after="2023-12-31">
+    enum="Boolean" expires_after="2024-03-03">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>

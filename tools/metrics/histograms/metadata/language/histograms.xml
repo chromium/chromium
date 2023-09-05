@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
