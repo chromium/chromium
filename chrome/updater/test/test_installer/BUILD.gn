@@ -5,152 +5,177 @@
 import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
 
-executable("test_meta_installer") {
-  testonly = true
+if (is_win) {
+  executable("test_meta_installer") {
+    testonly = true
 
-  sources = [
-    "main.cc",
-    "test_installer.rc",
-  ]
-  deps = [
-    "//base",
-    "//chrome/updater:constants_test",
-    "//chrome/updater/win/installer:lib",
-  ]
-}
-
-copy("test_installer") {
-  testonly = true
-
-  sources = [
-    "$root_build_dir/test_meta_installer.exe",
-    "//chrome/tools/build/win/resedit.py",
-    "create_test_installer_gn_wrapper.py",
-    "embed_install_scripts.py",
-  ]
-
-  deps = [ ":test_meta_installer" ]
-
-  outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
-}
-
-template("test_app_installer") {
-  testonly = true
-  app_name = "test_" + target_name
-  setup_name = "Test" + target_name + "Setup"
-  script = "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
-
-  output_installer = "$root_build_dir/test_installer/" + setup_name + ".exe"
-  outputs = [ output_installer ]
-
-  action(app_name + "_installer") {
-    inputs = [
-      script,
-      invoker.setup_script,
+    sources = [
+      "main.cc",
+      "test_installer.rc",
     ]
-
-    args = [
-      "--installer",
-      rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
-                  root_build_dir),
-      "--output",
-      rebase_path(output_installer, root_build_dir),
-      "--script",
-      rebase_path(invoker.setup_script),
+    deps = [
+      "//base",
+      "//chrome/updater:constants_test",
+      "//chrome/updater/win/installer:lib",
     ]
-    deps = [ ":test_installer" ]
   }
 
-  crx3(app_name + "_installer_crx") {
-    base_dir = "$root_build_dir/test_installer"
-    key = "//chrome/updater/test/data/selfupdate_test_key.der"
-    output = "$root_build_dir/test_installer/" + setup_name + ".crx3"
+  copy("test_installer") {
+    testonly = true
 
-    inputs = [ output_installer ]
-    deps = [ ":" + app_name + "_installer" ]
+    sources = [
+      "$root_build_dir/test_meta_installer.exe",
+      "//chrome/tools/build/win/resedit.py",
+      "create_test_installer_gn_wrapper.py",
+      "embed_install_scripts.py",
+    ]
+
+    deps = [ ":test_meta_installer" ]
+
+    outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
   }
-}
 
-test_app_installer("app1") {
-  setup_script = "test_app1_setup.py"
-}
+  template("test_app_installer") {
+    testonly = true
+    app_name = "test_" + target_name
+    setup_name = "Test" + target_name + "Setup"
+    script =
+        "$root_build_dir/test_installer/create_test_installer_gn_wrapper.py"
 
-test_app_installer("app2") {
-  setup_script = "test_app2_setup.cmd"
-}
+    output_installer = "$root_build_dir/test_installer/" + setup_name + ".exe"
+    outputs = [ output_installer ]
 
-template("test_msi_installer") {
-  testonly = true
-  appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
-  msi_base_name = "TestSystemMsiInstaller"
-  version = invoker.version
-  relative_path = appid + "." + version + "/" + msi_base_name + ".msi"
-  output_installer = "$root_build_dir/test_installer/" + relative_path
-
-  if (is_chrome_branded) {
-    action("test_msi_installer" + target_name) {
-      script = "create_test_msi_installer.py"
-      test_installer_wxs_xml = "test_installer.wxs.xml"
-
+    action(app_name + "_installer") {
       inputs = [
         script,
-        test_installer_wxs_xml,
+        invoker.setup_script,
       ]
-      outputs = [ output_installer ]
 
       args = [
-        "--candle_path",
-        rebase_path("//third_party/wix/candle.exe", root_build_dir),
-        "--light_path",
-        rebase_path("//third_party/wix/light.exe", root_build_dir),
-        "--product_name",
-        "Test System MSI Installer",
-        "--product_version",
-        version,
-        "--appid",
-        appid,
-        "--msi_base_name",
-        msi_base_name,
-        "--msi_template_path",
-        rebase_path(test_installer_wxs_xml),
-        "--company_name",
-        updater_company_short_name,
-        "--company_full_name",
-        updater_company_full_name,
-        "--output_dir",
-        rebase_path("$root_build_dir/test_installer"),
+        "--installer",
+        rebase_path("$root_build_dir/test_installer/test_meta_installer.exe",
+                    root_build_dir),
+        "--output",
+        rebase_path(output_installer, root_build_dir),
+        "--script",
+        rebase_path(invoker.setup_script),
       ]
+      deps = [ ":test_installer" ]
     }
-  } else {
-    # WiX tools are only available on `src-internal`, so the Chromium version is
-    # generated and checked into `//chrome/updater/test/data/chromium_msi/`.
-    copy("test_msi_installer" + target_name) {
-      sources = [ "//chrome/updater/test/data/chromium_msi/" + relative_path ]
-      outputs = [ output_installer ]
+
+    crx3(app_name + "_installer_crx") {
+      base_dir = "$root_build_dir/test_installer"
+      key = "//chrome/updater/test/data/selfupdate_test_key.der"
+      output = "$root_build_dir/test_installer/" + setup_name + ".crx3"
+
+      inputs = [ output_installer ]
+      deps = [ ":" + app_name + "_installer" ]
     }
   }
-}
 
-test_msi_installer("1.0.0.0") {
-  version = "1.0.0.0"
-}
+  test_app_installer("app1") {
+    setup_script = "test_app1_setup.py"
+  }
 
-test_msi_installer("2.0.0.0") {
-  version = "2.0.0.0"
-}
+  test_app_installer("app2") {
+    setup_script = "test_app2_setup.cmd"
+  }
 
-copy("copy_test_msi_installer2.0.0.0") {
-  testonly = true
-  sources = get_target_outputs(":test_msi_installer2.0.0.0")
-  deps = [ ":test_msi_installer2.0.0.0" ]
-  outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
-}
+  template("test_msi_installer") {
+    testonly = true
+    appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
+    msi_base_name = "TestSystemMsiInstaller"
+    version = invoker.version
+    relative_path = appid + "." + version + "/" + msi_base_name + ".msi"
+    output_installer = "$root_build_dir/test_installer/" + relative_path
 
-crx3("test_msi_installer_crx") {
-  testonly = true
-  base_dir = "$root_build_dir/test_installer"
-  key = "//chrome/updater/test/data/selfupdate_test_key.der"
-  inputs = get_target_outputs(":copy_test_msi_installer2.0.0.0")
-  output = "$root_build_dir/test_installer/TestSystemMsiInstaller.msi.crx3"
-  deps = [ ":copy_test_msi_installer2.0.0.0" ]
+    if (is_chrome_branded) {
+      action("test_msi_installer" + target_name) {
+        script = "create_test_msi_installer.py"
+        test_installer_wxs_xml = "test_installer.wxs.xml"
+
+        inputs = [
+          script,
+          test_installer_wxs_xml,
+        ]
+        outputs = [ output_installer ]
+
+        args = [
+          "--candle_path",
+          rebase_path("//third_party/wix/candle.exe", root_build_dir),
+          "--light_path",
+          rebase_path("//third_party/wix/light.exe", root_build_dir),
+          "--product_name",
+          "Test System MSI Installer",
+          "--product_version",
+          version,
+          "--appid",
+          appid,
+          "--msi_base_name",
+          msi_base_name,
+          "--msi_template_path",
+          rebase_path(test_installer_wxs_xml),
+          "--company_name",
+          updater_company_short_name,
+          "--company_full_name",
+          updater_company_full_name,
+          "--output_dir",
+          rebase_path("$root_build_dir/test_installer"),
+        ]
+      }
+    } else {
+      # WiX tools are only available on `src-internal`, so the Chromium version is
+      # generated and checked into `//chrome/updater/test/data/chromium_msi/`.
+      copy("test_msi_installer" + target_name) {
+        sources = [ "//chrome/updater/test/data/chromium_msi/" + relative_path ]
+        outputs = [ output_installer ]
+      }
+    }
+  }
+
+  test_msi_installer("1.0.0.0") {
+    version = "1.0.0.0"
+  }
+
+  test_msi_installer("2.0.0.0") {
+    version = "2.0.0.0"
+  }
+
+  copy("copy_test_msi_installer2.0.0.0") {
+    testonly = true
+    sources = get_target_outputs(":test_msi_installer2.0.0.0")
+    deps = [ ":test_msi_installer2.0.0.0" ]
+    outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+  }
+
+  crx3("test_msi_installer_crx") {
+    testonly = true
+    base_dir = "$root_build_dir/test_installer"
+    key = "//chrome/updater/test/data/selfupdate_test_key.der"
+    inputs = get_target_outputs(":copy_test_msi_installer2.0.0.0")
+    output = "$root_build_dir/test_installer/TestSystemMsiInstaller.msi.crx3"
+    deps = [ ":copy_test_msi_installer2.0.0.0" ]
+  }
+} else {
+  template("test_app_installer") {
+    testonly = true
+    app_name = target_name
+    script_target = "test_script_" + app_name
+    copy(script_target) {
+      sources = [ invoker.script ]
+      outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+    }
+    crx3("test_installer_" + app_name) {
+      base_dir = "$root_build_dir/test_installer"
+      key = "//chrome/updater/test/data/selfupdate_test_key.der"
+      inputs = get_target_outputs(":" + script_target)
+      output =
+          "$root_build_dir/test_installer/test_installer_" + app_name + ".crx3"
+      deps = [ ":" + script_target ]
+    }
+  }
+
+  test_app_installer("app") {
+    script = "test_app_setup.sh"
+  }
 }

@@ -967,6 +967,7 @@ if (is_win || is_mac || is_linux) {
         ":updater_selfupdate_test_crx",
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
+        "//chrome/updater/test/test_installer:test_installer_app",
       ]
 
       if (target_cpu == "arm64") {
