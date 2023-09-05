@@ -13,15 +13,9 @@ namespace actions {
 
 namespace {
 
-class ActionManagerTest : public testing::Test {
- public:
-  ActionManagerTest() { ActionManager::ResetForTesting(); }
-  ActionManagerTest(const ActionManagerTest&) = delete;
-  ActionManagerTest& operator=(const ActionManagerTest&) = delete;
-  ~ActionManagerTest() override { ActionManager::ResetForTesting(); }
-};
-
-using ActionItemTest = ActionManagerTest;
+const std::u16string kActionText = u"Test Action";
+const std::u16string kChild1Text = u"Child Action 1";
+const std::u16string kChild2Text = u"Child Action 2";
 
 enum TestActionIds : ActionId {
   kActionTestStart = kActionsStart,
@@ -31,6 +25,39 @@ enum TestActionIds : ActionId {
   kActionTest4,
   kActionTestEnd,
 };
+
+class ActionManagerTest : public testing::Test {
+ public:
+  ActionManagerTest() { ActionManager::ResetForTesting(); }
+  ActionManagerTest(const ActionManagerTest&) = delete;
+  ActionManagerTest& operator=(const ActionManagerTest&) = delete;
+  ~ActionManagerTest() override { ActionManager::ResetForTesting(); }
+
+ protected:
+  void InitializeActions(ActionManager* manager) {
+    // clang-format off
+    manager->AddAction(ActionItem::Builder()
+        .SetText(kActionText)
+        .SetActionId(kActionTest1)
+        .SetVisible(true)
+        .SetEnabled(false)
+        .AddChildren(
+            ActionItem::Builder()
+                .SetActionId(kActionTest2)
+                .SetText(kChild1Text),
+            ActionItem::Builder()
+                .SetActionId(kActionTest3)
+                .SetText(kChild2Text)).Build());
+    // clang-format on
+  }
+  void SetupInitializer() {
+    auto& manager = ActionManager::GetForTesting();
+    manager.AppendActionItemInitializer(base::BindRepeating(
+        &ActionManagerTest::InitializeActions, base::Unretained(this)));
+  }
+};
+
+using ActionItemTest = ActionManagerTest;
 
 }  // namespace
 
@@ -120,9 +147,6 @@ TEST_F(ActionItemTest, ActionBuilderTest) {
 }
 
 TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
-  const std::u16string text = u"Test Action";
-  const std::u16string child1_text = u"Child Action 1";
-  const std::u16string child2_text = u"Child Action 2";
   const size_t expected_child_count = 2;
   int action_invoked_count = 0;
   int child1_action_invoked_count = 0;
@@ -132,46 +156,46 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
       base::BindRepeating([](int* invoked_count, actions::ActionItem* action){
         ++*invoked_count;
       }, &action_invoked_count))
-      .SetText(text)
+      .SetText(kActionText)
       .SetActionId(kActionTest1)
       .SetVisible(true)
       .SetEnabled(false)
       .AddChildren(
           ActionItem::Builder(
               base::BindRepeating([](int* invoked_count,
-                                     actions::ActionItem* action) {
+                                    actions::ActionItem* action) {
                 ++*invoked_count;
               }, &child1_action_invoked_count))
               .SetActionId(kActionTest2)
-              .SetText(child1_text),
+              .SetText(kChild1Text),
           ActionItem::Builder(
               base::BindRepeating([](int* invoked_count,
-                                     actions::ActionItem* action) {
+                                    actions::ActionItem* action) {
                 ++*invoked_count;
               }, &child2_action_invoked_count))
               .SetActionId(kActionTest3)
-              .SetText(child2_text));
+              .SetChecked(true)
+              .SetText(kChild2Text));
   // clang-format on
   auto& manager = ActionManager::GetForTesting();
   manager.AddAction(std::move(builder).Build());
   auto* root_action = manager.FindAction(kActionTest1);
-  EXPECT_EQ(root_action->GetChildrenForTesting().children().size(),
-            expected_child_count);
+  EXPECT_EQ(root_action->GetChildren().children().size(), expected_child_count);
   // TODO(kylixrd): Once ActionManger::IndexActions() indexes the child actions,
   // FindAction() can be used to locate a child action. Go right to it for now.
-  auto* child_action1 =
-      root_action->GetChildrenForTesting().children()[0].get();
-  EXPECT_EQ(child_action1->GetText(), child1_text);
+  auto* child_action1 = root_action->GetChildren().children()[0].get();
+  EXPECT_EQ(child_action1->GetText(), kChild1Text);
   auto child_action_id1 = child_action1->GetActionId();
   ASSERT_TRUE(child_action_id1);
   EXPECT_EQ(child_action_id1.value(), kActionTest2);
+  EXPECT_FALSE(child_action1->GetChecked());
 
-  auto* child_action2 =
-      root_action->GetChildrenForTesting().children()[1].get();
-  EXPECT_EQ(child_action2->GetText(), child2_text);
+  auto* child_action2 = root_action->GetChildren().children()[1].get();
+  EXPECT_EQ(child_action2->GetText(), kChild2Text);
   auto child_action_id2 = child_action2->GetActionId();
   ASSERT_TRUE(child_action_id2);
   EXPECT_EQ(child_action_id2.value(), kActionTest3);
+  EXPECT_TRUE(child_action2->GetChecked());
 
   EXPECT_FALSE(root_action->GetEnabled());
   EXPECT_EQ(action_invoked_count, 0);
@@ -184,6 +208,15 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   EXPECT_EQ(child1_action_invoked_count, 1);
   child_action2->InvokeAction();
   EXPECT_EQ(child2_action_invoked_count, 1);
+}
+
+TEST_F(ActionItemTest, TestGetChildren) {
+  ActionItemVector actions;
+  auto& manager = ActionManager::GetForTesting();
+  SetupInitializer();
+  manager.GetActions(actions);
+  EXPECT_FALSE(actions.empty());
+  EXPECT_EQ(actions.size(), size_t{3});
 }
 
 }  // namespace actions

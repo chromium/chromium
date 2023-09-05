@@ -108,6 +108,17 @@ ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetAccelerator(
   return std::move(this->SetAccelerator(accelerator));
 }
 
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetChecked(
+    bool checked) & {
+  action_item_->SetChecked(checked);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetChecked(
+    bool checked) && {
+  return std::move(this->SetChecked(checked));
+}
+
 ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetEnabled(
     bool enabled) & {
   action_item_->SetEnabled(enabled);
@@ -220,6 +231,18 @@ void ActionItem::SetAccelerator(ui::Accelerator accelerator) {
     return;
   }
   accelerator_ = accelerator;
+  ActionItemChanged();
+}
+
+bool ActionItem::GetChecked() const {
+  return checked_;
+}
+
+void ActionItem::SetChecked(bool checked) {
+  if (checked_ == checked) {
+    return;
+  }
+  checked_ = checked;
   ActionItemChanged();
 }
 
@@ -401,6 +424,13 @@ ActionItem* ActionManager::FindAction(const ui::KeyEvent& key_event) {
   return nullptr;
 }
 
+void ActionManager::GetActions(ActionItemVector& items) {
+  IndexActions();
+  for (auto& child : root_action_list_->children()) {
+    GetActionsImpl(child.get(), items);
+  }
+}
+
 ActionItem* ActionManager::AddAction(std::unique_ptr<ActionItem> action_item) {
   return root_action_list_->AddAction(std::move(action_item));
 }
@@ -430,6 +460,13 @@ void ActionManager::AppendActionItemInitializer(
 }
 
 void ActionManager::ActionListChanged() {}
+
+void ActionManager::GetActionsImpl(ActionItem* item, ActionItemVector& items) {
+  items.push_back(item);
+  for (auto& child : item->GetChildren().children()) {
+    GetActionsImpl(child.get(), items);
+  }
+}
 
 BEGIN_METADATA_BASE(ActionManager)
 END_METADATA

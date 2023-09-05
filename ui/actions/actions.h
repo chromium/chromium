@@ -23,6 +23,7 @@ namespace actions {
 
 class ActionItem;
 using ActionListVector = std::vector<std::unique_ptr<ActionItem>>;
+using ActionItemVector = std::vector<ActionItem*>;
 
 class COMPONENT_EXPORT(ACTIONS) ActionList {
  public:
@@ -34,7 +35,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionList {
 
   explicit ActionList(Delegate* delegate);
   ~ActionList();
-  ActionListVector& children() { return children_; }
+  const ActionListVector& children() const { return children_; }
   bool empty() { return children_.empty(); }
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
@@ -75,6 +76,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
     ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
     ActionItemBuilder& SetAccelerator(ui::Accelerator accelerator) &;
     ActionItemBuilder&& SetAccelerator(ui::Accelerator accelerator) &&;
+    ActionItemBuilder& SetChecked(bool checked) &;
+    ActionItemBuilder&& SetChecked(bool checked) &&;
     ActionItemBuilder& SetEnabled(bool enabled) &;
     ActionItemBuilder&& SetEnabled(bool enabled) &&;
     ActionItemBuilder& SetImage(const ui::ImageModel& image) &;
@@ -118,6 +121,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   void SetActionId(absl::optional<ActionId> action_id);
   ui::Accelerator GetAccelerator() const;
   void SetAccelerator(ui::Accelerator accelerator);
+  bool GetChecked() const;
+  void SetChecked(bool checked);
   bool GetEnabled() const;
   void SetEnabled(bool enabled);
   const ui::ImageModel& GetImage() const;
@@ -144,7 +149,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   static ActionItemBuilder Builder(InvokeActionCallback callback);
   static ActionItemBuilder Builder();
 
-  ActionList& GetChildrenForTesting() { return children_; }
+  const ActionList& GetChildren() const { return children_; }
 
  protected:
   // ActionList::Delegate override.
@@ -157,6 +162,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   ActionList children_{this};
   absl::optional<ActionId> action_id_;
   ui::Accelerator accelerator_;
+  bool checked_ = false;
   bool enabled_ = true;
   bool visible_ = true;
   std::u16string text_;
@@ -186,6 +192,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   ActionItem* FindAction(std::u16string term);
   ActionItem* FindAction(ActionId action_id);
   ActionItem* FindAction(const ui::KeyEvent& key_event);
+  void GetActions(ActionItemVector& items);
 
   ActionItem* AddAction(std::unique_ptr<ActionItem> action_item);
   std::unique_ptr<ActionItem> RemoveAction(ActionItem* action_item);
@@ -208,6 +215,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   void ActionListChanged() override;
 
  private:
+  void GetActionsImpl(ActionItem* item, ActionItemVector& items);
+
   // Holds the chain of ActionManager initializer callbacks.
   std::unique_ptr<ActionItemInitializerList> initializer_list_;
 

@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
 #define UI_VIEWS_CONTROLS_TEXTAREA_TEXTAREA_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/metadata/view_factory.h"
 

@@ -11,6 +11,8 @@ component("views_examples_lib") {
   testonly = true
 
   sources = [
+    "actions_example.cc",
+    "actions_example.h",
     "animated_image_view_example.cc",
     "animated_image_view_example.h",
     "animation_example.cc",
@@ -45,6 +47,7 @@ component("views_examples_lib") {
     "example_base.h",
     "example_combobox_model.cc",
     "example_combobox_model.h",
+    "examples_action_id.h",
     "examples_color_id.h",
     "examples_color_mixer.cc",
     "examples_color_mixer.h",
@@ -128,6 +131,7 @@ component("views_examples_lib") {
     "//cc/paint",
     "//skia",
     "//third_party/icu",
+    "//ui/actions",
     "//ui/base",
     "//ui/color",
     "//ui/events",

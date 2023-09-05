@@ -14,6 +14,51 @@
         Abort Animation
       </message>
 
+      <!-- actions example -->
+      <message translateable="false" name="IDS_ASSIGN_ACTION_TO_CONTROL">
+        Assign
+      </message>
+
+      <message translateable="false" name="IDS_CREATE_CONTROL">
+        Create
+      </message>
+
+      <message translateable="false" name="IDS_CONTROLS">
+        Controls
+      </message>
+
+      <message translateable="false" name="IDS_AVAILABLE_CONTROLS">
+        Available controls
+      </message>
+
+      <message translateable="false" name="IDS_AVAILABLE_ACTIONS">
+        Available actions
+      </message>
+
+      <message translateable="false" name="IDS_ACTION_CHECKED">
+        Action checked
+      </message>
+
+      <message translateable="false" name="IDS_ACTION_VISIBLE">
+        Action visible
+      </message>
+
+      <message translateable="false" name="IDS_ACTION_ENABLED">
+        Action enabled
+      </message>
+
+      <message translateable="false" name="IDS_ACTION_TEXT">
+        Action text
+      </message>
+
+      <message translateable="false" name="IDS_ACTION_TOOLTIP_TEXT">
+        Action tooltip text
+      </message>
+
+      <message translateable="false" name="IDS_ACTIONS_TRIGGER_INFO">
+        Actions trigger info
+      </message>
+
       <!-- badge example -->
       <message translateable="false" name="IDS_BADGE_SELECT_LABEL">
         Badge
@@ -545,7 +590,7 @@
         The quick brown fox jumps over the lazy dog
       </message>
       <message translateable="false" name="IDS_TYPOGRAPHY_BODY_PLACEHOLDER_TEXT">
-        The quick brown fox jumps over the lazy dog&#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+        The quick brown fox jumps over the lazy dog&#10;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </message>
 
       <!-- vector example -->
