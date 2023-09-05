@@ -1090,8 +1090,7 @@ void BaseRenderingContext2D::DrawPathInternal(
     CanvasRenderingContext2DState::PaintType paint_type,
     SkPathFillType fill_type,
     UsePaintCache use_paint_cache) {
-  if (path.IsEmpty() ||
-      (path.BoundingRect().height() == 0 && path.BoundingRect().width() == 0)) {
+  if (path.IsEmpty()) {
     return;
   }
 
