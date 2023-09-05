@@ -87,9 +87,9 @@ arc::mojom::WebApkInfoPtr BuildDefaultWebApkInfo(
 }
 
 absl::optional<arc::ArcFeatures> GetArcFeaturesWithAbiList(
-    const std::string& abi_list) {
+    std::map<std::string, std::string> properties) {
   arc::ArcFeatures arc_features;
-  arc_features.build_props["ro.product.cpu.abilist"] = abi_list;
+  arc_features.build_props = properties;
   return arc_features;
 }
 
@@ -129,8 +129,10 @@ class WebApkInstallTaskTest : public testing::Test {
     webapk_test_server_ = std::make_unique<apps::WebApkTestServer>();
     ASSERT_TRUE(webapk_test_server_->SetUpAndStartServer(&test_server_));
 
+    std::map<std::string, std::string> default_properties = {
+        {"ro.product.cpu.abilist", "x86_64"}};
     arc_features_getter_ =
-        base::BindRepeating(&GetArcFeaturesWithAbiList, "x86_64");
+        base::BindRepeating(&GetArcFeaturesWithAbiList, default_properties);
     arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(
         &arc_features_getter_);
   }
@@ -186,8 +188,11 @@ class WebApkInstallTaskTest : public testing::Test {
 };
 
 TEST_F(WebApkInstallTaskTest, SuccessfulInstall) {
+  std::map<std::string, std::string> multiple_abis_properties = {
+      {"ro.product.cpu.abilist", "arm64-v8a,armeabi-v7a"}};
+
   auto arc_features_getter =
-      base::BindRepeating(&GetArcFeaturesWithAbiList, "arm64-v8a,armeabi-v7a");
+      base::BindRepeating(&GetArcFeaturesWithAbiList, multiple_abis_properties);
   arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(&arc_features_getter);
 
   auto app_id =
@@ -567,4 +572,40 @@ TEST_F(WebApkInstallTaskTest, FailedUpdateNetworkError) {
               testing::ElementsAre(app_id));
   ASSERT_THAT(apps::webapk_prefs::GetUpdateNeededAppIds(profile()),
               testing::ElementsAre(app_id));
+}
+
+TEST_F(WebApkInstallTaskTest, SingleAbi) {
+  std::map<std::string, std::string> single_abi_properties = {
+      {"ro.product.cpu.abilist", "armeabi-v7a"}};
+
+  auto arc_features_getter =
+      base::BindRepeating(&GetArcFeaturesWithAbiList, single_abi_properties);
+  arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(&arc_features_getter);
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  ASSERT_EQ(last_webapk_request()->android_abi(), "armeabi-v7a");
+}
+
+TEST_F(WebApkInstallTaskTest, SystemAbiProperty) {
+  std::map<std::string, std::string> system_abi_properties = {
+      {"ro.system.product.cpu.abilist", "armeabi-v7a"}};
+
+  auto arc_features_getter =
+      base::BindRepeating(&GetArcFeaturesWithAbiList, system_abi_properties);
+  arc::ArcFeaturesParser::SetArcFeaturesGetterForTesting(&arc_features_getter);
+
+  auto app_id =
+      web_app::test::InstallWebApp(profile(), BuildDefaultWebAppInfo());
+
+  webapk_test_server()->RespondWithSuccess("org.chromium.webapk.some_package");
+
+  EXPECT_TRUE(InstallWebApk(app_id));
+
+  ASSERT_EQ(last_webapk_request()->android_abi(), "armeabi-v7a");
 }
