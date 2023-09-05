@@ -1341,7 +1341,9 @@ AcceleratorConfigurationProvider::MaybeHandleNonSearchAccelerator(
     pending_accelerator_.reset();
   }
 
-  if ((accelerator.modifiers() & ui::EF_COMMAND_DOWN) == 0) {
+  // Function keys cannot be used with the search modifier so don't warn users.
+  if ((accelerator.modifiers() & ui::EF_COMMAND_DOWN) == 0 &&
+      !ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
     if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
         pending_accelerator_->source != source ||
         pending_accelerator_->accelerator != accelerator) {

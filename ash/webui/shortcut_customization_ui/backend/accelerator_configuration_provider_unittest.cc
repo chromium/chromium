@@ -2189,6 +2189,15 @@ TEST_F(AcceleratorConfigurationProviderTest, AddNonSearchAccelerator) {
           .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
                           accelerator, &result);
   EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  // Attempt to add a function key accelerator. Expect no warning even though
+  // it has no search key as a modifier.
+  const ui::Accelerator function_key_accel(ui::VKEY_F6, ui::EF_CONTROL_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, kToggleMirrorMode,
+                          function_key_accel, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,
