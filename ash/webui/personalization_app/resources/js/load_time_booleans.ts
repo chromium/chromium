@@ -50,3 +50,7 @@ export function isTimeOfDayScreenSaverEnabled() {
 export function isTimeOfDayWallpaperEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
 }
+
+export function isSeaPenEnabled() {
+  return loadTimeData.getBoolean('isSeaPenEnabled');
+}

@@ -2298,6 +2298,9 @@ BASE_FEATURE(kScreenSaverDuration,
              "ScreenSaverDuration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sea pen feature in the personalization app.
+BASE_FEATURE(kSeaPen, "SeaPen", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
@@ -3960,6 +3963,10 @@ bool IsScalableIphEnabled() {
 bool IsScalableIphDebugEnabled() {
   return IsScalableIphEnabled() &&
          base::FeatureList::IsEnabled(kScalableIphDebug);
+}
+
+bool IsSeaPenEnabled() {
+  return base::FeatureList::IsEnabled(kSeaPen);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

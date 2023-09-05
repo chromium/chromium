@@ -497,6 +497,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isTimeOfDayWallpaperEnabled",
                      features::IsTimeOfDayWallpaperEnabled());
+
+  source->AddBoolean("isSeaPenEnabled", features::IsSeaPenEnabled());
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
