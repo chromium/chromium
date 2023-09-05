@@ -22,3 +22,20 @@ test("gwp_asan_unittests") {
     ]
   }
 }
+
+if (is_win || is_mac || is_linux || is_chromeos || is_android) {
+  executable("dump_gwp_asan") {
+    sources = [ "tools/dump_gwp_asan/dump_gwp_asan.cc" ]
+
+    deps = [
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//components/gwp_asan/crash_handler",
+      "//components/gwp_asan/crash_handler:crash_proto",
+      "//third_party/crashpad/crashpad/minidump",
+      "//third_party/crashpad/crashpad/snapshot",
+      "//third_party/crashpad/crashpad/util",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+}
