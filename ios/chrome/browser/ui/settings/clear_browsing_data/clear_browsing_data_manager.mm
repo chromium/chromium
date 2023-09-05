@@ -34,6 +34,8 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -50,6 +52,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
@@ -105,6 +108,14 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
       break;
   }
   return symbol;
+}
+
+// Returns YES if UI is currently blocking, to stop a second clear browsing data
+// task to start.
+BOOL UIIsBlocking(Browser* browser) {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+  return [sceneState.uiBlockerManager currentUIBlocker];
 }
 
 }  // namespace
@@ -375,8 +386,12 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   [actionCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
                 action:^{
-                  [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
-                  [weakSelf.consumer dismissAlertCoordinator];
+                  if (!UIIsBlocking(browser)) {
+                    // Race condition caused the flow to get here, cancel this
+                    // one.
+                    [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
+                    [weakSelf.consumer dismissAlertCoordinator];
+                  }
                 }
                  style:UIAlertActionStyleDestructive];
   return actionCoordinator;
