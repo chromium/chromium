@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -26,16 +27,41 @@ MATCHER_P(HasLegalMessageLineText, text, "A LegalMessageLine that has text.") {
   return base::UTF16ToUTF8(arg.text()) == text;
 };
 
+namespace {
+
+// The different representations of a year needed by tests here.
+struct Year {
+  int integer;
+  std::string string;
+  std::u16string u16string;
+  std::string last2_string;
+};
+
+Year SetupNextYear() {
+  std::string next_year = test::NextYear();
+  int integer;
+  EXPECT_TRUE(base::StringToInt(next_year, &integer));
+  return Year{
+      .integer = integer,
+      .string = next_year,
+      .u16string = base::ASCIIToUTF16(next_year),
+      .last2_string = next_year.substr(next_year.length() - 2, 2),
+  };
+}
+
+}  // namespace
+
 // Tests that CreateForLocalSave() sets all properties.
 TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
+  const Year next_year = SetupNextYear();
   CreditCard card = test::GetCreditCard();
   card.SetNickname(u"My Card");
-  card.SetNumber(u"340056789012347777");  // This number sets the card network.
+  card.SetNumber(u"378282246310005");  // This number sets the card network.
   EXPECT_EQ(card.network(), kAmericanExpressCard);  // Self test to ensure the
                                                     // number above is for the
                                                     // intended network.
   card.SetExpirationMonth(3);
-  card.SetExpirationYear(2044);
+  card.SetExpirationYear(next_year.integer);
   card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Chromium Dev");
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
@@ -46,13 +72,15 @@ TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
   EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_CC_AMEX);
   EXPECT_THAT(ui_info.legal_message_lines, testing::ElementsAre());
   EXPECT_EQ(ui_info.card_label, card.NicknameAndLastFourDigitsForTesting());
-  EXPECT_THAT(
-      base::UTF16ToUTF8(ui_info.card_sub_label),
-      testing::AllOf(testing::HasSubstr("44"), testing::HasSubstr("03")));
-  EXPECT_EQ(ui_info.card_last_four_digits, u"7777");
+  EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_sub_label),
+              testing::AllOf(testing::HasSubstr(next_year.last2_string),
+                             testing::HasSubstr("03")));
+  EXPECT_EQ(ui_info.card_last_four_digits, u"0005");
   EXPECT_EQ(ui_info.cardholder_name, u"Chromium Dev");
   EXPECT_EQ(ui_info.expiration_date_month, u"03");
-  EXPECT_EQ(ui_info.expiration_date_year, u"2044");
+  EXPECT_EQ(ui_info.expiration_date_year, next_year.u16string);
+  EXPECT_EQ(ui_info.card_description,
+            u"My Card, Amex, 0005, expires 03/" + next_year.u16string);
   EXPECT_EQ(ui_info.displayed_target_account_email, u"");
   EXPECT_TRUE(ui_info.displayed_target_account_avatar.IsEmpty());
   EXPECT_EQ(ui_info.confirm_text,
@@ -66,12 +94,13 @@ TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
 // Tests that CreateForUploadSave() sets properties where no branched logic is
 // needed.
 TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {
+  const Year next_year = SetupNextYear();
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"My Card");
-  card.SetNumber(u"400056789012347777");
+  card.SetNumber(u"4444333322221111");
   card.SetNetworkForMaskedCard(kVisaCard);
   card.SetExpirationMonth(3);
-  card.SetExpirationYear(2044);
+  card.SetExpirationYear(next_year.integer);
   card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Chromium Dev");
   LegalMessageLines legal_message_lines(
       {TestLegalMessageLine("example message")});
@@ -90,14 +119,16 @@ TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {
               testing::ElementsAre(HasLegalMessageLineText("example message")));
   EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_label),
               testing::AllOf(testing::HasSubstr("My Card"),
-                             testing::HasSubstr("7777")));
-  EXPECT_THAT(
-      base::UTF16ToUTF8(ui_info.card_sub_label),
-      testing::AllOf(testing::HasSubstr("44"), testing::HasSubstr("03")));
-  EXPECT_EQ(ui_info.card_last_four_digits, u"7777");
+                             testing::HasSubstr("1111")));
+  EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_sub_label),
+              testing::AllOf(testing::HasSubstr(next_year.last2_string),
+                             testing::HasSubstr("03")));
+  EXPECT_EQ(ui_info.card_last_four_digits, u"1111");
   EXPECT_EQ(ui_info.cardholder_name, u"Chromium Dev");
   EXPECT_EQ(ui_info.expiration_date_month, u"03");
-  EXPECT_EQ(ui_info.expiration_date_year, u"2044");
+  EXPECT_EQ(ui_info.expiration_date_year, next_year.u16string);
+  EXPECT_EQ(ui_info.card_description,
+            u"My Card, Visa, 1111, expires 03/" + next_year.u16string);
   EXPECT_EQ(ui_info.displayed_target_account_email, u"example email");
   EXPECT_EQ(ui_info.displayed_target_account_avatar.Size(), gfx::Size(11, 17));
   EXPECT_EQ(
@@ -108,6 +139,23 @@ TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE));
   EXPECT_EQ(ui_info.description_text, std::u16string());
   EXPECT_EQ(ui_info.is_google_pay_branding_enabled, false);
+}
+
+TEST(AutofillSaveCardUiInfoTest,
+     CreateForUploadSaveSetsCardDescriptionWithoutNickname) {
+  const Year next_year = SetupNextYear();
+  CreditCard card = test::GetMaskedServerCard();
+  card.SetNumber(u"4444333322221111");
+  card.SetNetworkForMaskedCard(kVisaCard);
+  card.SetExpirationMonth(3);
+  card.SetExpirationYear(next_year.integer);
+
+  auto ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
+      /*options=*/{}, card, LegalMessageLines(), AccountInfo(),
+      /*is_google_pay_branding_enabled=*/false);
+
+  EXPECT_EQ(ui_info.card_description,
+            u"Visa, 1111, expires 03/" + next_year.u16string);
 }
 
 // Tests that CreateForUploadSave() sets properties that change under

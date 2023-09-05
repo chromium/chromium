@@ -83,6 +83,8 @@ import java.util.function.Consumer;
         setTextViewText(R.id.autofill_save_card_credit_card_label, uiInfo.getCardDetail().label);
         setTextViewText(
                 R.id.autofill_save_card_credit_card_sublabel, uiInfo.getCardDetail().subLabel);
+        mView.findViewById(R.id.autofill_credit_card_chip)
+                .setContentDescription(uiInfo.getCardDescription());
         setLegalMessage(uiInfo.getLegalMessageLines());
         setTextViewText(R.id.autofill_save_card_title_text, uiInfo.getTitleText());
         mView.<Button>findViewById(R.id.autofill_save_card_confirm_button)
@@ -170,25 +172,22 @@ import java.util.function.Consumer;
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        return android.R.string.ok;
+        return R.string.autofill_save_card_prompt_bottom_sheet_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        return android.R.string.ok;
+        assert false : "This method will not be called.";
+        return 0;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        return android.R.string.ok;
+        return R.string.autofill_save_card_prompt_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        return android.R.string.ok;
+        return R.string.autofill_save_card_prompt_bottom_sheet_closed;
     }
 }

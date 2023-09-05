@@ -27,6 +27,7 @@ public class AutofillSaveCardUiInfo {
     private final ImmutableList<LegalMessageLine> mLegalMessageLines;
     private final String mCardLabel;
     private final String mCardSubLabel;
+    private final String mCardDescription;
     private final String mTitleText;
     private final String mConfirmText;
     private final String mCancelText;
@@ -50,6 +51,11 @@ public class AutofillSaveCardUiInfo {
     /** @return a CardDetail of the issuer icon, label, and sub label. */
     public CardDetail getCardDetail() {
         return new CardDetail(mIssuerIcon, mCardLabel, mCardSubLabel);
+    }
+
+    /** @return an accessibility description of the card. */
+    public String getCardDescription() {
+        return mCardDescription;
     }
 
     public String getTitleText() {
@@ -77,14 +83,15 @@ public class AutofillSaveCardUiInfo {
     /** Construct the delegate given all the members. */
     private AutofillSaveCardUiInfo(boolean isForUpload, @DrawableRes int logoIcon,
             @DrawableRes int issuerIcon, List<LegalMessageLine> legalMessageLines, String cardLabel,
-            String cardSubLabel, String titleText, String confirmText, String cancelText,
-            boolean isGooglePayBrandingEnabled, String descriptionText) {
+            String cardSubLabel, String cardDescription, String titleText, String confirmText,
+            String cancelText, boolean isGooglePayBrandingEnabled, String descriptionText) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mIssuerIcon = issuerIcon;
         mLegalMessageLines = ImmutableList.copyOf(legalMessageLines);
         mCardLabel = cardLabel;
         mCardSubLabel = cardSubLabel;
+        mCardDescription = cardDescription;
         mTitleText = titleText;
         mConfirmText = confirmText;
         mCancelText = cancelText;
@@ -100,6 +107,7 @@ public class AutofillSaveCardUiInfo {
         @DrawableRes
         private int mLogoIcon;
         private CardDetail mCardDetail;
+        private String mCardDescription;
         private ImmutableList<LegalMessageLine> mLegalMessageLines = ImmutableList.of();
         private String mTitleText;
         private String mConfirmText;
@@ -119,6 +127,11 @@ public class AutofillSaveCardUiInfo {
 
         public Builder withCardDetail(CardDetail cardDetail) {
             mCardDetail = cardDetail;
+            return this;
+        }
+
+        public Builder withCardDescription(String cardDescription) {
+            mCardDescription = cardDescription;
             return this;
         }
 
@@ -158,7 +171,7 @@ public class AutofillSaveCardUiInfo {
         public AutofillSaveCardUiInfo build() {
             return new AutofillSaveCardUiInfo(mIsForUpload, mLogoIcon,
                     mCardDetail.issuerIconDrawableId, mLegalMessageLines, mCardDetail.label,
-                    mCardDetail.subLabel, mTitleText, mConfirmText, mCancelText,
+                    mCardDetail.subLabel, mCardDescription, mTitleText, mConfirmText, mCancelText,
                     mIsGooglePayBrandingEnabled, mDescriptionText);
         }
     }

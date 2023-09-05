@@ -31,6 +31,7 @@ public class AutofillSaveCardUiInfoTest {
                 .withLogoIcon(0)
                 .withIsForUpload(false)
                 .withCardDetail(new CardDetail(0, "", ""))
+                .withCardDescription("")
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withTitleText("")
                 .withConfirmText("")
@@ -65,6 +66,14 @@ public class AutofillSaveCardUiInfoTest {
         assertThat(uiInfo.getCardDetail().issuerIconDrawableId, equalTo(1));
         assertThat(uiInfo.getCardDetail().label, equalTo("cardLabel"));
         assertThat(uiInfo.getCardDetail().subLabel, equalTo("cardSubLabel"));
+    }
+
+    @Test
+    public void testBuilder_setsCardDescription() {
+        AutofillSaveCardUiInfo uiInfo =
+                defaultBuilder().withCardDescription("cardDescription").build();
+
+        assertThat(uiInfo.getCardDescription(), equalTo("cardDescription"));
     }
 
     @Test

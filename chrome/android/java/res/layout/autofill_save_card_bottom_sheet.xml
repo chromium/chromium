@@ -65,7 +65,12 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/autofill_bottom_sheet_card_chip_top_margin"
           android:padding="@dimen/autofill_bottom_sheet_credit_card_spacing"
-          android:background="@drawable/autofill_save_card_credit_card_surface">
+          android:background="@drawable/autofill_save_card_credit_card_surface"
+          android:descendantFocusability="blocksDescendants"
+          android:importantForAccessibility="yes">
+        <!-- A content description will be set by the view class for the whole
+             chip, and children will not be focusable to avoid redundant
+             information. -->
         <ImageView
             android:id="@+id/autofill_save_card_credit_card_icon"
             android:layout_width="@dimen/autofill_bottom_sheet_credit_card_width"

@@ -33,6 +33,22 @@ static std::u16string GetConfirmButtonText(
                                        : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
 }
 
+static std::u16string GetCardDescription(
+    const std::u16string& nickname,
+    const std::u16string& network,
+    const std::u16string& last_four_digits,
+    const std::u16string& expiration_date) {
+  if (nickname.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_SAVE_CARD_PROMPT_CARD_DESCRIPTION, network,
+        last_four_digits, expiration_date);
+  } else {
+    return l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_SAVE_CARD_PROMPT_CARD_DESCRIPTION_WITH_NICKNAME, nickname,
+        network, last_four_digits, expiration_date);
+  }
+}
+
 static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
     bool is_for_upload,
     const CreditCard& card,
@@ -55,6 +71,9 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.cardholder_name = card.GetRawInfo(CREDIT_CARD_NAME_FULL);
   ui_info.expiration_date_month = card.Expiration2DigitMonthAsString();
   ui_info.expiration_date_year = card.Expiration4DigitYearAsString();
+  ui_info.card_description = GetCardDescription(
+      card.nickname(), card.NetworkForDisplay(), card.LastFourDigits(),
+      card.ExpirationDateForDisplay());
   ui_info.displayed_target_account_email =
       base::UTF8ToUTF16((displayed_target_account.email));
   ui_info.displayed_target_account_avatar =

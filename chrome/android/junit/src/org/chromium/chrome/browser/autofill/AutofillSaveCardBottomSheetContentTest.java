@@ -101,6 +101,7 @@ public class AutofillSaveCardBottomSheetContentTest {
                                                 .withDescriptionText("Description Text")
                                                 .withCardDetail(new CardDetail(EXAMPLE_DRAWABLE_RES,
                                                         "CardLabel Text", "CardSubLabel Text"))
+                                                .withCardDescription("Card Description")
                                                 .withConfirmText("Confirm Text")
                                                 .withCancelText("Cancel Text")
                                                 .build();
@@ -118,6 +119,8 @@ public class AutofillSaveCardBottomSheetContentTest {
         assertEquals("CardLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_label));
         assertEquals(
                 "CardSubLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_sublabel));
+        assertEquals("Card Description",
+                contentView.findViewById(R.id.autofill_credit_card_chip).getContentDescription());
         Button confirmButton = contentView.findViewById(R.id.autofill_save_card_confirm_button);
         assertEquals("Confirm Text", confirmButton.getText());
         Button cancelButton = contentView.findViewById(R.id.autofill_save_card_cancel_button);
@@ -226,26 +229,20 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     @Test
     public void testGetSheetContentDescriptionStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        assertEquals(android.R.string.ok, mContent.getSheetContentDescriptionStringId());
-    }
-
-    @Test
-    public void testGetSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        assertEquals(android.R.string.ok, mContent.getSheetHalfHeightAccessibilityStringId());
+        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_content_description,
+                mContent.getSheetContentDescriptionStringId());
     }
 
     @Test
     public void testGetSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        assertEquals(android.R.string.ok, mContent.getSheetFullHeightAccessibilityStringId());
+        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_full_height,
+                mContent.getSheetFullHeightAccessibilityStringId());
     }
 
     @Test
     public void testGetSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/1454271): Implement save card bottom sheet.
-        assertEquals(android.R.string.ok, mContent.getSheetClosedAccessibilityStringId());
+        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_closed,
+                mContent.getSheetClosedAccessibilityStringId());
     }
 
     private List<ClickableSpan> getClickableSpans(Spannable text) {

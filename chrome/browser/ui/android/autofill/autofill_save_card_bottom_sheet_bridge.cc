@@ -34,6 +34,7 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
           ui_info.legal_message_lines),
       base::android::ConvertUTF16ToJavaString(env, ui_info.card_label),
       base::android::ConvertUTF16ToJavaString(env, ui_info.card_sub_label),
+      base::android::ConvertUTF16ToJavaString(env, ui_info.card_description),
       base::android::ConvertUTF16ToJavaString(env, ui_info.title_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.confirm_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.cancel_text),
