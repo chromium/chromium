@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
+#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 
 #include <string>
 
@@ -53,9 +53,9 @@ constexpr net::NetworkTrafficAnnotationTag kIpProtectionTrafficAnnotation =
 // The maximum size of the IpProtectionRequests - 256 KB (in practice these
 // should be much smaller than this).
 const int kIpProtectionRequestMaxBodySize = 256 * 1024;
-const char kIpProtectionContentType[] = "application/x-protobuf";
+const char kProtobufContentType[] = "application/x-protobuf";
 
-BlindSignHttpImpl::BlindSignHttpImpl(
+IpProtectionConfigHttp::IpProtectionConfigHttp(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)),
       ip_protection_server_url_(net::features::kIpPrivacyTokenServer.Get()),
@@ -66,12 +66,13 @@ BlindSignHttpImpl::BlindSignHttpImpl(
   CHECK(url_loader_factory_);
 }
 
-BlindSignHttpImpl::~BlindSignHttpImpl() = default;
+IpProtectionConfigHttp::~IpProtectionConfigHttp() = default;
 
-void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
-                                  const std::string& authorization_header,
-                                  const std::string& body,
-                                  quiche::BlindSignHttpCallback callback) {
+void IpProtectionConfigHttp::DoRequest(
+    quiche::BlindSignHttpRequestType request_type,
+    const std::string& authorization_header,
+    const std::string& body,
+    quiche::BlindSignHttpCallback callback) {
   GURL::Replacements replacements;
   switch (request_type) {
     case quiche::BlindSignHttpRequestType::kGetInitialData:
@@ -98,9 +99,9 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({"Bearer ", authorization_header}));
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                      kIpProtectionContentType);
+                                      kProtobufContentType);
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kIpProtectionContentType);
+                                      kProtobufContentType);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
@@ -109,13 +110,13 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
   auto* url_loader_ptr = url_loader.get();
   url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&BlindSignHttpImpl::OnRequestCompleted,
+      base::BindOnce(&IpProtectionConfigHttp::OnRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
                      std::move(callback)),
       kIpProtectionRequestMaxBodySize);
 }
 
-void BlindSignHttpImpl::OnRequestCompleted(
+void IpProtectionConfigHttp::OnRequestCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     quiche::BlindSignHttpCallback callback,
     std::unique_ptr<std::string> response) {

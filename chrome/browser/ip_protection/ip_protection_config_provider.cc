@@ -7,7 +7,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
+#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -20,10 +20,10 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      blind_sign_http_impl_(
-          std::make_unique<BlindSignHttpImpl>(url_loader_factory_.get())),
-      blind_sign_auth_(
-          std::make_unique<quiche::BlindSignAuth>(blind_sign_http_impl_.get())),
+      ip_protection_config_http_(
+          std::make_unique<IpProtectionConfigHttp>(url_loader_factory_.get())),
+      blind_sign_auth_(std::make_unique<quiche::BlindSignAuth>(
+          ip_protection_config_http_.get())),
       bsa_(blind_sign_auth_.get()) {
   CHECK(identity_manager);
 }

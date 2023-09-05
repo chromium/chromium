@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_IP_PROTECTION_BLIND_SIGN_HTTP_IMPL_H_
-#define CHROME_BROWSER_IP_PROTECTION_BLIND_SIGN_HTTP_IMPL_H_
+#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
+#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_
 
 #include <string>
 
@@ -16,12 +16,17 @@
 namespace network {
 class SimpleURLLoader;
 }  // namespace network
-class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
- public:
-  explicit BlindSignHttpImpl(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~BlindSignHttpImpl() override;
 
+// HTTP Fetching for IP Protection. This implements the `BlindSignHttpInterface`
+// for use by the BSA library, and also provides methods used directly by
+// `IpProtectionConfigProvider`.
+class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
+ public:
+  explicit IpProtectionConfigHttp(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ~IpProtectionConfigHttp() override;
+
+  // BlindSignHttp implementation.
   void DoRequest(quiche::BlindSignHttpRequestType request_type,
                  const std::string& authorization_header,
                  const std::string& body,
@@ -37,6 +42,6 @@ class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
   const std::string ip_protection_server_get_initial_data_path_;
   const std::string ip_protection_server_get_tokens_path_;
 
-  base::WeakPtrFactory<BlindSignHttpImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IpProtectionConfigHttp> weak_ptr_factory_{this};
 };
-#endif  // CHROME_BROWSER_IP_PROTECTION_BLIND_SIGN_HTTP_IMPL_H_
+#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_HTTP_H_

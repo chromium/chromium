@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
+#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -152,10 +152,10 @@ class IpProtectionConfigProvider
 
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
   // raw pointer to `url_loader_factory_` gets passed to
-  // `blind_sign_http_impl_`, so we ensure it stays alive by storing its
+  // `ip_protection_config_http_`, so we ensure it stays alive by storing its
   // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<BlindSignHttpImpl> blind_sign_http_impl_;
+  std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http_;
   std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
   // For testing, BlindSignAuth is accessed via its interface. In production,

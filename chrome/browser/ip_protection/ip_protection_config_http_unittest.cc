@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ip_protection/blind_sign_http_impl.h"
+#include "chrome/browser/ip_protection/ip_protection_config_http.h"
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -19,10 +19,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class BlindSignHttpImplTest : public testing::Test {
+class IpProtectionConfigHttpTest : public testing::Test {
  protected:
   void SetUp() override {
-    http_fetcher_ = std::make_unique<BlindSignHttpImpl>(
+    http_fetcher_ = std::make_unique<IpProtectionConfigHttp>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     token_server_get_initial_data_url_ = GURL(base::StrCat(
@@ -37,14 +37,14 @@ class BlindSignHttpImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<BlindSignHttpImpl> http_fetcher_;
+  std::unique_ptr<IpProtectionConfigHttp> http_fetcher_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   GURL token_server_get_initial_data_url_;
   GURL token_server_get_tokens_url_;
 };
 
-TEST_F(BlindSignHttpImplTest, DoRequestSendsCorrectRequest) {
+TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
   auto request_type = quiche::BlindSignHttpRequestType::kGetInitialData;
   std::string authorization_header = "token";
   std::string body = "body";
@@ -76,7 +76,8 @@ TEST_F(BlindSignHttpImplTest, DoRequestSendsCorrectRequest) {
   EXPECT_EQ("Response body", result->body());
 }
 
-TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
+TEST_F(IpProtectionConfigHttpTest,
+       DoRequestFailsToConnectReturnsFailureStatus) {
   auto request_type = quiche::BlindSignHttpRequestType::kAuthAndSign;
   std::string authorization_header = "token";
   std::string body = "body";
@@ -105,7 +106,8 @@ TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
   EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
 }
 
-TEST_F(BlindSignHttpImplTest, DoRequestInvalidFinchParametersFailsGracefully) {
+TEST_F(IpProtectionConfigHttpTest,
+       DoRequestInvalidFinchParametersFailsGracefully) {
   std::map<std::string, std::string> parameters;
   parameters["IpPrivacyTokenServer"] = "<(^_^)>";
   parameters["IpPrivacyTokenServerGetInitialDataPath"] = "(>_<)";
@@ -113,10 +115,10 @@ TEST_F(BlindSignHttpImplTest, DoRequestInvalidFinchParametersFailsGracefully) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy, std::move(parameters));
 
-  // Create a new BlindSignHttpImpl for this test so that the new FeatureParams
-  // get used.
-  std::unique_ptr<BlindSignHttpImpl> http_fetcher =
-      std::make_unique<BlindSignHttpImpl>(
+  // Create a new IpProtectionConfigHttp for this test so that the new
+  // FeatureParams get used.
+  std::unique_ptr<IpProtectionConfigHttp> http_fetcher =
+      std::make_unique<IpProtectionConfigHttp>(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_));
 
@@ -140,7 +142,7 @@ TEST_F(BlindSignHttpImplTest, DoRequestInvalidFinchParametersFailsGracefully) {
   EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
 }
 
-TEST_F(BlindSignHttpImplTest, DoRequestHttpFailureStatus) {
+TEST_F(IpProtectionConfigHttpTest, DoRequestHttpFailureStatus) {
   auto request_type = quiche::BlindSignHttpRequestType::kAuthAndSign;
   std::string authorization_header = "token";
   std::string body = "body";
