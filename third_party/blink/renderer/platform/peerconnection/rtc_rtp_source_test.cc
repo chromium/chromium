@@ -6,14 +6,16 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/rtp_headers.h"
 #include "third_party/webrtc/api/transport/rtp/rtp_source.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace blink {
 namespace {
 
-constexpr int64_t kTimestampMs = 12345678;
+constexpr webrtc::Timestamp kTimestamp = webrtc::Timestamp::Millis(12345678);
 constexpr uint32_t kSourceId = 5;
 constexpr webrtc::RtpSourceType kSourceType = webrtc::RtpSourceType::SSRC;
 constexpr uint32_t kRtpTimestamp = 112233;
@@ -27,13 +29,12 @@ constexpr uint64_t kQ32x32Time1500ms = kQ32x32Time1000ms | kUint64One << 31;
 }  // namespace
 
 TEST(RtcRtpSource, BasicPropertiesAreSetAndReturned) {
-  webrtc::RtpSource rtp_source(kTimestampMs, kSourceId, kSourceType,
+  webrtc::RtpSource rtp_source(kTimestamp, kSourceId, kSourceType,
                                kRtpTimestamp, webrtc::RtpSource::Extensions());
 
   RTCRtpSource rtc_rtp_source(rtp_source);
 
-  EXPECT_EQ((rtc_rtp_source.Timestamp() - base::TimeTicks()).InMilliseconds(),
-            kTimestampMs);
+  EXPECT_EQ(rtc_rtp_source.Timestamp(), ConvertToBaseTimeTicks(kTimestamp));
   EXPECT_EQ(rtc_rtp_source.Source(), kSourceId);
   EXPECT_EQ(rtc_rtp_source.SourceType(), RTCRtpSource::Type::kSSRC);
   EXPECT_EQ(rtc_rtp_source.RtpTimestamp(), kRtpTimestamp);
@@ -44,7 +45,7 @@ TEST(RtcRtpSource, BasicPropertiesAreSetAndReturned) {
 TEST(RtcRtpSource, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      base::TimeTicks() + base::Microseconds(rtc::TimeMicros());
+      ConvertToBaseTimeTicks(webrtc::Timestamp::Micros(rtc::TimeMicros()));
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if
@@ -60,7 +61,7 @@ TEST(RtcRtpSource, AbsoluteCaptureTimeSetAndReturnedNoOffset) {
   constexpr webrtc::AbsoluteCaptureTime kAbsCaptureTime{
       .absolute_capture_timestamp = kQ32x32Time1000ms};
   webrtc::RtpSource rtp_source(
-      kTimestampMs, kSourceId, kSourceType, kRtpTimestamp,
+      kTimestamp, kSourceId, kSourceType, kRtpTimestamp,
       /*extensions=*/{.absolute_capture_time = kAbsCaptureTime});
   RTCRtpSource rtc_rtp_source(rtp_source);
   EXPECT_EQ(rtc_rtp_source.CaptureTimestamp(), 1000);
@@ -72,7 +73,7 @@ TEST(RtcRtpSource, AbsoluteCaptureTimeSetAndReturnedWithZeroOffset) {
       .absolute_capture_timestamp = kQ32x32Time1250ms,
       .estimated_capture_clock_offset = 0};
   webrtc::RtpSource rtp_source(
-      kTimestampMs, kSourceId, kSourceType, kRtpTimestamp,
+      kTimestamp, kSourceId, kSourceType, kRtpTimestamp,
       /*extensions=*/{.absolute_capture_time = kAbsCaptureTime});
   RTCRtpSource rtc_rtp_source(rtp_source);
   EXPECT_EQ(rtc_rtp_source.CaptureTimestamp(), 1250);
@@ -85,7 +86,7 @@ TEST(RtcRtpSource, AbsoluteCaptureTimeSetAndReturnedWithPositiveOffset) {
       .absolute_capture_timestamp = kQ32x32Time1250ms,
       .estimated_capture_clock_offset = kQ32x32Time1500ms};
   webrtc::RtpSource rtp_source(
-      kTimestampMs, kSourceId, kSourceType, kRtpTimestamp,
+      kTimestamp, kSourceId, kSourceType, kRtpTimestamp,
       /*extensions=*/{.absolute_capture_time = kAbsCaptureTime});
   RTCRtpSource rtc_rtp_source(rtp_source);
   EXPECT_EQ(rtc_rtp_source.CaptureTimestamp(), 1250);

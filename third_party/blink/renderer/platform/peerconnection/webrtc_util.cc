@@ -32,4 +32,14 @@ webrtc::SdpVideoFormat::Parameters ConvertToSdpVideoFormatParameters(
   return sdp_parameters;
 }
 
+base::TimeTicks PLATFORM_EXPORT ConvertToBaseTimeTicks(webrtc::Timestamp time) {
+  if (time == webrtc::Timestamp::PlusInfinity()) {
+    return base::TimeTicks::Max();
+  } else if (time == webrtc::Timestamp::MinusInfinity()) {
+    return base::TimeTicks::Min();
+  } else {
+    return base::TimeTicks() + base::Microseconds(time.us());
+  }
+}
+
 }  // namespace blink
