@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 
@@ -13,10 +15,7 @@ namespace ash {
 
 QuickStartController::QuickStartController() {
   if (features::IsOobeQuickStartEnabled()) {
-    LoginDisplayHost::default_host()->GetWizardContext()->quick_start_enabled =
-        true;
-    bootstrap_controller_ =
-        LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+    InitTargetDeviceBootstrapController();
   }
 }
 
@@ -27,10 +26,7 @@ void QuickStartController::ForceEnableQuickStart() {
     return;
   }
 
-  LoginDisplayHost::default_host()->GetWizardContext()->quick_start_enabled =
-      true;
-  bootstrap_controller_ =
-      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+  InitTargetDeviceBootstrapController();
 }
 
 void QuickStartController::IsSupported(
@@ -52,13 +48,41 @@ void QuickStartController::IsSupported(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void QuickStartController::InitTargetDeviceBootstrapController() {
+  CHECK(LoginDisplayHost::default_host());
+  CHECK(!bootstrap_controller_);
+
+  StartObservingScreenTransitions();
+  LoginDisplayHost::default_host()->GetWizardContext()->quick_start_enabled =
+      true;
+  bootstrap_controller_ =
+      LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
+}
+
 void QuickStartController::OnGetQuickStartFeatureSupportStatus(
-    EntryPointButtonVisibilityCallback callback,
+    EntryPointButtonVisibilityCallback set_button_visibility_callback,
     quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus status) {
   quickstart_supported_ = status == quick_start::TargetDeviceConnectionBroker::
                                         FeatureSupportStatus::kSupported;
 
-  std::move(callback).Run(quickstart_supported_.value());
+  // Make the entry point button visible when supported, otherwise keep hidden.
+  std::move(set_button_visibility_callback).Run(quickstart_supported_.value());
+}
+
+void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
+                                                  OobeScreenId current_screen) {
+  current_screen_ = current_screen;
+  previous_screen_ = previous_screen;
+}
+
+void QuickStartController::OnDestroyingOobeUI() {
+  observation_.Reset();
+}
+
+void QuickStartController::StartObservingScreenTransitions() {
+  CHECK(LoginDisplayHost::default_host());
+  CHECK(LoginDisplayHost::default_host()->GetOobeUI());
+  observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
 }
 
 }  // namespace ash
