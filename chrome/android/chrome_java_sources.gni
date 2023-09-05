@@ -177,6 +177,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinder.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkMetrics.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModel.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkModelObserver.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkOpener.java",

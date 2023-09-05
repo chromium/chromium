@@ -252,6 +252,40 @@ chromium-metrics-reviews@google.com.
   <summary>Logs a UI location from which a bookmark is launched.</summary>
 </histogram>
 
+<histogram name="Bookmarks.MobileBookmarkManager.DisplayOptionUsed"
+    enum="MobileBookmarkManagerBookmarkRowDisplayPref"
+    expires_after="2024-01-14">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records when a user interacts with the display options in the mobile
+    bookmarks manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.MobileBookmarkManager.FilterUsed"
+    enum="MobileBookmarkManagerFilter" expires_after="2024-01-14">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records when a user interacts with the filter options in the mobile
+    bookmarks manager.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.MobileBookmarkManager.SortOptionUsed"
+    enum="MobileBookmarkManagerBookmarkRowSortOrder" expires_after="2024-01-14">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records when a user interacts with the sort options in the mobile bookmarks
+    manager.
+  </summary>
+</histogram>
+
 <histogram
     name="Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.{BookmarkType}"
     units="ms" expires_after="2024-01-20">

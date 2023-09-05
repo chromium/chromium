@@ -72466,6 +72466,24 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="PLATFORM_FAILURE"/>
 </enum>
 
+<enum name="MobileBookmarkManagerBookmarkRowDisplayPref">
+  <int value="0" label="Compact"/>
+  <int value="1" label="Visual"/>
+</enum>
+
+<enum name="MobileBookmarkManagerBookmarkRowSortOrder">
+  <int value="0" label="Chronological"/>
+  <int value="1" label="Reverse chronological"/>
+  <int value="2" label="Alphabetical"/>
+  <int value="3" label="Reverse alphabetical"/>
+  <int value="4" label="Recently used"/>
+  <int value="5" label="Manual"/>
+</enum>
+
+<enum name="MobileBookmarkManagerFilter">
+  <int value="0" label="Shopping"/>
+</enum>
+
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
   <int value="1" label="Chrome: System default"/>

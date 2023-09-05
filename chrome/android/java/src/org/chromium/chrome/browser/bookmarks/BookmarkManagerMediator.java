@@ -23,6 +23,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
@@ -1421,6 +1422,7 @@ class BookmarkManagerMediator
             mCurrentPowerFilter.remove(PowerBookmarkType.SHOPPING);
         }
 
+        BookmarkMetrics.reportBookmarkManagerFilterUsed(BookmarkManagerFilter.SHOPPING);
         getSearchBoxPropertyModel().set(
                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_SELECTED, isFiltering);
         refresh();
