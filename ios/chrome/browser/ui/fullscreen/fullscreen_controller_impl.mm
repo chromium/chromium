@@ -44,9 +44,9 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
                 forSelector:@selector(broadcastScrollViewContentSize:)];
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastScrollViewContentInset:)];
+  [broadcaster_ addObserver:bridge_
+                forSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    [broadcaster_ addObserver:bridge_
-                  forSelector:@selector(broadcastContentScrollOffset:)];
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastScrollViewIsScrolling:)];
     [broadcaster_ addObserver:bridge_
@@ -77,8 +77,6 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    [broadcaster_ removeObserver:bridge_
-                     forSelector:@selector(broadcastContentScrollOffset:)];
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastScrollViewIsScrolling:)];
     [broadcaster_ removeObserver:bridge_

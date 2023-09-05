@@ -61,13 +61,6 @@
   return scrollToTop;
 }
 
-- (void)webViewScrollViewDidScroll:
-    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    self.model->SetYContentOffset(webViewScrollViewProxy.contentOffset.y);
-  }
-}
-
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
