@@ -159,27 +159,14 @@ void AXTreeSourceAndroid::SerializeNode(AccessibilityInfoDataWrapper* info_data,
   }
 }
 
-void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
-    const AXEventData& event_data) {
-  if (window_id_ != event_data.window_id) {
-    // Root window id is changed. Resetting variables that depends on id.
-    android_focused_id_.reset();
-    hooks_.clear();
-    window_id_ = event_data.window_id;
-  }
-  is_notification_ = event_data.notification_key.has_value();
-  if (is_notification_) {
-    notification_key_ = event_data.notification_key;
-  }
-  is_input_method_window_ = event_data.is_input_method_window;
-
+void AXTreeSourceAndroid::BuildNodeMap(const AXEventData& event_data) {
   // Prepare the wrapper objects of mojom data from Android.
   CHECK(event_data.window_data);
   root_id_ = event_data.window_data->at(0)->window_id;
-  for (size_t i = 0; i < event_data.window_data->size(); ++i) {
-    int32_t window_id = event_data.window_data->at(i)->window_id;
-    int32_t root_node_id = event_data.window_data->at(i)->root_node_id;
-    AXWindowInfoData* window = event_data.window_data->at(i).get();
+  for (const auto& window_ptr : *event_data.window_data) {
+    int32_t window_id = window_ptr->window_id;
+    int32_t root_node_id = window_ptr->root_node_id;
+    AXWindowInfoData* window = window_ptr.get();
     if (root_node_id) {
       parent_map_[root_node_id] = window_id;
     }
@@ -197,20 +184,37 @@ void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
     }
   }
 
-  for (size_t i = 0; i < event_data.node_data.size(); ++i) {
-    int32_t node_id = event_data.node_data[i]->id;
-    AXNodeInfoData* node = event_data.node_data[i].get();
+  for (const auto& node_ptr : event_data.node_data) {
+    int32_t node_id = node_ptr->id;
+    AXNodeInfoData* node = node_ptr.get();
     tree_map_[node_id] =
         std::make_unique<AccessibilityNodeInfoDataWrapper>(this, node);
 
     std::vector<int32_t> children;
-    if (GetProperty(event_data.node_data[i].get()->int_list_properties,
+    if (GetProperty(node_ptr.get()->int_list_properties,
                     AXIntListProperty::CHILD_NODE_IDS, &children)) {
       for (const int32_t child : children) {
         parent_map_[child] = node_id;
       }
     }
   }
+}
+
+void AXTreeSourceAndroid::NotifyAccessibilityEventInternal(
+    const AXEventData& event_data) {
+  if (window_id_ != event_data.window_id) {
+    // Root window id is changed. Resetting variables that depends on id.
+    android_focused_id_.reset();
+    hooks_.clear();
+    window_id_ = event_data.window_id;
+  }
+  is_notification_ = event_data.notification_key.has_value();
+  if (is_notification_) {
+    notification_key_ = event_data.notification_key;
+  }
+  is_input_method_window_ = event_data.is_input_method_window;
+
+  BuildNodeMap(event_data);
 
   // Compute each node's bounds, based on its descendants.
   // Assuming |nodeData| is in pre-order, compute cached bounds in post-order to
@@ -410,7 +414,7 @@ bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
     }
   } else if (event_data.event_type == AXEventType::VIEW_SELECTED) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
-    // 1. Changing a value in ProgressBar or TimePicker in ARC P.
+    // 1. Changing a value in ProgressBar or TimePicker in Android P.
     // 2. Selecting an item in the context of an AdapterView.
     if (!source_node || !source_node->IsNode()) {
       return false;

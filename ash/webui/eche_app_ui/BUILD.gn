@@ -130,7 +130,6 @@ static_library("eche_app_ui") {
     ":eche_connection_status",
     ":feature_status",
     "//ash",
-    "//ash/components/arc/mojom:mojom",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/eche_app_ui/mojom",
@@ -152,6 +151,9 @@ static_library("eche_app_ui") {
     "//components/prefs",
     "//content/public/browser",
     "//mojo/public/js:resources",
+    "//services/accessibility/android:android_lib",
+    "//services/accessibility/android/public/mojom:mojom",
+    "//ui/views/controls/webview",
     "//ui/webui",
   ]
 
@@ -313,7 +315,6 @@ if (use_libfuzzer) {
       "//ash/webui/eche_app_ui/proto:proto",
       "//base",
       "//base/test:test_support",
-      "//components/arc",
       "//third_party/libprotobuf-mutator",
     ]
   }

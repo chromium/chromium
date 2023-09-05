@@ -85,13 +85,11 @@ parentMessagePipe.registerHandler(
 // Handle accessibility perform action.
 let performActionCallback = null;
 parentMessagePipe.registerHandler(
-    Message.ACCESSIBILITY_PERFORM_ACTION,
-    async (action) => {
+    Message.ACCESSIBILITY_PERFORM_ACTION, async (action) => {
       if (!performActionCallback) {
-        return;
+        return Promise.resolve(false);
       }
-
-      performActionCallback(/** @type {Uint8Array} */ (action));
+      return performActionCallback(/** @type {Uint8Array} */ (action));
     });
 
 // The implementation of echeapi.d.ts

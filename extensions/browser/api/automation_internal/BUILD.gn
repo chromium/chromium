@@ -22,6 +22,7 @@ source_set("automation_internal") {
 
   public_deps = [
     "//extensions/browser:browser_sources",
+    "//extensions/browser/api/app_runtime:app_runtime",
     "//services/accessibility/public/mojom:automation",
   ]
 

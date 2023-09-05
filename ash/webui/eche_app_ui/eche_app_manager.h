@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_web_view.h"
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
@@ -75,6 +76,7 @@ class EcheAppManager : public KeyedService {
                  secure_channel::SecureChannelClient*,
                  std::unique_ptr<secure_channel::PresenceMonitorClient>
                      presence_monitor_client,
+                 std::unique_ptr<AccessibilityProviderProxy>,
                  LaunchAppHelper::LaunchEcheAppFunction,
                  LaunchAppHelper::LaunchNotificationFunction,
                  LaunchAppHelper::CloseNotificationFunction);
@@ -119,6 +121,9 @@ class EcheAppManager : public KeyedService {
 
   // This trigger Eche Web to go back the previous page.
   void StreamGoBack();
+
+  // This is triggered when the app bubble appears in the UI.
+  void BubbleShown(AshWebView* view);
 
   // KeyedService:
   void Shutdown() override;

@@ -4,8 +4,11 @@
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 
+#include <memory>
+
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/eche_keyboard_layout_handler.h"
 #include "ash/webui/eche_app_ui/eche_stream_orientation_observer.h"
@@ -13,10 +16,7 @@
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -69,6 +69,18 @@ class FakePresenceMonitorClient : public secure_channel::PresenceMonitorClient {
       const multidevice::RemoteDeviceRef& remote_device_ref,
       const multidevice::RemoteDeviceRef& local_device_ref) override {}
   void StopMonitoring() override {}
+};
+
+class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
+ public:
+  FakeAccessibilityProviderProxy() = default;
+  ~FakeAccessibilityProviderProxy() override = default;
+
+  bool UseFullFocusMode() override { return false; }
+  ax::android::mojom::AccessibilityFilterType GetFilterType() override {
+    return ax::android::mojom::AccessibilityFilterType::ALL;
+  }
+  void OnViewTracked() override {}
 };
 
 }  // namespace
@@ -133,6 +145,7 @@ class EcheAppManagerTest : public AshTestBase {
         fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),
         std::move(fake_presence_monitor_client),
+        std::make_unique<FakeAccessibilityProviderProxy>(),
         base::BindRepeating(&LaunchEcheAppFunction),
         base::BindRepeating(&LaunchNotificationFunction),
         base::BindRepeating(&CloseNotificationFunction));

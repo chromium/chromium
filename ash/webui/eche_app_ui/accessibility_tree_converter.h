@@ -5,10 +5,9 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ACCESSIBILITY_TREE_CONVERTER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ACCESSIBILITY_TREE_CONVERTER_H_
 
-#include <memory>
-
 #include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 
 namespace {
@@ -56,12 +55,17 @@ class AccessibilityTreeConverter {
  public:
   AccessibilityTreeConverter();
   ~AccessibilityTreeConverter();
+
   // Proto is ash/webui/eche_app_ui/proto/accessibility_mojom.proto
+  bool DeserializeProto(const std::vector<uint8_t>& serialized_proto,
+                        proto::AccessibilityEventData* out_proto);
+
   mojo::StructPtr<AXEventData> ConvertEventDataProtoToMojom(
-      const std::vector<uint8_t>& serialized_proto);
+      proto::AccessibilityEventData& in_data);
 
   absl::optional<proto::AccessibilityActionData> ConvertActionDataToProto(
-      const ui::AXActionData& data);
+      const ui::AXActionData& data,
+      int32_t window_id);
 
  private:
   // Utility Functions
@@ -91,7 +95,8 @@ class AccessibilityTreeConverter {
           in_properties,
       absl::optional<base::flat_map<MojomKeyType, std::vector<MojomValueType>>>&
           out_properties,
-      base::RepeatingCallback<bool(ProtoValueType, MojomValueType*)> tranform);
+      base::RepeatingCallback<bool(ProtoValueType,
+                                   absl::optional<MojomValueType>&)> tranform);
 
   template <class ProtoPropertyPairType,
             class MojomKeyType,

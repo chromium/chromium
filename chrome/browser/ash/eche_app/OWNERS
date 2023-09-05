@@ -1,1 +1,3 @@
 file://ash/webui/eche_app_ui/OWNERS
+
+per-file *accessibility*=francisjp@google.com

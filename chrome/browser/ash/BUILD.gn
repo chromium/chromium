@@ -1047,6 +1047,8 @@ source_set("ash") {
     "early_prefs/early_prefs_export_service_factory.cc",
     "early_prefs/early_prefs_export_service_factory.h",
     "eche_app/app_id.h",
+    "eche_app/eche_app_accessibility_provider_proxy.cc",
+    "eche_app/eche_app_accessibility_provider_proxy.h",
     "eche_app/eche_app_manager_factory.cc",
     "eche_app/eche_app_manager_factory.h",
     "eche_app/eche_app_notification_controller.cc",

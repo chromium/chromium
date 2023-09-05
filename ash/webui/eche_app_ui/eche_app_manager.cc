@@ -28,8 +28,6 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
-#include "base/debug/stack_trace.h"
-#include "base/system/sys_info.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
@@ -49,6 +47,7 @@ EcheAppManager::EcheAppManager(
     secure_channel::SecureChannelClient* secure_channel_client,
     std::unique_ptr<secure_channel::PresenceMonitorClient>
         presence_monitor_client,
+    std::unique_ptr<AccessibilityProviderProxy> accessibility_provider_proxy,
     LaunchAppHelper::LaunchEcheAppFunction launch_eche_app_function,
     LaunchAppHelper::LaunchNotificationFunction launch_notification_function,
     LaunchAppHelper::CloseNotificationFunction close_notification_function)
@@ -117,6 +116,8 @@ EcheAppManager::EcheAppManager(
       alert_generator_(
           std::make_unique<EcheAlertGenerator>(launch_app_helper_.get(),
                                                pref_service)),
+      accessibility_provider_(std::make_unique<AccessibilityProvider>(
+          std::move(accessibility_provider_proxy))),
       apps_access_manager_(std::make_unique<AppsAccessManagerImpl>(
           eche_connector_.get(),
           message_receiver_.get(),
@@ -138,9 +139,6 @@ EcheAppManager::EcheAppManager(
       std::move(system_info), remote_cros_network_config_.get());
   // assign system_info_provider_ to eche signaler
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
-
-  // Accessibility Provider doesn't require anything special.
-  accessibility_provider_ = std::make_unique<AccessibilityProvider>();
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     phone_hub_manager_->SetEcheConnectionStatusHandler(
@@ -206,10 +204,15 @@ EcheConnectionStatusHandler* EcheAppManager::GetEcheConnectionStatusHandler() {
 
 void EcheAppManager::CloseStream() {
   stream_status_change_handler_->CloseStream();
+  accessibility_provider_->HandleStreamClosed();
 }
 
 void EcheAppManager::StreamGoBack() {
   stream_status_change_handler_->StreamGoBack();
+}
+
+void EcheAppManager::BubbleShown(AshWebView* view) {
+  accessibility_provider_->TrackView(view);
 }
 
 // NOTE: These should be destroyed in the opposite order of how these objects
@@ -225,6 +228,7 @@ void EcheAppManager::Shutdown() {
   system_info_provider_.reset();
   eche_tray_stream_status_observer_.reset();
   apps_access_manager_.reset();
+  accessibility_provider_.reset();
   alert_generator_.reset();
   eche_recent_app_click_handler_.reset();
   uid_.reset();

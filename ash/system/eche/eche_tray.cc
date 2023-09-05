@@ -365,6 +365,9 @@ void EcheTray::ShowBubble() {
   bubble_->GetBubbleWidget()->GetNativeWindow()->AddPreTargetHandler(
       event_interceptor_.get());
   shelf()->UpdateAutoHideState();
+  if (bubble_shown_callback_) {
+    bubble_shown_callback_.Run(web_view_);
+  }
 }
 
 TrayBubbleView* EcheTray::GetBubbleView() {
@@ -636,6 +639,14 @@ void EcheTray::SetGracefulGoBackCallback(
   if (!graceful_go_back_callback)
     return;
   graceful_go_back_callback_ = std::move(graceful_go_back_callback);
+}
+
+void EcheTray::SetBubbleShownCallback(
+    BubbleShownCallback bubble_shown_callback) {
+  if (!bubble_shown_callback) {
+    return;
+  }
+  bubble_shown_callback_ = std::move(bubble_shown_callback);
 }
 
 void EcheTray::HideBubble() {

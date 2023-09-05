@@ -31,7 +31,8 @@ void LaunchBubble(const GURL& url,
                   eche_app::mojom::ConnectionStatus last_connection_status,
                   eche_app::mojom::AppStreamLaunchEntryPoint entry_point,
                   EcheTray::GracefulCloseCallback graceful_close_callback,
-                  EcheTray::GracefulGoBackCallback graceful_go_back_callback);
+                  EcheTray::GracefulGoBackCallback graceful_go_back_callback,
+                  EcheTray::BubbleShownCallback bubble_shown_callback);
 
 // The observer that observes the stream status change and notifies `EcheTray`
 // show/hide/close the bubble when Eche starts/stops streaming.

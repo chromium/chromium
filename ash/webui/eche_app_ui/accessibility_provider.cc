@@ -5,20 +5,127 @@
 
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
 
+#include <cstddef>
 #include <cstdint>
-#include "base/notreached.h"
+#include <memory>
+
+#include "ash/root_window_controller.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
+#include "ash/webui/eche_app_ui/accessibility_tree_converter.h"
+#include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/webview.h"
+
+namespace {
+using AXActionType = ax::android::mojom::AccessibilityActionType;
+using AXBooleanProperty = ax::android::mojom::AccessibilityBooleanProperty;
+using AXCollectionInfoData =
+    ax::android::mojom::AccessibilityCollectionInfoData;
+using AXCollectionItemInfoData =
+    ax::android::mojom::AccessibilityCollectionItemInfoData;
+using AXEventData = ax::android::mojom::AccessibilityEventData;
+using AXEventIntListProperty =
+    ax::android::mojom::AccessibilityEventIntListProperty;
+using AXEventIntProperty = ax::android::mojom::AccessibilityEventIntProperty;
+using AXEventType = ax::android::mojom::AccessibilityEventType;
+using AXIntListProperty = ax::android::mojom::AccessibilityIntListProperty;
+using AXIntProperty = ax::android::mojom::AccessibilityIntProperty;
+using AXNodeInfoData = ax::android::mojom::AccessibilityNodeInfoData;
+using AXRangeInfoData = ax::android::mojom::AccessibilityRangeInfoData;
+using AXStringProperty = ax::android::mojom::AccessibilityStringProperty;
+using AXWindowBooleanProperty =
+    ax::android::mojom::AccessibilityWindowBooleanProperty;
+using AXWindowInfoData = ax::android::mojom::AccessibilityWindowInfoData;
+using AXWindowIntProperty = ax::android::mojom::AccessibilityWindowIntProperty;
+using AXWindowIntListProperty =
+    ax::android::mojom::AccessibilityWindowIntListProperty;
+using AXWindowStringProperty =
+    ax::android::mojom::AccessibilityWindowStringProperty;
+}  // namespace
 
 namespace ash::eche_app {
 
-AccessibilityProvider::AccessibilityProvider() = default;
+AccessibilityProvider::AccessibilityProvider(
+    std::unique_ptr<AccessibilityProviderProxy> proxy)
+    : proxy_(std::move(proxy)) {}
 AccessibilityProvider::~AccessibilityProvider() = default;
+
+void AccessibilityProvider::TrackView(AshWebView* view) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEcheSWAProcessAndroidAccessibilityTree)) {
+    // Don't track views if a11y tree is not enabled.
+    return;
+  }
+  tree_source_ = std::make_unique<ax::android::AXTreeSourceAndroid>(
+      this, std::make_unique<SerializationDelegate>(device_bounds_),
+      view->GetNativeView() /*window*/);
+  auto* child_view = view->children().at(0);
+  if (child_view) {
+    auto* webview = static_cast<views::WebView*>(child_view);
+    webview->set_lock_child_ax_tree_id_override(true);
+    webview->GetViewAccessibility().OverrideChildTreeID(
+        tree_source_->ax_tree_id());
+  } else {
+    view->GetViewAccessibility().OverrideChildTreeID(
+        tree_source_->ax_tree_id());
+  }
+  proxy_->OnViewTracked();
+}
+
+void AccessibilityProvider::HandleStreamClosed() {
+  tree_source_.reset();
+}
 
 void AccessibilityProvider::HandleAccessibilityEventReceived(
     const std::vector<uint8_t>& serialized_proto) {
-  AccessibilityTreeConverter converter;
-  auto mojom_event_data =
-      converter.ConvertEventDataProtoToMojom(serialized_proto);
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(
+          features::kEcheSWAProcessAndroidAccessibilityTree)) {
+    return;
+  }
+
+  if (serialized_proto.empty()) {
+    return;
+  }
+
+  switch (GetFilterType()) {
+    case ax::android::mojom::AccessibilityFilterType::ALL: {
+      AccessibilityTreeConverter converter;
+      // Parse the proto first so we can extract device screen size.
+      proto::AccessibilityEventData proto_event_data;
+      if (!converter.DeserializeProto(serialized_proto, &proto_event_data)) {
+        return;
+      }
+      // TODO(francisjp): hard coded to pixel 6A. Get correct bounds from proto
+      // message when available pending b/295229694.
+      UpdateDeviceBounds(1110, 2015);
+      auto mojom_event_data =
+          converter.ConvertEventDataProtoToMojom(proto_event_data);
+      if (mojom_event_data) {
+        // Pass into correct tree. Currently there is only one.
+        // Tree source will only be initialized once TrackView has been called.
+        CHECK(tree_source_);
+        tree_source_->NotifyAccessibilityEvent(mojom_event_data.get());
+      }
+    } break;
+    case ax::android::mojom::AccessibilityFilterType::FOCUS:
+      // TODO(francisjp): b/265817804
+      break;
+    case ax::android::mojom::AccessibilityFilterType::OFF:
+      break;
+    case ax::android::mojom::AccessibilityFilterType::INVALID_ENUM_VALUE:
+      NOTREACHED();
+      break;
+  }
 }
 
 void AccessibilityProvider::SetAccessibilityObserver(
@@ -27,16 +134,66 @@ void AccessibilityProvider::SetAccessibilityObserver(
   observer_remote_.Bind(std::move(observer));
 }
 
-void AccessibilityProvider::PerformAction(const ui::AXActionData& action) {
+void AccessibilityProvider::OnStreamOrientationChanged(bool is_landscape) {
+  // If the orientation changed flip the device bounds.
+  if (is_landscape != is_landscape_) {
+    is_landscape_ = is_landscape;
+    auto new_width = device_bounds_.height();
+    auto new_height = device_bounds_.width();
+    device_bounds_.set_height(new_height);
+    device_bounds_.set_width(new_width);
+  }
+}
+
+bool AccessibilityProvider::UseFullFocusMode() const {
+  return proxy_->UseFullFocusMode();
+}
+
+ax::android::mojom::AccessibilityFilterType
+AccessibilityProvider::GetFilterType() {
+  return proxy_->GetFilterType();
+}
+
+void AccessibilityProvider::UpdateDeviceBounds(int width, int height) {
+  // This function assumes that the bounds provided are portrait.
+  if (is_landscape_) {
+    // Reverse the bounds for landscape mode.
+    device_bounds_.set_size({height, width});
+  } else {
+    device_bounds_.set_size({width, height});
+  }
+}
+
+void AccessibilityProvider::OnActionResult(const ui::AXActionData& action,
+                                           bool result) const {
+  // Tree source could be null if the app is switched before the response comes
+  // back.
+  if (tree_source_) {
+    tree_source_->NotifyActionResult(action, result);
+  }
+}
+
+void AccessibilityProvider::OnAction(const ui::AXActionData& action) const {
+  if (!tree_source_) {
+    return;
+  }
+  if (!tree_source_->window_id().has_value()) {
+    OnActionResult(action, false);
+    return;
+  }
   AccessibilityTreeConverter converter;
-  auto proto_action = converter.ConvertActionDataToProto(action);
+  auto proto_action =
+      converter.ConvertActionDataToProto(action, *tree_source_->window_id());
   if (proto_action.has_value()) {
     size_t nbytes = proto_action->ByteSizeLong();
     std::vector<uint8_t> serialized_proto(nbytes);
     proto_action->SerializeToArray(serialized_proto.data(), nbytes);
-    observer_remote_->PerformAction(serialized_proto);
+    mojom::AccessibilityObserver::PerformActionCallback cb =
+        base::BindOnce(&AccessibilityProvider::OnActionResult,
+                       weak_ptr_factory_.GetWeakPtr(), action);
+    observer_remote_->PerformAction(serialized_proto, std::move(cb));
   } else {
-    LOG(ERROR) << "Failed to serialize AXActionData to protobuf.";
+    OnActionResult(action, false);
   }
 }
 
@@ -45,4 +202,41 @@ void AccessibilityProvider::Bind(
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
+
+// Serialization Delegate implementation
+
+gfx::RectF
+AccessibilityProvider::SerializationDelegate::ScaleAndroidPxToChromePx(
+    const ax::android::AccessibilityInfoDataWrapper& node,
+    aura::Window* window) const {
+  gfx::Rect android_bounds = node.GetBounds();
+  const auto* window_node = tree_source_->GetRoot();
+  gfx::Rect window_res = window_node->GetWindow()->bounds_in_screen;
+  const gfx::Rect chrome_window_bounds = window->GetBoundsInScreen();
+  float x_scale =
+      (float)chrome_window_bounds.width() / (float)device_bounds_->width();
+  float y_scale =
+      (float)chrome_window_bounds.height() / (float)device_bounds_->height();
+  gfx::RectF chrome_bounds(android_bounds);
+  const float chrome_dsf =
+      window->GetToplevelWindow()->layer()->device_scale_factor();
+  // Nodes need to be offset inside of their window.
+  if (node.IsNode()) {
+    chrome_bounds.Offset(-window_res.x(), -window_res.y());
+  }
+  chrome_bounds.Scale(x_scale * chrome_dsf, y_scale * chrome_dsf);
+  return chrome_bounds;
+}
+
+void AccessibilityProvider::SerializationDelegate::PopulateBounds(
+    const ax::android::AccessibilityInfoDataWrapper& node,
+    ui::AXNodeData& out_data) const {
+  gfx::RectF& out_bounds_px = out_data.relative_bounds.bounds;
+  auto* window = tree_source_->window();
+  out_bounds_px = ScaleAndroidPxToChromePx(node, window);
+}
+
+AccessibilityProvider::SerializationDelegate::SerializationDelegate(
+    gfx::Rect& device_bounds)
+    : device_bounds_(device_bounds) {}
 }  // namespace ash::eche_app

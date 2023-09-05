@@ -156,6 +156,9 @@ class AXTreeSourceAndroid
  private:
   friend class AXTreeSourceAndroidTest;
 
+  // Builds the map that stores relationships between nodes.
+  void BuildNodeMap(const mojom::AccessibilityEventData& event_data);
+
   // Actual implementation of NotifyAccessibilityEvent.
   void NotifyAccessibilityEventInternal(
       const mojom::AccessibilityEventData& event_data);

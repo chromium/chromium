@@ -164,9 +164,16 @@ systemInfoObserverRouter.onAndroidDeviceNetworkInfoChanged.addListener(
         /** @type {boolean} */ androidDeviceOnCellular,
       });
     });
-
-accessibilityObserverRouter.performAction.addListener(action => {
-  guestMessagePipe.sendMessage(Message.ACCESSIBILITY_PERFORM_ACTION, action);
+accessibilityObserverRouter.performAction.addListener((action) => {
+  return new Promise(async (resolve) => {
+    const result = await guestMessagePipe.sendMessage(
+        Message.ACCESSIBILITY_PERFORM_ACTION, action);
+    // It appears as though false is sent as an empty object. Likely due to
+    // proto omitting the value when it is false.
+    const payload = typeof result == 'boolean' ? result : false;
+    // For mojom to understand what to do, a result key is required.
+    resolve({result: payload});
+  });
 });
 
 // Add stream action listener and send result via pipes.
@@ -243,6 +250,7 @@ guestMessagePipe.registerHandler(
           `echeapi browser_proxy.js ` +
           `onStreamOrientationChanged ${message.isLandscape}`);
       streamOrientationObserver.onStreamOrientationChanged(message.isLandscape);
+      accessibility.onStreamOrientationChanged(message.isLandscape);
     });
 
 // Register CONNECTION_STATUS_CHANGED.

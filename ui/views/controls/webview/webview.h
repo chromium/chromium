@@ -113,6 +113,12 @@ class WEBVIEW_EXPORT WebView : public View,
     allow_accelerators_ = allow_accelerators;
   }
 
+  // When `lock = true` changes in web contents will not reset the override.
+  // Default is false.
+  void set_lock_child_ax_tree_id_override(bool lock) {
+    lock_child_ax_tree_id_override_ = lock;
+  }
+
   // Overridden from content::WebContentsDelegate:
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override;
@@ -210,6 +216,8 @@ class WEBVIEW_EXPORT WebView : public View,
   bool allow_accelerators_ = false;
   ViewTracker crashed_overlay_view_;
   bool is_primary_web_contents_for_window_ = false;
+
+  bool lock_child_ax_tree_id_override_ = false;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.
   // Empty if auto resize is not enabled.
