@@ -11,10 +11,11 @@
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // Sign-in has been canceled by the user or by another reason.
   SigninCoordinatorResultCanceledByUser,
-  // Sign-in has been done, but the user didn’t accept nor refuse to sync.
+  // The flow was interrupted, e.g. because the user opened a new URL or the app
+  // was terminated.
+  // Sign-in might have finished or not.
   SigninCoordinatorResultInterrupted,
-  // Sign-in has been done, the user has explicitly accepted or refused
-  // sync.
+  // Sign-in has been done, the user has explicitly accepted sign-in.
   SigninCoordinatorResultSuccess,
   // Sign-in did not complete because it is disabled. This can happen if
   // enterprise policies are updated after sign-in is started.
