@@ -1249,7 +1249,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SystemInfoProvider.Error.{ErrorSource}"
-    enum="CrosDiagnosticsDataError" expires_after="2023-10-15">
+    enum="CrosDiagnosticsDataError" expires_after="2024-06-15">
   <owner>laurencom@google.com</owner>
   <owner>tby@google.com</owner>
   <summary>
