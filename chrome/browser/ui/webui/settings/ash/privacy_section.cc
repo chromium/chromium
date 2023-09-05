@@ -357,28 +357,52 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 }
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"enableLogging", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
-      {"enableLoggingDesc", IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"enableLogging", kIsRevampEnabled
+                            ? IDS_OS_SETTINGS_REVAMP_ENABLE_LOGGING_TOGGLE_TITLE
+                            : IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE},
+      {"enableLoggingDesc",
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_ENABLE_LOGGING_TOGGLE_DESCRIPTION
+           : IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC},
       {"enableContentProtectionAttestation",
        IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION},
-      {"enableSuggestedContent", IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
+      {"enableSuggestedContent",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_ENABLE_SUGGESTED_CONTENT_TITLE
+                        : IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE},
       {"enableSuggestedContentDesc",
-       IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_ENABLE_SUGGESTED_CONTENT_DESCRIPTION
+           : IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_DESC},
       {"peripheralDataAccessProtectionToggleTitle",
-       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_TOGGLE_TITLE
+           : IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE},
       {"peripheralDataAccessProtectionToggleDescription",
-       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION
+           : IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION},
       {"peripheralDataAccessProtectionWarningTitle",
-       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE
+           : IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE},
       {"peripheralDataAccessProtectionWarningDescription",
-       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION
+           : IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION},
       {"peripheralDataAccessProtectionWarningSubDescription",
-       IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION
+           : IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION},
       {"peripheralDataAccessProtectionCancelButton",
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL},
       {"peripheralDataAccessProtectionDisableButton",
-       IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_ALLOW_BUTTON_LABEL
+           : IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
       {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
       {"smartPrivacyQuickDimTitle",
