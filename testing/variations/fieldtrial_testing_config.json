@@ -15604,10 +15604,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled5",
-                    "params": {
-                        "SyncAndroidNTPPromoMaxImpressions": "5"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "SyncAndroidLimitNTPPromoImpressions"
                     ]
