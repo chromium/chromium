@@ -454,8 +454,7 @@ bool ChromeWebClient::EnableFullscreenAPI() const {
   // earlier versions. Also, only enable on iPad to match expectations of the
   // iOS web ecosystem.
   return base::ios::IsRunningOnOrLater(16, 4, 0) &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-         base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI);
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 bool ChromeWebClient::EnableLongPressUIContextMenu() const {

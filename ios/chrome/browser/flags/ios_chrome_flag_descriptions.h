@@ -362,10 +362,6 @@ extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];
 
-// Title and description for the flag to enable the Fullscreen API.
-extern const char kEnableFullscreenAPIName[];
-extern const char kEnableFullscreenAPIDescription[];
-
 // Title and description for the flag to enable the preferences account storage.
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];

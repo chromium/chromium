@@ -45,10 +45,6 @@ BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 // interaction state.
 BASE_DECLARE_FEATURE(kSynthesizedRestoreSession);
 
-// Enables the Fullscreen API in WebKit (supported on iOS 16.0+). This API
-// allows web sites to enter fullscreen mode, with all browser UI hidden.
-BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
-
 // Feature flag enabling use of new iOS 15
 // loadSimulatedRequest:responseHTMLString: API to display error pages in
 // CRWWKNavigationHandler. The helper method IsLoadSimulatedRequestAPIEnabled()

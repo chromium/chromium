@@ -8267,21 +8267,6 @@
             ]
         }
     ],
-    "IOSFullscreenAPI": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFullscreenAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSGhostCards": [
         {
             "platforms": [

@@ -407,10 +407,6 @@ const char kEnableFeedSyntheticCapabilitiesDescription[] =
     "If enabled synthethic capablities will be used to inform the server of "
     "the client capabilities.";
 
-const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
-const char kEnableFullscreenAPIDescription[] =
-    "Enable the Fullscreen API for web content (iOS 16.0+).";
-
 const char kEnableFollowIPHExpParamsName[] =
     "Enable Follow IPH Experiment Parameters";
 const char kEnableFollowIPHExpParamsDescription[] =
