@@ -85,7 +85,8 @@ void PrintWindowHierarchy(const aura::Window* active_window,
                                        window->GetOcclusionState()))
                      .c_str()
                : "")
-       << " " << window->bounds().ToString();
+       << " " << window->bounds().ToString()
+       << " scale=" + window->transform().To2dScale().ToString();
   if (!subpixel_position_offset.IsZero())
     *out << " subpixel offset=" + subpixel_position_offset.ToString();
   std::string* tree_id = window->GetProperty(ui::kChildAXTreeID);
