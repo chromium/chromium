@@ -211,3 +211,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_NoContentNodes) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_InteractiveElement) {
   ASSERT_TRUE(RunTest("update_content_interactive_element.js"));
 }
+
+// TODO(crbug.com/1474951): Remove this test once the ReadAnythingWebUiToolbar
+// flag is removed.
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, ReadAnythingToolbar_Hidden) {
+  ASSERT_TRUE(RunTest("toolbar_hidden_without_flag.js"));
+}
