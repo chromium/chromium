@@ -18,6 +18,7 @@
 #include "base/threading/thread.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/port_util.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_dispatcher.h"
@@ -160,8 +161,8 @@ void SetupQuicMemoryCacheBackend() {
 
 void StartQuicServerOnServerThread(const base::FilePath& test_files_root,
                                    base::WaitableEvent* server_started_event) {
-  DCHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
-  DCHECK(!g_quic_server);
+  CHECK(g_quic_server_thread->task_runner()->BelongsToCurrentThread());
+  CHECK(!g_quic_server);
 
   quic::QuicConfig config;
   // Set up server certs.
@@ -173,15 +174,31 @@ void StartQuicServerOnServerThread(const base::FilePath& test_files_root,
                                  base::FilePath()));
   SetupQuicMemoryCacheBackend();
 
-  g_quic_server =
-      new QuicSimpleServer(std::move(proof_source), config,
-                           quic::QuicCryptoServerConfig::ConfigOptions(),
-                           quic::AllSupportedVersions(), g_quic_cache_backend);
+  // If we happen to list on a disallowed port, connections will fail. Try in a
+  // loop until we get an allowed port.
+  std::unique_ptr<QuicSimpleServer> server;
+  bool got_allowed_port = false;
+  constexpr int kMaxTries = 100;
+  int rv = 0;
 
-  // Start listening on an unbound port.
-  int rv = g_quic_server->Listen(IPEndPoint(IPAddress::IPv4AllZeros(), 0));
-  CHECK_GE(rv, 0) << "Quic server fails to start";
-  g_quic_server_port = g_quic_server->server_address().port();
+  for (int tries = 0; !got_allowed_port && tries < kMaxTries; ++tries) {
+    server = std::make_unique<QuicSimpleServer>(
+        std::move(proof_source), config,
+        quic::QuicCryptoServerConfig::ConfigOptions(),
+        quic::AllSupportedVersions(), g_quic_cache_backend);
+
+    // Start listening on an unbound port.
+    rv = server->Listen(IPEndPoint(IPAddress::IPv4AllZeros(), 0));
+    if (rv >= 0) {
+      got_allowed_port |= IsPortAllowedForScheme(
+          server->server_address().port(), url::kHttpsScheme);
+    }
+  }
+
+  CHECK_GE(rv, 0) << "QuicSimpleTestServer: Listen failed";
+  CHECK(got_allowed_port);
+  g_quic_server_port = server->server_address().port();
+  g_quic_server = server.release();
   server_started_event->Signal();
 }
 
@@ -203,14 +220,13 @@ void ShutdownDispatcherOnServerThread(
 }
 
 bool QuicSimpleTestServer::Start() {
-  DVLOG(3) << g_quic_server_thread;
-  DCHECK(!g_quic_server_thread);
+  CHECK(!g_quic_server_thread);
   g_quic_server_thread = new base::Thread("quic server thread");
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::IO;
   bool started =
       g_quic_server_thread->StartWithOptions(std::move(thread_options));
-  DCHECK(started);
+  CHECK(started);
   base::FilePath test_files_root = GetTestCertsDirectory();
 
   base::WaitableEvent server_started_event(
