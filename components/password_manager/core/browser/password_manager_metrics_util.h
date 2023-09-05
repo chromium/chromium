@@ -162,15 +162,6 @@ enum AutoSigninPromoUserAction {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum AccountChooserUserAction {
-  ACCOUNT_CHOOSER_DISMISSED = 0,
-  ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN = 1,
-  ACCOUNT_CHOOSER_SIGN_IN = 2,
-  ACCOUNT_CHOOSER_ACTION_COUNT
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // Metrics: "PasswordManager.Mediation{Silent,Optional,Required}"
 enum class CredentialManagerGetResult {
   // The promise is rejected.
@@ -792,10 +783,6 @@ void LogPasswordGenerationAvailableSubmissionEvent(
 
 // Log a user action on showing the autosignin first run experience.
 void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action);
-
-// Log a user action on showing the account chooser for one or many accounts.
-void LogAccountChooserUserActionOneAccount(AccountChooserUserAction action);
-void LogAccountChooserUserActionManyAccounts(AccountChooserUserAction action);
 
 // Log the result of navigator.credentials.get.
 void LogCredentialManagerGetResult(CredentialManagerGetResult result,

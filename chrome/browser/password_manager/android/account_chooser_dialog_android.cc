@@ -26,8 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 
-using password_manager::metrics_util::AccountChooserUserAction;
-
 namespace {
 
 void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
@@ -215,7 +213,6 @@ void AccountChooserDialogAndroid::OnVisibilityChanged(
 
 void AccountChooserDialogAndroid::OnDialogCancel() {
   passwords_data_.ChooseCredential(nullptr);
-  LogAction(password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
 }
 
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -226,12 +223,6 @@ AccountChooserDialogAndroid::local_credentials_forms() const {
 bool AccountChooserDialogAndroid::HandleCredentialChosen(
     size_t index,
     bool signin_button_clicked) {
-  AccountChooserUserAction action =
-      signin_button_clicked
-          ? password_manager::metrics_util::ACCOUNT_CHOOSER_SIGN_IN
-          : password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN;
-  LogAction(action);
-
   const auto& credentials_forms = local_credentials_forms();
   if (index >= credentials_forms.size()) {
     // There is nothing more to handle.
@@ -267,14 +258,4 @@ void AccountChooserDialogAndroid::OnReauthCompleted(size_t index,
     passwords_data_.ChooseCredential(nullptr);
   }
   delete this;
-}
-
-void AccountChooserDialogAndroid::LogAction(AccountChooserUserAction action) {
-  if (local_credentials_forms().size() == 1) {
-    password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-        action);
-    return;
-  }
-  password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-      action);
 }

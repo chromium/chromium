@@ -6,7 +6,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,7 +84,6 @@ class AccountChooserDialogAndroidTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
 
  protected:
-  AccountChooserDialogAndroid* CreateDialogOneAccount();
   AccountChooserDialogAndroid* CreateDialogManyAccounts();
 
   AccountChooserDialogAndroid* CreateDialog(
@@ -121,62 +119,11 @@ AccountChooserDialogAndroid* AccountChooserDialogAndroidTest::CreateDialog(
 }
 
 AccountChooserDialogAndroid*
-AccountChooserDialogAndroidTest::CreateDialogOneAccount() {
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
-  credentials.push_back(FillPasswordFormWithData(kFormData1));
-  return CreateDialog(std::move(credentials));
-}
-
-AccountChooserDialogAndroid*
 AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
   std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
   credentials.push_back(FillPasswordFormWithData(kFormData1));
   credentials.push_back(FillPasswordFormWithData(kFormData2));
   return CreateDialog(std::move(credentials));
-}
-
-TEST_F(AccountChooserDialogAndroidTest,
-       CheckHistogramsReportingOnceAccountViaOnAccountClick) {
-  base::HistogramTester histogram_tester;
-  AccountChooserDialogAndroid* dialog = CreateDialogOneAccount();
-  dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 0 /* credential_item */,
-                              false /* signin_button_clicked */);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountChooserDialogOneAccount",
-      password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountChooserDialogMultipleAccounts", 0);
-}
-
-TEST_F(AccountChooserDialogAndroidTest,
-       CheckHistogramsReportingOneAccountChoosenViaSigninButton) {
-  base::HistogramTester histogram_tester;
-  AccountChooserDialogAndroid* dialog = CreateDialogOneAccount();
-  dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 0 /* credential_item */,
-                              true /* signin_button_clicked */);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountChooserDialogOneAccount",
-      password_manager::metrics_util::ACCOUNT_CHOOSER_SIGN_IN, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountChooserDialogMultipleAccounts", 0);
-}
-
-TEST_F(AccountChooserDialogAndroidTest, CheckHistogramsReportingManyAccounts) {
-  base::HistogramTester histogram_tester;
-  AccountChooserDialogAndroid* dialog = CreateDialogManyAccounts();
-  dialog->OnCredentialClicked(base::android::AttachCurrentThread(),
-                              nullptr /* obj */, 0 /* credential_item */,
-                              false /* signin_button_clicked */);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountChooserDialogMultipleAccounts",
-      password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.AccountChooserDialogOneAccount", 0);
 }
 
 TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {

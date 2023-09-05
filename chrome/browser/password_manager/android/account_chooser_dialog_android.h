@@ -78,11 +78,6 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
   // re-authentication. Destroys |this|.
   void OnReauthCompleted(size_t index, bool auth_succeded);
 
-  // Logs |action| depending on how many credentials are displayed in the
-  // dialog.
-  void LogAction(
-      password_manager::metrics_util::AccountChooserUserAction action);
-
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // Client used to retrieve the biometric authenticator.

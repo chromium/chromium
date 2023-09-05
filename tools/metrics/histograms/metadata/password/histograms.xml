@@ -430,26 +430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.AccountChooserDialogMultipleAccounts"
-    enum="AccountChooserDismissalReason" expires_after="2023-10-08">
-  <owner>vasilii@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    The dismissal reason of the account chooser with multiple accounts. Recorded
-    when the account chooser is dismissed.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.AccountChooserDialogOneAccount"
-    enum="AccountChooserDismissalReason" expires_after="2023-10-15">
-  <owner>vasilii@chromium.org</owner>
-  <owner>kazinova@google.com</owner>
-  <summary>
-    The dismissal reason of the account chooser with one account. Recorded when
-    the account chooser is dismissed.
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2"
     enum="PasswordManager.MoveToAccountStoreTrigger" expires_after="2024-02-04">

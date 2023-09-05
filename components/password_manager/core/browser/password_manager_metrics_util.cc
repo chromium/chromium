@@ -179,18 +179,6 @@ void LogAutoSigninPromoUserAction(AutoSigninPromoUserAction action) {
                                 action, AUTO_SIGNIN_PROMO_ACTION_COUNT);
 }
 
-void LogAccountChooserUserActionOneAccount(AccountChooserUserAction action) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.AccountChooserDialogOneAccount", action,
-      ACCOUNT_CHOOSER_ACTION_COUNT);
-}
-
-void LogAccountChooserUserActionManyAccounts(AccountChooserUserAction action) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.AccountChooserDialogMultipleAccounts", action,
-      ACCOUNT_CHOOSER_ACTION_COUNT);
-}
-
 void LogCredentialManagerGetResult(CredentialManagerGetResult result,
                                    CredentialMediationRequirement mediation) {
   switch (mediation) {

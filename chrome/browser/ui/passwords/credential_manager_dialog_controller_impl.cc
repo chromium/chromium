@@ -118,13 +118,6 @@ bool CredentialManagerDialogControllerImpl::ShouldShowFooter() const {
 void CredentialManagerDialogControllerImpl::OnChooseCredentials(
     const password_manager::PasswordForm& password_form,
     password_manager::CredentialType credential_type) {
-  if (local_credentials_.size() == 1) {
-    password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-        password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN);
-  } else {
-    password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-        password_manager::metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN);
-  }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (delegate_->GetPasswordFeatureManager()
           ->IsBiometricAuthenticationBeforeFillingEnabled()) {
@@ -141,9 +134,7 @@ void CredentialManagerDialogControllerImpl::OnChooseCredentials(
 }
 
 void CredentialManagerDialogControllerImpl::OnSignInClicked() {
-  DCHECK_EQ(1u, local_credentials_.size());
-  password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-      password_manager::metrics_util::ACCOUNT_CHOOSER_SIGN_IN);
+  CHECK_EQ(1u, local_credentials_.size());
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (delegate_->GetPasswordFeatureManager()
           ->IsBiometricAuthenticationBeforeFillingEnabled()) {
@@ -184,13 +175,6 @@ void CredentialManagerDialogControllerImpl::OnAutoSigninTurnOff() {
 
 void CredentialManagerDialogControllerImpl::OnCloseDialog() {
   if (account_chooser_dialog_) {
-    if (local_credentials_.size() == 1) {
-      password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-          password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
-    } else {
-      password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-          password_manager::metrics_util::ACCOUNT_CHOOSER_DISMISSED);
-    }
     account_chooser_dialog_ = nullptr;
   }
   if (autosignin_dialog_) {
