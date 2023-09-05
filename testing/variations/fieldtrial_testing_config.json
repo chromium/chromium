@@ -1645,6 +1645,25 @@
             ]
         }
     ],
+    "AutofillShowAutocompleteDeleteButton": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillShowAutocompleteDeleteButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete": [
         {
             "platforms": [
