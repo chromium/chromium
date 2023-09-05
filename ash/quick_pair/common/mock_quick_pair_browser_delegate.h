@@ -54,6 +54,7 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
               LaunchCompanionApp,
               (const std::string& app_id),
               (override));
+  MOCK_METHOD(void, OpenPlayStorePage, (GURL play_store_uri), (override));
 };
 
 }  // namespace quick_pair

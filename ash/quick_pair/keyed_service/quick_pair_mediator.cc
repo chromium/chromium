@@ -505,12 +505,15 @@ void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
 
   switch (action) {
     case CompanionAppAction::kDownloadAndLaunchApp:
-      NOTREACHED();
+      ui_broker_->RemoveNotifications();
+      companion_app_broker_->InstallCompanionApp(device);
+      device_currently_showing_notification_ = nullptr;
       break;
     case CompanionAppAction::kLaunchApp:
       ui_broker_->RemoveNotifications();
       companion_app_broker_->LaunchCompanionApp(device);
-      [[fallthrough]];
+      device_currently_showing_notification_ = nullptr;
+      break;
     case CompanionAppAction::kDismissedByUser:
       [[fallthrough]];
     case CompanionAppAction::kDismissed:
@@ -546,13 +549,16 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
   }
 }
 
-// TODO(b/274973687): Implement this function
-void Mediator::ShowInstallCompanionApp(scoped_refptr<Device> device) {}
+void Mediator::ShowInstallCompanionApp(scoped_refptr<Device> device) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  ui_broker_->ShowInstallCompanionApp(device);
+}
 
 void Mediator::ShowLaunchCompanionApp(scoped_refptr<Device> device) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
-  ui_broker_->ShowCompanionApp(device);
+  ui_broker_->ShowLaunchCompanionApp(device);
 }
 
 // TODO(b/274973687): Implement this function

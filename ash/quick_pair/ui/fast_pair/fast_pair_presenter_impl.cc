@@ -444,18 +444,61 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
   }
 }
 
-void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,
-                                             CompanionAppCallback callback) {
+void FastPairPresenterImpl::ShowInstallCompanionApp(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
   const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
-      base::BindOnce(&FastPairPresenterImpl::OnCompanionAppMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), device, callback));
+      base::BindOnce(
+          &FastPairPresenterImpl::OnInstallCompanionAppMetadataRetrieved,
+          weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
-void FastPairPresenterImpl::OnCompanionAppMetadataRetrieved(
+void FastPairPresenterImpl::OnInstallCompanionAppMetadataRetrieved(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback,
+    DeviceMetadata* device_metadata,
+    bool has_retryable_error) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  if (!device_metadata) {
+    return;
+  }
+
+  std::u16string device_name;
+  // If the name of the device has been set by the user, use that name,
+  // otherwise use the OEM default name.
+  if (device->display_name().has_value()) {
+    device_name = base::UTF8ToUTF16(device->display_name().value());
+  } else {
+    device_name = base::ASCIIToUTF16(device_metadata->GetDetails().name());
+  }
+
+  notification_controller_->ShowApplicationAvailableNotification(
+      device_name, device_metadata->image(),
+      base::BindRepeating(&FastPairPresenterImpl::OnCompanionAppInstallClicked,
+                          weak_pointer_factory_.GetWeakPtr(), callback),
+      base::BindOnce(&FastPairPresenterImpl::OnCompanionAppDismissed,
+                     weak_pointer_factory_.GetWeakPtr(), callback));
+}
+
+void FastPairPresenterImpl::ShowLaunchCompanionApp(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  const auto metadata_id = device->metadata_id();
+  FastPairRepository::Get()->GetDeviceMetadata(
+      metadata_id,
+      base::BindOnce(
+          &FastPairPresenterImpl::OnLaunchCompanionAppMetadataRetrieved,
+          weak_pointer_factory_.GetWeakPtr(), device, callback));
+}
+
+void FastPairPresenterImpl::OnLaunchCompanionAppMetadataRetrieved(
     scoped_refptr<Device> device,
     CompanionAppCallback callback,
     DeviceMetadata* device_metadata,
@@ -484,6 +527,13 @@ void FastPairPresenterImpl::OnCompanionAppMetadataRetrieved(
                           weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenterImpl::OnCompanionAppDismissed,
                      weak_pointer_factory_.GetWeakPtr(), callback));
+}
+
+void FastPairPresenterImpl::OnCompanionAppInstallClicked(
+    CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
+  callback.Run(CompanionAppAction::kDownloadAndLaunchApp);
 }
 
 void FastPairPresenterImpl::OnCompanionAppSetupClicked(

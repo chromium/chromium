@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,6 +102,13 @@ void QuickPairBrowserDelegateImpl::LaunchCompanionApp(
   Profile* profile = GetActiveProfile();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->Launch(app_id, ui::EF_NONE, apps::LaunchSource::kFromChromeInternal);
+}
+
+void QuickPairBrowserDelegateImpl::OpenPlayStorePage(GURL play_store_uri) {
+  Profile* profile = GetActiveProfile();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, play_store_uri,
+                          apps::LaunchSource::kFromChromeInternal);
 }
 
 Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {

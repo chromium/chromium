@@ -21,7 +21,7 @@ source_set("companion_app") {
 
   deps = [
     "//ash/constants",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository",
     "//base",
@@ -49,14 +49,21 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "companion_app_parser_unittest.cc" ]
+  sources = [
+    "companion_app_broker_impl_unittest.cc",
+    "companion_app_parser_unittest.cc",
+  ]
 
   deps = [
     ":companion_app",
+    "//ash:test_support",
     "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/keyed_service:test_support",
     "//ash/quick_pair/repository:test_support",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
 }

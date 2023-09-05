@@ -54,6 +54,7 @@ component("common") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//url",
   ]
 }
 

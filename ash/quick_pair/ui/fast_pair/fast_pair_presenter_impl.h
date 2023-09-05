@@ -61,8 +61,10 @@ class FastPairPresenterImpl : public FastPairPresenter {
                          PairingFailedCallback callback) override;
   void ShowAssociateAccount(scoped_refptr<Device> device,
                             AssociateAccountCallback callback) override;
-  void ShowCompanionApp(scoped_refptr<Device> device,
-                        CompanionAppCallback callback) override;
+  void ShowInstallCompanionApp(scoped_refptr<Device> device,
+                               CompanionAppCallback callback) override;
+  void ShowLaunchCompanionApp(scoped_refptr<Device> device,
+                              CompanionAppCallback callback) override;
   void RemoveNotifications() override;
   void ExtendNotification() override;
 
@@ -101,6 +103,7 @@ class FastPairPresenterImpl : public FastPairPresenter {
       AssociateAccountCallback callback,
       FastPairNotificationDismissReason dismiss_reason);
 
+  void OnCompanionAppInstallClicked(CompanionAppCallback callback);
   void OnCompanionAppSetupClicked(CompanionAppCallback callback);
   void OnCompanionAppDismissed(
       CompanionAppCallback callback,
@@ -121,10 +124,14 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            AssociateAccountCallback callback,
                                            DeviceMetadata* device_metadata,
                                            bool has_retryable_error);
-  void OnCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
-                                       CompanionAppCallback callback,
-                                       DeviceMetadata* device_metadata,
-                                       bool has_retryable_error);
+  void OnInstallCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
+                                              CompanionAppCallback callback,
+                                              DeviceMetadata* device_metadata,
+                                              bool has_retryable_error);
+  void OnLaunchCompanionAppMetadataRetrieved(scoped_refptr<Device> device,
+                                             CompanionAppCallback callback,
+                                             DeviceMetadata* device_metadata,
+                                             bool has_retryable_error);
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenterImpl> weak_pointer_factory_{this};

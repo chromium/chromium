@@ -8,6 +8,7 @@
 #include "ash/quick_pair/companion_app/companion_app_broker.h"
 
 #include "base/observer_list.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace quick_pair {

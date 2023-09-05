@@ -1117,7 +1117,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppDisabled) {
   base::RunLoop().RunUntilIdle();
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        fast_pair_presenter_->ShowCompanionApp(
+        fast_pair_presenter_->ShowLaunchCompanionApp(
             initially_paired_device_,
             base::BindRepeating(
                 &FastPairPresenterImplTest::OnCompanionAppAction,
@@ -1137,7 +1137,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppEnabled) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowCompanionApp(
+  fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
@@ -1155,7 +1155,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_SetupClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowCompanionApp(
+  fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
@@ -1183,7 +1183,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_NoDeviceMetadata) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowCompanionApp(
+  fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
@@ -1201,7 +1201,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByUser) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowCompanionApp(
+  fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
@@ -1224,7 +1224,7 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
-  fast_pair_presenter_->ShowCompanionApp(
+  fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),

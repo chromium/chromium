@@ -32,7 +32,8 @@ class UIBrokerImpl final : public UIBroker {
   void ShowPairing(scoped_refptr<Device> device) override;
   void ShowPairingFailed(scoped_refptr<Device> device) override;
   void ShowAssociateAccount(scoped_refptr<Device> device) override;
-  void ShowCompanionApp(scoped_refptr<Device> device) override;
+  void ShowInstallCompanionApp(scoped_refptr<Device> device) override;
+  void ShowLaunchCompanionApp(scoped_refptr<Device> device) override;
   void RemoveNotifications() override;
   void ExtendNotification() override;
 

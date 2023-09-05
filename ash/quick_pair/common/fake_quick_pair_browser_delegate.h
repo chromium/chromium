@@ -6,6 +6,10 @@
 #define ASH_QUICK_PAIR_COMMON_FAKE_QUICK_PAIR_BROWSER_DELEGATE_H_
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
+
+#include <map>
+#include <string>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -33,6 +37,7 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
   static FakeQuickPairBrowserDelegate* Get();
 
   void SetIdentityManager(signin::IdentityManager* identity_manager);
+  void SetCompanionAppInstalled(const std::string& app_id, bool installed);
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   signin::IdentityManager* GetIdentityManager() override;
@@ -42,11 +47,13 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
       mojo::PendingReceiver<mojom::QuickPairService> receiver) override;
   bool CompanionAppInstalled(const std::string& app_id) override;
   void LaunchCompanionApp(const std::string& app_id) override;
+  void OpenPlayStorePage(GURL play_store_uri) override;
 
  private:
   TestingPrefServiceSimple pref_service_;
   raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
       identity_manager_ = nullptr;
+  std::map<std::string, bool> companion_app_installed_ = {};
 };
 
 }  // namespace ash::quick_pair

@@ -1030,11 +1030,19 @@ BASE_FEATURE(kFastPairPwaCompanion,
 // The URI for the Fast Pair web companion.
 const base::FeatureParam<std::string> kFastPairPwaCompanionInstallUri{
     &kFastPairPwaCompanion, "pwa-companion-install-uri",
-    /*default*/ "https://www.google.com"};
+    /*default*/ ""};
 
-// The app ID for the installed Fast Pair web companion.
+// (optional) The app ID for the installed Fast Pair web companion.
+// e.g. ncmjhecbjeaamljdfahankockkkdmedg
 const base::FeatureParam<std::string> kFastPairPwaCompanionAppId{
     &kFastPairPwaCompanion, "pwa-companion-app-id",
+    /*default*/ ""};
+
+// (optional) The Play Store link to download the Fast Pair web companion.
+// e.g.
+// https://play.google.com/store/apps/details?id=com.google.android.apps.photos
+const base::FeatureParam<std::string> kFastPairPwaCompanionPlayStoreUri{
+    &kFastPairPwaCompanion, "pwa-companion-play-store-uri",
     /*default*/ ""};
 
 // Sets Fast Pair scanning to low power mode.

@@ -650,6 +650,16 @@ TEST_F(MediatorTest, CompanionAppAction_DownloadApp_Disabled) {
       "");
 }
 
+TEST_F(MediatorTest, CompanionAppAction_DownloadApp_Enabled) {
+  base::test::ScopedFeatureList feature_list{
+      ash::features::kFastPairPwaCompanion};
+
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_companion_app_broker_, InstallCompanionApp).Times(1);
+  mock_ui_broker_->NotifyCompanionAppAction(
+      initial_device_, CompanionAppAction::kDownloadAndLaunchApp);
+}
+
 TEST_F(MediatorTest, CompanionAppAction_LaunchApp_Disabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -670,7 +680,7 @@ TEST_F(MediatorTest, CompanionAppAction_LaunchApp_Enabled) {
       ash::features::kFastPairPwaCompanion};
 
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
+  EXPECT_CALL(*mock_companion_app_broker_, LaunchCompanionApp).Times(1);
   mock_ui_broker_->NotifyCompanionAppAction(initial_device_,
                                             CompanionAppAction::kLaunchApp);
 }

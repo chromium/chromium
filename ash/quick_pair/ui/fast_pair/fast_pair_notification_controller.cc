@@ -367,10 +367,6 @@ void FastPairNotificationController::ShowApplicationAvailableNotification(
       base::MakeRefCounted<NotificationDelegate>(
           /*on_primary_click=*/download_app_callback,
           /*on_close=*/std::move(on_close)));
-  application_available_notification->set_type(
-      message_center::NOTIFICATION_TYPE_PROGRESS);
-  application_available_notification->set_progress(
-      kInfiniteLoadingProgressValue);
   application_available_notification->set_image(device_image);
 
   message_center_->AddNotification(
