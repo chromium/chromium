@@ -174,8 +174,8 @@ CSSAnimationProxy::CSSAnimationProxy(
     AnimationTimeDelta timeline_time = timeline->CurrentTime().value();
     at_scroll_timeline_boundary_ =
         timeline_time.is_zero() ||
-        IsWithinAnimationTimeTolerance(timeline_time,
-                                       timeline_duration_.value());
+        TimingCalculations::IsWithinAnimationTimeTolerance(
+            timeline_time, timeline_duration_.value());
   }
 }
 
@@ -260,7 +260,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // discontinuity.
     AnimationTimeDelta end_time = std::max(
         timing.start_delay.AsTimeValue() +
-            MultiplyZeroAlwaysGivesZero(
+            TimingCalculations::MultiplyZeroAlwaysGivesZero(
                 timing.iteration_duration.value_or(AnimationTimeDelta()),
                 timing.iteration_count) +
             timing.end_delay.AsTimeValue(),
@@ -3010,9 +3010,9 @@ void CSSAnimations::TransitionEventDelegate::OnEventCondition(
       // "active time of the animation at the moment it was cancelled,
       // calculated using a fill mode of both".
       absl::optional<AnimationTimeDelta> cancel_active_time =
-          CalculateActiveTime(animation_node.NormalizedTiming(),
-                              Timing::FillMode::BOTH,
-                              animation_node.LocalTime(), previous_phase_);
+          TimingCalculations::CalculateActiveTime(
+              animation_node.NormalizedTiming(), Timing::FillMode::BOTH,
+              animation_node.LocalTime(), previous_phase_);
       // Being the FillMode::BOTH the only possibility to get a null
       // cancel_active_time is that previous_phase_ is kPhaseNone. This cannot
       // happen because we know that current_phase == kPhaseNone and

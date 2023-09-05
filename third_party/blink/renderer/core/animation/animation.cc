@@ -594,11 +594,11 @@ bool Animation::PreCommit(
       compositor_state_ &&
       (Paused() || compositor_state_->playback_rate != EffectivePlaybackRate());
   bool hard_change =
-      compositor_state_ &&
-      (compositor_state_->effect_changed || !compositor_state_->start_time ||
-       !start_time_ ||
-       !IsWithinAnimationTimeEpsilon(compositor_state_->start_time.value(),
-                                     start_time_.value().InSecondsF()));
+      compositor_state_ && (compositor_state_->effect_changed ||
+                            !compositor_state_->start_time || !start_time_ ||
+                            !TimingCalculations::IsWithinAnimationTimeEpsilon(
+                                compositor_state_->start_time.value(),
+                                start_time_.value().InSecondsF()));
 
   bool compositor_property_animations_had_no_effect =
       compositor_property_animations_have_no_effect_;
@@ -683,8 +683,9 @@ void Animation::PostCommit() {
 
   DCHECK_EQ(CompositorAction::kStart, compositor_state_->pending_action);
   if (compositor_state_->start_time) {
-    DCHECK(IsWithinAnimationTimeEpsilon(start_time_.value().InSecondsF(),
-                                        compositor_state_->start_time.value()));
+    DCHECK(TimingCalculations::IsWithinAnimationTimeEpsilon(
+        start_time_.value().InSecondsF(),
+        compositor_state_->start_time.value()));
     compositor_state_->pending_action = CompositorAction::kNone;
   }
 }
@@ -1087,9 +1088,9 @@ void Animation::setStartTime(const V8CSSNumberish* start_time,
   if (new_start_time) {
     // Snap to timeline time if within floating point tolerance to ensure
     // deterministic behavior in phase transitions.
-    if (timeline_time &&
-        IsWithinAnimationTimeEpsilon(timeline_time.value().InSecondsF(),
-                                     new_start_time.value().InSecondsF())) {
+    if (timeline_time && TimingCalculations::IsWithinAnimationTimeEpsilon(
+                             timeline_time.value().InSecondsF(),
+                             new_start_time.value().InSecondsF())) {
       new_start_time = timeline_time.value();
     }
   }
@@ -1770,7 +1771,8 @@ void Animation::UpdateFinishedState(UpdateType update_type,
 
       // Hack for resolving precision issue at zero.
       if (hold_time.has_value() &&
-          IsWithinAnimationTimeEpsilon(hold_time.value().InSecondsF(), -0)) {
+          TimingCalculations::IsWithinAnimationTimeEpsilon(
+              hold_time.value().InSecondsF(), -0)) {
         hold_time = AnimationTimeDelta();
       }
 
@@ -2130,7 +2132,8 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
 
   // An Animation with zero playback rate will produce no visual output, so
   // there is no reason to composite it.
-  if (IsWithinAnimationTimeEpsilon(0, EffectivePlaybackRate())) {
+  if (TimingCalculations::IsWithinAnimationTimeEpsilon(
+          0, EffectivePlaybackRate())) {
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
   }
 
@@ -2247,7 +2250,8 @@ void Animation::StartAnimationOnCompositor(
       CompositorAnimations::kNoFailure);
 
   // If PlaybackRate is 0, then we will run into divide by 0 issues.
-  DCHECK(!IsWithinAnimationTimeEpsilon(0, EffectivePlaybackRate()));
+  DCHECK(!TimingCalculations::IsWithinAnimationTimeEpsilon(
+      0, EffectivePlaybackRate()));
 
   bool reversed = EffectivePlaybackRate() < 0;
 
@@ -2322,8 +2326,9 @@ void Animation::SetCompositorPending(bool effect_changed) {
       compositor_state_->playback_rate != EffectivePlaybackRate() ||
       compositor_state_->start_time.has_value() != start_time_.has_value() ||
       (compositor_state_->start_time && start_time_ &&
-       !IsWithinAnimationTimeEpsilon(compositor_state_->start_time.value(),
-                                     start_time_.value().InSecondsF())) ||
+       !TimingCalculations::IsWithinAnimationTimeEpsilon(
+           compositor_state_->start_time.value(),
+           start_time_.value().InSecondsF())) ||
       !compositor_state_->start_time || !start_time_) {
     compositor_pending_ = true;
     document_->GetPendingAnimations().Add(this);

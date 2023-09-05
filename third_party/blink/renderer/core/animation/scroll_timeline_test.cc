@@ -1056,13 +1056,13 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
   using NamedRange = TimelineOffset::NamedRange;
 
   // [0, 300]
-  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+  EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       duration, timeline->CalculateIntrinsicIterationDurationForTest(
                     /* range_start */ absl::optional<TimelineOffset>(),
                     /* range_end */ absl::optional<TimelineOffset>())));
 
   // [0, 300] (explicit)
-  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+  EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       duration,
       timeline->CalculateIntrinsicIterationDurationForTest(
           /* range_start */ TimelineOffset(NamedRange::kNone, Length::Fixed(0)),
@@ -1070,7 +1070,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
                                          Length::Fixed(300)))));
 
   // [50, 200]
-  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+  EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       duration / 2.0, timeline->CalculateIntrinsicIterationDurationForTest(
                           /* range_start */
                           TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
@@ -1079,7 +1079,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
 
   // [50, 200] (kEntry)
   // The name part of the TimelineOffset is ignored.
-  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+  EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       duration / 2.0,
       timeline->CalculateIntrinsicIterationDurationForTest(
           /* range_start */
@@ -1088,7 +1088,7 @@ TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
           TimelineOffset(NamedRange::kEntry, Length::Fixed(200)))));
 
   // [50, 50]
-  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+  EXPECT_TRUE(TimingCalculations::IsWithinAnimationTimeTolerance(
       AnimationTimeDelta(),
       timeline->CalculateIntrinsicIterationDurationForTest(
           /* range_start */

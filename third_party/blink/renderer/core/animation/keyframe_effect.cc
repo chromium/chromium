@@ -762,8 +762,8 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return {};
     case Timing::kPhaseAfter:
-      DCHECK(GreaterThanOrEqualToWithinTimeTolerance(local_time.value(),
-                                                     after_time));
+      DCHECK(TimingCalculations::GreaterThanOrEqualToWithinTimeTolerance(
+          local_time.value(), after_time));
       if (forwards) {
         // If an animation has a positive-valued end delay, we need an
         // additional tick at the end time to ensure that the finished event is

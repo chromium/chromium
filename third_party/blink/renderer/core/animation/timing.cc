@@ -191,45 +191,54 @@ Timing::CalculatedTiming Timing::CalculateTimings(
   const AnimationTimeDelta active_duration = normalized_timing.active_duration;
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
-  Timing::Phase current_phase =
-      CalculatePhase(normalized_timing, local_time, animation_direction);
+  Timing::Phase current_phase = TimingCalculations::CalculatePhase(
+      normalized_timing, local_time, animation_direction);
 
-  const absl::optional<AnimationTimeDelta> active_time = CalculateActiveTime(
-      normalized_timing, ResolvedFillMode(is_keyframe_effect), local_time,
-      current_phase);
+  const absl::optional<AnimationTimeDelta> active_time =
+      TimingCalculations::CalculateActiveTime(
+          normalized_timing, ResolvedFillMode(is_keyframe_effect), local_time,
+          current_phase);
 
   absl::optional<double> progress;
 
-  const absl::optional<double> overall_progress = CalculateOverallProgress(
-      current_phase, active_time, duration, iteration_count, iteration_start);
+  const absl::optional<double> overall_progress =
+      TimingCalculations::CalculateOverallProgress(current_phase, active_time,
+                                                   duration, iteration_count,
+                                                   iteration_start);
   const absl::optional<double> simple_iteration_progress =
-      CalculateSimpleIterationProgress(current_phase, overall_progress,
-                                       iteration_start, active_time,
-                                       active_duration, iteration_count);
+      TimingCalculations::CalculateSimpleIterationProgress(
+          current_phase, overall_progress, iteration_start, active_time,
+          active_duration, iteration_count);
   const absl::optional<double> current_iteration =
-      CalculateCurrentIteration(current_phase, active_time, iteration_count,
-                                overall_progress, simple_iteration_progress);
+      TimingCalculations::CalculateCurrentIteration(
+          current_phase, active_time, iteration_count, overall_progress,
+          simple_iteration_progress);
   const bool current_direction_is_forwards =
-      IsCurrentDirectionForwards(current_iteration, direction);
-  const absl::optional<double> directed_progress = CalculateDirectedProgress(
-      simple_iteration_progress, current_iteration, direction);
+      TimingCalculations::IsCurrentDirectionForwards(current_iteration,
+                                                     direction);
+  const absl::optional<double> directed_progress =
+      TimingCalculations::CalculateDirectedProgress(
+          simple_iteration_progress, current_iteration, direction);
 
-  progress = CalculateTransformedProgress(current_phase, directed_progress,
-                                          current_direction_is_forwards,
-                                          timing_function);
+  progress = TimingCalculations::CalculateTransformedProgress(
+      current_phase, directed_progress, current_direction_is_forwards,
+      timing_function);
 
   AnimationTimeDelta time_to_next_iteration = AnimationTimeDelta::Max();
   // Conditionally compute the time to next iteration, which is only
   // applicable if the iteration duration is non-zero.
   if (!duration.is_zero()) {
     const AnimationTimeDelta start_offset =
-        MultiplyZeroAlwaysGivesZero(duration, iteration_start);
+        TimingCalculations::MultiplyZeroAlwaysGivesZero(duration,
+                                                        iteration_start);
     DCHECK_GE(start_offset, AnimationTimeDelta());
     const absl::optional<AnimationTimeDelta> offset_active_time =
-        CalculateOffsetActiveTime(active_duration, active_time, start_offset);
+        TimingCalculations::CalculateOffsetActiveTime(
+            active_duration, active_time, start_offset);
     const absl::optional<AnimationTimeDelta> iteration_time =
-        CalculateIterationTime(duration, active_duration, offset_active_time,
-                               start_offset, current_phase, *this);
+        TimingCalculations::CalculateIterationTime(
+            duration, active_duration, offset_active_time, start_offset,
+            current_phase, *this);
     if (iteration_time) {
       // active_time cannot be null if iteration_time is not null.
       DCHECK(active_time);

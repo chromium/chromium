@@ -297,6 +297,7 @@ blink_core_sources("animation") {
     "timeline_range.h",
     "timing.cc",
     "timing.h",
+    "timing_calculations.cc",
     "timing_calculations.h",
     "timing_input.cc",
     "timing_input.h",
