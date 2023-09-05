@@ -79,6 +79,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Logic related to the URL overriding/intercepting functionality.
@@ -244,6 +245,9 @@ public class ExternalNavigationHandler {
         private final ExternalNavigationParams mParams;
         private final Intent mIntent;
         private final GURL mFallbackUrl;
+        // https://crbug.com/1412842, https://crbug.com/1474846: It seems dialogs sometimes end up
+        // with multiple results chosen.
+        private final AtomicBoolean mDialogResultChosen = new AtomicBoolean(false);
 
         private PropertyModel mPropertyModel;
 
@@ -259,10 +263,14 @@ public class ExternalNavigationHandler {
         public void onClick(
                 @NonNull PropertyModel model, @ModalDialogProperties.ButtonType int buttonType) {
             if (ModalDialogProperties.ButtonType.POSITIVE == buttonType) {
+                if (mDialogResultChosen.get()) return;
+                mDialogResultChosen.set(true);
                 onUserDecidedWhetherToLaunchIncognitoIntent(true, mParams, mIntent, mFallbackUrl);
                 mModalDialogManager.dismissDialog(
                         mPropertyModel, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
             } else if (ModalDialogProperties.ButtonType.NEGATIVE == buttonType) {
+                if (mDialogResultChosen.get()) return;
+                mDialogResultChosen.set(true);
                 onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
                 mModalDialogManager.dismissDialog(
                         mPropertyModel, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
@@ -276,6 +284,8 @@ public class ExternalNavigationHandler {
                     || DialogDismissalCause.NEGATIVE_BUTTON_CLICKED == dismissalCause) {
                 return;
             }
+            if (mDialogResultChosen.get()) return;
+            mDialogResultChosen.set(true);
 
             onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
             mIncognitoDialogDelegate = null;
