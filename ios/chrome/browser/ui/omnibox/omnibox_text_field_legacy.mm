@@ -589,6 +589,13 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+  // TODO(crbug.com/1478261): Improve this short term fix.
+  if (@available(iOS 17.0, *)) {
+    if (action == @selector(undoManager)) {
+      return YES;
+    }
+  }
+
   // If the text is not empty and there is selected text, show copy and cut.
   if ([self textInRange:self.selectedTextRange].length > 0 &&
       (action == @selector(cut:) || action == @selector(copy:))) {
