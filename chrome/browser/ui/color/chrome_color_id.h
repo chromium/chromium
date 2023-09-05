@@ -42,6 +42,7 @@
   /* Bookmark bar colors. */ \
   E_CPONLY(kColorBookmarkBarBackground) \
   E_CPONLY(kColorBookmarkBarForeground) \
+  E_CPONLY(kColorBookmarkBarForegroundDisabled) \
   E_CPONLY(kColorBookmarkBarSeparator) \
   E_CPONLY(kColorBookmarkBarSeparatorChromeRefresh) \
   E_CPONLY(kColorBookmarkButtonIcon) \

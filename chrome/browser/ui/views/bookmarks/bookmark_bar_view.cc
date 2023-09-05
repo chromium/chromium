@@ -1846,6 +1846,8 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
   if (cp) {
     text_color = cp->GetColor(kColorBookmarkBarForeground);
     button->SetEnabledTextColors(text_color);
+    button->SetTextColorId(views::Button::ButtonState::STATE_DISABLED,
+                           kColorBookmarkBarForegroundDisabled);
     if (node->is_folder()) {
       button->SetImageModel(
           views::Button::STATE_NORMAL,
