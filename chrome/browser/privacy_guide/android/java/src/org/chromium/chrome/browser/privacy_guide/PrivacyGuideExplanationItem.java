@@ -19,6 +19,7 @@ import android.widget.TextView;
  * A custom view for an item (icon + text) of a setting explanation for the privacy guide.
  */
 public class PrivacyGuideExplanationItem extends LinearLayout {
+    private final TextView mSummary;
     public PrivacyGuideExplanationItem(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -28,16 +29,27 @@ public class PrivacyGuideExplanationItem extends LinearLayout {
         TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.PrivacyGuideExplanationItem, 0, 0);
 
-        TextView summary = (TextView) view.findViewById(R.id.summary);
-        summary.setText(a.getText(R.styleable.PrivacyGuideExplanationItem_summaryText));
+        mSummary = view.findViewById(R.id.summary);
+        mSummary.setText(a.getText(R.styleable.PrivacyGuideExplanationItem_summaryText));
 
         Drawable icon = a.getDrawable(R.styleable.PrivacyGuideExplanationItem_iconImage);
         ColorStateList tint = a.getColorStateList(R.styleable.PrivacyGuideExplanationItem_iconTint);
         if (icon != null && tint != null) {
             icon.setColorFilter(tint.getDefaultColor(), PorterDuff.Mode.SRC_IN);
         }
-        summary.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
+        mSummary.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, null, null, null);
 
         a.recycle();
+    }
+
+    /**
+     * Sets the summary shown in the explanation item.
+     */
+    public void setSummaryText(CharSequence summaryText) {
+        mSummary.setText(summaryText);
+    }
+
+    public CharSequence getSummaryTextForTesting() {
+        return mSummary.getText();
     }
 }

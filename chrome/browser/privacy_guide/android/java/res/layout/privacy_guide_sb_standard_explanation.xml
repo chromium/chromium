@@ -37,6 +37,7 @@ found in the LICENSE file.
             app:summaryText="@string/privacy_guide_sb_standard_item_one" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:id="@+id/sb_standard_item_two"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:iconImage="@drawable/ic_bar_chart_24dp"
@@ -48,6 +49,7 @@ found in the LICENSE file.
             app:titleText="@string/privacy_guide_things_to_consider" />
 
         <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+            android:id="@+id/sb_standard_item_three"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:iconImage="@drawable/ic_web_asset_24dp"

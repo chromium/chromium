@@ -55,6 +55,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -411,6 +412,49 @@ public class PrivacyGuideFragmentTest {
         goToSafeBrowsingCard();
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
         mRenderTestRule.render(getRootView(), "privacy_guide_sb_standard_sheet");
+    }
+
+    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // launched.
+    @Test
+    @LargeTest
+    @Feature({"HashPrefixRealTimeLookupsTest"})
+    @DisableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION,
+            ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS})
+    public void
+    testRenderSBStandardBottomSheetTextWithoutProxy() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
+        onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two))
+                .check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three))
+                .check(matches(isDisplayed()));
+    }
+
+    // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings standard protection is
+    // launched.
+    @Test
+    @LargeTest
+    @Feature({"HashPrefixRealTimeLookupsTest"})
+    @EnableFeatures(ChromeFeatureList.HASH_PREFIX_REAL_TIME_LOOKUPS)
+    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testRenderSBStandardBottomSheetTextWithProxy() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_standard_title);
+        if (BuildConfig.IS_CHROME_BRANDED) {
+            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two_proxy))
+                    .check(matches(isDisplayed()));
+            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three_proxy))
+                    .check(matches(isDisplayed()));
+        } else {
+            // hash-prefix real-time check is disabled on Chromium build.
+            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_two))
+                    .check(matches(isDisplayed()));
+            onViewWaiting(withText(R.string.privacy_guide_sb_standard_item_three))
+                    .check(matches(isDisplayed()));
+        }
     }
 
     @Test

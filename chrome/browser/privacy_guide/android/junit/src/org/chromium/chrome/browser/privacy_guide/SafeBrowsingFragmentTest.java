@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -176,6 +177,26 @@ public class SafeBrowsingFragmentTest {
         assertTrue(mStandardProtectionButton.isChecked());
         assertEquals(View.GONE, mStandardProtectionButtonFriendlier.getVisibility());
         assertFalse(mStandardProtectionButtonFriendlier.isChecked());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION)
+    public void testDescriptionTextWhenHashRealTimeDisabled() {
+        when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(false);
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(ContextUtils.getApplicationContext().getString(
+                             R.string.safe_browsing_standard_protection_summary_updated),
+                mStandardProtectionButtonFriendlier.getDescriptionText());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_STANDARD_PROTECTION})
+    public void testDescriptionTextWhenHashRealTimeEnabled() {
+        when(mNativeMock.isHashRealTimeLookupEligibleInSession()).thenReturn(true);
+        initFragmentWithSBState(SafeBrowsingState.STANDARD_PROTECTION);
+        assertEquals(ContextUtils.getApplicationContext().getString(
+                             R.string.safe_browsing_standard_protection_summary_updated_proxy),
+                mStandardProtectionButtonFriendlier.getDescriptionText());
     }
 
     @Test
