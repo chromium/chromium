@@ -401,12 +401,7 @@ HeadlessContentMainDelegate::RunProcess(
   browser_runner->Run();
   browser_runner->Shutdown();
 
-  int exit_code = browser_->exit_code();
-
-  browser_.reset();
-
-  // Return an int here to disable calling content::BrowserMain.
-  return exit_code;
+  return browser_->exit_code();
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
