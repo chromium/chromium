@@ -977,6 +977,18 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin);
 
+  // Returns whether cookie deprecation label should be allowed for the
+  // profile.
+  virtual bool IsCookieDeprecationLabelAllowed(
+      content::BrowserContext* browser_context);
+
+  // Returns whether cookie deprecation label should be allowed for the
+  // profile in a given context.
+  virtual bool IsCookieDeprecationLabelAllowedForContext(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& context_origin);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}

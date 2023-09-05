@@ -63,6 +63,7 @@
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -1573,6 +1574,12 @@ void StoragePartitionImpl::Initialize(
   if (base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache)) {
     resource_cache_manager_ = std::make_unique<ResourceCacheManager>();
   }
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kCookieDeprecationFacilitatedTestingLabels)) {
+    cookie_deprecation_label_manager_ =
+        std::make_unique<CookieDeprecationLabelManager>(browser_context_);
+  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1931,6 +1938,12 @@ StoragePartitionImpl::GetPrivateAggregationDataModel() {
 ResourceCacheManager* StoragePartitionImpl::GetResourceCacheManager() {
   CHECK(initialized_);
   return resource_cache_manager_.get();
+}
+
+CookieDeprecationLabelManager*
+StoragePartitionImpl::GetCookieDeprecationLabelManager() {
+  CHECK(initialized_);
+  return cookie_deprecation_label_manager_.get();
 }
 
 void StoragePartitionImpl::OpenLocalStorage(

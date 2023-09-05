@@ -866,6 +866,19 @@ void CheckOutput(
           1);
       return;
     }
+    case (OutputKey::kIsCookieDeprecationLabelAllowedForContext): {
+      SCOPED_TRACE("Check Output: IsCookieDeprecatioinAllowedForContext");
+      auto top_frame_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
+      auto context_origin =
+          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
+      auto return_value = GetItemValue<bool>(output_value);
+      ASSERT_EQ(
+          return_value,
+          privacy_sandbox_settings->IsCookieDeprecationLabelAllowedForContext(
+              top_frame_origin, context_origin));
+      return;
+    }
   }
 }
 

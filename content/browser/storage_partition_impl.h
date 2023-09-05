@@ -74,6 +74,7 @@ class BrowsingDataFilterBuilder;
 class KeepAliveURLLoaderService;
 class BucketManager;
 class CacheStorageControlWrapper;
+class CookieDeprecationLabelManager;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
@@ -280,6 +281,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
   ResourceCacheManager* GetResourceCacheManager();
+  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -710,6 +712,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
 
   std::unique_ptr<ResourceCacheManager> resource_cache_manager_;
+
+  std::unique_ptr<CookieDeprecationLabelManager>
+      cookie_deprecation_label_manager_;
 
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The

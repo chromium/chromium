@@ -193,6 +193,7 @@ enum class OutputKey {
   kIsFledgeUpdateAllowedMetric = 43,
   kIsFledgeSellAllowedMetric = 44,
   kIsFledgeBuyAllowedMetric = 45,
+  kIsCookieDeprecationLabelAllowedForContext = 46,
 };
 
 // To allow multiple input keys to map to the same value, without having to

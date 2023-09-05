@@ -213,6 +213,19 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
 
+  // Determines whether cookie deprecation label is allowable. This consults the
+  // delegate to check whether the sandbox is restricted, as well as the cookie
+  // settings to check whether third party cookies is blocked. If true, the more
+  // specific function, IsCookieDeprecationLabelAllowed(), should be consulted
+  // for the relevant context.
+  virtual bool IsCookieDeprecationLabelAllowed() const = 0;
+
+  // Determines whether cookie deprecation label is allowable for
+  // `context_origin` in the context of `top_frame_origin`.
+  virtual bool IsCookieDeprecationLabelAllowedForContext(
+      const url::Origin& top_frame_origin,
+      const url::Origin& context_origin) const = 0;
+
   // Returns whether the profile has the Privacy Sandbox enabled. This consults
   // the main preference, as well as the delegate to check whether the sandbox
   // is restricted. It does not consider any cookie settings. A return value of

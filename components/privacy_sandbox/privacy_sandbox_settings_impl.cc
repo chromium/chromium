@@ -838,4 +838,25 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   return status;
 }
 
+bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {
+  return !IsPrivacySandboxRestricted() &&
+         !cookie_settings_->ShouldBlockThirdPartyCookies();
+}
+
+bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
+    const url::Origin& top_frame_origin,
+    const url::Origin& context_origin) const {
+  if (!IsCookieDeprecationLabelAllowed()) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
+    return IsAllowed(
+        GetSiteAccessAllowedStatus(top_frame_origin, context_origin.GetURL()));
+  }
+
+  return IsPrivacySandboxEnabledForContext(top_frame_origin,
+                                           context_origin.GetURL());
+}
+
 }  // namespace privacy_sandbox
