@@ -267,6 +267,13 @@ be describing additional metrics about the same event.
     <summary>
       Total number of selections made.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
