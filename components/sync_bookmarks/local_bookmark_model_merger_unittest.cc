@@ -1,0 +1,313 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/sync_bookmarks/local_bookmark_model_merger.h"
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/strings/utf_string_conversions.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace sync_bookmarks {
+namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
+
+MATCHER_P2(MatchesUrl, title, url, "") {
+  if (!arg->is_url()) {
+    *result_listener << "Expected URL bookmark but got folder.";
+    return false;
+  }
+  if (arg->GetTitle() != base::ASCIIToUTF16(title)) {
+    *result_listener << "Expected URL title \"" << title << "\" but got \""
+                     << arg->GetTitle() << "\"";
+    return false;
+  }
+  if (arg->url() != url) {
+    *result_listener << "Expected URL \"" << url << "\" but got \""
+                     << arg->url() << "\"";
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P2(MatchesFolder, title, children_matcher, "") {
+  if (!arg->is_folder()) {
+    *result_listener << "Expected folder but got URL.";
+    return false;
+  }
+  if (arg->GetTitle() != base::ASCIIToUTF16(title)) {
+    *result_listener << "Expected folder title \"" << title << "\" but got \""
+                     << arg->GetTitle() << "\"";
+    return false;
+  }
+  return testing::ExplainMatchResult(children_matcher, arg->children(),
+                                     result_listener);
+}
+
+// Test class to build bookmark URLs conveniently and compactly in tests.
+class UrlBuilder {
+ public:
+  UrlBuilder(const std::string& title, const GURL& url)
+      : title_(title), url_(url) {}
+  UrlBuilder(const UrlBuilder&) = default;
+  ~UrlBuilder() = default;
+
+  void Build(bookmarks::BookmarkModel* model,
+             const bookmarks::BookmarkNode* parent) const {
+    model->AddURL(parent, parent->children().size(), base::UTF8ToUTF16(title_),
+                  url_);
+  }
+
+ private:
+  const std::string title_;
+  const GURL url_;
+};
+
+// Test class to build bookmark folders and compactly in tests.
+class FolderBuilder {
+ public:
+  using FolderOrUrl = absl::variant<FolderBuilder, UrlBuilder>;
+
+  static void AddChildTo(bookmarks::BookmarkModel* model,
+                         const bookmarks::BookmarkNode* parent,
+                         const FolderOrUrl& folder_or_url) {
+    if (absl::holds_alternative<UrlBuilder>(folder_or_url)) {
+      absl::get<UrlBuilder>(folder_or_url).Build(model, parent);
+    } else {
+      CHECK(absl::holds_alternative<FolderBuilder>(folder_or_url));
+      absl::get<FolderBuilder>(folder_or_url).Build(model, parent);
+    }
+  }
+
+  static void AddChildrenTo(bookmarks::BookmarkModel* model,
+                            const bookmarks::BookmarkNode* parent,
+                            const std::vector<FolderOrUrl>& children) {
+    for (const FolderOrUrl& folder_or_url : children) {
+      AddChildTo(model, parent, folder_or_url);
+    }
+  }
+
+  explicit FolderBuilder(const std::string& title) : title_(title) {}
+  FolderBuilder(const FolderBuilder&) = default;
+  ~FolderBuilder() = default;
+
+  FolderBuilder& SetChildren(std::vector<FolderOrUrl> children) {
+    children_ = std::move(children);
+    return *this;
+  }
+
+  void Build(bookmarks::BookmarkModel* model,
+             const bookmarks::BookmarkNode* parent) const {
+    const bookmarks::BookmarkNode* folder = model->AddFolder(
+        parent, parent->children().size(), base::UTF8ToUTF16(title_));
+    AddChildrenTo(model, folder, children_);
+  }
+
+ private:
+  const std::string title_;
+  std::vector<FolderOrUrl> children_;
+};
+
+std::unique_ptr<bookmarks::BookmarkModel> BuildModel(
+    const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModel();
+  FolderBuilder::AddChildrenTo(model.get(), model->bookmark_bar_node(),
+                               children_of_bookmark_bar);
+  return model;
+}
+
+}  // namespace
+
+TEST(LocalBookmarkModelMergerTest,
+     ShouldUploadEntireLocalModelIfAccountModelEmpty) {
+  const std::string kFolder1Title = "folder1";
+  const std::string kFolder2Title = "folder2";
+
+  const std::string kUrl1Title = "url1";
+  const std::string kUrl2Title = "url2";
+  const std::string kUrl3Title = "url3";
+  const std::string kUrl4Title = "url4";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  //  |- folder 2
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      BuildModel({FolderBuilder(kFolder1Title)
+                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                    UrlBuilder(kUrl2Title, kUrl2)}),
+                  FolderBuilder(kFolder2Title)
+                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                                    UrlBuilder(kUrl4Title, kUrl4)})});
+
+  // -------- The account model --------
+  // bookmark_bar
+  std::unique_ptr<bookmarks::BookmarkModel> account_model = BuildModel({});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The expected merge outcome --------
+  // Same as the local model described above.
+  EXPECT_THAT(
+      account_model->bookmark_bar_node()->children(),
+      ElementsAre(MatchesFolder(kFolder1Title,
+                                ElementsAre(MatchesUrl(kUrl1Title, kUrl1),
+                                            MatchesUrl(kUrl2Title, kUrl2))),
+                  MatchesFolder(kFolder2Title,
+                                ElementsAre(MatchesUrl(kUrl3Title, kUrl3),
+                                            MatchesUrl(kUrl4Title, kUrl4)))));
+}
+
+TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
+  const std::string kUrl1Title = "url1";
+  const std::string kUrl2Title = "url2";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+
+  auto local_client = std::make_unique<bookmarks::TestBookmarkClient>();
+  bookmarks::BookmarkNode* local_managed_node =
+      local_client->EnableManagedNode();
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  |- url1(http://www.url1.com)
+  // managed_bookmarks
+  //  |- url2(http://www.url2.com)
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      bookmarks::TestBookmarkClient::CreateModelWithClient(
+          std::move(local_client));
+  FolderBuilder::AddChildrenTo(local_model.get(),
+                               local_model->bookmark_bar_node(),
+                               {UrlBuilder(kUrl1Title, kUrl1)});
+  FolderBuilder::AddChildrenTo(local_model.get(), local_managed_node,
+                               {UrlBuilder(kUrl2Title, kUrl2)});
+
+  // -------- The account model --------
+  // bookmark_bar
+  std::unique_ptr<bookmarks::BookmarkModel> account_model = BuildModel({});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  |- url1(http://www.url1.com)
+  //
+  ASSERT_THAT(account_model->bookmark_bar_node()->children(),
+              ElementsAre(MatchesUrl(kUrl1Title, kUrl1)));
+
+  // Managed nodes should be excluded from the merge.
+  std::vector<const bookmarks::BookmarkNode*> nodes;
+  account_model->GetNodesByURL(kUrl2, &nodes);
+  EXPECT_THAT(nodes, IsEmpty());
+}
+
+TEST(LocalBookmarkModelMergerTest, ShouldMergeLocalAndAccountModels) {
+  const std::string kFolder1Title = "folder1";
+  const std::string kFolder2Title = "folder2";
+  const std::string kFolder3Title = "folder3";
+
+  const std::string kUrl1Title = "url1";
+  const std::string kUrl2Title = "url2";
+  const std::string kUrl3Title = "url3";
+  const std::string kUrl4Title = "url4";
+
+  const GURL kUrl1("http://www.url1.com/");
+  const GURL kUrl2("http://www.url2.com/");
+  const GURL kUrl3("http://www.url3.com/");
+  const GURL kUrl4("http://www.url4.com/");
+  const GURL kAnotherUrl2("http://www.another-url2.com/");
+
+  // -------- The local model --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  //  |- folder 2
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  std::unique_ptr<bookmarks::BookmarkModel> local_model =
+      BuildModel({FolderBuilder(kFolder1Title)
+                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                    UrlBuilder(kUrl2Title, kUrl2)}),
+                  FolderBuilder(kFolder2Title)
+                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                                    UrlBuilder(kUrl4Title, kUrl4)})});
+
+  // -------- The account model --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.another-url2.com)
+  //  |- folder 3
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  std::unique_ptr<bookmarks::BookmarkModel> account_model =
+      BuildModel({FolderBuilder(kFolder1Title)
+                      .SetChildren({UrlBuilder(kUrl1Title, kUrl1),
+                                    UrlBuilder(kUrl2Title, kAnotherUrl2)}),
+                  FolderBuilder(kFolder3Title)
+                      .SetChildren({UrlBuilder(kUrl3Title, kUrl3),
+                                    UrlBuilder(kUrl4Title, kUrl4)})});
+
+  // -------- Exercise the merge logic --------
+  LocalBookmarkModelMerger(local_model.get(), account_model.get()).Merge();
+
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.another-url2.com)
+  //  |- folder 3
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  //  |- folder 1
+  //    |- url1(http://www.url1.com)
+  //    |- url2(http://www.url2.com)
+  //  |- folder 2
+  //    |- url3(http://www.url3.com)
+  //    |- url4(http://www.url4.com)
+  //
+  // Note that the current implementation doesn't do smart dedupping.
+  EXPECT_THAT(
+      account_model->bookmark_bar_node()->children(),
+      ElementsAre(
+          MatchesFolder(kFolder1Title,
+                        ElementsAre(MatchesUrl(kUrl1Title, kUrl1),
+                                    MatchesUrl(kUrl2Title, kAnotherUrl2))),
+          MatchesFolder(kFolder3Title,
+                        ElementsAre(MatchesUrl(kUrl3Title, kUrl3),
+                                    MatchesUrl(kUrl4Title, kUrl4))),
+          MatchesFolder(kFolder1Title,
+                        ElementsAre(MatchesUrl(kUrl1Title, kUrl1),
+                                    MatchesUrl(kUrl2Title, kUrl2))),
+          MatchesFolder(kFolder2Title,
+                        ElementsAre(MatchesUrl(kUrl3Title, kUrl3),
+                                    MatchesUrl(kUrl4Title, kUrl4)))));
+}
+
+}  // namespace sync_bookmarks

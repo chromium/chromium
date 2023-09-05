@@ -22,6 +22,8 @@ static_library("sync_bookmarks") {
     "bookmark_specifics_conversions.h",
     "bookmark_sync_service.cc",
     "bookmark_sync_service.h",
+    "local_bookmark_model_merger.cc",
+    "local_bookmark_model_merger.h",
     "parent_guid_preprocessing.cc",
     "parent_guid_preprocessing.h",
     "switches.cc",
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "bookmark_model_type_processor_unittest.cc",
     "bookmark_remote_updates_handler_unittest.cc",
     "bookmark_specifics_conversions_unittest.cc",
+    "local_bookmark_model_merger_unittest.cc",
     "parent_guid_preprocessing_unittest.cc",
     "synced_bookmark_tracker_unittest.cc",
   ]
