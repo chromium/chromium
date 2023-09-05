@@ -70,6 +70,9 @@ class SyncService;
 // Disconnects the mediator to all observers and services.
 - (void)disconnect;
 
+// Enable or disable Autofill data type.
+- (void)autofillAlertConfirmed:(BOOL)value;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_MEDIATOR_H_

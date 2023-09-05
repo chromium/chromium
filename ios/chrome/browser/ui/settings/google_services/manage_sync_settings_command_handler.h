@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_
 
-// Protocol to communicate user actions from the mediator to its coordinator.
+// Protocol to communicate user actions from the mediator to its
+// coordinator.
 @protocol ManageSyncSettingsCommandHandler <NSObject>
 
 // Opens the "Web & App Activity" dialog.
@@ -18,6 +19,10 @@
 // `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
+
+// Shows a dialog to warn users that addresses are not encrypted by custom
+// passphrase.
+- (void)showAdressesNotEncryptedDialog;
 
 // Shows a view displaying all Google Accounts present on the current device.
 // The view allows adding and removing accounts.

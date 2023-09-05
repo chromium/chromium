@@ -184,6 +184,19 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   _signedInIdentity = nil;
 }
 
+- (void)autofillAlertConfirmed:(BOOL)value {
+  _syncService->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kAutofill, value);
+  // When the auto fill data type is updated, the autocomplete wallet
+  // should be updated too. Autocomplete wallet should not be enabled
+  // when auto fill data type disabled. This behaviour not be
+  // implemented in the UI code. This code can be removed once
+  // either of crbug.com/937234 (move logic to infra layers) or
+  // crbug.com/1435431 (remove the coupling) is fixed.
+  _syncService->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, value);
+}
+
 #pragma mark - Loads sync data type section
 
 // Loads the centered identity account section.
@@ -1047,20 +1060,31 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 - (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
   {
+    SyncSwitchItem* syncSwitchItem =
+        base::apple::ObjCCast<SyncSwitchItem>(item);
+    syncSwitchItem.on = value;
+    if (value &&
+        static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType) ==
+            syncer::UserSelectableType::kAutofill &&
+        _syncService->GetUserSettings()->IsUsingExplicitPassphrase() &&
+        base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      [self.commandHandler showAdressesNotEncryptedDialog];
+      return;
+    }
+
     // The notifications should be ignored to get smooth switch animations.
     // Notifications are sent by SyncObserverModelBridge while changing
     // settings.
     base::AutoReset<BOOL> autoReset(&_ignoreSyncStateChanges, YES);
-    SyncSwitchItem* syncSwitchItem =
-        base::apple::ObjCCast<SyncSwitchItem>(item);
-    syncSwitchItem.on = value;
     SyncSettingsItemType itemType =
         static_cast<SyncSettingsItemType>(item.type);
     switch (itemType) {
       case SyncEverythingItemType:
         if ([self.syncEverythingItem
-                isKindOfClass:[TableViewInfoButtonItem class]])
+                isKindOfClass:[TableViewInfoButtonItem class]]) {
           return;
+        }
 
         self.syncSetupService->SetSyncEverythingEnabled(value);
         break;
@@ -1093,8 +1117,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         DCHECK(syncSwitchItem);
         syncer::UserSelectableType dataType =
             static_cast<syncer::UserSelectableType>(syncSwitchItem.dataType);
-        if ([self isManagedSyncSettingsDataType:dataType])
+        if ([self isManagedSyncSettingsDataType:dataType]) {
           break;
+        }
 
         _syncService->GetUserSettings()->SetSelectedType(dataType, value);
 
