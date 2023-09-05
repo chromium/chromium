@@ -3,7 +3,8 @@
       align-items: center;
       display: flex;
       flex-direction: row;
-      height: 68px;
+      height: auto;
+      padding: 14px 0px;
       width: 504px;
   }
 
@@ -44,6 +45,14 @@
   }
 
   :host([panel-type='3']) .xf-panel-label-text {
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      overflow: hidden;
+      white-space: normal;
+  }
+
+  .xf-panel-secondary-text {
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       display: -webkit-box;
