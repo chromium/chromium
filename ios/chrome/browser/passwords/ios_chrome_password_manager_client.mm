@@ -344,7 +344,7 @@ void IOSChromePasswordManagerClient::WebFrameBecameAvailable(
   if (!driver) {
     return;
   }
-  autofill_manager_observations_.AddObservation(driver->autofill_manager());
+  autofill_manager_observations_.AddObservation(&driver->GetAutofillManager());
 }
 
 void IOSChromePasswordManagerClient::OnAutofillManagerDestroyed(

@@ -2172,12 +2172,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDispatchKeyEventShowsAutoFill) {
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriverFactory::FromWebContents(GetInspectedTab())
           ->DriverForFrame(GetInspectedTab()->GetPrimaryMainFrame());
-  auto* autofill_manager = static_cast<autofill::BrowserAutofillManager*>(
-      autofill_driver->autofill_manager());
-  ASSERT_TRUE(autofill_manager);
+  auto& autofill_manager = static_cast<autofill::BrowserAutofillManager&>(
+      autofill_driver->GetAutofillManager());
   BrowserAutofillManagerTestDelegateDevtoolsImpl autofill_test_delegate(
       GetInspectedTab());
-  autofill_test_delegate.Observe(*autofill_manager);
+  autofill_test_delegate.Observe(autofill_manager);
 
   RunTestFunction(window_, "testDispatchKeyEventShowsAutoFill");
   CloseDevToolsWindow();

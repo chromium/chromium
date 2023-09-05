@@ -610,7 +610,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
 
   {
     autofill::TestAutofillManagerWaiter waiter(
-        *autofill_driver->autofill_manager(),
+        autofill_driver->GetAutofillManager(),
         {autofill::AutofillManagerEvent::kFormsSeen});
     autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                                  /*removed_forms=*/{});
@@ -620,7 +620,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
   // Simulate that the field types have been determined, since server
   // communication is turned off.
   using Observer = autofill::AutofillManager::Observer;
-  autofill_driver->autofill_manager()->NotifyObservers(
+  autofill_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 
@@ -665,7 +665,7 @@ TEST_F(ChromePasswordManagerClientTest,
 
   {
     autofill::TestAutofillManagerWaiter waiter(
-        *main_driver->autofill_manager(),
+        main_driver->GetAutofillManager(),
         {autofill::AutofillManagerEvent::kFormsSeen});
     main_driver->renderer_events().FormsSeen(/*updated_forms=*/{main_form},
                                              /*removed_forms=*/{});
@@ -677,7 +677,7 @@ TEST_F(ChromePasswordManagerClientTest,
   // Simulate that the field types have been determined, since server
   // communication is turned off.
   using Observer = autofill::AutofillManager::Observer;
-  main_driver->autofill_manager()->NotifyObservers(
+  main_driver->GetAutofillManager().NotifyObservers(
       &Observer::OnFieldTypesDetermined, main_form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 

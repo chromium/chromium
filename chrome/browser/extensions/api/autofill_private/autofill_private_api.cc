@@ -98,7 +98,7 @@ autofill::AutofillManager* GetAutofillManager(
           ->DriverForFrame(web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return nullptr;
-  return autofill_driver->autofill_manager();
+  return &autofill_driver->GetAutofillManager();
 }
 
 autofill::AutofillProfile CreateNewAutofillProfile(

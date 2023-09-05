@@ -235,9 +235,9 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                        webFrame:(web::WebFrame*)webFrame {
   if (!webState || !_webStateObserverBridge)
     return nullptr;
-  return autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState,
-                                                              webFrame)
-      ->autofill_manager();
+  return &autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState,
+                                                               webFrame)
+              ->GetAutofillManager();
 }
 
 // Notifies the autofill manager when forms are detected on a page.

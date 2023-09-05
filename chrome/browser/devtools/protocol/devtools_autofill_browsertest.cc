@@ -65,11 +65,11 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
                       autofill::AutofillClient* client)
       : BrowserAutofillManager(driver, client, "en-US") {}
 
-  static TestAutofillManager* GetForRenderFrameHost(
+  static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {
-    return static_cast<TestAutofillManager*>(
+    return static_cast<TestAutofillManager&>(
         autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh)
-            ->autofill_manager());
+            ->GetAutofillManager());
   }
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
@@ -93,7 +93,7 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  TestAutofillManager* main_autofill_manager() {
+  TestAutofillManager& main_autofill_manager() {
     return TestAutofillManager::GetForRenderFrameHost(main_frame());
   }
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
   base::Value::Dict address_1_fields;
   address_1_fields.Set("name", "ADDRESS_HOME_LINE1");
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
   SendCommandSync("Autofill.setAddresses", std::move(params));
 
   std::vector<autofill::AutofillProfile> res =
-      test_api(*main_autofill_manager()).test_addresses();
+      test_api(main_autofill_manager()).test_addresses();
   ASSERT_EQ(res.size(), 2u);
   ASSERT_EQ(res[0].GetAddress().GetRawInfo(
                 autofill::ServerFieldType::ADDRESS_HOME_LINE1),
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
   int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
 
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
   std::string frame_id;
   {
@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
   const base::Value::Dict* result = SendCommandSync("Target.getTargets");
 
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
 
   // Enabled events and emit event about forming being filled.
   SendCommandSync("Autofill.enable");
-  main_autofill_manager()->NotifyObservers(
+  main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
       form_id(), autofill::mojom::AutofillActionPersistence::kFill,
       filled_fields_by_autofill, &profile);

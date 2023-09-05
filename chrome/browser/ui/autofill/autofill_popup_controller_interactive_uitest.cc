@@ -88,7 +88,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
   BrowserAutofillManager& autofill_manager() {
     return static_cast<BrowserAutofillManager&>(
-        *autofill_driver().autofill_manager());
+        autofill_driver().GetAutofillManager());
   }
 
   TestAutofillExternalDelegate& autofill_external_delegate() {

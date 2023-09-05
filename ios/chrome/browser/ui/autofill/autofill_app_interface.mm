@@ -198,8 +198,8 @@ class SaveCardInfobarEGTestHelper
             web_state);
     web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
-        ->autofill_manager()
-        ->client()
+        ->GetAutofillManager()
+        .client()
         .GetFormDataImporter()
         ->credit_card_save_manager_.get();
   }
@@ -213,8 +213,8 @@ class SaveCardInfobarEGTestHelper
     web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
     DCHECK(web_state);
     return AutofillDriverIOS::FromWebStateAndWebFrame(web_state, main_frame)
-        ->autofill_manager()
-        ->client()
+        ->GetAutofillManager()
+        .client()
         .GetPaymentsClient();
   }
 

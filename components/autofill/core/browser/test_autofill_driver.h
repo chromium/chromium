@@ -161,11 +161,12 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   TestAutofillDriver();
   ~TestAutofillDriver() override;
 
+  // AutofillDriver
+  AutofillManager& GetAutofillManager() override;
+
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);
   }
-
-  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
 
  private:
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;

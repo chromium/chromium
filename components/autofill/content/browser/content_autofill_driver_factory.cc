@@ -158,9 +158,8 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
   DCHECK(driver);
 
   if (!render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering) &&
-      driver->autofill_manager()) {
-    driver->autofill_manager()->ReportAutofillWebOTPMetrics(
+          content::RenderFrameHost::LifecycleState::kPrerendering)) {
+    driver->GetAutofillManager().ReportAutofillWebOTPMetrics(
         render_frame_host->DocumentUsedWebOTP());
   }
 

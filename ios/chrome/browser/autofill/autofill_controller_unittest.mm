@@ -423,10 +423,10 @@ TEST_F(AutofillControllerTest, ReadForm) {
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state());
   web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-  BrowserAutofillManager* autofill_manager =
+  BrowserAutofillManager& autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
-          ->autofill_manager();
-  const auto& forms = autofill_manager->form_structures();
+          ->GetAutofillManager();
+  const auto& forms = autofill_manager.form_structures();
   const auto& form = *(forms.begin()->second);
   CheckField(form, NAME_FULL, "name");
   CheckField(form, ADDRESS_HOME_LINE1, "address");
@@ -446,10 +446,10 @@ TEST_F(AutofillControllerTest, ReadFormName) {
       AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state());
   web::WebFrame* main_frame = frames_manager->GetMainWebFrame();
-  BrowserAutofillManager* autofill_manager =
+  BrowserAutofillManager& autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), main_frame)
-          ->autofill_manager();
-  const auto& forms = autofill_manager->form_structures();
+          ->GetAutofillManager();
+  const auto& forms = autofill_manager.form_structures();
   const auto& form = *(forms.begin()->second);
   EXPECT_EQ(u"form1", form.ToFormData().name);
 }

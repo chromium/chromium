@@ -793,9 +793,7 @@ ChromePasswordManagerClient::GetAutofillDownloadManager() {
         factory->DriverForFrame(web_contents()->GetPrimaryMainFrame());
     // |driver| can be NULL if the tab is being closed.
     if (driver) {
-      autofill::AutofillManager* autofill_manager = driver->autofill_manager();
-      if (autofill_manager)
-        return autofill_manager->download_manager();
+      return driver->GetAutofillManager().download_manager();
     }
   }
   return nullptr;

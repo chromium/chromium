@@ -460,7 +460,7 @@ AutofillManager* CreditCardAccessoryControllerImpl::GetManager() const {
     return af_manager_for_testing_;
   ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
       GetWebContents().GetFocusedFrame());
-  return driver ? driver->autofill_manager() : nullptr;
+  return driver ? &driver->GetAutofillManager() : nullptr;
 }
 
 content::WebContents& CreditCardAccessoryControllerImpl::GetWebContents()

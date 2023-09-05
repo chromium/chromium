@@ -134,6 +134,10 @@ ContentAutofillDriver* ContentAutofillDriver::GetParent() {
   return owner_->DriverForFrame(parent_rfh);
 }
 
+AutofillManager& ContentAutofillDriver::GetAutofillManager() {
+  return *autofill_manager_;
+}
+
 absl::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
     FrameToken query) {
   if (absl::holds_alternative<LocalFrameToken>(query)) {

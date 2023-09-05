@@ -57,16 +57,17 @@ void TouchToFillKeyboardSuppressor::OnContentAutofillDriverCreated(
         },
         weak_ptr_factory_.GetWeakPtr()));
   }
-  autofill_manager_observations_.AddObservation(driver.autofill_manager());
+  autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
 }
 
 void TouchToFillKeyboardSuppressor::OnContentAutofillDriverWillBeDeleted(
     ContentAutofillDriverFactory& factory,
     ContentAutofillDriver& driver) {
-  if (suppressed_manager_.get() == driver.autofill_manager()) {
+  if (suppressed_manager_.get() == &driver.GetAutofillManager()) {
     Unsuppress();
   }
-  autofill_manager_observations_.RemoveObservation(driver.autofill_manager());
+  autofill_manager_observations_.RemoveObservation(
+      &driver.GetAutofillManager());
 }
 
 void TouchToFillKeyboardSuppressor::OnAutofillManagerDestroyed(

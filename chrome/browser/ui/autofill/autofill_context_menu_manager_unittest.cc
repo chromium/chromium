@@ -119,8 +119,8 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
   MockAutofillDriver* driver() { return autofill_driver_injector_[main_rfh()]; }
 
-  BrowserAutofillManager* autofill_manager() {
-    return static_cast<BrowserAutofillManager*>(driver()->autofill_manager());
+  BrowserAutofillManager& autofill_manager() {
+    return static_cast<BrowserAutofillManager&>(driver()->GetAutofillManager());
   }
 
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
@@ -144,10 +144,10 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
 
   // Adds the `form` to the `driver()`'s manager.
   void AddSeenForm(const FormData& form) {
-    TestAutofillManagerWaiter waiter(*autofill_manager(),
+    TestAutofillManagerWaiter waiter(autofill_manager(),
                                      {AutofillManagerEvent::kFormsSeen});
-    autofill_manager()->OnFormsSeen(/*updated_forms=*/{form},
-                                    /*removed_forms=*/{});
+    autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
+                                   /*removed_forms=*/{});
     ASSERT_TRUE(waiter.Wait());
   }
 
@@ -267,7 +267,7 @@ TEST_F(AutofillContextMenuManagerTest,
   // Expect that when the autofill_manager() is destroyed, the explicitly
   // triggered metric is emitted correctly.
   base::HistogramTester histogram_tester;
-  autofill_manager()->Reset();
+  autofill_manager().Reset();
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",
@@ -290,7 +290,7 @@ TEST_F(AutofillContextMenuManagerTest,
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
   base::HistogramTester histogram_tester;
-  autofill_manager()->Reset();
+  autofill_manager().Reset();
   histogram_tester.ExpectUniqueSample(
       "Autofill.ManualFallback.ExplicitlyTriggered."
       "ClassifiedFieldAutocompleteUnrecognized.Address",

@@ -290,7 +290,7 @@ BrowserAutofillManager* AutofillUiTest::GetBrowserAutofillManager() {
   // when there is a web page popup during teardown
   if (!driver)
     return nullptr;
-  return static_cast<BrowserAutofillManager*>(driver->autofill_manager());
+  return static_cast<BrowserAutofillManager*>(&driver->GetAutofillManager());
 }
 
 void AutofillUiTest::RenderFrameHostChanged(

@@ -103,11 +103,11 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
     return web_contents()->GetPrimaryMainFrame();
   }
 
-  TestAutofillManager* GetAutofillManagerInMainFrame() {
+  TestAutofillManager& GetAutofillManagerInMainFrame() {
     autofill::ContentAutofillDriver* driver =
         autofill::ContentAutofillDriver::GetForRenderFrameHost(
             web_contents()->GetPrimaryMainFrame());
-    return static_cast<TestAutofillManager*>(driver->autofill_manager());
+    return static_cast<TestAutofillManager&>(driver->GetAutofillManager());
   }
 
   // At the chrome layer, an outstanding request to /favicon.ico is made. It is
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
 
   // 1) Navigate to page with test form.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetTestFormUrl()));
-  EXPECT_TRUE(GetAutofillManagerInMainFrame()->WaitForFormsSeen(1));
+  EXPECT_TRUE(GetAutofillManagerInMainFrame().WaitForFormsSeen(1));
 
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
 
   // 1) Navigate to page with test form.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetTestFormUrl()));
-  EXPECT_TRUE(GetAutofillManagerInMainFrame()->WaitForFormsSeen(1));
+  EXPECT_TRUE(GetAutofillManagerInMainFrame().WaitForFormsSeen(1));
 
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
 
   // 1) Navigate to page with test form.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetTestFormUrl()));
-  EXPECT_TRUE(GetAutofillManagerInMainFrame()->WaitForFormsSeen(1));
+  EXPECT_TRUE(GetAutofillManagerInMainFrame().WaitForFormsSeen(1));
 
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(TabInteractionRecorderAndroidBrowserTest,
 
   // 1) Navigate to page with test form.
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetTestFormUrl()));
-  EXPECT_TRUE(GetAutofillManagerInMainFrame()->WaitForFormsSeen(1));
+  EXPECT_TRUE(GetAutofillManagerInMainFrame().WaitForFormsSeen(1));
 
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 

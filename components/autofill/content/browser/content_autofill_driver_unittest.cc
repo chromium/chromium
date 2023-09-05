@@ -378,7 +378,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
   MockBrowserAutofillManager& manager() {
     return static_cast<MockBrowserAutofillManager&>(
-        *driver().autofill_manager());
+        driver().GetAutofillManager());
   }
 
   LocalFrameToken frame_token() {

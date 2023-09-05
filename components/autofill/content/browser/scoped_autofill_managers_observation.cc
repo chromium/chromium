@@ -33,7 +33,7 @@ void ScopedAutofillManagersObservation::Observe(
     case InitializationPolicy::kObservePreexistingManagers:
       for (ContentAutofillDriver* driver : factory->GetExistingDrivers({})) {
         autofill_manager_observations_.AddObservation(
-            driver->autofill_manager());
+            &driver->GetAutofillManager());
       }
       break;
   }
@@ -59,13 +59,14 @@ void ScopedAutofillManagersObservation::OnContentAutofillDriverFactoryDestroyed(
 void ScopedAutofillManagersObservation::OnContentAutofillDriverCreated(
     ContentAutofillDriverFactory& factory,
     ContentAutofillDriver& driver) {
-  autofill_manager_observations_.AddObservation(driver.autofill_manager());
+  autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
 }
 
 void ScopedAutofillManagersObservation::OnContentAutofillDriverWillBeDeleted(
     ContentAutofillDriverFactory& factory,
     ContentAutofillDriver& driver) {
-  autofill_manager_observations_.RemoveObservation(driver.autofill_manager());
+  autofill_manager_observations_.RemoveObservation(
+      &driver.GetAutofillManager());
 }
 
 }  // namespace autofill

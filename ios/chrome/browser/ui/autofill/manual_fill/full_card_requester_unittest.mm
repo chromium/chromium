@@ -159,12 +159,12 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissNewPrompt) {
       autofill::AutofillJavaScriptFeature::GetInstance();
   web::WebFrame* main_frame =
       feature->GetWebFramesManager(web_state())->GetMainWebFrame();
-  autofill::BrowserAutofillManager* autofill_manager =
+  autofill::BrowserAutofillManager& autofill_manager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
                                                            main_frame)
-          ->autofill_manager();
+          ->GetAutofillManager();
   FakeResultDelegate* fake_result_delegate = new FakeResultDelegate;
-  full_card_requester.GetFullCard(*credit_cards()[0], autofill_manager,
+  full_card_requester.GetFullCard(*credit_cards()[0], &autofill_manager,
                                   fake_result_delegate->GetWeakPtr());
 
   // Spin the run loop to trigger the animation.

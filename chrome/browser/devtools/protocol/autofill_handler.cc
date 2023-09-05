@@ -41,7 +41,7 @@ absl::optional<std::pair<FormData, FormFieldData>> FindFieldWithFormData(
     autofill::ContentAutofillDriver* driver,
     autofill::FieldGlobalId id) {
   for (const auto& [key, form] :
-       driver->autofill_manager()->form_structures()) {
+       driver->GetAutofillManager().form_structures()) {
     for (const auto& field : form->fields()) {
       if (field->global_id() == id) {
         return std::make_pair(form->ToFormData(), FormFieldData(*field));
@@ -165,7 +165,7 @@ void AutofillHandler::FinishTrigger(
   tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
                                base::UTF8ToUTF16(card->GetCvc()));
 
-  autofill_driver->autofill_manager()->FillCreditCardForm(
+  autofill_driver->GetAutofillManager().FillCreditCardForm(
       field_data->first, field_data->second, tmp_autofill_card,
       base::UTF8ToUTF16(card->GetCvc()),
       {.trigger_source = AutofillTriggerSource::kPopup});
@@ -207,9 +207,9 @@ void AutofillHandler::SetAddresses(
     return;
   }
 
-  static_cast<autofill::BrowserAutofillManager*>(
-      autofill_driver->autofill_manager())
-      ->set_test_addresses(test_address_for_countries);
+  static_cast<autofill::BrowserAutofillManager&>(
+      autofill_driver->GetAutofillManager())
+      .set_test_addresses(test_address_for_countries);
   std::move(callback)->sendSuccess();
 }
 
@@ -334,7 +334,7 @@ Response AutofillHandler::Enable() {
           autofill::features::kAutofillTestFormWithDevtools)) {
     autofill::ContentAutofillDriver* autofill_driver = GetAutofillDriver();
     if (autofill_driver) {
-      observation_.Observe(autofill_driver->autofill_manager());
+      observation_.Observe(&autofill_driver->GetAutofillManager());
     }
   }
   return Response::FallThrough();

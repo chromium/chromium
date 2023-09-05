@@ -157,11 +157,10 @@ void FastCheckoutClientImpl::OnContentAutofillDriverFactoryDestroyed(
 void FastCheckoutClientImpl::OnContentAutofillDriverCreated(
     autofill::ContentAutofillDriverFactory& factory,
     autofill::ContentAutofillDriver& driver) {
-  auto* manager =
-      static_cast<autofill::BrowserAutofillManager*>(driver.autofill_manager());
-  manager->set_fast_checkout_delegate(
-      std::make_unique<FastCheckoutDelegateImpl>(
-          &autofill_client_->GetWebContents(), this, manager));
+  auto& manager = static_cast<autofill::BrowserAutofillManager&>(
+      driver.GetAutofillManager());
+  manager.set_fast_checkout_delegate(std::make_unique<FastCheckoutDelegateImpl>(
+      &autofill_client_->GetWebContents(), this, &manager));
 }
 
 bool FastCheckoutClientImpl::TryToStart(

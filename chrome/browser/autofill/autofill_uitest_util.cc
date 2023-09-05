@@ -138,22 +138,22 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
   form.fields.front().is_focusable = true;
   form.fields.front().should_autocomplete = true;
 
-  TestAutofillManagerWaiter waiter(*driver.autofill_manager(),
+  TestAutofillManagerWaiter waiter(driver.GetAutofillManager(),
                                    {AutofillManagerEvent::kAskForValuesToFill});
   driver.renderer_events().AskForValuesToFill(
       form, form.fields.front(), element_bounds,
       AutofillSuggestionTriggerSource::kTextFieldDidChange);
   ASSERT_TRUE(waiter.Wait());
-  ASSERT_EQ(1u, driver.autofill_manager()->form_structures().size());
+  ASSERT_EQ(1u, driver.GetAutofillManager().form_structures().size());
   // `form.host_frame` and `form.url` have only been set by
   // ContentAutofillDriver::AskForValuesToFill().
-  form = driver.autofill_manager()
-             ->form_structures()
+  form = driver.GetAutofillManager()
+             .form_structures()
              .begin()
              ->second->ToFormData();
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
-  test_api(static_cast<BrowserAutofillManager&>(*driver.autofill_manager()))
+  test_api(static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
       .external_delegate()
       ->OnSuggestionsReturned(
           form.fields.front().global_id(), suggestions,

@@ -96,8 +96,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     active_browser_ = nullptr;
     ContentAutofillDriverFactory::FromWebContents(web_contents)
         ->DriverForFrame(web_contents->GetPrimaryMainFrame())
-        ->autofill_manager()
-        ->client()
+        ->GetAutofillManager()
+        .client()
         .HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
   }
@@ -209,8 +209,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     AutofillClient& autofill_client =
         ContentAutofillDriverFactory::FromWebContents(web_contents())
             ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-            ->autofill_manager()
-            ->client();
+            ->GetAutofillManager()
+            .client();
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         AutofillSuggestionTriggerSource::kFormControlElementClicked,
         test::CreateTestFormField(/*label=*/"", input_name, prefix, "input"),

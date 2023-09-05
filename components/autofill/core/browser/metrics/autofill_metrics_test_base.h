@@ -205,7 +205,7 @@ class AutofillMetricsBaseTest {
 
   TestBrowserAutofillManager& autofill_manager() {
     return static_cast<TestBrowserAutofillManager&>(
-        *autofill_driver_->autofill_manager());
+        autofill_driver_->GetAutofillManager());
   }
 
   AutofillExternalDelegate& external_delegate() {

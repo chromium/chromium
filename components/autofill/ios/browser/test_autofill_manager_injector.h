@@ -61,10 +61,10 @@ class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
   }
 
   T* GetForFrame(web::WebFrame* web_frame) {
-    BrowserAutofillManager* autofill_manager =
+    BrowserAutofillManager& autofill_manager =
         AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame)
-            ->autofill_manager();
-    return static_cast<T*>(autofill_manager);
+            ->GetAutofillManager();
+    return &static_cast<T&>(autofill_manager);
   }
 
  private:

@@ -154,8 +154,8 @@ class AutofillTest : public InProcessBrowserTest {
     // Make sure to close any showing popups prior to tearing down the UI.
     ContentAutofillDriverFactory::FromWebContents(web_contents())
         ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-        ->autofill_manager()
-        ->client()
+        ->GetAutofillManager()
+        .client()
         .HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
     InProcessBrowserTest::TearDownOnMainThread();

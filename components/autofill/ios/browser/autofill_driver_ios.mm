@@ -47,14 +47,18 @@ LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
   return LocalFrameToken();
 }
 
+absl::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
+  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
+  return absl::nullopt;
+}
+
 AutofillDriverIOS* AutofillDriverIOS::GetParent() {
   NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
   return nullptr;
 }
 
-absl::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
-  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
-  return absl::nullopt;
+BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
+  return *browser_autofill_manager_;
 }
 
 // Return true as iOS has no MPArch.

@@ -59,10 +59,10 @@ void TouchToFillCreditCardController::OnContentAutofillDriverFactoryDestroyed(
 void TouchToFillCreditCardController::OnContentAutofillDriverCreated(
     ContentAutofillDriverFactory& factory,
     ContentAutofillDriver& driver) {
-  auto* manager =
-      static_cast<BrowserAutofillManager*>(driver.autofill_manager());
-  manager->set_touch_to_fill_delegate(
-      std::make_unique<TouchToFillDelegateAndroidImpl>(manager));
+  auto& manager =
+      static_cast<BrowserAutofillManager&>(driver.GetAutofillManager());
+  manager.set_touch_to_fill_delegate(
+      std::make_unique<TouchToFillDelegateAndroidImpl>(&manager));
 }
 
 bool TouchToFillCreditCardController::Show(

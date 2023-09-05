@@ -2722,7 +2722,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  test_delegate()->Observe(*cross_driver->autofill_manager());
+  test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this,
                            {.execution_target = cross_frame_host}));
@@ -2749,7 +2749,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  test_delegate()->Observe(*cross_driver->autofill_manager());
+  test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   auto Wait = [this]() { DoNothingAndWait(base::Seconds(2)); };
   ASSERT_TRUE(AutofillFlow(GetElementById("CREDIT_CARD_NUMBER"), this,
@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveFencedFrameTest,
           ->DriverForFrame(cross_frame_host);
   ASSERT_TRUE(cross_driver);
   // Let |test_delegate()| also observe autofill events in the iframe.
-  test_delegate()->Observe(*cross_driver->autofill_manager());
+  test_delegate()->Observe(cross_driver->GetAutofillManager());
 
   // Open the Autofill popup but do not accept the suggestion yet. Deleting the
   // subframe should close the popup.

@@ -21,6 +21,7 @@
 namespace autofill {
 
 class FormStructure;
+class AutofillManager;
 
 // AutofillDriver is Autofill's lowest-level abstraction of a frame that is
 // shared among all platforms.
@@ -51,10 +52,6 @@ class AutofillDriver {
   // Returns the uniquely identifying frame token.
   virtual LocalFrameToken GetFrameToken() const = 0;
 
-  // Returns the AutofillDriver of the parent frame, if such a frame and driver
-  // exist, and nullptr otherwise.
-  virtual AutofillDriver* GetParent() = 0;
-
   // Resolves a FrameToken `query` from the perspective of `this` to the
   // globally unique LocalFrameToken. Returns `absl::nullopt` if `query` is a
   // RemoteFrameToken that cannot be resolved from the perspective of `this`.
@@ -64,6 +61,13 @@ class AutofillDriver {
   //
   // See the documentation of LocalFrameToken and RemoteFrameToken for details.
   virtual absl::optional<LocalFrameToken> Resolve(FrameToken query) = 0;
+
+  // Returns the AutofillDriver of the parent frame, if such a frame and driver
+  // exist, and nullptr otherwise.
+  virtual AutofillDriver* GetParent() = 0;
+
+  // Returns the AutofillManager owned by the AutofillDriver.
+  virtual AutofillManager& GetAutofillManager() = 0;
 
   // Returns whether the AutofillDriver instance is associated with an active
   // frame in the MPArch sense.

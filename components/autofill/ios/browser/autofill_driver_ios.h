@@ -45,8 +45,9 @@ class AutofillDriverIOS : public AutofillDriver,
 
   // AutofillDriver:
   LocalFrameToken GetFrameToken() const override;
-  AutofillDriverIOS* GetParent() override;
   absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
+  AutofillDriverIOS* GetParent() override;
+  BrowserAutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
@@ -90,10 +91,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void set_autofill_manager_for_testing(
       std::unique_ptr<BrowserAutofillManager> browser_autofill_manager) {
     browser_autofill_manager_ = std::move(browser_autofill_manager);
-  }
-
-  BrowserAutofillManager* autofill_manager() {
-    return browser_autofill_manager_.get();
   }
 
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,

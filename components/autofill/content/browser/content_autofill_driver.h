@@ -129,7 +129,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);
   }
-  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
 
   content::RenderFrameHost* render_frame_host() { return &*render_frame_host_; }
   const content::RenderFrameHost* render_frame_host() const {
@@ -158,6 +157,7 @@ class ContentAutofillDriver : public AutofillDriver,
   LocalFrameToken GetFrameToken() const override;
   absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
   ContentAutofillDriver* GetParent() override;
+  AutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;

@@ -170,18 +170,17 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   if (!driver) {
     return;
   }
-  AutofillManager* manager = driver->autofill_manager();
-  CHECK(manager);
+  AutofillManager& manager = driver->GetAutofillManager();
 
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
   if (command_id == kAutofillContextFeedback) {
-    ExecuteAutofillFeedbackCommand(driver->GetFrameToken(), *manager);
+    ExecuteAutofillFeedbackCommand(driver->GetFrameToken(), manager);
     return;
   }
 
   if (command_id == kAutofillFallbackForAutocompleteUnrecognized) {
-    ExecuteFallbackForAutocompleteUnrecognizedCommand(*manager);
+    ExecuteFallbackForAutocompleteUnrecognizedCommand(manager);
     return;
   }
 }
@@ -226,11 +225,10 @@ void AutofillContextMenuManager::
 void AutofillContextMenuManager::
     MaybeAddFallbackForAutocompleteUnrecognizedToMenu(
         ContentAutofillDriver& driver) {
-  AutofillManager* manager = driver.autofill_manager();
-  CHECK(manager);
+  AutofillManager& manager = driver.GetAutofillManager();
   // Only show the context menu entry for address fields, which can be filled
   // with at least one of the user's profiles.
-  AutofillField* field = GetAutofillField(*manager, driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
   if (!field || FieldTypeGroupToFormType(field->Type().group()) !=
                     FormType::kAddressForm) {
     return;
@@ -258,8 +256,8 @@ void AutofillContextMenuManager::
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
       ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
-  static_cast<BrowserAutofillManager*>(manager)
-      ->GetAutocompleteUnrecognizedFallbackEventLogger()
+  static_cast<BrowserAutofillManager&>(manager)
+      .GetAutocompleteUnrecognizedFallbackEventLogger()
       .ContextMenuEntryShown(
           /*address_field_has_ac_unrecognized=*/field
               ->ShouldSuppressSuggestionsAndFillingByDefault());

@@ -64,13 +64,12 @@ class CreditCard;
   if (!mainFrame) {
     return;
   }
-  autofill::BrowserAutofillManager* autofillManager =
+  autofill::BrowserAutofillManager& autofillManager =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, mainFrame)
-          ->autofill_manager();
-  DCHECK(autofillManager);
+          ->GetAutofillManager();
   _fullCardRequester =
       std::make_unique<FullCardRequester>(viewController, self.browserState);
-  _fullCardRequester->GetFullCard(card, autofillManager,
+  _fullCardRequester->GetFullCard(card, &autofillManager,
                                   _cardAssistant->GetWeakPtr());
   // TODO(crbug.com/845472): closing CVC requester doesn't restore icon bar
   // above keyboard.

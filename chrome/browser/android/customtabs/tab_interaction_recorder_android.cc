@@ -38,7 +38,7 @@ AutofillManager* GetAutofillManager(RenderFrameHost* render_frame_host) {
       autofill::ContentAutofillDriver::GetForRenderFrameHost(render_frame_host);
   if (!autofill_driver)
     return nullptr;
-  return autofill_driver->autofill_manager();
+  return &autofill_driver->GetAutofillManager();
 }
 }  // namespace
 
