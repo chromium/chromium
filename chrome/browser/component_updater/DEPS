@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/elevation_service",
   "+chrome/browser/share",
   "+chrome/updater",
+  "+components/tpcd/metadata",
   "+components/cdm/common",
   "+components/feed",
   "+components/live_caption",

@@ -8,8 +8,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/tpcd/metadata/parser_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,14 +23,23 @@ namespace {
 using ::testing::_;
 
 const base::FilePath::CharType kComponentFileName[] =
-    FILE_PATH_LITERAL("tpcd_metadata.pb");
+    FILE_PATH_LITERAL("metadata.pb");
 }  // namespace
 
-class TpcdMetadataComponentInstallerTest : public ::testing::Test {
+class TpcdMetadataComponentInstallerTest
+    : public ::testing::Test,
+      public ::testing::WithParamInterface<bool> {
  public:
   TpcdMetadataComponentInstallerTest() {
     CHECK(install_dir_.CreateUniqueTempDir());
     CHECK(install_dir_.IsValid());
+    path_ = install_dir().Append(kComponentFileName);
+    CHECK(!path_.empty());
+    if (GetParam()) {
+      scoped_list_.InitAndEnableFeature(net::features::kTpcdMetadataGrants);
+    } else {
+      scoped_list_.InitAndDisableFeature(net::features::kTpcdMetadataGrants);
+    }
   }
 
   ~TpcdMetadataComponentInstallerTest() override = default;
@@ -33,10 +47,11 @@ class TpcdMetadataComponentInstallerTest : public ::testing::Test {
  protected:
   const base::FilePath& install_dir() { return install_dir_.GetPath(); }
 
-  void SetComponentContents(base::StringPiece contents) {
-    base::FilePath path = install_dir().Append(kComponentFileName);
-    CHECK(base::WriteFile(path, contents));
-    CHECK(base::PathExists(path));
+  const base::FilePath path() { return path_; }
+
+  void ExecFakeComponentInstallation(base::StringPiece contents) {
+    CHECK(base::WriteFile(path(), contents));
+    CHECK(base::PathExists(path()));
   }
 
   content::BrowserTaskEnvironment& task_env() { return task_env_; }
@@ -45,12 +60,14 @@ class TpcdMetadataComponentInstallerTest : public ::testing::Test {
 
  private:
   base::ScopedTempDir install_dir_;
+  base::FilePath path_;
   content::BrowserTaskEnvironment task_env_;
+  base::test::ScopedFeatureList scoped_list_;
   std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_ =
       std::make_unique<TpcdMetadataComponentInstaller>(base::DoNothing());
 };
 
-TEST_F(TpcdMetadataComponentInstallerTest, ComponentRegistered) {
+TEST_P(TpcdMetadataComponentInstallerTest, ComponentRegistered) {
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
@@ -60,15 +77,88 @@ TEST_F(TpcdMetadataComponentInstallerTest, ComponentRegistered) {
   task_env().RunUntilIdle();
 }
 
-TEST_F(TpcdMetadataComponentInstallerTest,
+TEST_P(TpcdMetadataComponentInstallerTest,
        VerifyInstallation_InvalidInstallDir) {
   EXPECT_FALSE(policy()->VerifyInstallation(
       base::Value::Dict(), install_dir().Append(FILE_PATH_LITERAL("x"))));
 }
 
-TEST_F(TpcdMetadataComponentInstallerTest,
+TEST_P(TpcdMetadataComponentInstallerTest,
        VerifyInstallation_RejectsMissingFile) {
   EXPECT_FALSE(
       policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
 }
+
+TEST_P(TpcdMetadataComponentInstallerTest,
+       VerifyInstallation_RejectsNotProtoFile) {
+  ExecFakeComponentInstallation("clearly not a proto");
+  EXPECT_FALSE(
+      policy()->VerifyInstallation(base::Value::Dict(), install_dir()));
+}
+
+TEST_P(TpcdMetadataComponentInstallerTest,
+       FeatureEnabled_ComponentReady_FiresCallback) {
+  if (!GetParam()) {
+    GTEST_SKIP_("Reason: Test parameter instance N/A");
+  }
+
+  const std::string primary_pattern_spec = "[*.]bar.com";
+  const std::string secondary_pattern_spec = "[*.]foo.com";
+
+  std::vector<tpcd::metadata::MetadataPair> metadata_pairs;
+  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
+  tpcd::metadata::Metadata metadata =
+      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  ASSERT_EQ(metadata.metadata_entries_size(), 1);
+
+  ExecFakeComponentInstallation(metadata.SerializeAsString());
+
+  base::RunLoop run_loop;
+
+  std::unique_ptr<component_updater::ComponentInstallerPolicy> policy =
+      std::make_unique<TpcdMetadataComponentInstaller>(
+          base::BindLambdaForTesting([&](std::string raw_metadata) {
+            EXPECT_EQ(raw_metadata, metadata.SerializeAsString());
+            run_loop.Quit();
+          }));
+  ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));
+  policy->ComponentReady(base::Version(), install_dir(), base::Value::Dict());
+
+  run_loop.Run();
+}
+
+TEST_P(TpcdMetadataComponentInstallerTest,
+       FeatureDisabled_ComponentReady_DoesNotFireCallback) {
+  if (GetParam()) {
+    GTEST_SKIP_("Reason: Test parameter instance N/A");
+  }
+
+  const std::string primary_pattern_spec = "[*.]bar.com";
+  const std::string secondary_pattern_spec = "[*.]foo.com";
+
+  std::vector<tpcd::metadata::MetadataPair> metadata_pairs;
+  metadata_pairs.emplace_back(primary_pattern_spec, secondary_pattern_spec);
+  tpcd::metadata::Metadata metadata =
+      tpcd::metadata::MakeMetadataProtoFromVectorOfPair(metadata_pairs);
+  ASSERT_EQ(metadata.metadata_entries_size(), 1);
+
+  ExecFakeComponentInstallation(metadata.SerializeAsString());
+
+  base::RunLoop run_loop;
+
+  std::unique_ptr<component_updater::ComponentInstallerPolicy> policy =
+      std::make_unique<TpcdMetadataComponentInstaller>(
+          base::BindLambdaForTesting(
+              [&](std::string raw_metadata) { NOTREACHED_NORETURN(); }));
+  ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));
+  policy->ComponentReady(base::Version(), install_dir(), base::Value::Dict());
+
+  run_loop.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    TpcdMetadataComponentInstallerTest,
+    ::testing::Bool());
+
 }  // namespace component_updater

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package tpcd.metadata;
+
+// MetadataEntry holds a pair of primary and secondary url patterns.
+message MetadataEntry {
+  // primary_pattern_spec represents the pattern specifications to match against
+  // third-party contexts url.
+  optional string primary_pattern_spec = 1;
+  // secondary_pattern_spec represents the pattern specifications to match
+  // against first-party contexts url.
+  optional string secondary_pattern_spec = 2;
+}
+
+// Metadata holds a list of url patterns pair aka `MetadataEntry`.
+message Metadata {
+  repeated MetadataEntry metadata_entries = 1;
+}
