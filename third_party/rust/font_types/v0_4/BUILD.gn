@@ -1,0 +1,45 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/BUILD.gn.hbs by tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "font_types"
+  epoch = "0.4"
+  crate_type = "rlib"
+  crate_root = "crate/src/lib.rs"
+  sources = [
+    "//third_party/rust/font_types/v0_4/crate/src/bbox.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/fixed.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/fword.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/glyph_id.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/lib.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/longdatetime.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/name_id.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/offset.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/pen.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/point.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/raw.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/serde_test.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/tag.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/uint24.rs",
+    "//third_party/rust/font_types/v0_4/crate/src/version.rs",
+  ]
+  inputs = [ "//third_party/rust/font_types/v0_4/crate/README.md" ]
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.4.0"
+  cargo_pkg_name = "font-types"
+  cargo_pkg_description = "Scalar types used in fonts."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  features = [ "std" ]
+}
