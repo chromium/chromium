@@ -2292,30 +2292,36 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveBulkPinningBannerEnabled")
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
-            .SetTestAccountType(TestAccountType::kNonManaged),
-        TestCase("driveBulkPinningBannerEnabled")
-            .EnableBulkPinning()
-            .SetDeviceMode(DeviceMode::kConsumerOwned)
-            .SetTestAccountType(TestAccountType::kNonManagedNonOwner),
-        TestCase("driveBulkPinningBannerEnabled")
-            .EnableBulkPinning()
-            .SetDeviceMode(DeviceMode::kEnrolled)
-            .SetTestAccountType(TestAccountType::kGoogler),
-        TestCase("driveBulkPinningBannerEnabled")
-            .EnableBulkPinning()
-            .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManaged)
-            .EnableCrosComponents(),
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"}),
         TestCase("driveBulkPinningBannerEnabled")
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kConsumerOwned)
             .SetTestAccountType(TestAccountType::kNonManagedNonOwner)
-            .EnableCrosComponents(),
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"}),
         TestCase("driveBulkPinningBannerEnabled")
             .EnableBulkPinning()
             .SetDeviceMode(DeviceMode::kEnrolled)
             .SetTestAccountType(TestAccountType::kGoogler)
-            .EnableCrosComponents()));
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"}),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManaged)
+            .EnableCrosComponents()
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"}),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kConsumerOwned)
+            .SetTestAccountType(TestAccountType::kNonManagedNonOwner)
+            .EnableCrosComponents()
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"}),
+        TestCase("driveBulkPinningBannerEnabled")
+            .EnableBulkPinning()
+            .SetDeviceMode(DeviceMode::kEnrolled)
+            .SetTestAccountType(TestAccountType::kGoogler)
+            .EnableCrosComponents()
+            .FeatureIds({"screenplay-e9165a4d-39d6-406c-9027-f2ad39bb4aeb"})));
 
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()
