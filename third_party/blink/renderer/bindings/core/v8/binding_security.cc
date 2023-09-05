@@ -352,14 +352,6 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
   // exception could be a security issue, so just crash.
   CHECK(target);
 
-  // This should throw, but for a period of time, it didn't. Until this is
-  // rolled out to stable, guard it with a flag so it can be rolled back.
-  if (base::FeatureList::IsEnabled(
-          features::kCrossOriginAccessOnDetachedWindowDoesNotThrow) &&
-      !target->GetFrame()) {
-    return;
-  }
-
   auto* local_dom_window = CurrentDOMWindow(isolate);
   // Determine if the access check failure was because of cross-origin or if the
   // WindowAgentFactory is different. If the WindowAgentFactories are different

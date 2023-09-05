@@ -547,12 +547,6 @@ BASE_FEATURE(kCreateImageBitmapOrientationNone,
              "CreateImageBitmapOrientationNone",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1453572): Remove this if this behavior does not need
-// to be rolled back on stable.
-BASE_FEATURE(kCrossOriginAccessOnDetachedWindowDoesNotThrow,
-             "CrossOriginAccessOnDetachedWindowDoesNotThrow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDOMContentLoadedWaitForAsyncScript,
              "DOMContentLoadedWaitForAsyncScript",
              base::FEATURE_DISABLED_BY_DEFAULT);
