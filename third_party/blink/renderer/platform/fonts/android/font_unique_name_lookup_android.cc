@@ -53,9 +53,9 @@ void FontUniqueNameLookupAndroid::PrepareFontUniqueNameLookup(
 
   EnsureServiceConnected();
 
-  firmware_font_lookup_service_->GetUniqueNameLookupTable(base::BindOnce(
+  firmware_font_lookup_service_->GetUniqueNameLookupTable(WTF::BindOnce(
       &FontUniqueNameLookupAndroid::ReceiveReadOnlySharedMemoryRegion,
-      base::Unretained(this)));
+      WTF::Unretained(this)));
 }
 
 bool FontUniqueNameLookupAndroid::IsFontUniqueNameLookupReadyForSyncLookup() {
