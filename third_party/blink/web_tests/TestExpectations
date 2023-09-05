@@ -6692,3 +6692,11 @@ crbug.com/1477586 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/a
 # Gardener 2023-09-04
 crbug.com/1478028 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
 crbug.com/1478028 [ Linux ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
+
+# Gardener 2023-09-05
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Failure  ]
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/classic/fullscreen_window/fullscreen.py [ Failure  ]
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/classic/maximize_window/maximize.py [ Failure  ]
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/classic/minimize_window/minimize.py [ Failure  ]
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure  ]
+crbug.com/1478884 [ Debug Linux ] external/wpt/webdriver/tests/classic/set_window_rect/set.py [ Failure  ]
