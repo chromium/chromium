@@ -342,8 +342,8 @@ class TestNetworkContext : public mojom::NetworkContext {
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override {}
-  void VerifyIpProtectionAuthTokenGetterForTesting(
-      VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override {}
+  void VerifyIpProtectionConfigGetterForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback) override {}
 };
 
 }  // namespace network

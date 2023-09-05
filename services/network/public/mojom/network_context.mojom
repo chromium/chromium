@@ -450,7 +450,7 @@ struct NetworkContextParams {
 
   // A service to fetch blind-signed auth tokens for IP protection. If this
   // is not set, then no tokens are available.
-  pending_remote<IpProtectionAuthTokenGetter>? ip_protection_auth_token_getter;
+  pending_remote<IpProtectionConfigGetter>? ip_protection_config_getter;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
@@ -901,7 +901,7 @@ struct BlindSignedAuthToken {
 };
 
 // A source for new BlindSignedAuthTokens.
-interface IpProtectionAuthTokenGetter {
+interface IpProtectionConfigGetter {
   // Try to get a batch of new tokens.
   //
   // This may take some time, if external network requests are required. If no
@@ -1497,7 +1497,7 @@ interface NetworkContext {
 
   // Initiates an IP Protection token request to the browser process and
   // returns a received token, for testing.
-  VerifyIpProtectionAuthTokenGetterForTesting() => (BlindSignedAuthToken token);
+  VerifyIpProtectionConfigGetterForTesting() => (BlindSignedAuthToken token);
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.

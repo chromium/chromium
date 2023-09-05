@@ -139,7 +139,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
   if (IsForIpProtection()) {
     // Do not use the proxy if the request doesn't match the allow list or the
     // token cache is not available or does not have a token.
-    if (!auth_token_cache_ || !network_service_proxy_allow_list_) {
+    if (!ipp_config_cache_ || !network_service_proxy_allow_list_) {
       vlog("no cache or proxy allow list");
       return;
     }
@@ -151,11 +151,11 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
       vlog("proxy allow list did not match");
       return;
     }
-    if (!auth_token_cache_->IsAuthTokenAvailable()) {
+    if (!ipp_config_cache_->IsAuthTokenAvailable()) {
       vlog("no auth token available from cache");
       return;
     }
-    if (!auth_token_cache_->IsProxyListAvailable()) {
+    if (!ipp_config_cache_->IsProxyListAvailable()) {
       // TODO: When this `vlog()` is removed, there's no need to distinguish the
       // case where a proxy list has not been downloaded, and the case where a
       // proxy list is empty. The `IsProxyListAvailable()` method can be removed
@@ -166,7 +166,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
     net::ProxyList proxy_list;
     if (!net::features::kIpPrivacyDirectOnly.Get()) {
-      for (auto& proxy_hostname : auth_token_cache_->ProxyList()) {
+      for (auto& proxy_hostname : ipp_config_cache_->ProxyList()) {
         proxy_list.AddProxyServer(
             net::ProxyServer::ForIpProtection(proxy_hostname));
       }
@@ -209,8 +209,8 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
                                              int net_error) {
   // If the bad proxy was an IP Protection proxy, refresh the list of IP
   // protection proxies immediately.
-  if (bad_proxy.is_for_ip_protection() && auth_token_cache_) {
-    auth_token_cache_->RequestRefreshProxyList();
+  if (bad_proxy.is_for_ip_protection() && ipp_config_cache_) {
+    ipp_config_cache_->RequestRefreshProxyList();
   }
 
   if (observer_) {
@@ -228,8 +228,8 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
   if (IsForIpProtection() && proxy_server.is_for_ip_protection()) {
-    if (auth_token_cache_) {
-      auto token = auth_token_cache_->GetAuthToken();
+    if (ipp_config_cache_) {
+      auto token = ipp_config_cache_->GetAuthToken();
       if (token) {
         vlog("adding auth token");
         std::string encoded_token;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_IMPL_H_
-#define SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_IMPL_H_
+#ifndef SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
+#define SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_IMPL_H_
 
 #include <deque>
 
@@ -13,24 +13,24 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/ip_protection_auth_token_cache.h"
+#include "services/network/ip_protection_config_cache.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
-// An implementation of IpProtectionAuthTokenCache that fills itself by making
-// IPC calls to the IpProtectionAuthTokenGetter in the browser process.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
-    : public IpProtectionAuthTokenCache {
+// An implementation of IpProtectionConfigCache that fills itself by making
+// IPC calls to the IpProtectionConfigGetter in the browser process.
+class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
+    : public IpProtectionConfigCache {
  public:
   // If `auth_token_getter` is unbound, no tokens will be provided.
-  explicit IpProtectionAuthTokenCacheImpl(
-      mojo::PendingRemote<network::mojom::IpProtectionAuthTokenGetter>
+  explicit IpProtectionConfigCacheImpl(
+      mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
           auth_token_getter,
       bool disable_background_tasks_for_testing = false);
-  ~IpProtectionAuthTokenCacheImpl() override;
+  ~IpProtectionConfigCacheImpl() override;
 
-  // IpProtectionAuthTokenCache implementation.
+  // IpProtectionConfigCache implementation.
   bool IsAuthTokenAvailable() override;
   bool IsProxyListAvailable() override;
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken()
@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
   std::vector<std::string> proxy_list_;
 
   // Source of auth tokens and proxy list, when needed.
-  mojo::Remote<network::mojom::IpProtectionAuthTokenGetter> auth_token_getter_;
+  mojo::Remote<network::mojom::IpProtectionConfigGetter> auth_token_getter_;
 
   // True if an invocation of `auth_token_getter_.TryGetAuthTokens()` is
   // outstanding.
@@ -144,9 +144,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCacheImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<IpProtectionAuthTokenCacheImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_IMPL_H_
+#endif  // SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_IMPL_H_

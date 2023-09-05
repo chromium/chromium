@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,16 +25,16 @@ class ScopedInitFeature {
 };
 }  // namespace
 
-class IpProtectionAuthTokenProviderFactoryTest : public testing::Test {
+class IpProtectionConfigProviderFactoryTest : public testing::Test {
  protected:
-  explicit IpProtectionAuthTokenProviderFactoryTest(bool feature_enabled = true)
+  explicit IpProtectionConfigProviderFactoryTest(bool feature_enabled = true)
       // Note that the order of initialization is important here - we want to
       // set the value of the feature before anything else since it's used by
-      // the `IpProtectionAuthTokenProviderFactory` logic.
+      // the `IpProtectionConfigProviderFactory` logic.
       : scoped_feature_(net::features::kEnableIpProtectionProxy,
                         feature_enabled),
-        profile_selections_(IpProtectionAuthTokenProviderFactory::GetInstance(),
-                            IpProtectionAuthTokenProviderFactory::
+        profile_selections_(IpProtectionConfigProviderFactory::GetInstance(),
+                            IpProtectionConfigProviderFactory::
                                 CreateProfileSelectionsForTesting()) {}
 
   void SetUp() override {
@@ -55,37 +55,37 @@ class IpProtectionAuthTokenProviderFactoryTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(IpProtectionAuthTokenProviderFactoryTest,
+TEST_F(IpProtectionConfigProviderFactoryTest,
        ServiceCreationSucceedsWhenFlagEnabled) {
-  IpProtectionAuthTokenProvider* service =
-      IpProtectionAuthTokenProviderFactory::GetForProfile(profile());
+  IpProtectionConfigProvider* service =
+      IpProtectionConfigProviderFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
   service->Shutdown();
 }
 
-TEST_F(IpProtectionAuthTokenProviderFactoryTest, OtrProfileUsesPrimaryProfile) {
+TEST_F(IpProtectionConfigProviderFactoryTest, OtrProfileUsesPrimaryProfile) {
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   // The regular profile and the off-the-record profile must be different.
   ASSERT_NE(profile(), otr_profile);
 
-  // The same `IpProtectionAuthTokenProvider` should be used for both the main
+  // The same `IpProtectionConfigProvider` should be used for both the main
   // profile and the corresponding OTR profile.
-  EXPECT_EQ(IpProtectionAuthTokenProviderFactory::GetForProfile(profile()),
-            IpProtectionAuthTokenProviderFactory::GetForProfile(otr_profile));
+  EXPECT_EQ(IpProtectionConfigProviderFactory::GetForProfile(profile()),
+            IpProtectionConfigProviderFactory::GetForProfile(otr_profile));
 }
 
-class IpProtectionAuthTokenProviderFactoryFeatureDisabledTest
-    : public IpProtectionAuthTokenProviderFactoryTest {
+class IpProtectionConfigProviderFactoryFeatureDisabledTest
+    : public IpProtectionConfigProviderFactoryTest {
  public:
-  IpProtectionAuthTokenProviderFactoryFeatureDisabledTest()
-      : IpProtectionAuthTokenProviderFactoryTest(/*feature_enabled=*/false) {}
+  IpProtectionConfigProviderFactoryFeatureDisabledTest()
+      : IpProtectionConfigProviderFactoryTest(/*feature_enabled=*/false) {}
 };
 
-TEST_F(IpProtectionAuthTokenProviderFactoryFeatureDisabledTest,
+TEST_F(IpProtectionConfigProviderFactoryFeatureDisabledTest,
        ServiceCreationFailsWhenFlagDisabled) {
-  IpProtectionAuthTokenProvider* service =
-      IpProtectionAuthTokenProviderFactory::GetForProfile(profile());
+  IpProtectionConfigProvider* service =
+      IpProtectionConfigProviderFactory::GetForProfile(profile());
   ASSERT_FALSE(service);
 }

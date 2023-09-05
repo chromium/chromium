@@ -533,8 +533,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override;
-  void VerifyIpProtectionAuthTokenGetterForTesting(
-      VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override;
+  void VerifyIpProtectionConfigGetterForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -763,8 +763,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool IsAllowedToUseAllHttpAuthSchemes(
       const url::SchemeHostPort& scheme_host_port);
 
-  void OnIpProtectionAuthTokenAvailableForTesting(
-      VerifyIpProtectionAuthTokenGetterForTestingCallback callback);
+  void OnIpProtectionConfigAvailableForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback);
 
   const raw_ptr<NetworkService> network_service_;
 

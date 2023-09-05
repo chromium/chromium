@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
 #include <memory>
+
+#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
@@ -14,7 +15,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 
-IpProtectionAuthTokenProvider::IpProtectionAuthTokenProvider(
+IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
@@ -27,9 +28,9 @@ IpProtectionAuthTokenProvider::IpProtectionAuthTokenProvider(
   CHECK(identity_manager);
 }
 
-IpProtectionAuthTokenProvider::~IpProtectionAuthTokenProvider() = default;
+IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
 
-void IpProtectionAuthTokenProvider::TryGetAuthTokens(
+void IpProtectionConfigProvider::TryGetAuthTokens(
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -44,13 +45,12 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokens(
   RequestOAuthToken(batch_size, std::move(callback));
 }
 
-void IpProtectionAuthTokenProvider::GetProxyList(
-    GetProxyListCallback callback) {
+void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
   // TODO(crbug.com/1475977): Temporary until we can fetch this from Phosphor.
   std::move(callback).Run({net::features::kIpPrivacyProxyServer.Get()});
 }
 
-void IpProtectionAuthTokenProvider::RequestOAuthToken(
+void IpProtectionConfigProvider::RequestOAuthToken(
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -83,12 +83,12 @@ void IpProtectionAuthTokenProvider::RequestOAuthToken(
           mode, signin::ConsentLevel::kSignin);
   auto* oauth_token_fetcher_ptr = oauth_token_fetcher.get();
   oauth_token_fetcher_ptr->Start(base::BindOnce(
-      &IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted,
+      &IpProtectionConfigProvider::OnRequestOAuthTokenCompleted,
       weak_ptr_factory_.GetWeakPtr(), std::move(oauth_token_fetcher),
       oauth_token_fetch_start_time, batch_size, std::move(callback)));
 }
 
-void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
+void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
         oauth_token_fetcher,
     base::TimeTicks oauth_token_fetch_start_time,
@@ -118,7 +118,7 @@ void IpProtectionAuthTokenProvider::OnRequestOAuthTokenCompleted(
   FetchBlindSignedToken(access_token_info, batch_size, std::move(callback));
 }
 
-void IpProtectionAuthTokenProvider::FetchBlindSignedToken(
+void IpProtectionConfigProvider::FetchBlindSignedToken(
     signin::AccessTokenInfo access_token_info,
     uint32_t batch_size,
     TryGetAuthTokensCallback callback) {
@@ -133,7 +133,7 @@ void IpProtectionAuthTokenProvider::FetchBlindSignedToken(
       });
 }
 
-void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
+void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
     absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
@@ -190,7 +190,7 @@ void IpProtectionAuthTokenProvider::OnFetchBlindSignedTokenCompleted(
                            IpProtectionTryGetAuthTokensResult::kSuccess);
 }
 
-void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
+void IpProtectionConfigProvider::TryGetAuthTokensComplete(
     absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>
         bsa_tokens,
     TryGetAuthTokensCallback callback,
@@ -207,7 +207,7 @@ void IpProtectionAuthTokenProvider::TryGetAuthTokensComplete(
   std::move(callback).Run(std::move(bsa_tokens), try_again_after);
 }
 
-absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
+absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     IpProtectionTryGetAuthTokensResult result) {
   absl::optional<base::TimeDelta> backoff;
   bool exponential = false;
@@ -273,7 +273,7 @@ absl::optional<base::TimeDelta> IpProtectionAuthTokenProvider::CalculateBackoff(
   return backoff;
 }
 
-void IpProtectionAuthTokenProvider::Shutdown() {
+void IpProtectionConfigProvider::Shutdown() {
   is_shutting_down_ = true;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
@@ -283,13 +283,12 @@ void IpProtectionAuthTokenProvider::Shutdown() {
 }
 
 /*static*/
-IpProtectionAuthTokenProvider* IpProtectionAuthTokenProvider::Get(
-    Profile* profile) {
-  return IpProtectionAuthTokenProviderFactory::GetForProfile(profile);
+IpProtectionConfigProvider* IpProtectionConfigProvider::Get(Profile* profile) {
+  return IpProtectionConfigProviderFactory::GetForProfile(profile);
 }
 
-void IpProtectionAuthTokenProvider::AddReceiver(
-    mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
+void IpProtectionConfigProvider::AddReceiver(
+    mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {

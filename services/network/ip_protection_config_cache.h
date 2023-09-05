@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_H_
-#define SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_H_
+#ifndef SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_
+#define SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -18,9 +18,9 @@ namespace network {
 //
 // This class provides sync access to a token, returning nullopt if none is
 // available, thereby avoiding adding latency to proxied requests.
-class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCache {
+class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
  public:
-  virtual ~IpProtectionAuthTokenCache() = default;
+  virtual ~IpProtectionConfigCache() = default;
 
   // Check whether tokens are available.
   //
@@ -50,4 +50,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionAuthTokenCache {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_AUTH_TOKEN_CACHE_H_
+#endif  // SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_

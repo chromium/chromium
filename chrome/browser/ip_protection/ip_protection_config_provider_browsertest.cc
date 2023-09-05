@@ -7,8 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider.h"
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -37,15 +37,15 @@ class ScopedIpProtectionFeatureList {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Helper class to intercept `IpProtectionAuthTokenGetter::TryGetAuthTokens()`
+// Helper class to intercept `IpProtectionConfigGetter::TryGetAuthTokens()`
 // requests and return a fake token value and a fake expiration value for
 // testing.
-class IpProtectionAuthTokenGetterInterceptor
-    : public network::mojom::IpProtectionAuthTokenGetterInterceptorForTesting {
+class IpProtectionConfigGetterInterceptor
+    : public network::mojom::IpProtectionConfigGetterInterceptorForTesting {
  public:
-  IpProtectionAuthTokenGetterInterceptor(IpProtectionAuthTokenProvider* getter,
-                                         std::string token,
-                                         base::Time expiration)
+  IpProtectionConfigGetterInterceptor(IpProtectionConfigProvider* getter,
+                                      std::string token,
+                                      base::Time expiration)
       : getter_(getter),
         receiver_id_(getter_->receiver_id_for_testing()),
         token_(std::move(token)),
@@ -53,12 +53,11 @@ class IpProtectionAuthTokenGetterInterceptor
     getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, this);
   }
 
-  ~IpProtectionAuthTokenGetterInterceptor() override {
+  ~IpProtectionConfigGetterInterceptor() override {
     getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, getter_);
   }
 
-  network::mojom::IpProtectionAuthTokenGetter* GetForwardingInterface()
-      override {
+  network::mojom::IpProtectionConfigGetter* GetForwardingInterface() override {
     return getter_;
   }
 
@@ -72,7 +71,7 @@ class IpProtectionAuthTokenGetterInterceptor
   }
 
  private:
-  raw_ptr<IpProtectionAuthTokenProvider> getter_;
+  raw_ptr<IpProtectionConfigProvider> getter_;
   // `getter_->receiver_id_for_testing()` will return the `mojo::ReceiverId` of
   // the most recently added receiver, so save this value off to ensure that on
   // destruction we restore the implementation for the correct receiver (for
@@ -83,16 +82,16 @@ class IpProtectionAuthTokenGetterInterceptor
 };
 }  // namespace
 
-class IpProtectionAuthTokenProviderBrowserTest : public InProcessBrowserTest {
+class IpProtectionConfigProviderBrowserTest : public InProcessBrowserTest {
  public:
-  IpProtectionAuthTokenProviderBrowserTest()
-      : profile_selections_(IpProtectionAuthTokenProviderFactory::GetInstance(),
-                            IpProtectionAuthTokenProviderFactory::
+  IpProtectionConfigProviderBrowserTest()
+      : profile_selections_(IpProtectionConfigProviderFactory::GetInstance(),
+                            IpProtectionConfigProviderFactory::
                                 CreateProfileSelectionsForTesting()) {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&IpProtectionAuthTokenProviderBrowserTest::
+                base::BindRepeating(&IpProtectionConfigProviderBrowserTest::
                                         OnWillCreateBrowserContextServices,
                                     base::Unretained(this)));
   }
@@ -110,7 +109,7 @@ class IpProtectionAuthTokenProviderBrowserTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    IpProtectionAuthTokenProvider::Get(browser()->profile())->Shutdown();
+    IpProtectionConfigProvider::Get(browser()->profile())->Shutdown();
     identity_test_environment_adaptor_.reset();
   }
 
@@ -123,7 +122,7 @@ class IpProtectionAuthTokenProviderBrowserTest : public InProcessBrowserTest {
  private:
   // Note that the order of initialization is important here - we want to set
   // the value of the features before anything else since it's used by the
-  // `IpProtectionAuthTokenProviderFactory` logic.
+  // `IpProtectionConfigProviderFactory` logic.
   ScopedIpProtectionFeatureList scoped_ip_protection_feature_list_;
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       profile_selections_;
@@ -133,17 +132,17 @@ class IpProtectionAuthTokenProviderBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
+IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
                        NetworkServiceCanRequestTokens) {
-  IpProtectionAuthTokenProvider* getter =
-      IpProtectionAuthTokenProvider::Get(browser()->profile());
+  IpProtectionConfigProvider* getter =
+      IpProtectionConfigProvider::Get(browser()->profile());
   ASSERT_TRUE(getter);
 
   std::string token = "best_token_ever";
   base::Time expiration = base::Time::Now() + base::Seconds(12345);
   auto auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionAuthTokenGetterInterceptor>(getter, token,
-                                                               expiration);
+      std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
+                                                            expiration);
 
   network::mojom::NetworkContext* network_context =
       browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
@@ -152,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
   base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr> future;
-  network_context->VerifyIpProtectionAuthTokenGetterForTesting(
+  network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& result = future.Get();
   ASSERT_TRUE(result);
@@ -171,12 +170,12 @@ IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
   // We need a new interceptor that will intercept messages corresponding to the
   // incognito mode network context's `mojo::Receiver()`.
   auto incognito_auth_token_getter_interceptor_ =
-      std::make_unique<IpProtectionAuthTokenGetterInterceptor>(getter, token,
-                                                               expiration);
+      std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
+                                                            expiration);
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();
-  incognito_network_context->VerifyIpProtectionAuthTokenGetterForTesting(
+  incognito_network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& incognito_result =
       future.Get();
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
-  network_context->VerifyIpProtectionAuthTokenGetterForTesting(
+  network_context->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& second_attempt_result =
       future.Get();
@@ -195,10 +194,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
   EXPECT_EQ(second_attempt_result->expiration, expiration);
 }
 
-IN_PROC_BROWSER_TEST_F(IpProtectionAuthTokenProviderBrowserTest,
+IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
                        ExpectedReceiverSetStateAfterNetworkServiceCrash) {
-  IpProtectionAuthTokenProvider* getter =
-      IpProtectionAuthTokenProvider::Get(browser()->profile());
+  IpProtectionConfigProvider* getter =
+      IpProtectionConfigProvider::Get(browser()->profile());
   ASSERT_TRUE(getter);
   ASSERT_EQ(getter->receivers_for_testing().size(), 1U);
 

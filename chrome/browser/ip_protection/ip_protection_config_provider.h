@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
-#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
+#ifndef CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
+#define CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/blind_sign_http_impl.h"
-#include "chrome/browser/ip_protection/ip_protection_auth_token_provider_factory.h"
+#include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -58,15 +58,15 @@ enum class IpProtectionTryGetAuthTokensResult {
 // This class handles both requesting OAuth2 tokens for the signed-in user, and
 // fetching blind-signed auth tokens for that user. It may only be used on the
 // UI thread.
-class IpProtectionAuthTokenProvider
+class IpProtectionConfigProvider
     : public KeyedService,
-      public network::mojom::IpProtectionAuthTokenGetter {
+      public network::mojom::IpProtectionConfigGetter {
  public:
-  IpProtectionAuthTokenProvider(
+  IpProtectionConfigProvider(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  ~IpProtectionAuthTokenProvider() override;
+  ~IpProtectionConfigProvider() override;
 
   void SetBlindSignAuthInterfaceForTesting(
       quiche::BlindSignAuthInterface* bsa) {
@@ -86,13 +86,13 @@ class IpProtectionAuthTokenProvider
   // KeyedService:
   void Shutdown() override;
 
-  static IpProtectionAuthTokenProvider* Get(Profile* profile);
+  static IpProtectionConfigProvider* Get(Profile* profile);
 
   void AddReceiver(
-      mojo::PendingReceiver<network::mojom::IpProtectionAuthTokenGetter>
+      mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
           pending_receiver);
 
-  mojo::ReceiverSet<network::mojom::IpProtectionAuthTokenGetter>&
+  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
     return receivers_;
   }
@@ -107,8 +107,8 @@ class IpProtectionAuthTokenProvider
   static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
 
  private:
-  friend class IpProtectionAuthTokenProviderTest;
-  FRIEND_TEST_ALL_PREFIXES(IpProtectionAuthTokenProviderTest, CalculateBackoff);
+  friend class IpProtectionConfigProviderTest;
+  FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
 
   // Calls the IdentityManager asynchronously to request the OAuth token for the
   // logged in user.
@@ -181,13 +181,13 @@ class IpProtectionAuthTokenProvider
   // Network Contexts restarts, the corresponding receiver will automatically be
   // removed and a new one bound as part of the Network Context initialization
   // flow.
-  mojo::ReceiverSet<network::mojom::IpProtectionAuthTokenGetter> receivers_;
+  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter> receivers_;
   // The `mojo::ReceiverId` of the most recently added `mojo::Receiver`, for
   // testing.
   mojo::ReceiverId receiver_id_for_testing_;
 
   // This must be the last member in this class.
-  base::WeakPtrFactory<IpProtectionAuthTokenProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<IpProtectionConfigProvider> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_AUTH_TOKEN_PROVIDER_H_
+#endif  // CHROME_BROWSER_IP_PROTECTION_IP_PROTECTION_CONFIG_PROVIDER_H_
