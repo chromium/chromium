@@ -6,10 +6,51 @@
 
 #include <inttypes.h>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 
 namespace gpu {
+
+namespace {
+
+BASE_FEATURE(kGrCacheLimitsFeature,
+             "GrCacheLimitsFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kMaxGaneshResourceCacheBytes(
+    &kGrCacheLimitsFeature,
+    "MaxGaneshResourceCacheBytes",
+    96 * 1024 * 1024);
+constexpr base::FeatureParam<int> kMaxDefaultGlyphCacheTextureBytes(
+    &kGrCacheLimitsFeature,
+    "MaxDefaultGlyphCacheTextureBytes",
+    2048 * 1024 * 4);
+
+#if !BUILDFLAG(IS_NACL)
+// The limit of the bytes allocated toward GPU resources in the GrContext's
+// GPU cache.
+constexpr base::FeatureParam<int> kMaxLowEndGaneshResourceCacheBytes(
+    &kGrCacheLimitsFeature,
+    "MaxLowEndGaneshResourceCacheBytes",
+    48 * 1024 * 1024);
+constexpr base::FeatureParam<int> kMaxHighEndGaneshResourceCacheBytes(
+    &kGrCacheLimitsFeature,
+    "MaxHighEndGaneshResourceCacheBytes",
+    256 * 1024 * 1024);
+// Limits for glyph cache textures.
+constexpr base::FeatureParam<int> kMaxLowEndGlyphCacheTextureBytes(
+    &kGrCacheLimitsFeature,
+    "MaxLowEndGlyphCacheTextureBytes",
+    1024 * 512 * 4);
+// High-end / low-end memory cutoffs.
+constexpr base::FeatureParam<int> kHighEndMemoryThresholdMB(
+    &kGrCacheLimitsFeature,
+    "HighEndMemoryThresholdMB",
+    4096);
+#endif
+
+}  // namespace
 
 size_t DetermineGraphiteImageProviderCacheLimitFromAvailableMemory() {
   // Use the same value as that for the Ganesh resource cache.
@@ -25,29 +66,17 @@ void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes) {
   // Default limits.
-  constexpr size_t kMaxGaneshResourceCacheBytes = 96 * 1024 * 1024;
-  constexpr size_t kMaxDefaultGlyphCacheTextureBytes = 2048 * 1024 * 4;
-
-  *max_resource_cache_bytes = kMaxGaneshResourceCacheBytes;
-  *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes;
+  *max_resource_cache_bytes = kMaxGaneshResourceCacheBytes.Get();
+  *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes.Get();
 
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
 #if !BUILDFLAG(IS_NACL)
-  // The limit of the bytes allocated toward GPU resources in the GrContext's
-  // GPU cache.
-  constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;
-  constexpr size_t kMaxHighEndGaneshResourceCacheBytes = 256 * 1024 * 1024;
-  // Limits for glyph cache textures.
-  constexpr size_t kMaxLowEndGlyphCacheTextureBytes = 1024 * 512 * 4;
-  // High-end / low-end memory cutoffs.
-  constexpr uint64_t kHighEndMemoryThreshold = 4096ULL * 1024 * 1024;
-
   if (base::SysInfo::IsLowEndDevice()) {
-    *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes;
-    *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes;
-  } else if (base::SysInfo::AmountOfPhysicalMemory() >=
-             kHighEndMemoryThreshold) {
-    *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes;
+    *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes.Get();
+    *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes.Get();
+  } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
+             kHighEndMemoryThresholdMB.Get()) {
+    *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes.Get();
   }
 #endif
 }
