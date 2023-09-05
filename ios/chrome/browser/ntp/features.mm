@@ -131,10 +131,12 @@ const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
     "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
 
 bool IsWebChannelsEnabled() {
+  const char* launched_countries[6] = {"au", "ca", "gb", "nz", "us", "za"};
   variations::VariationsService* variations_service =
       GetApplicationContext()->GetVariationsService();
   if (variations_service &&
-      variations_service->GetStoredPermanentCountry() == "us") {
+      base::Contains(launched_countries,
+                     variations_service->GetStoredPermanentCountry())) {
     return true;
   }
   return base::FeatureList::IsEnabled(kEnableWebChannels);

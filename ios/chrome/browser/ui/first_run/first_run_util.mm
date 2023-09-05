@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
-#import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

@@ -102,7 +102,7 @@ bool IsDiscoverFeedPreviewEnabled();
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
 
-// Whether the Discover feed top sync promotion is enabled.
+// Whether the sync promo should be shown on top of the feed.
 bool IsDiscoverFeedTopSyncPromoEnabled();
 
 // Returns the feed top sync promo's UI style.

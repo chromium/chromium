@@ -379,9 +379,23 @@ source_set("feature_flags") {
   ]
   deps = [
     "//components/prefs",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("utils") {
+  sources = [
+    "new_tab_page_utils.h",
+    "new_tab_page_utils.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    "//ios/chrome/browser/ui/first_run:utils",
   ]
   public_deps = [ "//base" ]
 }

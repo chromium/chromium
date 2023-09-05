@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_utils.h"
 
 @interface FeedTopSectionCoordinator () <SigninPresenter>
 
@@ -67,7 +67,7 @@
            prefService:browserState->GetPrefs()];
 
   self.isSignInPromoEnabled =
-      IsDiscoverFeedTopSyncPromoEnabled() && authenticationService &&
+      ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.ntpDelegate isSignInAllowed] &&
       !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 
