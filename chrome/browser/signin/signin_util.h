@@ -13,6 +13,7 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "net/cookies/canonical_cookie.h"
@@ -104,8 +105,9 @@ bool IsProfileDeletionAllowed(Profile* profile);
 // on accounts that will sign in the content area of `profile`.
 ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
     Profile* profile,
-    const absl::optional<std::string>& intercepted_account_level_policy_value =
-        absl::nullopt);
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies =
+            policy::ProfileSeparationPolicies());
 
 // Returns true if profile separation must be enforced on an account signing in
 // the content area of `profile` by the ManagedAccountsSigninRestriction policy
@@ -116,12 +118,13 @@ ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
 // determine if an intercepted account requires a new profile.
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
-    const absl::optional<std::string>& intercepted_account_level_policy_value =
-        absl::nullopt);
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies);
 
 bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     Profile* profile,
-    const std::string& intercepted_account_level_policy_value);
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 // Records a UMA metric if the user accepts or not to create an enterprise
 // profile.

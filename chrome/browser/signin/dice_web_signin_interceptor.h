@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -121,9 +122,9 @@ class DiceWebSigninInterceptor : public KeyedService,
     return is_interception_in_progress_;
   }
 
-  void SetAccountLevelSigninRestrictionFetchResultForTesting(
-      absl::optional<std::string> value) {
-    intercepted_account_level_policy_value_fetch_result_for_testing_ =
+  void SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      absl::optional<policy::ProfileSeparationPolicies> value) {
+    intercepted_account_profile_separation_policies_for_testing_ =
         std::move(value);
   }
 
@@ -235,27 +236,26 @@ class DiceWebSigninInterceptor : public KeyedService,
   // timeout.
   void FetchAccountLevelSigninRestrictionForInterceptedAccount(
       const AccountInfo& account_info,
-      base::OnceCallback<void(const std::string&)> callback);
+      base::OnceCallback<void(const policy::ProfileSeparationPolicies&)>
+          callback);
 
   // Called when the the value of the cloud user level value of the
   // ManagedAccountsSigninRestriction is received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
       bool timed_out,
       const AccountInfo& account_info,
-      const std::string& signin_restriction);
+      const policy::ProfileSeparationPolicies& profile_separation_policies);
 
   // Returns true if enterprise separation is required.
   // Returns false is enterprise separation is not required.
   // Returns no value if info is required to determine if enterprise separation
-  // is required. If `managed_account_profile_level_signin_restriction` is
-  // `absl::nullopt` then the user cloud policy value of
-  // ManagedAccountsSigninRestriction has not yet been fetched. If it is an
-  // empty string, then the value has been fetched but no policy was set.
+  // is required. If `profile_separation_policies` is `absl::nullopt` then the
+  // user cloud profile separation policies have not yet been fetched.
   absl::optional<bool> EnterpriseSeparationMaybeRequired(
       const std::string& email,
       bool is_new_account_interception,
-      absl::optional<std::string>
-          managed_account_profile_level_signin_restriction) const;
+      const absl::optional<policy::ProfileSeparationPolicies>&
+          profile_separation_policies) const;
 
   // Records the heuristic outcome and latency metrics.
   void RecordSigninInterceptionHeuristicOutcome(
@@ -304,9 +304,10 @@ class DiceWebSigninInterceptor : public KeyedService,
       account_level_signin_restriction_policy_fetcher_;
   // Value of the ManagedAccountsSigninRestriction for the intercepted account.
   // If no value is set, then we have not yet received the policy value.
-  absl::optional<std::string> intercepted_account_level_policy_value_;
-  absl::optional<std::string>
-      intercepted_account_level_policy_value_fetch_result_for_testing_;
+  absl::optional<policy::ProfileSeparationPolicies>
+      intercepted_account_profile_separation_policies_;
+  absl::optional<policy::ProfileSeparationPolicies>
+      intercepted_account_profile_separation_policies_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_H_

@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -72,7 +73,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestriction(
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
-        base::OnceCallback<void(const std::string&)> callback) {
+        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback) {
   // base::Unretained is safe here because the callback is called in the
   // lifecycle of `this`.
   FetchAccessToken(
@@ -112,7 +113,7 @@ void UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult(
 
 void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestrictionInternal(
-        base::OnceCallback<void(const std::string&)> callback,
+        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
         const std::string& access_token) {
   net::NetworkTrafficAnnotationTag annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -157,7 +158,7 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
 void UserCloudSigninRestrictionPolicyFetcher::
     OnManagedAccountsSigninRestrictionResult(
-        base::OnceCallback<void(const std::string&)> callback,
+        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
         std::unique_ptr<std::string> response_body) {
   std::string restriction;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
@@ -191,17 +192,32 @@ void UserCloudSigninRestrictionPolicyFetcher::
 
   if (error.state() == GoogleServiceAuthError::NONE && response_body) {
     auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
-    std::string* policy_value =
-        result ? result->GetDict().FindString("policyValue") : nullptr;
-    if (policy_value) {
-      restriction = *policy_value;
-    } else {
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << "Failed to ManagedAccountsSigninRestriction response";
+    if (!result) {
+      std::move(callback).Run(std::move(ProfileSeparationPolicies()));
+      return;
+    }
+
+    auto profile_separation_settings =
+        result->GetDict().FindInt("profileSeparationSettings");
+    auto profile_separation_data_migration_settings =
+        result->GetDict().FindInt("profileSeparationDataMigrationSettings");
+
+    if (profile_separation_settings) {
+      std::move(callback).Run(std::move(ProfileSeparationPolicies(
+          *profile_separation_settings,
+          std::move(profile_separation_data_migration_settings))));
+      return;
+    }
+    auto* managed_accounts_signin_restrictions =
+        result->GetDict().FindString("policyValue");
+    if (managed_accounts_signin_restrictions) {
+      std::move(callback).Run(std::move(
+          ProfileSeparationPolicies(*managed_accounts_signin_restrictions)));
+      return;
     }
   }
 
-  std::move(callback).Run(std::move(restriction));
+  std::move(callback).Run(std::move(ProfileSeparationPolicies()));
 }
 
 GURL UserCloudSigninRestrictionPolicyFetcher::

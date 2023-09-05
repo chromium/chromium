@@ -30,6 +30,7 @@ class IdentityManager;
 namespace policy {
 
 class BrowserPolicyConnector;
+class ProfileSeparationPolicies;
 
 class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
  public:
@@ -50,7 +51,7 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   void GetManagedAccountsSigninRestriction(
       signin::IdentityManager* identity_manager,
       const CoreAccountId& account_id,
-      base::OnceCallback<void(const std::string&)> callback);
+      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback);
 
   void SetURLLoaderFactoryForTesting(
       network::mojom::URLLoaderFactory* factory) {
@@ -73,13 +74,13 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   // policy using `access_token` for the authentication. Calls
   // `OnManagedAccountsSigninRestrictionResult` with the result from the API.
   void GetManagedAccountsSigninRestrictionInternal(
-      base::OnceCallback<void(const std::string&)> callback,
+      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
       const std::string& access_token);
 
   // Retrieves the policy value from `response_body` and calls `callback` with
   // that value.
   void OnManagedAccountsSigninRestrictionResult(
-      base::OnceCallback<void(const std::string&)> callback,
+      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
       std::unique_ptr<std::string> response_body);
 
   GURL GetSecureConnectApiGetAccountSigninRestrictionUrl() const;

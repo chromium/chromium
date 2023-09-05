@@ -36,6 +36,8 @@ source_set("internal") {
     "policy_conversions_client.h",
     "policy_error_map.cc",
     "policy_error_map.h",
+    "signin/profile_separation_policies.cc",
+    "signin/profile_separation_policies.h",
     "signin/user_cloud_signin_restriction_policy_fetcher.cc",
     "signin/user_cloud_signin_restriction_policy_fetcher.h",
     "url_allowlist_policy_handler.cc",

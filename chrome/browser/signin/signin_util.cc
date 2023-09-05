@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/storage_partition.h"
@@ -158,8 +160,14 @@ bool IsProfileDeletionAllowed(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
 ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
     Profile* profile,
-    const absl::optional<std::string>& intercepted_account_level_policy_value) {
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies) {
+  CHECK(intercepted_profile_separation_policies.Valid());
   ProfileSeparationPolicyStateSet result;
+  std::string intercepted_account_level_policy_value =
+      intercepted_profile_separation_policies
+          .managed_accounts_signin_restrictions()
+          .value_or(std::string());
 
   std::string current_profile_account_restriction =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
@@ -177,15 +185,13 @@ ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
                        "primary_account_strict")) {
     result.Put(ProfileSeparationPolicyState::kStrict);
   }
-  if (base::StartsWith(
-          intercepted_account_level_policy_value.value_or(std::string()),
-          "primary_account")) {
+  if (base::StartsWith(intercepted_account_level_policy_value,
+                       "primary_account")) {
     result.Put(ProfileSeparationPolicyState::kEnforcedByInterceptedAccount);
   }
 
-  if (base::StartsWith(
-          intercepted_account_level_policy_value.value_or(std::string()),
-          "primary_account_strict")) {
+  if (base::StartsWith(intercepted_account_level_policy_value,
+                       "primary_account_strict")) {
     result.Put(ProfileSeparationPolicyState::kStrict);
   }
 
@@ -198,7 +204,7 @@ ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
   bool account_allows_keeping_existing_browsing_data =
       !(result.Has(
           ProfileSeparationPolicyState::kEnforcedByInterceptedAccount)) ||
-      base::EndsWith(intercepted_account_level_policy_value.value(),
+      base::EndsWith(intercepted_account_level_policy_value,
                      "keep_existing_data");
   // Keep Existing browsing data if both sources for the policy allow it.
   if (profile_allows_keeping_existing_browsing_data &&
@@ -211,9 +217,10 @@ ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
 
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
-    const absl::optional<std::string>& intercepted_account_level_policy_value) {
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies) {
   auto separation_policy_state = GetProfileSeparationPolicyState(
-      profile, intercepted_account_level_policy_value);
+      profile, intercepted_profile_separation_policies);
   return !base::Intersection(
               separation_policy_state,
               {ProfileSeparationPolicyState::kStrict,
@@ -224,9 +231,10 @@ bool ProfileSeparationEnforcedByPolicy(
 
 bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     Profile* profile,
-    const std::string& intercepted_account_level_policy_value) {
+    const policy::ProfileSeparationPolicies&
+        intercepted_profile_separation_policies) {
   auto profile_separation_state = GetProfileSeparationPolicyState(
-      profile, intercepted_account_level_policy_value);
+      profile, intercepted_profile_separation_policies);
   return profile_separation_state.Empty() ||
          profile_separation_state.Has(
              ProfileSeparationPolicyState::kKeepsBrowsingData);
