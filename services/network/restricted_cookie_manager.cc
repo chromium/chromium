@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"  // for [[fallthrough]];
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -45,6 +46,10 @@
 namespace network {
 
 namespace {
+
+BASE_FEATURE(kIncreaseCoookieAccesCacheSize,
+             "IncreaseCoookieAccesCacheSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // How often to call CookieObserveer.OnCookiesAccessed. This value was picked
 // because it reduces calls by up to 90% on slow Android devices while not
@@ -167,8 +172,15 @@ bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
   if (existing_slot == cookie_accesses->end()) {
     // Don't store more than a max number of cookies, in the interest of
     // limiting memory consumption.
-    const int kMaxCookieCount = 32;
-    if (cookie_accesses->size() == kMaxCookieCount) {
+    const size_t kMaxCookieCount = 32;
+    const size_t kIncreasedMaxCookieCount = 100;
+
+    size_t max_cookie_count = kMaxCookieCount;
+    if (base::FeatureList::IsEnabled(kIncreaseCoookieAccesCacheSize)) {
+      max_cookie_count = kIncreasedMaxCookieCount;
+    }
+
+    if (cookie_accesses->size() == max_cookie_count) {
       cookie_accesses->clear();
     }
     cookie_accesses->insert(cookie_item);
