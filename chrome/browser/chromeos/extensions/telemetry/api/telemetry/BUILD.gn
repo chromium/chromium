@@ -8,6 +8,22 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_probe_service.cc",
+    "fake_probe_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}
+
 source_set("telemetry") {
   sources = [
     "telemetry_api.cc",
@@ -36,14 +52,11 @@ source_set("telemetry") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
-    "telemetry_api_browsertest.cc",
-  ]
+  sources = [ "telemetry_api_browsertest.cc" ]
 
   deps = [
     ":telemetry",
+    ":test_support",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",

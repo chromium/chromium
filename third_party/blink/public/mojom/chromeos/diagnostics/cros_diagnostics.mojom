@@ -18,8 +18,18 @@ interface CrosDiagnostics {
   // Retrieves diagnostics information of the CPU.
   //
   // The response:
-  // * |cpu_info| - diagnostics information of the CPU, e.g. model name, utilization and temperature.
-  GetCpuInfo() => (CrosCpuInfo cpu_info);
+  // * |result| - union containing diagnostics information of the CPU, e.g.
+  //   model name, utilization and temperature, or error.
+  GetCpuInfo() => (GetCpuInfoResult result);
+};
+
+// Error codes used by the getCpuInfo() method.
+enum GetCpuInfoError {
+  // TelemetryProbeService is unavailable.
+  kTelemetryProbeServiceUnavailable,
+
+  // TelemetryProbeService returned an error when retrieving CPU telemetry info.
+  kCpuTelemetryInfoUnavailable,
 };
 
 // Diagnostics information of the CPU, e.g. model name, utilization and
@@ -31,6 +41,42 @@ struct CrosCpuInfo {
   // The model name of the CPU, e.g. "AMD Ryzen 7 7840U", "Intel Core i7-1370P".
   string model_name;
 
-  // The number of logical processors available.
-  int32 num_of_processors;
+  // The number of power-efficient logical processors available. This is
+  // typically the number of LITTLE cores on the Arm big.LITTLE architecture, or
+  // E-cores on the Intel hybrid architecture.
+  //
+  // Evaluates to 0 when the architecture is symmetric or cannot be determined.
+  int32 num_of_efficient_processors;
+
+  // Information on each logical processor available to the system.
+  array<CrosLogicalCpuInfo> logical_cpus;
+};
+
+
+// Diagnostics information of a logical processor, e.g. core ID, current clock speed
+// and max clock speed.
+struct CrosLogicalCpuInfo {
+  // The core number this logical processor corresponds to.
+  uint32? core_id;
+
+  // Idle time since last boot, in milliseconds.
+  uint64? idle_time_ms;
+
+  // The max processor clock speed in kHz.
+  uint32? max_clock_speed_khz;
+
+  // Current frequency the processor is running at.
+  uint32? scaling_current_frequency_khz;
+
+  // Maximum frequency the processor is allowed to run at, by policy.
+  uint32? scaling_max_frequency_khz;
+};
+
+// The response from the getCpuInfo() method.
+union GetCpuInfoResult {
+  // Returned on success.
+  CrosCpuInfo cpu_info;
+
+  // Returned on encountering an error.
+  GetCpuInfoError error;
 };

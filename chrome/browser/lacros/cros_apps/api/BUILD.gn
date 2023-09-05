@@ -14,9 +14,14 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    # TODO(b/298329656): We shouldn't depend on things in .../extensions/. Ideally,
+    # this target would be in //chrome/browser/chromeos/ or //chromeos/, and then
+    # we could depend on it.
+    "//chrome/browser/chromeos/extensions/telemetry/api/telemetry:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//chromeos/constants",
+    "//chromeos/lacros",
     "//content/test:test_support",
     "//testing/gtest",
   ]

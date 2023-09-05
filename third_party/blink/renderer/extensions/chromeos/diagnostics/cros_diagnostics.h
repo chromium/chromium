@@ -38,9 +38,9 @@ class CrosDiagnostics : public ScriptWrappable,
   mojom::blink::CrosDiagnostics* GetCrosDiagnosticsOrNull();
 
   void OnGetCpuInfoResponse(ScriptPromiseResolver* resolver,
-                            mojom::blink::CrosCpuInfoPtr cpu_info_mojom);
+                            mojom::blink::GetCpuInfoResultPtr result);
 
-  HeapMojoRemote<mojom::blink::CrosDiagnostics> cros_diagnostics_;
+  HeapMojoRemote<mojom::blink::CrosDiagnostics> cros_diagnostics_remote_;
 };
 
 }  // namespace blink

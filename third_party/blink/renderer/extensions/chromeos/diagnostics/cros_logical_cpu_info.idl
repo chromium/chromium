@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Diagnostics information of a logical processor, e.g. core ID, current clock speed
+// and max clock speed.
+//
+// Properties will be undefined if they can't be retrieved.
+dictionary CrosLogicalCpuInfo {
+  // The core number this logical processor corresponds to.
+  unsigned long? coreId;
+
+  // Idle time since last boot, in milliseconds.
+  // Supports values up to JavaScript's MAX_SAFE_INTEGER, which is 2^53 - 1.
+  unsigned long long? idleTimeMs;
+
+  // The max processor clock speed in kHz.
+  unsigned long? maxClockSpeedKhz;
+
+  // Current frequency the processor is running at.
+  unsigned long? scalingCurrentFrequencyKhz;
+
+  // Maximum frequency the processor is allowed to run at, by policy.
+  unsigned long? scalingMaxFrequencyKhz;
+};

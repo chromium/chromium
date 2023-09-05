@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LACROS_CROS_APPS_API_DIAGNOSTICS_CROS_DIAGNOSTICS_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -38,9 +39,14 @@ class CrosDiagnosticsImpl
   void GetCpuInfoPostTaskCallback(GetCpuInfoCallback callback,
                                   blink::mojom::CrosCpuInfoPtr cpu_info_mojom);
 
+  void GetCpuInfoProbeTelemetryInfoCallback(
+      GetCpuInfoCallback callback,
+      blink::mojom::CrosCpuInfoPtr cpu_info_mojom,
+      crosapi::mojom::ProbeTelemetryInfoPtr telemetry_info);
+
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  mojo::Receiver<blink::mojom::CrosDiagnostics> receiver_;
+  mojo::Receiver<blink::mojom::CrosDiagnostics> cros_diagnostics_receiver_;
 
   // Last member definition. Needed here because WeakPtrFactory members which
   // refer to their outer class must be the last member in the outer class

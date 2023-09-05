@@ -12,6 +12,8 @@ source_set("diagnostics") {
     "cros_diagnostics_impl.h",
   ]
   deps = [
+    "//chromeos/crosapi/mojom",
+    "//chromeos/lacros",
     "//content/public/browser",
     "//content/public/common",
   ]
