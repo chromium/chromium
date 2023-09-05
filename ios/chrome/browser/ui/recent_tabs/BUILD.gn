@@ -105,6 +105,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",

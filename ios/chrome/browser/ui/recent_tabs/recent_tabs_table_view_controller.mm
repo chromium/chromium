@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -1234,7 +1235,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     TableViewIllustratedCell* illustratedCell =
         base::apple::ObjCCastStrict<TableViewIllustratedCell>(cell);
     [illustratedCell.button addTarget:self
-                               action:@selector(updateSyncState)
+                               action:@selector(didTapPromoActionButton)
                      forControlEvents:UIControlEventTouchUpInside];
     illustratedCell.button.accessibilityIdentifier =
         kRecentTabsTabSyncOffButtonAccessibilityIdentifier;
@@ -1851,7 +1852,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Private Helpers
 
-- (void)updateSyncState {
+- (void)didTapPromoActionButton {
   syncer::SyncService* const syncService = self.syncService;
   if (!syncService) {
     return;
@@ -1860,33 +1861,41 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       syncService->GetUserActionableError();
   if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
     [self showPrimaryAccountReauth];
+  } else if ([self shouldShowHistorySyncOnPromoAction]) {
+    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
   } else if (ShouldShowSyncSettings(error)) {
-    [self showSyncSettingsOrHistoryOptIn];
+    [self.handler showSyncSettingsFromViewController:self];
   } else if (error ==
              syncer::SyncService::UserActionableError::kNeedsPassphrase) {
     [self showSyncPassphraseSettings];
   }
 }
 
-// Show the History Sync Opt-In screen if the sync-related UI is disabled, and
-// the account is not syncing. Otherwise, show the sync settings screen.
-- (void)showSyncSettingsOrHistoryOptIn {
-  // TODO(crbug.com/1462326): This logic should be moved outside of the
-  // ViewController.
-  BOOL isSyncUIDisabled =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+// Returns YES if the History Sync Opt-In should be shown when the promo action
+// button is tapped.
+// TODO(crbug.com/1462326): This logic should be moved outside of the
+// ViewController.
+- (BOOL)shouldShowHistorySyncOnPromoAction {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return NO;
+  }
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(_browserState);
   // TODO(crbug.com/1466884): Delete the usage of ConsentLevel::kSync after
   // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
   // details.
-  BOOL hasSyncingAccount =
-      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (!isSyncUIDisabled || hasSyncingAccount) {
-    [self.handler showSyncSettingsFromViewController:self];
-  } else {
-    [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:NO];
+  if (authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    return NO;
   }
+  // Check if History Sync Opt-In should be skipped.
+  // In case it's not necessary to show the history opt-in, but the promo action
+  // button is still available, sync errors should be checked to show the
+  // correct screen to handle the error (ex. passphrase screen).
+  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
+      getHistorySyncOptInSkipReason:self.syncService
+              authenticationService:authenticationService];
+  return skipReason == HistorySyncSkipReason::kNone;
 }
 
 @end
