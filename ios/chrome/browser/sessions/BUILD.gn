@@ -71,6 +71,7 @@ source_set("session_service") {
   deps = [
     ":serialisation",
     ":session_constants",
+    ":session_internal_util",
     "//base",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public/session",
@@ -181,15 +182,32 @@ source_set("session_constants") {
   deps = [ "//base" ]
 }
 
+source_set("session_internal_util") {
+  visibility = [ ":*" ]
+  sources = [
+    "session_internal_util.h",
+    "session_internal_util.mm",
+  ]
+  deps = [
+    ":serialisation",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
+    "proto_util.cc",
+    "proto_util.h",
     "test_session_service.h",
     "test_session_service.mm",
   ]
   deps = [
     ":session_service",
     "//base",
+    "//ios/chrome/browser/sessions/proto",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
@@ -208,6 +226,8 @@ source_set("fake") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "proto_util_unittest.cc",
+    "session_internal_util_unittest.mm",
     "session_restoration_browser_agent_unittest.mm",
     "session_restoration_scroll_observer_unittest.mm",
     "session_restoration_service_factory_unittest.cc",
@@ -221,6 +241,7 @@ source_set("unit_tests") {
     ":restoration_agent",
     ":restoration_observer",
     ":serialisation",
+    ":session_internal_util",
     ":session_restoration_service_factory",
     ":session_restoration_service_impl",
     ":session_service",
@@ -231,6 +252,7 @@ source_set("unit_tests") {
     "//components/sessions:session_id",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/sessions/proto",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

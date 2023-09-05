@@ -22,6 +22,7 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
+#import "ios/chrome/browser/sessions/session_internal_util.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios_factory.h"
@@ -31,7 +32,6 @@
 
 namespace {
 const NSTimeInterval kSaveDelay = 2.5;     // Value taken from Desktop Chrome.
-NSString* const kRootObjectKey = @"root";  // Key for the root object.
 }
 
 @implementation SessionServiceIOS {
@@ -111,43 +111,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 }
 
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath {
-  NSObject<NSCoding>* rootObject = nil;
-  @try {
-    NSData* data = [NSData dataWithContentsOfFile:sessionPath];
-    if (!data)
-      return nil;
-
-    NSError* error = nil;
-    NSKeyedUnarchiver* unarchiver =
-        [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-    if (!unarchiver || error) {
-      DLOG(WARNING) << "Error creating unarchiver, session file: "
-                    << base::SysNSStringToUTF8(sessionPath) << ": "
-                    << base::SysNSStringToUTF8([error description]);
-      return nil;
-    }
-
-    unarchiver.requiresSecureCoding = NO;
-    rootObject = [unarchiver decodeObjectForKey:kRootObjectKey];
-  } @catch (NSException* exception) {
-    NOTREACHED() << "Error loading session file: "
-                 << base::SysNSStringToUTF8(sessionPath) << ": "
-                 << base::SysNSStringToUTF8([exception reason]);
-  }
-
-  if (!rootObject)
-    return nil;
-
-  // From version M-59 to M-117, the session saved a SessionIOS with a single
-  // SessionWindowIOS value. Before M-59 or after M-118, the storage consists
-  // of a single SessionWindowIOS instance as the root object (this simplify)
-  // the decoding logic.
-  if ([rootObject isKindOfClass:[SessionIOS class]]) {
-    SessionIOS* session = base::apple::ObjCCastStrict<SessionIOS>(rootObject);
-    DCHECK_EQ(session.sessionWindows.count, 1u);
-    return session.sessionWindows[0];
-  }
-  return base::apple::ObjCCastStrict<SessionWindowIOS>(rootObject);
+  return ios::sessions::ReadSessionWindow(
+      base::apple::NSStringToFilePath(sessionPath));
 }
 
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
