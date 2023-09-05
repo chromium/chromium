@@ -15,7 +15,7 @@ desc: |-
 example_value: allowed
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
 items:
 - caption: Allow the <ph name="CLOUD_UPLOAD_NAME">Cloud Upload</ph> flow for <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> and <ph name="GOOGLE_WORKSPACE_NAME">Google Workspace</ph>
   name: allowed
@@ -28,7 +28,7 @@ items:
   value: automated
 owners:
 - greengrape@google.com
-- file://ui/file_manager/OWNERS
+- file://chrome/browser/chromeos/enterprise/cloud_storage/OWNERS
 - cros-commercial-clippy-eng@google.com
 schema:
   enum:

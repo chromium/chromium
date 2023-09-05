@@ -1,0 +1,24 @@
+caption: Restricts accounts that can use the <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> integration
+default: null
+desc: |-
+  This policy allows admins to restrict which accounts are allowed to sign-in for <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> when the <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME">MicrosoftOneDriveMount</ph> is enabled.
+
+  If this policy is unset or set to an empty value, any account can be used to sign-in.
+
+  If this policy is set to a domain name or tenant ID (see https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints), only accounts from that domain name or tenant ID can be used to sign-in.
+
+  Changing the restriction might lead to users being signed out of their <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> account if it does not adhere to the new restriction.
+example_value: domain.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- hendrich@chromium.org
+- file://chrome/browser/chromeos/enterprise/cloud_storage/OWNERS
+- cros-commercial-clippy-eng@google.com
+schema:
+  type: string
+future_on:
+- chrome_os
+tags: []
+type: string

@@ -33846,6 +33846,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1153" label="ProfileSeparationDataMigrationSettings"/>
   <int value="1154" label="ProfileSeparationDomainExceptionList"/>
   <int value="1155" label="FullRestoreMode"/>
+  <int value="1156" label="MicrosoftOneDriveAccountRestriction"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -1154,6 +1154,7 @@ policies:
   1153: ProfileSeparationDataMigrationSettings
   1154: ProfileSeparationDomainExceptionList
   1155: FullRestoreMode
+  1156: MicrosoftOneDriveAccountRestriction
 atomic_groups:
   1: Homepage
   2: RemoteAccess
