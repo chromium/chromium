@@ -1,7 +1,6 @@
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startURL(
-      '../resources/stylesheet-loading-issues.html',
-      'Report stylesheet loading failures');
+  const {page, session, dp} =
+      await testRunner.startBlank('Report stylesheet loading failures');
 
   await dp.DOM.enable();
   await dp.Network.enable();
@@ -9,7 +8,7 @@
   await dp.Page.enable();
   await dp.Audits.enable();
 
-  dp.Page.reload();
+  session.navigate('../resources/stylesheet-loading-issues.html');
 
   const issues = [];
   await dp.Audits.onceIssueAdded(e => {
@@ -24,7 +23,8 @@
   function issueComparator(i) {
     return `${i.styleSheetLoadingIssueReason}:${i.sourceCodeLocation.url}:${
         i.sourceCodeLocation.lineNumber}:${i.sourceCodeLocation.columnNumber}:${
-        i.failedRequestInfo?.url}:${i.failedRequestInfo?.failureMessage}:${i.failedRequestInfo?.requestId}`;
+        i.failedRequestInfo?.url}:${i.failedRequestInfo?.failureMessage}:${
+        i.failedRequestInfo?.requestId}`;
   }
   issues.sort((a, b) => {
     const cmpA = issueComparator(a), cmpB = issueComparator(b);
@@ -37,7 +37,7 @@
          failedRequestInfo
        } of issues) {
     testRunner.log(`Reason: ${styleSheetLoadingIssueReason}`);
-    testRunner.log(`Location: ${url} @ ${lineNumber+1}:${columnNumber+1}`);
+    testRunner.log(`Location: ${url} @ ${lineNumber + 1}:${columnNumber + 1}`);
     if (failedRequestInfo) {
       const {url, failureMessage, requestId} = failedRequestInfo;
       testRunner.log(`Request: ${failureMessage} ${url} ${Boolean(requestId)}`);
