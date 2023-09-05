@@ -20,12 +20,10 @@
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -326,11 +324,6 @@ class CONTENT_EXPORT FencedFrameReporter
   void SendPrivateAggregationRequestsForEventInternal(
       const std::string& pa_event_type);
 
-  // Binds a receiver to `private_aggregation_manager_`. Binds Remote
-  // `private_aggregation_host_` and connects it to the receiver, if it has not
-  // been bound.
-  void MaybeBindPrivateAggregationHost();
-
   // Used by FencedFrameURLMappingTestPeer.
   const base::flat_map<blink::FencedFrame::ReportingDestination,
                        ReportingDestinationInfo>&
@@ -395,8 +388,6 @@ class CONTENT_EXPORT FencedFrameReporter
   // requests are sent, because more requests associated with this event might
   // be received and need to be sent later.
   std::set<std::string> received_pa_events_;
-
-  mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
 
   // Which API created this fenced frame reporter instance.
   PrivacySandboxInvokingAPI invoking_api_;

@@ -38,7 +38,6 @@
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/noiser_and_bucketer.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
@@ -46,7 +45,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -279,17 +277,9 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
   }
 
   for (auto& [origin, requests] : private_aggregation_requests) {
-    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-    if (!private_aggregation_manager->BindNewReceiver(
-            origin, main_frame_origin,
-            PrivateAggregationBudgetKey::Api::kProtectedAudience,
-            /*context_id=*/absl::nullopt,
-            remote.BindNewPipeAndPassReceiver())) {
-      continue;
-    }
-
-    SplitContributionsIntoBatchesThenSendToHost(std::move(requests),
-                                                /*remote_host=*/remote);
+    SplitContributionsIntoBatchesThenSendToHost(
+        std::move(requests), *private_aggregation_manager,
+        /*reporting_origin=*/origin, main_frame_origin);
   }
 }
 

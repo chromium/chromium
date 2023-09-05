@@ -87,11 +87,11 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
 
   MOCK_METHOD(
       void,
-      SendHistogramReport,
-      (std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>,
-       blink::mojom::AggregationServiceMode,
-       blink::mojom::DebugModeDetailsPtr),
+      ContributeToHistogram,
+      (std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>),
       (override));
+
+  MOCK_METHOD(void, EnableDebugMode, (blink::mojom::DebugKeyPtr), (override));
 
  private:
   TestBrowserContext test_browser_context_;

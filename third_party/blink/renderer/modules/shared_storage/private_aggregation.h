@@ -35,12 +35,7 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
     explicit OperationState(ContextLifecycleNotifier* notifier)
         : private_aggregation_host(notifier) {}
 
-    // Defaults to debug mode being disabled.
-    mojom::blink::DebugModeDetails debug_mode_details;
-
-    // Pending contributions
-    Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
-        private_aggregation_contributions;
+    bool enable_debug_mode_called = false;
 
     // No need to be associated as message ordering (relative to shared storage
     // operations) is unimportant.

@@ -62,6 +62,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -632,8 +633,6 @@ bool FencedFrameReporter::SendReportInternal(
 void FencedFrameReporter::OnForEventPrivateAggregationRequestsReceived(
     std::map<std::string, PrivateAggregationRequests>
         private_aggregation_event_map) {
-  MaybeBindPrivateAggregationHost();
-
   for (auto& [event_type, requests] : private_aggregation_event_map) {
     PrivateAggregationRequests& destination_vector =
         private_aggregation_event_map_[event_type];
@@ -655,7 +654,6 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEvent(
     // events when it should not be able to. Simply ignores the events.
     return;
   }
-  MaybeBindPrivateAggregationHost();
 
   // Always insert `pa_event_type` to `received_pa_events_`, since
   // `private_aggregation_event_map_` might grow with more entries when
@@ -667,7 +665,11 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEvent(
 
 void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
     const std::string& pa_event_type) {
-  DCHECK(private_aggregation_host_.is_bound());
+  DCHECK(private_aggregation_manager_);
+  DCHECK(winner_origin_.has_value() &&
+         winner_origin_.value().scheme() == url::kHttpsScheme);
+  DCHECK(main_frame_origin_.has_value() &&
+         main_frame_origin_.value().scheme() == url::kHttpsScheme);
 
   auto it = private_aggregation_event_map_.find(pa_event_type);
   if (it == private_aggregation_event_map_.end()) {
@@ -675,33 +677,14 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
   }
 
   SplitContributionsIntoBatchesThenSendToHost(
-      /*requests=*/std::move(it->second),
-      /*remote_host=*/private_aggregation_host_);
+      /*requests=*/std::move(it->second), *private_aggregation_manager_,
+      /*reporting_origin=*/winner_origin_.value(), main_frame_origin_.value());
 
   // Remove the entry of key `pa_event_type` from
   // `private_aggregation_event_map_` to avoid possibly sending the same
   // requests more than once. As a result, receiving the same event type
   // multiple times only triggers sending the event's requests once.
   private_aggregation_event_map_.erase(it);
-}
-
-void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
-  if (private_aggregation_host_.is_bound()) {
-    return;
-  }
-  DCHECK(private_aggregation_manager_);
-  DCHECK(winner_origin_.has_value() &&
-         winner_origin_.value().scheme() == url::kHttpsScheme);
-  DCHECK(main_frame_origin_.has_value() &&
-         main_frame_origin_.value().scheme() == url::kHttpsScheme);
-  bool bound = private_aggregation_manager_->BindNewReceiver(
-      winner_origin_.value(), main_frame_origin_.value(),
-      PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      /*context_id=*/absl::nullopt,
-      private_aggregation_host_.BindNewPipeAndPassReceiver());
-  // FLEDGE's worklets should all be trustworthy, including `winner_origin_`, so
-  // the receiver `private_aggregation_host_` should be accepted.
-  DCHECK(bound);
 }
 
 base::flat_map<blink::FencedFrame::ReportingDestination,

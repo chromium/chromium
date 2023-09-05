@@ -108,11 +108,11 @@ struct SharedStorageWriteOperationAndResult {
 bool operator==(const SharedStorageWriteOperationAndResult& a,
                 const SharedStorageWriteOperationAndResult& b);
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramSuccessValue();
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeReportSuccessValue();
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramApiDisabledValue();
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeApiDisabledValue();
 
 base::WeakPtr<TestSharedStorageHeaderObserver>
 CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition);

@@ -7,7 +7,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -23,10 +25,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -278,14 +282,12 @@ class MockMojomPrivateAggregationHost
   // blink::mojom::blink::PrivateAggregationHost:
   MOCK_METHOD(
       void,
-      SendHistogramReport,
-      (Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>,
-       blink::mojom::blink::AggregationServiceMode,
-       blink::mojom::blink::DebugModeDetailsPtr),
+      ContributeToHistogram,
+      (Vector<blink::mojom::blink::AggregatableReportHistogramContributionPtr>),
       (override));
   MOCK_METHOD(void,
-              SetDebugModeDetailsOnNullReport,
-              (blink::mojom::blink::DebugModeDetailsPtr),
+              EnableDebugMode,
+              (blink::mojom::blink::DebugKeyPtr),
               (override));
 
  private:
@@ -2756,20 +2758,21 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
             {"class TestClass { async run() {", script_body,
              "}}; register(\"test-operation\", TestClass);"}));
 
-    EXPECT_CALL(*mock_private_aggregation_host_, SendHistogramReport)
+    EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
         .WillOnce(testing::Invoke(
-            [&](Vector<blink::mojom::blink::
-                           AggregatableReportHistogramContributionPtr>
-                    contributions,
-                blink::mojom::blink::AggregationServiceMode aggregation_mode,
-                mojom::blink::DebugModeDetailsPtr debug_mode_details) {
+            [&](Vector<
+                blink::mojom::blink::AggregatableReportHistogramContributionPtr>
+                    contributions) {
               ASSERT_EQ(contributions.size(), 1u);
               EXPECT_EQ(contributions[0]->bucket, expected_bucket);
               EXPECT_EQ(contributions[0]->value, expected_value);
-              EXPECT_EQ(aggregation_mode,
-                        blink::mojom::blink::AggregationServiceMode::kDefault);
-              EXPECT_TRUE(debug_mode_details == expected_debug_mode_details);
             }));
+    if (expected_debug_mode_details->is_enabled) {
+      EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
+          .WillOnce(testing::Invoke([&](mojom::blink::DebugKeyPtr debug_key) {
+            EXPECT_TRUE(debug_key == expected_debug_mode_details->debug_key);
+          }));
+    }
 
     RunResult run_result = Run("test-operation", CreateSerializedUndefined());
 
@@ -2801,8 +2804,9 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
              !!mock_private_aggregation_host_);
 
     if (mock_private_aggregation_host_) {
-      EXPECT_CALL(*mock_private_aggregation_host_, SendHistogramReport)
+      EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
           .Times(0);
+      EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode).Times(0);
     }
 
     RunResult run_result = Run("test-operation", CreateSerializedUndefined());
@@ -3029,7 +3033,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 TEST_F(SharedStoragePrivateAggregationTest,
        EnableDebugModeCalledAfterRequest_DoesntApply) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
-      class SendHistogramReport {
+      class ContributeToHistogram {
         async run() {
           privateAggregation.contributeToHistogram({bucket: 1n, value: 2});
         }
@@ -3041,34 +3045,56 @@ TEST_F(SharedStoragePrivateAggregationTest,
         }
       }
 
-      register("send-histogram-report", SendHistogramReport);
+      register("contribute-to-histogram", ContributeToHistogram);
       register("enable-debug-mode", EnableDebugMode);
   )");
 
-  EXPECT_CALL(*mock_private_aggregation_host_, SendHistogramReport)
+  absl::optional<mojo::ReceiverId> contribute_to_histogram_pipe_id;
+  absl::optional<mojo::ReceiverId> enable_debug_mode_pipe_id;
+  base::RunLoop run_loop;
+  base::RepeatingClosure closure =
+      base::BarrierClosure(2, run_loop.QuitClosure());
+
+  EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
       .WillOnce(testing::Invoke(
-          [&](Vector<blink::mojom::blink::
-                         AggregatableReportHistogramContributionPtr>
-                  contributions,
-              blink::mojom::blink::AggregationServiceMode aggregation_mode,
-              mojom::blink::DebugModeDetailsPtr debug_mode_details) {
+          [&](Vector<
+              blink::mojom::blink::AggregatableReportHistogramContributionPtr>
+                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-            EXPECT_EQ(aggregation_mode,
-                      blink::mojom::blink::AggregationServiceMode::kDefault);
-            EXPECT_TRUE(debug_mode_details ==
-                        mojom::blink::DebugModeDetails::New());
+
+            contribute_to_histogram_pipe_id =
+                mock_private_aggregation_host_->receiver_set()
+                    .current_receiver();
+            closure.Run();
+          }));
+  EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
+      .WillOnce(
+          testing::Invoke([&](blink::mojom::blink::DebugKeyPtr debug_key) {
+            ASSERT_FALSE(debug_key.is_null());
+            EXPECT_EQ(debug_key->value, 1234u);
+
+            enable_debug_mode_pipe_id =
+                mock_private_aggregation_host_->receiver_set()
+                    .current_receiver();
+            closure.Run();
           }));
 
   RunResult run_result =
-      Run("send-histogram-report", CreateSerializedUndefined());
+      Run("contribute-to-histogram", CreateSerializedUndefined());
   EXPECT_TRUE(run_result.success);
 
   RunResult run_result2 = Run("enable-debug-mode", CreateSerializedUndefined());
   EXPECT_TRUE(run_result2.success);
 
   mock_private_aggregation_host_->FlushForTesting();
+  run_loop.Run();
+
+  // The calls should've come on two different pipes.
+  EXPECT_TRUE(contribute_to_histogram_pipe_id.has_value());
+  EXPECT_TRUE(enable_debug_mode_pipe_id.has_value());
+  EXPECT_NE(contribute_to_histogram_pipe_id, enable_debug_mode_pipe_id);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
@@ -3084,24 +3110,27 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
       register("test-operation", TestClass);
   )");
 
-  EXPECT_CALL(*mock_private_aggregation_host_, SendHistogramReport)
+  EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode)
+      .WillOnce(testing::Invoke([](mojom::blink::DebugKeyPtr debug_key) {
+        EXPECT_EQ(debug_key, mojom::blink::DebugKey::New(1234u));
+      }));
+
+  EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
       .WillOnce(testing::Invoke(
-          [](Vector<blink::mojom::blink::
-                        AggregatableReportHistogramContributionPtr>
-                 contributions,
-             blink::mojom::blink::AggregationServiceMode aggregation_mode,
-             mojom::blink::DebugModeDetailsPtr debug_mode_details) {
-            ASSERT_EQ(contributions.size(), 2u);
+          [](Vector<
+              blink::mojom::blink::AggregatableReportHistogramContributionPtr>
+                 contributions) {
+            ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-            EXPECT_EQ(contributions[1]->bucket, 3);
-            EXPECT_EQ(contributions[1]->value, 4);
-            EXPECT_EQ(aggregation_mode,
-                      blink::mojom::blink::AggregationServiceMode::kDefault);
-            EXPECT_EQ(debug_mode_details,
-                      mojom::blink::DebugModeDetails::New(
-                          /*is_enabled=*/true,
-                          /*debug_key=*/mojom::blink::DebugKey::New(1234u)));
+          }))
+      .WillOnce(testing::Invoke(
+          [](Vector<
+              blink::mojom::blink::AggregatableReportHistogramContributionPtr>
+                 contributions) {
+            ASSERT_EQ(contributions.size(), 1u);
+            EXPECT_EQ(contributions[0]->bucket, 3);
+            EXPECT_EQ(contributions[0]->value, 4);
           }));
 
   RunResult run_result = Run("test-operation", CreateSerializedUndefined());
@@ -3126,19 +3155,15 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   base::RunLoop run_loop;
 
-  EXPECT_CALL(*mock_private_aggregation_host_, SendHistogramReport)
+  EXPECT_CALL(*mock_private_aggregation_host_, EnableDebugMode).Times(0);
+  EXPECT_CALL(*mock_private_aggregation_host_, ContributeToHistogram)
       .WillOnce(testing::Invoke(
-          [&](Vector<blink::mojom::blink::
-                         AggregatableReportHistogramContributionPtr>
-                  contributions,
-              blink::mojom::blink::AggregationServiceMode aggregation_mode,
-              mojom::blink::DebugModeDetailsPtr debug_mode_details) {
+          [&](Vector<
+              blink::mojom::blink::AggregatableReportHistogramContributionPtr>
+                  contributions) {
             ASSERT_EQ(contributions.size(), 1u);
             EXPECT_EQ(contributions[0]->bucket, 1);
             EXPECT_EQ(contributions[0]->value, 2);
-            EXPECT_EQ(aggregation_mode,
-                      blink::mojom::blink::AggregationServiceMode::kDefault);
-            EXPECT_FALSE(debug_mode_details->is_enabled);
 
             run_loop.Quit();
           }));

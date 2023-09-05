@@ -800,18 +800,31 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult"
-    enum="PrivacySandboxPrivateAggregationHostSendHistogramReportResult"
+    name="PrivacySandbox.PrivateAggregation.Host.PipeOpenDurationOnShutdown"
+    units="ms" expires_after="2024-02-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    On browser or profile shutdown, records the length of time that each mojo
+    pipe still open has been open for. Recorded for every mojo pipe that is
+    still open during shutdown. This is intended to provide a signal if mojo
+    pipes are not being closed.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.PrivateAggregation.Host.PipeResult"
+    enum="PrivacySandboxPrivateAggregationHostPipeResult"
     expires_after="2024-02-11">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
-    Records whether a call to PrivateAggregationHost::SendHistogramReport()
-    successfully resulted in the report request being forwarded to the manager
-    and, if not, the reason for failure. Further, breaks out the case of too
-    many contributions, where the request is forwarded but is truncated. Note
-    that, even if successfully forwarded, the report may still be rejected by
-    the budgeter or in the aggregation_service layer. Recorded for every call.
+    Records whether a PrivateAggregationHost mojo pipe successfully resulted in
+    a report request being forwarded to the manager and, if not, the reason for
+    failure or no report. Further, breaks out the case of too many
+    contributions, where the request is forwarded but is truncated. Note that,
+    even if successfully forwarded, the report may still be rejected by the
+    budgeter, manager or in the aggregation_service layer. Recorded for every
+    mojo pipe on disconnection.
   </summary>
 </histogram>
 

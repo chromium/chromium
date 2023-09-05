@@ -39,8 +39,8 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // and processed. However, the receiver is not bound if the `worklet_origin`
   // is not potentially trustworthy or if `context_id` is too long. The return
   // value indicates whether the receiver was accepted. If `context_id` is set,
-  // only one `SendHistogramReport()` call can be made. If none is made by
-  // disconnection, a null report will be sent.
+  // and no `ContributeToHistogram()` calls are made by disconnection, a null
+  // report will still be sent.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,

@@ -46,8 +46,8 @@ constexpr char kReportingURL[] = "/_report_event_server.html";
 // Used for event reporting to custom destination URLs.
 constexpr char kCustomReportingURL[] = "/_custom_report_event_server.html";
 
-constexpr char kPrivateAggregationSendHistogramReportHistogram[] =
-    "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult";
+constexpr char kPrivateAggregationHostPipeResultHistogram[] =
+    "PrivacySandbox.PrivateAggregation.Host.PipeResult";
 
 }  // namespace
 
@@ -641,10 +641,10 @@ IN_PROC_BROWSER_TEST_F(
           /*fenced_frame_hostname=*/"a.test");
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
-      content::GetPrivateAggregationSendHistogramSuccessValue(), 2);
+      kPrivateAggregationHostPipeResultHistogram,
+      content::GetPrivateAggregationHostPipeReportSuccessValue(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -662,10 +662,10 @@ IN_PROC_BROWSER_TEST_F(
           /*fenced_frame_hostname=*/"a.test");
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
-      content::GetPrivateAggregationSendHistogramApiDisabledValue(), 2);
+      kPrivateAggregationHostPipeResultHistogram,
+      content::GetPrivateAggregationHostPipeApiDisabledValue(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -688,10 +688,10 @@ IN_PROC_BROWSER_TEST_F(
           /*fenced_frame_hostname=*/"b.test");
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
-      content::GetPrivateAggregationSendHistogramSuccessValue(), 2);
+      kPrivateAggregationHostPipeResultHistogram,
+      content::GetPrivateAggregationHostPipeReportSuccessValue(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -712,8 +712,8 @@ IN_PROC_BROWSER_TEST_F(
           /*fenced_frame_hostname=*/"b.test");
   ASSERT_NE(fenced_frame_node, nullptr);
 
-  WaitForHistogram(kPrivateAggregationSendHistogramReportHistogram, 2);
+  WaitForHistogram(kPrivateAggregationHostPipeResultHistogram, 2);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
-      content::GetPrivateAggregationSendHistogramApiDisabledValue(), 2);
+      kPrivateAggregationHostPipeResultHistogram,
+      content::GetPrivateAggregationHostPipeApiDisabledValue(), 2);
 }

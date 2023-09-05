@@ -11,12 +11,16 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-forward.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
+
+namespace url {
+class Origin;
+}
 
 namespace content {
+
+class PrivateAggregationManager;
 
 // Reserved event types for aggregatable report's for-event contribution.
 CONTENT_EXPORT extern const char kReservedAlways[];
@@ -66,10 +70,12 @@ FillInPrivateAggregationRequest(
     bool is_winner);
 
 // Splits a vector of requests into those with matching debug mode details and
-// then forwards to the provided mojo pipe.
+// then forwards to a new mojo pipe.
 CONTENT_EXPORT void SplitContributionsIntoBatchesThenSendToHost(
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
-    mojo::Remote<blink::mojom::PrivateAggregationHost>& remote_host);
+    PrivateAggregationManager& pa_manager,
+    const url::Origin& reporting_origin,
+    const url::Origin& main_frame_origin);
 
 }  // namespace content
 

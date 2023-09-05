@@ -122,23 +122,21 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
         expected_cleartext_payloads.GetList().front().GetIfString();
     ASSERT_TRUE(base64_encoded_expected_cleartext_payload);
 
-    absl::optional<AggregatableReportRequest> actual_report;
-
-    actual_report = PrivateAggregationHost::GenerateReportRequest(
-        std::move(contributions),
-        blink::mojom::AggregationServiceMode::kDefault,
-        std::move(debug_details),
-        /*scheduled_report_time=*/base::Time::FromJavaTime(1234486400000),
-        /*report_id=*/
-        base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
-        /*reporting_origin=*/kExampleOrigin, api_identifier,
-        /*context_id=*/absl::nullopt);
-    ASSERT_TRUE(actual_report.has_value());
+    AggregatableReportRequest actual_report =
+        PrivateAggregationHost::GenerateReportRequest(
+            std::move(contributions),
+            blink::mojom::AggregationServiceMode::kDefault,
+            std::move(debug_details),
+            /*scheduled_report_time=*/base::Time::FromJavaTime(1234486400000),
+            /*report_id=*/
+            base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
+            /*reporting_origin=*/kExampleOrigin, api_identifier,
+            /*context_id=*/absl::nullopt);
 
     base::RunLoop run_loop;
 
     aggregation_service().AssembleReport(
-        std::move(*actual_report),
+        std::move(actual_report),
         base::BindLambdaForTesting(
             [&](AggregatableReportRequest,
                 absl::optional<AggregatableReport> assembled_report,

@@ -89210,14 +89210,14 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Failed to create directory"/>
 </enum>
 
-<enum name="PrivacySandboxPrivateAggregationHostSendHistogramReportResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="API disabled in settings"/>
-  <int value="2" label="Success but truncated due to too many contributions"/>
-  <int value="3" label="Debug key present but debug mode not enabled"/>
-  <int value="4" label="Report request creation failed"/>
+<enum name="PrivacySandboxPrivateAggregationHostPipeResult">
+  <int value="0" label="Report success"/>
+  <int value="1"
+      label="Report success but truncated due to too many contributions"/>
+  <int value="2" label="No report, but no error"/>
+  <int value="3" label="API disabled in settings"/>
+  <int value="4" label="Enable debug mode called multiple times"/>
   <int value="5" label="Negative value"/>
-  <int value="6" label="Pipe with context ID reused"/>
 </enum>
 
 <enum name="PrivacySandboxReferrer">

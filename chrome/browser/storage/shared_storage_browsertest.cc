@@ -124,8 +124,8 @@ constexpr char kWorkletNumPerPageHistogram[] =
     "Storage.SharedStorage.Worklet.NumPerPage";
 constexpr char kTimingRemainingBudgetHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
-constexpr char kPrivateAggregationSendHistogramReportHistogram[] =
-    "PrivacySandbox.PrivateAggregation.Host.SendHistogramReportResult";
+constexpr char kPrivateAggregationHostPipeResultHistogram[] =
+    "PrivacySandbox.PrivateAggregation.Host.PipeResult";
 
 const double kBudgetAllowed = 5.0;
 
@@ -2947,13 +2947,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 
@@ -2976,13 +2976,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 
@@ -3005,13 +3005,13 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kWorkletNumPerPageHistogram,
-                     kPrivateAggregationSendHistogramReportHistogram});
+                     kPrivateAggregationHostPipeResultHistogram});
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(
-      kPrivateAggregationSendHistogramReportHistogram,
+      kPrivateAggregationHostPipeResultHistogram,
       SuccessExpected()
-          ? content::GetPrivateAggregationSendHistogramSuccessValue()
-          : content::GetPrivateAggregationSendHistogramApiDisabledValue(),
+          ? content::GetPrivateAggregationHostPipeReportSuccessValue()
+          : content::GetPrivateAggregationHostPipeApiDisabledValue(),
       1);
 }
 

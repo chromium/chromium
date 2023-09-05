@@ -93,16 +93,18 @@ void PrivateAggregation::contributeToHistogram(
     return;
   }
 
-  mojom::blink::AggregatableReportHistogramContributionPtr mojom_contribution =
+  Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
+      mojom_contribution_vector;
+  mojom_contribution_vector.push_back(
       mojom::blink::AggregatableReportHistogramContribution::New(bucket.value(),
-                                                                 value);
+                                                                 value));
 
   int64_t operation_id = global_scope_->GetCurrentOperationId();
   CHECK(operation_states_.Contains(operation_id));
   OperationState* operation_state = operation_states_.at(operation_id);
 
-  operation_state->private_aggregation_contributions.push_back(
-      std::move(mojom_contribution));
+  operation_state->private_aggregation_host->ContributeToHistogram(
+      std::move(mojom_contribution_vector));
 }
 
 void PrivateAggregation::enableDebugMode(ScriptState* script_state,
@@ -133,14 +135,15 @@ void PrivateAggregation::enableDebugMode(
   CHECK(base::Contains(operation_states_, operation_id));
   OperationState* operation_state = operation_states_.at(operation_id);
 
-  mojom::blink::DebugModeDetails& debug_mode_details =
-      operation_state->debug_mode_details;
-  if (debug_mode_details.is_enabled) {
+  if (operation_state->enable_debug_mode_called) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "enableDebugMode may be called at most once");
     return;
   }
+  operation_state->enable_debug_mode_called = true;
+
+  mojom::blink::DebugKeyPtr debug_key;
 
   // If `options` is not provided, no debug key is set.
   if (options) {
@@ -154,11 +157,12 @@ void PrivateAggregation::enableDebugMode(
       return;
     }
 
-    uint64_t debug_key = absl::Uint128Low64(maybe_debug_key.value());
-    debug_mode_details.debug_key = mojom::blink::DebugKey::New(debug_key);
+    debug_key = mojom::blink::DebugKey::New(
+        absl::Uint128Low64(maybe_debug_key.value()));
   }
 
-  debug_mode_details.is_enabled = true;
+  operation_state->private_aggregation_host->EnableDebugMode(
+      std::move(debug_key));
 }
 
 void PrivateAggregation::OnOperationStarted(
@@ -175,16 +179,7 @@ void PrivateAggregation::OnOperationStarted(
 
 void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
   CHECK(operation_states_.Contains(operation_id));
-  OperationState* operation_state = operation_states_.at(operation_id);
-
-  if (!operation_state->private_aggregation_contributions.empty()) {
-    operation_state->private_aggregation_host->SendHistogramReport(
-        std::move(operation_state->private_aggregation_contributions),
-        // TODO(alexmt): consider allowing this to be set
-        mojom::blink::AggregationServiceMode::kDefault,
-        operation_state->debug_mode_details.Clone());
-  }
-
+  operation_states_.at(operation_id)->private_aggregation_host.reset();
   operation_states_.erase(operation_id);
 }
 

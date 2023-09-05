@@ -316,15 +316,14 @@ bool operator==(const SharedStorageWriteOperationAndResult& a,
          a.result == b.result;
 }
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramSuccessValue() {
-  return PrivateAggregationHost::SendHistogramReportResult::kSuccess;
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeReportSuccessValue() {
+  return PrivateAggregationHost::PipeResult::kReportSuccess;
 }
 
-PrivateAggregationHost::SendHistogramReportResult
-GetPrivateAggregationSendHistogramApiDisabledValue() {
-  return PrivateAggregationHost::SendHistogramReportResult::
-      kApiDisabledInSettings;
+PrivateAggregationHost::PipeResult
+GetPrivateAggregationHostPipeApiDisabledValue() {
+  return PrivateAggregationHost::PipeResult::kApiDisabledInSettings;
 }
 
 base::WeakPtr<TestSharedStorageHeaderObserver>

@@ -50,13 +50,10 @@ class TestInterestGroupPrivateAggregationManager
                        base::OnceClosure done) override;
 
   // blink::mojom::PrivateAggregationHost implementation:
-  void SendHistogramReport(
+  void ContributeToHistogram(
       std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-          contributions,
-      blink::mojom::AggregationServiceMode aggregation_mode,
-      blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
-  void SetDebugModeDetailsOnNullReport(
-      blink::mojom::DebugModeDetailsPtr debug_mode_details) override;
+          contribution_ptrs) override;
+  void EnableDebugMode(blink::mojom::DebugKeyPtr debug_key) override;
 
   // Returns a logging callback and saves all requests passed to it. These can
   // then be retrieved by `TakeLoggedPrivateAggregationRequests()`
@@ -97,10 +94,15 @@ class TestInterestGroupPrivateAggregationManager
   // to `TakePrivateAggregationRequests()` or `Reset()` in between.
   bool allow_multiple_calls_per_origin_ = false;
 
-  // Reports received through `SendHistogramReport()`.
-  std::map<url::Origin,
-           InterestGroupAuctionReporter::PrivateAggregationRequests>
-      private_aggregation_requests_;
+  // Contributions received through `ContributeToHistogram()`.
+  std::map<
+      url::Origin,
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
+      private_aggregation_contributions_;
+
+  // Debug details set through `EnableDebugMode()`.
+  std::map<url::Origin, blink::mojom::DebugModeDetailsPtr>
+      private_aggregation_debug_details_;
 
   // Reports received through running
   // `GetLogPrivateAggregationRequestsCallback()`.
