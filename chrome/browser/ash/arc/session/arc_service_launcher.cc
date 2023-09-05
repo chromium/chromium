@@ -314,7 +314,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcSharesheetBridge::GetForBrowserContext(profile);
   ArcSurveyService::GetForBrowserContext(profile);
   ArcSystemUIBridge::GetForBrowserContext(profile);
-  ArcTimerBridge::GetForBrowserContext(profile);
   ArcTracingBridge::GetForBrowserContext(profile);
   ArcTtsService::GetForBrowserContext(profile);
   ArcUsbHostBridge::GetForBrowserContext(profile);
@@ -346,6 +345,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
       ArcIdleManager::GetForBrowserContext(profile);
   } else {
     // ARC Container-only services.
+    ArcTimerBridge::GetForBrowserContext(profile);
     ArcAppfuseBridge::GetForBrowserContext(profile);
     ArcObbMounterBridge::GetForBrowserContext(profile);
   }

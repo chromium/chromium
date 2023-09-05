@@ -28,6 +28,12 @@ class BrowserContext;
 
 namespace arc {
 
+constexpr char kArcSetTimeJobName[] = "arc_2dset_2dtime";
+
+// TimerHost::SetTime rejects the request if delta between requested time and
+// current time is greater than this value.
+constexpr base::TimeDelta kArcSetTimeMaxTimeDelta = base::Hours(24);
+
 class ArcBridgeService;
 
 // Sets wake up timers / alarms based on calls from the instance.
@@ -65,6 +71,7 @@ class ArcTimerBridge : public KeyedService,
   void StartTimer(clockid_t clock_id,
                   base::TimeTicks absolute_expiration_time,
                   StartTimerCallback callback) override;
+  void SetTime(base::Time time, SetTimeCallback callback) override;
 
   static void EnsureFactoryBuilt();
 

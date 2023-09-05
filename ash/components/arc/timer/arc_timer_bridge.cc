@@ -13,7 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -154,6 +156,34 @@ void ArcTimerBridge::StartTimer(clockid_t clock_id,
   chromeos::PowerManagerClient::Get()->StartArcTimer(
       timer_id.value(), absolute_expiration_time,
       base::BindOnce(&OnStartTimer, std::move(callback)));
+}
+
+void ArcTimerBridge::SetTime(base::Time time_to_set, SetTimeCallback callback) {
+  base::Time now = base::Time::Now();
+  base::TimeDelta delta = time_to_set - now;
+  if (delta.is_negative()) {
+    delta = -delta;
+  }
+  if (delta > kArcSetTimeMaxTimeDelta) {
+    LOG(ERROR) << "SetTime rejected. Delta between requested time ("
+               << time_to_set << ") and current time (" << now
+               << ") is greater than " << kArcSetTimeMaxTimeDelta;
+    std::move(callback).Run(mojom::ArcTimerResult::FAILURE);
+    return;
+  }
+
+  DVLOG(1) << "SetTime requested: " << time_to_set;
+  std::vector<std::string> env = {
+      base::StringPrintf("UNIXTIME_TO_SET=%ld", time_to_set.ToTimeT())};
+  ash::UpstartClient::Get()->StartJob(
+      kArcSetTimeJobName, env,
+      base::BindOnce(
+          [](SetTimeCallback callback, bool success) {
+            DVLOG(1) << "arc-set-time upstart job returned: " << success;
+            std::move(callback).Run(success ? mojom::ArcTimerResult::SUCCESS
+                                            : mojom::ArcTimerResult::FAILURE);
+          },
+          std::move(callback)));
 }
 
 void ArcTimerBridge::DeleteArcTimers() {
