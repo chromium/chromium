@@ -5,6 +5,7 @@ include_rules = [
   "+android_webview/browser_jni_headers",
   "+android_webview/common/aw_features.h",
   "+android_webview/common/aw_switches.h",
+  "+android_webview/common/crash_reporter/crash_keys.h",
   "+android_webview/public/browser",
   "+components/viz/service/gl",
   "+components/viz/service/main",

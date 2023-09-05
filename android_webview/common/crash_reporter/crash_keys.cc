@@ -16,6 +16,8 @@ const char kAppProcessName[] = "app-process-name";
 
 const char kAndroidSdkInt[] = "android-sdk-int";
 
+const char kContextLossReason[] = "context-loss-reason";
+
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
 extern const char kWeblayerWebViewCompatMode[] =
@@ -27,6 +29,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageVersionCode,
     kAppProcessName,
     kAndroidSdkInt,
+    kContextLossReason,
     kSupportLibraryWebkitVersion,
 
     // process type
