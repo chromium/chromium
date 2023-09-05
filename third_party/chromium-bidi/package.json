@@ -14,6 +14,7 @@
     "format": "npm run pre-commit --",
     "pre-commit": "pre-commit run --all-files",
     "prepare": "wireit",
+    "prettier": "prettier --write .",
     "rollup": "wireit",
     "server": "npm run server-headless --",
     "server-headful": "wireit",
@@ -22,7 +23,8 @@
     "tsc": "wireit",
     "unit": "wireit",
     "wpt": "wireit",
-    "wpt-all": "wireit"
+    "wpt-all": "wireit",
+    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "nyc": {
     "exclude": [
