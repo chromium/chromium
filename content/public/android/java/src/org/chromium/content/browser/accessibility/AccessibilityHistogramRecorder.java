@@ -114,6 +114,7 @@ public class AccessibilityHistogramRecorder {
     private long mTimeOfFirstShown = -1;
     private long mTimeOfNativeInitialization = -1;
     private long mTimeOfLastDisabledCall = -1;
+    private long mOngoingSumOfTimeDisabled;
 
     /**
      * Record that the Auto-disable Accessibility feature has disabled accessibility.
@@ -165,13 +166,13 @@ public class AccessibilityHistogramRecorder {
         if (initialCall) {
             RecordHistogram.recordLongTimesHistogram(
                     AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_INITIAL,
-                    now - mTimeOfLastDisabledCall);
+                    (now - mTimeOfLastDisabledCall) + mOngoingSumOfTimeDisabled);
             RecordHistogram.recordBooleanHistogram(
                     AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_INITIAL, true);
         } else {
             RecordHistogram.recordLongTimesHistogram(
                     AUTO_DISABLE_ACCESSIBILITY_DISABLED_TIME_SUCCESSIVE,
-                    now - mTimeOfLastDisabledCall);
+                    (now - mTimeOfLastDisabledCall) + mOngoingSumOfTimeDisabled);
             RecordHistogram.recordBooleanHistogram(
                     AUTO_DISABLE_ACCESSIBILITY_REENABLE_METHOD_CALLED_SUCCESSIVE, true);
         }
@@ -182,6 +183,7 @@ public class AccessibilityHistogramRecorder {
 
         // Reset value.
         mTimeOfLastDisabledCall = -1;
+        mOngoingSumOfTimeDisabled = 0;
 
         TraceEvent.end("AccessibilityHistogramRecorder.onReEnabledCalled");
     }
@@ -234,6 +236,21 @@ public class AccessibilityHistogramRecorder {
      */
     public void updateTimeOfNativeInitialization() {
         mTimeOfNativeInitialization = Calendar.getInstance().getTimeInMillis();
+    }
+
+    /**
+     * Notify the recorder that this instance was shown, and has previously been auto-disabled.
+     */
+    public void showAutoDisabledInstance() {
+        mTimeOfLastDisabledCall = Calendar.getInstance().getTimeInMillis();
+    }
+
+    /**
+     * Notify the recorder that this instance was hidden, and is currently auto-disabled.
+     */
+    public void hideAutoDisabledInstance() {
+        mOngoingSumOfTimeDisabled +=
+                Calendar.getInstance().getTimeInMillis() - mTimeOfLastDisabledCall;
     }
 
     /**
@@ -337,12 +354,21 @@ public class AccessibilityHistogramRecorder {
 
         long now = Calendar.getInstance().getTimeInMillis();
 
+        // On activity recreate, or tab reparent, we can get quick succession of show/hide events,
+        // and we do not want to record those, so limit to instances > 250ms.
+        if (now - mTimeOfFirstShown < 250 /* ms */) {
+            mTimeOfFirstShown = -1;
+            return;
+        }
+
         // Record the general usage in the foreground, long histograms are up to 1 hour.
         RecordHistogram.recordLongTimesHistogram(USAGE_FOREGROUND_TIME, now - mTimeOfFirstShown);
-        mTimeOfFirstShown = -1;
 
-        // If native was not initialized, the following histograms have no value.
-        if (mTimeOfNativeInitialization < 0) return;
+        // If native was not initialized, the following histograms have no value. Reset and return.
+        if (mTimeOfNativeInitialization < 0) {
+            mTimeOfFirstShown = -1;
+            return;
+        }
 
         // Record native initialized time, long histograms are up to 1 hour.
         RecordHistogram.recordLongTimesHistogram(
@@ -351,10 +377,13 @@ public class AccessibilityHistogramRecorder {
         // When the foreground and native usage times are close in value, then we will assume this
         // was an instance with an accessibility service always running, and record that usage.
         long timeDiff = Math.abs(mTimeOfNativeInitialization - mTimeOfFirstShown);
-        if (timeDiff < 500 /* ms */ || ((double) timeDiff / mTimeOfFirstShown) < 0.03 /* % */) {
+        if (timeDiff < 500 /* ms */
+                || ((double) timeDiff / (now - mTimeOfFirstShown)) < 0.03 /* % */) {
             RecordHistogram.recordLongTimesHistogram(
                     USAGE_ACCESSIBILITY_ALWAYS_ON_TIME, now - mTimeOfNativeInitialization);
         }
+
+        mTimeOfFirstShown = -1;
 
         // When the auto-disable feature is running, the accessibility engine will be disabled in
         // the background, and native initialization time will be reset at that point.

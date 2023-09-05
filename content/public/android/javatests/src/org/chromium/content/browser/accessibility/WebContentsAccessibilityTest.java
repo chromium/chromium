@@ -660,26 +660,6 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Test that UMA histograms are recorded when an instance has been in the foreground.
-     */
-    @Test
-    @SmallTest
-    public void testUMAHistograms_Usage() throws Throwable {
-        setupTestWithHTML("<p>This is a test</p>");
-
-        // Since the test suite always initializes native, we should see values for both histograms.
-        // Unknown test timing means we cannot know for sure if the always on histogram is recorded.
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectAnyRecord(USAGE_FOREGROUND_TIME)
-                                       .expectAnyRecord(USAGE_NATIVE_INITIALIZED_TIME)
-                                       .build();
-
-        mActivityTestRule.mWcax.forceRecordUsageUMAHistogramsForTesting();
-
-        histogramWatcher.assertExpected();
-    }
-
-    /**
      * Test that UMA histograms are recorded when an instance has disabled/re-enabled accessibility
      * with the Auto-disable Accessibility feature.
      */
