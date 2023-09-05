@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 /** Implements the content for the autofill save card bottom sheet. */
 /*package*/ class AutofillSaveCardBottomSheetContent implements BottomSheetContent {
     private final View mView;
-    private final Delegate mDelegate;
+    private Delegate mDelegate;
 
     /** User actions delegated by this bottom sheet. */
     /*package*/ interface Delegate {
@@ -43,12 +43,10 @@ import java.util.function.Consumer;
      * Creates the BottomSheetContent and inflates the view given a delegate responding to actions.
      *
      * @param context The activity context of the window.
-     * @param delegate User actions delegated to this object.
      */
-    /*package*/ AutofillSaveCardBottomSheetContent(Context context, Delegate delegate) {
+    /*package*/ AutofillSaveCardBottomSheetContent(Context context) {
         mView = LayoutInflater.from(context).inflate(
                 R.layout.autofill_save_card_bottom_sheet, /*root=*/null);
-        mDelegate = delegate;
         setButtonDelegateAction(R.id.autofill_save_card_confirm_button, Delegate::didClickConfirm);
         setButtonDelegateAction(R.id.autofill_save_card_cancel_button, Delegate::didClickCancel);
         setLinkMovementMethod(R.id.legal_message);
@@ -68,6 +66,15 @@ import java.util.function.Consumer;
     @VisibleForTesting
     public Delegate getDelegate() {
         return mDelegate;
+    }
+
+    /**
+     * Sets the delegate listening for actions the user performs on this bottom sheet.
+     *
+     * @param delegate An implementation of {@link Delegate}.
+     */
+    public void setDelegate(Delegate delegate) {
+        mDelegate = delegate;
     }
 
     /**
@@ -114,13 +121,20 @@ import java.util.function.Consumer;
                 AutofillUiUtils.getSpannableStringForLegalMessageLines(mView.getContext(),
                         legalMessageLines,
                         /*underlineLinks=*/true,
-                        /*onClickCallback=*/mDelegate::didClickLegalMessageUrl));
+                        /*onClickCallback=*/(url) -> mDelegate.didClickLegalMessageUrl(url)));
     }
 
     // BottomSheetContent implementation follows:
     @Override
     public View getContentView() {
         return mView;
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        // This bottom sheet should stay open during page navigation. The
+        // AutofillSaveCardBottomSheetBridge is responsible for hiding this bottom sheet.
+        return true;
     }
 
     @Nullable

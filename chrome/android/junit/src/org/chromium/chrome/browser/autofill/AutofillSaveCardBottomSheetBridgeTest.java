@@ -4,24 +4,14 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
 
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -29,7 +19,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,9 +26,11 @@ import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
+import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -63,14 +54,26 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     @Mock
     private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
 
+    private Activity mActivity;
     private ShadowActivity mShadowActivity;
 
     private WindowAndroid mWindow;
 
+    private MockTabModel mTabModel;
+
     @Mock
     private ManagedBottomSheetController mBottomSheetController;
 
+    @Mock
+    private ManagedLayoutManager mLayoutManager;
+
+    @Mock
+    private AutofillSaveCardBottomSheetBridge.CoordinatorFactory mCoordinatorFactory;
+
     private AutofillSaveCardUiInfo mUiInfo;
+
+    @Mock
+    private AutofillSaveCardBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
@@ -78,247 +81,127 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mUiInfo = new AutofillSaveCardUiInfo.Builder()
                           .withCardDetail(new CardDetail(/*iconId*/ 0, "label", "subLabel"))
                           .build();
-        Activity activity = buildActivity(Activity.class).create().get();
-        mShadowActivity = shadowOf(activity);
-        mWindow = new WindowAndroid(activity);
+        mActivity = buildActivity(Activity.class).create().get();
+        mShadowActivity = shadowOf(mActivity);
+        mWindow = new WindowAndroid(mActivity);
+        mTabModel = new MockTabModel(/*incognito=*/false, /*delegate=*/null);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mAutofillSaveCardBottomSheetBridge =
-                new AutofillSaveCardBottomSheetBridge(MOCK_POINTER, mWindow);
+        LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
+        mAutofillSaveCardBottomSheetBridge = new AutofillSaveCardBottomSheetBridge(
+                MOCK_POINTER, mWindow, mTabModel, mCoordinatorFactory);
+    }
+
+    private void setupCoordinatorFactory() {
+        when(mCoordinatorFactory.create(mActivity, mBottomSheetController, mLayoutManager,
+                     mTabModel, mUiInfo, mAutofillSaveCardBottomSheetBridge))
+                .thenReturn(mCoordinator);
     }
 
     @After
     public void tearDown() {
         BottomSheetControllerFactory.detach(mBottomSheetController);
+        LayoutManagerAppUtils.detach(mLayoutManager);
         mWindow.destroy();
     }
 
     @Test
-    public void testRequestShowContent_callsControllerRequestShowContent() {
-        requestShowContent(/*didShow=*/true);
+    public void testRequestShowContent_requestsShowOnCoordinator() {
+        setupCoordinatorFactory();
 
-        verify(mBottomSheetController)
-                .requestShowContent(any(AutofillSaveCardBottomSheetContent.class),
-                        /* animate= */ eq(true));
+        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
+
+        verify(mCoordinator).requestShowContent();
     }
 
     @Test
-    public void testRequestShowContent_callsNativeOnUiShown_whenShown() {
-        requestShowContent(/*didShow=*/true);
+    public void testDestroy_callsCoordinatorDestroy() {
+        setupCoordinatorFactory();
+        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
+
+        mAutofillSaveCardBottomSheetBridge.destroy();
+
+        verify(mCoordinator).destroy();
+    }
+
+    @Test
+    public void testDestroy_whenCoordinatorHasNotBeenCreated() {
+        mAutofillSaveCardBottomSheetBridge.destroy();
+
+        verifyNoInteractions(mCoordinator);
+    }
+
+    @Test
+    public void testDestroyTwice_destroysCoordinatorOnce() {
+        setupCoordinatorFactory();
+        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
+
+        mAutofillSaveCardBottomSheetBridge.destroy();
+        mAutofillSaveCardBottomSheetBridge.destroy();
+
+        verify(mCoordinator).destroy();
+    }
+
+    @Test
+    public void testOnUiShown_callsNativeOnUiShown() {
+        mAutofillSaveCardBottomSheetBridge.onUiShown();
 
         verify(mBridgeNatives).onUiShown(MOCK_POINTER);
     }
 
     @Test
-    public void testRequestShowContent_doesNotCallNativeOnUiShown_whenNotShown() {
-        requestShowContent(/*didShow=*/false);
+    public void testOnUiShown_doesNotCallNative_afterDestroy() {
+        mAutofillSaveCardBottomSheetBridge.destroy();
 
-        verify(mBridgeNatives, never()).onUiShown(MOCK_POINTER);
+        mAutofillSaveCardBottomSheetBridge.onUiShown();
+
+        verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testDidClickLegalMessageUrl_launchesCustomTabIntent() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-
-        bottomSheetContent.getDelegate().didClickLegalMessageUrl(HTTPS_EXAMPLE_TEST);
-
-        Intent intent = mShadowActivity.getNextStartedActivity();
-        assertThat(intent.getData(), equalTo(Uri.parse(HTTPS_EXAMPLE_TEST)));
-        assertThat(intent.getAction(), equalTo(Intent.ACTION_VIEW));
-        assertThat(intent.getExtras().get(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE),
-                equalTo(CustomTabsIntent.SHOW_PAGE_TITLE));
-    }
-
-    @Test
-    public void testDidClickConfirm_hidesBottomSheetContent() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-
-        bottomSheetContent.getDelegate().didClickConfirm();
-
-        verify(mBottomSheetController)
-                .hideContent(bottomSheetContent, /*animate=*/true,
-                        StateChangeReason.INTERACTION_COMPLETE);
-    }
-
-    @Test
-    public void testDidClickConfirm_callsNativeOnUiAccepted() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-
-        bottomSheetContent.getDelegate().didClickConfirm();
+    public void testOnUiAccepted_callsNativeOnUiAccepted() {
+        mAutofillSaveCardBottomSheetBridge.onUiAccepted();
 
         verify(mBridgeNatives).onUiAccepted(MOCK_POINTER);
     }
 
     @Test
-    public void testDidClickConfirm_doesNotCallBridgeNatives_whenAlreadyClickedConfirm() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-        bottomSheetContent.getDelegate().didClickConfirm();
-        clearInvocations(mBridgeNatives);
-
-        bottomSheetContent.getDelegate().didClickConfirm();
-
-        verify(mBridgeNatives, never()).onUiAccepted(MOCK_POINTER);
-    }
-
-    @Test
-    public void testDidClickConfirm_doesNotCallBridgeNatives_afterDestroy() {
-        requestShowContent(/*didShow=*/true);
+    public void testOnUiAccepted_doesNotCallNative_afterDestroy() {
         mAutofillSaveCardBottomSheetBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.didClickConfirm();
+        mAutofillSaveCardBottomSheetBridge.onUiAccepted();
 
-        verify(mBridgeNatives, never())
-                .onUiAccepted(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
+        verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testDidClickCancel_hidesBottomSheetContent() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-
-        bottomSheetContent.getDelegate().didClickCancel();
-
-        verify(mBottomSheetController)
-                .hideContent(bottomSheetContent, /*animate=*/true,
-                        StateChangeReason.INTERACTION_COMPLETE);
-    }
-
-    @Test
-    public void testDidClickCancel_callsNativeOnUiCanceled() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-
-        bottomSheetContent.getDelegate().didClickCancel();
+    public void testOnUiCanceled_callsNativeOnUiCanceled() {
+        mAutofillSaveCardBottomSheetBridge.onUiCanceled();
 
         verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
     }
 
     @Test
-    public void testDidClickCancel_doesNotCallBridgeNatives_whenAlreadyClickedCancel() {
-        AutofillSaveCardBottomSheetContent bottomSheetContent =
-                requestShowContent(/*didShow=*/true);
-        bottomSheetContent.getDelegate().didClickCancel();
-        clearInvocations(mBridgeNatives);
-
-        bottomSheetContent.getDelegate().didClickCancel();
-
-        verify(mBridgeNatives, never())
-                .onUiIgnored(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
-    }
-
-    @Test
-    public void testDidClickCancel_doesNotCallBridgeNatives_afterDestroy() {
-        requestShowContent(/*didShow=*/true);
+    public void testOnUiCanceled_doesNotCallNative_afterDestroy() {
         mAutofillSaveCardBottomSheetBridge.destroy();
 
-        mAutofillSaveCardBottomSheetBridge.didClickCancel();
+        mAutofillSaveCardBottomSheetBridge.onUiCanceled();
 
-        verify(mBridgeNatives, never())
-                .onUiCanceled(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
+        verifyNoInteractions(mBridgeNatives);
     }
 
     @Test
-    public void testSheetClosedOnBackPress_callsNativeOnUiCanceled() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.onSheetClosed(StateChangeReason.BACK_PRESS);
-
-        verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
-    }
-
-    @Test
-    public void testSheetClosedOnSwipe_callsNativeOnUiCanceled() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.onSheetClosed(StateChangeReason.SWIPE);
-
-        verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
-    }
-
-    @Test
-    public void testSheetClosedOnTapScrim_callsNativeOnUiCanceled() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.onSheetClosed(StateChangeReason.TAP_SCRIM);
-
-        verify(mBridgeNatives).onUiCanceled(MOCK_POINTER);
-    }
-
-    @Test
-    public void testSheetClosedOnInteractionComplete_doesNotCallOnUiCanceledNorOnUiAccepted() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.onSheetClosed(StateChangeReason.INTERACTION_COMPLETE);
-
-        verify(mBridgeNatives, never())
-                .onUiCanceled(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
-        verify(mBridgeNatives, never())
-                .onUiAccepted(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
-    }
-
-    @Test
-    public void testSheetClosedWithoutUserInteraction_callsNativeOnUiIgnored() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.onSheetClosed(StateChangeReason.PROMOTE_TAB);
+    public void testOnUiIgnored_callsNativeOnUiIgnored() {
+        mAutofillSaveCardBottomSheetBridge.onUiIgnored();
 
         verify(mBridgeNatives).onUiIgnored(MOCK_POINTER);
     }
 
     @Test
-    public void testDestroy_stopsObservingTheBottomSheetController() {
+    public void testOnUiIgnored_doesNotCallNative_afterDestroy() {
         mAutofillSaveCardBottomSheetBridge.destroy();
 
-        verify(mBottomSheetController).removeObserver(mAutofillSaveCardBottomSheetBridge);
-    }
+        mAutofillSaveCardBottomSheetBridge.onUiIgnored();
 
-    @Test
-    public void testDestroy_callsNativeOnUiIgnored_withoutOtherInteraction() {
-        requestShowContent(/*didShow=*/true);
-
-        mAutofillSaveCardBottomSheetBridge.destroy();
-
-        verify(mBridgeNatives).onUiIgnored(MOCK_POINTER);
-    }
-
-    @Test
-    public void testDestroy_doesNotCallBridgeNatives_withoutBottomSheetShown() {
-        requestShowContent(/*didShow=*/false);
-
-        mAutofillSaveCardBottomSheetBridge.destroy();
-
-        verify(mBridgeNatives, never())
-                .onUiIgnored(/*nativeAutofillSaveCardBottomSheetBridge=*/anyLong());
-    }
-
-    @Test
-    public void testRequestShowContent_doesNotCreateABottomSheet_afterDestroy() {
-        mAutofillSaveCardBottomSheetBridge.destroy();
-
-        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
-
-        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
-    }
-
-    /**
-     * Calls the bridge's requestShowContent while capturing the bottom sheet content.
-     *
-     * The bridge must be initialized; otherwise, we fail to capture the BottomSheet with an
-     * exception from Mockito.
-     *
-     * @param didShow The value returned by the mocked call
-     *                {@link ManagedBottomSheetController#requestShowContent}.
-     * @return The captured value, a AutofillSaveCardBottomSheetContent.
-     */
-    private AutofillSaveCardBottomSheetContent requestShowContent(boolean didShow) {
-        ArgumentCaptor<AutofillSaveCardBottomSheetContent> bottomSheetContent =
-                ArgumentCaptor.forClass(AutofillSaveCardBottomSheetContent.class);
-        when(mBottomSheetController.requestShowContent(bottomSheetContent.capture(), anyBoolean()))
-                .thenReturn(didShow);
-        mAutofillSaveCardBottomSheetBridge.requestShowContent(mUiInfo);
-        return bottomSheetContent.getValue();
+        verifyNoInteractions(mBridgeNatives);
     }
 }

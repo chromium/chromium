@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
@@ -46,12 +47,14 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
 }  // namespace
 
 AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
-    ui::WindowAndroid* window_android) {
+    ui::WindowAndroid* window_android,
+    TabModel* tab_model) {
   CHECK(window_android);
+  CHECK(tab_model);
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
           base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
-          window_android->GetJavaObject());
+          window_android->GetJavaObject(), tab_model->GetJavaObject());
 }
 
 AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() {

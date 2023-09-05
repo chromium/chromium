@@ -125,6 +125,7 @@
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
 #include "chrome/browser/ui/android/infobars/autofill_offer_notification_infobar.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
@@ -792,11 +793,14 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       // During shutdown the window may be null. There is no need to show the
       // bottom sheet during shutdown.
       auto* window_android = web_contents()->GetTopLevelNativeWindow();
-      if (!window_android) {
+      TabModel* tab_model =
+          TabModelList::GetTabModelForWebContents(web_contents());
+      if (!window_android || !tab_model) {
         return;
       }
       autofill_save_card_bottom_sheet_bridge_ =
-          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android);
+          std::make_unique<AutofillSaveCardBottomSheetBridge>(window_android,
+                                                              tab_model);
     }
     autofill_save_card_bottom_sheet_bridge_->RequestShowContent(
         ui_info, std::move(common_delegate));

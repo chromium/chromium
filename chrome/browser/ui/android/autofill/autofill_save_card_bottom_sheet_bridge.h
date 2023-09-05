@@ -9,6 +9,8 @@
 
 #include "base/android/scoped_java_ref.h"
 
+class TabModel;
+
 namespace ui {
 class WindowAndroid;
 }
@@ -22,8 +24,9 @@ struct AutofillSaveCardUiInfo;
 // to trigger the save card bottom sheet on Android.
 class AutofillSaveCardBottomSheetBridge {
  public:
-  // The window must not be null.
-  explicit AutofillSaveCardBottomSheetBridge(ui::WindowAndroid* window_android);
+  // The window and tab model must not be null.
+  AutofillSaveCardBottomSheetBridge(ui::WindowAndroid* window_android,
+                                    TabModel* tab_model);
 
   AutofillSaveCardBottomSheetBridge(const AutofillSaveCardBottomSheetBridge&) =
       delete;

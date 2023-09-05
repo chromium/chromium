@@ -70,7 +70,8 @@ public class AutofillSaveCardBottomSheetContentTest {
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication().getApplicationContext();
-        mContent = new AutofillSaveCardBottomSheetContent(mContext, mDelegate);
+        mContent = new AutofillSaveCardBottomSheetContent(mContext);
+        mContent.setDelegate(mDelegate);
     }
 
     @Test
@@ -164,6 +165,23 @@ public class AutofillSaveCardBottomSheetContentTest {
                                 "abc", Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
                         .build());
         TextView view = mContent.getContentView().findViewById(R.id.legal_message);
+        List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
+
+        spans.get(0).onClick(view);
+
+        verify(mDelegate).didClickLegalMessageUrl(HTTPS_EXAMPLE_COM);
+    }
+
+    @Test
+    public void testSetDelegateAfterSetUiInfo_callsLegalMessageDelegate() {
+        AutofillSaveCardBottomSheetContent content =
+                new AutofillSaveCardBottomSheetContent(mContext);
+        content.setUiInfo(defaultUiInfoBuilder()
+                                  .withLegalMessageLines(ImmutableList.of(new LegalMessageLine(
+                                          "abc", Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
+                                  .build());
+        content.setDelegate(mDelegate);
+        TextView view = content.getContentView().findViewById(R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
 
         spans.get(0).onClick(view);
