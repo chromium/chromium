@@ -48,6 +48,7 @@
         fields_to_diff: [
             "font",
             "white-space-collapse",
+            "text-autospace",
         ],
         methods_to_diff: [
           {
