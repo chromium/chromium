@@ -1402,13 +1402,14 @@ crbug.com/1186753 [ Debug Linux ] virtual/threaded-prefer-compositing/fast/scrol
 crbug.com/1186753 [ Release ] virtual/threaded-prefer-compositing/fast/scroll-snap/animate-fling-to-snap-points-2.html [ Slow ]
 crbug.com/1361889 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on-div-custom-scrollbar.html [ Slow ]
 
-# Mac11 IDB timeouts
+# Mac IDB timeouts
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/fire-error-event-exception.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/get-databases.any.html [ Slow ]
-crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAll.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/idbindex_getAllKeys.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] external/wpt/IndexedDB/keypath-special-identifiers.htm [ Slow ]
+crbug.com/1195814 [ Mac ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Slow ]
+crbug.com/1418947 [ Mac ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
 
@@ -1534,6 +1535,4 @@ crbug.com/1453303 [ Win ] http/tests/inspector-protocol/network/blocked-setcooki
 
 crbug.com/1459575 webexposed/global-interface-listing-dedicated-worker.html [ Slow ]
 
-
 crbug.com/1456739 [ Linux Release ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/protected-audience-sends-report.https.html [ Slow ]
-
