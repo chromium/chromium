@@ -304,8 +304,7 @@ public class TabPersistentStoreUnitTest {
         TabState ntpState = new TabState();
         mPersistentStore.restoreTab(ntpDetails, ntpState, false);
 
-        verify(mNormalTabCreator)
-                .createFrozenTab(eq(ntpState), eq(null), eq(1), eq(false), anyInt());
+        verify(mNormalTabCreator).createFrozenTab(eq(ntpState), eq(1), eq(false), anyInt());
     }
 
     @Test

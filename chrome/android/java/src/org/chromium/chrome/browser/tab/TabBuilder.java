@@ -165,6 +165,7 @@ public class TabBuilder {
      * tab, if it was persisted
      * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
      * @return {@link TabBuilder} creating the Tab
+     * TODO(b/298692614) Deprecate CriticalPersistedTabData in TabBuilder.
      */
     public TabBuilder setSerializedCriticalPersistedTabData(
             @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
