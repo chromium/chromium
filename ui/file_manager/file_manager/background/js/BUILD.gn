@@ -69,7 +69,6 @@ js_type_check("test_support_modules_type_check") {
   testonly = true
   deps = [
     ":mock_crostini",
-    ":mock_drive_sync_handler",
     ":mock_file_operation_manager",
     ":mock_progress_center",
     ":mock_volume_manager",
@@ -120,16 +119,6 @@ js_library("file_manager_base") {
 js_library("mock_crostini") {
   testonly = true
   deps = [ "//ui/file_manager/file_manager/externs/background:crostini" ]
-}
-
-js_library("mock_drive_sync_handler") {
-  deps = [
-    "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/externs:drive_dialog_controller",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
-  ]
-  visibility +=
-      [ "//ui/file_manager/file_manager/foreground/js:actions_model_unittest" ]
 }
 
 js_library("entry_location_impl") {

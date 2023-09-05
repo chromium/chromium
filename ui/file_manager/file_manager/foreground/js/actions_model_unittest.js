@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {MockDriveSyncHandler} from '../../background/js/mock_drive_sync_handler.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
@@ -35,11 +34,6 @@ let driveFileSystem;
  * @type {!FileSystem}
  */
 let providedFileSystem;
-
-/**
- * @type {!MockDriveSyncHandler}
- */
-let driveSyncHandler;
 
 
 /**
@@ -134,7 +128,6 @@ export function setUp() {
 
   // Create mock action model components.
   shortcutsModel = createFakeFolderShortcutsDataModel();
-  driveSyncHandler = new MockDriveSyncHandler();
   ui = new MockUI();
 }
 
@@ -150,7 +143,7 @@ export function testDriveDirectoryEntry(callback) {
   });
 
   let model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [driveFileSystem.entries['/test']]);
 
   let invalidated = 0;
@@ -191,8 +184,8 @@ export function testDriveDirectoryEntry(callback) {
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [driveFileSystem.entries['/test']]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [driveFileSystem.entries['/test']]);
             model.addEventListener('invalidated', () => {
               invalidated++;
             });
@@ -231,7 +224,7 @@ export function testDriveFileEntry(callback) {
   });
 
   let model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [driveFileSystem.entries['/test.txt']]);
   let invalidated = 0;
 
@@ -281,8 +274,8 @@ export function testDriveFileEntry(callback) {
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [driveFileSystem.entries['/test.txt']]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [driveFileSystem.entries['/test.txt']]);
             return model.initialize();
           })
           .then(() => {
@@ -349,8 +342,7 @@ export function testDriveHostedFileEntry(callback) {
   };
 
   let model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
-      [testDocument]);
+      volumeManager, metadataModel, shortcutsModel, ui, [testDocument]);
 
   return reportPromise(
       model.initialize()
@@ -365,8 +357,8 @@ export function testDriveHostedFileEntry(callback) {
 
             // Check the actions for multiple selection.
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [testDocument, testFile]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [testDocument, testFile]);
             return model.initialize();
           })
           .then(() => {
@@ -399,8 +391,8 @@ export function testDriveHostedFileEntry(callback) {
             assertEquals(1, metrics.calls['DriveHostedFilePinSuccess']);
 
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [testDocument, testFile]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [testDocument, testFile]);
             return model.initialize();
           })
           .then(() => {
@@ -458,8 +450,7 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
   };
 
   let model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
-      [testDocument]);
+      volumeManager, metadataModel, shortcutsModel, ui, [testDocument]);
 
   return reportPromise(
       model.initialize()
@@ -474,8 +465,8 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
 
             // Check the actions for multiple selection.
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [testDocument, testFile]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [testDocument, testFile]);
             return model.initialize();
           })
           .then(() => {
@@ -509,8 +500,8 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
             assertEquals(0, metrics.calls['DriveHostedFilePinSuccess']);
 
             model = new ActionsModel(
-                volumeManager, metadataModel, shortcutsModel, driveSyncHandler,
-                ui, [testDocument, testFile]);
+                volumeManager, metadataModel, shortcutsModel, ui,
+                [testDocument, testFile]);
             return model.initialize();
           })
           .then(() => {
@@ -556,7 +547,7 @@ export function testTeamDriveRootEntry(callback) {
   });
 
   const model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [driveFileSystem.entries['/team_drives/ABC Team']]);
 
   return reportPromise(
@@ -593,7 +584,7 @@ export function testTeamDriveDirectoryEntry(callback) {
   });
 
   const model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [driveFileSystem.entries['/team_drives/ABC Team/Folder 1']]);
 
   return reportPromise(
@@ -648,7 +639,7 @@ export function testTeamDriveFileEntry(callback) {
   });
 
   const model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [driveFileSystem.entries['/team_drives/ABC Team/Folder 1/test.txt']]);
 
   return reportPromise(
@@ -702,7 +693,7 @@ export function testProvidedEntry(callback) {
   const metadataModel = new MockMetadataModel(null);
 
   const model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [providedFileSystem.entries['/test']]);
 
   let invalidated = 0;
@@ -773,7 +764,7 @@ export function testProvidedEntryWithError(callback) {
   const metadataModel = new MockMetadataModel(null);
 
   const model = new ActionsModel(
-      volumeManager, metadataModel, shortcutsModel, driveSyncHandler, ui,
+      volumeManager, metadataModel, shortcutsModel, ui,
       [providedFileSystem.entries['/test']]);
 
   return reportPromise(

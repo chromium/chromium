@@ -11,12 +11,10 @@
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
-import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
+import {toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
 import {MetadataModelInterface} from '../../externs/metadata_model.js';
 import {getStore} from '../../state/store.js';
 
@@ -60,15 +58,6 @@ const SPEED_BUFFER_WINDOW = 30;
 const DRIVE_SYNC_COMPLETED_EVENT = 'completed';
 
 /**
- * Notification IDs of custom notifications for disabling mobile sync and
- * enabling docs offline.
- */
-enum NotificationId {
-  DISABLED_MOBILE_SYNC = 'disabled-mobile-sync',
-  ENABLE_DOCS_OFFLINE = 'enable-docs-offline',
-}
-
-/**
  * A list of prefixes used to disambiguate errors that come from the same source
  * to ensure separate notifications are generated.
  */
@@ -99,11 +88,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * When true, this item is syncing.
    */
   private syncing_ = false;
-
-  /**
-   * When true, sync has been enabled on metered networks.
-   */
-  private driveSyncEnabledOnMeteredNetwork_ = false;
 
   private queue_ = new AsyncQueue();
 
@@ -171,17 +155,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
     this.updateCompletedRateLimiter_.run();
   }, 200);
 
-  /**
-   * Saved dialog event to be sent to the next launched Files App UI window.
-   */
-  private savedDialogEvent_: chrome.fileManagerPrivate.DriveConfirmDialogEvent|
-      null = null;
-
-  /**
-   * A mapping of App IDs to dialogs.
-   */
-  private dialogs_: Map<string, DriveDialogControllerInterface> = new Map();
-
   constructor(private progressCenter_: ProgressCenter) {
     super();
 
@@ -221,18 +194,8 @@ export class DriveSyncHandlerImpl extends EventTarget {
     }
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
-    notifications.onButtonClicked.addListener(
-        this.onNotificationButtonClicked_.bind(this));
-    notifications.onClosed.addListener(this.onNotificationClosed_.bind(this));
-    chrome.fileManagerPrivate.onPreferencesChanged.addListener(
-        this.onPreferencesChanged_.bind(this));
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
         this.onDriveConnectionStatusChanged_.bind(this));
-    chrome.fileManagerPrivate.onMountCompleted.addListener(
-        this.onMountCompleted_.bind(this));
-
-    // Set initial values.
-    this.onPreferencesChanged_();
   }
 
   /**
@@ -254,30 +217,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
    */
   getCompletedEventName() {
     return DRIVE_SYNC_COMPLETED_EVENT;
-  }
-
-  /**
-   * Returns whether the Drive sync is currently suppressed or not.
-   */
-  isSyncSuppressed() {
-    return navigator.connection.type === 'cellular' &&
-        !this.driveSyncEnabledOnMeteredNetwork_;
-  }
-
-  /**
-   * Shows a notification that Drive sync is disabled on cellular networks.
-   */
-  showDisabledMobileSyncNotification() {
-    notifications.create(
-        NotificationId.DISABLED_MOBILE_SYNC, {
-          type: 'basic',
-          title: str('FILEMANAGER_APP_NAME'),
-          message: str('DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE'),
-          iconUrl: getFilesAppIconURL().toString(),
-          buttons:
-              [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}],
-        },
-        () => {});
   }
 
   /**
@@ -524,76 +463,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
   }
 
   /**
-   * Adds a dialog to be controlled by DriveSyncHandler.
-   */
-  addDialog(appId: string, dialog: DriveDialogControllerInterface) {
-    this.dialogs_.set(appId, dialog);
-    if (this.savedDialogEvent_) {
-      notifications.clear(NotificationId.ENABLE_DOCS_OFFLINE, () => {});
-      dialog.showDialog(this.savedDialogEvent_);
-      this.savedDialogEvent_ = null;
-    }
-  }
-
-  /**
-   * Removes a dialog from being controlled by DriveSyncHandler.
-   */
-  removeDialog(appId: string) {
-    if (this.dialogs_.has(appId) && this.dialogs_.get(appId)!.open) {
-      chrome.fileManagerPrivate.notifyDriveDialogResult(
-          chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
-      this.dialogs_.delete(appId);
-    }
-  }
-
-  /**
-   * Handles notification's button click.
-   */
-  private onNotificationButtonClicked_(
-      notificationId: string, buttonIndex: number) {
-    switch (notificationId) {
-      case NotificationId.DISABLED_MOBILE_SYNC:
-        notifications.clear(notificationId, () => {});
-        chrome.fileManagerPrivate.setPreferences(
-            {driveSyncEnabledOnMeteredNetwork: true});
-        break;
-      case NotificationId.ENABLE_DOCS_OFFLINE:
-        notifications.clear(notificationId, () => {});
-        this.savedDialogEvent_ = null;
-        chrome.fileManagerPrivate.notifyDriveDialogResult(
-            buttonIndex == 1 ?
-                chrome.fileManagerPrivate.DriveDialogResult.ACCEPT :
-                chrome.fileManagerPrivate.DriveDialogResult.REJECT);
-        break;
-    }
-  }
-
-  /**
-   * Handles notifications being closed by user or system action.
-   */
-  private onNotificationClosed_(notificationId: string, byUser: boolean) {
-    switch (notificationId) {
-      case NotificationId.ENABLE_DOCS_OFFLINE:
-        this.savedDialogEvent_ = null;
-        if (byUser) {
-          chrome.fileManagerPrivate.notifyDriveDialogResult(
-              chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
-        }
-        break;
-    }
-  }
-
-  /**
-   * Handles preferences change.
-   */
-  private onPreferencesChanged_() {
-    chrome.fileManagerPrivate.getPreferences(pref => {
-      this.driveSyncEnabledOnMeteredNetwork_ =
-          pref.driveSyncEnabledOnMeteredNetwork;
-    });
-  }
-
-  /**
    * Handles connection state change.
    */
   private onDriveConnectionStatusChanged_() {
@@ -614,18 +483,5 @@ export class DriveSyncHandlerImpl extends EventTarget {
         this.dispatchEvent(new Event(this.getCompletedEventName()));
       }
     });
-  }
-
-  /**
-   * Handles mount events to handle Drive mounting and unmounting.
-   */
-  private onMountCompleted_(event:
-                                chrome.fileManagerPrivate.MountCompletedEvent) {
-    if (event.eventType ===
-            chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
-        event.volumeMetadata.volumeType ===
-            chrome.fileManagerPrivate.VolumeType.DRIVE) {
-      notifications.clear(NotificationId.ENABLE_DOCS_OFFLINE, () => {});
-    }
   }
 }

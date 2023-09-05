@@ -4,7 +4,6 @@
 
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {util} from '../../common/js/util.js';
-import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 
@@ -25,13 +24,12 @@ export class ActionsController {
    * @param {!MetadataModel} metadataModel
    * @param {!DirectoryModel} directoryModel
    * @param {!FolderShortcutsDataModel} shortcutsModel
-   * @param {!DriveSyncHandler} driveSyncHandler
    * @param {!FileSelectionHandler} selectionHandler
    * @param {!FileManagerUI} ui
    */
   constructor(
       volumeManager, metadataModel, directoryModel, shortcutsModel,
-      driveSyncHandler, selectionHandler, ui) {
+      selectionHandler, ui) {
     /** @private @const {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
@@ -43,9 +41,6 @@ export class ActionsController {
 
     /** @private @const {!FolderShortcutsDataModel} */
     this.shortcutsModel_ = shortcutsModel;
-
-    /** @private @const {!DriveSyncHandler} */
-    this.driveSyncHandler_ = driveSyncHandler;
 
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
@@ -291,7 +286,7 @@ export class ActionsController {
 
     actionsModel = new ActionsModel(
         this.volumeManager_, this.metadataModel_, this.shortcutsModel_,
-        this.driveSyncHandler_, this.ui_, entries);
+        this.ui_, entries);
 
     actionsModel.addEventListener('invalidated', () => {
       this.clearLocalCache_(key);

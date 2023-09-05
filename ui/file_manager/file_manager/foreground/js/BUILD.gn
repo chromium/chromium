@@ -36,7 +36,6 @@ group("js_modules") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
-    ":drive_dialog_controller",
     ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
@@ -110,7 +109,6 @@ js_type_check("closure_compile_jsmodules") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
-    ":drive_dialog_controller",
     ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
@@ -170,7 +168,6 @@ js_library("actions_controller") {
     "ui:file_manager_ui",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
   ]
 }
 
@@ -186,7 +183,6 @@ js_library("actions_model") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
   ]
 }
 
@@ -215,7 +211,6 @@ js_unittest("actions_model_unittest") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
     "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_drive_sync_handler",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
@@ -425,14 +420,6 @@ js_library("directory_tree_naming_controller") {
   ]
 }
 
-js_library("drive_dialog_controller") {
-  deps = [
-    "ui:file_manager_ui",
-    "ui:files_confirm_dialog",
-    "//ash/webui/common/resources:load_time_data.m",
-  ]
-}
-
 js_library("drop_effect_and_label") {
 }
 
@@ -518,7 +505,6 @@ js_library("file_manager") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
-    ":drive_dialog_controller",
     ":empty_folder_controller",
     ":file_manager_commands",
     ":file_selection",

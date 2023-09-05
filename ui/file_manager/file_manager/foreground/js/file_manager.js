@@ -52,7 +52,6 @@ import {DialogActionController} from './dialog_action_controller.js';
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
 import {DirectoryTreeNamingController} from './directory_tree_naming_controller.js';
-import {DriveDialogController} from './drive_dialog_controller.js';
 import {importElements} from './elements_importer.js';
 import {EmptyFolderController} from './empty_folder_controller.js';
 import {CommandHandler, CommandUtil} from './file_manager_commands.js';
@@ -183,12 +182,6 @@ export class FileManager extends EventTarget {
      * @private {ActionsController}
      */
     this.actionsController_ = null;
-
-    /**
-     * Controller for showing dialogs from Drive.
-     * @private {?DriveDialogController}
-     */
-    this.driveDialogController_ = null;
 
     /**
      * Handler for command events.
@@ -693,14 +686,8 @@ export class FileManager extends EventTarget {
         /** @type {!A11yAnnounce} */ (this.ui_));
     this.actionsController_ = new ActionsController(
         this.volumeManager_, assert(this.metadataModel_), this.directoryModel_,
-        assert(this.folderShortcutsModel_),
-        this.fileBrowserBackground_.driveSyncHandler, this.selectionHandler_,
+        assert(this.folderShortcutsModel_), this.selectionHandler_,
         assert(this.ui_));
-    if (this.dialogType === DialogType.FULL_PAGE) {
-      this.driveDialogController_ = new DriveDialogController(this.ui_);
-      this.fileBrowserBackground_.driveSyncHandler.addDialog(
-          window.appID, this.driveDialogController_);
-    }
     this.lastModifiedController_ = new LastModifiedController(
         this.ui_.listContainer.table, this.directoryModel_);
 
@@ -1672,10 +1659,6 @@ export class FileManager extends EventTarget {
 
     if (this.ui_ && this.ui_.progressCenterPanel) {
       this.progressCenter.removePanel(this.ui_.progressCenterPanel);
-    }
-
-    if (this.driveDialogController_) {
-      this.fileBrowserBackground_.driveSyncHandler.removeDialog(window.appID);
     }
   }
 

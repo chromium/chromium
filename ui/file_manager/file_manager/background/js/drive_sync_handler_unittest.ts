@@ -164,9 +164,6 @@ export function setUp() {
 
   // Create DriveSyncHandlerImpl.
   driveSyncHandler = new DriveSyncHandlerImpl(progressCenter);
-
-  // Check: Drive sync is enabled at creation time.
-  assertFalse(driveSyncHandler.isSyncSuppressed());
 }
 
 // Test that in general case item IDs produced for errors are unique.
