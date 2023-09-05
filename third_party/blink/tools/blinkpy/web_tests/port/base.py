@@ -111,10 +111,11 @@ FONT_FILES = [
 ]
 
 # This is the fingerprint of wpt's certificate found in
-# blinkpy/third_party/wpt/certs.  The following line is updated by
-# update_cert.py.
+# `//third_party/wpt_tools/certs/127.0.0.1.pem`. The following line is updated
+# by `//third_party/wpt_tools/update_certs.py`.
 WPT_FINGERPRINT = 'Nxvaj3+bY3oVrTc+Jp7m3E3sB1n3lXtnMDCyBsqEXiY='
-# One for 127.0.0.1.sxg.pem
+# One for `//third_party/wpt_tools/certs/127.0.0.1.sxg.pem` used by non-WPT
+# tests under `web_tests/http/`.
 SXG_FINGERPRINT = '55qC1nKu2A88ESbFmk5sTPQS/ScG+8DD7P+2bgFA9iM='
 # And one for external/wpt/signed-exchange/resources/127.0.0.1.sxg.pem
 SXG_WPT_FINGERPRINT = '0Rt4mT6SJXojEMHTnKnlJ/hBKMBcI4kteBlhR1eTTdk='
@@ -377,15 +378,35 @@ class Port(object):
 
     def additional_driver_flags(self):
         flags = self._specified_additional_driver_flags()
-        if self.driver_name() == self.CONTENT_SHELL_NAME:
-            flags += [
+        driver_name = self.driver_name()
+
+        # Enable "test" and "experimental" features by passing either
+        # `--run-web-tests` or `--enable-blink-test-features`.
+        if driver_name == self.CONTENT_SHELL_NAME:
+            flags.extend([
                 '--run-web-tests',
-                '--ignore-certificate-errors-spki-list=' + WPT_FINGERPRINT +
-                ',' + SXG_FINGERPRINT + ',' + SXG_WPT_FINGERPRINT,
+                # `--ignore-certificate-errors-spki-list` requires
+                # `--user-data-dir` to take effect. `--user-data-dir` is an
+                # embedder-defined switch; it seems that we don't need to pass
+                # this for `chrome`, as `chromedriver` will supply its own
+                # value.
+                '--user-data-dir',
+            ])
+        elif driver_name == self.CHROME_NAME:
+            flags.append('--enable-blink-test-features')
+
+        if driver_name in {self.CONTENT_SHELL_NAME, self.CHROME_NAME}:
+            known_fingerprints = [
+                WPT_FINGERPRINT,
+                SXG_FINGERPRINT,
+                SXG_WPT_FINGERPRINT,
+            ]
+            flags.extend([
+                '--ignore-certificate-errors-spki-list=' +
+                ','.join(known_fingerprints),
                 # Required for WebTransport tests.
                 '--webtransport-developer-mode',
-                '--user-data-dir'
-            ]
+            ])
             if self.get_option('nocheck_sys_deps', False):
                 flags.append('--disable-system-font-check')
 

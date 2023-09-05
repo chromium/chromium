@@ -180,6 +180,9 @@ class WPTAdapter:
             f'View the test results at file://{self.port.artifacts_directory()}/results.html'
         )
         logger.info(f'Using {self.port.get_option("configuration")} build')
+        flag_specific = self.port.flag_specific_config_name()
+        if flag_specific:
+            logger.info(f'Running flag-specific suite "{flag_specific}"')
 
     def _set_up_runner_options(self, tmp_dir):
         """Set up wptrunner options based on run_wpt_tests.py arguments and defaults."""
@@ -217,6 +220,7 @@ class WPTAdapter:
         # Set up logging as early as possible.
         self._set_up_runner_output_options(runner_options)
         self._set_up_runner_config_options(runner_options)
+        self._set_up_runner_ssl_options(runner_options)
         self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options, tmp_dir)
 
@@ -278,12 +282,8 @@ class WPTAdapter:
         runner_options.binary_args.extend([
             '--host-resolver-rules='
             'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
+            *self.port.additional_driver_flags(),
         ])
-
-        if self.options.product != 'content_shell':
-            # `content_shell --run-web-tests` already enables "test" and
-            # "experimental" features.
-            runner_options.binary_args.append('--enable-blink-test-features')
         # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
         runner_options.mojojs_path = self.port.generated_sources_directory()
 
@@ -297,18 +297,8 @@ class WPTAdapter:
             runner_options.config = self.finder.path_from_web_tests(
                 'wptrunner.blink.ini')
 
-        if self.port.flag_specific_config_name():
-            # Enable adding smoke tests later.
-            configs = self.port.flag_specific_configs()
-            args, _ = configs[self.port.flag_specific_config_name()]
-            logger.info('Running with flag-specific arguments: "%s"',
-                        ' '.join(args))
-            runner_options.binary_args.extend(args)
-
         if self.options.enable_leak_detection:
-            runner_options.binary_args.extend(['--enable-leak-detection'])
-
-        runner_options.binary_args.extend(self.options.additional_driver_flag)
+            runner_options.binary_args.append('--enable-leak-detection')
 
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):
@@ -340,6 +330,19 @@ class WPTAdapter:
         # rerun will not restart browsers. Might also need to restart the
         # browser at Wptrunner side.
         runner_options.rerun = self.options.repeat_each
+
+    def _set_up_runner_ssl_options(self, runner_options):
+        # wptrunner doesn't recognize the `pregenerated.*` values in
+        # `external/wpt/config.json`, so pass them here.
+        #
+        # See also: https://github.com/web-platform-tests/wpt/pull/41594
+        certs_path = self.finder.path_from_chromium_base(
+            'third_party', 'wpt_tools', 'certs')
+        runner_options.ca_cert_path = self.fs.join(certs_path, 'cacert.pem')
+        runner_options.host_key_path = self.fs.join(certs_path,
+                                                    '127.0.0.1.key')
+        runner_options.host_cert_path = self.fs.join(certs_path,
+                                                     '127.0.0.1.pem')
 
     def _set_up_runner_debugging_options(self, runner_options):
         self.port.set_option_default('use_xvfb',
@@ -443,7 +446,7 @@ class WPTAdapter:
         if not self.options.use_upstream_wpt:
             include_tests, subsuite_json = self._collect_tests()
             if subsuite_json:
-                config_path = self.fs.join(tmp_dir, "subsuite.json")
+                config_path = self.fs.join(tmp_dir, 'subsuite.json')
                 with self.fs.open_text_file_for_writing(
                         config_path) as outfile:
                     json.dump(subsuite_json, outfile)
