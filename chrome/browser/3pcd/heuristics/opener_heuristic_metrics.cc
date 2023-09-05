@@ -61,8 +61,7 @@ int32_t Bucketize3PCDHeuristicTimeDelta(
     base::RepeatingCallback<int64_t(const base::TimeDelta*)> cast_time_delta) {
   constexpr size_t bucket_count = 50;
 
-  // Initialize BucketRanges only once:
-  static const base::BucketRanges& bucket_ranges = *[=]() {
+  const base::BucketRanges& bucket_ranges = *[=]() {
     auto ranges =
         CreateBucketRanges(bucket_count, cast_time_delta.Run(&maximum));
     ANNOTATE_LEAKING_OBJECT_PTR(ranges.get());
