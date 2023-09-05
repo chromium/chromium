@@ -163,13 +163,6 @@ class CORE_EXPORT ElementRuleCollector {
                                    bool is_vtt_embedded_style,
                                    StyleRuleUsageTracker* tracker);
   void ClearMatchedRules();
-
-  // Cheaper versions of CollectMatchingRules and CollectMatchingShadowHostRules
-  // respectively, that only return true/false instead of actually collecting
-  // the rules.
-  bool CheckIfAnyRuleMatches(const MatchRequest&);
-  bool CheckIfAnyShadowHostRuleMatches(const MatchRequest&);
-
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  CascadeOrigin,
                                  bool is_cacheable = true,
@@ -234,31 +227,15 @@ class CORE_EXPORT ElementRuleCollector {
     bool for_shadow_pseudo = false;
   };
 
-  // If stop_at_first_match = true, CollectMatchingRules*() will stop
-  // whenever any rule matches, return true, and not store the result
-  // anywhere nor update the match counters. Otherwise, these functions
-  // will return false (even if one or more rules matched).
-  //
-  // Note in the context of stop_at_first_match, a match against any
-  // pseudo rule in the element counts as a match (e.g., “div::before”
-  // will match the <div> element, not just its ::before pseudo-element).
-  // This is convenient because this mode is used for invalidation on
-  // changed rulesets only, where such a match causes us to have to
-  // invalidate style on the element anyway.
-
-  template <bool stop_at_first_match>
-  bool CollectMatchingRulesInternal(const MatchRequest&);
-
-  template <bool stop_at_first_match, bool perf_trace_enabled>
-  bool CollectMatchingRulesForListInternal(base::span<const RuleData>,
+  template <bool perf_trace_enabled>
+  void CollectMatchingRulesForListInternal(base::span<const RuleData>,
                                            const MatchRequest&,
                                            const RuleSet*,
                                            int,
                                            const SelectorChecker&,
                                            PartRequest* = nullptr);
 
-  template <bool stop_at_first_match>
-  bool CollectMatchingRulesForList(base::span<const RuleData>,
+  void CollectMatchingRulesForList(base::span<const RuleData>,
                                    const MatchRequest&,
                                    const RuleSet*,
                                    int,

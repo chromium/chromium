@@ -241,19 +241,9 @@ void SelectorFilter::PopParentStackFrame() {
   }
 }
 
-void SelectorFilter::PushAllParentsOf(TreeScope& tree_scope) {
-  PushAncestors(tree_scope.RootNode());
-}
-
-void SelectorFilter::PushAncestors(const Node& node) {
-  Element* parent = node.ParentOrShadowHostElement();
-  if (parent != nullptr) {
-    PushAncestors(*parent);
-    PushParent(*parent);
-  }
-}
-
 void SelectorFilter::PushParent(Element& parent) {
+  DCHECK(parent.GetDocument().InStyleRecalc());
+  DCHECK(parent.InActiveDocument());
   if (parent_stack_.empty()) {
     DCHECK_EQ(parent, parent.GetDocument().documentElement());
     DCHECK(!ancestor_identifier_filter_);
@@ -272,6 +262,8 @@ void SelectorFilter::PushParent(Element& parent) {
 }
 
 void SelectorFilter::PopParent(Element& parent) {
+  DCHECK(parent.GetDocument().InStyleRecalc());
+  DCHECK(parent.InActiveDocument());
   // Note that we may get invoked for some random elements in some wacky cases
   // during style resolve. Pause maintaining the stack in this case.
   if (!ParentStackIsConsistent(&parent)) {

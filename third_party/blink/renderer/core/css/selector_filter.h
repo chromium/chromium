@@ -96,10 +96,6 @@ class CORE_EXPORT SelectorFilter {
   SelectorFilter(const SelectorFilter&) = delete;
   SelectorFilter& operator=(const SelectorFilter&) = delete;
 
-  // Call before the first PushParent(), if you are starting traversal at
-  // some tree scope that is not at the root of the document.
-  void PushAllParentsOf(TreeScope& tree_scope);
-
   void PushParent(Element& parent);
   void PopParent(Element& parent);
 
@@ -118,7 +114,6 @@ class CORE_EXPORT SelectorFilter {
   void Trace(Visitor*) const;
 
  private:
-  void PushAncestors(const Node& node);
   void PushParentStackFrame(Element& parent);
   void PopParentStackFrame();
 

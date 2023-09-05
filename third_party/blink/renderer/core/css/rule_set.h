@@ -447,16 +447,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return !slotted_pseudo_element_rules_.empty();
   }
 
-  bool HasPartPseudoRules() const { return !part_pseudo_rules_.empty(); }
-
   bool HasBucketForStyleAttribute() const { return has_bucket_for_style_attr_; }
 
   bool MayHaveScopeInUniversalBucket() const {
     return may_have_scope_in_universal_bucket_;
-  }
-
-  bool HasUAShadowPseudoElementRules() const {
-    return !ua_shadow_pseudo_element_rules_.IsEmpty();
   }
 
   bool NeedsFullRecalcForRuleSetInvalidation() const {
