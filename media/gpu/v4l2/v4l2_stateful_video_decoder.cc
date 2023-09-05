@@ -543,6 +543,7 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
     return false;
   }
   CHECK(gfx::Rect(coded_size).Contains(*visible_rect));
+  visible_rect_ = *visible_rect;
 
   const auto num_codec_reference_frames = GetNumberOfReferenceFrames();
 
@@ -753,14 +754,13 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       //  the VideoFrames are pooled in |client_|s;
       //  TryAndEnqueueCAPTUREQueueBuffers() will find them there.
       if (queue_type == V4L2_MEMORY_MMAP) {
-        // TODO(mcasas): Consider carrying this gfx::Rect in the |video_frame|.
-        absl::optional<gfx::Rect> visible_rect =
-            CAPTURE_queue_->GetVisibleRect();
-        CHECK(visible_rect.has_value());
-
+        // Don't query |CAPTURE_queue_|'s GetVisibleRect() here because it races
+        // with hypothetical resolution changes.
+        CHECK(gfx::Rect(video_frame->coded_size()).Contains(visible_rect_));
+        CHECK(video_frame->visible_rect().Contains(visible_rect_));
         auto wrapped_frame = VideoFrame::WrapVideoFrame(
-            video_frame, video_frame->format(), *visible_rect,
-            /*natural_size=*/visible_rect->size());
+            video_frame, video_frame->format(), visible_rect_,
+            /*natural_size=*/visible_rect_.size());
 
         // Make sure |dequeued_buffer| stays alive and its reference released as
         // |wrapped_frame| is destroyed, allowing -maybe- for it to get back to

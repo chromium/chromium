@@ -144,6 +144,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Used only on V4L2_MEMORY_MMAP queues (e.g. Hana MT8173) to grab the visible
+  // rectangle upon |CAPTURE_queue_| configuration in InitializeCAPTUREQueue().
+  gfx::Rect visible_rect_;
+
   // Holds pairs of encoded chunk (DecoderBuffer) and associated DecodeCB for
   // decoding via TryAndEnqueueOUTPUTQueueBuffers().
   base::queue<std::pair<scoped_refptr<DecoderBuffer>, DecodeCB>>
