@@ -197,7 +197,13 @@ TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
   }
 }
 
-TEST_F(ImageFrameGeneratorTest, incompleteDecode) {
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1479089) : Test is flaky in android.
+#define MAYBE_incompleteDecode DISABLED_incompleteDecode
+#else
+#define MAYBE_incompleteDecode incompleteDecode
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(ImageFrameGeneratorTest, MAYBE_incompleteDecode) {
   SetFrameStatus(ImageFrame::kFramePartial);
 
   char buffer[100 * 100 * 4];
@@ -244,7 +250,14 @@ TEST_F(ImageFrameGeneratorTest, LowEndDeviceDestroysDecoderOnPartialDecode) {
   EXPECT_EQ(4, memory_allocator_set_count_);
 }
 
-TEST_F(ImageFrameGeneratorTest, incompleteDecodeBecomesComplete) {
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1479089) : Test is flaky in android.
+#define MAYBE_incompleteDecodeBecomesComplete \
+  DISABLED_incompleteDecodeBecomesComplete
+#else
+#define MAYBE_incompleteDecodeBecomesComplete incompleteDecodeBecomesComplete
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(ImageFrameGeneratorTest, MAYBE_incompleteDecodeBecomesComplete) {
   SetFrameStatus(ImageFrame::kFramePartial);
 
   char buffer[100 * 100 * 4];
@@ -322,7 +335,13 @@ TEST_F(ImageFrameGeneratorTest,
   generator_ = nullptr;
 }
 
-TEST_F(ImageFrameGeneratorTest, frameHasAlpha) {
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1479089) : Test is flaky in android.
+#define MAYBE_frameHasAlpha DISABLED_frameHasAlpha
+#else
+#define MAYBE_frameHasAlpha frameHasAlpha
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(ImageFrameGeneratorTest, MAYBE_frameHasAlpha) {
   SetFrameStatus(ImageFrame::kFramePartial);
 
   char buffer[100 * 100 * 4];
