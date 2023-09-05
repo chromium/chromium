@@ -9,11 +9,13 @@
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_observer.h"
 
 class GURL;
 
 namespace views {
+class FlexLayout;
 class Label;
 }
 
@@ -88,6 +90,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> empty_list_label_ = nullptr;
+  raw_ptr<views::FlexLayout, ExperimentalAsh> layout_manager_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver>
       combobox_view_observation_{this};

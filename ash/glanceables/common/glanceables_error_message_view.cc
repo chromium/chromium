@@ -29,8 +29,9 @@
 namespace {
 
 constexpr int kErrorMessageViewSize = 40;
+constexpr int kErrorMessageHorizontalMargin = 16;
+constexpr int kErrorMessageBottomMargin = 12;
 constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(10, 0, 10, 16);
-constexpr gfx::Insets kContainerInsets = gfx::Insets::TLBR(0, 0, 12, 0);
 constexpr gfx::Insets kLabelInsets = gfx::Insets::VH(10, 16);
 
 }  // namespace
@@ -59,7 +60,6 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
     const std::u16string& error_message) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysError, kErrorMessageViewSize / 2));
-  SetProperty(views::kMarginsKey, kContainerInsets);
 
   const auto* const typography_provider = TypographyProvider::Get();
 
@@ -84,6 +84,19 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
 
   dismiss_button_ = AddChildView(
       std::make_unique<DismissErrorLabelButton>(std::move(callback)));
+}
+
+void GlanceablesErrorMessageView::UpdateBoundsToContainer(
+    const gfx::Rect& container_bounds) {
+  gfx::Rect preferred_bounds(container_bounds);
+
+  preferred_bounds.Inset(gfx::Insets::TLBR(
+      preferred_bounds.height() - kErrorMessageViewSize -
+          kErrorMessageBottomMargin,
+      kErrorMessageHorizontalMargin, kErrorMessageBottomMargin,
+      kErrorMessageHorizontalMargin));
+
+  SetBoundsRect(preferred_bounds);
 }
 
 BEGIN_METADATA(GlanceablesErrorMessageView, views::View)

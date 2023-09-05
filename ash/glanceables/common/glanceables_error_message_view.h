@@ -33,6 +33,10 @@ class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
       delete;
   ~GlanceablesErrorMessageView() override = default;
 
+  // Updates the error message view to display proportionally to the given
+  // `container_bounds`.
+  void UpdateBoundsToContainer(const gfx::Rect& container_bounds);
+
  private:
   raw_ptr<views::Label> error_message_label_ = nullptr;
   raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
