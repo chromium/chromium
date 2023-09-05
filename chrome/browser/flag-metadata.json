@@ -7746,11 +7746,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "sync-enable-batch-upload-local-data",
-    "owners": ["ankushkush@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 122
-  },
-  {
     "name": "sync-poll-immediately-on-every-startup",
     "owners": [ "treib", "//components/search/OWNERS" ],
     "expiry_milestone": 118

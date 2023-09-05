@@ -729,6 +729,7 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
+     "SyncEnableBatchUploadLocalData,"
      "EnablePreferencesAccountStorage"},
 };
 
@@ -1704,11 +1705,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInactiveTabsMoveLimitName,
      flag_descriptions::kInactiveTabsMoveLimitDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kInactiveTabsMoveLimit)},
-    {"sync-enable-batch-upload-local-data",
-     flag_descriptions::kSyncEnableBatchUploadLocalDataName,
-     flag_descriptions::kSyncEnableBatchUploadLocalDataDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kSyncEnableBatchUploadLocalData)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
