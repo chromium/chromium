@@ -37,7 +37,7 @@ struct Year {
   std::string last2_string;
 };
 
-Year SetupNextYear() {
+Year SetUpNextYear() {
   std::string next_year = test::NextYear();
   int integer;
   EXPECT_TRUE(base::StringToInt(next_year, &integer));
@@ -53,7 +53,7 @@ Year SetupNextYear() {
 
 // Tests that CreateForLocalSave() sets all properties.
 TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
-  const Year next_year = SetupNextYear();
+  const Year next_year = SetUpNextYear();
   CreditCard card = test::GetCreditCard();
   card.SetNickname(u"My Card");
   card.SetNumber(u"378282246310005");  // This number sets the card network.
@@ -94,7 +94,7 @@ TEST(AutofillSaveCardUiInfoTest, CreateForLocalSaveSetsProperties) {
 // Tests that CreateForUploadSave() sets properties where no branched logic is
 // needed.
 TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {
-  const Year next_year = SetupNextYear();
+  const Year next_year = SetUpNextYear();
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"My Card");
   card.SetNumber(u"4444333322221111");
@@ -143,7 +143,7 @@ TEST(AutofillSaveCardUiInfoTest, CreateForUploadSaveSetsProperties) {
 
 TEST(AutofillSaveCardUiInfoTest,
      CreateForUploadSaveSetsCardDescriptionWithoutNickname) {
-  const Year next_year = SetupNextYear();
+  const Year next_year = SetUpNextYear();
   CreditCard card = test::GetMaskedServerCard();
   card.SetNumber(u"4444333322221111");
   card.SetNetworkForMaskedCard(kVisaCard);
