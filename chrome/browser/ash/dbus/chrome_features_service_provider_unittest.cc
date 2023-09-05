@@ -24,10 +24,133 @@ class ChromeFeaturesServiceProviderTest : public testing::Test {
     provider_->GetFeatureParams(
         method_call, base::BindOnce(&ResponseSenderCallback, expected));
   }
+  void IsFeatureEnabled(dbus::MethodCall* method_call, std::string expected) {
+    provider_->IsFeatureEnabled(
+        method_call, base::BindOnce(&ResponseSenderCallback, expected));
+  }
   std::unique_ptr<ChromeFeaturesServiceProvider> provider_;
 };
 
-TEST_F(ChromeFeaturesServiceProviderTest, Success) {
+TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_Success) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  auto feature_list_accessor = feature_list->ConstructAccessor();
+  const char enabled[] = "CrOSLateBootA";
+  const char disabled[] = "";
+  feature_list->InitializeFromCommandLine(enabled, disabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      std::move(feature_list_accessor));
+
+  const char kExpectedMessage[] =
+      R"--(message_type: MESSAGE_METHOD_RETURN
+signature: b
+reply_serial: 123
+
+bool true
+)--";
+
+  dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendString("CrOSLateBootA");
+
+  // Not setting the serial causes a crash.
+  method_call.SetSerial(123);
+  IsFeatureEnabled(&method_call, kExpectedMessage);
+}
+
+TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_UnknownFeature) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  auto feature_list_accessor = feature_list->ConstructAccessor();
+  const char enabled[] = "CrOSLateBootA";
+  const char disabled[] = "";
+  feature_list->InitializeFromCommandLine(enabled, disabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      std::move(feature_list_accessor));
+
+  const char kExpectedMessage[] =
+      R"--(message_type: MESSAGE_ERROR
+error_name: org.freedesktop.DBus.Error.InvalidArgs
+signature: s
+reply_serial: 123
+
+string "Chrome can't get state for 'CrOSLateBootB'; feature_library will decide"
+)--";
+
+  dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendString("CrOSLateBootB");
+
+  // Not setting the serial causes a crash.
+  method_call.SetSerial(123);
+  IsFeatureEnabled(&method_call, kExpectedMessage);
+}
+
+TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidPrefix) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  auto feature_list_accessor = feature_list->ConstructAccessor();
+  const char enabled[] = "CrOSLateBootA";
+  const char disabled[] = "";
+  feature_list->InitializeFromCommandLine(enabled, disabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      std::move(feature_list_accessor));
+
+  const char kExpectedMessage[] =
+      R"--(message_type: MESSAGE_ERROR
+error_name: org.freedesktop.DBus.Error.InvalidArgs
+signature: s
+reply_serial: 123
+
+string "Invalid prefix for feature name: 'B'. Want CrOSLateBoot"
+)--";
+
+  dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendString("B");
+
+  // Not setting the serial causes a crash.
+  method_call.SetSerial(123);
+  IsFeatureEnabled(&method_call, kExpectedMessage);
+}
+
+TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidInput) {
+  auto feature_list = std::make_unique<base::FeatureList>();
+  auto feature_list_accessor = feature_list->ConstructAccessor();
+  const char enabled[] = "";
+  const char disabled[] = "";
+  feature_list->InitializeFromCommandLine(enabled, disabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  provider_ = std::make_unique<ChromeFeaturesServiceProvider>(
+      std::move(feature_list_accessor));
+
+  const char kExpectedMessage[] =
+      R"--(message_type: MESSAGE_ERROR
+error_name: org.freedesktop.DBus.Error.InvalidArgs
+signature: s
+reply_serial: 123
+
+string "Missing or invalid feature_name string arg."
+)--";
+
+  dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendBool(true);
+
+  // Not setting the serial causes a crash.
+  method_call.SetSerial(123);
+  IsFeatureEnabled(&method_call, kExpectedMessage);
+}
+
+TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_Success) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "CrOSLateBootA:key1/value1/key2/value2,CrOSLateBootB";
@@ -107,7 +230,7 @@ array [
   GetFeatureParams(&method_call, kExpectedMessage);
 }
 
-TEST_F(ChromeFeaturesServiceProviderTest, Failure_NoInput) {
+TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_NoInput) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
   feature_list->InitializeFromCommandLine("", "");
@@ -131,7 +254,7 @@ string "Could not pop string array of feature names"
   GetFeatureParams(&method_call, kExpectedMessage);
 }
 
-TEST_F(ChromeFeaturesServiceProviderTest, Failure_BadInput) {
+TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadInput) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
   feature_list->InitializeFromCommandLine("", "");
@@ -157,7 +280,7 @@ string "Could not pop string array of feature names"
   GetFeatureParams(&method_call, kExpectedMessage);
 }
 
-TEST_F(ChromeFeaturesServiceProviderTest, Failure_BadArrayEntry) {
+TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadArrayEntry) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
   feature_list->InitializeFromCommandLine("", "");
@@ -186,7 +309,7 @@ string "Missing or invalid feature_name string arg in array."
   GetFeatureParams(&method_call, kExpectedMessage);
 }
 
-TEST_F(ChromeFeaturesServiceProviderTest, Failure_BadNameFormat) {
+TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadNameFormat) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
   feature_list->InitializeFromCommandLine("", "");
@@ -201,7 +324,7 @@ error_name: org.freedesktop.DBus.Error.InvalidArgs
 signature: s
 reply_serial: 123
 
-string "Unexpected feature name."
+string "Invalid prefix for feature name: 'B'. Want CrOSLateBoot"
 )--";
 
   dbus::MethodCall method_call("com.example.Interface", "SomeMethod");

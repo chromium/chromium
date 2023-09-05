@@ -230,13 +230,23 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   } else {
     LOG(ERROR) << "Invalid prefix on feature " << feature_name << " (want "
                << kCrOSLateBootFeaturePrefix << ")";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS,
+            base::StrCat({"Invalid prefix for feature name: '", feature_name,
+                          "'. Want ", kCrOSLateBootFeaturePrefix})));
+    return;
   }
   if (state == base::FeatureList::OVERRIDE_USE_DEFAULT) {
     VLOG(1) << "Unexpected feature name '" << feature_name << "'"
             << " (likely just indicates there isn't a variations seed).";
+    // This isn't really an error, we're just using the error channel to signal
+    // to feature_library that it should fall back to its defaults.
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_INVALID_ARGS, "Unexpected feature name."));
+            method_call, DBUS_ERROR_INVALID_ARGS,
+            base::StrCat({"Chrome can't get state for '", feature_name,
+                          "'; feature_library will decide"})));
     return;
   }
   SendResponse(method_call, std::move(response_sender),
@@ -276,9 +286,10 @@ void ChromeFeaturesServiceProvider::GetFeatureParams(
       LOG(ERROR) << "Unexpected prefix on feature name '" << feature_name << "'"
                  << " (want " << kCrOSLateBootFeaturePrefix << ")";
       std::move(response_sender)
-          .Run(dbus::ErrorResponse::FromMethodCall(method_call,
-                                                   DBUS_ERROR_INVALID_ARGS,
-                                                   "Unexpected feature name."));
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS,
+              base::StrCat({"Invalid prefix for feature name: '", feature_name,
+                            "'. Want ", kCrOSLateBootFeaturePrefix})));
       return;
     }
 
