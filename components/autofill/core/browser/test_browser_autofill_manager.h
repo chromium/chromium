@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"

@@ -128,7 +128,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   raw_ptr<AutofillClient> client_;
   DriverInitCallback driver_init_hook_;
 
-  // Routes events between different drivers.
+  // Routes events between different ContentAutofillDrivers.
   // Must be destroyed after |driver_map_|'s elements.
   ContentAutofillRouter router_;
 

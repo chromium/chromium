@@ -11,6 +11,7 @@
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
