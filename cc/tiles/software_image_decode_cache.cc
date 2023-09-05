@@ -34,12 +34,18 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 namespace {
 
+BASE_FEATURE(kNormalMaxItemsInCacheForSoftwareFeature,
+             "NormalMaxItemsInCacheForSoftwareFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The number of entries to keep around in the cache. This limit can be breached
 // if more items are locked. That is, locked items ignore this limit.
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
-const size_t kNormalMaxItemsInCacheForSoftware = 1000;
+constexpr base::FeatureParam<int> kNormalMaxItemsInCacheForSoftware(
+    &kNormalMaxItemsInCacheForSoftwareFeature,
+    "NormalMaxItemsInCacheForSoftware",
+    1000);
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -160,7 +166,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
-      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
+      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware.Get()) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -728,7 +734,7 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
   return decoded_images_.size();
 }
 size_t SoftwareImageDecodeCache::GetMaxNumCacheEntriesForTesting() {
-  return kNormalMaxItemsInCacheForSoftware;
+  return kNormalMaxItemsInCacheForSoftware.Get();
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(
