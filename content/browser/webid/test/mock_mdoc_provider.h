@@ -19,11 +19,10 @@ class MockMDocProvider : public MDocProvider {
   MockMDocProvider(const MockMDocProvider&) = delete;
   MockMDocProvider& operator=(const MockMDocProvider&) = delete;
 
-  MOCK_METHOD5(RequestMDoc,
+  MOCK_METHOD4(RequestMDoc,
                void(WebContents*,
+                    const url::Origin& origin,
                     const std::string&,
-                    const std::string&,
-                    const std::vector<MDocElementPtr>&,
                     MDocCallback));
 };
 

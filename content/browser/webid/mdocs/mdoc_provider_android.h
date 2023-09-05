@@ -10,6 +10,7 @@
 #include "content/browser/webid/mdocs/mdoc_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "url/origin.h"
 
 #include <jni.h>
 #include <string>
@@ -39,9 +40,8 @@ class CONTENT_EXPORT MDocProviderAndroid : public MDocProvider {
 
   // Triggers a mdoc request intent.
   void RequestMDoc(WebContents* web_contents,
-                   const std::string& reader_public_key,
-                   const std::string& document_type,
-                   const std::vector<MDocElementPtr>& requested_elements,
+                   const url::Origin& origin,
+                   const std::string& request,
                    MDocCallback callback) override;
 
  private:

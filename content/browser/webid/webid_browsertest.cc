@@ -624,8 +624,8 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, RequestMDoc) {
   MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
       test_browser_client_->GetMDocProviderForTests());
 
-  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
-      .WillOnce(WithArg<4>([](MDocProvider::MDocCallback callback) {
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _))
+      .WillOnce(WithArg<3>([](MDocProvider::MDocCallback callback) {
         std::move(callback).Run("test-mdoc");
       }));
 
@@ -688,8 +688,8 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest,
         }) ()
     )";
 
-  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
-      .WillOnce(WithArg<4>([&](MDocProvider::MDocCallback callback) {
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _))
+      .WillOnce(WithArg<3>([&](MDocProvider::MDocCallback callback) {
         EXPECT_EQ(
             "a JavaScript error: \"AbortError: Only one "
             "navigator.credentials.get request may be outstanding at one "

@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/bad_message.h"
@@ -44,6 +46,7 @@
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
+using base::Value;
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::IdentityProviderConfig;
 using blink::mojom::IdentityProviderConfigPtr;
@@ -555,6 +558,26 @@ void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
   }
 }
 
+std::string BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
+  auto fields = Value::List();
+
+  for (auto& field : provider->requested_elements) {
+    fields.Append(Value::Dict().Set("name", field->name));
+  }
+
+  auto dict = Value::Dict().Set(
+      "providers",
+      Value::List().Append(
+          Value::Dict()
+              .Set("responseFormat", Value::List().Append("mdoc"))
+              .Set("request", Value::Dict().Set("readerPublicKey",
+                                                provider->reader_public_key))
+              .Set("selector",
+                   Value::Dict().Set("fields", std::move(fields)))));
+
+  return WriteJson(dict).value();
+}
+
 void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderGetParametersPtr> idp_get_params_ptrs,
     MediationRequirement requirement,
@@ -625,12 +648,12 @@ void FederatedAuthRequestImpl::RequestToken(
     }
 
     auto mdoc = std::move(idp_get_params_ptrs[0]->providers[0]->get_mdoc());
-    std::string reader_public_key = mdoc->reader_public_key;
-    std::string document_type = mdoc->document_type;
+
+    std::string request = BuildMDocRequest(std::move(mdoc));
 
     mdoc_provider_->RequestMDoc(
-        WebContents::FromRenderFrameHost(&render_frame_host()),
-        reader_public_key, document_type, mdoc->requested_elements,
+        WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
+        request,
         base::BindOnce(&FederatedAuthRequestImpl::CompleteMDocRequest,
                        weak_ptr_factory_.GetWeakPtr()));
 
