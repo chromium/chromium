@@ -24,5 +24,6 @@ specific_include_rules = {
         "+base/test/bind.h",
         "+media/mojo/mojom/watch_time_recorder.mojom-blink.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
+        "+media/mojo/clients/mojo_video_encoder_metrics_provider.h"
     ],
 }

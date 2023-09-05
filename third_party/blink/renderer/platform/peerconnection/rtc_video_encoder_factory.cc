@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -251,8 +252,13 @@ bool IsScalabiltiyModeSupported(
 }  // anonymous namespace
 
 RTCVideoEncoderFactory::RTCVideoEncoderFactory(
-    media::GpuVideoAcceleratorFactories* gpu_factories)
-    : gpu_factories_(gpu_factories), gpu_codec_support_waiter_(gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory)
+    : gpu_factories_(gpu_factories),
+      encoder_metrics_provider_factory_(
+          std::move(encoder_metrics_provider_factory)),
+      gpu_codec_support_waiter_(gpu_factories) {
 #if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) {
     disabled_profiles_.emplace_back(media::VP9PROFILE_PROFILE0);
@@ -268,7 +274,13 @@ RTCVideoEncoderFactory::RTCVideoEncoderFactory(
 #endif
 }
 
-RTCVideoEncoderFactory::~RTCVideoEncoderFactory() {}
+RTCVideoEncoderFactory::~RTCVideoEncoderFactory() {
+  // |encoder_metrics_provider_factory_| needs to be destroyed on the same
+  // sequence as one that destroys the VideoEncoderMetricsProviders created by
+  // it. It is gpu task runner in this case.
+  gpu_factories_->GetTaskRunner()->ReleaseSoon(
+      FROM_HERE, std::move(encoder_metrics_provider_factory_));
+}
 
 void RTCVideoEncoderFactory::CheckAndWaitEncoderSupportStatusIfNeeded() const {
   if (!gpu_codec_support_waiter_.IsEncoderSupportKnown()) {
@@ -293,15 +305,17 @@ RTCVideoEncoderFactory::CreateVideoEncoder(
     for (size_t i = 0; i < supported_formats.sdp_formats.size(); ++i) {
       if (format.IsSameCodec(supported_formats.sdp_formats[i])) {
         encoder = std::make_unique<RTCVideoEncoder>(
-            supported_formats.profiles[i], is_constrained_h264, gpu_factories_);
+            supported_formats.profiles[i], is_constrained_h264, gpu_factories_,
+            encoder_metrics_provider_factory_);
         break;
       }
     }
   } else {
     auto profile = WebRTCFormatToCodecProfile(format);
     if (profile) {
-      encoder = std::make_unique<RTCVideoEncoder>(*profile, is_constrained_h264,
-                                                  gpu_factories_);
+      encoder = std::make_unique<RTCVideoEncoder>(
+          *profile, is_constrained_h264, gpu_factories_,
+          encoder_metrics_provider_factory_);
     }
   }
 

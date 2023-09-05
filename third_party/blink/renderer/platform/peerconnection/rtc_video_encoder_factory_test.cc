@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
@@ -53,6 +54,10 @@ class MockGpuVideoEncodeAcceleratorFactories
          kScalabilityModes}};
     return profiles;
   }
+
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() override {
+    return base::SequencedTaskRunner::GetCurrentDefault();
+  }
 };
 
 }  // anonymous namespace
@@ -62,7 +67,9 @@ typedef webrtc::SdpVideoFormat::Parameters Params;
 
 class RTCVideoEncoderFactoryTest : public ::testing::Test {
  public:
-  RTCVideoEncoderFactoryTest() : encoder_factory_(&mock_gpu_factories_) {
+  RTCVideoEncoderFactoryTest()
+      : encoder_factory_(&mock_gpu_factories_,
+                         /*encoder_metrics_provider_factory=*/nullptr) {
     // Ensure all the profiles in our mock GPU factory are allowed.
     encoder_factory_.clear_disabled_profiles_for_testing();
   }

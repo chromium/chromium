@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_factory.h"
@@ -208,12 +209,15 @@ class DecoderAdapter : public webrtc::VideoDecoderFactory {
 }  // namespace
 
 std::unique_ptr<webrtc::VideoEncoderFactory> CreateHWVideoEncoderFactory(
-    media::GpuVideoAcceleratorFactories* gpu_factories) {
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory) {
   std::unique_ptr<webrtc::VideoEncoderFactory> encoder_factory;
 
   if (gpu_factories && gpu_factories->IsGpuVideoEncodeAcceleratorEnabled() &&
       Platform::Current()->IsWebRtcHWEncodingEnabled()) {
-    encoder_factory = std::make_unique<RTCVideoEncoderFactory>(gpu_factories);
+    encoder_factory = std::make_unique<RTCVideoEncoderFactory>(
+        gpu_factories, std::move(encoder_metrics_provider_factory));
   }
 
   return encoder_factory;
@@ -221,9 +225,13 @@ std::unique_ptr<webrtc::VideoEncoderFactory> CreateHWVideoEncoderFactory(
 
 std::unique_ptr<webrtc::VideoEncoderFactory> CreateWebrtcVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
     StatsCollector::StoreProcessingStatsCB stats_callback) {
   return std::make_unique<EncoderAdapter>(
-      CreateHWVideoEncoderFactory(gpu_factories), stats_callback);
+      CreateHWVideoEncoderFactory(gpu_factories,
+                                  std::move(encoder_metrics_provider_factory)),
+      stats_callback);
 }
 
 std::unique_ptr<webrtc::VideoDecoderFactory> CreateWebrtcVideoDecoderFactory(

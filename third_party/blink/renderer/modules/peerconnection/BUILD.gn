@@ -163,6 +163,7 @@ blink_modules_sources("peerconnection") {
   deps = [
     "//build:chromecast_buildflags",
     "//components/webrtc:thread_wrapper",
+    "//media/mojo/clients:clients",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",

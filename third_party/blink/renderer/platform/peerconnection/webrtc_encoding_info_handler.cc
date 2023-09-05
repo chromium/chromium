@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
@@ -26,11 +27,15 @@ WebrtcEncodingInfoHandler* WebrtcEncodingInfoHandler::Instance() {
   return &instance;
 }
 
+// |encoder_metrics_provider_factory| is not used unless
+// RTCVideoEncoder::InitEncode() is called.
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler()
-    : WebrtcEncodingInfoHandler(blink::CreateWebrtcVideoEncoderFactory(
-                                    Platform::Current()->GetGpuFactories(),
-                                    base::DoNothing()),
-                                blink::CreateWebrtcAudioEncoderFactory()) {}
+    : WebrtcEncodingInfoHandler(
+          blink::CreateWebrtcVideoEncoderFactory(
+              Platform::Current()->GetGpuFactories(),
+              /*encoder_metrics_provider_factory=*/nullptr,
+              base::DoNothing()),
+          blink::CreateWebrtcAudioEncoderFactory()) {}
 
 WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(
     std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,

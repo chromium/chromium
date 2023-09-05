@@ -27,6 +27,7 @@ include_rules = [
     "+media/capture/video/video_capture_feedback.h",
     "+media/filters/decoder_stream.h",
     "+media/media_buildflags.h",
+    "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
     # This is only needed for a cast to DecoderFactory.
     "+media/renderers/default_decoder_factory.h",
     "+media/video/gpu_video_accelerator_factories.h",
@@ -50,6 +51,7 @@ specific_include_rules = {
         "+media/video/fake_gpu_memory_buffer.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
         "+media/video/mock_video_encode_accelerator.h",
+        "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
         "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
     ],
 }

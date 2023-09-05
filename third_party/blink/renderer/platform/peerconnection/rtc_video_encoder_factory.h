@@ -15,6 +15,7 @@
 
 namespace media {
 class GpuVideoAcceleratorFactories;
+class MojoVideoEncoderMetricsProviderFactory;
 }  // namespace media
 
 namespace blink {
@@ -24,8 +25,10 @@ namespace blink {
 class PLATFORM_EXPORT RTCVideoEncoderFactory
     : public webrtc::VideoEncoderFactory {
  public:
-  explicit RTCVideoEncoderFactory(
-      media::GpuVideoAcceleratorFactories* gpu_factories);
+  RTCVideoEncoderFactory(
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+          encoder_metrics_provider_factory);
   RTCVideoEncoderFactory(const RTCVideoEncoderFactory&) = delete;
   RTCVideoEncoderFactory& operator=(const RTCVideoEncoderFactory&) = delete;
   ~RTCVideoEncoderFactory() override;
@@ -46,6 +49,9 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+
+  scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+      encoder_metrics_provider_factory_;
 
   GpuCodecSupportWaiter gpu_codec_support_waiter_;
 

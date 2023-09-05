@@ -14,6 +14,7 @@
 namespace media {
 class DecoderFactory;
 class GpuVideoAcceleratorFactories;
+class MojoVideoEncoderMetricsProviderFactory;
 }
 
 namespace base {
@@ -26,13 +27,11 @@ class ColorSpace;
 
 namespace blink {
 
-// Creates a factory representing available and enabled hardware encoders.
-PLATFORM_EXPORT std::unique_ptr<webrtc::VideoEncoderFactory>
-CreateHWVideoEncoderFactory(media::GpuVideoAcceleratorFactories* gpu_factories);
-
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoEncoderFactory>
 CreateWebrtcVideoEncoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
     StatsCollector::StoreProcessingStatsCB stats_callback);
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
 CreateWebrtcVideoDecoderFactory(

@@ -100,14 +100,16 @@ SVCScalabilityMode GetSVCScalabilityMode(
       },
       // kOn.
       {
-          {kInvalid, kInvalid, kInvalid},
+          {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+           SVCScalabilityMode::kL1T3},
           {SVCScalabilityMode::kL2T1, SVCScalabilityMode::kL2T2,
            SVCScalabilityMode::kL2T3},
           {SVCScalabilityMode::kL3T1, SVCScalabilityMode::kL3T2,
            SVCScalabilityMode::kL3T3},
       },
       {
-          {kInvalid, kInvalid, kInvalid},
+          {SVCScalabilityMode::kL1T1, SVCScalabilityMode::kL1T2,
+           SVCScalabilityMode::kL1T3},
           {SVCScalabilityMode::kL2T1Key, SVCScalabilityMode::kL2T2Key,
            SVCScalabilityMode::kL2T3Key},
           {SVCScalabilityMode::kL3T1Key, SVCScalabilityMode::kL3T2Key,

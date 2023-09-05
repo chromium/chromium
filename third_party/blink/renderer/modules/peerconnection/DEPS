@@ -24,6 +24,7 @@ include_rules = [
     "+components/webrtc/thread_wrapper.h",
     "+media/base",
     "+media/media_buildflags.h",
+    "+media/mojo/clients/mojo_video_encoder_metrics_provider.h",
     "+media/mojo/mojom/webrtc_video_perf.mojom-blink.h",
     "+media/video/gpu_video_accelerator_factories.h",
     "+net/third_party/quiche/src/quiche/quic",

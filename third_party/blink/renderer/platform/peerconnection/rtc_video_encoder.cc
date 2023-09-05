@@ -38,6 +38,7 @@
 #include "media/base/video_util.h"
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/h264_parser.h"
 #include "media/video/video_encode_accelerator.h"
@@ -74,6 +75,18 @@ bool IsNV12GpuMemoryBufferVideoFrame(const webrtc::VideoFrame& input_image) {
   CHECK(frame);
   return frame->format() == media::PIXEL_FORMAT_NV12 &&
          frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+}
+
+media::SVCScalabilityMode ToSVCScalabilityMode(
+    const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+        spatial_layers,
+    media::SVCInterLayerPredMode inter_layer_pred) {
+  if (spatial_layers.empty()) {
+    return media::SVCScalabilityMode::kL1T1;
+  }
+  return GetSVCScalabilityMode(spatial_layers.size(),
+                               spatial_layers[0].num_of_temporal_layers,
+                               inter_layer_pred);
 }
 
 class SignaledValue {
@@ -569,6 +582,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
       media::VideoEncoderInfo,
       std::vector<webrtc::VideoFrameBuffer::Type>)>;
   Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
+       scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+           encoder_metrics_provider_factory,
        webrtc::VideoCodecType video_codec_type,
        webrtc::VideoContentType video_content_type,
        UpdateEncoderInfoCallback update_encoder_info_callback,
@@ -666,7 +681,11 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Factory for creating VEAs, shared memory buffers, etc.
-  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  media::GpuVideoAcceleratorFactories* const gpu_factories_;
+
+  scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+      encoder_metrics_provider_factory_;
+  std::unique_ptr<media::VideoEncoderMetricsProvider> encoder_metrics_provider_;
 
   // webrtc::VideoEncoder expects InitEncode() and Encode() to be synchronous.
   // Do this by waiting on the |async_init_event_| when initialization
@@ -774,18 +793,22 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
 RTCVideoEncoder::Impl::Impl(
     media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory,
     webrtc::VideoCodecType video_codec_type,
     webrtc::VideoContentType video_content_type,
     UpdateEncoderInfoCallback update_encoder_info_callback,
     base::RepeatingClosure execute_software_fallback,
     base::WeakPtr<Impl>& weak_this_for_client)
     : gpu_factories_(gpu_factories),
+      encoder_metrics_provider_factory_(
+          std::move(encoder_metrics_provider_factory)),
       video_codec_type_(video_codec_type),
       video_content_type_(video_content_type),
       update_encoder_info_callback_(std::move(update_encoder_info_callback)),
       execute_software_fallback_(std::move(execute_software_fallback)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-
+  CHECK(encoder_metrics_provider_factory_);
   preferred_pixel_formats_ = {webrtc::VideoFrameBuffer::Type::kI420};
   weak_this_ = weak_this_factory_.GetWeakPtr();
   weak_this_for_client = weak_this_;
@@ -829,6 +852,13 @@ void RTCVideoEncoder::Impl::CreateAndInitializeVEA(
         media::VideoEncodeAccelerator::Config::EncoderType::kNoPreference;
   }
 #endif
+  encoder_metrics_provider_ =
+      encoder_metrics_provider_factory_->CreateVideoEncoderMetricsProvider();
+  encoder_metrics_provider_->Initialize(
+      vea_config.output_profile, vea_config.input_visible_size,
+      /*is_hardware_encoder=*/true,
+      ToSVCScalabilityMode(vea_config.spatial_layers,
+                           vea_config.inter_layer_pred));
   if (!video_encoder_->Initialize(vea_config, this,
                                   std::make_unique<media::NullMediaLog>())) {
     NotifyErrorStatus({media::EncoderStatus::Codes::kEncoderInitializationError,
@@ -1099,6 +1129,10 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     frames_in_encoder_count_--;
   }
 
+  if (metadata.end_of_picture()) {
+    encoder_metrics_provider_->IncrementEncodedFrameCount();
+  }
+
   // Find RTP and capture timestamps by going through |pending_timestamps_|.
   // Derive it from current time otherwise.
   absl::optional<uint32_t> rtp_timestamp;
@@ -1358,6 +1392,7 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
              << static_cast<int>(status.code())
              << ", message=" << status.message();
   RecordEncoderStatusUMA(status, video_codec_type_);
+  encoder_metrics_provider_->SetError(status);
   video_encoder_.reset();
   status_ = WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
@@ -1678,12 +1713,17 @@ void RTCVideoEncoder::Impl::RegisterEncodeCompleteCallback(
 RTCVideoEncoder::RTCVideoEncoder(
     media::VideoCodecProfile profile,
     bool is_constrained_h264,
-    media::GpuVideoAcceleratorFactories* gpu_factories)
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
+        encoder_metrics_provider_factory)
     : profile_(profile),
       is_constrained_h264_(is_constrained_h264),
       gpu_factories_(gpu_factories),
+      encoder_metrics_provider_factory_(
+          std::move(encoder_metrics_provider_factory)),
       gpu_task_runner_(gpu_factories->GetTaskRunner()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
+  CHECK(encoder_metrics_provider_factory_);
   DVLOG(1) << "RTCVideoEncoder(): profile=" << GetProfileName(profile);
 
   // The default values of EncoderInfo.
@@ -1714,6 +1754,12 @@ RTCVideoEncoder::~RTCVideoEncoder() {
 
   Release();
   DCHECK(!impl_);
+
+  // |encoder_metrics_provider_factory_| needs to be destroyed on the same
+  // sequence as one that destroys the VideoEncoderMetricsProviders created by
+  // it. It is gpu task runner in this case.
+  gpu_task_runner_->ReleaseSoon(FROM_HERE,
+                                std::move(encoder_metrics_provider_factory_));
 }
 
 bool RTCVideoEncoder::IsCodecInitializationPending() const {
@@ -1857,9 +1903,9 @@ int32_t RTCVideoEncoder::InitEncode(
           base::BindRepeating(&RTCVideoEncoder::SetError, weak_this_));
 
   impl_ = std::make_unique<Impl>(
-      gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),
-      webrtc_content_type, update_encoder_info_callback,
-      execute_software_fallback, weak_impl_);
+      gpu_factories_, encoder_metrics_provider_factory_,
+      ProfileToWebRtcVideoCodecType(profile_), webrtc_content_type,
+      update_encoder_info_callback, execute_software_fallback, weak_impl_);
 
   media::VideoPixelFormat pixel_format = media::PIXEL_FORMAT_I420;
   auto storage_type =
