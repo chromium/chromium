@@ -750,11 +750,8 @@ const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
     13);
 
 bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
-  static const bool enabled =
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(omnibox::kExpandedLayout);
-  return enabled;
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kExpandedLayout);
 }
 
 bool OmniboxFieldTrial::IsChromeRefreshSteadyStateBackgroundColorEnabled() {
