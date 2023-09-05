@@ -43,7 +43,8 @@ LanguageSettingsPrivateDelegateFactory::LanguageSettingsPrivateDelegateFactory()
 LanguageSettingsPrivateDelegateFactory::
     ~LanguageSettingsPrivateDelegateFactory() = default;
 
-KeyedService* LanguageSettingsPrivateDelegateFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LanguageSettingsPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return LanguageSettingsPrivateDelegate::Create(context);
 }

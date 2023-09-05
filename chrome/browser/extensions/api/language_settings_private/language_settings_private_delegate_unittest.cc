@@ -72,7 +72,7 @@ class LanguageSettingsPrivateDelegateTest
     run_loop_.reset();
     dictionary->RemoveObserver(this);
 
-    delegate_.reset(LanguageSettingsPrivateDelegate::Create(browser_context()));
+    delegate_ = LanguageSettingsPrivateDelegate::Create(browser_context());
   }
 
   void TearDown() override {
