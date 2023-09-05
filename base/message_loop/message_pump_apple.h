@@ -75,6 +75,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  TimeTicks AjdustDelayedRunTime(TimeTicks earliest_time,
+                                 TimeTicks run_time,
+                                 TimeTicks latest_time) override;
 
 #if BUILDFLAG(IS_IOS)
   // Some iOS message pumps do not support calling |Run()| to spin the main
@@ -239,6 +242,7 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
 
   // Time at which `delayed_work_timer_` is set to fire.
   base::TimeTicks delayed_work_scheduled_at_ = base::TimeTicks::Max();
+  base::TimeDelta delayed_work_leeway_;
 
   // The recursion depth of the currently-executing CFRunLoopRun loop on the
   // run loop's thread.  0 if no run loops are running inside of whatever scope

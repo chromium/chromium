@@ -1087,6 +1087,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatches) {
 
   scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+  MessagePump::InitializeFeatures();
 
   int task_counter = 0;
   for (int i = 0; i < 2; i++) {
@@ -1104,6 +1105,7 @@ TEST_F(ThreadControllerWithMessagePumpNoBatchesTest, DoWorkBatches) {
 
   scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+  MessagePump::InitializeFeatures();
 
   int task_counter = 0;
   for (int i = 0; i < 2; i++) {
@@ -1123,6 +1125,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, DoWorkBatchesForSetTime) {
 
   scoped_feature_list.InitAndEnableFeature(kRunTasksByBatches);
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
+  MessagePump::InitializeFeatures();
 
   int task_counter = 0;
 

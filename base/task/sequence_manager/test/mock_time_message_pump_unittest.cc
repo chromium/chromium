@@ -137,8 +137,8 @@ TEST(MockMessagePumpTest, StoresNextWakeUpTimeInScheduleDelayedWork) {
   const auto kStartTime = mock_clock.NowTicks();
   const auto kNextDelayedWorkTime = kStartTime + Seconds(2);
 
-  pump.ScheduleDelayedWork(
-      MessagePump::Delegate::NextWorkInfo{kNextDelayedWorkTime, kStartTime});
+  pump.ScheduleDelayedWork(MessagePump::Delegate::NextWorkInfo{
+      kNextDelayedWorkTime, TimeDelta(), kStartTime});
 
   EXPECT_THAT(pump.next_wake_up_time(), Eq(kNextDelayedWorkTime));
 }

@@ -66,38 +66,22 @@ BASE_FEATURE(kAlwaysUseHighResTimers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-std::atomic_bool g_align_wake_ups = false;
 std::atomic_bool g_run_tasks_by_batches = false;
-#if BUILDFLAG(IS_WIN)
-bool g_explicit_high_resolution_timer_win = true;
-#endif  // BUILDFLAG(IS_WIN)
 
-TimeTicks WakeUpRunTime(const WakeUp& wake_up) {
-  // Windows relies on the low resolution timer rather than manual wake up
-  // alignment.
-#if BUILDFLAG(IS_WIN)
-  if (g_explicit_high_resolution_timer_win)
-    return wake_up.earliest_time();
-#else  // BUILDFLAG(IS_WIN)
-  if (g_align_wake_ups.load(std::memory_order_relaxed)) {
-    TimeTicks aligned_run_time = wake_up.earliest_time().SnappedToNextTick(
-        TimeTicks(), GetTaskLeewayForCurrentThread());
-    return std::min(aligned_run_time, wake_up.latest_time());
+base::TimeDelta GetLeewayForWakeUp(absl::optional<WakeUp> wake_up) {
+  if (!wake_up || wake_up->delay_policy == subtle::DelayPolicy::kPrecise) {
+    return TimeDelta();
   }
-#endif
-  return wake_up.time;
+  return wake_up->leeway;
 }
 
 }  // namespace
 
 // static
 void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
-  g_align_wake_ups = FeatureList::IsEnabled(kAlignWakeUps);
   g_run_tasks_by_batches.store(FeatureList::IsEnabled(kRunTasksByBatches),
                                std::memory_order_relaxed);
 #if BUILDFLAG(IS_WIN)
-  g_explicit_high_resolution_timer_win =
-      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
   g_use_less_high_res_timers.store(
       FeatureList::IsEnabled(kUseLessHighResTimers), std::memory_order_relaxed);
   if (FeatureList::IsEnabled(kAlwaysUseHighResTimers)) {
@@ -108,9 +92,6 @@ void ThreadControllerWithMessagePumpImpl::InitializeFeatures() {
 
 // static
 void ThreadControllerWithMessagePumpImpl::ResetFeatures() {
-  g_align_wake_ups.store(
-      kAlignWakeUps.default_state == FEATURE_ENABLED_BY_DEFAULT,
-      std::memory_order_relaxed);
   g_run_tasks_by_batches.store(
       kRunTasksByBatches.default_state == FEATURE_ENABLED_BY_DEFAULT,
       std::memory_order_relaxed);
@@ -211,27 +192,27 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     LazyNow* lazy_now,
     absl::optional<WakeUp> wake_up) {
   DCHECK(!wake_up || !wake_up->is_immediate());
-  TimeTicks run_time =
-      wake_up.has_value() ? WakeUpRunTime(*wake_up) : TimeTicks::Max();
-  DCHECK_LT(lazy_now->Now(), run_time);
-
-  if (main_thread_only().next_delayed_do_work == run_time)
-    return;
-  main_thread_only().next_delayed_do_work = run_time;
-
   // It's very rare for PostDelayedTask to be called outside of a DoWork in
   // production, so most of the time this does nothing.
-  if (work_deduplicator_.OnDelayedWorkRequested() ==
+  if (work_deduplicator_.OnDelayedWorkRequested() !=
       ShouldScheduleWork::kScheduleImmediate) {
-    // Cap at one day but remember the exact time for the above equality check
-    // on the next round.
-    if (!run_time.is_max())
-      run_time = CapAtOneDay(run_time, lazy_now);
-    // |pump_| can't be null as all postTasks are cross-thread before binding,
-    // and delayed cross-thread postTasks do the thread hop through an immediate
-    // task.
-    pump_->ScheduleDelayedWork({run_time, lazy_now->Now()});
+    return;
   }
+  TimeTicks run_time =
+      wake_up.has_value()
+          ? pump_->AjdustDelayedRunTime(wake_up->earliest_time(), wake_up->time,
+                                        wake_up->latest_time())
+          : TimeTicks::Max();
+  DCHECK_LT(lazy_now->Now(), run_time);
+
+  if (!run_time.is_max()) {
+    run_time = CapAtOneDay(run_time, lazy_now);
+  }
+  // |pump_| can't be null as all postTasks are cross-thread before binding,
+  // and delayed cross-thread postTasks do the thread hop through an immediate
+  // task.
+  pump_->ScheduleDelayedWork(
+      {run_time, GetLeewayForWakeUp(wake_up), lazy_now->Now()});
 }
 
 bool ThreadControllerWithMessagePumpImpl::RunsTasksInCurrentSequence() {
@@ -371,20 +352,19 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // Special-casing here avoids unnecessarily sampling Now() when out of work.
   if (!next_wake_up) {
-    main_thread_only().next_delayed_do_work = TimeTicks::Max();
     next_work_info.delayed_run_time = TimeTicks::Max();
     return next_work_info;
   }
 
   // The MessagePump will schedule the wake up on our behalf, so we need to
-  // update |main_thread_only().next_delayed_do_work|.
-  main_thread_only().next_delayed_do_work = WakeUpRunTime(*next_wake_up);
+  // update |next_work_info.delayed_run_time|.
+  TimeTicks next_delayed_do_work = pump_->AjdustDelayedRunTime(
+      next_wake_up->earliest_time(), next_wake_up->time,
+      next_wake_up->latest_time());
 
   // Don't request a run time past |main_thread_only().quit_runloop_after|.
-  if (main_thread_only().next_delayed_do_work >
-      main_thread_only().quit_runloop_after) {
-    main_thread_only().next_delayed_do_work =
-        main_thread_only().quit_runloop_after;
+  if (next_delayed_do_work > main_thread_only().quit_runloop_after) {
+    next_delayed_do_work = main_thread_only().quit_runloop_after;
     // If we've passed |quit_runloop_after| there's no more work to do.
     if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
       next_work_info.delayed_run_time = TimeTicks::Max();
@@ -392,8 +372,9 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     }
   }
 
-  next_work_info.delayed_run_time = CapAtOneDay(
-      main_thread_only().next_delayed_do_work, &continuation_lazy_now);
+  next_work_info.delayed_run_time =
+      CapAtOneDay(next_delayed_do_work, &continuation_lazy_now);
+  next_work_info.leeway = GetLeewayForWakeUp(next_wake_up);
   next_work_info.recent_now = continuation_lazy_now.Now();
   return next_work_info;
 }

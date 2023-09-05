@@ -16,6 +16,7 @@
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/task/task_features.h"
 #include "base/time/time_override.h"
 
 namespace base {
@@ -31,6 +32,9 @@ BASE_FEATURE(kUseSimplifiedMessagePumpKqueueLoop,
 
 // Caches the state of the "UseSimplifiedMessagePumpKqueueLoop".
 std::atomic_bool g_use_simplified_version = false;
+
+// Caches the state of the "TimerSlackMac" feature for efficiency.
+std::atomic_bool g_timer_slack = false;
 
 #if DCHECK_IS_ON()
 // Prior to macOS 10.14, kqueue timers may spuriously wake up, because earlier
@@ -153,6 +157,8 @@ void MessagePumpKqueue::InitializeFeatures() {
   g_use_simplified_version.store(
       base::FeatureList::IsEnabled(kUseSimplifiedMessagePumpKqueueLoop),
       std::memory_order_relaxed);
+  g_timer_slack.store(FeatureList::IsEnabled(kTimerSlackMac),
+                      std::memory_order_relaxed);
 }
 
 void MessagePumpKqueue::Run(Delegate* delegate) {
@@ -271,6 +277,16 @@ bool MessagePumpKqueue::WatchMachReceivePort(
   return true;
 }
 
+TimeTicks MessagePumpKqueue::AjdustDelayedRunTime(TimeTicks earliest_time,
+                                                  TimeTicks run_time,
+                                                  TimeTicks latest_time) {
+  if (g_timer_slack.load(std::memory_order_relaxed)) {
+    return earliest_time;
+  }
+  return MessagePump::AjdustDelayedRunTime(earliest_time, run_time,
+                                           latest_time);
+}
+
 bool MessagePumpKqueue::WatchFileDescriptor(int fd,
                                             bool persistent,
                                             int mode,
@@ -319,6 +335,7 @@ bool MessagePumpKqueue::WatchFileDescriptor(int fd,
 }
 
 void MessagePumpKqueue::SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
+                                            base::TimeDelta leeway,
                                             kevent64_s* timer_event) {
   // The ident of the wakeup timer. There's only the one timer as the pair
   // (ident, filter) is the identity of the event.
@@ -341,6 +358,13 @@ void MessagePumpKqueue::SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
     // timer is set immediately.
     timer_event->fflags = NOTE_USECONDS;
     timer_event->data = (wakeup_time - base::TimeTicks::Now()).InMicroseconds();
+
+    if (!leeway.is_zero() && g_timer_slack.load(std::memory_order_relaxed)) {
+      // Specify slack based on |leeway|.
+      // See "man kqueue" in recent macOSen for documentation.
+      timer_event->fflags |= NOTE_LEEWAY;
+      timer_event->ext[1] = static_cast<uint64_t>(leeway.InMicroseconds());
+    }
   }
 }
 
@@ -417,7 +441,8 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
   unsigned int flags = immediate ? KEVENT_FLAG_IMMEDIATE : 0;
 
   if (!immediate) {
-    MaybeUpdateWakeupTimer(next_work_info->delayed_run_time);
+    MaybeUpdateWakeupTimer(next_work_info->delayed_run_time,
+                           next_work_info->leeway);
     DCHECK_EQ(scheduled_wakeup_time_, next_work_info->delayed_run_time);
     delegate->BeforeWait();
   }
@@ -514,7 +539,8 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
 }
 
 void MessagePumpKqueue::MaybeUpdateWakeupTimer(
-    const base::TimeTicks& wakeup_time) {
+    const base::TimeTicks& wakeup_time,
+    base::TimeDelta leeway) {
   if (wakeup_time == scheduled_wakeup_time_) {
     // No change in the timer setting necessary.
     return;
@@ -525,7 +551,7 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
     if (scheduled_wakeup_time_ != base::TimeTicks::Max()) {
       // Clear the timer.
       kevent64_s timer{};
-      SetWakeupTimerEvent(wakeup_time, &timer);
+      SetWakeupTimerEvent(wakeup_time, leeway, &timer);
       int rv = ChangeOneEvent(kqueue_, &timer);
       PCHECK(rv == 0) << "kevent64, delete timer";
       --event_count_;
@@ -533,7 +559,7 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
   } else {
     // Set/reset the timer.
     kevent64_s timer{};
-    SetWakeupTimerEvent(wakeup_time, &timer);
+    SetWakeupTimerEvent(wakeup_time, leeway, &timer);
     int rv = ChangeOneEvent(kqueue_, &timer);
     PCHECK(rv == 0) << "kevent64, set timer";
 

@@ -299,6 +299,7 @@ void SequenceManagerImpl::InitializeFeatures() {
   base::InitializeTaskLeeway();
   ApplyNoWakeUpsForCanceledTasks();
   TaskQueueImpl::InitializeFeatures();
+  MessagePump::InitializeFeatures();
   ThreadControllerWithMessagePumpImpl::InitializeFeatures();
 #if BUILDFLAG(IS_WIN)
   g_explicit_high_resolution_timer_win =

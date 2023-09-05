@@ -52,6 +52,10 @@ const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
 
 BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTimerSlackMac,
+             "TimerSlackMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
              base::FEATURE_ENABLED_BY_DEFAULT);

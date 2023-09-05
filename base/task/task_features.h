@@ -51,6 +51,10 @@ extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 // DelayPolicy.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);
 
+// Under this feature, slack is added on mac message pumps that support it when
+// allowed per DelayPolicy.
+BASE_EXPORT BASE_DECLARE_FEATURE(kTimerSlackMac);
+
 // Under this feature, tasks that need high resolution timer are determined
 // based on explicit DelayPolicy rather than based on a threshold.
 BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);

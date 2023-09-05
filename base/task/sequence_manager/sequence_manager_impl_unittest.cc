@@ -301,6 +301,7 @@ class FixtureWithMockMessagePump : public Fixture {
     auto thread_controller =
         std::make_unique<ThreadControllerWithMessagePumpImpl>(std::move(pump),
                                                               settings);
+    MessagePump::InitializeFeatures();
     ThreadControllerWithMessagePumpImpl::InitializeFeatures();
     sequence_manager_ = SequenceManagerForTest::Create(
         std::move(thread_controller), std::move(settings));

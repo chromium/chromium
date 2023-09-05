@@ -130,9 +130,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // yield to the MessagePump after |work_batch_size| work items.
     base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
 
-    // When the next scheduled delayed work should run, if any.
-    TimeTicks next_delayed_do_work = TimeTicks::Max();
-
     // The time after which the runloop should quit.
     TimeTicks quit_runloop_after = TimeTicks::Max();
 

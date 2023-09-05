@@ -115,6 +115,9 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
+  TimeTicks AjdustDelayedRunTime(TimeTicks earliest_time,
+                                 TimeTicks run_time,
+                                 TimeTicks latest_time) override;
 
   // Begins watching the Mach receive right named by |port|. The |controller|
   // can be used to stop watching for incoming messages, and new message
@@ -154,9 +157,11 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // scheduled wakeup. Clears the wakeup timer if |wakeup_time| is
   // base::TimeTicks::Max().
   // Updates |scheduled_wakeup_time_| to follow.
-  void MaybeUpdateWakeupTimer(const base::TimeTicks& wakeup_time);
+  void MaybeUpdateWakeupTimer(const base::TimeTicks& wakeup_time,
+                              base::TimeDelta leeway);
 
   void SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
+                           base::TimeDelta leeway,
                            kevent64_s* timer_event);
 
   // Receive right to which an empty Mach message is sent to wake up the pump

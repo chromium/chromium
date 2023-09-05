@@ -31,6 +31,8 @@ class BASE_EXPORT MessagePump {
   // Returns true if the MessagePumpForUI has been overidden.
   static bool IsMessagePumpForUIFactoryOveridden();
 
+  static void InitializeFeatures();
+
   // Creates the default MessagePump based on |type|. Caller owns return value.
   static std::unique_ptr<MessagePump> Create(MessagePumpType type);
 
@@ -56,6 +58,12 @@ class BASE_EXPORT MessagePump {
       // work to run immediately. is_max() if there are no more immediate nor
       // delayed tasks.
       TimeTicks delayed_run_time;
+
+      // |leeway| determines the preferred time range for scheduling
+      // work. A larger leeway provides more freedom to schedule work at
+      // an optimal time for power consumption. This field is ignored
+      // for immediate work.
+      TimeDelta leeway;
 
       // A recent view of TimeTicks::Now(). Only valid if |delayed_run_time|
       // isn't null nor max. MessagePump impls should use remaining_delay()
@@ -251,6 +259,11 @@ class BASE_EXPORT MessagePump {
   // entered.
   virtual void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) = 0;
+
+  // Returns an adjusted |run_time| based on alignment policies of the pump.
+  virtual TimeTicks AjdustDelayedRunTime(TimeTicks earliest_time,
+                                         TimeTicks run_time,
+                                         TimeTicks latest_time);
 };
 
 }  // namespace base
