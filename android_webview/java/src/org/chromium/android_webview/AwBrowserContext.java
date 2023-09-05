@@ -83,16 +83,17 @@ public class AwBrowserContext implements BrowserContextHandle {
         // Register MemoryPressureMonitor callbacks and make sure it polls only if there is at
         // least one WebView around.
         MemoryPressureMonitor.INSTANCE.registerComponentCallbacks();
-        AwContentsLifecycleNotifier.addObserver(new AwContentsLifecycleNotifier.Observer() {
-            @Override
-            public void onFirstWebViewCreated() {
-                MemoryPressureMonitor.INSTANCE.enablePolling();
-            }
-            @Override
-            public void onLastWebViewDestroyed() {
-                MemoryPressureMonitor.INSTANCE.disablePolling();
-            }
-        });
+        AwContentsLifecycleNotifier.getInstance().addObserver(
+                new AwContentsLifecycleNotifier.Observer() {
+                    @Override
+                    public void onFirstWebViewCreated() {
+                        MemoryPressureMonitor.INSTANCE.enablePolling();
+                    }
+                    @Override
+                    public void onLastWebViewDestroyed() {
+                        MemoryPressureMonitor.INSTANCE.disablePolling();
+                    }
+                });
     }
 
     @VisibleForTesting

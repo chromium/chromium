@@ -49,7 +49,7 @@ public class AwContentsLifecycleNotifierTest {
     public void testNotifierCreate() throws Throwable {
         LifecycleObserver observer = new LifecycleObserver();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AwContentsLifecycleNotifier.addObserver(observer);
+            AwContentsLifecycleNotifier.getInstance().addObserver(observer);
             Assert.assertFalse(AwContentsLifecycleNotifier.getInstance().hasWebViewInstances());
         });
 

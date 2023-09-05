@@ -54,12 +54,8 @@ public class AwContentsLifecycleNotifier {
     private final ObserverList<Observer> mLifecycleObservers = new ObserverList<Observer>();
     private AwContentsLifecycleNotifier() {}
 
-    public void addObserverWithInstance(Observer observer) {
+    public void addObserver(Observer observer) {
         mLifecycleObservers.addObserver(observer);
-    }
-
-    public static void addObserver(Observer observer) {
-        getInstance().addObserverWithInstance(observer);
     }
 
     public void removeObserver(Observer observer) {
