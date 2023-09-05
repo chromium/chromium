@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/autofill_image_fetcher_impl.h"
+#include "chrome/browser/autofill/ui/autofill_image_fetcher_impl.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/payments/constants.h"

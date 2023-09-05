@@ -449,8 +449,7 @@ static_library("browser") {
     "ui/address_form_label_formatter.h",
     "ui/address_phone_form_label_formatter.cc",
     "ui/address_phone_form_label_formatter.h",
-    "ui/autofill_image_fetcher.cc",
-    "ui/autofill_image_fetcher.h",
+    "ui/autofill_image_fetcher_base.h",
     "ui/autofill_popup_delegate.h",
     "ui/autofill_resource_utils.cc",
     "ui/autofill_resource_utils.h",
@@ -575,6 +574,13 @@ static_library("browser") {
       "payments/credit_card_fido_authenticator.h",
       "strike_databases/payments/fido_authentication_strike_database.cc",
       "strike_databases/payments/fido_authentication_strike_database.h",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "ui/autofill_image_fetcher.cc",
+      "ui/autofill_image_fetcher.h",
     ]
   }
 
@@ -1067,7 +1073,6 @@ source_set("unit_tests") {
     "strike_databases/strike_database_integrator_test_strike_database_unittest.cc",
     "strike_databases/strike_database_unittest.cc",
     "ui/address_combobox_model_unittest.cc",
-    "ui/autofill_image_fetcher_unittest.cc",
     "ui/country_combobox_model_unittest.cc",
     "ui/payments/bubble_show_options_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
@@ -1110,6 +1115,10 @@ source_set("unit_tests") {
       # Not included on iOS because the files need to be bundled specially.
       "heuristic_classification_unittests.cc",
     ]
+  }
+
+  if (!is_android) {
+    sources += [ "ui/autofill_image_fetcher_unittest.cc" ]
   }
 
   if (is_win || is_mac || is_android) {

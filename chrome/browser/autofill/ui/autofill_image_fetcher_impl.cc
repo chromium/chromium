@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/autofill_image_fetcher_impl.h"
+#include "chrome/browser/autofill/ui/autofill_image_fetcher_impl.h"
 
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -138,8 +138,9 @@ gfx::Image AutofillImageFetcherImpl::ApplyGreyOverlay(const gfx::Image& image) {
 }
 
 void AutofillImageFetcherImpl::InitializeImageFetcher() {
-  if (image_fetcher_)
+  if (image_fetcher_) {
     return;
+  }
 
   // Lazily initialize the `image_fetcher_`, since
   // ImageFetcherServiceFactory relies on the initialization of the profile, and
@@ -147,8 +148,9 @@ void AutofillImageFetcherImpl::InitializeImageFetcher() {
   // not done yet.
   image_fetcher::ImageFetcherService* image_fetcher_service =
       ImageFetcherServiceFactory::GetForKey(key_);
-  if (!image_fetcher_service)
+  if (!image_fetcher_service) {
     return;
+  }
 
   // TODO(crbug.com/1382289): Fix and change the config back to kDiskCacheOnly.
   image_fetcher_ = image_fetcher_service->GetImageFetcher(

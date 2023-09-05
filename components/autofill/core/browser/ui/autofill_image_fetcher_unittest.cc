@@ -134,8 +134,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
 
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }
@@ -200,8 +201,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   gfx::Image fake_image1 = gfx::test::CreateImage(1, 2);
 
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }
@@ -231,8 +233,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
 
   // Expect callback to be called with some received images.
   std::map<GURL, gfx::Image> received_images;
-  const auto callback =
-      base::BindLambdaForTesting([&](const CardArtImageData& card_art_images) {
+  const auto callback = base::BindLambdaForTesting(
+      [&](const std::vector<std::unique_ptr<CreditCardArtImage>>&
+              card_art_images) {
         for (auto& entry : card_art_images) {
           received_images[entry->card_art_url] = entry->card_art_image;
         }

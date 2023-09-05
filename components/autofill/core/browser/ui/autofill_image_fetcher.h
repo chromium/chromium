@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_IMAGE_FETCHER_H_
 
+#include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
+
 #include <memory>
-#include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,28 +27,21 @@ struct RequestMetadata;
 
 namespace autofill {
 
-struct CreditCardArtImage;
-
-using CardArtImageData = std::vector<std::unique_ptr<CreditCardArtImage>>;
-
-// Abstract class that exposes image fetcher for images stored outside of
-// Chrome.
+// Abstract class for Desktop and iOS that exposes image fetcher for images
+// stored outside of Chrome.
 //
-// Subclasses provide the underlying image_fetcher::ImageFetcher (as this
-// differs per platform) and can specialize handling the returned card art.
-class AutofillImageFetcher {
+// Subclasses provide the underlying platform-specific
+// image_fetcher::ImageFetcher.
+class AutofillImageFetcher : public AutofillImageFetcherBase {
  public:
   virtual ~AutofillImageFetcher() = default;
 
-  // Once invoked, the image fetcher starts fetching images asynchronously based
-  // on the urls. `card_art_urls` is a span of with credit cards' card art image
-  // url. `callback` will be invoked when all the requests have been completed.
-  // The callback will receive a vector of CreditCardArtImage, for (only) those
-  // cards for which the AutofillImageFetcher could successfully fetch the
-  // image.
+  // AutofillImageFetcherBase:
   void FetchImagesForURLs(
       base::span<const GURL> card_art_urls,
-      base::OnceCallback<void(const CardArtImageData&)> callback);
+      base::OnceCallback<void(
+          const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback)
+      override;
 
   // Subclasses may override this to provide custom handling of a given card art
   // URL.

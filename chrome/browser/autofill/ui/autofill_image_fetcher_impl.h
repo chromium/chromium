@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_IMAGE_FETCHER_IMPL_H_
-#define CHROME_BROWSER_AUTOFILL_AUTOFILL_IMAGE_FETCHER_IMPL_H_
+#ifndef CHROME_BROWSER_AUTOFILL_UI_AUTOFILL_IMAGE_FETCHER_IMPL_H_
+#define CHROME_BROWSER_AUTOFILL_UI_AUTOFILL_IMAGE_FETCHER_IMPL_H_
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
@@ -13,8 +13,7 @@ class ProfileKey;
 
 namespace autofill {
 
-// chrome/ implementation of the AutofillImageFetcher. Used on Desktop (Android
-// has its own Java implementation).
+// chrome/ implementation of AutofillImageFetcher for Desktop clients.
 class AutofillImageFetcherImpl : public AutofillImageFetcher,
                                  public KeyedService {
  public:
@@ -47,4 +46,4 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_IMAGE_FETCHER_IMPL_H_
+#endif  // CHROME_BROWSER_AUTOFILL_UI_AUTOFILL_IMAGE_FETCHER_IMPL_H_

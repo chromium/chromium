@@ -59,7 +59,7 @@ class PrefService;
 class RemoveAutofillTester;
 
 namespace autofill {
-class AutofillImageFetcher;
+class AutofillImageFetcherBase;
 class AutofillInteractiveTest;
 struct CreditCardArtImage;
 class PersonalDataManagerObserver;
@@ -132,7 +132,7 @@ class PersonalDataManager : public KeyedService,
             history::HistoryService* history_service,
             syncer::SyncService* sync_service,
             StrikeDatabaseBase* strike_database,
-            AutofillImageFetcher* image_fetcher);
+            AutofillImageFetcherBase* image_fetcher);
 
   // KeyedService:
   void Shutdown() override;
@@ -791,7 +791,7 @@ class PersonalDataManager : public KeyedService,
   // this class and must outlive |this|.
   void SetPrefService(PrefService* pref_service);
 
-  // Asks AutofillImageFetcher to fetch images. Virtual for testing.
+  // Asks `image_fetcher_` to fetch images. Virtual for testing.
   virtual void FetchImagesForURLs(base::span<const GURL> updated_urls) const;
 
   // The PersonalDataManager supports two types of AutofillProfiles, stored in
@@ -1022,7 +1022,7 @@ class PersonalDataManager : public KeyedService,
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   // The image fetcher to fetch customized images for Autofill data.
-  raw_ptr<AutofillImageFetcher> image_fetcher_ = nullptr;
+  raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
 
   // Whether we have already logged the stored profile, credit card, IBAN, offer
   // and virtual card usage metrics this session.

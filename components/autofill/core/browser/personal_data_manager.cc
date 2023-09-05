@@ -383,7 +383,7 @@ void PersonalDataManager::Init(
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
     StrikeDatabaseBase* strike_database,
-    AutofillImageFetcher* image_fetcher) {
+    AutofillImageFetcherBase* image_fetcher) {
   database_helper_->Init(profile_database, account_database);
 
   SetPrefService(pref_service);

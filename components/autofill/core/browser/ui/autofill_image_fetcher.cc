@@ -60,7 +60,8 @@ constexpr net::NetworkTrafficAnnotationTag kCardArtImageTrafficAnnotation =
 
 void AutofillImageFetcher::FetchImagesForURLs(
     base::span<const GURL> card_art_urls,
-    base::OnceCallback<void(const CardArtImageData&)> callback) {
+    base::OnceCallback<void(
+        const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
   if (!GetImageFetcher()) {
     std::move(callback).Run({});
     return;

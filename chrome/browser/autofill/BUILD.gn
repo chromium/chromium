@@ -18,8 +18,6 @@ static_library("autofill") {
     "autofill_gstatic_reader.h",
     "autofill_image_fetcher_factory.cc",
     "autofill_image_fetcher_factory.h",
-    "autofill_image_fetcher_impl.cc",
-    "autofill_image_fetcher_impl.h",
     "autofill_offer_manager_factory.cc",
     "autofill_offer_manager_factory.h",
     "autofill_optimization_guide_factory.cc",
@@ -79,6 +77,8 @@ static_library("autofill") {
       "address_accessory_controller.h",
       "address_accessory_controller_impl.cc",
       "address_accessory_controller_impl.h",
+      "android/autofill_image_fetcher_impl.cc",
+      "android/autofill_image_fetcher_impl.h",
       "android/personal_data_manager_android.cc",
       "android/personal_data_manager_android.h",
       "android/phone_number_util_android.cc",
@@ -111,6 +111,10 @@ static_library("autofill") {
     ]
   } else {
     # !is_android
+    sources += [
+      "ui/autofill_image_fetcher_impl.cc",
+      "ui/autofill_image_fetcher_impl.h",
+    ]
     deps += [ "//components/sync/base" ]
   }
 }
