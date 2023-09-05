@@ -278,9 +278,10 @@ UpdateAddressProfileView::UpdateAddressProfileView(
             .Build());
   }
 
-  set_fixed_width(std::max(main_content_view->GetPreferredSize().width(),
-                           layout_provider->GetDistanceMetric(
-                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
+  set_fixed_width(std::max(
+      main_content_view->GetPreferredSize().width() + margins().width(),
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH)));
 }
 
 bool UpdateAddressProfileView::ShouldShowCloseButton() const {
