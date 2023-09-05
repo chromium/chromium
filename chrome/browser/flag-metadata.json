@@ -6609,7 +6609,7 @@
   {
     "name": "pcie-billboard-notification",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 130
   },
   {
     "name": "pdf-ocr",
