@@ -2,38 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-generated_grd = "$target_gen_dir/resources.grd"
-
-generate_grd("build_grd") {
-  out_grd = generated_grd
+build_webui("build") {
   grd_prefix = "media_internals"
-  input_files_base_dir = rebase_path(".", "//")
 
-  input_files = [
-    "media_internals.html",
+  static_files = [
     "media_internals.css",
-    "media_internals.js",
-    "main.js",
+    "media_internals.html",
+  ]
+
+  non_web_component_files = [
     "client_renderer.js",
+    "main.js",
     "manager.js",
+    "media_internals.js",
     "player_info.js",
     "util.js",
   ]
-}
 
-grit("resources") {
-  source = generated_grd
-  enable_input_discovery_for_gn_analyze = false
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/media_internals_resources.h",
-    "grit/media_internals_resources_map.cc",
-    "grit/media_internals_resources_map.h",
-    "media_internals_resources.pak",
+  ts_deps = [
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
-  output_dir = "$root_gen_dir/content/browser/resources/media"
+
+  grit_output_dir = "$root_gen_dir/content/browser/resources/media"
 }

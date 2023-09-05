@@ -432,9 +432,6 @@ ts_library("build_ts") {
     # from tsconfig_base.json.
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
-    "media_internals/integration_test.js",
-    "media_internals/manager_test.js",
-    "media_internals/player_info_test.js",
     "media/media_engagement_test.js",
     "media/media_history_test.js",
   ]
@@ -494,6 +491,7 @@ generate_grd("build_grd") {
     "history:build_grdp",
     "js:build_grdp",
     "location_internals:build_grdp",
+    "media_internals:build_grdp",
     "metrics_internals:build_grdp",
     "mojo:build_grdp",
     "net_internals:build_grdp",
@@ -524,6 +522,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/history/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/location_internals/resources.grdp",
+    "$target_gen_dir/media_internals/resources.grdp",
     "$target_gen_dir/metrics_internals/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
     "$target_gen_dir/mojo/resources.grdp",

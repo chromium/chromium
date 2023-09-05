@@ -136,6 +136,10 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'components/policy/resources/webui',
       'ui/webui/resources/js',
       'ui/webui/resources/mojo',
+
+      # TODO(crbug.com/1478961) : Migrate to TypeScript.
+      'chrome/test/data/webui/media_internals',
+      'content/browser/resources/media',
   ]
   for directory in migrating_directories:
     if (source_dir.endswith(directory)
