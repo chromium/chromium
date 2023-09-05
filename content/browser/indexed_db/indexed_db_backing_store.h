@@ -45,6 +45,7 @@
 
 namespace base {
 class SequencedTaskRunner;
+class WaitableEvent;
 }  // namespace base
 
 namespace blink {
@@ -405,6 +406,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Initializes the backing store. This must be called before doing any
   // operations or method calls on this object.
   leveldb::Status Initialize(bool clean_active_blob_journal);
+
+  virtual void TearDown(base::WaitableEvent* signal_on_destruction);
 
   const storage::BucketLocator& bucket_locator() const {
     return bucket_locator_;

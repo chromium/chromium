@@ -114,11 +114,6 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
 
   size_t GetConnectionCount(storage::BucketId bucket_id) const;
 
-  void NotifyIndexedDBContentChanged(
-      const storage::BucketLocator& bucket_locator,
-      const std::u16string& database_name,
-      const std::u16string& object_store_name);
-
   int64_t GetInMemoryDBSize(const storage::BucketLocator& bucket_locator) const;
 
   base::Time GetLastModified(
@@ -126,19 +121,16 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
 
   std::vector<storage::BucketId> GetOpenBuckets() const;
 
-  IndexedDBBucketContext* GetBucketFactory(const storage::BucketId& id) const;
+  IndexedDBBucketContext* GetBucketContext(const storage::BucketId& id) const;
 
-  // On an OK status, the factory handle is populated. Otherwise (when status is
-  // not OK), the `IndexedDBDatabaseError` will be populated. If the status was
-  // corruption, the `IndexedDBDataLossInfo` will also be populated.
   std::tuple<IndexedDBBucketContextHandle,
              leveldb::Status,
              IndexedDBDatabaseError,
              IndexedDBDataLossInfo,
              /*was_cold_open=*/bool>
-  GetOrOpenBucketFactory(const storage::BucketLocator& bucket_locator,
-                         const base::FilePath& data_directory,
-                         bool create_if_missing);
+  GetOrCreateBucketContext(const storage::BucketLocator& bucket_locator,
+                           const base::FilePath& data_directory,
+                           bool create_if_missing);
 
   void OnDatabaseError(const storage::BucketLocator& bucket_locator,
                        leveldb::Status s,
@@ -195,11 +187,16 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
       bool is_first_attempt,
       bool create_if_missing);
 
+  void NotifyIndexedDBContentChanged(
+      const storage::BucketLocator& bucket_locator,
+      const std::u16string& database_name,
+      const std::u16string& object_store_name);
+
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
   void MaybeRunTasksForBucket(const storage::BucketLocator& bucket_locator);
-  void RunTasksForBucket(base::WeakPtr<IndexedDBBucketContext> bucket_state);
+  void RunTasksForBucket(base::WeakPtr<IndexedDBBucketContext> bucket_context);
 
   // Testing helpers, so unit tests don't need to grovel through internal state.
   bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
@@ -230,8 +227,8 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   // IndexedDBBucketContext object. This allows those weak pointers to be
   // invalidated during force close & shutdown to prevent re-entry (see
   // ContextDestroyed()).
-  base::WeakPtrFactory<IndexedDBFactory> bucket_state_destruction_weak_factory_{
-      this};
+  base::WeakPtrFactory<IndexedDBFactory>
+      bucket_context_destruction_weak_factory_{this};
   base::WeakPtrFactory<IndexedDBFactory> weak_factory_{this};
 };
 

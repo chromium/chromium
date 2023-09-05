@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
@@ -71,6 +72,11 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
                             std::move(report_outstanding_blobs),
                             task_runner) {}
 IndexedDBFakeBackingStore::~IndexedDBFakeBackingStore() = default;
+
+void IndexedDBFakeBackingStore::TearDown(
+    base::WaitableEvent* signal_on_destruction) {
+  signal_on_destruction->Signal();
+}
 
 Status IndexedDBFakeBackingStore::CreateDatabase(
     blink::IndexedDBDatabaseMetadata& metadata) {

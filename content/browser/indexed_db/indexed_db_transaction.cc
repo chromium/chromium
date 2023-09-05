@@ -17,6 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
@@ -121,15 +123,13 @@ IndexedDBTransaction::IndexedDBTransaction(
     IndexedDBConnection* connection,
     const std::set<int64_t>& object_store_ids,
     blink::mojom::IDBTransactionMode mode,
-    TasksAvailableCallback tasks_available_callback,
-    TearDownCallback tear_down_callback,
+    IndexedDBBucketContextHandle bucket_context,
     IndexedDBBackingStore::Transaction* backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),
       connection_(connection->GetWeakPtr()),
-      run_tasks_callback_(std::move(tasks_available_callback)),
-      tear_down_callback_(std::move(tear_down_callback)),
+      bucket_context_(std::move(bucket_context)),
       transaction_(backing_store_transaction) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB",
                                     "IndexedDBTransaction::lifetime", this);
@@ -164,7 +164,7 @@ IndexedDBTransaction::~IndexedDBTransaction() {
 
 void IndexedDBTransaction::SetCommitFlag() {
   is_commit_pending_ = true;
-  run_tasks_callback_.Run();
+  bucket_context_->delegate().on_tasks_available.Run();
 }
 
 void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
@@ -181,7 +181,7 @@ void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
     preemptive_task_queue_.push(std::move(task));
   }
   if (state() == STARTED)
-    run_tasks_callback_.Run();
+    bucket_context_->delegate().on_tasks_available.Run();
 }
 
 void IndexedDBTransaction::ScheduleAbortTask(AbortOperation abort_task) {
@@ -236,7 +236,8 @@ leveldb::Status IndexedDBTransaction::Abort(
 
   if (database_)
     database_->TransactionFinished(mode_, false);
-  run_tasks_callback_.Run();
+  bucket_context_->delegate().on_tasks_available.Run();
+  bucket_context_.Release();
   return leveldb::Status::OK();
 }
 
@@ -273,7 +274,7 @@ void IndexedDBTransaction::Start() {
   state_ = STARTED;
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
-  run_tasks_callback_.Run();
+  bucket_context_->delegate().on_tasks_available.Run();
 }
 
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
@@ -292,13 +293,13 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
               "Failed to write blobs (%s)",
               WriteBlobToFileResultToString(error).c_str()))));
       if (!status.ok())
-        tear_down_callback_.Run(status);
+        bucket_context_->delegate().on_fatal_error.Run(status);
       // The result is ignored.
       return leveldb::Status::OK();
     }
     case BlobWriteResult::kRunPhaseTwoAsync:
       ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
-      run_tasks_callback_.Run();
+      bucket_context_->delegate().on_tasks_available.Run();
       return leveldb::Status::OK();
     case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
       return CommitPhaseTwo();
@@ -543,7 +544,7 @@ void IndexedDBTransaction::Timeout() {
       IndexedDBDatabaseError(blink::mojom::IDBException::kTimeoutError,
                              u"Transaction timed out due to inactivity."));
   if (!result.ok())
-    tear_down_callback_.Run(result);
+    bucket_context_->delegate().on_fatal_error.Run(result);
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {

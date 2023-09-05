@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -28,7 +28,7 @@ class IndexedDBBucketContextHandle;
 class CONTENT_EXPORT IndexedDBConnection {
  public:
   IndexedDBConnection(
-      IndexedDBBucketContextHandle bucket_state_handle,
+      IndexedDBBucketContext& bucket_context,
       IndexedDBClassFactory* indexed_db_class_factory,
       base::WeakPtr<IndexedDBDatabase> database,
       base::RepeatingClosure on_version_change_ignored,
@@ -103,7 +103,7 @@ class CONTENT_EXPORT IndexedDBConnection {
   const int32_t id_;
 
   // Keeps the factory for this bucket alive.
-  IndexedDBBucketContextHandle bucket_state_handle_;
+  IndexedDBBucketContextHandle bucket_context_handle_;
   const raw_ptr<IndexedDBClassFactory> indexed_db_class_factory_;
 
   base::WeakPtr<IndexedDBDatabase> database_;

@@ -27,7 +27,6 @@
 namespace content {
 class IndexedDBBackingStore;
 class IndexedDBConnection;
-class IndexedDBFactory;
 class IndexedDBTransaction;
 class LevelDBFactory;
 class TransactionalLevelDBFactory;
@@ -55,24 +54,18 @@ class CONTENT_EXPORT IndexedDBClassFactory {
   virtual TransactionalLevelDBFactory& transactional_leveldb_factory();
 
   // Returns a database that is newly constructed, but which has uninitialized
-  // metadata. |tasks_available_callback| is called when the database has tasks
-  // to run.
+  // metadata.
   virtual std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
       const std::u16string& name,
-      IndexedDBBackingStore* backing_store,
-      IndexedDBFactory* factory,
-      TasksAvailableCallback tasks_available_callback,
-      const IndexedDBDatabase::Identifier& unique_identifier,
-      PartitionedLockManager* transaction_lock_manager);
+      IndexedDBBucketContext& bucket_context,
+      const IndexedDBDatabase::Identifier& unique_identifier);
 
-  // |tasks_available_callback| is called when the transaction has tasks to run.
   virtual std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(
       int64_t id,
       IndexedDBConnection* connection,
       const std::set<int64_t>& scope,
       blink::mojom::IDBTransactionMode mode,
-      TasksAvailableCallback tasks_available_callback,
-      IndexedDBTransaction::TearDownCallback tear_down_callback,
+      IndexedDBBucketContextHandle bucket_context,
       IndexedDBBackingStore::Transaction* backing_store_transaction);
 
   void SetLevelDBFactoryForTesting(LevelDBFactory* leveldb_factory);

@@ -42,18 +42,14 @@ class MockBrowserTestIndexedDBClassFactory
 
   std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
       const std::u16string& name,
-      IndexedDBBackingStore* backing_store,
-      IndexedDBFactory* factory,
-      TasksAvailableCallback tasks_available_callback,
-      const IndexedDBDatabase::Identifier& unique_identifier,
-      PartitionedLockManager* transaction_lock_manager) override;
+      IndexedDBBucketContext& bucket_context,
+      const IndexedDBDatabase::Identifier& unique_identifier) override;
   std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(
       int64_t id,
       IndexedDBConnection* connection,
       const std::set<int64_t>& scope,
       blink::mojom::IDBTransactionMode mode,
-      TasksAvailableCallback tasks_available_callback,
-      IndexedDBTransaction::TearDownCallback tear_down_callback,
+      IndexedDBBucketContextHandle bucket_context,
       IndexedDBBackingStore::Transaction* backing_store_transaction) override;
 
   std::unique_ptr<TransactionalLevelDBDatabase> CreateLevelDBDatabase(

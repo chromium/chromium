@@ -350,18 +350,18 @@ class IndexedDBBackingStoreTest : public testing::Test {
         file_system_access_context_.get());
 
     leveldb::Status s;
-    std::tie(bucket_state_handle_, s, std::ignore, data_loss_info_,
+    std::tie(bucket_context_handle_, s, std::ignore, data_loss_info_,
              std::ignore) =
-        idb_factory_->GetOrOpenBucketFactory(
+        idb_factory_->GetOrCreateBucketContext(
             bucket_locator, idb_context_->GetDataPath(bucket_locator),
             /*create_if_missing=*/true);
-    if (!bucket_state_handle_.IsHeld()) {
+    if (!bucket_context_handle_.IsHeld()) {
       backing_store_ = nullptr;
       return;
     }
     backing_store_ = static_cast<TestableIndexedDBBackingStore*>(
-        bucket_state_handle_.bucket_state()->backing_store());
-    lock_manager_ = bucket_state_handle_.bucket_state()->lock_manager();
+        bucket_context_handle_->backing_store());
+    lock_manager_ = bucket_context_handle_->lock_manager();
   }
 
   std::vector<PartitionedLock> CreateDummyLock() {
@@ -376,7 +376,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   }
 
   void DestroyFactoryAndBackingStore() {
-    bucket_state_handle_.Release();
+    bucket_context_handle_.Release();
     idb_factory_.reset();
     backing_store_ = nullptr;
   }
@@ -393,7 +393,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
       for (const auto& bucket_id : factory->GetOpenBuckets()) {
         base::RunLoop loop;
         IndexedDBBucketContext* per_bucket_factory =
-            factory->GetBucketFactory(bucket_id);
+            factory->GetBucketContext(bucket_id);
 
         auto* leveldb_state =
             per_bucket_factory->backing_store()->db()->leveldb_state();
@@ -466,7 +466,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   std::unique_ptr<TestIDBFactory> idb_factory_;
   raw_ptr<PartitionedLockManager, DanglingUntriaged> lock_manager_;
 
-  IndexedDBBucketContextHandle bucket_state_handle_;
+  IndexedDBBucketContextHandle bucket_context_handle_;
   raw_ptr<TestableIndexedDBBackingStore, DanglingUntriaged> backing_store_ =
       nullptr;
   IndexedDBDataLossInfo data_loss_info_;

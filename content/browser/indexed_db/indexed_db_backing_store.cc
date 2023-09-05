@@ -44,7 +44,6 @@
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
@@ -1123,6 +1122,11 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   initialized_ = true;
 #endif
   return s;
+}
+
+void IndexedDBBackingStore::TearDown(
+    base::WaitableEvent* signal_on_destruction) {
+  db()->leveldb_state()->RequestDestruction(signal_on_destruction);
 }
 
 Status IndexedDBBackingStore::AnyDatabaseContainsBlobs(bool* blobs_exist) {

@@ -10,28 +10,44 @@ namespace content {
 
 IndexedDBBucketContextHandle::IndexedDBBucketContextHandle() = default;
 IndexedDBBucketContextHandle::IndexedDBBucketContextHandle(
-    base::WeakPtr<IndexedDBBucketContext> bucket_state)
-    : bucket_state_(bucket_state) {}
+    IndexedDBBucketContext& bucket_context)
+    : bucket_context_(bucket_context.AsWeakPtr()) {
+  bucket_context_->OnHandleCreated();
+}
+
 IndexedDBBucketContextHandle::IndexedDBBucketContextHandle(
     IndexedDBBucketContextHandle&&) = default;
 IndexedDBBucketContextHandle& IndexedDBBucketContextHandle::operator=(
     IndexedDBBucketContextHandle&&) = default;
 
+IndexedDBBucketContextHandle::IndexedDBBucketContextHandle(
+    const IndexedDBBucketContextHandle& other)
+    : bucket_context_(other.bucket_context_) {
+  if (bucket_context_) {
+    bucket_context_->OnHandleCreated();
+  }
+}
+
+IndexedDBBucketContextHandle IndexedDBBucketContextHandle::operator=(
+    const IndexedDBBucketContextHandle& other) {
+  return IndexedDBBucketContextHandle(other);
+}
+
 IndexedDBBucketContextHandle::~IndexedDBBucketContextHandle() {
-  if (bucket_state_) {
-    bucket_state_->OnHandleDestruction();
+  if (bucket_context_) {
+    bucket_context_->OnHandleDestruction();
   }
 }
 
 void IndexedDBBucketContextHandle::Release() {
-  if (bucket_state_) {
-    bucket_state_->OnHandleDestruction();
-    bucket_state_.reset();
+  if (bucket_context_) {
+    bucket_context_->OnHandleDestruction();
+    bucket_context_.reset();
   }
 }
 
 bool IndexedDBBucketContextHandle::IsHeld() const {
-  return !!bucket_state_;
+  return !!bucket_context_;
 }
 
 }  // namespace content

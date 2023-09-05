@@ -24,7 +24,6 @@
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
@@ -119,6 +118,10 @@ constexpr const base::TimeDelta
 constexpr const base::TimeDelta
     IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow;
 
+IndexedDBBucketContext::Delegate::Delegate() = default;
+IndexedDBBucketContext::Delegate::Delegate(Delegate&& other) = default;
+IndexedDBBucketContext::Delegate::~Delegate() = default;
+
 IndexedDBBucketContext::IndexedDBBucketContext(
     storage::BucketLocator bucket_locator,
     bool persist_for_incognito,
@@ -127,8 +130,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     base::Time* earliest_global_sweep_time,
     base::Time* earliest_global_compaction_time,
     std::unique_ptr<PartitionedLockManager> lock_manager,
-    TasksAvailableCallback notify_tasks_callback,
-    TearDownCallback tear_down_callback,
+    Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store)
     : bucket_locator_(std::move(bucket_locator)),
       persist_for_incognito_(persist_for_incognito),
@@ -138,8 +140,7 @@ IndexedDBBucketContext::IndexedDBBucketContext(
       earliest_global_compaction_time_(earliest_global_compaction_time),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
-      notify_tasks_callback_(std::move(notify_tasks_callback)),
-      tear_down_callback_(std::move(tear_down_callback)) {
+      delegate_(std::move(delegate)) {
   DCHECK(clock_);
   DCHECK(earliest_global_sweep_time_);
   if (*earliest_global_sweep_time_ == base::Time()) {
@@ -162,15 +163,14 @@ IndexedDBBucketContext::~IndexedDBBucketContext() {
   }
 
   base::WaitableEvent leveldb_destruct_event;
-  backing_store_->db()->leveldb_state()->RequestDestruction(
-      &leveldb_destruct_event);
+  backing_store_->TearDown(&leveldb_destruct_event);
   backing_store_.reset();
   leveldb_destruct_event.Wait();
 }
 
 void IndexedDBBucketContext::ForceClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IndexedDBBucketContextHandle handle = CreateHandle();
+  IndexedDBBucketContextHandle handle(*this);
   for (const auto& pair : databases_) {
     // Note: We purposefully ignore the result here as force close needs to
     // continue tearing things down anyways.
@@ -229,7 +229,7 @@ IndexedDBBucketContext::RunTasks() {
     }
   }
   running_tasks_ = false;
-  if (CanCloseFactory() && closing_stage_ == ClosingState::kClosed) {
+  if (CanClose() && closing_stage_ == ClosingState::kClosed) {
     return {RunTasksResult::kCanBeDestroyed, leveldb::Status::OK()};
   }
   return {RunTasksResult::kDone, leveldb::Status::OK()};
@@ -243,7 +243,7 @@ IndexedDBDatabase* IndexedDBBucketContext::AddDatabase(
   return databases_.emplace(name, std::move(database)).first->second.get();
 }
 
-IndexedDBBucketContextHandle IndexedDBBucketContext::CreateHandle() {
+void IndexedDBBucketContext::OnHandleCreated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++open_handles_;
   if (closing_stage_ != ClosingState::kNotClosing) {
@@ -255,7 +255,6 @@ IndexedDBBucketContextHandle IndexedDBBucketContext::CreateHandle() {
       pre_close_task_queue_.reset();
     }
   }
-  return IndexedDBBucketContextHandle(weak_factory_.GetWeakPtr());
 }
 
 void IndexedDBBucketContext::OnHandleDestruction() {
@@ -265,7 +264,7 @@ void IndexedDBBucketContext::OnHandleDestruction() {
   MaybeStartClosing();
 }
 
-bool IndexedDBBucketContext::CanCloseFactory() {
+bool IndexedDBBucketContext::CanClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
   return !has_blobs_outstanding_ && open_handles_ <= 0 &&
@@ -274,14 +273,14 @@ bool IndexedDBBucketContext::CanCloseFactory() {
 
 void IndexedDBBucketContext::MaybeStartClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsClosing() && CanCloseFactory()) {
+  if (!IsClosing() && CanClose()) {
     StartClosing();
   }
 }
 
 void IndexedDBBucketContext::StartClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(CanCloseFactory());
+  DCHECK(CanClose());
   DCHECK(!IsClosing());
 
   if (skip_closing_sequence_ ||
@@ -352,7 +351,7 @@ void IndexedDBBucketContext::CloseNow() {
   closing_stage_ = ClosingState::kClosed;
   close_timer_.AbandonAndStop();
   pre_close_task_queue_.reset();
-  notify_tasks_callback_.Run();
+  delegate_.on_tasks_available.Run();
 }
 
 bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {

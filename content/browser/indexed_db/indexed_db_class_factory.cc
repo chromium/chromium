@@ -91,16 +91,10 @@ IndexedDBClassFactory::transactional_leveldb_factory() {
 std::unique_ptr<IndexedDBDatabase>
 IndexedDBClassFactory::CreateIndexedDBDatabase(
     const std::u16string& name,
-    IndexedDBBackingStore* backing_store,
-    IndexedDBFactory* factory,
-    TasksAvailableCallback tasks_available_callback,
-    const IndexedDBDatabase::Identifier& unique_identifier,
-    PartitionedLockManager* transaction_lock_manager) {
-  DCHECK(backing_store);
-  DCHECK(factory);
-  return base::WrapUnique(new IndexedDBDatabase(
-      name, backing_store, factory, this, std::move(tasks_available_callback),
-      unique_identifier, transaction_lock_manager));
+    IndexedDBBucketContext& bucket_context,
+    const IndexedDBDatabase::Identifier& unique_identifier) {
+  return base::WrapUnique(
+      new IndexedDBDatabase(name, bucket_context, this, unique_identifier));
 }
 
 std::unique_ptr<IndexedDBTransaction>
@@ -109,12 +103,11 @@ IndexedDBClassFactory::CreateIndexedDBTransaction(
     IndexedDBConnection* connection,
     const std::set<int64_t>& scope,
     blink::mojom::IDBTransactionMode mode,
-    TasksAvailableCallback tasks_available_callback,
-    IndexedDBTransaction::TearDownCallback tear_down_callback,
+    IndexedDBBucketContextHandle bucket_context,
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
-  return base::WrapUnique(new IndexedDBTransaction(
-      id, connection, scope, mode, std::move(tasks_available_callback),
-      std::move(tear_down_callback), backing_store_transaction));
+  return base::WrapUnique(new IndexedDBTransaction(id, connection, scope, mode,
+                                                   std::move(bucket_context),
+                                                   backing_store_transaction));
 }
 
 void IndexedDBClassFactory::SetLevelDBFactoryForTesting(

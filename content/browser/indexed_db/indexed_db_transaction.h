@@ -49,7 +49,6 @@ FORWARD_DECLARE_TEST(IndexedDBTransactionTest, TimeoutPreemptive);
 
 class CONTENT_EXPORT IndexedDBTransaction {
  public:
-  using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using Operation = base::OnceCallback<leveldb::Status(IndexedDBTransaction*)>;
   using AbortOperation = base::OnceClosure;
 
@@ -153,8 +152,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
       IndexedDBConnection* connection,
       const std::set<int64_t>& object_store_ids,
       blink::mojom::IDBTransactionMode mode,
-      TasksAvailableCallback tasks_available_callback,
-      TearDownCallback tear_down_callback,
+      IndexedDBBucketContextHandle bucket_context,
       IndexedDBBackingStore::Transaction* backing_store_transaction);
 
   // May be overridden in tests.
@@ -222,10 +220,8 @@ class CONTENT_EXPORT IndexedDBTransaction {
   base::WeakPtr<IndexedDBConnection> connection_;
   scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
   base::WeakPtr<IndexedDBDatabase> database_;
-  TasksAvailableCallback run_tasks_callback_;
-  // Note: calling this will tear down the IndexedDBOriginState (and probably
-  // destroy this object).
-  TearDownCallback tear_down_callback_;
+
+  IndexedDBBucketContextHandle bucket_context_;
 
   // Metrics for quota.
   int64_t size_ = 0;

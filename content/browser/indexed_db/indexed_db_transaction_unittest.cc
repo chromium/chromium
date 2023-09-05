@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -60,8 +61,7 @@ class AbortObserver {
 class IndexedDBTransactionTest : public testing::Test {
  public:
   IndexedDBTransactionTest()
-      : task_environment_(std::make_unique<base::test::TaskEnvironment>()),
-        backing_store_(std::make_unique<IndexedDBFakeBackingStore>()) {}
+      : task_environment_(std::make_unique<base::test::TaskEnvironment>()) {}
 
   IndexedDBTransactionTest(const IndexedDBTransactionTest&) = delete;
   IndexedDBTransactionTest& operator=(const IndexedDBTransactionTest&) = delete;
@@ -79,13 +79,23 @@ class IndexedDBTransactionTest : public testing::Test {
         /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
+
+    IndexedDBBucketContext::Delegate delegate;
+    delegate.on_fatal_error = base::DoNothing();
+    delegate.on_tasks_available = CreateRunTasksCallback();
+    delegate.on_content_changed = base::DoNothing();
+
+    bucket_context_ = std::make_unique<IndexedDBBucketContext>(
+        storage::BucketLocator(), false, base::DefaultClock::GetInstance(),
+        &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
+        &unused_, &unused_, std::make_unique<PartitionedLockManager>(),
+        std::move(delegate), std::make_unique<IndexedDBFakeBackingStore>());
+
     // DB is created here instead of the constructor to workaround a
     // "peculiarity of C++". More info at
     // https://github.com/google/googletest/blob/main/docs/faq.md#my-compiler-complains-that-a-constructor-or-destructor-cannot-return-a-value-whats-going-on
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
-        u"db", backing_store_.get(), indexed_db_context_->GetIDBFactory(),
-        CreateRunTasksCallback(), IndexedDBDatabase::Identifier(),
-        &lock_manager_);
+        u"db", *bucket_context_, IndexedDBDatabase::Identifier());
   }
 
   TasksAvailableCallback CreateRunTasksCallback() {
@@ -133,8 +143,8 @@ class IndexedDBTransactionTest : public testing::Test {
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         remote;
     auto connection = std::make_unique<IndexedDBConnection>(
-        IndexedDBBucketContextHandle(), IndexedDBClassFactory::Get(),
-        db_->AsWeakPtr(), base::DoNothing(), base::DoNothing(),
+        *bucket_context_, IndexedDBClassFactory::Get(), db_->AsWeakPtr(),
+        base::DoNothing(), base::DoNothing(),
         base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>(),
         base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
             std::move(remote)));
@@ -142,20 +152,21 @@ class IndexedDBTransactionTest : public testing::Test {
     return connection;
   }
 
-  PartitionedLockManager* lock_manager() { return &lock_manager_; }
+  PartitionedLockManager* lock_manager() {
+    return bucket_context_->lock_manager();
+  }
 
  protected:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
-  std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
+  std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   std::unique_ptr<IndexedDBDatabase> db_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
 
-  bool error_called_ = false;
+  base::Time unused_;
 
- private:
-  PartitionedLockManager lock_manager_;
+  bool error_called_ = false;
 };
 
 class IndexedDBTransactionTestMode

@@ -707,14 +707,13 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
-                                              GetDataPath(bucket_locator),
-                                              /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
+                                                GetDataPath(bucket_locator),
+                                                /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 
-  TransactionalLevelDBDatabase* db =
-      handle.bucket_state()->backing_store()->db();
+  TransactionalLevelDBDatabase* db = handle->backing_store()->db();
   std::string value_copy = value;
   s = db->Put(key, &value_copy);
   CHECK(s.ok()) << s.ToString();
@@ -736,14 +735,13 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
-                                              GetDataPath(bucket_locator),
-                                              /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
+                                                GetDataPath(bucket_locator),
+                                                /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 
-  TransactionalLevelDBDatabase* db =
-      handle.bucket_state()->backing_store()->db();
+  TransactionalLevelDBDatabase* db = handle->backing_store()->db();
 
   const std::string key_gen_key = DatabaseMetaDataKey::Encode(
       database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
@@ -768,13 +766,13 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
   IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
-      GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
-                                              GetDataPath(bucket_locator),
-                                              /*create_if_missing=*/true);
+      GetIDBFactory()->GetOrCreateBucketContext(bucket_locator,
+                                                GetDataPath(bucket_locator),
+                                                /*create_if_missing=*/true);
   CHECK(s.ok()) << s.ToString();
   CHECK(handle.IsHeld());
 
-  IndexedDBBackingStore* backing_store = handle.bucket_state()->backing_store();
+  IndexedDBBackingStore* backing_store = handle->backing_store();
   base::FilePath path =
       backing_store->GetBlobFileName(database_id, blob_number);
   std::move(callback).Run(path);

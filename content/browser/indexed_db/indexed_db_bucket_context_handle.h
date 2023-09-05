@@ -19,14 +19,11 @@ class IndexedDBBucketContext;
 class CONTENT_EXPORT IndexedDBBucketContextHandle {
  public:
   IndexedDBBucketContextHandle();
-  explicit IndexedDBBucketContextHandle(
-      base::WeakPtr<IndexedDBBucketContext> bucket_state);
+  explicit IndexedDBBucketContextHandle(IndexedDBBucketContext& bucket_context);
   IndexedDBBucketContextHandle(IndexedDBBucketContextHandle&&);
   IndexedDBBucketContextHandle& operator=(IndexedDBBucketContextHandle&&);
-
-  IndexedDBBucketContextHandle(const IndexedDBBucketContextHandle&) = delete;
-  IndexedDBBucketContextHandle& operator=(const IndexedDBBucketContextHandle&) =
-      delete;
+  IndexedDBBucketContextHandle(const IndexedDBBucketContextHandle&);
+  IndexedDBBucketContextHandle operator=(const IndexedDBBucketContextHandle&);
 
   ~IndexedDBBucketContextHandle();
 
@@ -36,10 +33,19 @@ class CONTENT_EXPORT IndexedDBBucketContextHandle {
 
   // Returns null if the factory was destroyed, which should only happen on
   // context destruction.
-  IndexedDBBucketContext* bucket_state() { return bucket_state_.get(); }
+  IndexedDBBucketContext* bucket_context() { return bucket_context_.get(); }
+
+  IndexedDBBucketContext* operator->() {
+    CHECK(bucket_context_.get());
+    return bucket_context_.get();
+  }
+  const IndexedDBBucketContext* operator->() const {
+    CHECK(bucket_context_.get());
+    return bucket_context_.get();
+  }
 
  private:
-  base::WeakPtr<IndexedDBBucketContext> bucket_state_;
+  base::WeakPtr<IndexedDBBucketContext> bucket_context_;
 };
 
 }  // namespace content

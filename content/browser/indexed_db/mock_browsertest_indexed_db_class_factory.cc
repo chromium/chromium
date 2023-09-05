@@ -56,20 +56,14 @@ namespace content {
 class IndexedDBTestDatabase : public IndexedDBDatabase {
  public:
   IndexedDBTestDatabase(const std::u16string& name,
-                        IndexedDBBackingStore* backing_store,
-                        IndexedDBFactory* factory,
+                        IndexedDBBucketContext& bucket_context,
                         IndexedDBClassFactory* class_factory,
-                        TasksAvailableCallback tasks_available_callback,
-                        const Identifier& unique_identifier,
-                        PartitionedLockManager* transaction_lock_manager)
+                        const Identifier& unique_identifier)
       : IndexedDBDatabase(name,
-                          backing_store,
-                          factory,
+                          bucket_context,
                           class_factory,
-                          std::move(tasks_available_callback),
-                          unique_identifier,
-                          transaction_lock_manager) {}
-  ~IndexedDBTestDatabase() override {}
+                          unique_identifier) {}
+  ~IndexedDBTestDatabase() override = default;
 
  protected:
   size_t GetUsableMessageSizeInBytes() const override {
@@ -84,17 +78,15 @@ class IndexedDBTestTransaction : public IndexedDBTransaction {
       IndexedDBConnection* connection,
       const std::set<int64_t>& scope,
       blink::mojom::IDBTransactionMode mode,
-      TasksAvailableCallback tasks_available_callback,
-      IndexedDBTransaction::TearDownCallback tear_down_callback,
+      IndexedDBBucketContextHandle bucket_context,
       IndexedDBBackingStore::Transaction* backing_store_transaction)
       : IndexedDBTransaction(id,
                              connection,
                              scope,
                              mode,
-                             std::move(tasks_available_callback),
-                             std::move(tear_down_callback),
+                             std::move(bucket_context),
                              backing_store_transaction) {}
-  ~IndexedDBTestTransaction() override {}
+  ~IndexedDBTestTransaction() override = default;
 
  protected:
   // Browser tests run under memory/address sanitizers (etc) may trip the
@@ -228,7 +220,7 @@ class LevelDBTestTransaction : public TransactionalLevelDBTransaction {
   }
 
  private:
-  ~LevelDBTestTransaction() override {}
+  ~LevelDBTestTransaction() override = default;
 
   FailMethod fail_method_;
   int fail_on_call_num_;
@@ -343,7 +335,7 @@ class LevelDBTestIterator : public content::TransactionalLevelDBIterator {
         fail_method_(fail_method),
         fail_on_call_num_(fail_on_call_num),
         current_call_num_(0) {}
-  ~LevelDBTestIterator() override {}
+  ~LevelDBTestIterator() override = default;
 
  private:
   leveldb::Status Seek(const base::StringPiece& target) override {
@@ -374,14 +366,10 @@ MockBrowserTestIndexedDBClassFactory::transactional_leveldb_factory() {
 std::unique_ptr<IndexedDBDatabase>
 MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
     const std::u16string& name,
-    IndexedDBBackingStore* backing_store,
-    IndexedDBFactory* factory,
-    TasksAvailableCallback tasks_available_callback,
-    const IndexedDBDatabase::Identifier& unique_identifier,
-    PartitionedLockManager* transaction_lock_manager) {
-  return std::make_unique<IndexedDBTestDatabase>(
-      name, backing_store, factory, this, std::move(tasks_available_callback),
-      unique_identifier, transaction_lock_manager);
+    IndexedDBBucketContext& bucket_context,
+    const IndexedDBDatabase::Identifier& unique_identifier) {
+  return std::make_unique<IndexedDBTestDatabase>(name, bucket_context, this,
+                                                 unique_identifier);
 }
 
 std::unique_ptr<IndexedDBTransaction>
@@ -390,12 +378,11 @@ MockBrowserTestIndexedDBClassFactory::CreateIndexedDBTransaction(
     IndexedDBConnection* connection,
     const std::set<int64_t>& scope,
     blink::mojom::IDBTransactionMode mode,
-    TasksAvailableCallback tasks_available_callback,
-    IndexedDBTransaction::TearDownCallback tear_down_callback,
+    IndexedDBBucketContextHandle bucket_context,
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
-  return std::make_unique<IndexedDBTestTransaction>(
-      id, connection, scope, mode, std::move(tasks_available_callback),
-      std::move(tear_down_callback), backing_store_transaction);
+  return std::make_unique<IndexedDBTestTransaction>(id, connection, scope, mode,
+                                                    std::move(bucket_context),
+                                                    backing_store_transaction);
 }
 
 std::unique_ptr<TransactionalLevelDBDatabase>

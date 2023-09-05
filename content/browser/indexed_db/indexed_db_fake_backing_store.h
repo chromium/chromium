@@ -37,6 +37,8 @@ class IndexedDBFakeBackingStore : public IndexedDBBackingStore {
 
   ~IndexedDBFakeBackingStore() override;
 
+  void TearDown(base::WaitableEvent* signal_on_destruction) override;
+
   leveldb::Status CreateDatabase(
       blink::IndexedDBDatabaseMetadata& metadata) override;
   leveldb::Status DeleteDatabase(

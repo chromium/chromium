@@ -59,7 +59,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompactIDBOnClose);
 // `IndexedDBCursor`.
 class CONTENT_EXPORT IndexedDBBucketContext {
  public:
-  using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using DBMap =
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
 
@@ -96,6 +95,34 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     kClosed,
   };
 
+  // This structure defines the interface between `IndexedDBBucketContext` and
+  // the broader context that exists per Storage Partition (i.e.
+  // BrowserContext).
+  // TODO(crbug.com/1474996): for now these callbacks execute on the current
+  // sequence, but in the future they should be bound to the main IDB sequence.
+  struct CONTENT_EXPORT Delegate {
+    Delegate();
+    Delegate(Delegate&&);
+    ~Delegate();
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // Called to pump the IDB task queue (generally results in `RunTasks()`
+    // being called).
+    base::RepeatingClosure on_tasks_available;
+
+    // Called when a fatal error has occurred that should result in tearing down
+    // the backing store. `IndexedDBBucketContext` *may* be synchronously
+    // destroyed after this is invoked.
+    base::RepeatingCallback<void(leveldb::Status)> on_fatal_error;
+
+    // Called when database content has changed.
+    base::RepeatingCallback<void(const std::u16string& /*database_name*/,
+                                 const std::u16string& /*object_store_name*/)>
+        on_content_changed;
+  };
+
   // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
   // expected to outlive this object.
   IndexedDBBucketContext(
@@ -106,8 +133,7 @@ class CONTENT_EXPORT IndexedDBBucketContext {
       base::Time* earliest_global_sweep_time,
       base::Time* earliest_global_compaction_time,
       std::unique_ptr<PartitionedLockManager> lock_manager,
-      TasksAvailableCallback notify_tasks_callback,
-      TearDownCallback tear_down_callback,
+      Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
 
   IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
@@ -144,17 +170,16 @@ class CONTENT_EXPORT IndexedDBBucketContext {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return lock_manager_.get();
   }
+  const PartitionedLockManager* lock_manager() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return lock_manager_.get();
+  }
   IndexedDBPreCloseTaskQueue* pre_close_task_queue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return pre_close_task_queue_.get();
   }
-  TasksAvailableCallback notify_tasks_callback() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return notify_tasks_callback_;
-  }
 
-  // Note: calling this callback will destroy the IndexedDBBucketContext.
-  const TearDownCallback& tear_down_callback() { return tear_down_callback_; }
+  Delegate& delegate() { return delegate_; }
 
   bool is_running_tasks() const { return running_tasks_; }
   bool is_task_run_scheduled() const { return task_run_scheduled_; }
@@ -190,15 +215,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   IndexedDBDatabase* AddDatabase(const std::u16string& name,
                                  std::unique_ptr<IndexedDBDatabase> database);
 
-  // Returns a new handle to this factory. If this object was in its closing
-  // sequence, then that sequence will be halted by this call.
-  [[nodiscard]] IndexedDBBucketContextHandle CreateHandle();
-
+  void OnHandleCreated();
   void OnHandleDestruction();
 
   // Returns true if this factory can be closed (no references, no blobs, and
   // not persisting for incognito).
-  bool CanCloseFactory();
+  bool CanClose();
 
   void MaybeStartClosing();
   void StartClosing();
@@ -221,11 +243,11 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   // True if this factory should be remain alive due to the storage partition
   // being for incognito mode, and our backing store being in-memory. This is
-  // used as closing criteria for this object, see CanCloseFactory.
+  // used as closing criteria for this object, see CanClose.
   bool persist_for_incognito_;
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see
-  // CanCloseFactory.
+  // CanClose.
   bool has_blobs_outstanding_ = false;
   bool skip_closing_sequence_ = false;
   const raw_ptr<base::Clock> clock_;
@@ -246,13 +268,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   DBMap databases_;
   // This is the refcount for the number of IndexedDBBucketContextHandle's
   // given out for this factory using OpenReference. This is used as closing
-  // criteria for this object, see CanCloseFactory.
+  // criteria for this object, see CanClose.
   int64_t open_handles_ = 0;
 
   std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;
 
-  TasksAvailableCallback notify_tasks_callback_;
-  TearDownCallback tear_down_callback_;
+  Delegate delegate_;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };

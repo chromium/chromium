@@ -15,7 +15,6 @@
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
-#include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,7 +29,7 @@ static int32_t g_next_indexed_db_connection_id;
 }  // namespace
 
 IndexedDBConnection::IndexedDBConnection(
-    IndexedDBBucketContextHandle bucket_state_handle,
+    IndexedDBBucketContext& bucket_context,
     IndexedDBClassFactory* indexed_db_class_factory,
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
@@ -38,7 +37,7 @@ IndexedDBConnection::IndexedDBConnection(
     scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
     : id_(g_next_indexed_db_connection_id++),
-      bucket_state_handle_(std::move(bucket_state_handle)),
+      bucket_context_handle_(bucket_context),
       indexed_db_class_factory_(indexed_db_class_factory),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
@@ -60,7 +59,7 @@ IndexedDBConnection::~IndexedDBConnection() {
   leveldb::Status status =
       AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
   if (!status.ok())
-    bucket_state_handle_.bucket_state()->tear_down_callback().Run(status);
+    bucket_context_handle_->delegate().on_fatal_error.Run(status);
 }
 
 leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
@@ -87,7 +86,7 @@ leveldb::Status IndexedDBConnection::AbortTransactionsAndClose(
 
   std::move(on_close_).Run(this);
   client_keep_active_remotes_.Clear();
-  bucket_state_handle_.Release();
+  bucket_context_handle_.Release();
   return status;
 }
 
@@ -120,12 +119,9 @@ IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  IndexedDBBucketContext* bucket_state = bucket_state_handle_.bucket_state();
   std::unique_ptr<IndexedDBTransaction> transaction =
       indexed_db_class_factory_->CreateIndexedDBTransaction(
-          id, this, scope, mode, database()->tasks_available_callback(),
-          bucket_state ? bucket_state->tear_down_callback()
-                       : IndexedDBTransaction::TearDownCallback(),
+          id, this, scope, mode, bucket_context_handle_,
           backing_store_transaction);
   IndexedDBTransaction* transaction_ptr = transaction.get();
   transactions_[id] = std::move(transaction);
@@ -140,7 +136,7 @@ void IndexedDBConnection::AbortTransactionAndTearDownOnError(
                transaction->id());
   leveldb::Status status = transaction->Abort(error);
   if (!status.ok())
-    bucket_state_handle_.bucket_state()->tear_down_callback().Run(status);
+    bucket_context_handle_->delegate().on_fatal_error.Run(status);
 }
 
 leveldb::Status IndexedDBConnection::AbortAllTransactions(
