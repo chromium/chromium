@@ -89,6 +89,14 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   ~TFLiteModelExecutor() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Ensure the memory mapped file is deleted on a blockable sequence since
+    // the current sequence is not guaranteed to be blockable.
+    //
+    // |UnloadModel| is not used here since it may be overridden.
+    if (model_fb_) {
+      model_loading_task_runner_->DeleteSoon(FROM_HERE, std::move(model_fb_));
+    }
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
@@ -174,7 +182,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     loaded_model_.reset();
-    model_fb_.reset();
+    // Ensure the memory mapped file is deleted on a blockable sequence.
+    model_loading_task_runner_->DeleteSoon(FROM_HERE, std::move(model_fb_));
   }
 
   using ExecutionCallback =
@@ -297,6 +306,9 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
             GetStringNameForOptimizationTarget(optimization_target_),
         !!model_file_path_);
 
+    // TODO(b/298673103): Multiple calls to LoadModelFile may trigger this
+    // PostTask multiple times.
+
     // Run the slower model loading file I/O task on the background thread to
     // avoid blocking the main thread, e.g., the UI thread.
     model_loading_task_runner_->PostTaskAndReplyWithResult(
@@ -346,15 +358,21 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
           status_and_model_fb) {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    auto status = status_and_model_fb.first;
-    auto model_fb = std::move(status_and_model_fb.second);
-    if (!model_fb) {
-      std::move(model_loaded_callback).Run(status);
+
+    // If |model_fb_| is going to be replaced below, it needs to be deleted on a
+    // blockable thread.
+    UnloadModel();
+
+    ExecutionStatus file_load_status = status_and_model_fb.first;
+    model_fb_ = std::move(status_and_model_fb.second);
+    if (!model_fb_) {
+      std::move(model_loaded_callback).Run(file_load_status);
       return;
     }
 
-    ExecutionStatus out_status;
-    loaded_model_ = BuildModelExecutionTask(model_fb.get(), &out_status);
+    ExecutionStatus build_model_status;
+    loaded_model_ =
+        BuildModelExecutionTask(model_fb_.get(), &build_model_status);
 
     // Local histogram used in integration testing.
     base::BooleanHistogram::FactoryGet(
@@ -364,7 +382,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
         base::Histogram::kNoFlags)
         ->Add(!!loaded_model_);
 
-    std::move(model_loaded_callback).Run(out_status);
+    std::move(model_loaded_callback).Run(build_model_status);
   }
 
   // Loads the model file if not loaded yet on the background thread, and batch
@@ -531,7 +549,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   // Note on lifetimes: |loaded_model_| and |model_fb_| both share the same
   // lifetime, being set in |LoadModelFile()| and being destroyed in
-  // |ResetModelFile()|.
+  // |UnloadModel()|.
 
   std::unique_ptr<ModelExecutionTaskType> loaded_model_
       GUARDED_BY_CONTEXT(sequence_checker_);

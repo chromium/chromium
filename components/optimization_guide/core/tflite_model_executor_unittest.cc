@@ -119,8 +119,8 @@ class TFLiteModelExecutorTest : public testing::Test {
     return test_model_provider_.get();
   }
 
-  base::SequencedTaskRunner* execution_sequence() {
-    return execution_sequence_.get();
+  scoped_refptr<base::SequencedTaskRunner> execution_sequence() {
+    return execution_sequence_;
   }
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
@@ -847,6 +847,59 @@ TEST_F(TFLiteModelExecutorTest, UpdateModelFileWithPreloading) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       true, 1);
+}
+
+class ForegroundTFLiteModelExecutorTest : public TFLiteModelExecutorTest {
+ public:
+  ForegroundTFLiteModelExecutorTest() = default;
+  ~ForegroundTFLiteModelExecutorTest() override = default;
+
+  void CreateModelHandler() override {
+    foreground_execution_sequence_ =
+        base::ThreadPool::CreateSequencedTaskRunner({});
+
+    model_handler_ = std::make_unique<TestTFLiteModelHandler>(
+        test_model_provider(), foreground_execution_sequence_);
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> foreground_execution_sequence_;
+};
+
+// See https://crbug.com/1477407.
+TEST_F(ForegroundTFLiteModelExecutorTest, LoadAndUpdateAndUnloadModel) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  // Setting this flag ensures every call to |PushModelFileToModelExecutor| will
+  // also call |LoadModelFile|.
+  model_handler_->SetShouldUnloadModelOnComplete(false);
+
+  // Invoke UpdateModelFile() to load the model.
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+
+  // Ensures pending tasks are processed. They are generating UMA metrics.
+  RunUntilIdle();
+
+  // Push the model again to ensure model file updating is correctly threaded.
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      true, 2);
+
+  // Trigger the memory mapped model file to be destroyed.
+  model_handler_->UnloadModel();
+
+  // Wait for everything to be cleaned up on background threads.
+  RunUntilIdle();
 }
 
 }  // namespace
