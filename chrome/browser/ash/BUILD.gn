@@ -5873,6 +5873,7 @@ source_set("unit_tests") {
     "wilco_dtc_supportd/wilco_dtc_supportd_notification_controller_unittest.cc",
     "wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_unittest.cc",
   ]
+
   deps = [
     ":add_remove_user_event_proto",
     ":arc_test_support",

@@ -5,6 +5,8 @@
 #include "ash/system/federated/federated_client_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -18,7 +20,8 @@ class FederatedClientManagerTest : public NoSessionAshTestBase {
  public:
   FederatedClientManagerTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        scoped_fake_service_connection_for_test_(&fake_service_connection_) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kFederatedService,
                               features::kFederatedStringsService},
@@ -33,19 +36,61 @@ class FederatedClientManagerTest : public NoSessionAshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    manager_ = new FederatedClientManager;
+    manager_ = std::make_unique<FederatedClientManager>();
+  }
+
+  void TearDown() override {
+    // This ordering is important.
+    manager_.reset();
+    AshTestBase::TearDown();
   }
 
  protected:
-  raw_ptr<FederatedClientManager> manager_;
+  std::unique_ptr<FederatedClientManager> manager_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  FakeServiceConnectionImpl fake_service_connection_;
+  ScopedFakeServiceConnectionForTest scoped_fake_service_connection_for_test_;
 };
 
-// TODO(b/289140140): Add tests after implementation is written.
-TEST_F(FederatedClientManagerTest, PlaceholderTest) {
+// TODO(b/289140140): Add more tests when implementation is completed.
+
+TEST_F(FederatedClientManagerTest, ServiceAvailableAfterLogin) {
+  // Before login.
   EXPECT_FALSE(manager_->IsServiceAvailable());
+
+  // After login.
+  SimulateUserLogin("user@gmail.com");
+  EXPECT_TRUE(manager_->IsServiceAvailable());
+}
+
+// Demonstration of using a faked FederatedServiceController in a non-ash
+// test environment, i.e. a low-level unit test which does not inherit from
+// AshTestBase.
+class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
+ public:
+  FederatedClientManagerFakeAshInteractionTest() = default;
+  FederatedClientManagerFakeAshInteractionTest(
+      const FederatedClientManagerFakeAshInteractionTest&) = delete;
+  FederatedClientManagerFakeAshInteractionTest& operator=(
+      const FederatedClientManagerFakeAshInteractionTest&) = delete;
+
+  ~FederatedClientManagerFakeAshInteractionTest() override = default;
+
+  void SetUp() override {
+    FederatedClientManager::UseFakeAshInteractionForTest();
+    manager_ = std::make_unique<FederatedClientManager>();
+  }
+
+  void TearDown() override { manager_.reset(); }
+
+ protected:
+  std::unique_ptr<FederatedClientManager> manager_;
+};
+
+TEST_F(FederatedClientManagerFakeAshInteractionTest, ServiceAvailable) {
+  EXPECT_TRUE(manager_->IsServiceAvailable());
 }
 
 }  // namespace ash::federated
