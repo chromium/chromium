@@ -40,6 +40,7 @@ enum PanelSelector {
   FINISHED = '#progress-finished',
   OFFLINE = '#progress-offline',
   NOT_ENOUGH_SPACE = '#progress-not-enough-space',
+  METERED = '#progress-metered-network',
 }
 
 // Checks that a panel type is visible and that all the other types are hidden.
@@ -55,6 +56,9 @@ function checkVisiblePanel(panel: XfCloudPanel, selector: PanelSelector) {
           '#progress-not-enough-space')!;
   const progressPreparingElement =
       panel.shadowRoot!.querySelector<HTMLDivElement>('#progress-preparing')!;
+  const progressMeteredNetworkElement =
+      panel.shadowRoot!.querySelector<HTMLDivElement>(
+          '#progress-metered-network')!;
 
   // Some stages use flexbox to center or vertically align their items, others
   // use a normal block display.
@@ -76,6 +80,9 @@ function checkVisiblePanel(panel: XfCloudPanel, selector: PanelSelector) {
   checkStyle(
       progressPreparingElement, 'display',
       displayValue(PanelSelector.PREPARING, 'flex'));
+  checkStyle(
+      progressMeteredNetworkElement, 'display',
+      displayValue(PanelSelector.METERED, 'flex'));
 }
 
 // Tests that the initial `<xf-cloud-panel>` element defaults to the preparing
@@ -250,4 +257,13 @@ export async function testVariousCombinationsOfAttributes() {
   // The type attribute should take precedence over progressing.
   panel.setAttribute('type', 'offline');
   checkVisiblePanel(panel, PanelSelector.OFFLINE);
+}
+
+// Tests that metered network properly updates the state.
+export async function testMeteredNetworkState() {
+  const panel = await getCloudPanel();
+
+  // Setting it to a valid value should update the underlying type.
+  panel.setAttribute('type', 'metered_network');
+  checkVisiblePanel(panel, PanelSelector.METERED);
 }
