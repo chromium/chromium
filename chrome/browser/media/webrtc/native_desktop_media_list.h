@@ -36,6 +36,7 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
 
   ~NativeDesktopMediaList() override;
 
+  void SetViewDialogWindowId(content::DesktopMediaID dialog_id) override;
   bool IsSourceListDelegated() const override;
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
