@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -1133,6 +1134,8 @@ TEST_F(AutofillTableTest, IBAN) {
 }
 
 TEST_F(AutofillTableTest, CreditCard) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Add a 'Work' credit card.
   CreditCard work_creditcard;
   work_creditcard.set_origin("https://www.example.com/");
@@ -1241,8 +1244,25 @@ TEST_F(AutofillTableTest, CreditCard) {
   EXPECT_FALSE(db_creditcard);
 }
 
+TEST_F(AutofillTableTest, AddCreditCardCvcWithFlagOff) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card = test::GetCreditCard();
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->AddCreditCard(card));
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"", db_card->cvc());
+
+  card.set_cvc(u"234");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"", db_card->cvc());
+}
+
 // Tests that verify ClearCreditCards function working as expected.
 TEST_F(AutofillTableTest, ClearCreditCards) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   CreditCard card = test::GetCreditCard();
   card.set_cvc(u"123");
   EXPECT_TRUE(table_->AddCreditCard(card));
@@ -1264,6 +1284,8 @@ TEST_F(AutofillTableTest, ClearCreditCards) {
 // credit card with only cvc change will not update credit_card table
 // modification_date.
 TEST_F(AutofillTableTest, CreditCardCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   const base::Time arbitrary_time = base::Time::FromDoubleT(25);
   // Create the test clock and set the time to a specific value.
   TestAutofillClock test_clock;
@@ -1321,6 +1343,23 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   cvc_removed_statement.BindString(0, card.guid());
   ASSERT_TRUE(cvc_removed_statement.is_valid());
   EXPECT_FALSE(cvc_removed_statement.Step());
+}
+
+// Tests that update a credit card CVC that doesn't have CVC set initially.
+TEST_F(AutofillTableTest, UpdateCvcForExistingCreditCardWithoutCvc) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  CreditCard card = test::GetCreditCard();
+  EXPECT_TRUE(table_->AddCreditCard(card));
+
+  std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"", db_card->cvc());
+
+  // Update the credit card CVC, we should expect success and CVC gets updated.
+  card.set_cvc(u"123");
+  EXPECT_TRUE(table_->UpdateCreditCard(card));
+  db_card = table_->GetCreditCard(card.guid());
+  EXPECT_EQ(u"123", db_card->cvc());
 }
 
 // Tests that verify add, update and clear server cvc function working as
@@ -1467,6 +1506,8 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
 }
 
 TEST_F(AutofillTableTest, UpdateCreditCard) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Add a credit card to the db.
   CreditCard credit_card;
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
@@ -1538,6 +1579,8 @@ TEST_F(AutofillTableTest, UpdateCreditCard) {
 }
 
 TEST_F(AutofillTableTest, UpdateCreditCardOriginOnly) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Add a credit card to the db.
   CreditCard credit_card;
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");

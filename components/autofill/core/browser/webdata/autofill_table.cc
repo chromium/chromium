@@ -48,6 +48,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -2010,7 +2011,9 @@ bool AutofillTable::AddCreditCard(const CreditCard& credit_card) {
   DCHECK_GT(db_->GetLastChangeCount(), 0);
 
   // If credit card contains cvc, will store cvc in local_stored_cvc table.
-  if (!credit_card.cvc().empty()) {
+  if (!credit_card.cvc().empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
     sql::Statement cvc_statement;
     InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
                   {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
@@ -2031,10 +2034,20 @@ bool AutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
     return false;
 
   bool cvc_result = false;
-  if (old_credit_card->cvc() != credit_card.cvc()) {
+  if (old_credit_card->cvc() != credit_card.cvc() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
     sql::Statement cvc_statement;
-    UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
-                  {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    // If existing card doesn't have CVC, we will insert CVC into
+    // local_stored_cvc table. If existing card does have CVC, we will update
+    // CVC for local_stored_cvc table.
+    if (old_credit_card->cvc().empty()) {
+      InsertBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp});
+    } else {
+      UpdateBuilder(db_, cvc_statement, kLocalStoredCvcTable,
+                    {kGuid, kValueEncrypted, kLastUpdatedTimestamp}, "guid=?1");
+    }
     BindLocalStoredCvcToStatement(credit_card, AutofillClock::Now(),
                                   &cvc_statement, *autofill_table_encryptor_);
     cvc_result = cvc_statement.Run();
