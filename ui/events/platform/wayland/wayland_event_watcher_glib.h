@@ -18,7 +18,9 @@ namespace ui {
 // https://bit.ly/3tCjobF
 class WaylandEventWatcherGlib : public WaylandEventWatcher {
  public:
-  WaylandEventWatcherGlib(wl_display* display, wl_event_queue* event_queue);
+  WaylandEventWatcherGlib(wl_display* display,
+                          wl_event_queue* event_queue,
+                          bool use_threaded_polling);
   WaylandEventWatcherGlib(const WaylandEventWatcherGlib&) = delete;
   WaylandEventWatcherGlib& operator=(const WaylandEventWatcherGlib&) = delete;
   ~WaylandEventWatcherGlib() override;

@@ -193,12 +193,14 @@ void WaylandEventSource::ConvertEventToTarget(const EventTarget* new_target,
 WaylandEventSource::WaylandEventSource(wl_display* display,
                                        wl_event_queue* event_queue,
                                        WaylandWindowManager* window_manager,
-                                       WaylandConnection* connection)
+                                       WaylandConnection* connection,
+                                       bool use_threaded_polling)
     : window_manager_(window_manager),
       connection_(connection),
-      event_watcher_(
-          WaylandEventWatcher::CreateWaylandEventWatcher(display,
-                                                         event_queue)) {
+      event_watcher_(WaylandEventWatcher::CreateWaylandEventWatcher(
+          display,
+          event_queue,
+          use_threaded_polling)) {
   DCHECK(window_manager_);
 
   // Observes remove changes to know when touch points can be removed.

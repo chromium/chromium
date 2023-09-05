@@ -239,7 +239,23 @@ class OzonePlatformWayland : public OzonePlatform,
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());
     connection_ = std::make_unique<WaylandConnection>();
-    if (!connection_->Initialize()) {
+
+    // wl_egl requires single_process and it needs to watch wayland event on gpu
+    // thread. In this case we need thread polling event watcher on browser
+    // process since watching wayland event with glib on ui thread can cause
+    // incomplete state of reading (wl_display_prepare_read is called but
+    // wl_display_cancel_read or wl_display_read_events is not called). This
+    // incomplete state can cause deadlock from gpu thread reading wayland
+    // event.
+    bool use_threaded_polling = args.single_process;
+
+#if defined(WAYLAND_GBM)
+    if (use_threaded_polling) {
+      // If gbm is used, wl_egl is not used so threaded polling is not required.
+      use_threaded_polling = path_finder_.GetDrmRenderNodePath().empty();
+    }
+#endif
+    if (!connection_->Initialize(use_threaded_polling)) {
       LOG(ERROR) << "Failed to initialize Wayland platform";
       return false;
     }

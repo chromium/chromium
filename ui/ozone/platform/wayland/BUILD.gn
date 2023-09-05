@@ -631,6 +631,7 @@ source_set("wayland_unittests") {
     "//ui/base/ime/linux",
     "//ui/base/wayland:wayland_display_util",
     "//ui/events/ozone/layout",
+    "//ui/events/platform/wayland:wayland_event_watcher",
     "//ui/gfx/linux:test_support",
     "//ui/ozone:platform",
     "//ui/ozone:test_support",

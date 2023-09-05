@@ -63,7 +63,8 @@ class WaylandEventSource : public PlatformEventSource,
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
                      WaylandWindowManager* window_manager,
-                     WaylandConnection* connection);
+                     WaylandConnection* connection,
+                     bool use_threaded_polling = false);
   WaylandEventSource(const WaylandEventSource&) = delete;
   WaylandEventSource& operator=(const WaylandEventSource&) = delete;
   ~WaylandEventSource() override;

@@ -73,8 +73,9 @@ GSourceFuncs WatchSourceFuncs = {
 }  // namespace
 
 WaylandEventWatcherGlib::WaylandEventWatcherGlib(wl_display* display,
-                                                 wl_event_queue* event_queue)
-    : WaylandEventWatcher(display, event_queue) {}
+                                                 wl_event_queue* event_queue,
+                                                 bool use_threaded_polling)
+    : WaylandEventWatcher(display, event_queue, use_threaded_polling) {}
 
 WaylandEventWatcherGlib::~WaylandEventWatcherGlib() {
   StopProcessingEvents();
@@ -139,8 +140,10 @@ void WaylandEventWatcherGlib::HandleDispatch() {
 // static
 std::unique_ptr<WaylandEventWatcher>
 WaylandEventWatcher::CreateWaylandEventWatcher(wl_display* display,
-                                               wl_event_queue* event_queue) {
-  return std::make_unique<WaylandEventWatcherGlib>(display, event_queue);
+                                               wl_event_queue* event_queue,
+                                               bool use_threaded_polling) {
+  return std::make_unique<WaylandEventWatcherGlib>(display, event_queue,
+                                                   use_threaded_polling);
 }
 
 }  // namespace ui

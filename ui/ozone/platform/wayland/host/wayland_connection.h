@@ -97,7 +97,7 @@ class WaylandConnection {
   WaylandConnection& operator=(const WaylandConnection&) = delete;
   ~WaylandConnection();
 
-  bool Initialize();
+  bool Initialize(bool use_threaded_polling = false);
 
   // Immediately flushes the Wayland display.
   void Flush();
