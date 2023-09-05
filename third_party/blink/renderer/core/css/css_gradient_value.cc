@@ -742,7 +742,9 @@ void CSSGradientValue::AddStops(
                              hue_interpolation_method_);
       }
 
-      if (NormalizeAndAddStops(stops, desc)) {
+      // Always adjust the radii for non-repeating gradients, because they can
+      // extend "outside" the [0, 1] range even if they are degenerate.
+      if (NormalizeAndAddStops(stops, desc) || !repeating_) {
         AdjustGradientRadiiForOffsetRange(desc, stops.front().offset,
                                           stops.back().offset);
       }
