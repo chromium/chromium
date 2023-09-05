@@ -381,53 +381,38 @@ void RecordBulkPinningMountFailureReason(const Profile* profile,
 }  // namespace
 
 // Observes changes in Drive's Preferences and network connections.
-class DriveIntegrationService::PrefWatcher {
- public:
-  explicit PrefWatcher(DriveIntegrationService* const service)
-      : service_(service) {
-    DCHECK(service_);
-    service_->registrar_.Init(service_->GetPrefs());
-    service_->registrar_.Add(
-        prefs::kDisableDrive,
-        base::BindRepeating(&PrefWatcher::OnDrivePrefChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-    service_->registrar_.Add(
-        prefs::kDisableDriveOverCellular,
-        base::BindRepeating(&DriveIntegrationService::OnNetworkChanged,
-                            service_->weak_ptr_factory_.GetWeakPtr()));
-    if (ash::features::IsDriveFsMirroringEnabled()) {
-      service_->registrar_.Add(
-          prefs::kDriveFsEnableMirrorSync,
-          base::BindRepeating(&PrefWatcher::OnMirroringPrefChanged,
-                              weak_ptr_factory_.GetWeakPtr()));
-    }
-
-    if (util::IsDriveFsBulkPinningEnabled(service_->profile_)) {
-      service_->registrar_.Add(
-          kDriveFsBulkPinningEnabled,
-          base::BindRepeating(&PrefWatcher::ToggleBulkPinning,
-                              weak_ptr_factory_.GetWeakPtr()));
-    }
-
-    DCHECK(!service_->network_state_handler_);
-    if (!ash::NetworkHandler::IsInitialized()) {
-      return;  // Test environment.
-    }
-
-    service_->network_state_handler_ =
-        ash::NetworkHandler::Get()->network_state_handler();
-    DCHECK(service_->network_state_handler_);
-    service_->network_state_handler_->AddObserver(service_);
+void DriveIntegrationService::RegisterPrefs() {
+  registrar_.Init(GetPrefs());
+  registrar_.Add(
+      prefs::kDisableDrive,
+      base::BindRepeating(&DriveIntegrationService::OnDrivePrefChanged,
+                          base::Unretained(this)));
+  registrar_.Add(prefs::kDisableDriveOverCellular,
+                 base::BindRepeating(&DriveIntegrationService::OnNetworkChanged,
+                                     base::Unretained(this)));
+  if (ash::features::IsDriveFsMirroringEnabled()) {
+    registrar_.Add(
+        prefs::kDriveFsEnableMirrorSync,
+        base::BindRepeating(&DriveIntegrationService::OnMirroringPrefChanged,
+                            base::Unretained(this)));
   }
 
- private:
-  void OnDrivePrefChanged() { service_->OnDrivePrefChanged(); }
-  void OnMirroringPrefChanged() { service_->OnMirroringPrefChanged(); }
-  void ToggleBulkPinning() { service_->ToggleBulkPinning(); }
+  if (util::IsDriveFsBulkPinningEnabled(profile_)) {
+    registrar_.Add(
+        kDriveFsBulkPinningEnabled,
+        base::BindRepeating(&DriveIntegrationService::ToggleBulkPinning,
+                            base::Unretained(this)));
+  }
 
-  const raw_ptr<DriveIntegrationService, ExperimentalAsh> service_;
-  base::WeakPtrFactory<PrefWatcher> weak_ptr_factory_{this};
-};
+  DCHECK(!network_state_handler_);
+  if (!ash::NetworkHandler::IsInitialized()) {
+    return;  // Test environment.
+  }
+
+  network_state_handler_ = ash::NetworkHandler::Get()->network_state_handler();
+  DCHECK(network_state_handler_);
+  network_state_handler_->AddObserver(this);
+}
 
 class DriveIntegrationService::DriveFsHolder
     : public drivefs::DriveFsHost::Delegate,
@@ -641,7 +626,7 @@ DriveIntegrationService::DriveIntegrationService(
        base::WithBaseSyncPrimitives()});
 
   if (util::IsDriveAvailableForProfile(profile)) {
-    pref_watcher_ = std::make_unique<const PrefWatcher>(this);
+    RegisterPrefs();
   }
 
   bool migrated_to_drivefs =

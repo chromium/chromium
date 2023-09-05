@@ -462,6 +462,7 @@ class DriveIntegrationService : public KeyedService,
                                    drive::FileError error,
                                    int64_t total_size);
 
+  void RegisterPrefs();
   void OnDrivePrefChanged();
   void OnMirroringPrefChanged();
 
@@ -496,12 +497,9 @@ class DriveIntegrationService : public KeyedService,
 
   std::unique_ptr<DriveFsHolder> drivefs_holder_;
 
-  PrefChangeRegistrar registrar_;
   raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
       nullptr;
 
-  class PrefWatcher;
-  std::unique_ptr<const PrefWatcher> pref_watcher_;
   std::unique_ptr<PinManager> pin_manager_;
 
   int drivefs_total_failures_count_ = 0;
@@ -514,6 +512,8 @@ class DriveIntegrationService : public KeyedService,
 
   base::Time last_offline_storage_size_time_;
   int64_t last_offline_storage_size_result_;
+
+  PrefChangeRegistrar registrar_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
