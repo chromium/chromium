@@ -3438,9 +3438,9 @@ void RenderFrameHostImpl::SetMojomFrameRemote(
 
 namespace {
 
-class DebugHelperForCrbug1425281v2 : public mojom::DebugHelperForCrbug1425281 {
+class DebugHelperForCrbug1425281v3 : public mojom::DebugHelperForCrbug1425281 {
  public:
-  explicit DebugHelperForCrbug1425281v2(
+  explicit DebugHelperForCrbug1425281v3(
       const base::debug::StackTrace& create_rfh_stack_trace,
       const absl::optional<base::debug::StackTrace>&
           last_commit_navigation_stack_trace,
@@ -3503,13 +3503,11 @@ class DebugHelperForCrbug1425281v2 : public mojom::DebugHelperForCrbug1425281 {
     base::debug::Alias(&renderer_is_provisional);
     base::debug::Alias(&added_to_frame_tree_stack_trace);
 
-    SCOPED_CRASH_KEY_STRING256("Bug1425281", "current_site_info",
-                               current_site_info_);
-    SCOPED_CRASH_KEY_STRING256("Bug1425281", "speculative_site_info",
-                               speculative_site_info_);
-    SCOPED_CRASH_KEY_STRING256("Bug1425281", "reason", reason_);
-    SCOPED_CRASH_KEY_STRING256("Bug1425281", "url",
-                               url_.possibly_invalid_spec());
+    DEBUG_ALIAS_FOR_CSTR(current_site_info, current_site_info_.c_str(), 256);
+    DEBUG_ALIAS_FOR_CSTR(speculative_site_info, speculative_site_info_.c_str(),
+                         256);
+    DEBUG_ALIAS_FOR_CSTR(reason, reason_.c_str(), 256);
+    DEBUG_ALIAS_FOR_GURL(url, url_);
 
     base::debug::DumpWithoutCrashing();
   }
@@ -3546,7 +3544,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     if (intent == mojom::FrameDeleteIntention::
                       kSpeculativeMainFrameForNavigationCancelled) {
       mojo::MakeSelfOwnedReceiver(
-          std::make_unique<DebugHelperForCrbug1425281v2>(
+          std::make_unique<DebugHelperForCrbug1425281v3>(
               create_rfh_stack_trace_, last_commit_navigation_stack_trace_,
               lifecycle_state_, GetPage().IsPrimary(), IsOutermostMainFrame(),
               !!GetParent(),
