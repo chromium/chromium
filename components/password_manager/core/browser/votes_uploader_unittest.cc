@@ -657,7 +657,14 @@ TEST_F(VotesUploaderTest, GeneratePasswordAttributesVote_NonAsciiPassword) {
 TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+  base::HistogramTester histogram_tester;
   votes_uploader.MaybeSendSingleUsernameVotes();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.VoteDataAvailability",
+      static_cast<int>(
+          VotesUploader::SingleUsernameVoteDataAvailability::kNone),
+      1);
 }
 
 TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
@@ -700,7 +707,14 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  base::HistogramTester histogram_tester;
   votes_uploader.MaybeSendSingleUsernameVotes();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.VoteDataAvailability",
+      static_cast<int>(VotesUploader::SingleUsernameVoteDataAvailability::
+                           kUsernameFirstOnly),
+      1);
 }
 
 // Tests that a negeative vote is sent if the username candidate field
@@ -1116,7 +1130,64 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
                          /*pref_service=*/nullptr,
                          /*observer=*/IsNull()));
 
+  base::HistogramTester histogram_tester;
   votes_uploader.MaybeSendSingleUsernameVotes();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.VoteDataAvailability",
+      static_cast<int>(VotesUploader::SingleUsernameVoteDataAvailability::
+                           kForgotPasswordOnly),
+      1);
+}
+
+// Tests "PasswordManager.SingleUsername.VoteDataAvailability" UMA recording
+// when both UFF and FPF data is available and has info about the same form.
+TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffOverlapsWithFpf) {
+  VotesUploader votes_uploader(&client_, false);
+
+  SingleUsernameVoteData data(kSingleUsernameRendererId, u"possible_username",
+                              MakeSimpleSingleUsernamePredictions(),
+                              /*stored_credentials=*/{},
+                              /*password_form_had_username_field=*/false);
+
+  votes_uploader.set_single_username_vote_data(data);
+  votes_uploader.AddForgotPasswordVoteData(data);
+
+  base::HistogramTester histogram_tester;
+  votes_uploader.MaybeSendSingleUsernameVotes();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.VoteDataAvailability",
+      static_cast<int>(
+          VotesUploader::SingleUsernameVoteDataAvailability::kBothWithOverlap),
+      1);
+}
+
+// Tests "PasswordManager.SingleUsername.VoteDataAvailability" UMA recording
+// when both UFF and FPF data is available and has info about different forms.
+TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffNoOverlapWithFpf) {
+  VotesUploader votes_uploader(&client_, false);
+
+  SingleUsernameVoteData data1(FieldRendererId(100), u"maybe_username",
+                               MakeSimpleSingleUsernamePredictions(),
+                               /*stored_credentials=*/{},
+                               /*password_form_had_username_field=*/false);
+  votes_uploader.set_single_username_vote_data(data1);
+
+  SingleUsernameVoteData data2(FieldRendererId(200), u"also_maybe_username",
+                               MakeSimpleSingleUsernamePredictions(),
+                               /*stored_credentials=*/{},
+                               /*password_form_had_username_field=*/false);
+  votes_uploader.AddForgotPasswordVoteData(data2);
+
+  base::HistogramTester histogram_tester;
+  votes_uploader.MaybeSendSingleUsernameVotes();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SingleUsername.VoteDataAvailability",
+      static_cast<int>(
+          VotesUploader::SingleUsernameVoteDataAvailability::kBothNoOverlap),
+      1);
 }
 
 }  // namespace password_manager

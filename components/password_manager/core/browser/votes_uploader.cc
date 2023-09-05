@@ -645,6 +645,26 @@ void VotesUploader::MaybeSendSingleUsernameVotes() {
     MaybeSendSingleUsernameVote(vote_data, vote_data.form_predictions,
                                 /*is_forgot_password_vote=*/true);
   }
+
+  SingleUsernameVoteDataAvailability availability =
+      SingleUsernameVoteDataAvailability::kNone;
+  if (single_username_vote_data_.has_value()) {
+    if (forgot_password_vote_data_.size() > 0) {
+      availability = forgot_password_vote_data_.contains(
+                         single_username_vote_data_->renderer_id)
+                         ? SingleUsernameVoteDataAvailability::kBothWithOverlap
+                         : SingleUsernameVoteDataAvailability::kBothNoOverlap;
+    } else {  // `forgot_password_vote_data_` is empty.
+      availability = SingleUsernameVoteDataAvailability::kUsernameFirstOnly;
+    }
+
+  } else {  // `single_username_vote_data_` has no value.
+    if (forgot_password_vote_data_.size() > 0) {
+      availability = SingleUsernameVoteDataAvailability::kForgotPasswordOnly;
+    }
+  }
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SingleUsername.VoteDataAvailability", availability);
 }
 
 void VotesUploader::CalculateUsernamePromptEditState(
