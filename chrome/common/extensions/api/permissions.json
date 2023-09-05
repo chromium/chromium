@@ -5,7 +5,7 @@
 [
   {
     "namespace": "permissions",
-    "description": "Use the <code>chrome.permissions</code> API to request <a href='permissions#manifest'>declared optional permissions</a> at run time rather than install time, so users understand why the permissions are needed and grant only those that are necessary.",
+    "description": "Use the <code>chrome.permissions</code> API to request <a href='/docs/extensions/mv3/declare_permissions/'>declared optional permissions</a> at run time rather than install time, so users understand why the permissions are needed and grant only those that are necessary.",
     "types": [
       {
         "id": "Permissions",
