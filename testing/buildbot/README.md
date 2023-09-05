@@ -292,43 +292,53 @@ is identified uniquely by name, thus, the identifier is appended to the test
 name in the format: "test_name" + "_" + "identifier"
 
 For example, iOS requires running a test suite against multiple devices. If we
-have the following basic test suite:
+have the following variants.pyl:
 
-```
-'ios_eg2_tests': {
-  'basic_unittests': {
+```python
+{
+  'IPHONE_X_13.3': {
     'args': [
-      '--some-arg',
-    ]
-  }
+      '--platform',
+      'iPhone X',
+      '--version',
+      '13.3'
+    ],
+    'identifier': 'iPhone_X_13.3',
+  },
+  'IPHONE_X_13.3_DEVICE': {
+    'identifier': 'device_iPhone_X_13.3',
+    'swarming': {
+      'dimensions': {
+        'os': 'iOS-iPhone10,3'
+      },
+    }
+  },
 }
 ```
 
-and a matrix compound suite with this variants definition:
+and the following test_suites.pyl:
 
-```
-'matrix_compound_test': {
-  'ios_eg2_tests': {
-    'variants': [
-      {
+```python
+{
+  'basic_suites': {
+    'ios_eg2_tests': {
+      'basic_unittests': {
         'args': [
-          '--platform',
-          'iPhone X',
-          '--version',
-          '13.3'
+          '--some-arg',
         ],
-        'identifier': 'iPhone_X_13.3',
       },
-      {
-        'identifier': 'device_iPhone_X_13.3',
-        'swarming': {
-          'dimensions': {
-            'os': 'iOS-iPhone10,3'
-          },
-        }
-      }
-    ]
-  }
+    },
+  },
+  'matrix_compound_suites': {
+    'ios_tests': {
+      'ios_eg2_tests': {
+        'variants': [
+          'IPHONE_X_13.3',
+          'IPHONE_X_13.3_DEVICE',
+        ]
+      },
+    },
+  },
 }
 ```
 
@@ -368,11 +378,6 @@ we can expect the following output:
   'test': 'basic_unittests'
 }
 ```
-
-Due to limitations of the merging algorithm, merging dimension sets fail when
-there are more dimension sets defined in the matrix test suite than the basic
-test suite. On failure, the user is notified of an error merging list key
-dimension sets.
 
 ### Waterfalls
 
