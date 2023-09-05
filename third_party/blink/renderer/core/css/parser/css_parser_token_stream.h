@@ -46,9 +46,12 @@ class CORE_EXPORT CSSParserTokenStream {
     STACK_ALLOCATED();
 
    public:
-    explicit BlockGuard(CSSParserTokenStream& stream) : stream_(stream) {
+    explicit BlockGuard(CSSParserTokenStream& stream)
+        : stream_(stream), boundaries_(stream.boundaries_) {
       const CSSParserToken next = stream.ConsumeInternal();
       DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
+      // Boundaries do not apply within blocks.
+      stream.boundaries_ = FlagForTokenType(kEOFToken);
     }
 
     void SkipToEndOfBlock() {
@@ -62,11 +65,13 @@ class CORE_EXPORT CSSParserTokenStream {
       if (!skipped_to_end_of_block_) {
         SkipToEndOfBlock();
       }
+      stream_.boundaries_ = boundaries_;
     }
 
    private:
     CSSParserTokenStream& stream_;
     bool skipped_to_end_of_block_ = false;
+    uint64_t boundaries_;
   };
 
   static constexpr uint64_t FlagForTokenType(CSSParserTokenType token_type) {
@@ -74,7 +79,13 @@ class CORE_EXPORT CSSParserTokenStream {
   }
 
   // The specified token type will be treated as kEOF while the Boundary is on
-  // the stack.
+  // the stack. However, this does not apply within blocks. For example, if the
+  // current boundary is kSemicolonToken, the parsing following will only treat
+  // the ';' between 'b' and 'c' as kEOF, because the other ';'-tokens are
+  // within a block:
+  //
+  //  a[1;2;3]b;c
+  //
   class Boundary {
     STACK_ALLOCATED();
 

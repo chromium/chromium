@@ -391,6 +391,28 @@ TEST(CSSParserTokenStreamTest, IneffectiveBoundary) {
   EXPECT_FALSE(stream.AtEnd());
 }
 
+TEST(CSSParserTokenStreamTest, BoundaryBlockGuard) {
+  CSSTokenizer tokenizer(String("a[b;c]d;e"));
+  CSSParserTokenStream stream(tokenizer);
+
+  {
+    CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+    EXPECT_EQ("a", stream.Consume().Value());
+
+    {
+      CSSParserTokenStream::BlockGuard guard(stream);
+      // Consume rest of block.
+      CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
+      // The boundary does not apply within blocks.
+      EXPECT_EQ("b;c", range.Serialize());
+    }
+
+    // However, now the boundary should apply.
+    CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
+    EXPECT_EQ("d", range.Serialize());
+  }
+}
+
 namespace {
 
 Vector<CSSParserToken, 32> TokenizeAll(String string) {
