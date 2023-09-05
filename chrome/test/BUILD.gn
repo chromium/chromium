@@ -6729,6 +6729,7 @@ test("unit_tests") {
     "//third_party/re2",
     "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/widevine/cdm:headers",
+    "//third_party/zlib/google:compression_utils",
     "//third_party/zlib/google:zip",
     "//ui/base:test_support",
     "//ui/base/clipboard:clipboard_test_support",

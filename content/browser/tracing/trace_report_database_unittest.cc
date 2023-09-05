@@ -19,7 +19,9 @@ namespace content {
 
 class TraceReportDatabaseTest : public testing::Test {
  protected:
-  void SetUp() override { ASSERT_TRUE(trace_report_.OpenDatabaseForTesting()); }
+  void SetUp() override {
+    ASSERT_TRUE(trace_report_.OpenDatabaseInMemoryForTesting());
+  }
 
   TraceReportDatabase trace_report_;
 };

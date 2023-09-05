@@ -108,7 +108,7 @@ bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
   return EnsureTableCreated();
 }
 
-bool TraceReportDatabase::OpenDatabaseForTesting() {
+bool TraceReportDatabase::OpenDatabaseInMemoryForTesting() {
   if (database_.is_open()) {
     return EnsureTableCreated();
   }

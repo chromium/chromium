@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
@@ -50,62 +51,73 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     base::OnceCallback<void(bool)> done_callback,
     metrics::ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
-  auto serialized_trace =
-      content::BackgroundTracingManager::GetInstance().GetLatestTraceToUpload();
-  if (serialized_trace.empty()) {
-    std::move(done_callback).Run(false);
-    return;
-  }
-
   auto* system_profile = uma_proto->mutable_system_profile();
-
   for (auto& provider : system_profile_providers_) {
     provider->ProvideSystemProfileMetricsWithLogCreationTime(
         base::TimeTicks::Now(), system_profile);
   }
 
-  metrics::TraceLog* log = uma_proto->add_trace_log();
-  ProvideEmbedderMetrics(uma_proto, std::move(serialized_trace), log,
-                         snapshot_manager, std::move(serialize_log_callback),
-                         std::move(done_callback));
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  auto provide_embedder_metrics = GetEmbedderMetricsProvider();
+  content::BackgroundTracingManager::GetInstance().GetTraceToUpload(
+      base::BindOnce(
+          [](base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*,
+                                     std::string&&)> provide_embedder_metrics,
+             base::OnceClosure serialize_log_callback,
+             base::OnceCallback<void(bool)> done_callback,
+             metrics::ChromeUserMetricsExtension* uma_proto,
+             scoped_refptr<base::SequencedTaskRunner> task_runner,
+             std::string compressed_trace) {
+            if (compressed_trace.empty() ||
+                !std::move(provide_embedder_metrics)
+                     .Run(uma_proto, std::move(compressed_trace))) {
+              task_runner->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(done_callback), false));
+              return;
+            }
+            // If |kMetricsServiceAsyncIndependentLogs| is enabled,
+            // serialize the log on the background instead of on the
+            // main thread.
+            if (base::FeatureList::IsEnabled(
+                    metrics::features::kMetricsServiceAsyncIndependentLogs)) {
+              base::ThreadPool::PostTask(
+                  FROM_HERE,
+                  {base::TaskPriority::BEST_EFFORT,
+                   base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                  std::move(serialize_log_callback)
+                      .Then(base::BindPostTask(
+                          task_runner,
+                          base::BindOnce(&OnProvideEmbedderMetrics,
+                                         std::move(done_callback)))));
+            } else {
+              task_runner->PostTask(FROM_HERE,
+                                    base::BindOnce(&OnProvideEmbedderMetrics,
+                                                   std::move(done_callback)));
+            }
+          },
+          std::move(provide_embedder_metrics),
+          std::move(serialize_log_callback), std::move(done_callback),
+          uma_proto, task_runner));
 }
 
-void BackgroundTracingMetricsProvider::ProvideEmbedderMetrics(
-    metrics::ChromeUserMetricsExtension* uma_proto,
-    std::string&& serialized_trace,
-    metrics::TraceLog* log,
-    base::HistogramSnapshotManager* snapshot_manager,
-    base::OnceClosure serialize_log_callback,
-    base::OnceCallback<void(bool)> done_callback) {
-  // If |kMetricsServiceAsyncIndependentLogs| is enabled, call SetTrace() and
-  // serialize the log on the background instead of on the main thread.
-  if (base::FeatureList::IsEnabled(
-          metrics::features::kMetricsServiceAsyncIndependentLogs)) {
-    base::ThreadPool::PostTaskAndReply(
-        FROM_HERE,
-        {base::TaskPriority::BEST_EFFORT,
-         // CONTINUE_ON_SHUTDOWN because the work done is only useful once the
-         // reply task is run (and there are no side effects). So, no need to
-         // block shutdown since the reply task won't be run anyway.
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&BackgroundTracingMetricsProvider::SetTrace, log,
-                       std::move(serialized_trace))
-            .Then(std::move(serialize_log_callback)),
-        base::BindOnce(&OnProvideEmbedderMetrics, std::move(done_callback)));
-  } else {
-    SetTrace(log, std::move(serialized_trace));
-    OnProvideEmbedderMetrics(std::move(done_callback));
-  }
+base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*, std::string&&)>
+BackgroundTracingMetricsProvider::GetEmbedderMetricsProvider() {
+  return base::BindOnce([](metrics::ChromeUserMetricsExtension* uma_proto,
+                           std::string&& compressed_trace) {
+    SetTrace(uma_proto->add_trace_log(), std::move(compressed_trace));
+    return true;
+  });
 }
 
 // static
 void BackgroundTracingMetricsProvider::SetTrace(
     metrics::TraceLog* log,
-    std::string&& serialized_trace) {
+    std::string&& compressed_trace) {
   base::UmaHistogramCounts100000("Tracing.Background.UploadingTraceSizeInKB",
-                                 serialized_trace.size() / 1024);
+                                 compressed_trace.size() / 1024);
 
-  log->set_raw_data(std::move(serialized_trace));
+  log->set_raw_data(std::move(compressed_trace));
+  log->set_compression_type(metrics::TraceLog::COMPRESSION_TYPE_ZLIB);
 }
 
 }  // namespace tracing

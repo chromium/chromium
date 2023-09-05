@@ -23,6 +23,10 @@ bool TracingDelegate::IsAllowedToEndBackgroundScenario(
   return false;
 }
 
+bool TracingDelegate::ShouldSaveUnuploadedTrace() const {
+  return false;
+}
+
 bool TracingDelegate::IsSystemWideTracingEnabled() {
   return false;
 }

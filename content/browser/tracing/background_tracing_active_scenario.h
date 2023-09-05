@@ -52,11 +52,7 @@ class BackgroundTracingActiveScenario {
 
   // Called by TracingSession when the final trace data is ready for proto
   // traces.
-  void OnProtoDataComplete(std::string);
-
-  // Called when the finalized trace data has been uploaded/transferred away
-  // from the background tracing system.
-  void OnFinalizeComplete();
+  void OnProtoDataComplete(std::string&& serialized_trace);
 
   // For testing
   CONTENT_EXPORT void FireTimerForTesting();

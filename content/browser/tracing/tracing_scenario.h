@@ -52,7 +52,8 @@ class CONTENT_EXPORT TracingScenario {
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
     // Called when a trace was collected.
     virtual void SaveTrace(TracingScenario* scenario,
-                           std::string trace_data) = 0;
+                           const BackgroundTracingRule* triggered_rule,
+                           std::string&& serialized_trace) = 0;
 
    protected:
     ~Delegate() = default;
@@ -105,7 +106,8 @@ class CONTENT_EXPORT TracingScenario {
   void OnTracingError(perfetto::TracingError error);
   void OnTracingStop();
   void OnTracingStart();
-  void OnFinalizingDone(std::string trace_data, TracingSession tracing_session);
+  void OnFinalizingDone(std::string&& serialized_trace,
+                        TracingSession tracing_session);
 
   bool OnSetupTrigger(const BackgroundTracingRule* rule);
   bool OnStartTrigger(const BackgroundTracingRule* rule);
@@ -126,7 +128,7 @@ class CONTENT_EXPORT TracingScenario {
   raw_ptr<Delegate> scenario_delegate_;
   raw_ptr<TracingDelegate> tracing_delegate_;
   TracingSession tracing_session_;
-  std::string raw_data_;
+  raw_ptr<const BackgroundTracingRule> triggered_rule_;
   const bool requires_anonymized_data_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -29,6 +29,9 @@ class CONTENT_EXPORT TracingDelegate {
       bool requires_anonymized_data,
       bool is_crash_scenario);
 
+  // Specifies whether traces that aren't uploaded should still be saved.
+  virtual bool ShouldSaveUnuploadedTrace() const;
+
   // Whether system-wide performance trace collection using the external system
   // tracing service is enabled.
   virtual bool IsSystemWideTracingEnabled();

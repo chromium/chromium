@@ -340,14 +340,16 @@ class LenientFakeBackgroundTracingManager
   }
 
   bool HasTraceToUpload() override { return false; }
-  std::string GetLatestTraceToUpload() override { return std::string(); }
+  void GetTraceToUpload(
+      base::OnceCallback<void(std::string)> callback) override {}
   std::unique_ptr<content::BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override {
     return nullptr;
   }
   void AbortScenarioForTesting() override {}
-  void SetTraceToUploadForTesting(
-      std::unique_ptr<std::string> trace_data) override {}
+  void SaveTraceForTesting(std::string&& trace_data,
+                           const std::string& scenario_name,
+                           const std::string& rule_name) override {}
 
   void DeleteTracesInDateRange(base::Time start, base::Time end) override {}
 };

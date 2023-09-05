@@ -43,7 +43,9 @@ class TestTracingScenarioDelegate : public TracingScenario::Delegate {
               (override));
   MOCK_METHOD(void,
               SaveTrace,
-              (TracingScenario * scenario, std::string trace_data),
+              (TracingScenario * scenario,
+               const BackgroundTracingRule* triggered_rule,
+               std::string&& trace_data),
               (override));
 };
 
@@ -356,7 +358,7 @@ TEST_F(TracingScenarioTest, SetupUpload) {
   EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
 
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, SaveTrace(_, _)).Times(0);
+  EXPECT_CALL(delegate, SaveTrace(_, _, _)).Times(0);
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
 
@@ -428,7 +430,8 @@ TEST_F(TracingScenarioTest, Upload) {
       "start_trigger"));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, "this is a trace"))
+  EXPECT_CALL(delegate,
+              SaveTrace(&tracing_scenario, _, std::string("this is a trace")))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario)).Times(1);
 
@@ -450,7 +453,8 @@ TEST_F(TracingScenarioTest, StopUpload) {
       "start_trigger"));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(delegate, SaveTrace(&tracing_scenario, "this is a trace"))
+  EXPECT_CALL(delegate,
+              SaveTrace(&tracing_scenario, _, std::string("this is a trace")))
       .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario)).Times(1);
 

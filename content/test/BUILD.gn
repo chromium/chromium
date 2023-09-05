@@ -1752,6 +1752,7 @@ test("content_browsertests") {
     "//third_party/mesa_headers",
     "//third_party/re2",
     "//third_party/zlib",
+    "//third_party/zlib/google:compression_utils",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/accessibility:test_support",

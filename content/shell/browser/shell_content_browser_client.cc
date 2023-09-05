@@ -627,6 +627,11 @@ base::FilePath ShellContentBrowserClient::GetFirstPartySetsDirectory() {
   return browser_context()->GetPath();
 }
 
+absl::optional<base::FilePath>
+ShellContentBrowserClient::GetLocalTracesDirectory() {
+  return browser_context()->GetPath();
+}
+
 std::string ShellContentBrowserClient::GetUserAgent() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return content::GetReducedUserAgent(

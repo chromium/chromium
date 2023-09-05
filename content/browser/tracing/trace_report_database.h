@@ -29,7 +29,10 @@ class CONTENT_EXPORT TraceReportDatabase {
     kUploaded
   };
 
-  enum class SkipUploadReason { kNoSkip = 0 };
+  enum class SkipUploadReason {
+    kNoSkip = 0,
+    kSizeLimitExceeded = 1,
+  };
 
   // BaseReport represents the base metadata that use fundamental to create or
   // display a report.
@@ -64,6 +67,8 @@ class CONTENT_EXPORT TraceReportDatabase {
   // into the TraceReportDatabase.
   struct CONTENT_EXPORT NewReport : public BaseReport {
     NewReport();
+    // NOLINTNEXTLINE(google-explicit-constructor)
+    NewReport(const BaseReport& report) : BaseReport(report) {}
     ~NewReport();
 
     NewReport(const NewReport& new_report) = delete;
@@ -96,13 +101,15 @@ class CONTENT_EXPORT TraceReportDatabase {
   TraceReportDatabase(const TraceReportDatabase&) = delete;
   TraceReportDatabase& operator=(const TraceReportDatabase&) = delete;
 
+  bool is_open() const { return database_.is_open(); }
+
   bool OpenDatabase(const base::FilePath& path);
 
   // Open database only if it already exists.
   bool OpenDatabaseIfExists(const base::FilePath& path);
 
   // Initialize DB and open in it memory.
-  bool OpenDatabaseForTesting();
+  bool OpenDatabaseInMemoryForTesting();
 
   // Adds a new row (trace) to the local_traces table.
   bool AddTrace(NewReport new_report);

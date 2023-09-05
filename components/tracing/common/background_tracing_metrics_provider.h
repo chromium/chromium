@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/tracing/tracing_export.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
@@ -43,13 +44,9 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
   // Embedders can override this to do any additional processing of the log
   // before it is sent. This includes processing of the trace itself (e.g.
   // compression).
-  virtual void ProvideEmbedderMetrics(
-      metrics::ChromeUserMetricsExtension* uma_proto,
-      std::string&& serialized_trace,
-      metrics::TraceLog* log,
-      base::HistogramSnapshotManager* snapshot_manager,
-      base::OnceClosure serialize_log_callback,
-      base::OnceCallback<void(bool)> done_callback);
+  virtual base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*,
+                                  std::string&&)>
+  GetEmbedderMetricsProvider();
 
   // Writes |serialized_trace| into |logs|'s |raw_data| field.
   static void SetTrace(metrics::TraceLog* log, std::string&& serialized_trace);

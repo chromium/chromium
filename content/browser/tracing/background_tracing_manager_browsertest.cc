@@ -56,6 +56,7 @@
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "third_party/zlib/zlib.h"
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
@@ -231,6 +232,7 @@ class TestBackgroundTracingHelper
   void OnTraceReceived(const std::string& proto_content) override {
     ProcessTraceContent(proto_content);
   }
+  void OnTraceSaved() override { wait_for_trace_saved_.Quit(); }
 
   void ExpectOnScenarioActive(const std::string& scenario_name) {
     EXPECT_CALL(*this, OnScenarioActive(scenario_name)).Times(1);
@@ -243,6 +245,7 @@ class TestBackgroundTracingHelper
   void WaitForScenarioIdle() { wait_for_scenario_idle_.Run(); }
   void WaitForTraceStarted() { wait_for_trace_started_.Run(); }
   void WaitForTraceReceived() { wait_for_trace_received_.Run(); }
+  void WaitForTraceSaved() { wait_for_trace_saved_.Run(); }
 
   bool trace_received() const { return trace_received_; }
   const std::string& json_file_contents() const { return json_file_contents_; }
@@ -294,6 +297,7 @@ class TestBackgroundTracingHelper
   base::RunLoop wait_for_scenario_idle_;
   base::RunLoop wait_for_trace_started_;
   base::RunLoop wait_for_trace_received_;
+  base::RunLoop wait_for_trace_saved_;
 
   bool trace_received_ = false;
   std::string proto_file_contents_;
@@ -1756,18 +1760,26 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
 
   EXPECT_TRUE(BackgroundTracingManager::EmitNamedTrigger("preemptive_test"));
-  background_tracing_helper.WaitForTraceReceived();
+  background_tracing_helper.WaitForTraceSaved();
   EXPECT_TRUE(BackgroundTracingManager::GetInstance().HasTraceToUpload());
 
-  std::string trace_data =
-      BackgroundTracingManager::GetInstance().GetLatestTraceToUpload();
+  std::string compressed_trace;
+  base::RunLoop run_loop;
+  BackgroundTracingManager::GetInstance().GetTraceToUpload(
+      base::BindLambdaForTesting([&](std::string trace_content) {
+        compressed_trace = std::move(trace_content);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 
   background_tracing_helper.ExpectOnScenarioIdle("");
   BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
   background_tracing_helper.WaitForScenarioIdle();
 
+  std::string serialized_trace;
+  ASSERT_TRUE(compression::GzipUncompress(compressed_trace, &serialized_trace));
   tracing::PrivacyFilteringCheck checker;
-  checker.CheckProtoForUnexpectedFields(trace_data);
+  checker.CheckProtoForUnexpectedFields(serialized_trace);
   EXPECT_GT(checker.stats().track_event, 0u);
   EXPECT_GT(checker.stats().process_desc, 0u);
   EXPECT_GT(checker.stats().thread_desc, 0u);

@@ -342,12 +342,10 @@ void BackgroundTracingActiveScenario::BeginFinalizing() {
 }
 
 void BackgroundTracingActiveScenario::OnProtoDataComplete(
-    std::string proto_trace) {
+    std::string&& serialized_trace) {
   BackgroundTracingManagerImpl::GetInstance().OnProtoDataComplete(
-      std::move(proto_trace));
-}
-
-void BackgroundTracingActiveScenario::OnFinalizeComplete() {
+      std::move(serialized_trace), config_->scenario_name(),
+      last_triggered_rule_->rule_id());
   tracing_session_.reset();
   SetState(State::kIdle);
 

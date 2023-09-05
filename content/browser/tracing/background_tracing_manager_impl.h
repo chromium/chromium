@@ -38,6 +38,8 @@ class ChildProcess;
 class BackgroundTracingActiveScenario;
 class TracingDelegate;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingDatabase);
+
 class BackgroundTracingManagerImpl : public BackgroundTracingManager,
                                      public TracingScenario::Delegate {
  public:
@@ -70,6 +72,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
     FINALIZATION_STARTED_WITH_LOCAL_OUTPUT = 16,
     DATABASE_INITIALIZATION_FAILED = 17,
     DATABASE_CLEANUP_FAILED = 18,
+    SAVE_TRACE_FAILED = 19,
+    SAVE_TRACE_SUCCEEDED = 20,
     NUMBER_OF_BACKGROUND_TRACING_METRICS,
   };
   static void RecordMetric(Metrics metric);
@@ -105,16 +109,15 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void OnScenarioActive(TracingScenario* scenario) override;
   void OnScenarioIdle(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
-  void SaveTrace(TracingScenario* scenario, std::string trace_data) override;
-
-  void OnTraceDatabaseCreated(bool creation_result);
+  void SaveTrace(TracingScenario* scenario,
+                 const BackgroundTracingRule* triggered_rule,
+                 std::string&& serialized_trace) override;
 
   void SetNamedTriggerCallback(const std::string& trigger_name,
                                base::RepeatingCallback<bool()> callback);
 
   bool HasTraceToUpload() override;
-  std::string GetLatestTraceToUpload() override;
-  void SetTraceToUpload(std::string trace_data);
+  void GetTraceToUpload(base::OnceCallback<void(std::string)>) override;
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
 
@@ -134,15 +137,19 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
 
   // Called by BackgroundTracingActiveScenario
   void OnStartTracingDone();
-  void OnProtoDataComplete(std::string trace_data);
+  void OnProtoDataComplete(std::string&& serialized_trace,
+                           const std::string& scenario_name,
+                           const std::string& rule_name);
 
   // For tests
   CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
   CONTENT_EXPORT void InvalidateTriggersCallbackForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
   CONTENT_EXPORT void AbortScenarioForTesting() override;
-  CONTENT_EXPORT void SetTraceToUploadForTesting(
-      std::unique_ptr<std::string> trace_data) override;
+  CONTENT_EXPORT void SaveTraceForTesting(
+      std::string&& serialized_trace,
+      const std::string& scenario_name,
+      const std::string& rule_name) override;
 
  private:
 #if BUILDFLAG(IS_ANDROID)
@@ -168,8 +175,15 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
           provider);
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
-  void OnFinalizeComplete(bool success);
-  void InitializeTraceReportDatabase();
+  void InitializeTraceReportDatabase(bool open_in_memory = false);
+  void OnFinalizeComplete(
+      absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
+      bool success);
+  void OnTraceDatabaseCreated(
+      absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
+      bool success);
+  void OnTraceSaved(
+      absl::optional<TraceReportDatabase::NewReport> trace_to_upload);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
 
@@ -193,13 +207,14 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::map<int, mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider>>
       pending_agents_;
 
-  // This contains all the traces saved locally.
+  // Task runner on which |trace_database_| lives.
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
+
+  // This contains all the traces saved locally.
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  // This field contains serialized trace log proto.
-  std::string trace_to_upload_;
+  absl::optional<TraceReportDatabase::NewReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

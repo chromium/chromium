@@ -258,6 +258,7 @@ bool TracingScenario::OnUploadTrigger(
   CHECK(current_state_ == State::kRecording ||
         current_state_ == State::kStopping)
       << static_cast<int>(current_state_);
+  triggered_rule_ = triggered_rule;
   if (current_state_ != State::kStopping) {
     tracing_session_->Stop();
   }
@@ -346,12 +347,13 @@ void TracingScenario::OnTracingStop() {
   scenario_delegate_->OnScenarioIdle(this);
 }
 
-void TracingScenario::OnFinalizingDone(std::string trace_data,
+void TracingScenario::OnFinalizingDone(std::string&& serialized_trace,
                                        TracingSession tracing_session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   tracing_session.reset();
-  scenario_delegate_->SaveTrace(this, std::move(trace_data));
+  scenario_delegate_->SaveTrace(this, triggered_rule_.get(),
+                                std::move(serialized_trace));
 }
 
 void TracingScenario::SetState(State new_state) {

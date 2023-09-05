@@ -51,6 +51,8 @@ class BackgroundTracingManager {
     virtual void OnTraceStarted() {}
     // Called when tracing stopped and |proto_content| was received.
     virtual void OnTraceReceived(const std::string& proto_content) {}
+    // Called when the trace content is saved.
+    virtual void OnTraceSaved() {}
 
    protected:
     ~EnabledStateTestObserver() = default;
@@ -135,11 +137,12 @@ class BackgroundTracingManager {
   // landed.
   virtual void DeleteTracesInDateRange(base::Time start, base::Time end) = 0;
 
-  // Returns the latest trace created for uploading in a serialized proto of
-  // message type perfetto::Trace.
-  // TODO(ssid): This should also return the trigger for the trace along with
-  // the serialized trace proto.
-  virtual std::string GetLatestTraceToUpload() = 0;
+  // Loads the content of the next trace saved for uploading and returns
+  // it through |callback| in a gzip of a serialized proto of message
+  // type perfetto::Trace. |callback| may be invoked either synchronously or
+  // on a thread pool task runner.
+  virtual void GetTraceToUpload(
+      base::OnceCallback<void(std::string)> callback) = 0;
 
   // Returns background tracing configuration for the experiment |trial_name|.
   virtual std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
@@ -147,8 +150,9 @@ class BackgroundTracingManager {
 
   // For tests
   virtual void AbortScenarioForTesting() = 0;
-  virtual void SetTraceToUploadForTesting(
-      std::unique_ptr<std::string> trace_data) = 0;
+  virtual void SaveTraceForTesting(std::string&& trace_data,
+                                   const std::string& scenario_name,
+                                   const std::string& rule_name) = 0;
 
   using ConfigTextFilterForTesting =
       base::RepeatingCallback<std::string(const std::string&)>;

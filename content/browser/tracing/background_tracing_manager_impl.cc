@@ -45,6 +45,7 @@
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace content {
 
@@ -58,7 +59,97 @@ const char kBackgroundTracingConfig[] = "config";
 BackgroundTracingManager* g_background_tracing_manager = nullptr;
 BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 
+void OpenDatabaseOnDatabaseTaskRunner(
+    TraceReportDatabase* database,
+    absl::optional<base::FilePath> database_dir,
+    base::OnceCallback<void(absl::optional<TraceReportDatabase::BaseReport>,
+                            bool)> on_database_created) {
+  DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
+  bool success;
+  if (!database_dir) {
+    success = database->OpenDatabaseInMemoryForTesting();  // IN-TEST
+  } else {
+    success = database->OpenDatabase(*database_dir);
+  }
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_database_created),
+                     database->GetNextReportPendingUpload(), success));
+}
+
+absl::optional<TraceReportDatabase::NewReport> AddTraceOnDatabaseTaskRunner(
+    TraceReportDatabase* database,
+    std::string&& serialized_trace,
+    const std::string& scenario_name,
+    const std::string& rule_name,
+    TraceReportDatabase::SkipUploadReason skip_reason) {
+  std::string compressed_trace;
+  bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
+  if (success) {
+    UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
+                                compressed_trace.size() / 1024);
+
+    TraceReportDatabase::NewReport trace_report;
+    trace_report.uuid = base::Uuid::GenerateRandomV4();
+    trace_report.creation_time = base::Time::Now();
+    trace_report.scenario_name = scenario_name;
+    trace_report.upload_rule_name = rule_name;
+    trace_report.total_size = serialized_trace.size();
+    trace_report.proto = std::move(compressed_trace);
+    trace_report.skip_reason = skip_reason;
+
+    // The database may be created even if BackgroundTracingDatabase is
+    // disabled due to DeleteTracesInDateRange(). The trace is saved
+    // only if BackgroundTracingDatabase is enabled and the database was
+    // open successfully.
+    if (database && database->is_open() &&
+        base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+      success = database->AddTrace(std::move(trace_report));
+    } else {
+      // Return the report as-is to hold the trace content in memory until it
+      // can be uploaded.
+      if (skip_reason == TraceReportDatabase::SkipUploadReason::kNoSkip) {
+        return std::move(trace_report);
+      }
+    }
+  }
+  if (database && database->is_open() &&
+      base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+    BackgroundTracingManagerImpl::RecordMetric(
+        success ? BackgroundTracingManagerImpl::Metrics::SAVE_TRACE_SUCCEEDED
+                : BackgroundTracingManagerImpl::Metrics::SAVE_TRACE_FAILED);
+    return database->GetNextReportPendingUpload();
+  }
+  return absl::nullopt;
+}
+
+void GetProtoValueOnDatabaseTaskRunner(
+    TraceReportDatabase* database,
+    base::Uuid uuid,
+    base::OnceCallback<void(std::string)> receive_callback,
+    base::OnceCallback<void(absl::optional<TraceReportDatabase::BaseReport>,
+                            bool)> on_finalize_complete) {
+  DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
+  auto trace_content = database->GetProtoValue(uuid);
+  absl::optional<TraceReportDatabase::ClientReport> next_report;
+  if (trace_content) {
+    if (database->UploadComplete(uuid, base::Time::Now())) {
+      next_report = database->GetNextReportPendingUpload();
+    }
+  }
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_finalize_complete), std::move(next_report),
+                     trace_content.has_value()));
+  std::move(receive_callback)
+      .Run(trace_content ? *std::move(trace_content) : std::string());
+}
+
 }  // namespace
+
+BASE_FEATURE(kBackgroundTracingDatabase,
+             "BackgroundTracingDatabase",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 const char BackgroundTracingManager::kContentTriggerConfig[] =
@@ -125,7 +216,9 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
       database_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      trace_database_(new TraceReportDatabase,
+      trace_database_(base::FeatureList::IsEnabled(kBackgroundTracingDatabase)
+                          ? new TraceReportDatabase
+                          : nullptr,
                       base::OnTaskRunnerDeleter(database_task_runner_)) {
   SetInstance(this);
   g_background_tracing_manager_impl = this;
@@ -149,8 +242,10 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
 }
 
 void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
+    absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
     bool creation_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  trace_report_to_upload_ = std::move(trace_to_upload);
   if (!creation_result) {
     RecordMetric(Metrics::DATABASE_INITIALIZATION_FAILED);
     trace_database_.reset();
@@ -160,6 +255,15 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
       FROM_HERE, base::Days(1),
       base::BindRepeating(&BackgroundTracingManagerImpl::CleanDatabase,
                           weak_factory_.GetWeakPtr()));
+}
+
+void BackgroundTracingManagerImpl::OnTraceSaved(
+    absl::optional<TraceReportDatabase::NewReport> trace_to_upload) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  trace_report_to_upload_ = std::move(trace_to_upload);
+  for (auto* observer : background_tracing_observers_) {
+    observer->OnTraceSaved();
+  }
 }
 
 void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
@@ -301,21 +405,27 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
   return true;
 }
 
-void BackgroundTracingManagerImpl::InitializeTraceReportDatabase() {
+void BackgroundTracingManagerImpl::InitializeTraceReportDatabase(
+    bool open_in_memory) {
+  if (!trace_database_ ||
+      !base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
+    return;
+  }
   auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
-  if (database_dir.has_value()) {
-    database_task_runner_->PostTaskAndReplyWithResult(
+  if (database_dir.has_value() || open_in_memory) {
+    database_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&TraceReportDatabase::OpenDatabase,
-                       base::Unretained(trace_database_.get()),
-                       std::move(*database_dir)),
-        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(
+            OpenDatabaseOnDatabaseTaskRunner,
+            base::Unretained(trace_database_.get()), std::move(database_dir),
+            base::BindOnce(
+                &BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
+                weak_factory_.GetWeakPtr())));
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&BackgroundTracingManagerImpl::OnTraceDatabaseCreated,
-                       weak_factory_.GetWeakPtr(), false));
+                       weak_factory_.GetWeakPtr(), absl::nullopt, false));
   }
 }
 
@@ -353,9 +463,12 @@ void BackgroundTracingManagerImpl::OnScenarioRecording(
   OnStartTracingDone();
 }
 
-void BackgroundTracingManagerImpl::SaveTrace(TracingScenario* scenario,
-                                             std::string trace_data) {
-  OnProtoDataComplete(std::move(trace_data));
+void BackgroundTracingManagerImpl::SaveTrace(
+    TracingScenario* scenario,
+    const BackgroundTracingRule* triggered_rule,
+    std::string&& trace_data) {
+  OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
+                      triggered_rule->rule_id());
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -370,34 +483,52 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
   // collect a trace that is bigger than expected, then we will end up never
   // uploading, and drop the trace. This should never happen because the trace
   // buffer limits are set appropriately.
-  if (trace_to_upload_.empty()) {
+  if (!trace_report_to_upload_) {
     return false;
   }
-  if (trace_to_upload_.size() <= GetTraceUploadLimitKb() * 1024) {
+  if (trace_report_to_upload_->total_size <= GetTraceUploadLimitKb() * 1024) {
     return true;
   }
   RecordMetric(Metrics::LARGE_UPLOAD_WAITING_TO_RETRY);
   return false;
 }
 
-std::string BackgroundTracingManagerImpl::GetLatestTraceToUpload() {
+void BackgroundTracingManagerImpl::GetTraceToUpload(
+    base::OnceCallback<void(std::string)> receive_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::string ret;
-  ret.swap(trace_to_upload_);
+  if (!trace_report_to_upload_) {
+    std::move(receive_callback).Run("");
+    return;
+  }
 
-  OnFinalizeComplete(true);
-  return ret;
+  // Trace content was kept in memory.
+  if (!trace_report_to_upload_->proto.empty()) {
+    std::move(receive_callback).Run(std::move(trace_report_to_upload_->proto));
+    OnFinalizeComplete(absl::nullopt, true);
+    return;
+  }
+
+  DCHECK(trace_database_);
+  TraceReportDatabase::BaseReport trace_report =
+      *std::move(trace_report_to_upload_);
+  database_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          GetProtoValueOnDatabaseTaskRunner,
+          base::Unretained(trace_database_.get()), trace_report.uuid,
+          std::move(receive_callback),
+          base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
-void BackgroundTracingManagerImpl::OnFinalizeComplete(bool success) {
+void BackgroundTracingManagerImpl::OnFinalizeComplete(
+    absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
+    bool success) {
+  trace_report_to_upload_ = std::move(trace_to_upload);
   if (success) {
     BackgroundTracingManagerImpl::RecordMetric(Metrics::UPLOAD_SUCCEEDED);
   } else {
     BackgroundTracingManagerImpl::RecordMetric(Metrics::UPLOAD_FAILED);
-  }
-
-  if (legacy_active_scenario_) {
-    legacy_active_scenario_->OnFinalizeComplete();
   }
 }
 
@@ -475,42 +606,53 @@ bool BackgroundTracingManagerImpl::IsTracingForTesting() {
   return false;
 }
 
-void BackgroundTracingManagerImpl::SetTraceToUploadForTesting(
-    std::unique_ptr<std::string> trace_data) {
-  if (trace_data) {
-    SetTraceToUpload(std::move(*trace_data));
-  } else {
-    SetTraceToUpload(std::string());
-  }
+void BackgroundTracingManagerImpl::SaveTraceForTesting(
+    std::string&& serialized_trace,
+    const std::string& scenario_name,
+    const std::string& rule_name) {
+  InitializeTraceReportDatabase(true);
+  OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name);
 }
 
-void BackgroundTracingManagerImpl::OnProtoDataComplete(std::string trace_data) {
+void BackgroundTracingManagerImpl::OnProtoDataComplete(
+    std::string&& serialized_trace,
+    const std::string& scenario_name,
+    const std::string& rule_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto* observer : background_tracing_observers_) {
-    observer->OnTraceReceived(trace_data);
+    observer->OnTraceReceived(serialized_trace);
   }
   if (!receive_callback_) {
+    TraceReportDatabase::SkipUploadReason skip_reason =
+        TraceReportDatabase::SkipUploadReason::kNoSkip;
+    if (serialized_trace.size() > upload_limit_kb_ * 1024) {
+      skip_reason = TraceReportDatabase::SkipUploadReason::kSizeLimitExceeded;
+    }
+    if (skip_reason != TraceReportDatabase::SkipUploadReason::kNoSkip &&
+        !(delegate_ && delegate_->ShouldSaveUnuploadedTrace())) {
+      return;
+    }
     BackgroundTracingManagerImpl::RecordMetric(Metrics::FINALIZATION_STARTED);
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.FinalizingTraceSizeInKB2",
-                                trace_data.size() / 1024);
-    // Store the trace to be uploaded through UMA.
-    // BackgroundTracingMetricsProvider::ProvideIndependentMetrics will call
-    // OnFinalizeComplete once the upload is done.
-    SetTraceToUpload(std::move(trace_data));
+                                serialized_trace.size() / 1024);
+
+    database_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(AddTraceOnDatabaseTaskRunner,
+                       base::Unretained(trace_database_.get()),
+                       std::move(serialized_trace), scenario_name, rule_name,
+                       skip_reason),
+        base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
+                       weak_factory_.GetWeakPtr()));
   } else {
     BackgroundTracingManagerImpl::RecordMetric(
         Metrics::FINALIZATION_STARTED_WITH_LOCAL_OUTPUT);
     receive_callback_.Run(
-        std::move(trace_data),
+        std::move(serialized_trace),
         base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), absl::nullopt));
   }
-}
-
-void BackgroundTracingManagerImpl::SetTraceToUpload(std::string trace_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  trace_to_upload_ = std::move(trace_data);
 }
 
 std::unique_ptr<content::BackgroundTracingConfig>
@@ -599,9 +741,7 @@ void BackgroundTracingManagerImpl::CleanDatabase() {
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](TraceReportDatabase* trace_database, base::TimeDelta age) {
-            trace_database->DeleteTracesOlderThan(age);
-          },
+          base::IgnoreResult(&TraceReportDatabase::DeleteTracesOlderThan),
           base::Unretained(trace_database_.get()), kTraceTimeToLive));
 }
 
