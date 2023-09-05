@@ -13,6 +13,7 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -135,6 +136,7 @@ void ClassroomBubbleBaseView::CancelUpdates() {
 }
 
 void ClassroomBubbleBaseView::AboutToRequestAssignments() {
+  assignments_requested_time_ = base::TimeTicks::Now();
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/true);
   combo_box_view_->SetAccessibleDescription(u"");
 }
@@ -189,23 +191,15 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     }
   }
 
-  // TODO(anasalazar): Record delay for non-initial updates on the bubble.
-  if (initial_update) {
-    auto* controller = Shell::Get()->glanceables_v2_controller();
-    base::TimeDelta initial_load_time =
-        base::TimeTicks::Now() - controller->last_bubble_show_time();
+  auto* controller = Shell::Get()->glanceables_v2_controller();
 
-    if (controller->bubble_shown_count() == 1) {
-      base::UmaHistogramMediumTimes(
-          "Ash.Glanceables.TimeManagement.Classroom."
-          "OpenToInitialLoadTime.FirstOcurrence",
-          initial_load_time);
-    } else {
-      base::UmaHistogramMediumTimes(
-          "Ash.Glanceables.TimeManagement.Classroom."
-          "OpenToInitialLoadTime.SubsequentOccurence",
-          initial_load_time);
-    }
+  if (initial_update) {
+    RecordClassromInitialLoadTime(
+        /* first_occurrence=*/controller->bubble_shown_count() == 1,
+        base::TimeTicks::Now() - controller->last_bubble_show_time());
+  } else {
+    RecordClassroomChangeLoadTime(
+        success, base::TimeTicks::Now() - assignments_requested_time_);
   }
 }
 

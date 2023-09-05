@@ -12,8 +12,15 @@
 
 namespace {
 
-constexpr char kLoginToShowTime[] =
+constexpr char kLoginToShowTimeHistogram[] =
     "Ash.Glanceables.TimeManagement.LoginToShowTime";
+constexpr char kTotalShowTimeHistogram[] =
+    "Ash.Glanceables.TimeManagement.TotalShowTime";
+
+constexpr char kTimeManagementTaskPrefix[] =
+    "Ash.Glanceables.TimeManagement.Tasks";
+constexpr char kTimeManagementClassroomPrefix[] =
+    "Ash.Glanceables.TimeManagement.Classroom";
 
 }  // namespace
 
@@ -57,7 +64,58 @@ void RecordAddTaskButtonShown() {
 }
 
 void RecordLoginToShowTime(base::TimeDelta login_to_show_time) {
-  base::UmaHistogramMediumTimes(kLoginToShowTime, login_to_show_time);
+  base::UmaHistogramMediumTimes(kLoginToShowTimeHistogram, login_to_show_time);
+}
+
+void RecordTotalShowTime(base::TimeDelta total_show_time) {
+  base::UmaHistogramMediumTimes(kTotalShowTimeHistogram, total_show_time);
+}
+
+void RecordClassromInitialLoadTime(bool first_occurrence,
+                                   base::TimeDelta load_time) {
+  std::string histogram_name =
+      base::StrCat({kTimeManagementClassroomPrefix, ".OpenToInitialLoadTime"});
+
+  if (first_occurrence) {
+    histogram_name += ".FirstOccurence";
+  } else {
+    histogram_name += ".SubsequentOccurence";
+  }
+
+  base::UmaHistogramMediumTimes(histogram_name, load_time);
+}
+
+void RecordClassroomChangeLoadTime(bool success, base::TimeDelta load_time) {
+  std::string histogram_name =
+      base::StrCat({kTimeManagementClassroomPrefix, ".ChangeListToLoadTime"});
+
+  if (success) {
+    histogram_name += ".Success";
+  } else {
+    histogram_name += ".Fail";
+  }
+
+  base::UmaHistogramMediumTimes(histogram_name, load_time);
+}
+
+void RecordTasksInitialLoadTime(bool first_occurrence,
+                                base::TimeDelta load_time) {
+  std::string histogram_name =
+      base::StrCat({kTimeManagementTaskPrefix, ".OpenToInitialLoadTime"});
+
+  if (first_occurrence) {
+    histogram_name += ".FirstOccurence";
+  } else {
+    histogram_name += ".SubsequentOccurence";
+  }
+
+  base::UmaHistogramMediumTimes(histogram_name, load_time);
+}
+
+void RecordTasksChangeLoadTime(base::TimeDelta load_time) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kTimeManagementTaskPrefix, ".ChangeListToLoadTime"}),
+      load_time);
 }
 
 }  // namespace ash

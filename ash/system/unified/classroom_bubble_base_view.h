@@ -92,6 +92,10 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   base::ScopedObservation<views::View, views::ViewObserver>
       combobox_view_observation_{this};
 
+  // Records the time when the bubble was about to request an assignment list.
+  // Used for metrics.
+  base::TimeTicks assignments_requested_time_;
+
   base::WeakPtrFactory<ClassroomBubbleBaseView> weak_ptr_factory_{this};
 };
 

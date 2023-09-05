@@ -12,8 +12,6 @@
 #include "ash/system/unified/classroom_bubble_student_view.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -84,9 +82,7 @@ void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
     }
   }
 
-  base::UmaHistogramMediumTimes(
-      "Ash.Glanceables.TimeManagement.TotalShowTime",
-      base::TimeTicks::Now() - last_bubble_show_time_);
+  RecordTotalShowTime(base::TimeTicks::Now() - last_bubble_show_time_);
 }
 
 void GlanceablesV2Controller::RecordGlanceablesBubbleShowTime(

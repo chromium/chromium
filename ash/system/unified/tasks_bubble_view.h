@@ -121,6 +121,10 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
 
+  // Records the time when the bubble was about to request a task list. Used for
+  // metrics.
+  base::TimeTicks tasks_requested_time_;
+
   base::ScopedObservation<views::View, views::ViewObserver>
       combobox_view_observation_{this};
 

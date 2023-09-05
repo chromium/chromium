@@ -10,6 +10,7 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_client.h"
@@ -22,6 +23,7 @@
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -195,7 +197,7 @@ void TasksBubbleView::ActionButtonPressed(TasksLaunchSource source) {
 
 void TasksBubbleView::SelectedTasksListChanged() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-
+  tasks_requested_time_ = base::TimeTicks::Now();
   ScheduleUpdateTasksList(/*initial_update=*/false);
 }
 
@@ -280,25 +282,15 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     }
   }
 
-  // TODO(anasalazar): Record delay for non-initial updates on the bubble.
-  if (initial_update) {
-    auto* controller = Shell::Get()->glanceables_v2_controller();
-    base::TimeDelta initial_load_time =
-        base::TimeTicks::Now() - controller->last_bubble_show_time();
+  auto* controller = Shell::Get()->glanceables_v2_controller();
 
-    if (controller->bubble_shown_count() == 1) {
-      base::UmaHistogramMediumTimes(
-          "Ash.Glanceables.TimeManagement.Tasks.OpenToInitialLoadTime."
-          "FirstOcurrence",
-          initial_load_time);
-    } else {
-      base::UmaHistogramMediumTimes(
-          "Ash.Glanceables.TimeManagement.Tasks.OpenToInitialLoadTime."
-          "SubsequentOccurence",
-          initial_load_time);
-    }
+  if (initial_update) {
+    RecordTasksInitialLoadTime(
+        /* first_occurrence=*/controller->bubble_shown_count() == 1,
+        base::TimeTicks::Now() - controller->last_bubble_show_time());
   } else {
     RecordActiveTaskListChanged();
+    RecordTasksChangeLoadTime(base::TimeTicks::Now() - tasks_requested_time_);
   }
 }
 

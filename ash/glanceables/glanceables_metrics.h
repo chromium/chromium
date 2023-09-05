@@ -27,6 +27,18 @@ void RecordAddTaskButtonShown();
 
 void RecordLoginToShowTime(base::TimeDelta login_to_show_time);
 
+void RecordTotalShowTime(base::TimeDelta total_show_time);
+
+void RecordClassromInitialLoadTime(bool first_occurrence,
+                                   base::TimeDelta load_time);
+
+void RecordClassroomChangeLoadTime(bool success, base::TimeDelta load_time);
+
+void RecordTasksInitialLoadTime(bool first_occurrence,
+                                base::TimeDelta load_time);
+
+void RecordTasksChangeLoadTime(base::TimeDelta load_time);
+
 }  // namespace ash
 
 #endif  // ASH_GLANCEABLES_GLANCEABLES_METRICS_H_
