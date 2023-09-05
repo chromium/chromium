@@ -2115,16 +2115,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     behavior_type = BehaviorType::kProjector;
   } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
     CHECK(features::IsGameDashboardEnabled());
-    // TODO(minch): Get the window from game dashboard and make sure the window
-    // exists before starting the game capture session.
-    auto windows =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-    if (windows.empty()) {
-      LOG(ERROR)
-          << "Please make sure there is a window selected for game capture.";
-      return;
-    }
-
     behavior_type = BehaviorType::kGameDashboard;
   }
 
