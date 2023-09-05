@@ -1685,10 +1685,11 @@ chrome.fileManagerPrivate.resumeIOTask = function(taskId, params) {};
 
 /**
  * Notifies the browser that any info still stored about an already completed
- * I/O task identified by id can be cleared.
+ * I/O task identified by |taskId| can be cleared.
  * @param {number} taskId
+ * @param {function(): void} callback Callback that does not take arguments.
  */
-chrome.fileManagerPrivate.dismissIOTask = function(taskId) {};
+chrome.fileManagerPrivate.dismissIOTask = function(taskId, callback) {};
 
 /**
  * Shows a policy dialog for a task. Task ids are communicated to the Files App

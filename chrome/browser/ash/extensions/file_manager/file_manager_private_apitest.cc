@@ -34,6 +34,9 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -756,6 +759,12 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     ASSERT_TRUE(drive_path_.CreateUniqueTempDir());
   }
 
+  void TearDownOnMainThread() override {
+    mock_rules_manager_ = nullptr;
+    fpnm_ = nullptr;
+    FileManagerPrivateApiTest::TearDownOnMainThread();
+  };
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();
@@ -771,11 +780,19 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     return dlp_rules_manager;
   }
 
+  std::unique_ptr<KeyedService> SetFPNM(content::BrowserContext* context) {
+    auto fpnm = std::make_unique<policy::MockFilesPolicyNotificationManager>(
+        browser()->profile());
+    fpnm_ = fpnm.get();
+    return fpnm;
+  }
+
  protected:
   base::ScopedTempDir drive_path_;
   raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
       mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
+  raw_ptr<policy::MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -1050,5 +1067,33 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
 
   EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
                                {.custom_arg = "error"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest,
+                       DlpMetadata_DismissIOTask) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(0);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+
+  policy::FilesPolicyNotificationManagerFactory::GetInstance()
+      ->SetTestingFactory(
+          browser()->profile(),
+          base::BindRepeating(&FileManagerPrivateApiDlpTest::SetFPNM,
+                              base::Unretained(this)));
+  // FPNM is created lazily so initialize it before running the test.
+  ASSERT_TRUE(
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser()->profile()));
+  // Expect only the valid task id.
+  EXPECT_CALL(*fpnm_, OnErrorItemDismissed(1u));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "dismissIOTask"},
                                {.load_as_component = true}));
 }

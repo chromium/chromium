@@ -71,6 +71,11 @@ class MockFilesPolicyNotificationManager
               OnIOTaskResumed,
               (file_manager::io_task::IOTaskId task_id),
               (override));
+
+  MOCK_METHOD(void,
+              OnErrorItemDismissed,
+              (file_manager::io_task::IOTaskId task_id),
+              (override));
 };
 
 }  // namespace policy

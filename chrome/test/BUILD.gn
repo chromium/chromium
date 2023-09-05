@@ -681,6 +681,8 @@ static_library("test_support") {
       "../browser/ash/policy/dlp/test/files_policy_notification_manager_test_utils.h",
       "../browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.cc",
       "../browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h",
+      "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.cc",
+      "../browser/ash/policy/dlp/test/mock_files_policy_notification_manager.h",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_apitest_base.h",
       "../browser/component_updater/fake_cros_component_manager.cc",

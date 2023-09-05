@@ -165,6 +165,22 @@ chrome.test.getConfig(config => {
             }));
       }]);
       break;
+    case 'dismissIOTask':
+      chrome.test.runTests([
+        async function dismissIOTask() {
+          // Valid task id - succeeds and notifies FPNM.
+          chrome.fileManagerPrivate.dismissIOTask(
+            1,
+            chrome.test.callbackPass());
+          // Invalid task id - succeeds but won't notify FPNM.
+          chrome.fileManagerPrivate.dismissIOTask(
+            -5,
+            chrome.test.callbackFail('Invalid task id'));
+
+          chrome.test.succeed();
+        }
+      ]);
+      break;
     case 'default':
       chrome.test.runTests([
         async function getDlpMetadata() {

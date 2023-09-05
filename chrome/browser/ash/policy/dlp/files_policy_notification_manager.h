@@ -125,7 +125,7 @@ class FilesPolicyNotificationManager
   void ShowBlockedNotifications();
 
   // Clears any info stored about the task with `task_id`.
-  void OnErrorItemDismissed(file_manager::io_task::IOTaskId task_id);
+  virtual void OnErrorItemDismissed(file_manager::io_task::IOTaskId task_id);
 
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
