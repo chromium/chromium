@@ -631,14 +631,23 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
           script_state->GetContext(), v8::Local<v8::Module>(),
           v8_import_assertions, /*v8_import_assertions_has_positions=*/false));
 
-  ReferrerScriptInfo referrer_info =
-      ReferrerScriptInfo::FromV8HostDefinedOptions(
-          context, v8_host_defined_options, referrer_resource_url);
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   resolver->SetPropertyName("import");
   ScriptPromise promise = resolver->Promise();
-  modulator->ResolveDynamically(module_request, referrer_info, resolver);
+
+  String invalid_attribute_key;
+  if (module_request.HasInvalidImportAttributeKey(&invalid_attribute_key)) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        script_state->GetIsolate(),
+        "Invalid attribute key \"" + invalid_attribute_key + "\"."));
+  } else {
+    ReferrerScriptInfo referrer_info =
+        ReferrerScriptInfo::FromV8HostDefinedOptions(
+            context, v8_host_defined_options, referrer_resource_url);
+
+    modulator->ResolveDynamically(module_request, referrer_info, resolver);
+  }
+
   return v8::Local<v8::Promise>::Cast(promise.V8Value());
 }
 

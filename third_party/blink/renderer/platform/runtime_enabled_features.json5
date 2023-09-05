@@ -2058,6 +2058,14 @@
       status: {"Android": "stable"},
       base_feature: "none",
     },
+    // This change, although technically breaking, is expected to be fully web-compatible
+    // due to how import attributes are currently used in the ecosystem. However, this is
+    // a killswitch just in case. This can be removed once it ships to stable and no
+    // regressions are reported.
+    {
+      name: "ImportAttributesDisallowUnknownKeys",
+      status: "stable"
+    },
     {
       name: "IncomingCallNotifications",
     },

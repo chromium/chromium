@@ -79,33 +79,44 @@ JSModuleScript* JSModuleScript::Create(
   // result.[[RequestedModules]]:</spec>
   for (const auto& requested :
        ModuleRecord::ModuleRequests(script_state, result)) {
-    // <spec step="9.1">Let url be the result of resolving a module specifier
-    // given script's base URL and requested.</spec>
-    //
-    // <spec step="9.2">If url is failure, then:</spec>
+    v8::MaybeLocal<v8::Value> error;
+
     String failure_reason;
-    bool module_specifier_is_valid =
-        script->ResolveModuleSpecifier(requested.specifier, &failure_reason)
-            .IsValid();
-    ModuleType module_type = modulator->ModuleTypeFromRequest(requested);
+    // <spec step="9.1">If requested.[[Attributes]] contains a Record entry
+    // such that entry.[[Key]] is not "type", then:</spec>
+    if (requested.HasInvalidImportAttributeKey(&failure_reason)) {
+      // <spec step="9.1.1">Let error be a new SyntaxError exception.</spec>
+      error = V8ThrowException::CreateSyntaxError(
+          isolate, "Invalid attribute key \"" + failure_reason + "\".");
 
-    if (!module_specifier_is_valid || module_type == ModuleType::kInvalid) {
-      // <spec step="9.2.1">Let error be a new TypeError exception.</spec>
-      String error_message;
-      if (!module_specifier_is_valid) {
-        error_message = "Failed to resolve module specifier \"" +
-                        requested.specifier + "\". " + failure_reason;
-      } else {
-        error_message = "\"" + requested.GetModuleTypeString() +
-                        "\" is not a valid module type.";
-      }
-      v8::Local<v8::Value> error =
-          V8ThrowException::CreateTypeError(isolate, error_message);
+      // <spec step="9.2">Resolve a module specifier given script and
+      // requested.[[Specifier]], catching any exceptions.</spec>
+    } else if (!script
+                    ->ResolveModuleSpecifier(requested.specifier,
+                                             &failure_reason)
+                    .IsValid()) {
+      error = V8ThrowException::CreateTypeError(
+          isolate, "Failed to resolve module specifier \"" +
+                       requested.specifier + "\". " + failure_reason);
+      // <spec step="9.4">Let moduleType be the result of running the module
+      // type from module request steps given requested.</spec>
+      //
+      // <spec step="9.5">If the result of running the module type allowed steps
+      // given moduleType and settings is false, then:</spec>
+    } else if (modulator->ModuleTypeFromRequest(requested) ==
+               ModuleType::kInvalid) {
+      // <spec step="9.5.1">Let error be a new TypeError exception.</spec>
+      error = V8ThrowException::CreateTypeError(
+          isolate, "\"" + requested.GetModuleTypeString() +
+                       "\" is not a valid module type.");
+    }
 
-      // <spec step="9.2.2">Set script's parse error to error.</spec>
-      script->SetParseErrorAndClearRecord(ScriptValue(isolate, error));
+    if (!error.IsEmpty()) {
+      // <spec step="9.1.2">Set script's parse error to error.</spec>
+      script->SetParseErrorAndClearRecord(
+          ScriptValue(isolate, error.ToLocalChecked()));
 
-      // <spec step="9.2.3">Return script.</spec>
+      // <spec step="9.1.3">Return script.</spec>
       return script;
     }
   }
