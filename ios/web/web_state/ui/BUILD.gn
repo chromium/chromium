@@ -60,7 +60,6 @@ source_set("ui") {
   ]
 
   sources = [
-    "crw_context_menu_item.mm",
     "crw_touch_tracking_recognizer.mm",
     "crw_web_controller.mm",
     "crw_web_controller_container_view.h",
