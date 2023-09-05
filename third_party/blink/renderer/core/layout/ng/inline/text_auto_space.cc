@@ -9,8 +9,6 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_segment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_items_data.h"
 
 namespace blink {
 
@@ -125,15 +123,8 @@ float GetSpacingWidth(const ComputedStyle* style) {
 
 }  // namespace
 
-// static
-void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
-                                  Vector<wtf_size_t>* offsets_out) {
-  const String& text = data.text_content;
-  if (text.Is8Bit()) {
-    return;  // 8-bits never be `kIdeograph`. See `TextAutoSpaceTest`.
-  }
-
-  HeapVector<NGInlineItem>& items = data.items;
+void TextAutoSpace::Initialize(const NGInlineItemsData& data) {
+  const HeapVector<NGInlineItem>& items = data.items;
   if (UNLIKELY(items.empty())) {
     return;
   }
@@ -141,7 +132,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
   // `RunSegmenterRange` is used to find where we can skip computing Unicode
   // properties. Compute them for the whole text content. It's pre-computed, but
   // packed in `NGInlineItemSegments` to save memory.
-  NGInlineItemSegments::RunSegmenterRanges ranges;
+  const String& text = data.text_content;
   if (!data.segments) {
     const NGInlineItem& item0 = items.front();
     RunSegmenter::RunSegmenterRange range = item0.CreateRunSegmenterRange();
@@ -149,26 +140,33 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
       return;
     }
     range.end = text.length();
-    ranges.push_back(range);
+    ranges_.push_back(range);
   } else {
-    data.segments->ToRanges(ranges);
-    if (std::none_of(ranges.begin(), ranges.end(),
+    data.segments->ToRanges(ranges_);
+    if (std::none_of(ranges_.begin(), ranges_.end(),
                      [&text](const RunSegmenter::RunSegmenterRange& range) {
                        return MaybeIdeograph(
                            range.script, StringView(text, range.start,
                                                     range.end - range.start));
                      })) {
+      ranges_.clear();
       return;
     }
   }
-  DCHECK_EQ(text.length(), ranges.back().end);
+}
+
+void TextAutoSpace::Apply(NGInlineItemsData& data,
+                          Vector<wtf_size_t>* offsets_out) {
+  const String& text = data.text_content;
+  DCHECK(!text.Is8Bit());
+  DCHECK_EQ(text.length(), ranges_.back().end);
 
   Vector<wtf_size_t, 16> offsets;
-  CHECK(!ranges.empty());
-  const RunSegmenter::RunSegmenterRange* range = ranges.begin();
+  CHECK(!ranges_.empty());
+  const RunSegmenter::RunSegmenterRange* range = ranges_.begin();
   absl::optional<CharType> last_type = kOther;
   SpacingApplier applier;
-  for (const NGInlineItem& item : items) {
+  for (const NGInlineItem& item : data.items) {
     if (item.Type() != NGInlineItem::kText) {
       if (item.Length()) {
         // If `item` has a length, e.g., inline-block, set the `last_type`.
@@ -202,7 +200,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
       // Find the `RunSegmenterRange` for `offset`.
       while (offset >= range->end) {
         ++range;
-        CHECK_NE(range, ranges.end());
+        CHECK_NE(range, ranges_.end());
       }
       DCHECK_GE(offset, range->start);
       DCHECK_LT(offset, range->end);

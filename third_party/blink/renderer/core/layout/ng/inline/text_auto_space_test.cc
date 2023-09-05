@@ -43,7 +43,8 @@ public:
         PreparePageLayoutBlock(html, container_css);
     NGInlineNodeData* node_data = container->GetNGInlineNodeData();
     Vector<wtf_size_t> offsets;
-    TextAutoSpace::ApplyIfNeeded(*node_data, &offsets);
+    TextAutoSpace auto_space(*node_data);
+    auto_space.ApplyIfNeeded(*node_data, &offsets);
     return offsets;
   }
 };

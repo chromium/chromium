@@ -1282,9 +1282,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
   HeapVector<NGInlineItem>* items = &data->items;
 
   ShapeResultSpacing<String> spacing(text_content, IsSvgText());
+  TextAutoSpace auto_space(*data);
 
   const bool allow_shape_cache =
-      IsNGShapeCacheAllowed(text_content, override_font, *items, spacing);
+      IsNGShapeCacheAllowed(text_content, override_font, *items, spacing) &&
+      !auto_space.MayApply();
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items, allow_shape_cache);
@@ -1475,10 +1477,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     shape_result->CopyRanges(text_item_ranges.data(), text_item_ranges.size());
   }
 
-  // TODO(https://crbug.com/1463890): Update the likelihood condition.
-  if (UNLIKELY(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled())) {
-    TextAutoSpace::ApplyIfNeeded(*data);
-  }
+  auto_space.ApplyIfNeeded(*data);
 
 #if DCHECK_IS_ON()
   for (const NGInlineItem& item : *items) {
