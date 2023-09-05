@@ -62,8 +62,6 @@ blink_core_sources_paint = [
   "html_canvas_painter.h",
   "image_painter.cc",
   "image_painter.h",
-  "inline_box_painter_base.cc",
-  "inline_box_painter_base.h",
   "link_highlight_impl.cc",
   "link_highlight_impl.h",
   "ng/ng_box_fragment_painter.cc",

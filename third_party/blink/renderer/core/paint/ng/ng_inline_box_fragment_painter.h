@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/inline_box_painter_base.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -22,7 +21,7 @@ struct PhysicalRect;
 
 // Common base class for NGInlineBoxFragmentPainter and
 // NGLineBoxFragmentPainter.
-class NGInlineBoxFragmentPainterBase : public InlineBoxPainterBase {
+class NGInlineBoxFragmentPainterBase {
   STACK_ALLOCATED();
 
  public:
@@ -38,11 +37,11 @@ class NGInlineBoxFragmentPainterBase : public InlineBoxPainterBase {
                                  const ComputedStyle& style,
                                  const ComputedStyle& line_style,
                                  NGInlinePaintContext* inline_context)
-      : InlineBoxPainterBase(layout_object,
-                             &layout_object.GetDocument(),
-                             layout_object.GeneratingNode(),
-                             style,
-                             line_style),
+      : image_observer_(layout_object),
+        document_(&layout_object.GetDocument()),
+        node_(layout_object.GeneratingNode()),
+        style_(style),
+        line_style_(line_style),
         inline_box_fragment_(inline_box_fragment),
         inline_box_item_(inline_box_item),
         inline_box_cursor_(inline_box_cursor),
@@ -82,23 +81,66 @@ class NGInlineBoxFragmentPainterBase : public InlineBoxPainterBase {
   virtual PhysicalBoxSides SidesToInclude() const = 0;
 
   PhysicalRect PaintRectForImageStrip(const PhysicalRect&,
-                                      TextDirection direction) const override;
+                                      TextDirection direction) const;
+  static PhysicalRect ClipRectForNinePieceImageStrip(
+      const ComputedStyle& style,
+      PhysicalBoxSides sides_to_include,
+      const NinePieceImage& image,
+      const PhysicalRect& paint_rect);
 
-  BorderPaintingType GetBorderPaintType(
-      const PhysicalRect& adjusted_frame_rect,
-      gfx::Rect& adjusted_clip_rect,
-      bool object_has_multiple_boxes) const override;
+  enum BorderPaintingType {
+    kDontPaintBorders,
+    kPaintBordersWithoutClip,
+    kPaintBordersWithClip
+  };
+  BorderPaintingType GetBorderPaintType(const PhysicalRect& adjusted_frame_rect,
+                                        gfx::Rect& adjusted_clip_rect,
+                                        bool object_has_multiple_boxes) const;
+
   void PaintNormalBoxShadow(const PaintInfo&,
                             const ComputedStyle&,
-                            const PhysicalRect& paint_rect) override;
+                            const PhysicalRect& paint_rect);
   void PaintInsetBoxShadow(const PaintInfo&,
                            const ComputedStyle&,
-                           const PhysicalRect& paint_rect) override;
+                           const PhysicalRect& paint_rect);
 
   void PaintBackgroundBorderShadow(const PaintInfo&,
                                    const PhysicalOffset& paint_offset);
 
+  void PaintBoxDecorationBackground(BoxPainterBase&,
+                                    const PaintInfo&,
+                                    const PhysicalOffset& paint_offset,
+                                    const PhysicalRect& adjusted_frame_rect,
+                                    BackgroundImageGeometry,
+                                    bool object_has_multiple_boxes,
+                                    PhysicalBoxSides sides_to_include);
+
+  void PaintFillLayers(BoxPainterBase&,
+                       const PaintInfo&,
+                       const Color&,
+                       const FillLayer&,
+                       const PhysicalRect&,
+                       BackgroundImageGeometry& geometry,
+                       bool object_has_multiple_boxes);
+  void PaintFillLayer(BoxPainterBase&,
+                      const PaintInfo&,
+                      const Color&,
+                      const FillLayer&,
+                      const PhysicalRect&,
+                      BackgroundImageGeometry& geometry,
+                      bool object_has_multiple_boxes);
+
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
+
+  const ImageResourceObserver& image_observer_;
+  const Document* document_;
+  Node* node_;
+
+  // Style for the corresponding node.
+  const ComputedStyle& style_;
+
+  // Style taking ::first-line into account.
+  const ComputedStyle& line_style_;
 
   const NGPhysicalFragment& inline_box_fragment_;
   const NGFragmentItem& inline_box_item_;

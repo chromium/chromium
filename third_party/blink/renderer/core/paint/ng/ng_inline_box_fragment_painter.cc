@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -245,7 +246,31 @@ PhysicalRect NGInlineBoxFragmentPainterBase::PaintRectForImageStrip(
                       paint_rect.Width(), total_width);
 }
 
-InlineBoxPainterBase::BorderPaintingType
+PhysicalRect NGInlineBoxFragmentPainterBase::ClipRectForNinePieceImageStrip(
+    const ComputedStyle& style,
+    PhysicalBoxSides sides_to_include,
+    const NinePieceImage& image,
+    const PhysicalRect& paint_rect) {
+  PhysicalRect clip_rect(paint_rect);
+  NGPhysicalBoxStrut outsets = style.ImageOutsets(image);
+  if (sides_to_include.left) {
+    clip_rect.SetX(paint_rect.X() - outsets.left);
+    clip_rect.SetWidth(paint_rect.Width() + outsets.left);
+  }
+  if (sides_to_include.right) {
+    clip_rect.SetWidth(clip_rect.Width() + outsets.right);
+  }
+  if (sides_to_include.top) {
+    clip_rect.SetY(paint_rect.Y() - outsets.top);
+    clip_rect.SetHeight(paint_rect.Height() + outsets.top);
+  }
+  if (sides_to_include.bottom) {
+    clip_rect.SetHeight(clip_rect.Height() + outsets.bottom);
+  }
+  return clip_rect;
+}
+
+NGInlineBoxFragmentPainterBase::BorderPaintingType
 NGInlineBoxFragmentPainterBase::GetBorderPaintType(
     const PhysicalRect& adjusted_frame_rect,
     gfx::Rect& adjusted_clip_rect,
@@ -289,6 +314,100 @@ void NGInlineBoxFragmentPainterBase::PaintInsetBoxShadow(
     const PhysicalRect& paint_rect) {
   BoxPainterBase::PaintInsetBoxShadowWithBorderRect(info, paint_rect, s,
                                                     SidesToInclude());
+}
+
+void NGInlineBoxFragmentPainterBase::PaintBoxDecorationBackground(
+    BoxPainterBase& box_painter,
+    const PaintInfo& paint_info,
+    const PhysicalOffset& paint_offset,
+    const PhysicalRect& adjusted_frame_rect,
+    BackgroundImageGeometry geometry,
+    bool object_has_multiple_boxes,
+    PhysicalBoxSides sides_to_include) {
+  // Shadow comes first and is behind the background and border.
+  PaintNormalBoxShadow(paint_info, line_style_, adjusted_frame_rect);
+
+  Color background_color =
+      line_style_.VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  PaintFillLayers(box_painter, paint_info, background_color,
+                  line_style_.BackgroundLayers(), adjusted_frame_rect, geometry,
+                  object_has_multiple_boxes);
+
+  PaintInsetBoxShadow(paint_info, line_style_, adjusted_frame_rect);
+
+  gfx::Rect adjusted_clip_rect;
+  BorderPaintingType border_painting_type = GetBorderPaintType(
+      adjusted_frame_rect, adjusted_clip_rect, object_has_multiple_boxes);
+  switch (border_painting_type) {
+    case kDontPaintBorders:
+      break;
+    case kPaintBordersWithoutClip:
+      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
+                                  paint_info, adjusted_frame_rect, line_style_,
+                                  kBackgroundBleedNone, sides_to_include);
+      break;
+    case kPaintBordersWithClip:
+      // FIXME: What the heck do we do with RTL here? The math we're using is
+      // obviously not right, but it isn't even clear how this should work at
+      // all.
+      PhysicalRect image_strip_paint_rect =
+          PaintRectForImageStrip(adjusted_frame_rect, TextDirection::kLtr);
+      GraphicsContextStateSaver state_saver(paint_info.context);
+      paint_info.context.Clip(adjusted_clip_rect);
+      BoxPainterBase::PaintBorder(image_observer_, *document_, node_,
+                                  paint_info, image_strip_paint_rect,
+                                  line_style_);
+      break;
+  }
+}
+
+void NGInlineBoxFragmentPainterBase::PaintFillLayers(
+    BoxPainterBase& box_painter,
+    const PaintInfo& info,
+    const Color& c,
+    const FillLayer& layer,
+    const PhysicalRect& rect,
+    BackgroundImageGeometry& geometry,
+    bool object_has_multiple_boxes) {
+  // FIXME: This should be a for loop or similar. It's a little non-trivial to
+  // do so, however, since the layers need to be painted in reverse order.
+  if (layer.Next()) {
+    PaintFillLayers(box_painter, info, c, *layer.Next(), rect, geometry,
+                    object_has_multiple_boxes);
+  }
+  PaintFillLayer(box_painter, info, c, layer, rect, geometry,
+                 object_has_multiple_boxes);
+}
+
+void NGInlineBoxFragmentPainterBase::PaintFillLayer(
+    BoxPainterBase& box_painter,
+    const PaintInfo& paint_info,
+    const Color& c,
+    const FillLayer& fill_layer,
+    const PhysicalRect& paint_rect,
+    BackgroundImageGeometry& geometry,
+    bool object_has_multiple_boxes) {
+  StyleImage* img = fill_layer.GetImage();
+  bool has_fill_image = img && img->CanRender();
+
+  if (!object_has_multiple_boxes ||
+      (!has_fill_image && !style_.HasBorderRadius())) {
+    box_painter.PaintFillLayer(paint_info, c, fill_layer, paint_rect,
+                               kBackgroundBleedNone, geometry, false);
+    return;
+  }
+
+  // Handle fill images that clone or spans multiple lines.
+  bool multi_line = object_has_multiple_boxes &&
+                    style_.BoxDecorationBreak() != EBoxDecorationBreak::kClone;
+  PhysicalRect rect =
+      multi_line ? PaintRectForImageStrip(paint_rect, style_.Direction())
+                 : paint_rect;
+  GraphicsContextStateSaver state_saver(paint_info.context);
+  paint_info.context.Clip(ToPixelSnappedRect(paint_rect));
+  box_painter.PaintFillLayer(paint_info, c, fill_layer, rect,
+                             kBackgroundBleedNone, geometry, multi_line,
+                             paint_rect.size);
 }
 
 // Paint all fragments for the |layout_inline|. This function is used only for
