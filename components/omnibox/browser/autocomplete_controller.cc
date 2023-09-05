@@ -1214,7 +1214,14 @@ void AutocompleteController::AttachActions() {
   }
   result_.TrimOmniboxActions(input_.IsZeroSuggest());
 
-  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
+  // TODO(crbug.com/1477861): Eliminate the NTP realbox check when realbox UI
+  //  is fixed for this feature. For now the *IncludeRealbox feature param is
+  //  defaulted to true so that developers see realbox issues but they can
+  //  be prevented in experiments.
+  if (OmniboxFieldTrial::IsActionsUISimplificationEnabled() &&
+      (OmniboxFieldTrial::kActionsUISimplificationIncludeRealbox.Get() ||
+       input_.current_page_classification() !=
+           metrics::OmniboxEventProto::NTP_REALBOX)) {
     result_.SplitActionsToSuggestions(input_);
   }
 }

@@ -1912,13 +1912,8 @@ void AutocompleteMatch::ConvertFromTakeoverAction() {
   // Use the pedal text as primary match `contents`.
   contents = takeover_action->GetLabelStrings().hint;
   contents_class = {{0, ACMatchClassification::NONE}};
-
-  // TODO(crbug.com/1473162): May use a shorter description here, like
-  //  a new grit string for "Chrome action", or maybe no string at all.
-  //  Consider also providing a tooltip with `suggestion_contents`, as
-  //  pedals did support this detailed educational string in the past.
-  description = takeover_action->GetLabelStrings().suggestion_contents;
-  description_class = {{0, ACMatchClassification::DIM}};
+  description.clear();
+  description_class = {{0, ACMatchClassification::NONE}};
 }
 
 #if DCHECK_IS_ON()

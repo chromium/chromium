@@ -554,6 +554,12 @@ bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
 }
 
 const base::FeatureParam<bool>
+    OmniboxFieldTrial::kActionsUISimplificationIncludeRealbox(
+        &omnibox::kOmniboxActionsUISimplification,
+        "ActionsUISimplificationIncludeRealbox",
+        true);
+
+const base::FeatureParam<bool>
     OmniboxFieldTrial::kActionsUISimplificationTrimExtra(
         &omnibox::kOmniboxActionsUISimplification,
         "ActionsUISimplificationTrimExtra",
