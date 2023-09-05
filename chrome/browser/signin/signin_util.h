@@ -26,7 +26,6 @@ namespace signin_util {
 enum class ProfileSeparationPolicyState {
   kEnforcedByExistingProfile,
   kEnforcedByInterceptedAccount,
-  kStrict,
   kEnforcedOnMachineLevel,
   kKeepsBrowsingData,
   kMaxValue = kKeepsBrowsingData
@@ -100,31 +99,21 @@ bool IsProfileDeletionAllowed(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
-// Returns the state of profile separation on any account that would signin
-// inside `profile`. Returns an empty set if profile separation is not enforced
-// on accounts that will sign in the content area of `profile`.
-ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
-    Profile* profile,
-    const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies =
-            policy::ProfileSeparationPolicies());
 
-// Returns true if profile separation must be enforced on an account signing in
-// the content area of `profile` by the ManagedAccountsSigninRestriction policy
-// for `profile` or if the value of 'intercepted_account_level_policy_value'
-// enforces profile separation for an intercepted account.
-// `intercepted_account_level_policy_value` has a value only in the case of an
-// account interception. This is used mainly in DiceWebSigninInterceptor to
-// determine if an intercepted account requires a new profile.
-bool ProfileSeparationEnforcedByPolicy(
-    Profile* profile,
+// Returns true if managed accounts signin are required to create a new profile
+// by policies set in `profile`.
+bool IsProfileSeparationEnforcedByProfile(Profile* profile);
+
+// Returns true if profile separation is enforced by
+// `intercepted_account_separation_policies`.
+bool IsProfileSeparationEnforcedByPolicies(
     const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies);
+        intercepted_account_separation_policies);
 
 bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     Profile* profile,
     const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies);
+        intercepted_account_separation_policies);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 // Records a UMA metric if the user accepts or not to create an enterprise
 // profile.

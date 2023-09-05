@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -158,86 +159,58 @@ bool IsProfileDeletionAllowed(Profile* profile) {
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
-ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
-    Profile* profile,
-    const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies) {
-  CHECK(intercepted_profile_separation_policies.Valid());
-  ProfileSeparationPolicyStateSet result;
-  std::string intercepted_account_level_policy_value =
-      intercepted_profile_separation_policies
-          .managed_accounts_signin_restrictions()
-          .value_or(std::string());
-
-  std::string current_profile_account_restriction =
+// Returns true if managed accounts signin are required to create a new profile
+// by policies set in `profile`.
+bool IsProfileSeparationEnforcedByProfile(Profile* profile) {
+  std::string legacy_policy_for_current_profile =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
-
-  if (base::StartsWith(current_profile_account_restriction,
-                       "primary_account")) {
-    result.Put(ProfileSeparationPolicyState::kEnforcedByExistingProfile);
-
-    if (profile->GetPrefs()->GetBoolean(
-            prefs::kManagedAccountsSigninRestrictionScopeMachine)) {
-      result.Put(ProfileSeparationPolicyState::kEnforcedOnMachineLevel);
-    }
-  }
-  if (base::StartsWith(current_profile_account_restriction,
-                       "primary_account_strict")) {
-    result.Put(ProfileSeparationPolicyState::kStrict);
-  }
-  if (base::StartsWith(intercepted_account_level_policy_value,
-                       "primary_account")) {
-    result.Put(ProfileSeparationPolicyState::kEnforcedByInterceptedAccount);
-  }
-
-  if (base::StartsWith(intercepted_account_level_policy_value,
-                       "primary_account_strict")) {
-    result.Put(ProfileSeparationPolicyState::kStrict);
-  }
-
-  if (result.Empty())
-    return result;
-
-  bool profile_allows_keeping_existing_browsing_data =
-      !(result.Has(ProfileSeparationPolicyState::kEnforcedByExistingProfile)) ||
-      base::EndsWith(current_profile_account_restriction, "keep_existing_data");
-  bool account_allows_keeping_existing_browsing_data =
-      !(result.Has(
-          ProfileSeparationPolicyState::kEnforcedByInterceptedAccount)) ||
-      base::EndsWith(intercepted_account_level_policy_value,
-                     "keep_existing_data");
-  // Keep Existing browsing data if both sources for the policy allow it.
-  if (profile_allows_keeping_existing_browsing_data &&
-      account_allows_keeping_existing_browsing_data) {
-    result.Put(ProfileSeparationPolicyState::kKeepsBrowsingData);
-  }
-
-  return result;
+  bool enforced_by_existing_profile = base::StartsWith(
+      legacy_policy_for_current_profile, "primary_account_strict");
+  bool enforced_at_machine_level =
+      base::StartsWith(legacy_policy_for_current_profile, "primary_account") &&
+      profile->GetPrefs()->GetBoolean(
+          prefs::kManagedAccountsSigninRestrictionScopeMachine);
+  return enforced_by_existing_profile || enforced_at_machine_level;
 }
 
-bool ProfileSeparationEnforcedByPolicy(
-    Profile* profile,
+// Returns true if profile separation is enforced by
+// `intercepted_account_separation_policies`.
+bool IsProfileSeparationEnforcedByPolicies(
     const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies) {
-  auto separation_policy_state = GetProfileSeparationPolicyState(
-      profile, intercepted_profile_separation_policies);
-  return !base::Intersection(
-              separation_policy_state,
-              {ProfileSeparationPolicyState::kStrict,
-               ProfileSeparationPolicyState::kEnforcedByInterceptedAccount,
-               ProfileSeparationPolicyState::kEnforcedOnMachineLevel})
-              .Empty();
+        intercepted_account_separation_policies) {
+  std::string legacy_policy_for_intercepted_profile =
+      intercepted_account_separation_policies
+          .managed_accounts_signin_restrictions()
+          .value_or(std::string());
+  return base::StartsWith(legacy_policy_for_intercepted_profile,
+                          "primary_account");
 }
 
 bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     Profile* profile,
     const policy::ProfileSeparationPolicies&
-        intercepted_profile_separation_policies) {
-  auto profile_separation_state = GetProfileSeparationPolicyState(
-      profile, intercepted_profile_separation_policies);
-  return profile_separation_state.Empty() ||
-         profile_separation_state.Has(
-             ProfileSeparationPolicyState::kKeepsBrowsingData);
+        intercepted_account_separation_policies) {
+  // We should not move managed data.
+  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile)) {
+    return false;
+  }
+
+  std::string legacy_policy_for_intercepted_profile =
+      intercepted_account_separation_policies
+          .managed_accounts_signin_restrictions()
+          .value_or(std::string());
+  std::string legacy_policy_for_current_profile =
+      profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
+  bool allowed_by_existing_profile =
+      legacy_policy_for_current_profile.empty() ||
+      legacy_policy_for_current_profile == "none" ||
+      base::EndsWith(legacy_policy_for_current_profile, "keep_existing_data");
+  bool allowed_by_intercepted_account =
+      legacy_policy_for_intercepted_profile.empty() ||
+      legacy_policy_for_intercepted_profile == "none" ||
+      base::EndsWith(legacy_policy_for_intercepted_profile,
+                     "keep_existing_data");
+  return allowed_by_existing_profile && allowed_by_intercepted_account;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

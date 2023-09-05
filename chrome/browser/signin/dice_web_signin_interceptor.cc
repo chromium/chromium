@@ -370,9 +370,10 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     return !chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
   }
 
-  if (!signin_util::ProfileSeparationEnforcedByPolicy(
-          profile_, intercepted_account_profile_separation_policies_.value_or(
-                        policy::ProfileSeparationPolicies()))) {
+  if (!signin_util::IsProfileSeparationEnforcedByProfile(profile_) &&
+      !signin_util::IsProfileSeparationEnforcedByPolicies(
+          intercepted_account_profile_separation_policies_.value_or(
+              policy::ProfileSeparationPolicies()))) {
     return false;
   }
 
@@ -742,9 +743,11 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     SkColor profile_color,
     SigninInterceptionResult create) {
   signin_util::RecordEnterpriseProfileCreationUserChoice(
-      /*enforced_by_policy=*/signin_util::ProfileSeparationEnforcedByPolicy(
-          profile_, intercepted_account_profile_separation_policies_.value_or(
-                        policy::ProfileSeparationPolicies())),
+      /*enforced_by_policy=*/!signin_util::IsProfileSeparationEnforcedByProfile(
+          profile_) &&
+          !signin_util::IsProfileSeparationEnforcedByPolicies(
+              intercepted_account_profile_separation_policies_.value_or(
+                  policy::ProfileSeparationPolicies())),
       /*created=*/create == SigninInterceptionResult::kAccepted);
 
   // Make sure existing account is a non-signed in profile.
@@ -868,11 +871,13 @@ void DiceWebSigninInterceptor::
     DCHECK(profile_separation_policies.Empty())
         << "There should be no signin restriction at the account level in case "
            "of a timeout";
+    intercepted_account_profile_separation_policies_ =
+        policy::ProfileSeparationPolicies();
   } else {
     on_intercepted_account_level_policy_value_timeout_.Cancel();
+    intercepted_account_profile_separation_policies_ =
+        profile_separation_policies;
   }
-  intercepted_account_profile_separation_policies_ =
-      profile_separation_policies;
   OnInterceptionReadyToBeProcessed(account_info);
 }
 
@@ -899,11 +904,16 @@ DiceWebSigninInterceptor::EnterpriseSeparationMaybeRequired(
   if (!intercepted_account_info.IsManaged())
     return false;
   // If `profile` requires enterprise profile separation, return true.
-  if (signin_util::ProfileSeparationEnforcedByPolicy(
-          profile_, intercepted_profile_separation_policies.value_or(
-                        policy::ProfileSeparationPolicies()))) {
+  if (signin_util::IsProfileSeparationEnforcedByProfile(profile_)) {
     return true;
   }
+
+  if (signin_util::IsProfileSeparationEnforcedByPolicies(
+          intercepted_profile_separation_policies.value_or(
+              policy::ProfileSeparationPolicies()))) {
+    return true;
+  }
+
   // If we still do not know if profile separation is required, the account
   // level policies for the intercepted account must be fetched if possible.
   if (is_new_account_interception &&

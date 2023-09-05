@@ -191,8 +191,9 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     return;
   }
   auto profile_creation_required_by_policy =
-      signin_util::ProfileSeparationEnforcedByPolicy(
-          browser_->profile(), profile_separation_policies);
+      signin_util::IsProfileSeparationEnforcedByProfile(browser_->profile()) ||
+      signin_util::IsProfileSeparationEnforcedByPolicies(
+          profile_separation_policies);
   bool show_link_data_option = signin_util::
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
           browser_->profile(), profile_separation_policies);
