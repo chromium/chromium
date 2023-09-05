@@ -238,7 +238,6 @@ crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
-crbug.com/1478636 [ Debug Linux ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/span-with-overflowing-text-hidden.html [ Failure Pass ]
 
 # View transition SPA failures with MPA serialization.
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
