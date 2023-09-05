@@ -1216,7 +1216,7 @@ FormFieldData* SearchForFormControlByName(
     const std::u16string& field_name,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set,
-    AssignedLabelSource& label_source) {
+    FormFieldData::LabelSource& label_source) {
   if (field_name.empty())
     return nullptr;
 
@@ -1233,11 +1233,11 @@ FormFieldData* SearchForFormControlByName(
     if (it != end) {
       label_source =
           base::Contains(it->second.shadow_host_name_attributes, field_name)
-              ? AssignedLabelSource::kShadowHostName
-              : AssignedLabelSource::kShadowHostId;
+              ? FormFieldData::LabelSource::kForShadowHostName
+              : FormFieldData::LabelSource::kForShadowHostId;
     }
   } else {
-    label_source = AssignedLabelSource::kName;
+    label_source = FormFieldData::LabelSource::kForName;
   }
   return it != end ? it->first : nullptr;
 }
@@ -1290,7 +1290,7 @@ void MatchLabelsAndFields(
     WebLabelElement label = item.To<WebLabelElement>();
     WebElement control = label.CorrespondingControl();
     FormFieldData* field_data = nullptr;
-    auto label_source = AssignedLabelSource::kId;
+    auto label_source = FormFieldData::LabelSource::kForId;
 
     if (control.IsNull()) {
       // Sometimes site authors will incorrectly specify the corresponding
@@ -1300,7 +1300,7 @@ void MatchLabelsAndFields(
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableDevtoolsIssues)) {
         EmitDevtoolsIssueForLabelWithoutControl(
-            label, label_source == AssignedLabelSource::kName);
+            label, label_source == FormFieldData::LabelSource::kForName);
       }
     } else if (control.IsFormControlElement()) {
       WebFormControlElement form_control = control.To<WebFormControlElement>();
@@ -1348,8 +1348,7 @@ void MatchLabelsAndFields(
     if (!field_data->label.empty())
       field_data->label += u" ";
     field_data->label += label_text;
-    field_data->label_source = FormFieldData::LabelSource::kFor;
-    base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram, label_source);
+    field_data->label_source = label_source;
   }
 }
 
@@ -1558,11 +1557,6 @@ bool OwnedOrUnownedFormToFormData(
     FormFieldData& field = form->fields[field_index++];
     if (field.label.empty())
       InferLabelForElement(control_element, field.label, field.label_source);
-    // At this point, label-for and heuristic label inference has happened and
-    // `field.label_source` is set appropriately. In case no label was found,
-    // it is set to kUnknown.
-    base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
-                                  field.label_source);
     field.label = std::move(field.label).substr(0, kMaxStringLength);
 
     if (optional_field && *form_control_element == control_element) {

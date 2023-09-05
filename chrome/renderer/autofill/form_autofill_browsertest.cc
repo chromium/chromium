@@ -3618,8 +3618,7 @@ TEST_F(FormAutofillTest, Labels) {
 // labels are separated with a space.
 // TODO(crbug.com/1339277): Simplify the test using `ExpectLabels()`. This
 // requires some refactoring of the fixture, as only owned forms are supported
-// at the moment. Moreover, it seems like the form is parsed multiple times, so
-// checking for metrics is tricky.
+// at the moment.
 TEST_F(FormAutofillTest, LabelForAttribute) {
   LoadHTML(R"(
     <label for=fieldId>foo</label>
@@ -3638,9 +3637,7 @@ TEST_F(FormAutofillTest, LabelForAttribute) {
   FormFieldData& form_field_data = form.fields[0];
 
   EXPECT_EQ(form_field_data.label, u"foo bar");
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kAssignedLabelSourceHistogram),
-      testing::UnorderedElementsAre(base::Bucket(AssignedLabelSource::kId, 2)));
+  EXPECT_EQ(form_field_data.label_source, FormFieldData::LabelSource::kForId);
 }
 
 // Tests that when a label is assigned to an input, text behind it is considered

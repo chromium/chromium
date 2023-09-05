@@ -74,22 +74,6 @@ enum ExtractMask {
                                  // kMaxDataLength.
 };
 
-// Autofill supports assigning <label for=x> tags to inputs if x its id/name,
-// or the id/name of a shadow host element containing the input.
-// This enum is used to track how often each case occurs in practice.
-enum class AssignedLabelSource {
-  kId = 0,
-  kName = 1,
-  kShadowHostId = 2,
-  kShadowHostName = 3,
-  kMaxValue = kShadowHostName,
-};
-// This temporary histogram is emitted inline, because browser files like
-// AutofillMetrics cannot be included here.
-// TODO(crbug.com/1339277): Remove.
-inline constexpr char kAssignedLabelSourceHistogram[] =
-    "Autofill.LabelInference.AssignedLabelSource";
-
 // Indicates if an iframe |element| is considered actually visible to the user.
 //
 // This function is not intended to implement a perfect visibility check. It

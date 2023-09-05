@@ -301,19 +301,26 @@ struct FormFieldData {
 
   // From which source the label is inferred.
   enum LabelSource {
-    kUnknown,          // No label.
-    kLabelTag,         // <label> sibling/ancestor.
-    kPTag,             // <p> sibling.
-    kDivTable,         // <div> ancestor.
-    kTdTag,            // <td> sibling.
-    kDdTag,            // <dd> sibling.
-    kLiTag,            // <li> ancestor.
-    kPlaceHolder,      // placeholder attribute.
-    kAriaLabel,        // aria-label attribute.
-    kCombined,         // Text node sibling (includes <b>, etc).
-    kValue,            // value attribute.
-    kFor,              // <label> for-attribute
-    kOverlayingLabel,  // Succeeding DOM node overlaying the input.
+    kUnknown,           // No label.
+    kLabelTag,          // <label> sibling/ancestor.
+    kPTag,              // <p> sibling.
+    kDivTable,          // <div> ancestor.
+    kTdTag,             // <td> sibling.
+    kDdTag,             // <dd> sibling.
+    kLiTag,             // <li> ancestor.
+    kPlaceHolder,       // placeholder attribute.
+    kAriaLabel,         // aria-label attribute.
+    kCombined,          // Text node sibling (includes <b>, etc).
+    kValue,             // value attribute.
+    kForId,             // <label> for-attribute that links to an control
+                        // via it's id attribute.
+    kForName,           // <label> for-attribute that links to an control
+                        // viait's name attribute.
+    kForShadowHostId,   // <label> for-attribute that links to an control
+                        // (inside a shadow DOM) via it's id attribute.
+    kForShadowHostName, // <label> for-attribute that links to an control
+                        // (inside a shadow DOM) via it's name attribute.
+    kOverlayingLabel,   // Succeeding DOM node overlaying the input.
   };
 
   mojo_base.mojom.String16 label;

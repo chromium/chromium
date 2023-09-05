@@ -867,7 +867,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   }
 }
 
-// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission
+// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission2
 // metric is emitted correctly.
 TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   const AutofillProfile& profile =
@@ -884,7 +884,7 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   name_field.label_source = FormFieldData::LabelSource::kUnknown;
   FormFieldData street_field;
   street_field.value = u"unknown";
-  street_field.label_source = FormFieldData::LabelSource::kFor;
+  street_field.label_source = FormFieldData::LabelSource::kForId;
   FormFieldData country_field;
   country_field.value =
       profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale());
@@ -898,7 +898,7 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.LabelInference.InferredLabelSource.AtSubmission"),
+                  "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
               BucketsAre(Bucket(name_field.label_source, 1),
                          Bucket(country_field.label_source, 1)));
 }

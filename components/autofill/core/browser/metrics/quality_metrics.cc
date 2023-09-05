@@ -276,7 +276,7 @@ void LogQualityMetrics(
       }
 
       base::UmaHistogramEnumeration(
-          "Autofill.LabelInference.InferredLabelSource.AtSubmission",
+          "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
           field->label_source);
     }
   }
