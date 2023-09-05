@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/existing_window_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -40,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
@@ -637,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_NE(app_browser, new_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id));
+  EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);
 
   // Check the new browser contains the moved tab and a pinned home tab.
   EXPECT_EQ(new_browser->tab_strip_model()->count(), 2);
@@ -645,6 +649,42 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
       new_browser->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL(),
       start_url);
   EXPECT_EQ(new_browser->tab_strip_model()->active_index(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallTestWebApp(start_url);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  chrome::NewTab(app_browser);
+
+  // Open a second app browser window.
+  chrome::MoveTabsToNewWindow(app_browser, {1});
+  Browser* app_browser2 = BrowserList::GetInstance()->GetLastActive();
+
+  EXPECT_EQ(app_browser->tab_strip_model()->count(), 1);
+  EXPECT_EQ(app_browser2->tab_strip_model()->count(), 2);
+
+  // Test the "open in existing window" menu option.
+  TabMenuModel menu(nullptr, app_browser2->tab_menu_model_delegate(),
+                    app_browser2->tab_strip_model(), 1);
+  size_t submenu_index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandMoveToExistingWindow)
+          .value();
+  ExistingWindowSubMenuModel* submenu =
+      static_cast<ExistingWindowSubMenuModel*>(
+          menu.GetSubmenuModelAt(submenu_index));
+  EXPECT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(submenu->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW));
+  EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(submenu->GetLabelAt(2), app_browser->GetWindowTitleForCurrentTab(
+                                        /*include_app_name=*/false));
+
+  submenu->ExecuteCommand(submenu->GetCommandIdAt(2), 0);
+
+  EXPECT_EQ(app_browser2->tab_strip_model()->count(), 1);
+  EXPECT_EQ(app_browser->tab_strip_model()->count(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
