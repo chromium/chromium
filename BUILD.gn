@@ -840,6 +840,10 @@ group("gn_all") {
       deps += [ "//components/cronet:cronet_tests" ]
     }
   }
+
+  if (is_chrome_for_testing) {
+    deps += [ "//chrome/browser/chrome_for_testing:chrome_for_testing" ]
+  }
 }
 
 # All Rust targets. This is provided for convenience while developing Rust to

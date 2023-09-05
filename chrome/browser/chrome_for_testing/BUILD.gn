@@ -6,6 +6,16 @@ import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
 import("//components/nacl/features.gni")
 
+if (is_chrome_for_testing) {
+  group("chrome_for_testing") {
+    deps = [ ":generate_about_file" ]
+
+    if (is_linux) {
+      deps += [ ":strip_linux_files" ]
+    }
+  }
+}
+
 if (is_linux) {
   import("//build/linux/strip_binary.gni")
 }
