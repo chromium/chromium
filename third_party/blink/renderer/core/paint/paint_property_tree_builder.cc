@@ -2706,9 +2706,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
   if (!object_.IsBoxModelObject() && !properties_)
     return;
 
-  if (object_.IsLayoutBlock())
-    context_.paint_offset_for_float = context_.current.paint_offset;
-
   if (object_.CanContainAbsolutePositionObjects())
     context_.absolute_position = context_.current;
 
@@ -2805,11 +2802,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipIsolationNode() {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
-  if (!pre_paint_info_) {
-    if (object_.IsFloating() && !object_.IsInLayoutNGInlineFormattingContext())
-      context_.current.paint_offset = context_.paint_offset_for_float;
-  }
-
   if (object_.IsBoxModelObject()) {
     const auto& box_model_object = To<LayoutBoxModelObject>(object_);
     switch (box_model_object.StyleRef().GetPosition()) {
