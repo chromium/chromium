@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl,
+import {Destination,
+        // <if expr="is_chromeos">
+        DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS,
+        // </if>
+        DestinationStore, GooglePromotedDestinationId, LocalDestinationInfo, makeRecentDestination, NativeLayerImpl,
         // <if expr="is_chromeos">
         PrintPreviewDestinationDialogCrosElement,
         // </if>
@@ -12,6 +16,9 @@ import {Destination, DestinationStore, GooglePromotedDestinationId, LocalDestina
         PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+// <if expr="is_chromeos">
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+// </if>
 
 // <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
@@ -48,6 +55,10 @@ suite(destination_dialog_test.suiteName, function() {
 
   const localDestinations: LocalDestinationInfo[] = [];
 
+  // <if expr="is_chromeos">
+  let mockTimer: MockTimer;
+  // </if>
+
   suiteSetup(function() {
     setupTestListenerElement();
   });
@@ -57,6 +68,8 @@ suite(destination_dialog_test.suiteName, function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="is_chromeos">
+    mockTimer = new MockTimer();
+    mockTimer.install();
     setNativeLayerCrosInstance();
     // </if>
     destinationStore = createDestinationStore();
@@ -79,6 +92,9 @@ suite(destination_dialog_test.suiteName, function() {
     document.body.appendChild(dialog);
     destinationStore.startLoadAllDestinations();
     dialog.show();
+    // <if expr="is_chromeos">
+    mockTimer.tick(DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS);
+    // </if>
   }
 
   function validatePrinterList() {

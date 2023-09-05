@@ -21,6 +21,17 @@
   .server-search-box-container {
     width: 100%;
   }
+
+  .throbber {
+    align-self: center;
+  }
+
+  .throbber-container {
+    display: flex;
+    margin-inline-start:
+        calc((var(--search-icon-size) - var(--throbber-size))/2);
+    min-height: var(--destination-item-height);
+  }
 </style>
 <cr-dialog id="dialog" on-close="onCloseOrCancel_">
   <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
@@ -36,14 +47,19 @@
         </cr-searchable-drop-down>
       </div>
     </div>
+    <div class="throbber-container" hidden$="[[!showThrobber_]]">
+      <div class="throbber"></div>
+    </div>
     <print-preview-search-box id="searchBox"
-        hidden$="[[isShowingPrinterSetupAssistance]]"
+        hidden$="[[!getShowDestinations_(
+          showThrobber_, isShowingPrinterSetupAssistance)]]"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
         autofocus>
     </print-preview-search-box>
     <print-preview-destination-list id="printList"
         destinations="[[destinations_]]"
-        hidden$="[[isShowingPrinterSetupAssistance]]"
+        hidden$="[[!getShowDestinations_(
+          showThrobber_, isShowingPrinterSetupAssistance)]]"
         loading-destinations="[[loadingAnyDestinations_]]"
         search-query="[[searchQuery_]]"
         on-destination-selected="onDestinationSelected_">

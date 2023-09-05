@@ -43,7 +43,7 @@ export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies
 export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
 // </if>
 // <if expr="is_chromeos">
-export {PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
+export {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
 export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
 // </if>
 export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
