@@ -81,6 +81,8 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
   void DownloadContacts() override;
   void SetAllowedContacts(
       const std::set<std::string>& allowed_contact_ids) override;
+  std::set<std::string> GetAllowedContacts() const override;
+
   void OnStart() override;
   void OnStop() override;
   void Bind(mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver)
@@ -91,7 +93,6 @@ class NearbyShareContactManagerImpl : public NearbyShareContactManager {
       ::mojo::PendingRemote<nearby_share::mojom::DownloadContactsObserver>
           observer) override;
 
-  std::set<std::string> GetAllowedContacts() const;
   void OnPeriodicContactsUploadRequested();
   void OnContactsDownloadRequested();
   void OnContactsDownloadSuccess(

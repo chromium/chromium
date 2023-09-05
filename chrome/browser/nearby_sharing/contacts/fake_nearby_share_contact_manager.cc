@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/contacts/fake_nearby_share_contact_manager.h"
+#include <set>
+#include <string>
 
 FakeNearbyShareContactManager::Factory::Factory() = default;
 
@@ -36,6 +38,12 @@ void FakeNearbyShareContactManager::DownloadContacts() {
 void FakeNearbyShareContactManager::SetAllowedContacts(
     const std::set<std::string>& allowed_contact_ids) {
   set_allowed_contacts_calls_.push_back(allowed_contact_ids);
+}
+std::set<std::string> FakeNearbyShareContactManager::GetAllowedContacts()
+    const {
+  return set_allowed_contacts_calls_.empty()
+             ? std::set<std::string>()
+             : set_allowed_contacts_calls_.back();
 }
 
 void FakeNearbyShareContactManager::OnStart() {}

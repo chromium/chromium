@@ -78,6 +78,12 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
   FakeNearbyShareContactManager();
   ~FakeNearbyShareContactManager() override;
 
+  // NearbyShareContactsManager:
+  void DownloadContacts() override;
+  void SetAllowedContacts(
+      const std::set<std::string>& allowed_contact_ids) override;
+  std::set<std::string> GetAllowedContacts() const override;
+
   size_t num_download_contacts_calls() const {
     return num_download_contacts_calls_;
   }
@@ -93,9 +99,6 @@ class FakeNearbyShareContactManager : public NearbyShareContactManager {
 
  private:
   // NearbyShareContactsManager:
-  void DownloadContacts() override;
-  void SetAllowedContacts(
-      const std::set<std::string>& allowed_contact_ids) override;
   void OnStart() override;
   void OnStop() override;
   void Bind(mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver)

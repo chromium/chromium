@@ -62,6 +62,7 @@
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -5338,18 +5339,34 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
   service_->UnregisterReceiveSurface(&callback);
 }
 
-TEST_P(NearbySharingServiceImplTest, YourDevicesVisibilityOnScreenLock) {
+TEST_P(NearbySharingServiceImplTest,
+       SelfShareEnabled_YourDevicesVisibilityOnScreenLock) {
   if (features::IsSelfShareEnabled()) {
     SetIsEnabled(true);
     SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
 
     // Lock screen, expect Your Devices visibility.
     session_controller_->SetScreenLocked(true);
-    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kYourDevices);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
 
     // Unlock screen, expect visibility to return to All Contacts.
     session_controller_->SetScreenLocked(false);
-    EXPECT_EQ(GetVisibility(), nearby_share::mojom::Visibility::kAllContacts);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
+  }
+}
+
+TEST_P(NearbySharingServiceImplTest,
+       SelfShareDisabled_NoVisibilityChangeOnScreenLock) {
+  if (!features::IsSelfShareEnabled()) {
+    SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+
+    // Lock screen, expect no change in visibility.
+    session_controller_->SetScreenLocked(true);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
+
+    // Unlock screen, expect no change in visibility.
+    session_controller_->SetScreenLocked(false);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
   }
 }
 

@@ -68,14 +68,16 @@ class NearbyShareContactManager : public nearby_share::mojom::ContactManager {
   void SetAllowedContacts(
       const std::vector<std::string>& allowed_contacts) override;
 
-  // Assigns the set of contacts that the local device allows sharing with when
-  // in selected-contacts visibility mode. (Note: This set is irrelevant for
-  // all-contacts visibility mode.) The allowed contact list determines what
-  // contacts receive the local device's "selected-contacts" visibility public
-  // certificates. Changes to the allowlist will trigger RPC calls to upload the
-  // new allowlist to the Nearby Share server.
+  // Assigns the set of contacts that the local device allows sharing with. The
+  // allowed contact list determines what contacts receive the local device's
+  // "selected-contacts" visibility public certificates. Changes to the
+  // allowlist will trigger RPC calls to upload the new allowlist to the Nearby
+  // Share server.
   virtual void SetAllowedContacts(
       const std::set<std::string>& allowed_contact_ids) = 0;
+
+  // Gets the set of contacts that the local device allows sharing with.
+  virtual std::set<std::string> GetAllowedContacts() const = 0;
 
   virtual void Bind(
       mojo::PendingReceiver<nearby_share::mojom::ContactManager> receiver) = 0;

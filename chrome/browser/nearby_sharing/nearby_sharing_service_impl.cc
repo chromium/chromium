@@ -1393,7 +1393,10 @@ void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
   // Set visibility to 'Your Devices' if the screen is locked.
   if (features::IsSelfShareEnabled()) {
     if (locked) {
+      // Store old visibility setting.
       user_visibility_ = settings_.GetVisibility();
+
+      // Set visibility to Your Devices.
       settings_.SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
     } else {
       settings_.SetVisibility(user_visibility_);

@@ -47,6 +47,7 @@
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -599,8 +600,8 @@ class NearbySharingServiceImpl
   // Called when cleanup for ARC is needed as part of the transfer.
   base::OnceCallback<void()> arc_transfer_cleanup_callback_;
 
-  // Stores the user's selected visibility state when the screen is locked and
-  // visibility is set to kYourDevices.
+  // Stores the user's selected visibility state when the
+  // screen is locked and visibility is set to Your Devices.
   nearby_share::mojom::Visibility user_visibility_;
 
   SEQUENCE_CHECKER(sequence_checker_);
