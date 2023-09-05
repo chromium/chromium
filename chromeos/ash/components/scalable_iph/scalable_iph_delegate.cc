@@ -35,4 +35,63 @@ std::ostream& operator<<(std::ostream& out,
   }
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::Action action) {
+  return out << "Action: action_type: " << action.action_type
+             << " iph_event_name: " << action.iph_event_name;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::Button button) {
+  return out << "Button: text: " << button.text << " action: (" << button.action
+             << ")";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::BubbleIcon bubble_icon) {
+  switch (bubble_icon) {
+    case ScalableIphDelegate::BubbleIcon::kNoIcon:
+      return out << "NoIcon";
+    case ScalableIphDelegate::BubbleIcon::kChromeIcon:
+      return out << "ChromeIcon";
+    case ScalableIphDelegate::BubbleIcon::kPlayStoreIcon:
+      return out << "PlayStoreIcon";
+    case ScalableIphDelegate::BubbleIcon::kGoogleDocsIcon:
+      return out << "GoogleDocsIcon";
+    case ScalableIphDelegate::BubbleIcon::kGooglePhotosIcon:
+      return out << "GooglePhotosIcon";
+    case ScalableIphDelegate::BubbleIcon::kPrintJobsIcon:
+      return out << "PrintJobsIcon";
+    case ScalableIphDelegate::BubbleIcon::kYouTubeIcon:
+      return out << "YouTubeIcon";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::BubbleParams params) {
+  return out << "BubbleParams: bubble_id: " << params.bubble_id
+             << " title: " << params.title << " text: " << params.text
+             << " icon: " << params.icon << " button: (" << params.button
+             << ") anchor_view_app_id: " << params.anchor_view_app_id;
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    ScalableIphDelegate::NotificationImageType notification_image_type) {
+  switch (notification_image_type) {
+    case ScalableIphDelegate::NotificationImageType::kNoImage:
+      return out << "NoImage";
+    case ScalableIphDelegate::NotificationImageType::kWallpaper:
+      return out << "Wallpaper";
+  }
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::NotificationParams params) {
+  return out << "NotificationParams: notification_id: "
+             << params.notification_id << " title: " << params.title
+             << " text: " << params.text << " image_type: " << params.image_type
+             << " button: (" << params.button << ")";
+}
+
 }  // namespace scalable_iph

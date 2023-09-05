@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -21,8 +22,8 @@
 // used/implemented if a constraint is coming from server side or a config.
 class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
  public:
-  using DelegateTestingFactory = base::RepeatingCallback<
-      std::unique_ptr<scalable_iph::ScalableIphDelegate>(Profile*)>;
+  using DelegateTestingFactory = base::RepeatingCallback<std::unique_ptr<
+      scalable_iph::ScalableIphDelegate>(Profile*, scalable_iph::Logger*)>;
 
   static ScalableIphFactory* GetInstance();
   static scalable_iph::ScalableIph* GetForBrowserContext(
@@ -52,7 +53,8 @@ class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
   friend base::NoDestructor<ScalableIphFactory>;
 
   std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateScalableIphDelegate(
-      Profile* profile) const;
+      Profile* profile,
+      scalable_iph::Logger* logger) const;
 
   ScalableIphFactory();
   ~ScalableIphFactory() override;

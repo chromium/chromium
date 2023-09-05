@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
@@ -36,7 +37,8 @@ class ScalableIphDelegateImpl
       public AppListControllerObserver,
       public SyncedPrintersManager::Observer {
  public:
-  explicit ScalableIphDelegateImpl(Profile* profile);
+  explicit ScalableIphDelegateImpl(Profile* profile,
+                                   scalable_iph::Logger* logger);
   ~ScalableIphDelegateImpl() override;
 
   // scalable_iph::ScalableIphDelegate:
@@ -89,7 +91,13 @@ class ScalableIphDelegateImpl
                             scalable_iph::ScalableIphDelegate::Action action);
   void OnNudgeDismissed(const std::string& bubble_id);
 
+  scalable_iph::Logger* GetLogger() { return logger_; }
+
   raw_ptr<Profile> profile_;
+
+  // Owned by `ScalableIph`
+  raw_ptr<scalable_iph::Logger> logger_;
+
   raw_ptr<SyncedPrintersManager> synced_printers_manager_;
   bool has_online_network_ = false;
   bool has_saved_printers_ = false;

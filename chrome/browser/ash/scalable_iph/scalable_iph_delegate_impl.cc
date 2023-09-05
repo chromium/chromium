@@ -105,8 +105,27 @@ const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   return *action_type_urls;
 }
 
-bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks) {
+std::string ToString(ConnectionStateType connection_state_type) {
+  switch (connection_state_type) {
+    case ConnectionStateType::kOnline:
+      return "Online";
+    case ConnectionStateType::kConnected:
+      return "Connected";
+    case ConnectionStateType::kPortal:
+      return "Portal";
+    case ConnectionStateType::kConnecting:
+      return "Connecting";
+    case ConnectionStateType::kNotConnected:
+      return "NotConnected";
+  }
+}
+
+bool HasOnlineNetwork(const std::vector<NetworkStatePropertiesPtr>& networks,
+                      scalable_iph::Logger* logger) {
+  SCALABLE_IPH_LOG(logger) << "Checking networks. Size: " << networks.size();
   for (const NetworkStatePropertiesPtr& network : networks) {
+    SCALABLE_IPH_LOG(logger)
+        << network->name << ": " << ToString(network->connection_state);
     if (network->connection_state == ConnectionStateType::kOnline) {
       return true;
     }
@@ -164,7 +183,9 @@ bool IsAppValidForProfile(Profile* profile, const std::string& app_id) {
   return true;
 }
 
-void OpenUrlForProfile(Profile* profile, const GURL& url) {
+void OpenUrlForProfile(Profile* profile,
+                       const GURL& url,
+                       scalable_iph::Logger* logger) {
   if (crosapi::browser_util::IsLacrosEnabled()) {
     const GURL sanitized_url =
         crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
@@ -172,11 +193,16 @@ void OpenUrlForProfile(Profile* profile, const GURL& url) {
     // rather than a browser window.
     if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
             sanitized_url)) {
+      SCALABLE_IPH_LOG(logger) << "Opening a sanitized url with "
+                                  "crosapi::UrlHandlerAsh. Sanitized url: "
+                               << sanitized_url << " Url: " << url;
       crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
       return;
     }
   }
 
+  SCALABLE_IPH_LOG(logger) << "Opening a url with ash::NewWindowDelegate. Url: "
+                           << url;
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewWindow);
@@ -250,8 +276,14 @@ DelegateSessionState GetDelegateSessionState(
 
 }  // namespace
 
-ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile)
-    : profile_(profile) {
+ScalableIphDelegateImpl::ScalableIphDelegateImpl(Profile* profile,
+                                                 scalable_iph::Logger* logger)
+    : profile_(profile), logger_(logger) {
+  CHECK(profile_);
+  CHECK(logger_);
+
+  SCALABLE_IPH_LOG(GetLogger()) << "Initializing ScalableIphDelegateImpl";
+
   GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   remote_cros_network_config_->AddObserver(
@@ -295,6 +327,8 @@ ScalableIphDelegateImpl::~ScalableIphDelegateImpl() {
 void ScalableIphDelegateImpl::ShowBubble(
     const scalable_iph::ScalableIphDelegate::BubbleParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
+  SCALABLE_IPH_LOG(GetLogger()) << "Show bubble: " << params;
+
   // It will be no-op if the `bubble_id_` is an empty string when the first time
   // to show a bubble.
   ash::AnchoredNudgeManager::Get()->Cancel(bubble_id_);
@@ -312,6 +346,12 @@ void ScalableIphDelegateImpl::ShowBubble(
             ->hotseat_widget()
             ->GetShelfView()
             ->GetShelfAppButton(ash::ShelfID(params.anchor_view_app_id));
+    if (!anchor_view) {
+      SCALABLE_IPH_LOG(GetLogger())
+          << "Unable to find a view for specified anchor view app id. Anchor "
+             "view app id: "
+          << params.anchor_view_app_id;
+    }
   }
 
   ash::AnchoredNudgeData nudge_data(
@@ -327,6 +367,7 @@ void ScalableIphDelegateImpl::ShowBubble(
   // nudge should be anchored to shelf. Once bubbles fully support anchor views,
   // this behavior may change.
   if (anchor_view) {
+    SCALABLE_IPH_LOG(GetLogger()) << "Anchoring bubble UI to the shelf.";
     nudge_data.anchored_to_shelf = true;
   }
 
@@ -356,6 +397,8 @@ void ScalableIphDelegateImpl::ShowBubble(
 void ScalableIphDelegateImpl::ShowNotification(
     const NotificationParams& params,
     std::unique_ptr<scalable_iph::IphSession> iph_session) {
+  SCALABLE_IPH_LOG(GetLogger()) << "Show notification: " << params;
+
   std::string notification_source_name = kNotificationSourceName;
   std::string notification_title = params.title;
   std::string notification_text = params.text;
@@ -414,13 +457,20 @@ int ScalableIphDelegateImpl::ClientAgeInDays() {
 
 void ScalableIphDelegateImpl::PerformActionForScalableIph(
     ActionType action_type) {
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Performing action: Action type: " << action_type;
+
   switch (action_type) {
     case ActionType::kOpenChrome: {
       OpenUrlForProfile(profile_,
-                        GURL(GetActionTypeURLs().at(ActionType::kOpenChrome)));
+                        GURL(GetActionTypeURLs().at(ActionType::kOpenChrome)),
+                        GetLogger());
       break;
     }
     case ActionType::kOpenPersonalizationApp: {
+      SCALABLE_IPH_LOG(GetLogger())
+          << "Opening ash::SystemWebAppType::PERSONALIZATION via "
+             "ash::LaunchSystemWebAppAsync.";
       ash::LaunchSystemWebAppAsync(profile_,
                                    ash::SystemWebAppType::PERSONALIZATION);
       break;
@@ -431,16 +481,20 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
         app_launched = arc::LaunchApp(
             profile_, arc::kPlayStoreAppId, ui::EF_NONE,
             arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Opening Play Store Android app. App launched: " << app_launched;
       }
       if (!app_launched) {
         OpenUrlForProfile(
-            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenPlayStore)));
+            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenPlayStore)),
+            GetLogger());
       }
       break;
     }
     case ActionType::kOpenGoogleDocs: {
       OpenUrlForProfile(
-          profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenGoogleDocs)));
+          profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenGoogleDocs)),
+          GetLogger());
       break;
     }
     case ActionType::kOpenGooglePhotos: {
@@ -449,22 +503,30 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
         app_launched = arc::LaunchApp(
             profile_, arc::kGooglePhotosAppId, ui::EF_NONE,
             arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP);
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Opening Google Photos Android app. App launched: "
+            << app_launched;
       }
       if (!app_launched) {
         OpenUrlForProfile(
             profile_,
-            GURL(GetActionTypeURLs().at(ActionType::kOpenGooglePhotos)));
+            GURL(GetActionTypeURLs().at(ActionType::kOpenGooglePhotos)),
+            GetLogger());
       }
       break;
     }
     case ActionType::kOpenSettingsPrinter: {
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+      SCALABLE_IPH_LOG(GetLogger())
+          << "Opening OSSettings kPrintingDetailsSubpagePath";
       break;
     }
     case ActionType::kOpenPhoneHub: {
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kMultiDeviceSectionPath);
+      SCALABLE_IPH_LOG(GetLogger())
+          << "Opening OSSettings kMultiDeviceSectionPath";
       break;
     }
     case ActionType::kOpenYouTube: {
@@ -479,9 +541,11 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
             GURL(GetActionTypeURLs().at(ActionType::kOpenYouTube)),
             apps::LaunchSource::kFromOtherApp,
             std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
+        SCALABLE_IPH_LOG(GetLogger()) << "Opening YouTube app via AppService.";
       } else {
         OpenUrlForProfile(
-            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenYouTube)));
+            profile_, GURL(GetActionTypeURLs().at(ActionType::kOpenYouTube)),
+            GetLogger());
       }
       break;
     }
@@ -494,6 +558,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       files_app_launcher->Launch(base::BindOnce(
           crosapi::browser_util::ClearGotoFilesClicked,
           g_browser_process->local_state(), std::move(user_id_hash)));
+      SCALABLE_IPH_LOG(GetLogger()) << "Opening file manager.";
       break;
     }
     case ActionType::kOpenLauncher:
@@ -507,7 +572,7 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
 
 void ScalableIphDelegateImpl::OnActiveNetworksChanged(
     std::vector<NetworkStatePropertiesPtr> networks) {
-  SetHasOnlineNetwork(HasOnlineNetwork(networks));
+  SetHasOnlineNetwork(HasOnlineNetwork(networks, GetLogger()));
 }
 
 void ScalableIphDelegateImpl::OnShellDestroying() {
@@ -525,13 +590,21 @@ void ScalableIphDelegateImpl::OnSessionStateChanged(
 void ScalableIphDelegateImpl::SuspendDone(base::TimeDelta sleep_duration) {
   // Do not record event when the lock screen is enabled.
   if (ash::LockScreen::HasInstance()) {
+    SCALABLE_IPH_LOG(GetLogger()) << "Observed SuspendDone. But do nothing as "
+                                     "the lock screen is enabled.";
     return;
   }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Observed SuspendDone. Notifying SuspendDoneWithoutLockScreen.";
   NotifySuspendDoneWithoutLockScreen();
 }
 
 void ScalableIphDelegateImpl::OnAppListVisibilityChanged(bool shown,
                                                          int64_t display_id) {
+  SCALABLE_IPH_LOG(GetLogger())
+      << "App list visibility changed. Shown: " << shown
+      << " Display Id: " << display_id;
   for (DelegateObserver& observer : observers_) {
     observer.OnAppListVisibilityChanged(shown);
   }
@@ -543,8 +616,15 @@ void ScalableIphDelegateImpl::OnSavedPrintersChanged() {
 
 void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
   if (has_online_network_ == has_online_network) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Has online network state is set to " << has_online_network
+        << ". But do nothing as it's the same with the current internal state.";
     return;
   }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Has online network state has changed from " << has_online_network_
+      << " to " << has_online_network << ". Notifying the state change.";
 
   has_online_network_ = has_online_network;
 
@@ -554,6 +634,8 @@ void ScalableIphDelegateImpl::SetHasOnlineNetwork(bool has_online_network) {
 }
 
 void ScalableIphDelegateImpl::QueryOnlineNetworkState() {
+  SCALABLE_IPH_LOG(GetLogger()) << "Querying network state.";
+
   remote_cros_network_config_->GetNetworkStateList(
       NetworkFilter::New(FilterType::kActive, NetworkType::kAll, kNoLimit),
       base::BindOnce(&ScalableIphDelegateImpl::OnNetworkStateList,
@@ -562,7 +644,9 @@ void ScalableIphDelegateImpl::QueryOnlineNetworkState() {
 
 void ScalableIphDelegateImpl::OnNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
-  SetHasOnlineNetwork(HasOnlineNetwork(networks));
+  SCALABLE_IPH_LOG(GetLogger()) << "Received network state list.";
+
+  SetHasOnlineNetwork(HasOnlineNetwork(networks, GetLogger()));
 }
 
 void ScalableIphDelegateImpl::NotifySessionStateChanged(
@@ -583,8 +667,16 @@ void ScalableIphDelegateImpl::MaybeNotifyHasSavedPrinters() {
       !synced_printers_manager_->GetSavedPrinters().empty();
 
   if (has_saved_printers_ == has_saved_printers) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Checked has saved printers status. Do nothing as it matches with "
+           "the current internal state. Has saved printers: "
+        << has_saved_printers_;
     return;
   }
+
+  SCALABLE_IPH_LOG(GetLogger())
+      << "Has saved printers status has changed from " << has_saved_printers_
+      << " to " << has_saved_printers << ". Notifying the status change.";
 
   has_saved_printers_ = has_saved_printers;
 
@@ -595,7 +687,12 @@ void ScalableIphDelegateImpl::MaybeNotifyHasSavedPrinters() {
 
 void ScalableIphDelegateImpl::OnNudgeButtonClicked(const std::string& bubble_id,
                                                    Action action) {
+  SCALABLE_IPH_LOG(GetLogger())
+      << "A button in a bubble gets clicked. Bubble id: " << bubble_id
+      << " Action: " << action;
   if (bubble_id_ != bubble_id) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Bubble id " << bubble_id << " is an obsolete id.";
     DCHECK(false) << "Callback for an obsolete bubble id gets called "
                   << bubble_id;
     return;
@@ -604,7 +701,11 @@ void ScalableIphDelegateImpl::OnNudgeButtonClicked(const std::string& bubble_id,
 }
 
 void ScalableIphDelegateImpl::OnNudgeDismissed(const std::string& bubble_id) {
+  SCALABLE_IPH_LOG(GetLogger())
+      << "A bubble gets dismissed. Bubble id: " << bubble_id;
   if (bubble_id_ != bubble_id) {
+    SCALABLE_IPH_LOG(GetLogger())
+        << "Bubble id " << bubble_id << " is an obsolete id.";
     DCHECK(false) << "Callback for an obsolete bubble id gets called "
                   << bubble_id;
     return;

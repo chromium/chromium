@@ -351,14 +351,16 @@ std::unique_ptr<KeyedService> ScalableIphBrowserTestBase::CreateMockTracker(
 
 // static
 std::unique_ptr<scalable_iph::ScalableIphDelegate>
-ScalableIphBrowserTestBase::CreateMockDelegate(Profile* profile) {
+ScalableIphBrowserTestBase::CreateMockDelegate(Profile* profile,
+                                               scalable_iph::Logger* logger) {
   std::pair<std::set<std::string>::iterator, bool> result =
       mock_delegate_created_.insert(profile->GetProfileUserName());
   CHECK(result.second) << "Delegate is created twice for a profile";
 
   std::unique_ptr<test::MockScalableIphDelegate> delegate =
       std::make_unique<test::MockScalableIphDelegate>();
-  delegate->SetDelegate(std::make_unique<ScalableIphDelegateImpl>(profile));
+  delegate->SetDelegate(
+      std::make_unique<ScalableIphDelegateImpl>(profile, logger));
 
   // Fake behaviors of observers must be set at an early stage as those methods
   // are called from constructors, i.e. Set up phases of test fixtures.

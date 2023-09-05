@@ -150,6 +150,17 @@ class ScalableIphDelegate {
 
 std::ostream& operator<<(std::ostream& out,
                          ScalableIphDelegate::SessionState session_state);
+std::ostream& operator<<(std::ostream& out, ScalableIphDelegate::Action action);
+std::ostream& operator<<(std::ostream& out, ScalableIphDelegate::Button button);
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::BubbleIcon bubble_icon);
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::BubbleParams bubble_params);
+std::ostream& operator<<(
+    std::ostream& out,
+    ScalableIphDelegate::NotificationImageType notification_image_type);
+std::ostream& operator<<(std::ostream& out,
+                         ScalableIphDelegate::NotificationParams params);
 
 }  // namespace scalable_iph
 

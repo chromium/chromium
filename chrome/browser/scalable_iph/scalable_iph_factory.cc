@@ -155,17 +155,24 @@ ScalableIphFactory::BuildServiceInstanceForBrowserContext(
                     "BuildServiceInstanceForBrowserContext method is not "
                     "allowed to return nullptr";
 
+  std::unique_ptr<scalable_iph::Logger> logger =
+      std::make_unique<scalable_iph::Logger>();
+  std::unique_ptr<scalable_iph::ScalableIphDelegate> scalable_iph_delegate =
+      CreateScalableIphDelegate(profile, logger.get());
   return std::make_unique<scalable_iph::ScalableIph>(
-      tracker, CreateScalableIphDelegate(profile));
+      tracker, std::move(scalable_iph_delegate), std::move(logger));
 }
 
 std::unique_ptr<scalable_iph::ScalableIphDelegate>
-ScalableIphFactory::CreateScalableIphDelegate(Profile* profile) const {
+ScalableIphFactory::CreateScalableIphDelegate(
+    Profile* profile,
+    scalable_iph::Logger* logger) const {
   CHECK(profile) << "Profile must not be nullptr for this method";
+  CHECK(logger);
 
   if (!delegate_testing_factory_.is_null()) {
-    return delegate_testing_factory_.Run(profile);
+    return delegate_testing_factory_.Run(profile, logger);
   }
 
-  return std::make_unique<ash::ScalableIphDelegateImpl>(profile);
+  return std::make_unique<ash::ScalableIphDelegateImpl>(profile, logger);
 }

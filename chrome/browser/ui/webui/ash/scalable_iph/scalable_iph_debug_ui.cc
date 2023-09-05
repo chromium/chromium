@@ -63,7 +63,7 @@ void ScalableIphDebugUI::HandleRequest(
   }
 
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-      scalable_iph->logger()->GenerateLog()));
+      scalable_iph->GetLogger()->GenerateLog()));
 }
 
 }  // namespace ash

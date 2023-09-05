@@ -89,11 +89,12 @@ class ScalableIph : public KeyedService,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,
-              std::unique_ptr<ScalableIphDelegate> delegate);
+              std::unique_ptr<ScalableIphDelegate> delegate,
+              std::unique_ptr<Logger> logger);
 
   void RecordEvent(Event event);
 
-  Logger* logger() { return &logger_; }
+  Logger* GetLogger();
 
   ScalableIphDelegate* delegate_for_testing() { return delegate_.get(); }
 
@@ -167,7 +168,7 @@ class ScalableIph : public KeyedService,
   ScalableIphDelegate::SessionState session_state_ =
       ScalableIphDelegate::SessionState::kUnknownInitialValue;
   bool has_saved_printers_ = false;
-  Logger logger_;
+  std::unique_ptr<Logger> logger_;
 
   base::RepeatingClosure has_saved_printers_closure_for_testing_;
   std::vector<const base::Feature*> feature_list_for_testing_;

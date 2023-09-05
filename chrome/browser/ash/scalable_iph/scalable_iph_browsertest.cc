@@ -653,13 +653,13 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
     return true;
   });
 
-  SCALABLE_IPH_LOG(scalable_iph->logger()) << kTestLogMessage;
+  SCALABLE_IPH_LOG(scalable_iph->GetLogger()) << kTestLogMessage;
 
   logging::SetLogMessageHandler(nullptr);
 
-  EXPECT_TRUE(base::MatchPattern(scalable_iph->logger()->GenerateLog(),
+  EXPECT_TRUE(base::MatchPattern(scalable_iph->GetLogger()->GenerateLog(),
                                  kTestLogMessagePattern));
-  EXPECT_TRUE(base::MatchPattern(scalable_iph->logger()->GenerateLog(),
+  EXPECT_TRUE(base::MatchPattern(scalable_iph->GetLogger()->GenerateLog(),
                                  kTestFileNamePattern));
 
   std::string log_output = base::JoinString(*captured_logs, "");
@@ -693,11 +693,11 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
     return true;
   });
 
-  SCALABLE_IPH_LOG(scalable_iph->logger()) << kTestLogMessage;
+  SCALABLE_IPH_LOG(scalable_iph->GetLogger()) << kTestLogMessage;
 
   logging::SetLogMessageHandler(nullptr);
 
-  EXPECT_TRUE(scalable_iph->logger()->IsLogEmptyForTesting());
+  EXPECT_TRUE(scalable_iph->GetLogger()->IsLogEmptyForTesting());
 
   std::string log_output = base::JoinString(*captured_logs, "");
   EXPECT_FALSE(base::MatchPattern(log_output, kTestLogMessagePattern));

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -109,7 +110,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static std::unique_ptr<KeyedService> CreateMockTracker(
       content::BrowserContext* browser_context);
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
-      Profile* profile);
+      Profile* profile,
+      scalable_iph::Logger* logger);
 
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
