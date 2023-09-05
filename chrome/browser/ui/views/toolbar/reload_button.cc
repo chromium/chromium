@@ -37,6 +37,14 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
                     CreateMenuModel(),
                     nullptr),
       command_updater_(command_updater),
+      reload_icon_(features::IsChromeRefresh2023()
+                       ? vector_icons::kReloadChromeRefreshIcon
+                       : vector_icons::kReloadIcon),
+      reload_touch_icon_(kReloadTouchIcon),
+      stop_icon_(features::IsChromeRefresh2023()
+                     ? kNavigateStopChromeRefreshIcon
+                     : kNavigateStopIcon),
+      stop_touch_icon_(kNavigateStopTouchIcon),
       double_click_timer_delay_(
           base::Milliseconds(views::GetDoubleClickInterval())),
       mode_switch_timer_delay_(base::Milliseconds(1350)) {
@@ -77,6 +85,24 @@ void ReloadButton::ChangeMode(Mode mode, bool force) {
       mode_switch_timer_.Start(FROM_HERE, mode_switch_timer_delay_, this,
                                &ReloadButton::OnStopToReloadTimer);
     }
+  }
+}
+
+void ReloadButton::SetVectorIconsForMode(Mode mode,
+                                         const gfx::VectorIcon& icon,
+                                         const gfx::VectorIcon& touch_icon) {
+  switch (mode) {
+    case Mode::kReload:
+      reload_icon_ = icon;
+      reload_touch_icon_ = touch_icon;
+      break;
+    case Mode::kStop:
+      stop_icon_ = icon;
+      stop_touch_icon_ = touch_icon;
+      break;
+  }
+  if (mode == visible_mode_) {
+    SetVisibleMode(visible_mode_);
   }
 }
 
@@ -154,16 +180,10 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   visible_mode_ = mode;
   switch (mode) {
     case Mode::kReload:
-      SetVectorIcons(features::IsChromeRefresh2023()
-                         ? vector_icons::kReloadChromeRefreshIcon
-                         : vector_icons::kReloadIcon,
-                     kReloadTouchIcon);
+      SetVectorIcons(*reload_icon_, *reload_touch_icon_);
       break;
     case Mode::kStop:
-      SetVectorIcons(features::IsChromeRefresh2023()
-                         ? kNavigateStopChromeRefreshIcon
-                         : kNavigateStopIcon,
-                     kNavigateStopTouchIcon);
+      SetVectorIcons(*stop_icon_, *stop_touch_icon_);
       break;
   }
 }

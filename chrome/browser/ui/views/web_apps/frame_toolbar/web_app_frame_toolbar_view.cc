@@ -363,8 +363,6 @@ void WebAppFrameToolbarView::UpdateChildrenColor(bool color_changed) {
   const SkColor foreground_color = paint_as_active_
                                        ? *active_foreground_color_
                                        : *inactive_foreground_color_;
-  if (left_container_)
-    left_container_->SetIconColor(foreground_color);
   const SkColor background_color = paint_as_active_
                                        ? *active_background_color_
                                        : *inactive_background_color_;
