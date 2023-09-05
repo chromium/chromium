@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -29,6 +31,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  */
 public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarChangeListener {
     private int mInitialValue;
+    private BrowserContextHandle mBrowserContextHandle;
     private SeekBar mSeekBar;
     private ChromeImageButton mDecreaseButton;
     private ChromeImageButton mIncreaseButton;
@@ -60,6 +63,10 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         super(context, attrs);
 
         setLayoutResource(R.layout.page_zoom_preference);
+    }
+
+    public void setmBrowserContextHandle(BrowserContextHandle browserContextHandle) {
+        mBrowserContextHandle = browserContextHandle;
     }
 
     @Override
@@ -235,6 +242,11 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
             // TODO(crbug.com/1459631): add functionality to save the new progress variable to a
             // profile setting, which can access on c++ side
+
+            UserPrefs.get(mBrowserContextHandle)
+                    .setInteger("settings.a11y.text_size_contrast_factor",
+                            PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL - seekBar.getProgress());
+            // TODO(crbug.com/1459631): Add page refresh functionality
         }
     }
 
