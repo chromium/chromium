@@ -1200,7 +1200,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1226,7 +1226,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1255,7 +1255,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1293,7 +1293,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1337,7 +1337,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1372,7 +1372,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1407,7 +1407,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1446,7 +1446,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1491,7 +1491,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1527,7 +1527,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1563,7 +1563,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1601,7 +1601,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1624,7 +1624,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1651,7 +1651,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1676,7 +1676,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1705,7 +1705,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "io_timeout": 1800,
@@ -1743,7 +1743,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1787,7 +1787,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1822,7 +1822,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1857,7 +1857,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1896,7 +1896,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1941,7 +1941,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -1977,7 +1977,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2013,7 +2013,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2051,7 +2051,7 @@
             "cpu": "x86-64",
             "display_attached": "1",
             "gpu": "8086:3e9b",
-            "os": "Mac-13.3.1"
+            "os": "Mac-13.3.1|Mac-13.5"
           },
           "hard_timeout": 1800,
           "idempotent": false,
@@ -2075,7 +2075,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2103,7 +2103,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2134,7 +2134,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2174,7 +2174,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2220,7 +2220,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2257,7 +2257,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2294,7 +2294,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2335,7 +2335,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2382,7 +2382,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2420,7 +2420,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2458,7 +2458,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2498,7 +2498,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2523,7 +2523,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2552,7 +2552,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2579,7 +2579,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2610,7 +2610,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2650,7 +2650,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2696,7 +2696,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2733,7 +2733,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2770,7 +2770,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2811,7 +2811,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2858,7 +2858,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2896,7 +2896,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2934,7 +2934,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
@@ -2974,7 +2974,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.2.1",
+            "os": "Mac-13.2.1|Mac-13.5",
             "pool": "chromium.tests.gpu"
           },
           "hard_timeout": 1800,
