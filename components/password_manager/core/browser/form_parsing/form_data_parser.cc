@@ -437,6 +437,10 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
           result->username = processed_field->field;
           result->is_single_username = true;
           result->ClearAllPasswordFields();
+          base::UmaHistogramBoolean(
+              "PasswordManager.SingleUsername."
+              "ForgotPasswordServerPredictionUsed",
+              prediction.type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD);
           return;
         }
         break;
