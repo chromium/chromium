@@ -91,10 +91,10 @@ class FormStructure {
   // AutofillUploadContents elements in the vector, which encode the renderer
   // forms (see below for an explanation). These elements omit the renderer
   // form's metadata because retrieving this would require significant plumbing
-  // from ContentAutofillRouter.
+  // from AutofillDriverRouter.
   //
   // The renderer forms are the forms that constitute a frame-transcending form.
-  // ContentAutofillRouter receives these forms from the renderer and flattens
+  // AutofillDriverRouter receives these forms from the renderer and flattens
   // them into a single fresh form. Only the latter form is exposed to the rest
   // of the browser process. For server predictions, however, we want to query
   // and upload also votes also for the signatures of the renderer forms. For

@@ -10,11 +10,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -105,7 +103,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   AutofillClient* client() { return client_; }
 
-  ContentAutofillRouter& autofill_router() { return router_; }
+  AutofillDriverRouter& router() { return router_; }
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
@@ -130,7 +128,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   // Routes events between different ContentAutofillDrivers.
   // Must be destroyed after |driver_map_|'s elements.
-  ContentAutofillRouter router_;
+  AutofillDriverRouter router_;
 
   // Owns the drivers, one for each frame in the WebContents.
   // Should be empty at destruction time because its elements are erased in

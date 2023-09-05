@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_
-#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_TEST_API_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_TEST_API_H_
 
 #include "base/containers/stack.h"
 #include "base/memory/raw_ref.h"
-#include "components/autofill/content/browser/form_forest.h"
+#include "components/autofill/core/browser/form_forest.h"
 
 namespace autofill::internal {
 
@@ -81,4 +81,4 @@ inline FormForestTestApi test_api(FormForest& form_forest) {
 
 }  // namespace autofill::internal
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_TEST_API_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_TEST_API_H_

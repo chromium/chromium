@@ -13,7 +13,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
+#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -42,8 +42,8 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
     // embedders.
     ContentAutofillClient& client =
         static_cast<ContentAutofillClient&>(manager.client());
-    const ContentAutofillRouter& router =
-        client.GetAutofillDriverFactory()->autofill_router();
+    const AutofillDriverRouter& router =
+        client.GetAutofillDriverFactory()->router();
     std::vector<FormData> renderer_forms =
         router.GetRendererForms(form_and_predictions.form_datas.front());
 

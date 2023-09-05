@@ -23,12 +23,11 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
-#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -314,10 +313,6 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
  protected:
   TestContentAutofillClient* autofill_client() {
     return autofill_client_injector_[web_contents()];
-  }
-
-  ContentAutofillRouter& autofill_router() {
-    return autofill_client()->GetAutofillDriverFactory()->autofill_router();
   }
 
   NiceMock<MockAutofillDriver>* autofill_driver() {

@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"

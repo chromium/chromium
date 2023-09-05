@@ -58,10 +58,10 @@ with `AutofillAgent` extracting a form from the DOM.
   │                        ┌────────────┼─────────────────┼────────────┐
   │                        │owns 1      │events           │            │
   │                        │            │owns 1           │            │
-┌─▼────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼───────────────────┐
-│ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►ContentAutofillRouter│
-│1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents    │
-└────────────────────────────┘        └─▲─────────┬─────────┘        └─────────────────────┘
+┌─▼────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼──────────────────┐
+│ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►AutofillDriverRouter│
+│1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents   │
+└────────────────────────────┘        └─▲─────────┬─────────┘        └────────────────────┘
                                         │         │fill form and
 Browser                                 │         │other events
 1 process                               │         │
@@ -108,6 +108,7 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
     - [`autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver.h)
       - [`../../content/browser/content_autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver.h) (non-iOS implementation)
       - [`../../ios/browser/autofill_driver_ios.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/autofill_driver_ios.h) (iOS implementation)
+    - [`autofill_driver_router.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver_router.h)
     - [`autofill_external_delegate.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_external_delegate.h)
     - [`autofill_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_manager.h)
       - [`browser_autofill_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/browser_autofill_manager.h) (Chrome specialization)
@@ -121,12 +122,11 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
     - [`proto/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/proto/) (Autofill server)
 - [`content/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content)
   - [`browser/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser)
-      - [`content_autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_driver.h)
-      - [`content_autofill_driver_factory.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_driver_factory.h)
-      - [`content_autofill_router.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_router.h)
+    - [`content_autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_driver.h)
+    - [`content_autofill_driver_factory.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_driver_factory.h)
   - [`renderer/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/renderer)
-      - [`autofill_agent.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/renderer/autofill_agent.h)
-      - [`form_autofill_util.cc`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/renderer/autofill_agent.h)
+    - [`autofill_agent.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/renderer/autofill_agent.h)
+    - [`form_autofill_util.cc`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/renderer/autofill_agent.h)
 - [`ios/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios)
   - [`browser/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser)
     - [`autofill_agent.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/autofill_agent.h)
@@ -173,7 +173,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
       * Manages life-cycle of `ContentAutofillDriver` and ensures that there is
         one Driver instance per renderer frame.
     * Has sibling `AutofillDriverIOSFactory` for iOS
-  * `ContentAutofillRouter`
+  * `AutofillDriverRouter`
     * One instance per `WebContents` (tab).
     * Responsibilities:
       * Flattens frame-transcending forms into a single `FormData`.
@@ -307,7 +307,7 @@ and types derived from the autocomplete attribute are represented as [HtmlFieldT
   Such a tree of forms (and frames) is called a *frame-transcending form*.
 * Autofill treats every frame-transcending form like a single, ordinary form:
   [docs/security/autofill-across-iframes.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/security/autofill-across-iframes.md)
-* [`ContentAutofillRouter`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/content/browser/content_autofill_router.h)
+* [`AutofillDriverRouter`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver_router.h)
   flattens each tree of forms by merging the fields of the `FormData` nodes
   into the root `FormData`, and routes events between the nodes' drivers to the
   root's driver and vice versa.

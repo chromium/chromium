@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_ROUTER_H_
-#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_ROUTER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_ROUTER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_ROUTER_H_
 
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_forest.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -19,15 +19,15 @@
 
 namespace autofill {
 
-// ContentAutofillRouter routes events between AutofillDriver objects in order
-// to handle frame-transcending forms.
+// AutofillDriverRouter routes events between AutofillDriver objects in order to
+// handle frame-transcending forms.
 //
 // A *frame-transcending* form is a form whose fields live in different frames.
 // For example, credit card forms often have the credit card number field in an
 // iframe hosted by a payment service provider.
 //
 // A frame-transcending form therefore consists of multiple *renderer forms*.
-// ContentAutofillRouter *flattens* these forms into a single *browser form*,
+// AutofillDriverRouter *flattens* these forms into a single *browser form*,
 // and maps all events concerning the renderer forms to that browser form, and
 // vice versa.
 //
@@ -117,10 +117,10 @@ namespace autofill {
 //
 // If the event name is `f`, the control flow is as follows:
 //   Driver-3's AutofillDriver::f(args...) calls
-//   Router's   ContentAutofillRouter::f(this, args..., callback) calls
+//   Router's   AutofillDriverRouter::f(this, args..., callback) calls
 //   Driver-0's AutofillDriver::callback(args...).
 //
-// Every function in ContentAutofillRouter takes a |source| parameter, which
+// Every function in AutofillDriverRouter takes a |source| parameter, which
 // points to the AutofillDriver that triggered the event. In events triggered by
 // the renderer, the source driver is the driver the associated renderer form
 // originates from.
@@ -128,12 +128,12 @@ namespace autofill {
 // See ContentAutofillDriver for details on the naming pattern and an example.
 //
 // See FormForest for details on (un)flattening.
-class ContentAutofillRouter {
+class AutofillDriverRouter {
  public:
-  ContentAutofillRouter();
-  ContentAutofillRouter(const ContentAutofillRouter&) = delete;
-  ContentAutofillRouter& operator=(const ContentAutofillRouter&) = delete;
-  ~ContentAutofillRouter();
+  AutofillDriverRouter();
+  AutofillDriverRouter(const AutofillDriverRouter&) = delete;
+  AutofillDriverRouter& operator=(const AutofillDriverRouter&) = delete;
+  ~AutofillDriverRouter();
 
   // Deletes all forms and fields related to |driver| (and this driver only).
   // Must be called whenever |driver| is destroyed.
@@ -330,8 +330,6 @@ class ContentAutofillRouter {
   std::vector<FormData> GetRendererForms(const FormData& browser_form) const;
 
  private:
-  friend class ContentAutofillRouterTestApi;
-
   // Returns the driver of |frame| stored in |form_forest_|.
   // Does not invalidate any forms in the FormForest.
   AutofillDriver* DriverOfFrame(LocalFrameToken frame);
@@ -352,4 +350,4 @@ class ContentAutofillRouter {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_ROUTER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DRIVER_ROUTER_H_

@@ -21,12 +21,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
-#include "components/autofill/content/browser/content_autofill_router_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -370,7 +369,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     return *client()->GetAutofillDriverFactory();
   }
 
-  ContentAutofillRouter& router() { return factory().autofill_router(); }
+  AutofillDriverRouter& router() { return factory().router(); }
 
   ContentAutofillDriver& driver() {
     return *autofill_driver_injector_[web_contents()];

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/form_forest_test_api.h"
+#include "components/autofill/core/browser/form_forest_test_api.h"
 
 #include <iomanip>
-
-#include "components/autofill/content/browser/content_autofill_driver.h"
 
 namespace autofill::internal {
 
@@ -18,8 +16,9 @@ void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
         frame_and_form.frame->driver->Resolve(child.token);
     FrameData* child_frame;
     if (local_child && (child_frame = GetFrameData(*local_child))) {
-      for (FormData& child_form : child_frame->child_forms)
+      for (FormData& child_form : child_frame->child_forms) {
         frontier.push({raw_ref(*child_frame), raw_ref(child_form)});
+      }
     }
   }
 }
@@ -27,14 +26,14 @@ void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
 std::ostream& FormForestTestApi::PrintFrames(std::ostream& os) {
   os << "#Frames = " << frame_datas().size() << std::endl;
   for (const std::unique_ptr<FrameData>& frame : frame_datas()) {
-    auto* driver = static_cast<ContentAutofillDriver*>(frame->driver);
     os << "Token = " << frame->frame_token.ToString() << ":" << std::endl;
-    os << "Driver = " << driver << std::endl;
-    os << "URL = "
-       << (driver ? driver->render_frame_host()->GetLastCommittedURL() : GURL())
-       << std::endl;
-    if (frame->parent_form)
+    os << "Driver = " << frame->driver << std::endl;
+    if (frame->driver) {
+      os << "Parent = " << frame->driver->GetParent() << std::endl;
+    }
+    if (frame->parent_form) {
       os << "ParentForm = " << *frame->parent_form << ":" << std::endl;
+    }
     os << "#Forms = " << frame->child_forms.size() << std::endl;
     for (const FormData& form : frame->child_forms) {
       os << "  Form = " << form.global_id() << ":" << std::endl;
@@ -65,8 +64,9 @@ std::ostream& FormForestTestApi::PrintForest(std::ostream& os) {
       LocalFrameToken frame = form.host_frame;
       for (int level = 0;; ++level) {
         const FrameData* frame_data = GetFrameData(frame);
-        if (!frame_data || !frame_data->parent_form)
+        if (!frame_data || !frame_data->parent_form) {
           return level;
+        }
         frame = frame_data->parent_form->frame_token;
       }
     }();
@@ -83,8 +83,9 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
      << form.host_frame << " at " << form.full_url.DeprecatedGetOriginAsURL()
      << " with " << form.fields.size() << " fields" << std::endl;
   os << prefix << "Origin " << form.main_frame_origin.Serialize() << std::endl;
-  if (!form.name.empty())
+  if (!form.name.empty()) {
     os << prefix << "Name " << form.name << std::endl;
+  }
   int i = 0;
   const FrameData* frame = GetFrameData(form.host_frame);
   if (frame) {
@@ -100,15 +101,19 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
     os << prefix << std::setfill(' ') << std::setw(2) << ++i << ". Field "
        << *field.unique_renderer_id << " at " << field.host_frame << " at "
        << field.origin.Serialize() << std::endl;
-    if (!field.id_attribute.empty())
+    if (!field.id_attribute.empty()) {
       os << prefix << "    ID " << field.id_attribute << std::endl;
-    if (!field.name_attribute.empty())
+    }
+    if (!field.name_attribute.empty()) {
       os << prefix << "    Name " << field.name_attribute << std::endl;
-    if (!field.value.empty())
+    }
+    if (!field.value.empty()) {
       os << prefix << "    Value " << field.value << std::endl;
-    if (!field.label.empty())
+    }
+    if (!field.label.empty()) {
       os << prefix << "    Label "
          << field.label.substr(0, field.label.find('\n')) << std::endl;
+    }
   }
   return os;
 }

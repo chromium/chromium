@@ -495,7 +495,7 @@ class AutofillManager
   // - Let ParseFormAync() wrap the FormData in a vector, call
   //   ParseFormsAsync(), and then unwrap the vector again.
   // - Let OnFormsSeen() take a single FormData. That simplifies also
-  //   ContentAutofillDriver and ContentAutofillRouter a bit, but then the
+  //   ContentAutofillDriver and AutofillDriverRouter a bit, but then the
   //   AutofillDownloadManager needs to collect forms to send a batch query.
   // - Let all other events take a FormGlobalId instead of a FormData and fire
   //   OnFormsSeen() before these events if necessary.

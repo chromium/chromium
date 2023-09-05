@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/form_forest.h"
+#include "components/autofill/core/browser/form_forest.h"
 
 #include <limits>
 #include <memory>
@@ -18,7 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "components/autofill/content/browser/form_forest_util_inl.h"
+#include "components/autofill/core/browser/form_forest_util_inl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -33,8 +33,9 @@ FormForest::~FormForest() = default;
 
 FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   auto it = frame_datas_.find(frame);
-  if (it == frame_datas_.end())
+  if (it == frame_datas_.end()) {
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
+  }
   DCHECK(it != frame_datas_.end());
   DCHECK(it->get());
   return it->get();
@@ -47,10 +48,12 @@ FormForest::FrameData* FormForest::GetFrameData(LocalFrameToken frame) {
 
 FormData* FormForest::GetFormData(FormGlobalId form, FrameData* frame_data) {
   DCHECK(!frame_data || frame_data == GetFrameData(form.frame_token));
-  if (!frame_data)
+  if (!frame_data) {
     frame_data = GetFrameData(form.frame_token);
-  if (!frame_data)
+  }
+  if (!frame_data) {
     return nullptr;
+  }
   auto it = base::ranges::find(frame_data->child_forms, form.renderer_id,
                                &FormData::unique_renderer_id);
   return it != frame_data->child_forms.end() ? &*it : nullptr;
@@ -88,8 +91,9 @@ void FormForest::EraseReferencesTo(
         forms_with_removed_fields->insert(some_form.global_id());
       }
     }
-    if (some_frame->parent_form && Match(*some_frame->parent_form))
+    if (some_frame->parent_form && Match(*some_frame->parent_form)) {
       some_frame->parent_form = absl::nullopt;
+    }
   }
 }
 
@@ -240,8 +244,9 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       size_t number_of_fields_moved = 0;
       for (FormFieldData& f : source) {
         if (f.renderer_form_id() == source_form) {
-          if (++number_of_fields_moved > max_number_of_fields_to_be_moved)
+          if (++number_of_fields_moved > max_number_of_fields_to_be_moved) {
             break;
+          }
           target.push_back(std::move(f));
           f = {};  // Clobber |f| in |source| so future MoveFields() skip it.
           DCHECK(!f.renderer_form_id());
@@ -348,8 +353,9 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     };
     auto NumChildrenOfFrame = [&NumChildrenOfForm](const FrameData& frame) {
       size_t num = 0;
-      for (const FormData& form : frame.child_forms)
+      for (const FormData& form : frame.child_forms) {
         num += NumChildrenOfForm(form);
+      }
       return num;
     };
     size_t num_did_visit = 0;
@@ -366,8 +372,10 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
       // Pushes the current form on |roots_on_path| only if this is the first
       // time we encounter the form in the traversal (Node::next_frame == 0).
-      if (n.next_frame == 0 && (n.form == root.form || !n.form->fields.empty()))
+      if (n.next_frame == 0 &&
+          (n.form == root.form || !n.form->fields.empty())) {
         roots_on_path.push(n.form);
+      }
       CHECK(!roots_on_path.empty());
 
       std::vector<FormFieldData>& source =
@@ -542,8 +550,9 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
                                             form_id, &FormData::global_id);
     if (renderer_form == result.renderer_forms.rend()) {
       const FormData* original_form = mutable_this.GetFormData(form_id);
-      if (!original_form)  // The form with |form_id| may have been removed.
+      if (!original_form) {  // The form with |form_id| may have been removed.
         continue;
+      }
       result.renderer_forms.push_back(*original_form);
       renderer_form = result.renderer_forms.rbegin();
       renderer_form->fields.clear();  // In case |original_form| is a root form.

@@ -184,7 +184,7 @@ struct FormFieldData {
 
   // An identifier of the renderer form that contained this field.
   // This may be different from the browser form that contains this field in the
-  // case of a frame-transcending form. See ContentAutofillRouter and
+  // case of a frame-transcending form. See AutofillDriverRouter and
   // internal::FormForest for details on the distinction between renderer and
   // browser forms.
   FormGlobalId renderer_form_id() const { return {host_frame, host_form_id}; }
@@ -275,7 +275,7 @@ struct FormFieldData {
 
   // The signature of the field's renderer form, that is, the signature of the
   // FormData that contained this field when it was received by the
-  // AutofillDriver (see ContentAutofillRouter and internal::FormForest
+  // AutofillDriver (see AutofillDriverRouter and internal::FormForest
   // for details on the distinction between renderer and browser forms).
   // Currently, the value is only set in ContentAutofillDriver; it's null on iOS
   // and in the Password Manager.

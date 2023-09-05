@@ -30,7 +30,7 @@ class RenderFrameHost;
 namespace autofill {
 
 class ContentAutofillDriverFactory;
-class ContentAutofillRouter;
+class AutofillDriverRouter;
 
 // ContentAutofillDriver drives the Autofill flow in the browser process based
 // on communication from the renderer and from the external world.
@@ -47,11 +47,11 @@ class ContentAutofillRouter;
 //   mojom::AutofillAgent events must be owned by that RenderFrameHost.
 //
 // Events in AutofillDriver and mojom::AutofillDriver are passed on to
-// ContentAutofillRouter, which has one instance per WebContents. The naming
+// AutofillDriverRouter, which has one instance per WebContents. The naming
 // pattern is that for all of these events, there are three functions:
 //
 //   1. ReturnType ContentAutofillDriver::f(Args...)
-//   2. ReturnType ContentAutofillRouter::f(AutofillDriver*, Args..., callback)
+//   2. ReturnType AutofillDriverRouter::f(AutofillDriver*, Args..., callback)
 //   3. ReturnType callback(AutofillDriver*, Args...)
 //
 // The first function calls the second, and the second calls the third, perhaps
@@ -108,7 +108,7 @@ class ContentAutofillRouter;
 //     FieldRendererId{.renderer_id = 78}
 //   });
 //
-// See ContentAutofillRouter for further details.
+// See AutofillDriverRouter for further details.
 class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver {
  public:
@@ -143,7 +143,7 @@ class ContentAutofillDriver : public AutofillDriver,
   // relevant because renderer forms and browser forms have distinct properties:
   // certain fields are not set in renderer form (see SetFrameAndFormMetaData()
   // for details) and, if they are part of a frame-transcending form, they are
-  // not flattened yet (see ContentAutofillRouter for details).
+  // not flattened yet (see AutofillDriverRouter for details).
   autofill::AutofillDriver& browser_events() { return *this; }
   mojom::AutofillDriver& renderer_events() { return *this; }
 
@@ -188,7 +188,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // autofill::AutofillDriver:
   // Events triggered by the browser. These events are routed by
-  // ContentAutofillRouter to potentially a different ContentAutofillDriver and
+  // AutofillDriverRouter to potentially a different ContentAutofillDriver and
   // then passed to AutofillAgent in the renderer.
   //
   // These events are private to avoid accidental use in the browser.
@@ -234,7 +234,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // mojom::AutofillDriver:
   // Events triggered by the renderer. These events are routed by
-  // ContentAutofillRouter to potentially a different ContentAutofillDriver and
+  // AutofillDriverRouter to potentially a different ContentAutofillDriver and
   // then passed to AutofillManager.
   //
   // We do not expect to receive Autofill related messages from a prerendered
@@ -300,7 +300,7 @@ class ContentAutofillDriver : public AutofillDriver,
   //
   // The router must only route among ContentAutofillDrivers because
   // ContentAutofillDriver casts AutofillDrivers to ContentAutofillDrivers.
-  ContentAutofillRouter& autofill_router();
+  AutofillDriverRouter& router();
 
   // The frame/document to which this driver is associated. Outlives `this`.
   // RFH is corresponds to neither a frame nor a document: it may survive

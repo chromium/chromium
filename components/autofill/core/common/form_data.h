@@ -125,7 +125,7 @@ struct FrameTokenWithPredecessor {
 // The unowned fields of the frame constitute that frame's *unowned form*.
 //
 // Forms from different frames of the same WebContents may furthermore be
-// merged. For details, see ContentAutofillRouter.
+// merged. For details, see AutofillDriverRouter.
 //
 // clang-format off
 // [1] https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#reset-the-form-owner

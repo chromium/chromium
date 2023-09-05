@@ -84,7 +84,7 @@ class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
  private:
   // Replaces every newly created production-code ContentAutofillDriver for the
   // given WebContents with a test driver created by
-  // `T(content::RenderFrameHost*, ContentAutofillRouter*)` and sets its
+  // `T(content::RenderFrameHost*, AutofillDriverRouter*)` and sets its
   // AutofillManager to a new `BrowserAutofillManager` with locale "en-US".
   //
   // One challenge is that the ContentAutofillClient may not exist yet at the

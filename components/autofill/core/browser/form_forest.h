@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
-#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_H_
 
 #include <memory>
 #include <vector>
@@ -29,7 +29,7 @@ namespace autofill::internal {
 // the renderers of these frames. The *browser form* of a frame-transcending
 // form is its root FormData, with all fields of its descendant FormDatas moved
 // into the root.
-// See ContentAutofillRouter for further details on the terminology and
+// See ContentAutofillDriverRouter for further details on the terminology and
 // motivation.
 //
 // Consider the following main frame with two frame-transcending forms:
@@ -408,4 +408,4 @@ class FormForest {
 
 }  // namespace autofill::internal
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_H_

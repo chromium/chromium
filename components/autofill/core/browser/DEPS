@@ -74,7 +74,7 @@ specific_include_rules = {
   ],
   "test_autofill_driver\.h": [
     "+components/autofill/content/browser/content_autofill_driver.h",
-    "+components/autofill/content/browser/content_autofill_router.h",
+    "+components/autofill/core/browser/autofill_driver_router.h",
   ],
   "credit_card_access_manager(_unittest)?\.cc": [
     "+components/device_reauth",

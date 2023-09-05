@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_UTIL_INL_H_
-#define COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_UTIL_INL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_UTIL_INL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_UTIL_INL_H_
 
 #include <iterator>
 #include "base/functional/identity.h"
@@ -57,12 +57,13 @@ void for_each_in_set_difference(Range1&& r1,
 
   for (auto& x1 : r1) {
     auto& x = base::invoke(proj, x1);
-    if (!Contains(r2, x))
+    if (!Contains(r2, x)) {
       base::invoke(fun, x);
+    }
   }
 }
 
 }  // namespace internal
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_FORM_FOREST_UTIL_INL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_UTIL_INL_H_

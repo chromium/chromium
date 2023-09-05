@@ -16,12 +16,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/to_vector.h"
-#include "components/autofill/content/browser/form_forest.h"
-#include "components/autofill/content/browser/form_forest_test_api.h"
-#include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/form_forest.h"
+#include "components/autofill/core/browser/form_forest_test_api.h"
+#include "components/autofill/core/browser/form_forest_util_inl.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,16 +53,18 @@ auto Equals(const FrameData& exp);
 template <typename T>
 auto ArrayEquals(const std::vector<T>& exp) {
   std::vector<Matcher<T>> matchers;
-  for (const T& f : exp)
+  for (const T& f : exp) {
     matchers.push_back(Equals(f));
+  }
   return ElementsAreArray(matchers);
 }
 
 template <typename T>
 auto UnorderedArrayEquals(const std::vector<T>& exp) {
   std::vector<Matcher<T>> matchers;
-  for (const T& f : exp)
+  for (const T& f : exp) {
     matchers.push_back(Equals(f));
+  }
   return UnorderedElementsAreArray(matchers);
 }
 
@@ -108,8 +109,9 @@ auto Equals(const FrameData& exp) {
 // Deep comparison of the unique_ptrs in a FrameDataSet.
 auto Equals(const FrameDataSet& exp) {
   std::vector<Matcher<std::unique_ptr<FrameData>>> matchers;
-  for (const std::unique_ptr<FrameData>& x : exp)
+  for (const std::unique_ptr<FrameData>& x : exp) {
     matchers.push_back(Pointee(Equals(*x)));
+  }
   return ElementsAreArray(matchers);
 }
 
@@ -193,8 +195,9 @@ FrameDataSet& frame_datas(FormForest& ff) {
 template <typename T>
 std::vector<T> Flattened(const std::vector<std::vector<T>>& xs) {
   std::vector<T> concat;
-  for (const auto& x : xs)
+  for (const auto& x : xs) {
     concat.insert(concat.end(), x.begin(), x.end());
+  }
   return concat;
 }
 
@@ -209,8 +212,9 @@ std::vector<std::vector<T>> Permutations(const std::vector<T>& xs) {
   ps.reserve(factorial(xs.size()));
   ps.push_back(xs);
   base::ranges::sort(ps.front());
-  while (base::ranges::next_permutation(ps.front()))
+  while (base::ranges::next_permutation(ps.front())) {
     ps.push_back(ps.front());
+  }
   CHECK_EQ(ps.size(), factorial(xs.size()));
   return ps;
 }
@@ -405,8 +409,9 @@ class FormForestTestWithMockedTree : public FormForestTest {
       FormData data = form_info.form;
       data.name = base::ASCIIToUTF16(form_info.name);
       data.url = url;
-      for (FormFieldData& field : data.fields)
+      for (FormFieldData& field : data.fields) {
         field.name = base::StrCat({data.name, u".", field.name});
+      }
       driver->SetMetaData(data);
 
       // Creates the frames and set their predecessor field according to
@@ -431,8 +436,9 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
     auto frame_data = std::make_unique<FrameData>(driver->GetFrameToken());
     frame_data->child_forms = std::move(forms);
-    if (parent_form)
+    if (parent_form) {
       frame_data->parent_form = parent_form->global_id();
+    }
     frame_data->driver = driver;
     auto p = frame_datas(mocked_forms_).insert(std::move(frame_data));
     CHECK(p.second);
@@ -459,10 +465,12 @@ class FormForestTestWithMockedTree : public FormForestTest {
     std::vector<FormFieldData> fields;
     for (FormSpan f : form_fields) {
       const FormData& source = GetMockedForm(f.form);
-      if (f.begin >= source.fields.size())
+      if (f.begin >= source.fields.size()) {
         continue;
-      if (f.begin + f.count > source.fields.size())
+      }
+      if (f.begin + f.count > source.fields.size()) {
         f.count = base::dynamic_extent;
+      }
       base::ranges::copy(
           base::make_span(source.fields).subspan(f.begin, f.count),
           std::back_inserter(fields));
@@ -476,8 +484,9 @@ class FormForestTestWithMockedTree : public FormForestTest {
         copy.push_back(std::make_unique<FrameData>(frame->frame_token));
         copy.back()->parent_form = frame->parent_form;
         copy.back()->child_forms = frame->child_forms;
-        for (FormData& child_form : copy.back()->child_forms)
+        for (FormData& child_form : copy.back()->child_forms) {
           child_form.fields.clear();
+        }
         copy.back()->driver = frame->driver;
       }
       frame_datas(flattened_forms_) = FrameDataSet(std::move(copy));
@@ -641,16 +650,19 @@ TEST_F(FormForestTestUpdateTree, SizeLimit) {
 
   MockFlattening([&] {
     std::vector<FormSpan> flattened_forms;
-    for (size_t i = 0; i <= kActualFlattened; ++i)
+    for (size_t i = 0; i <= kActualFlattened; ++i) {
       flattened_forms.push_back({FormName(i)});
+    }
     return flattened_forms;
   }());
-  for (size_t i = kActualFlattened + 1; i <= kDescendants; ++i)
+  for (size_t i = kActualFlattened + 1; i <= kDescendants; ++i) {
     MockFlattening({{FormName(i)}});
+  }
 
   FormForest ff;
-  for (size_t i = 0; i <= kDescendants; ++i)
+  for (size_t i = 0; i <= kDescendants; ++i) {
     UpdateTreeOfRendererForm(ff, FormName(i));
+  }
   for (size_t i = kActualFlattened + 1; i <= kDescendants; i += 3) {
     // At the time FormName(64) was seen, its frame contained only this one
     // form, so the overall limit of kMaxDescendants was satisfied. Therefore,
@@ -696,8 +708,9 @@ class FormForestTestUpdateOrder
   }
 
   void UpdateFormForestAccordingToParamOrder() {
-    for (const std::string& form_name : GetParam())
+    for (const std::string& form_name : GetParam()) {
       UpdateTreeOfRendererForm(ff_, form_name);
+    }
   }
 
   FormForest ff_;
@@ -1192,8 +1205,9 @@ TEST_P(FormForestTestUpdateFieldMove, Test) {
   DoMove();
   MockFlattening();
   UpdateTreeOfRendererForm(ff, GetParam().source.form_name);
-  if (GetParam().source.form_name != GetParam().target.form_name)
+  if (GetParam().source.form_name != GetParam().target.form_name) {
     UpdateTreeOfRendererForm(ff, GetParam().target.form_name);
+  }
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
@@ -1633,8 +1647,9 @@ class ForEachInSetDifferenceTest
 
   std::vector<Dummy> ToDummies(const std::vector<size_t>& vec) {
     std::vector<Dummy> out;
-    for (const size_t v : vec)
+    for (const size_t v : vec) {
       out.push_back({.val = v, .num_equals_calls = &num_equals_calls_});
+    }
     return out;
   }
 
