@@ -365,7 +365,8 @@ void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
         &ScrollView::OnLayerScrolled, base::Unretained(this)));
     a_view->layer()->SetScrollable(contents_viewport_->bounds().size());
   }
-  SetHeaderOrContents(contents_viewport_, std::move(a_view), &contents_);
+  contents_ = ReplaceChildView(
+      contents_viewport_, contents_.ExtractAsDangling(), std::move(a_view));
   UpdateBackground();
 }
 
@@ -389,7 +390,8 @@ void ScrollView::SetContentsLayerType(ui::LayerType layer_type) {
 }
 
 void ScrollView::SetHeaderImpl(std::unique_ptr<View> a_header) {
-  SetHeaderOrContents(header_viewport_, std::move(a_header), &header_);
+  header_ = ReplaceChildView(header_viewport_, header_.ExtractAsDangling(),
+                             std::move(a_header));
 }
 
 void ScrollView::SetHeader(std::nullptr_t) {
@@ -559,7 +561,7 @@ ScrollBar* ScrollView::SetHorizontalScrollBar(
     std::unique_ptr<ScrollBar> horiz_sb) {
   horiz_sb->SetVisible(horiz_sb_->GetVisible());
   horiz_sb->set_controller(this);
-  RemoveChildViewT(horiz_sb_.get());
+  RemoveChildViewT(horiz_sb_.ExtractAsDangling());
   horiz_sb_ = AddChildView(std::move(horiz_sb));
   return horiz_sb_;
 }
@@ -569,7 +571,7 @@ ScrollBar* ScrollView::SetVerticalScrollBar(
   DCHECK(vert_sb);
   vert_sb->SetVisible(vert_sb_->GetVisible());
   vert_sb->set_controller(this);
-  RemoveChildViewT(vert_sb_.get());
+  RemoveChildViewT(vert_sb_.ExtractAsDangling());
   vert_sb_ = AddChildView(std::move(vert_sb));
   return vert_sb_;
 }
@@ -1021,16 +1023,18 @@ void ScrollView::UpdateViewportLayerForClipping() {
     contents_viewport_->DestroyLayer();
 }
 
-void ScrollView::SetHeaderOrContents(View* parent,
-                                     std::unique_ptr<View> new_view,
-                                     View** member) {
-  if (*member)
-    parent->RemoveChildViewT(*member);
-  if (new_view.get())
-    *member = parent->AddChildViewAt(std::move(new_view), 0);
-  else
-    *member = nullptr;
+View* ScrollView::ReplaceChildView(View* parent,
+                                   raw_ptr<View>::DanglingType old_view,
+                                   std::unique_ptr<View> new_view) {
+  if (old_view) {
+    parent->RemoveChildViewT(old_view);
+  }
+  View* result = nullptr;
+  if (new_view.get()) {
+    result = parent->AddChildViewAt(std::move(new_view), 0);
+  }
   InvalidateLayout();
+  return result;
 }
 
 void ScrollView::ScrollContentsRegionToBeVisible(const gfx::Rect& rect) {
