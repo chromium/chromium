@@ -117,4 +117,22 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
     assertEquals(
         `${newAnchorTop - dialogHeight}px`, element.$.dialog.style.top);
   });
+
+  test('HidesWhenClickingOutsideDialog', () => {
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    element.showAt(anchor);
+
+    // Clicks within dialog should do nothing.
+    element.$.dialog.dispatchEvent(
+        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    assertTrue(element.$.dialog.open);
+
+    // Clicking anywhere outside dialog should close the dialog.
+    const externalElement = document.createElement('div');
+    document.body.appendChild(externalElement);
+    externalElement.dispatchEvent(
+        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    assertFalse(element.$.dialog.open);
+  });
 });
