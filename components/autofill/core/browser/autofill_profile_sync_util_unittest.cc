@@ -71,12 +71,12 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(COMPANY_NAME, u"Google, Inc.");
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
-      u"123 Fake St. Dep Premise Marcos y Oliva\n"
+      u"123 Fake St. Premise Marcos y Oliva\n"
       u"Apt. 10 Floor 2 Red tree",
       VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
-  EXPECT_EQ(u"123 Fake St. Dep Premise Marcos y Oliva",
+  EXPECT_EQ(u"123 Fake St. Premise Marcos y Oliva",
             profile.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(u"Apt. 10 Floor 2 Red tree",
             profile.GetRawInfo(ADDRESS_HOME_LINE2));
@@ -114,6 +114,10 @@ AutofillProfile ConstructCompleteProfile() {
       ADDRESS_HOME_STREET_NAME, u"Fake St.", VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"123",
+                                           VerificationStatus::kFormatted);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"123 Fake St.",
                                            VerificationStatus::kFormatted);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
@@ -200,10 +204,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   // Set values and statuses for the address.
   // Address lines are derived from the home street address and do not have an
   // independent status.
-  specifics.set_address_home_line1("123 Fake St. Dep Premise Marcos y Oliva");
+  specifics.set_address_home_line1("123 Fake St. Premise Marcos y Oliva");
   specifics.set_address_home_line2("Apt. 10 Floor 2 Red tree");
   specifics.set_address_home_street_address(
-      "123 Fake St. Dep Premise Marcos y Oliva\n"
+      "123 Fake St. Premise Marcos y Oliva\n"
       "Apt. 10 Floor 2 Red tree");
   specifics.set_address_home_street_address_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus::
@@ -215,6 +219,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
 
   specifics.set_address_home_thoroughfare_number("123");
   specifics.set_address_home_thoroughfare_number_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
+
+  specifics.set_address_home_street_location("123 Fake St.");
+  specifics.set_address_home_street_location_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_FORMATTED);
 
   specifics.set_address_home_subpremise_name("Apt. 10 Floor 2");

@@ -158,4 +158,12 @@ TEST(AutofillI18nApi, ParseValueByI18nRegularExpression) {
                 street_address, ADDRESS_HOME_STREET_ADDRESS, "XX"));
 }
 
+// Tests that the i18n address API returns by default a hierarchy equivalent to
+// that of the legacy address model (autofill structured addresses).
+TEST(AutofillI18nApi, CheckApiDefaultVsLegacyHierarchy) {
+  std::unique_ptr<AddressComponent> default_hierarchy =
+      CreateAddressComponentModel("");
+  EXPECT_TRUE(default_hierarchy->SameAs(AddressNode()));
+}
+
 }  // namespace autofill::i18n_model_definition

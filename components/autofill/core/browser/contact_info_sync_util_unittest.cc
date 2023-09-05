@@ -68,7 +68,7 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
-      u"123 Fake St. Dep Premise Marcos y Oliva\n"
+      u"123 Fake St. Premise Marcos y Oliva\n"
       u"Apt. 10 Floor 2 Red tree",
       VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE, u"CEDEX",
@@ -80,9 +80,9 @@ AutofillProfile ConstructCompleteProfile() {
       ADDRESS_HOME_STREET_NAME, u"Fake St.", VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_HOUSE_NUMBER, u"123",
                                            VerificationStatus::kFormatted);
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME, u"Fake St. Dep",
-      VerificationStatus::kFormatted);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_LOCATION,
+                                           u"Fake St. 123",
+                                           VerificationStatus::kFormatted);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SUBPREMISE,
                                            u"Apt. 10 Floor 2",
                                            VerificationStatus::kObserved);
@@ -177,7 +177,7 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
   SetToken(specifics.mutable_address_country(), "US",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_street_address(),
-           "123 Fake St. Dep Premise Marcos y Oliva\n"
+           "123 Fake St. Premise Marcos y Oliva\n"
            "Apt. 10 Floor 2 Red tree",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_sorting_code(), "CEDEX",
@@ -188,9 +188,8 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::FORMATTED);
   SetToken(specifics.mutable_address_thoroughfare_number(), "123",
            ContactInfoSpecifics::FORMATTED);
-  SetToken(
-      specifics.mutable_address_thoroughfare_and_dependent_thoroughfare_name(),
-      "Fake St. Dep", ContactInfoSpecifics::FORMATTED);
+  SetToken(specifics.mutable_address_street_location(), "Fake St. 123",
+           ContactInfoSpecifics::FORMATTED);
   SetToken(specifics.mutable_address_subpremise_name(), "Apt. 10 Floor 2",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_apt_num(), "10",

@@ -309,7 +309,7 @@ enum ServerFieldType {
   // ADDRESS_HOME_DEPENDENT_STREET_NAME value 112 is deprecated.
 
   // Compound type to join the street and dependent street names.
-  ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME = 113,
+  // ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME  value 113 is deprecated.
 
   // The complete formatted address as it would be written on an envelope or in
   // a clear-text field without the name.

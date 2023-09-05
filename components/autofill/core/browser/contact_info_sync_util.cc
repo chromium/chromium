@@ -226,9 +226,8 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
         ADDRESS_HOME_STREET_NAME);
   s.Set(specifics.mutable_address_thoroughfare_number(),
         ADDRESS_HOME_HOUSE_NUMBER);
-  s.Set(
-      specifics.mutable_address_thoroughfare_and_dependent_thoroughfare_name(),
-      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME);
+  s.Set(specifics.mutable_address_street_location(),
+        ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.mutable_address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
   s.Set(specifics.mutable_address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.mutable_address_floor(), ADDRESS_HOME_FLOOR);
@@ -335,8 +334,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
         ADDRESS_HOME_DEPENDENT_LOCALITY);
   s.Set(specifics.address_thoroughfare_name(), ADDRESS_HOME_STREET_NAME);
   s.Set(specifics.address_thoroughfare_number(), ADDRESS_HOME_HOUSE_NUMBER);
-  s.Set(specifics.address_thoroughfare_and_dependent_thoroughfare_name(),
-        ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME);
+  s.Set(specifics.address_street_location(), ADDRESS_HOME_STREET_LOCATION);
   s.Set(specifics.address_subpremise_name(), ADDRESS_HOME_SUBPREMISE);
   s.Set(specifics.address_apt_num(), ADDRESS_HOME_APT_NUM);
   s.Set(specifics.address_floor(), ADDRESS_HOME_FLOOR);
@@ -461,11 +459,8 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     trimmed_specifics.clear_address_thoroughfare_number();
   }
 
-  if (d.Delete(
-          trimmed_specifics
-              .mutable_address_thoroughfare_and_dependent_thoroughfare_name())) {
-    trimmed_specifics
-        .clear_address_thoroughfare_and_dependent_thoroughfare_name();
+  if (d.Delete(trimmed_specifics.mutable_address_street_location())) {
+    trimmed_specifics.clear_address_street_location();
   }
 
   if (d.Delete(trimmed_specifics.mutable_address_subpremise_name())) {

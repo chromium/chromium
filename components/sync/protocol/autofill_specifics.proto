@@ -124,6 +124,7 @@ message AutofillProfileSpecifics {
   optional string address_home_language_code = 20;
   optional string address_home_thoroughfare_name = 38;
   optional string address_home_thoroughfare_number = 39;
+  optional string address_home_street_location = 73;
   optional string address_home_subpremise_name = 42;
   optional string address_home_apt_num = 56;
   optional string address_home_floor = 57;
@@ -142,6 +143,7 @@ message AutofillProfileSpecifics {
   optional VerificationStatus address_home_language_code_status = 50;
   optional VerificationStatus address_home_thoroughfare_name_status = 51;
   optional VerificationStatus address_home_thoroughfare_number_status = 52;
+  optional VerificationStatus address_home_street_location_status = 74;
   optional VerificationStatus address_home_subpremise_name_status = 55;
   optional VerificationStatus address_home_apt_num_status = 58;
   optional VerificationStatus address_home_floor_status = 59;

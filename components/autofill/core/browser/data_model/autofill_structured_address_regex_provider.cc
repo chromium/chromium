@@ -354,13 +354,14 @@ std::string ParseLastNameIntoSecondLastNameExpression() {
 std::string ParseStreetNameHouseNumberExpression() {
   return CaptureTypeWithPattern(
       ADDRESS_HOME_STREET_ADDRESS,
-      {CaptureTypeWithPattern(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-                              CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
-                                                     kMultipleLazyWordsRe),
-                              CaptureOptions{.separator = ""}),
-       CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
-                                     kHouseNumberOptionalPrefixRe,
-                                     "(?:\\d+\\w?)", "(th\\.|\\.)?"),
+      {CaptureTypeWithPattern(
+           ADDRESS_HOME_STREET_LOCATION,
+           {CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
+                                   kMultipleLazyWordsRe),
+            CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
+                                          kHouseNumberOptionalPrefixRe,
+                                          "(?:\\d+\\w?)", "(th\\.|\\.)?")},
+           CaptureOptions{.separator = ""}),
        CaptureTypeWithPattern(
            ADDRESS_HOME_SUBPREMISE,
            {
@@ -385,13 +386,15 @@ std::string ParseStreetNameHouseNumberExpression() {
 std::string ParseStreetNameHouseNumberSuffixedFloorAndAppartmentExpression() {
   return CaptureTypeWithPattern(
       ADDRESS_HOME_STREET_ADDRESS,
-      {CaptureTypeWithPattern(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-                              CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
-                                                     kMultipleLazyWordsRe),
-                              CaptureOptions{.separator = ""}),
-       CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
-                                     kHouseNumberOptionalPrefixRe,
-                                     "(?:\\d+\\w?)", "(th\\.|\\.)?"),
+      {CaptureTypeWithPattern(
+           ADDRESS_HOME_STREET_LOCATION,
+           {CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
+                                   kMultipleLazyWordsRe),
+            CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
+                                          kHouseNumberOptionalPrefixRe,
+                                          "(?:\\d+\\w?)", "(th\\.|\\.)?")},
+           CaptureOptions{.separator = ""}),
+
        CaptureTypeWithPattern(
            ADDRESS_HOME_SUBPREMISE,
            {
@@ -418,13 +421,14 @@ std::string ParseStreetNameHouseNumberExpressionSuffixedFloor() {
       {
 
           CaptureTypeWithPattern(
-              ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-              CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
-                                     kMultipleLazyWordsRe),
+              ADDRESS_HOME_STREET_LOCATION,
+              {CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
+                                      kMultipleLazyWordsRe),
+               CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
+                                             kHouseNumberOptionalPrefixRe,
+                                             "(?:\\d+\\w?)", "(th\\.|\\.)?")},
               {.separator = ""}),
-          CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
-                                        kHouseNumberOptionalPrefixRe,
-                                        "(?:\\d+\\w?)", "(th\\.|\\.)?"),
+
           CaptureTypeWithPattern(
               ADDRESS_HOME_SUBPREMISE,
               {
@@ -448,13 +452,14 @@ std::string ParseStreetNameHouseNumberExpressionSuffixedFloor() {
 std::string ParseHouseNumberStreetNameExpression() {
   return CaptureTypeWithPattern(
       ADDRESS_HOME_STREET_ADDRESS,
-      {CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
-                                     kHouseNumberOptionalPrefixRe,
-                                     "(?:\\d+\\w?)", "(th\\.|\\.)?"),
-       CaptureTypeWithPattern(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-                              CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
-                                                     kMultipleLazyWordsRe),
-                              {.separator = ""}),
+      {CaptureTypeWithPattern(
+           ADDRESS_HOME_STREET_LOCATION,
+           {CaptureTypeWithAffixedPattern(ADDRESS_HOME_HOUSE_NUMBER,
+                                          kHouseNumberOptionalPrefixRe,
+                                          "(?:\\d+\\w?)", "(th\\.|\\.)?"),
+            CaptureTypeWithPattern(ADDRESS_HOME_STREET_NAME,
+                                   kMultipleLazyWordsRe)},
+           {.separator = ""}),
        CaptureTypeWithPattern(
            ADDRESS_HOME_SUBPREMISE,
            {

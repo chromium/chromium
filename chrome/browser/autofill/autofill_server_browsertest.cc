@@ -267,9 +267,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   std::string data_present;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForHonorificPrefixes)) {
-    data_present = "1f7e0003f80000080004000001c46418";
+    data_present = "1f7e0003f80000080004000001c424180002";
   } else {
-    data_present = "1f7e0003f80000080004000001c46018";
+    data_present = "1f7e0003f80000080004000001c420780002";
   }
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // implementation when launched.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes)) {
-    data_present.rbegin()[1] = '7';
+    data_present.rbegin()[5] = '7';
   }
   upload->set_data_present(data_present);
 

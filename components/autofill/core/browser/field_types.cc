@@ -88,8 +88,6 @@ static constexpr auto kTypeNameToFieldType =
          {"NAME_LAST_CONJUNCTION", NAME_LAST_CONJUNCTION},
          {"NAME_LAST_SECOND", NAME_LAST_SECOND},
          {"NAME_HONORIFIC_PREFIX", NAME_HONORIFIC_PREFIX},
-         {"ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME",
-          ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME},
          {"ADDRESS_HOME_ADDRESS", ADDRESS_HOME_ADDRESS},
          {"ADDRESS_HOME_ADDRESS_WITH_NAME", ADDRESS_HOME_ADDRESS_WITH_NAME},
          {"ADDRESS_HOME_FLOOR", ADDRESS_HOME_FLOOR},
@@ -144,7 +142,7 @@ ServerFieldType ToSafeServerFieldType(
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
            // Reserved for server-side only use.
-           !(111 <= t && t <= 112) && t != 127 && !(130 <= t && t <= 132) &&
+           !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
            t != 153 && t != 155;
   };
@@ -189,8 +187,8 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_SORTING_CODE:
     case ADDRESS_HOME_DEPENDENT_LOCALITY:
     case ADDRESS_HOME_STREET_NAME:
-    case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
     case ADDRESS_HOME_HOUSE_NUMBER:
+    case ADDRESS_HOME_STREET_LOCATION:
     case ADDRESS_HOME_SUBPREMISE:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS:
@@ -202,7 +200,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_BETWEEN_STREETS_2:
     case ADDRESS_HOME_ADMIN_LEVEL2:
     case ADDRESS_HOME_OVERFLOW:
-    case ADDRESS_HOME_STREET_LOCATION:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
@@ -398,8 +395,6 @@ base::StringPiece FieldTypeToDeveloperRepresentationString(
       return "Street name";
     case ADDRESS_HOME_HOUSE_NUMBER:
       return "House number";
-    case ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME:
-      return "Street and dependent street name";
     case ADDRESS_HOME_BETWEEN_STREETS:
       return "Address between-streets";
     case ADDRESS_HOME_BETWEEN_STREETS_1:

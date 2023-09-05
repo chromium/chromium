@@ -1807,26 +1807,25 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
   // Make sure everything is set up correctly.
   EXPECT_EQ(1U, personal_data_->GetProfiles().size());
 
-  std::vector<ServerFieldType> expected_types{
-      NAME_FIRST,
-      NAME_LAST,
-      NAME_FULL,
-      EMAIL_ADDRESS,
-      ADDRESS_HOME_ADDRESS,
-      ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_COUNTRY,
-      PHONE_HOME_NUMBER,
-      PHONE_HOME_NUMBER_PREFIX,
-      PHONE_HOME_NUMBER_SUFFIX,
-      PHONE_HOME_COUNTRY_CODE,
-      PHONE_HOME_CITY_CODE,
-      PHONE_HOME_CITY_AND_NUMBER,
-      PHONE_HOME_WHOLE_NUMBER};
+  std::vector<ServerFieldType> expected_types{NAME_FIRST,
+                                              NAME_LAST,
+                                              NAME_FULL,
+                                              EMAIL_ADDRESS,
+                                              ADDRESS_HOME_ADDRESS,
+                                              ADDRESS_HOME_STREET_LOCATION,
+                                              ADDRESS_HOME_LINE1,
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              ADDRESS_HOME_CITY,
+                                              ADDRESS_HOME_STATE,
+                                              ADDRESS_HOME_ZIP,
+                                              ADDRESS_HOME_COUNTRY,
+                                              PHONE_HOME_NUMBER,
+                                              PHONE_HOME_NUMBER_PREFIX,
+                                              PHONE_HOME_NUMBER_SUFFIX,
+                                              PHONE_HOME_COUNTRY_CODE,
+                                              PHONE_HOME_CITY_CODE,
+                                              PHONE_HOME_CITY_AND_NUMBER,
+                                              PHONE_HOME_WHOLE_NUMBER};
   // For structured names and addresses, there are more non-empty types.
   expected_types.push_back(NAME_LAST_SECOND);
   expected_types.insert(expected_types.end(),

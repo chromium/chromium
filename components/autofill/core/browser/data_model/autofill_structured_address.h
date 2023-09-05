@@ -53,23 +53,23 @@ class StreetNameNode : public AddressComponent {
   ~StreetNameNode() override;
 };
 
-// Contains the StreetName of an address.
-// TODO(crbug.com/1464568): Update to StreetLocationNode.
-class StreetAndDependentStreetNameNode : public AddressComponent {
- public:
-  explicit StreetAndDependentStreetNameNode(AddressComponent* parent);
-  ~StreetAndDependentStreetNameNode() override;
-
- private:
-  StreetNameNode thoroughfare_name_{this};
-};
-
 // The house number. It also contains the subunit descriptor, e.g. the 'a' in
 // '73a'.
 class HouseNumberNode : public AddressComponent {
  public:
   explicit HouseNumberNode(AddressComponent* parent);
   ~HouseNumberNode() override;
+};
+
+// Contains both the StreetName and the HouseNumberNode of an address.
+class StreetLocationNode : public AddressComponent {
+ public:
+  explicit StreetLocationNode(AddressComponent* parent);
+  ~StreetLocationNode() override;
+
+ private:
+  StreetNameNode street_name_{this};
+  HouseNumberNode house_number_{this};
 };
 
 // The floor the apartment is located in.
@@ -119,8 +119,8 @@ class AdminLevel2Node : public FeatureGuardedAddressComponent {
   ~AdminLevel2Node() override;
 };
 
-// The StreetAddress incorporates the StreetAndDependentStreetName, the
-// HouseNumber and SubPremise.
+// The StreetAddress incorporates the StreetLocation, BetweenStreets, Landmark
+// and SubPremise.
 // This class inherits from AddressComponentWithRewriter to implement rewriting
 // values for comparison.
 class StreetAddressNode : public AddressComponentWithRewriter {
@@ -171,9 +171,8 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   // `type` is ADDRESS_HOME_LINE(1|2|3).
   std::u16string GetAddressLine(ServerFieldType type) const;
 
-  StreetAndDependentStreetNameNode streets_{this};
+  StreetLocationNode street_location_{this};
   BetweenStreetsNode between_streets_{this};
-  HouseNumberNode number_{this};
   SubPremiseNode sub_premise_{this};
   LandmarkNode landmark_code_{this};
 

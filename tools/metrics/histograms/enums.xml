@@ -6843,10 +6843,6 @@ Called by update_autofill_enums.py.-->
   <int value="1745" label="NAME_LAST_SECOND: accepted"/>
   <int value="1760" label="NAME_HONORIFIC_PREFIX: edited"/>
   <int value="1761" label="NAME_HONORIFIC_PREFIX: accepted"/>
-  <int value="1808"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME: edited"/>
-  <int value="1809"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME: accepted"/>
   <int value="1824" label="ADDRESS_HOME_ADDRESS: edited"/>
   <int value="1825" label="ADDRESS_HOME_ADDRESS: accepted"/>
   <int value="1840" label="ADDRESS_HOME_ADDRESS_WITH_NAME: edited"/>
@@ -8756,24 +8752,6 @@ Called by update_autofill_enums.py.-->
   <int value="666"
       label="NAME_HONORIFIC_PREFIX - Predictions different - Value agrees
              with both predictions"/>
-  <int value="679"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             equal - Value agrees"/>
-  <int value="680"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             equal - Value disagrees"/>
-  <int value="681"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             different - Value agrees with old prediction"/>
-  <int value="682"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             different - Value agrees with new prediction"/>
-  <int value="683"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             different - Value agrees with neither prediction"/>
-  <int value="684"
-      label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME - Predictions
-             different - Value agrees with both predictions"/>
   <int value="685"
       label="ADDRESS_HOME_ADDRESS - Predictions equal - Value agrees"/>
   <int value="686"
@@ -9457,7 +9435,6 @@ Called by update_autofill_enums.py.-->
   <int value="108" label="NAME_LAST_CONJUNCTION"/>
   <int value="109" label="NAME_LAST_SECOND"/>
   <int value="110" label="NAME_HONORIFIC_PREFIX"/>
-  <int value="113" label="ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME"/>
   <int value="114" label="ADDRESS_HOME_ADDRESS"/>
   <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
   <int value="116" label="ADDRESS_HOME_FLOOR"/>

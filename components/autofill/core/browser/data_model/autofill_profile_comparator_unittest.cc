@@ -1239,8 +1239,8 @@ TEST_F(AutofillProfileComparatorTest,
   // Test for most settings visible types that a change is correctly recognized.
   for (ServerFieldType changed_type :
        {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-        ADDRESS_HOME_ZIP, ADDRESS_HOME_LANDMARK, ADDRESS_HOME_BETWEEN_STREETS,
-        ADDRESS_HOME_ADMIN_LEVEL2, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
+        ADDRESS_HOME_ZIP, ADDRESS_HOME_ADMIN_LEVEL2, EMAIL_ADDRESS,
+        PHONE_HOME_WHOLE_NUMBER}) {
     // Make a fresh copy and test that the function returns false.
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(

@@ -6972,10 +6972,10 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"Elvis Aaron Presley", {NAME_FULL}},
     {"theking@gmail.com", {EMAIL_ADDRESS}},
     {"RCA", {COMPANY_NAME}},
-    {"3734 Elvis Presley Blvd.", {ADDRESS_HOME_LINE1}},
+    {"3734 Elvis Presley Blvd.",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
     {"3734", {ADDRESS_HOME_HOUSE_NUMBER}},
-    {"Elvis Presley Blvd.",
-     {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME}},
+    {"Elvis Presley Blvd.", {ADDRESS_HOME_STREET_NAME}},
     {"Apt. 10", {ADDRESS_HOME_LINE2, ADDRESS_HOME_SUBPREMISE}},
     {"Memphis", {ADDRESS_HOME_CITY}},
     {"Tennessee", {ADDRESS_HOME_STATE}},
@@ -7031,8 +7031,10 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"UnItEd StAtEs", {ADDRESS_HOME_COUNTRY}},
 
     // Make sure fields that differ by punctuation match.
-    {"3734 Elvis Presley Blvd", {ADDRESS_HOME_LINE1}},
-    {"3734, Elvis    Presley Blvd.", {ADDRESS_HOME_LINE1}},
+    {"3734 Elvis Presley Blvd",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
+    {"3734, Elvis    Presley Blvd.",
+     {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_LOCATION}},
 
     // Make sure that a state's full name and abbreviation match.
     {"TN", {ADDRESS_HOME_STATE}},     // Saved as "Tennessee" in profile.
@@ -7426,10 +7428,13 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
                        possible_types.contains(ADDRESS_HOME_STREET_ADDRESS)));
         } else if (possible_types.size() == 3) {
           // Or even all three.
-          EXPECT_TRUE(possible_types.contains(NAME_FULL) &&
-                      possible_types.contains(NAME_LAST) &&
-                      (possible_types.contains(NAME_LAST_SECOND) ||
-                       possible_types.contains(NAME_LAST_FIRST)));
+          EXPECT_TRUE((possible_types.contains(NAME_FULL) &&
+                       possible_types.contains(NAME_LAST) &&
+                       (possible_types.contains(NAME_LAST_SECOND) ||
+                        possible_types.contains(NAME_LAST_FIRST))) ||
+                      (possible_types.contains(ADDRESS_HOME_LINE1) &&
+                       possible_types.contains(ADDRESS_HOME_STREET_ADDRESS) &&
+                       possible_types.contains(ADDRESS_HOME_STREET_LOCATION)));
         } else {
           EXPECT_EQ(1U, possible_types.size());
         }

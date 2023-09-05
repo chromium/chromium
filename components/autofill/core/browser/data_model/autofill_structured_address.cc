@@ -53,19 +53,18 @@ StreetNameNode::StreetNameNode(AddressComponent* parent)
 
 StreetNameNode::~StreetNameNode() = default;
 
-StreetAndDependentStreetNameNode::StreetAndDependentStreetNameNode(
-    AddressComponent* parent)
-    : AddressComponent(ADDRESS_HOME_STREET_AND_DEPENDENT_STREET_NAME,
-                       parent,
-                       MergeMode::kDefault) {}
-
-StreetAndDependentStreetNameNode::~StreetAndDependentStreetNameNode() = default;
-
 HouseNumberNode::HouseNumberNode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER, parent, MergeMode::kDefault) {
 }
 
 HouseNumberNode::~HouseNumberNode() = default;
+
+StreetLocationNode::StreetLocationNode(AddressComponent* parent)
+    : AddressComponent(ADDRESS_HOME_STREET_LOCATION,
+                       parent,
+                       MergeMode::kDefault) {}
+
+StreetLocationNode::~StreetLocationNode() = default;
 
 FloorNode::FloorNode(AddressComponent* parent)
     : AddressComponent(ADDRESS_HOME_FLOOR, parent, MergeMode::kDefault) {}

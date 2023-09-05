@@ -1252,6 +1252,7 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
       ADDRESS_HOME_LINE2,
       ADDRESS_HOME_LINE3,
       ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_STREET_LOCATION,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_APT_NUM,

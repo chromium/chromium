@@ -350,7 +350,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_dependent_locality);
   VISIT(address_thoroughfare_name);
   VISIT(address_thoroughfare_number);
-  VISIT(address_thoroughfare_and_dependent_thoroughfare_name);
   VISIT(address_subpremise_name);
   VISIT(address_apt_num);
   VISIT(address_floor);
@@ -358,6 +357,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
   VISIT(address_between_streets);
   VISIT(address_admin_level_2);
   VISIT(phone_home_whole_number);
+  VISIT(address_street_location);
   VISIT(birthdate_day);
   VISIT(birthdate_month);
   VISIT(birthdate_year);

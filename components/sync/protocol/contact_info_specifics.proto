@@ -157,9 +157,8 @@ message ContactInfoSpecifics {
   // Deprecated in M118.
   reserved 27;
   reserved "address_dependent_thoroughfare_name";
-  // Contains both the thoroughfare and the dependent thoroughfare name.
-  optional StringToken address_thoroughfare_and_dependent_thoroughfare_name =
-      28;
+  reserved 28;
+  reserved "address_thoroughfare_and_dependent_thoroughfare_name";
   reserved 29;
   reserved "address_premise_name";
   // Contains the floor, staircase or apartment number within a building.
@@ -168,6 +167,8 @@ message ContactInfoSpecifics {
   optional StringToken address_apt_num = 31;
   // The floor number within a building.
   optional StringToken address_floor = 32;
+  // Contains both the street and house number.
+  optional StringToken address_street_location = 44;
 
   // Phone.
   optional StringToken phone_home_whole_number = 33;
