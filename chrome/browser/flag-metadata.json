@@ -6867,6 +6867,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "profiles-reordering",
+    "owners": ["rsult", "chrome-signin-team"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "promise-icons",
     "owners": ["vpao", "chromeos-apps-foundation-team@google.com"],
     "expiry_milestone": 120

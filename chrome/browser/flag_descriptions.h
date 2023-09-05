@@ -4405,6 +4405,11 @@ extern const char kEnableBuiltinHlsName[];
 extern const char kEnableBuiltinHlsDescription[];
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kProfilesReorderingName[];
+extern const char kProfilesReorderingDescription[];
+#endif
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

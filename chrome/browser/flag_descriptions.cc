@@ -7607,6 +7607,14 @@ const char kEnableBuiltinHlsDescription[] =
     "Enables chrome's builtin HLS player instead of Android's MediaPlayer";
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+const char kProfilesReorderingName[] = "Profiles Reordering";
+const char kProfilesReorderingDescription[] =
+    "Enables profiles reordering in the Profile Picker main view by drag and "
+    "dropping the Profile Tiles. The order is saved when changed and "
+    "persisted.";
+#endif
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.
