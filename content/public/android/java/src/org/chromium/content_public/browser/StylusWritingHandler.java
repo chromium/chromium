@@ -29,7 +29,7 @@ public interface StylusWritingHandler {
      * @return true if writing can be started or if started successfully, false if writing cannot
      * be started.
      */
-    boolean requestStartStylusWriting();
+    boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback);
 
     /**
      * Update current input state parameters to stylus writing system.

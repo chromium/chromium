@@ -74,10 +74,6 @@ class DirectWritingTrigger
     public void onWebContentsChanged(Context context, WebContents webContents) {
         updateDWSettings(context);
         webContents.setStylusWritingHandler(this);
-        // TODO(crbug.com/1457860): Drop StylusHandwritingImeCallback reference when webContents is
-        // destroyed.
-        mStylusWritingImeCallback = webContents.getStylusWritingImeCallback();
-        mCallback.setImeCallback(mStylusWritingImeCallback);
     }
 
     @Override
@@ -109,8 +105,10 @@ class DirectWritingTrigger
     }
 
     @Override
-    public boolean requestStartStylusWriting() {
+    public boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback) {
         if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return false;
+        mStylusWritingImeCallback = imeCallback;
+        mCallback.setImeCallback(imeCallback);
         StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         mStylusWritingDetected = true;
         // We know writing can be started but wait for onEditElementFocusedForStylusWriting to be

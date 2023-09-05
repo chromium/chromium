@@ -1084,7 +1084,8 @@ public class ImeAdapterImpl
         if (!ViewUtils.hasFocus(containerView)) ViewUtils.requestFocus(containerView);
 
         updateInputStateForStylusWriting();
-        return mWebContents.getStylusWritingHandler().requestStartStylusWriting();
+        return mWebContents.getStylusWritingHandler().requestStartStylusWriting(
+                getStylusWritingImeCallback());
     }
 
     @CalledByNative
@@ -1143,7 +1144,7 @@ public class ImeAdapterImpl
     }
 
     /** Lazily creates/returns a StylusWritingImeCallback object. */
-    public StylusWritingImeCallback getStylusWritingImeCallback() {
+    private StylusWritingImeCallback getStylusWritingImeCallback() {
         if (mStylusWritingImeCallback == null) {
             mStylusWritingImeCallback = new StylusWritingImeCallback() {
                 @Override

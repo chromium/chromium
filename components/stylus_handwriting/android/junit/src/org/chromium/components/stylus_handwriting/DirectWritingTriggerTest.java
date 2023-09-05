@@ -101,13 +101,11 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testOnWebContentsChanged() {
         // Test that settings are updated and callback is created if null, when WebContents is set.
-        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
-        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
+        assertNull(mDwTrigger.getServiceCallback());
         mDwTrigger.onWebContentsChanged(mContext, mWebContents);
         verify(mDwTrigger).updateDWSettings(mContext);
+        assertNotNull(mDwTrigger.getServiceCallback());
         verify(mWebContents).setStylusWritingHandler(mDwTrigger);
-        verify(mWebContents).getStylusWritingImeCallback();
-        verify(mDwServiceCallback).setImeCallback(mStylusWritingImeCallback);
     }
 
     @Test
@@ -151,9 +149,8 @@ public class DirectWritingTriggerTest {
         verify(mDwServiceBinder, never()).onStopRecognition(any(), any(), any());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        // Set Ime callback via onWebContentsChanged.
-        doReturn(mStylusWritingImeCallback).when(mWebContents).getStylusWritingImeCallback();
-        mDwTrigger.onWebContentsChanged(mContext, mWebContents);
+        // Set Ime callback via requestStartStylusWriting.
+        assertTrue(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
         mDwTrigger.onFocusChanged(false);
         verify(mDwServiceBinder).onStopRecognition(null, null, mContainerView);
     }
@@ -174,11 +171,13 @@ public class DirectWritingTriggerTest {
     public void testRequestStartStylusWriting() {
         mDwTrigger.updateDWSettings(mContext);
         // requestStartStylusWriting returns false until service is connected.
-        assertFalse(mDwTrigger.requestStartStylusWriting());
+        assertFalse(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
         assertFalse(mDwTrigger.stylusWritingDetected());
 
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        assertTrue(mDwTrigger.requestStartStylusWriting());
+        mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
+        assertTrue(mDwTrigger.requestStartStylusWriting(mStylusWritingImeCallback));
+        verify(mDwServiceCallback).setImeCallback(mStylusWritingImeCallback);
         assertTrue(mDwTrigger.stylusWritingDetected());
     }
 
