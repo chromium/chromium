@@ -261,10 +261,13 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   wgpu::Adapter adapter(adapters[0].Get());
   if (adapter.HasFeature(wgpu::FeatureName::TransientAttachments)) {
     features.push_back(wgpu::FeatureName::TransientAttachments);
+    // Enabling MSAARenderToSingleSampled causes performance regression without
+    // TransientAttachments support.
+    if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
+      features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
+    }
   }
-  if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
-    features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
-  }
+
   if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {
     features.push_back(wgpu::FeatureName::MultiPlanarFormatExtendedUsages);
   }
