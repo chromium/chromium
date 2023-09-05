@@ -1757,7 +1757,8 @@ li[renaming=''] .filename-label {
   isolation: isolate;
   opacity: 0;
   position: absolute;
-  transition: opacity 220ms ease;
+  /* TODO(b/298339491) Temporary fix for the colored square issue after deselecting file row. */
+  /* transition: opacity 220ms ease; */
 }
 
 body.check-select #list-container li[selected] .detail-checkmark {
