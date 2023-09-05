@@ -31,6 +31,20 @@ size_t GetCustomGpuCacheSizeBytesIfExists(base::StringPiece switch_string) {
 }
 #endif
 
+BASE_FEATURE(kDefaultGpuDiskCacheSize,
+             "DefaultGpuDiskCacheSize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kGpuDefaultMaxProgramCacheMemoryBytes{
+    &kDefaultGpuDiskCacheSize, "GpuDefaultMaxProgramCacheMemoryBytes",
+    kDefaultMaxProgramCacheMemoryBytes};
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<int> kGpuLowEndMaxProgramCacheMemoryBytes{
+    &kDefaultGpuDiskCacheSize, "GpuLowEndMaxProgramCacheMemoryBytes",
+    kLowEndMaxProgramCacheMemoryBytes};
+#endif
+
 }  // namespace
 
 size_t GetDefaultGpuDiskCacheSize() {
@@ -39,12 +53,12 @@ size_t GetDefaultGpuDiskCacheSize() {
       GetCustomGpuCacheSizeBytesIfExists(switches::kGpuDiskCacheSizeKB);
   if (custom_cache_size)
     return custom_cache_size;
-  return kDefaultMaxProgramCacheMemoryBytes;
+  return kGpuDefaultMaxProgramCacheMemoryBytes.Get();
 #else   // !BUILDFLAG(IS_ANDROID)
   if (!base::SysInfo::IsLowEndDevice())
-    return kDefaultMaxProgramCacheMemoryBytes;
+    return kGpuDefaultMaxProgramCacheMemoryBytes.Get();
   else
-    return kLowEndMaxProgramCacheMemoryBytes;
+    return kGpuLowEndMaxProgramCacheMemoryBytes.Get();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
