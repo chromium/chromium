@@ -593,7 +593,7 @@ class ContextMenuForSupervisedUsersBrowserTest : public ContextMenuBrowserTest {
  public:
   ContextMenuForSupervisedUsersBrowserTest() {
     supervision_mixin_.InitFeatures();
-  };
+  }
 
   supervised_user::SupervisedUserService* GetSupervisedUserService() {
     return SupervisedUserServiceFactory::GetForProfile(browser()->profile());
@@ -1397,6 +1397,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   // Set up menu with link URL.
   content::ContextMenuParams params;
   params.page_url = kReferrerWithFragment;
+  params.frame_url = params.page_url;
   params.link_url = echoheader;
 
   // Select "Open Link in New Tab" and wait for the new tab to be added.

@@ -32,8 +32,12 @@ struct CONTENT_EXPORT ContextMenuParams
   // on.
   GURL page_url;
 
-  // This is the URL of the subframe that the context menu was invoked on.
+  // This is the URL of the frame that the context menu was invoked on. This may
+  // or may not be equal to `page_url`.
   GURL frame_url;
+
+  // Whether the context menu was invoked on a subframe.
+  bool is_subframe = false;
 
   // Extra properties for the context menu.
   std::map<std::string, std::string> properties;
