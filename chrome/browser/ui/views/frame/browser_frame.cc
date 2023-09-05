@@ -183,17 +183,10 @@ void BrowserFrame::InitBrowserFrame() {
 #if BUILDFLAG(IS_LINUX)
   // Because getting `linux_ui_theme` requires `native_widget_` to be
   // initialized, this needs to happen after Init().
-  const auto* linux_ui_theme =
-      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
-  // Ignore the system theme for web apps with window-controls-overlay as the
-  // display_override so the web contents can blend with the overlay by using
-  // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
-  // Use the regular NativeTheme instance if running incognito mode, regardless
-  // of system theme (gtk, qt etc).
-  if (!IsIncognitoBrowser() && linux_ui_theme &&
+  if (!IsIncognitoBrowser() &&
+      ui::LinuxUiTheme::GetForWindow(GetNativeWindow()) &&
       !browser_view_->AppUsesWindowControlsOverlay()) {
-    SetNativeTheme(linux_ui_theme->GetNativeTheme());
+    SelectNativeTheme();
   }
 #endif
 
@@ -285,7 +278,21 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
     return;
   }
 
+  // RegenerateFrameOnThemeChange() may or may not result in an implicit call to
+  // ThemeChanged(), regardless of whether the frame was regenerated or not.
+  // Ensure that ThemeChanged() is called for this Widget if no implicit call
+  // occurred.
+  // TODO(crbug.com/1476898): The entire theme propagation system needs to be
+  // moved to scheduling theme changes rather than synchronously demanding a
+  // ThemeChange() event take place. This will reduce a ton of churn resulting
+  // from independent clients increasingly issuing theme change requests.
+  ThemeChangedObserver theme_changed_observer(this);
+  RegenerateFrameOnThemeChange(theme_change_type);
+
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme) {
+    // When the browser theme changes, the NativeTheme may also change.
+    SelectNativeTheme();
+
     // Browser theme changes are directly observed by the BrowserFrame. However
     // the other Widgets in the frame's hierarchy may inherit this new theme
     // information in their ColorProviderKeys and thus should also be forwarded
@@ -297,16 +304,6 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
     }
   }
 
-  // RegenerateFrameOnThemeChange() may or may not result in an implicit call to
-  // ThemeChanged(), regardless of whether the frame was regenerated or not.
-  // Ensure that ThemeChanged() is called for this Widget if no implicit call
-  // occurred.
-  // TODO(crbug.com/1476898): The entire theme propagation system needs to be
-  // moved to scheduling theme changes rather than synchronously demanding a
-  // ThemeChange() event take place. This will reduce a ton of churn resulting
-  // from independent clients increasingly issuing theme change requests.
-  ThemeChangedObserver theme_changed_observer(this);
-  RegenerateFrameOnThemeChange(theme_change_type);
   if (!theme_changed_observer.theme_changed()) {
     ThemeChanged();
   }
@@ -568,6 +565,29 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
 
 void BrowserFrame::OnMenuClosed() {
   menu_runner_.reset();
+}
+
+void BrowserFrame::SelectNativeTheme() {
+#if BUILDFLAG(IS_LINUX)
+  // Use the regular NativeTheme instance if running incognito mode, regardless
+  // of system theme (gtk, qt etc).
+  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  if (IsIncognitoBrowser()) {
+    SetNativeTheme(native_theme);
+    return;
+  }
+
+  // Ignore the system theme for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  const auto* linux_ui_theme =
+      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
+  SetNativeTheme(linux_ui_theme &&
+                         !browser_view_->AppUsesWindowControlsOverlay()
+                     ? linux_ui_theme->GetNativeTheme()
+                     : native_theme);
+#endif
 }
 
 void BrowserFrame::OnTouchUiChanged() {

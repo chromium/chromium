@@ -186,6 +186,11 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Callback for MenuRunner.
   void OnMenuClosed();
 
+  // Select a native theme that is appropriate for the current context. This is
+  // currently only needed for Linux to switch between the regular NativeTheme
+  // and the GTK NativeTheme instance.
+  void SelectNativeTheme();
+
   // Regenerate the frame on theme change if necessary. Returns true if
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
