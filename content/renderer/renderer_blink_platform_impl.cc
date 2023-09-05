@@ -853,7 +853,8 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
   ServiceWorkerSubresourceLoaderFactory::Create(
       base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(service_worker_container_host),
-          /*remote_controller=*/mojo::NullRemote(), client_id.Utf8(),
+          /*remote_controller=*/mojo::NullRemote(),
+          /*remote_cache_storage=*/mojo::NullRemote(), client_id.Utf8(),
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
           /*router_rules=*/absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),

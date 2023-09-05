@@ -16,6 +16,7 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
         remote_container_host,
     mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
         remote_controller,
+    mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage,
     const std::string& client_id,
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
@@ -32,6 +33,9 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     router_evaluator_ =
         absl::make_unique<content::ServiceWorkerRouterEvaluator>(*router_rules);
     CHECK(router_evaluator_->IsValid());
+    if (remote_cache_storage) {
+      cache_storage_.Bind(std::move(remote_cache_storage));
+    }
   }
   SetControllerServiceWorker(std::move(remote_controller));
 }

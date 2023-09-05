@@ -52,6 +52,23 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
   return ServiceWorkerMetrics::EventType::UNKNOWN;
 }
 
+storage::mojom::CacheStorageControl* GetCacheStorageControl(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  DCHECK(version);
+  if (!version->context()) {
+    return nullptr;
+  }
+  auto* storage_partition = version->context()->wrapper()->storage_partition();
+  if (!storage_partition) {
+    return nullptr;
+  }
+  auto* control = storage_partition->GetCacheStorageControl();
+  if (!control) {
+    return nullptr;
+  }
+  return control;
+}
+
 }  // namespace
 
 // RAII helper class for keeping track of versions waiting for an update hint
@@ -623,7 +640,16 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
   if (controller()->router_evaluator()) {
-    controller_info->router_rules = controller()->router_evaluator()->rules();
+    controller_info->router_data = blink::mojom::ServiceWorkerRouterData::New();
+    controller_info->router_data->router_rules =
+        controller()->router_evaluator()->rules();
+    // Pass an endpoint for the cache storage.
+    mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage =
+        GetRemoteCacheStorage();
+    if (remote_cache_storage) {
+      controller_info->router_data->remote_cache_storage =
+          std::move(remote_cache_storage);
+    }
   }
 
   // Pass an endpoint for the client to talk to this controller.
@@ -1771,6 +1797,44 @@ void ServiceWorkerContainerHost::InheritControllerFrom(
     SetControllerRegistration(creator_host.controller_registration(),
                               false /* notify_controllerchange */);
   }
+}
+
+mojo::PendingRemote<blink::mojom::CacheStorage>
+ServiceWorkerContainerHost::GetRemoteCacheStorage() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsContainerForClient());
+  DCHECK(controller_);
+
+  auto* control = GetCacheStorageControl(controller_);
+  if (!control) {
+    return mojo::NullRemote();
+  }
+
+  // Since this is offloading the cache storage API access in ServiceWorker,
+  // we need to follow COEP used there.
+  // The reason why COEP is enforced to the cache storage API can be seen in:
+  // crbug.com/991428.
+  const network::CrossOriginEmbedderPolicy* coep =
+      controller_->cross_origin_embedder_policy();
+  if (!coep) {
+    return mojo::NullRemote();
+  }
+
+  // Clone the COEP reporter if available.
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_to_be_passed;
+  if (coep_reporter_) {
+    coep_reporter_->Clone(
+        coep_reporter_to_be_passed.InitWithNewPipeAndPassReceiver());
+  }
+
+  mojo::PendingRemote<blink::mojom::CacheStorage> remote;
+  control->AddReceiver(
+      *coep, std::move(coep_reporter_to_be_passed),
+      storage::BucketLocator::ForDefaultBucket(controller_->key()),
+      storage::mojom::CacheStorageOwner::kCacheAPI,
+      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 }  // namespace content

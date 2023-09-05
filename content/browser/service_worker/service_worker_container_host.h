@@ -350,6 +350,9 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   mojo::Remote<blink::mojom::ControllerServiceWorker>
   GetRemoteControllerServiceWorker();
 
+  // Get an associated cache storage interface.
+  mojo::PendingRemote<blink::mojom::CacheStorage> GetRemoteCacheStorage();
+
   // |registration| claims the client (document, dedicated worker when
   // PlzDedicatedWorker is enabled, or shared worker) to be controlled.
   void ClaimedByRegistration(

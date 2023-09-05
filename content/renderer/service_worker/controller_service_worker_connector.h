@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
@@ -73,6 +74,7 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
           remote_container_host,
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
           remote_controller,
+      mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage,
       const std::string& client_id,
       blink::mojom::ServiceWorkerFetchHandlerBypassOption
           fetch_handler_bypass_option,
@@ -151,6 +153,9 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   // process that's not necessarily the same as this connector.
   mojo::Remote<blink::mojom::ControllerServiceWorker>
       controller_service_worker_;
+
+  // Connection to the cache storage.
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

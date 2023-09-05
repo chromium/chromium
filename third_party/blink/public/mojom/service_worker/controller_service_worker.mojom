@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom";
 import "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_embedded_worker_status.mojom";
@@ -59,6 +60,19 @@ interface ControllerServiceWorker {
             coep_reporter);
 };
 
+// A convenient struct to keep ServiceWorker static routing API data.
+// https://github.com/WICG/service-worker-static-routing-api
+struct ServiceWorkerRouterData {
+  // Declarative rules for routing requests without requiring a live
+  // ServiceWorker.
+  ServiceWorkerRouterRules router_rules;
+  // ServiceWorker running status at initialization time.
+  ServiceWorkerEmbeddedWorkerStatus initial_running_status;
+  // CacheStorage connection to be used upon the given rule.
+  // Non-null if the cache storage API is available and `router_rules` is set.
+  pending_remote<CacheStorage> remote_cache_storage;
+};
+
 // A convenient struct that packs necessary information for a service worker
 // client to talk to and set up its controller. Used to propagate controller
 // information from the browser process to the renderer process on navigation
@@ -92,15 +106,12 @@ struct ControllerServiceWorkerInfo {
   string? sha256_script_checksum;
 
   // Experimental feature (crbug.com/1371756).
-  // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+  // A field to keep ServiceWorker static routing API data.
   //
-  // Declarative rules for routing requests without requiring a live
-  // ServiceWorker. These are non-null only when passing the ServiceWorker
-  // info to commit a navigation; the static rules here will be used to route
-  // subresource requests in the newly-committed Document.
-  ServiceWorkerRouterRules? router_rules;
-  // ServiceWorker running status at initialization time.
-  ServiceWorkerEmbeddedWorkerStatus initial_running_status;
+  // These are non-null only when passing the ServiceWorker info to commit
+  // a navigation; the data here will be used to route subresource requests
+  // in the newly-committed Document.
+  ServiceWorkerRouterData? router_data;
 
   // Non-null iff there is a controller and it has a fetch event handler.
   pending_remote<ControllerServiceWorker>? remote_controller;

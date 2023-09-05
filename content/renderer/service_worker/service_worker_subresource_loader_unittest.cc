@@ -561,7 +561,8 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
           remote_container_host.InitWithNewPipeAndPassReceiver());
       connector_ = base::MakeRefCounted<ControllerServiceWorkerConnector>(
           std::move(remote_container_host),
-          mojo::NullRemote() /*remote_controller*/, "" /*client_id*/,
+          mojo::NullRemote() /*remote_controller*/,
+          mojo::NullRemote() /*remote_cache_storage*/, "" /*client_id*/,
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
           absl::nullopt, blink::EmbeddedWorkerStatus::STOPPED);
     }

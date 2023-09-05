@@ -39,6 +39,7 @@ void CreateSubresourceLoaderFactoryForProviderContext(
         remote_container_host,
     mojo::PendingRemote<blink::mojom::ControllerServiceWorker>
         remote_controller,
+    mojo::PendingRemote<blink::mojom::CacheStorage> remote_cache_storage,
     const std::string& client_id,
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
@@ -51,8 +52,9 @@ void CreateSubresourceLoaderFactoryForProviderContext(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto connector = base::MakeRefCounted<ControllerServiceWorkerConnector>(
-      std::move(remote_container_host), std::move(remote_controller), client_id,
-      fetch_handler_bypass_option, router_rules, initial_running_status);
+      std::move(remote_container_host), std::move(remote_controller),
+      std::move(remote_cache_storage), client_id, fetch_handler_bypass_option,
+      router_rules, initial_running_status);
   connector->AddBinding(std::move(connector_receiver));
   ServiceWorkerSubresourceLoaderFactory::Create(
       std::move(connector),
@@ -187,7 +189,8 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
         base::BindOnce(
             &CreateSubresourceLoaderFactoryForProviderContext,
             std::move(remote_container_host), std::move(remote_controller_),
-            client_id_, fetch_handler_bypass_option_, router_rules_,
+            std::move(remote_cache_storage_), client_id_,
+            fetch_handler_bypass_option_, router_rules_,
             initial_running_status_, fallback_loader_factory_->Clone(),
             controller_connector_.BindNewPipeAndPassReceiver(),
             subresource_loader_factory_.BindNewPipeAndPassReceiver(),
@@ -390,8 +393,11 @@ void ServiceWorkerProviderContext::SetController(
   remote_controller_ = std::move(controller_info->remote_controller);
   fetch_handler_bypass_option_ = controller_info->fetch_handler_bypass_option;
   sha256_script_checksum_ = controller_info->sha256_script_checksum;
-  router_rules_ = controller_info->router_rules;
-  initial_running_status_ = controller_info->initial_running_status;
+  if (controller_info->router_data) {
+    router_rules_ = controller_info->router_data->router_rules;
+    remote_cache_storage_ =
+        std::move(controller_info->router_data->remote_cache_storage);
+  }
 
   // Propagate the controller to workers related to this provider.
   if (controller_) {
