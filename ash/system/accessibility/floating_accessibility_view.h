@@ -8,6 +8,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -50,7 +51,8 @@ END_VIEW_BUILDER
 // ----  | [Change menu location]
 class FloatingAccessibilityView : public views::BoxLayoutView,
                                   public views::ViewObserver,
-                                  public KeyboardControllerObserver {
+                                  public KeyboardControllerObserver,
+                                  public SystemTrayObserver {
  public:
   METADATA_HEADER(FloatingAccessibilityView);
 
@@ -100,6 +102,10 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool visible) override;
+
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnImeMenuTrayBubbleShown() override;
 
   // Feature buttons:
   raw_ptr<TrayBackgroundView, ExperimentalAsh> dictation_button_ = nullptr;

@@ -60,6 +60,7 @@ class ASH_EXPORT SystemTrayNotifier {
   void RemoveSystemTrayObserver(SystemTrayObserver* observer);
   void NotifyFocusOut(bool reverse);
   void NotifySystemTrayBubbleShown();
+  void NotifyImeMenuTrayBubbleShown();
 
   // Status area anchored bubble.
   void NotifyStatusAreaAnchoredBubbleVisibilityChanged(
