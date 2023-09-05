@@ -40,6 +40,7 @@ import * as Network from 'devtools/panels/network/network.js';
     const promise = TestRunner.addSnifferPromise(view, 'searchFinished');
     view.onAction();
     await promise;
+    await view.throttlerForTest.process?.();
     const element = printSubtree(view.visiblePane.treeOutline.rootElement());
     TestRunner.addResult('');
     return element;

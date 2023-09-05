@@ -33,8 +33,10 @@ URL search
   Referer:http://127.0.0.1:8000/devtools/resources/inspected-page.html
 
 Ignore case, regexp
-  echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=01
+  echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=03
   1request0-dosearch-doSearch-d.Search
+  1request0-dosearch-doSearch-d.Search
+  1…quest0-dosearch-doSearch-d.Search
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=21
   1request2-doSearch
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=31
@@ -43,7 +45,8 @@ Ignore case, regexp
   1request4-doSearch
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=51
   1request5-d.Search
-  echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=61
+  echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=62
+  1request6-dosearch-doSearch
   1request6-dosearch-doSearch
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=81
   1request8-doSearch
@@ -52,7 +55,7 @@ Ignore case, regexp
 
 Ignore case, No regexp
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=01
-  1…ch-doSearch-d.Search
+  1…quest0-dosearch-doSearch-d.Search
   echo-payload.php—127.0.0.1:8000/devtools/network/resources/echo-payload.php?n=51
   1request5-d.Search
 

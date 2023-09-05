@@ -30,7 +30,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
         panel.showFunctionDefinition(result.object);
       }
 
-      function showUISourceCodeHook(uiSourceCode, lineNumber, columnNumber, forceShowInPanel) {
+      function showUISourceCodeHook(uiSourceCode, {lineNumber, columnNumber}, forceShowInPanel) {
         // lineNumber and columnNumber are 0-based
         ++lineNumber;
         ++columnNumber;

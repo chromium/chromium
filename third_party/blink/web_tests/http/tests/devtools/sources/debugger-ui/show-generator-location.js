@@ -53,7 +53,7 @@ import * as Common from 'devtools/core/common/common.js';
           remote.debuggerModel().createRawLocationByScriptId(loc.scriptId, loc.lineNumber, loc.columnNumber));
     }
 
-    function showUISourceCodeHook(uiSourceCode, lineNumber, columnNumber, forceShowInPanel) {
+    function showUISourceCodeHook(uiSourceCode, {lineNumber, columnNumber}, forceShowInPanel) {
       // lineNumber and columnNumber are 0-based
       ++lineNumber;
       ++columnNumber;
