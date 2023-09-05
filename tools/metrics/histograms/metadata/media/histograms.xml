@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>evliu@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5285,7 +5285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.AspectRatio" units="%"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>mcasas@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -5407,7 +5407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2023-12-31">
+    enum="VideoCaptureFrameDropReason" expires_after="2024-03-03">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5425,7 +5425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
@@ -5573,7 +5573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -6042,7 +6042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VTVDA.SessionFailureReason"
-    enum="VTVDASessionFailureType" expires_after="2023-12-31">
+    enum="VTVDASessionFailureType" expires_after="2024-03-03">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

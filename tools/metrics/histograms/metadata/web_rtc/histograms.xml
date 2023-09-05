@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.OnChange" units="volume"
-    expires_after="2023-12-31">
+    expires_after="2024-03-03">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -200,7 +200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Average"
-    units="volume" expires_after="2023-12-31">
+    units="volume" expires_after="2024-03-03">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Apm.{InputVolumeType}.{Metric}Rate"
-    units="changes/minute" expires_after="2023-12-31">
+    units="changes/minute" expires_after="2024-03-03">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1244,7 +1244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2023-12-31">
+    enum="IceConnectionStates" expires_after="2024-03-03">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1975,7 +1975,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.UserMediaRequest.Result2"
-    enum="MediaStreamRequestResult2" expires_after="2023-12-31">
+    enum="MediaStreamRequestResult2" expires_after="2024-03-03">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
