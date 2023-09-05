@@ -85,6 +85,7 @@ try_.compilator_builder(
     name = "android-12-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
     main_list_view = "try",
+    siso_enabled = True,
 )
 
 try_.orchestrator_builder(
