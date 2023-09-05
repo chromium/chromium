@@ -10,6 +10,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
@@ -177,10 +178,12 @@ class AmbientControllerTest : public AmbientAshTestBase {
 
   bool AreSessionSpecificObserversBound() {
     auto* ctrl = ambient_controller();
+    auto* ui_launcher =
+        static_cast<AmbientSlideshowUiLauncher*>(ambient_ui_launcher());
 
     bool ui_model_bound = ctrl->ambient_ui_model_observer_.IsObserving();
     bool backend_model_bound =
-        ctrl->ambient_backend_model_observer_.IsObserving();
+        ui_launcher || ctrl->ambient_backend_model_observer_.IsObserving();
     bool power_manager_bound =
         ctrl->power_manager_client_observer_.IsObserving();
     bool fingerprint_bound = ctrl->fingerprint_observer_receiver_.is_bound();

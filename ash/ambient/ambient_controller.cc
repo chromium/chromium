@@ -12,6 +12,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
+#include "ash/ambient/ambient_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_video_ui_launcher.h"
@@ -1180,8 +1181,8 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
         session_metrics_recorder_.get());
   } else {
     // TODO(b/274164306): Everything should use
-    // |AmbientUiLauncher::CreateView()| when slideshow and animation themes
-    // are migrated to AmbientUiLauncher.
+    // |AmbientUiLauncher::CreateView()| when animation theme
+    // is migrated to AmbientUiLauncher.
     container_view = std::make_unique<AmbientContainerView>(
         &delegate_, ambient_animation_progress_tracker_.get(),
         AmbientAnimationStaticResources::Create(GetCurrentUiSettings(),
@@ -1231,6 +1232,7 @@ void AmbientController::OnUiLauncherInitialized(bool success) {
     // UI will also result in this failure.
     // TODO (b/175142676) Add metrics for cases where success = false.
     LOG(ERROR) << "AmbientUiLauncher failed to initialize";
+    SetUiVisibilityClosed();
     return;
   }
   CreateAndShowWidgets();
@@ -1248,6 +1250,7 @@ void AmbientController::CreateAndShowWidgets() {
   }
 }
 
+// TODO(b/274164306): Remove when animation theme is migrated.
 void AmbientController::StartRefreshingImages() {
   DCHECK(ambient_photo_controller_);
   // There is no use case for switching themes "on-the-fly" while ambient mode
@@ -1320,7 +1323,7 @@ void AmbientController::MaybeStartScreenSaver() {
   } else {
     StartRefreshingImages();
     // TODO(b/274164306): Move `weather_refresher_` to `AmbientUiLauncher`
-    // implementation for slideshow and animation themes.
+    // implementation for animation theme.
     weather_refresher_ = ambient_weather_controller_->CreateScopedRefresher();
   }
 }
@@ -1365,8 +1368,13 @@ void AmbientController::CreateUiLauncher() {
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
     ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
         GetPrimaryUserPrefService(), &delegate_);
+  } else if (GetCurrentUiSettings().theme() == AmbientTheme::kSlideshow) {
+    CHECK(photo_cache_);
+    CHECK(backup_photo_cache_);
+    ambient_ui_launcher_ = std::make_unique<AmbientSlideshowUiLauncher>(
+        *photo_cache_, *backup_photo_cache_, &delegate_);
   } else {
-    // TODO(b/274164306): Remove when slideshow and animation themes are
+    // TODO(b/274164306): Remove when animation theme is
     // migrated to AmbientUiLauncher.
     CHECK(photo_cache_);
     CHECK(backup_photo_cache_);
@@ -1392,7 +1400,7 @@ void AmbientController::CreateUiLauncher() {
 
 void AmbientController::DestroyUiLauncher() {
   ambient_ui_launcher_.reset();
-  // TODO(b/274164306): Remove when slideshow and animation themes are migrated
+  // TODO(b/274164306): Remove when animation theme is migrated
   // to AmbientUiLauncher.
   ambient_backend_model_observer_.Reset();
   ambient_photo_controller_.reset();
@@ -1400,7 +1408,7 @@ void AmbientController::DestroyUiLauncher() {
 
 bool AmbientController::IsUiLauncherActive() const {
   return (ambient_ui_launcher_ && ambient_ui_launcher_->IsActive()) ||
-         // TODO(b/274164306): Remove when slideshow and animation themes are
+         // TODO(b/274164306): Remove when animation theme is
          // migrated to AmbientUiLauncher.
          (ambient_photo_controller_ &&
           ambient_photo_controller_->IsScreenUpdateActive());

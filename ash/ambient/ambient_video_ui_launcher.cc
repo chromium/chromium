@@ -5,6 +5,7 @@
 #include "ash/ambient/ambient_video_ui_launcher.h"
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/public/cpp/personalization_app/time_of_day_paths.h"
@@ -73,6 +74,10 @@ void AmbientVideoUiLauncher::Finalize() {
 }
 
 AmbientBackendModel* AmbientVideoUiLauncher::GetAmbientBackendModel() {
+  return nullptr;
+}
+
+AmbientPhotoController* AmbientVideoUiLauncher::GetAmbientPhotoController() {
   return nullptr;
 }
 

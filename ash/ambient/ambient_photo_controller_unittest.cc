@@ -154,8 +154,9 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
   }
 
   void RunUntilImagesReady() {
-    if (photo_controller()->ambient_backend_model()->ImagesReady())
+    if (photo_controller()->ambient_backend_model()->ImagesReady()) {
       return;
+    }
 
     static constexpr base::TimeDelta kTimeout = base::Seconds(3);
     base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);

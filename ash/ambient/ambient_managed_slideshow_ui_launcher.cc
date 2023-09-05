@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
@@ -89,6 +90,11 @@ void AmbientManagedSlideshowUiLauncher::Finalize() {
 AmbientBackendModel*
 AmbientManagedSlideshowUiLauncher::GetAmbientBackendModel() {
   return photo_controller_.ambient_backend_model();
+}
+
+AmbientPhotoController*
+AmbientManagedSlideshowUiLauncher::GetAmbientPhotoController() {
+  return nullptr;
 }
 
 bool AmbientManagedSlideshowUiLauncher::IsActive() {

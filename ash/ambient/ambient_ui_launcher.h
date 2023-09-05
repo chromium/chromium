@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
-#include "ash/constants/ambient_theme.h"
 #include "base/functional/callback_forward.h"
 #include "ui/views/view.h"
 
@@ -47,6 +47,10 @@ class AmbientUiLauncher {
   // TODO(esum): Remove when we get rid of the ambient backend model dependency
   // from the ambient controller and PhotoView.
   virtual AmbientBackendModel* GetAmbientBackendModel() = 0;
+
+  // TODO(pzliu): Remove when we get rid of the ambient photo controller
+  // dependency from the ambient controller.
+  virtual AmbientPhotoController* GetAmbientPhotoController() = 0;
 
   // Returns whether an ambient UI session is active.
   virtual bool IsActive() = 0;

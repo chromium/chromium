@@ -26,6 +26,7 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
@@ -609,7 +610,14 @@ AmbientController* AmbientAshTestBase::ambient_controller() {
   return Shell::Get()->ambient_controller();
 }
 
+AmbientUiLauncher* AmbientAshTestBase::ambient_ui_launcher() {
+  return ambient_controller()->ambient_ui_launcher();
+}
+
 AmbientPhotoController* AmbientAshTestBase::photo_controller() {
+  if (ambient_ui_launcher()) {
+    return ambient_ui_launcher()->GetAmbientPhotoController();
+  }
   return ambient_controller()->ambient_photo_controller();
 }
 
@@ -618,8 +626,7 @@ AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
     return nullptr;
   }
   AmbientManagedSlideshowUiLauncher* ui_launcher =
-      static_cast<AmbientManagedSlideshowUiLauncher*>(
-          ambient_controller()->ambient_ui_launcher());
+      static_cast<AmbientManagedSlideshowUiLauncher*>(ambient_ui_launcher());
   return &ui_launcher->photo_controller_;
 }
 

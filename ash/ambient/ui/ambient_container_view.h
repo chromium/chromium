@@ -29,7 +29,7 @@ class ASH_EXPORT AmbientContainerView : public views::View {
  public:
   METADATA_HEADER(AmbientContainerView);
 
-  // TODO(b/274164306): Remove when slideshow and animation themes are
+  // TODO(b/274164306): Remove when animation theme is
   // migrated to AmbientUiLauncher. Prefer other overloaded constructor below.
   //
   // |animation_static_resources| contains the Lottie animation file to render

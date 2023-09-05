@@ -1,0 +1,81 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/ambient/ambient_slideshow_ui_launcher.h"
+
+#include <memory>
+
+#include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_photo_controller.h"
+#include "ash/ambient/model/ambient_slideshow_photo_config.h"
+#include "ash/ambient/model/ambient_topic_queue_slideshow_delegate.h"
+#include "ash/ambient/ui/photo_view.h"
+#include "ash/shell.h"
+#include "base/check.h"
+
+namespace ash {
+
+AmbientSlideshowUiLauncher::AmbientSlideshowUiLauncher(
+    AmbientPhotoCache& photo_cache,
+    AmbientPhotoCache& backup_photo_cache,
+    AmbientViewDelegateImpl* view_delegate)
+    : photo_controller_(photo_cache,
+                        backup_photo_cache,
+                        *view_delegate,
+                        CreateAmbientSlideshowPhotoConfig()),
+      view_delegate_(view_delegate) {}
+
+AmbientSlideshowUiLauncher::~AmbientSlideshowUiLauncher() = default;
+
+void AmbientSlideshowUiLauncher::OnImagesReady() {
+  // Start screen update only if images are ready.
+  CHECK(initialization_callback_);
+  std::move(initialization_callback_).Run(/*success=*/true);
+}
+
+void AmbientSlideshowUiLauncher::OnImagesFailed() {
+  CHECK(initialization_callback_);
+  std::move(initialization_callback_).Run(/*success=*/false);
+}
+
+void AmbientSlideshowUiLauncher::Initialize(InitializationCallback on_done) {
+  CHECK(on_done);
+  initialization_callback_ = std::move(on_done);
+  CHECK(!is_active_);
+  is_active_ = true;
+  weather_refresher_ = Shell::Get()
+                           ->ambient_controller()
+                           ->ambient_weather_controller()
+                           ->CreateScopedRefresher();
+  ambient_backend_model_observer_.Observe(GetAmbientBackendModel());
+  photo_controller_.StartScreenUpdate(
+      std::make_unique<AmbientTopicQueueSlideshowDelegate>());
+}
+
+std::unique_ptr<views::View> AmbientSlideshowUiLauncher::CreateView() {
+  CHECK(is_active_);
+  return std::make_unique<PhotoView>(view_delegate_);
+}
+
+void AmbientSlideshowUiLauncher::Finalize() {
+  photo_controller_.StopScreenUpdate();
+  ambient_backend_model_observer_.Reset();
+  weather_refresher_.reset();
+  is_active_ = false;
+}
+
+AmbientBackendModel* AmbientSlideshowUiLauncher::GetAmbientBackendModel() {
+  return photo_controller_.ambient_backend_model();
+}
+
+AmbientPhotoController*
+AmbientSlideshowUiLauncher::GetAmbientPhotoController() {
+  return &photo_controller_;
+}
+
+bool AmbientSlideshowUiLauncher::IsActive() {
+  return is_active_;
+}
+
+}  // namespace ash

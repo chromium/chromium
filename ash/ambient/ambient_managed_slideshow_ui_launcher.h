@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_managed_photo_controller.h"
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
@@ -50,6 +51,7 @@ class AmbientManagedSlideshowUiLauncher
   std::unique_ptr<views::View> CreateView() override;
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
+  AmbientPhotoController* GetAmbientPhotoController() override;
   bool IsActive() override;
 
  private:

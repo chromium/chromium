@@ -213,6 +213,10 @@ class ASH_EXPORT AmbientController
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
 
   AmbientPhotoController* ambient_photo_controller() {
+    if (ambient_ui_launcher_) {
+      return ambient_ui_launcher_->GetAmbientPhotoController();
+    }
+    // TODO(pzliu): Remove when migration to UI Launcher is complete.
     return ambient_photo_controller_.get();
   }
 

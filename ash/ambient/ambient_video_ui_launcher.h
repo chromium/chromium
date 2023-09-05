@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/constants/ambient_video.h"
@@ -33,6 +34,7 @@ class AmbientVideoUiLauncher : public AmbientUiLauncher {
   std::unique_ptr<views::View> CreateView() override;
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
+  AmbientPhotoController* GetAmbientPhotoController() override;
   bool IsActive() override;
 
  private:

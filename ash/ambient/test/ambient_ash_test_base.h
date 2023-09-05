@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_info_view.h"
@@ -211,6 +212,8 @@ class AmbientAshTestBase : public AshTestBase {
   const std::map<int, ::ambient::PhotoCacheEntry>& GetBackupCachedFiles();
 
   AmbientController* ambient_controller();
+
+  AmbientUiLauncher* ambient_ui_launcher();
 
   AmbientPhotoController* photo_controller();
 
