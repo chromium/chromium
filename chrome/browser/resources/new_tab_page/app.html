@@ -219,8 +219,13 @@
     --cr-button-height: 32px;
   }
 
+  @media (forced-colors: none) {
+    :host([show-background-image_]) #customizeIcon {
+      background-color: white;
+    }
+  }
+
   :host([show-background-image_]) #customizeIcon {
-    background-color: white;
     margin: 0;
   }
 
