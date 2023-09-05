@@ -14,9 +14,11 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -70,19 +72,26 @@ std::wstring GetLocalizedString(int base_message_id) {
   if (g_translation_delegate)
     return g_translation_delegate->GetLocalizedString(base_message_id);
 
-  std::wstring localized_string;
-
-  UINT message_id = base::checked_cast<UINT>(base_message_id +
-                                             GetLanguageSelector().offset());
+  const auto& language_selector = GetLanguageSelector();
+  const auto language_offset = language_selector.offset();
+  const UINT message_id = base::checked_cast<UINT>(
+      base::CheckAdd(base_message_id, language_offset).ValueOrDie());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
-    localized_string = std::wstring(image->achString, image->nLength);
-  } else {
-    NOTREACHED() << "Unable to find resource id " << message_id;
+    return std::wstring(image->achString, image->nLength);
   }
 
-  return localized_string;
+  // Debugging aid for https://crbug.com/1478933.
+  base::debug::Alias(&base_message_id);
+  base::debug::Alias(&language_offset);
+  base::debug::Alias(&message_id);
+  DEBUG_ALIAS_FOR_WCHARCSTR(selected_translation,
+                            language_selector.selected_translation().c_str(),
+                            16);
+  NOTREACHED() << "Unable to find resource id " << message_id;
+
+  return std::wstring();
 }
 
 // Here we generate the url spec with the Microsoft res:// scheme which is
