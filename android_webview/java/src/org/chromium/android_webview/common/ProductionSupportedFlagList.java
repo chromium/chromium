@@ -328,6 +328,9 @@ public final class ProductionSupportedFlagList {
                             + "for commit to finish on the compositor thread."),
             Flag.baseFeature(CcFeatures.USE_DMSAA_FOR_TILES,
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
+            Flag.baseFeature(CcFeatures.USE_DMSAA_FOR_TILES_ANDROID_GL,
+                    "Switches skia to use DMSAA instead of MSAA for tile raster"
+                            + " on Android GL backend."),
             Flag.baseFeature(BlinkFeatures.CSS_PAINTING_FOR_SPELLING_GRAMMAR_ERRORS,
                     "Use the new CSS-based painting for spelling and grammar errors"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
