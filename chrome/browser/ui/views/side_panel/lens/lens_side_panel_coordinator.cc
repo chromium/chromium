@@ -207,7 +207,8 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
           "LensUnifiedSidePanel.LensQuery_SidePanelOpenNonLens"));
     }
 
-    side_panel_coordinator->Show(SidePanelEntry::Id::kLens);
+    side_panel_coordinator->Show(SidePanelEntry::Id::kLens,
+                                 SidePanelOpenTrigger::kLensContextMenu);
   } else {
     base::RecordAction(base::UserMetricsAction(
         "LensUnifiedSidePanel.LensQuery_SidePanelOpenLens"));
