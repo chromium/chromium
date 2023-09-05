@@ -4200,6 +4200,8 @@ message CertProvBackendError {
     CA_UNAVAILABLE = 8;
     // The CA exhibited an internal server error.
     CA_FAILURE = 9;
+    // The referenced certificate provisioning profile does not exist.
+    PROFILE_NOT_FOUND = 10;
   }
 
   // The specific error type.

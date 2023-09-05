@@ -194,6 +194,8 @@ void CertProvisioningSchedulerImpl::ScheduleRetry(
     const CertProfileId& profile_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // TODO: b/299054905 - Instead of using a hardcoded delay time, trigger a
+  // policy refresh and restart workers when policies have been applied.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CertProvisioningSchedulerImpl::UpdateOneWorkerImpl,

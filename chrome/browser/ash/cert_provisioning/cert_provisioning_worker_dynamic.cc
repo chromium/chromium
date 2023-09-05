@@ -876,7 +876,11 @@ void CertProvisioningWorkerDynamic::ProcessResponseErrors(
     return;
   }
 
-  if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA) {
+  if (backend_error.error() == em::CertProvBackendError::INCONSISTENT_DATA ||
+      backend_error.error() == em::CertProvBackendError::PROFILE_NOT_FOUND) {
+    // Report both INCONSISTENT_DATA and PROFILE_NOT_FOUND as
+    // kInconsistentDataError because both mean that the locally-cached policy
+    // does not match the server's database.
     LOG(ERROR) << "Server response contains error: " << backend_error.error()
                << " for profile ID: " << cert_profile_.profile_id
                << " in state: "

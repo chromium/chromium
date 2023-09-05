@@ -1664,6 +1664,51 @@ TEST_F(CertProvisioningWorkerDynamicTest, InconsistentDataErrorHandling) {
   VerifyDeleteKeyCalledOnce(kCertScope);
 }
 
+TEST_F(CertProvisioningWorkerDynamicTest, ProfileNotFoundErrorHandling) {
+  const CertScope kCertScope = CertScope::kUser;
+  CertProfile cert_profile(kCertProfileId, kCertProfileName,
+                           kCertProfileVersion,
+                           /*is_va_enabled=*/true, kCertProfileRenewalPeriod,
+                           ProtocolVersion::kDynamic);
+  const CertProvisioningClient::ProvisioningProcess provisioning_process(
+      kCertScope, kCertProfileId, kCertProfileVersion, GetPublicKeyBin());
+
+  MockTpmChallengeKeySubtle* mock_tpm_challenge_key = PrepareTpmChallengeKey();
+  auto worker = CertProvisioningWorkerFactory::Get()->Create(
+      kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
+      &cert_provisioning_client_, MakeInvalidator(), GetStateChangeCallback(),
+      GetResultCallback());
+
+  EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
+      .Times(AtLeast(1));
+  {
+    testing::InSequence seq;
+
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
+
+    EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
+                 base::unexpected(BackendError(
+                     em::CertProvBackendError::PROFILE_NOT_FOUND)));
+
+    // PROFILE_NOT_FOUND is also mapped to kInconsistentDataError on the client.
+    EXPECT_CALL(callback_observer_,
+                Callback(cert_profile,
+                         CertProvisioningWorkerState::kInconsistentDataError))
+        .Times(1);
+  }
+
+  worker->DoStep();
+  FastForwardBy(base::Seconds(1));
+
+  VerifyDeleteKeyCalledOnce(kCertScope);
+}
+
 // Checks that when the server returns TEMPORARY_UNAVAILABLE status code, the
 // worker will automatically retry a request using exponential backoff strategy.
 TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategy) {
