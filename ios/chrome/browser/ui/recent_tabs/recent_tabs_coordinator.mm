@@ -258,7 +258,7 @@
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
-        didFinishWithDeclinedByUser:(BOOL)declined {
+                didFinishWithResult:(SigninCoordinatorResult)result {
   _historySyncPopupCoordinator.delegate = nil;
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator = nil;

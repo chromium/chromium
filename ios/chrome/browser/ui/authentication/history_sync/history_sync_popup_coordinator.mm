@@ -63,7 +63,7 @@
     [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
                                             accessPoint:_accessPoint];
     [self.delegate historySyncPopupCoordinator:self
-                   didFinishWithDeclinedByUser:NO];
+                           didFinishWithResult:SigninCoordinatorResultDisabled];
     return;
   }
 
@@ -106,7 +106,7 @@
                  completion:(ProceduralBlock)completion {
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock dismissCompletion = ^() {
-    [weakSelf viewWasDismissedWithDeclinedByUser:NO];
+    [weakSelf viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
     if (completion) {
       completion();
     }
@@ -125,8 +125,9 @@
       _navigationController.presentationController.delegate = nil;
       _navigationController = nil;
       // This coordinator is now done, and its owner can now stop it.
-      [self.delegate historySyncPopupCoordinator:self
-                     didFinishWithDeclinedByUser:NO];
+      [self.delegate
+          historySyncPopupCoordinator:self
+                  didFinishWithResult:SigninCoordinatorResultInterrupted];
       if (completion) {
         completion();
       }
@@ -136,18 +137,17 @@
 
 #pragma mark - Private
 
-- (void)viewWasDismissedWithDeclinedByUser:(BOOL)declined {
+- (void)viewWasDismissedWithResult:(SigninCoordinatorResult)result {
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
 
-  if (declined && _dedicatedSignInDone) {
+  if (result != SigninCoordinatorResultSuccess && _dedicatedSignInDone) {
     _authenticationService->SignOut(
         signin_metrics::ProfileSignout::
             kUserDeclinedHistorySyncAfterDedicatedSignIn,
         /*force_clear_browsing_data=*/false, nil);
   }
-  [self.delegate historySyncPopupCoordinator:self
-                 didFinishWithDeclinedByUser:declined];
+  [self.delegate historySyncPopupCoordinator:self didFinishWithResult:result];
 }
 
 #pragma mark - HistorySyncCoordinatorDelegate
@@ -158,12 +158,14 @@
   CHECK(_navigationController);
   [_historySyncCoordinator stop];
   _historySyncCoordinator = nil;
+  SigninCoordinatorResult result = declined
+                                       ? SigninCoordinatorResultCanceledByUser
+                                       : SigninCoordinatorResultSuccess;
   __weak __typeof(self) weakSelf = self;
   [_navigationController
       dismissViewControllerAnimated:YES
                          completion:^() {
-                           [weakSelf
-                               viewWasDismissedWithDeclinedByUser:declined];
+                           [weakSelf viewWasDismissedWithResult:result];
                          }];
 }
 
@@ -177,7 +179,7 @@
   _historySyncCoordinator = nil;
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
-  [self viewWasDismissedWithDeclinedByUser:YES];
+  [self viewWasDismissedWithResult:SigninCoordinatorResultCanceledByUser];
 }
 
 @end
