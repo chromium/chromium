@@ -32,6 +32,7 @@ class AwContentsLifecycleNotifier {
   };
 
   static AwContentsLifecycleNotifier& GetInstance();
+  static void InitForTesting();
 
   // The |onLoseForegroundCallback| will be invoked after all observers when app
   // lose foreground.

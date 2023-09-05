@@ -213,4 +213,9 @@ AwContentsLifecycleNotifier::GetAwContentsData(const AwContents* aw_contents) {
   return &aw_contents_to_data_.at(aw_contents);
 }
 
+void AwContentsLifecycleNotifier::InitForTesting() {  // IN-TEST
+  Java_AwContentsLifecycleNotifier_initialize(        // IN-TEST
+      AttachCurrentThread());
+}
+
 }  // namespace android_webview

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.StrictMode;
@@ -196,6 +197,9 @@ public final class AwBrowserProcess {
 
                 PowerMonitor.create();
                 PlatformServiceBridge.getInstance().setSafeBrowsingHandler();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    AwContentsLifecycleNotifier.initialize();
+                }
             });
         }
     }
