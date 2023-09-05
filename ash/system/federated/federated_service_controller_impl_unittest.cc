@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/services/federated/public/cpp/fake_service_connection.h"
 #include "chromeos/ash/services/federated/public/cpp/service_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
