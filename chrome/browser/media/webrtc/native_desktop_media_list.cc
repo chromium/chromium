@@ -536,13 +536,13 @@ void NativeDesktopMediaList::Worker::OnCaptureResult(
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  auto index = refresh_thumbnails_state_->next_source_index - 1;
+  const size_t index = refresh_thumbnails_state_->next_source_index - 1;
   DCHECK(index < refresh_thumbnails_state_->source_ids.size());
   DesktopMediaID id = refresh_thumbnails_state_->source_ids[index];
 
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
-  auto frame_hash = GetFrameHash(frame.get());
+  const absl::optional<size_t> frame_hash = GetFrameHash(frame.get());
   if (frame_hash) {
     refresh_thumbnails_state_->new_image_hashes[id] = *frame_hash;
 
