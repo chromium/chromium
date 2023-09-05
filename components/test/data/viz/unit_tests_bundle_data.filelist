@@ -78,6 +78,7 @@
 //components/test/data/viz/enlarged_texture_on_threshold.png
 //components/test/data/viz/filter_with_giant_crop_rect.png
 //components/test/data/viz/force_anti_aliasing_off.png
+//components/test/data/viz/force_anti_aliasing_off_graphite.png
 //components/test/data/viz/four_blue_green_checkers.png
 //components/test/data/viz/four_blue_green_checkers_linear.png
 //components/test/data/viz/green.png
@@ -96,9 +97,11 @@
 //components/test/data/viz/intersecting_blue_green_squares.png
 //components/test/data/viz/intersecting_blue_green_squares_video.png
 //components/test/data/viz/intersecting_blue_green_squares_video_angle_metal.png
+//components/test/data/viz/intersecting_blue_green_squares_video_graphite.png
 //components/test/data/viz/intersecting_flipped_blue_green_half_size_rectangles.png
 //components/test/data/viz/intersecting_light_dark_squares_video.png
 //components/test/data/viz/intersecting_light_dark_squares_video_angle_metal.png
+//components/test/data/viz/intersecting_light_dark_squares_video_graphite.png
 //components/test/data/viz/intersecting_non_flipped_blue_green_half_size_rectangles.png
 //components/test/data/viz/invert_backdrop_filter_1x.png
 //components/test/data/viz/invert_backdrop_filter_1x_graphite.png
@@ -243,6 +246,7 @@
 //components/test/data/viz/touch_region_light.json
 //components/test/data/viz/translated_blue_green_alpha.png
 //components/test/data/viz/translucent_quads_no_aa.png
+//components/test/data/viz/translucent_quads_no_aa_graphite.png
 //components/test/data/viz/translucent_rectangles.png
 //components/test/data/viz/trilinear_filtering.png
 //components/test/data/viz/trilinear_filtering_angle_metal.png
