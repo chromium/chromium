@@ -14,7 +14,7 @@ import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_settings_card.js';
-import '../os_search_page/search_and_assistant_card.js';
+import '../os_search_page/search_and_assistant_settings_card.js';
 import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

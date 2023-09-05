@@ -166,13 +166,14 @@ suite('<settings-system-preferences-page>', () => {
   });
 
   suite('Search & Assistant subsection', () => {
-    test('Search and Assistant card is visible', async () => {
+    test('Search and Assistant settings card is visible', async () => {
       await createPage();
 
-      const card =
-          page.shadowRoot!.querySelector('settings-search-and-assistant-card');
+      const searchAndAssistantSettingsCard =
+          page.shadowRoot!.querySelector('search-and-assistant-settings-card');
       assertTrue(
-          isVisible(card), 'Search and Assistant card should be visible.');
+          isVisible(searchAndAssistantSettingsCard),
+          'Search and Assistant settings card should be visible.');
     });
 
     test('Search subpage is visible if quick answers is enabled', async () => {

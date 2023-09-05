@@ -22,14 +22,14 @@ suite('<os-settings-search-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Search and Assistant card should be visible', async () => {
+  test('Search and Assistant settings card should be visible', async () => {
     createPage();
 
     Router.getInstance().navigateTo(routes.OS_SEARCH);
     await flushTasks();
 
-    const searchAndAssistantCard =
-        page.shadowRoot!.querySelector('settings-search-and-assistant-card');
-    assertTrue(isVisible(searchAndAssistantCard));
+    const searchAndAssistantSettingsCard =
+        page.shadowRoot!.querySelector('search-and-assistant-settings-card');
+    assertTrue(isVisible(searchAndAssistantSettingsCard));
   });
 });

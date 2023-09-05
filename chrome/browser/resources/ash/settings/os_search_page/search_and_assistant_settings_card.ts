@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-search-and-assistant-card' is the card element containing search
+ * 'search-and-assistant-settings-card' is the card element containing search
  * and assistant settings.
  */
 
@@ -24,15 +24,15 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
-import {getTemplate} from './search_and_assistant_card.html.js';
+import {getTemplate} from './search_and_assistant_settings_card.html.js';
 
-const SettingsSearchAndAssistantCardElementBase =
+const SearchAndAssistantSettingsCardElementBase =
     DeepLinkingMixin(RouteOriginMixin(I18nMixin(PolymerElement)));
 
-export class SettingsSearchAndAssistantCardElement extends
-    SettingsSearchAndAssistantCardElementBase {
+export class SearchAndAssistantSettingsCardElement extends
+    SearchAndAssistantSettingsCardElementBase {
   static get is() {
-    return 'settings-search-and-assistant-card' as const;
+    return 'search-and-assistant-settings-card' as const;
   }
 
   static get template() {
@@ -121,11 +121,11 @@ export class SettingsSearchAndAssistantCardElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SettingsSearchAndAssistantCardElement.is]:
-        SettingsSearchAndAssistantCardElement;
+    [SearchAndAssistantSettingsCardElement.is]:
+        SearchAndAssistantSettingsCardElement;
   }
 }
 
 customElements.define(
-    SettingsSearchAndAssistantCardElement.is,
-    SettingsSearchAndAssistantCardElement);
+    SearchAndAssistantSettingsCardElement.is,
+    SearchAndAssistantSettingsCardElement);

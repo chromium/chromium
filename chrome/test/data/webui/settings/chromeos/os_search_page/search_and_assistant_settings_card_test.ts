@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OsSettingsRoutes, Router, routes, SettingsSearchAndAssistantCardElement} from 'chrome://os-settings/os_settings.js';
+import {OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,22 +15,23 @@ interface SubpageTriggerData {
   routeName: keyof OsSettingsRoutes;
 }
 
-suite('<settings-search-and-assistant-card>', () => {
+suite('<search-and-assistant-settings-card>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
   const route =
       isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.OS_SEARCH;
 
-  let card: SettingsSearchAndAssistantCardElement;
+  let searchAndAssistantSettingsCard: SearchAndAssistantSettingsCardElement;
 
   function createSearchAndAssistantCard() {
-    card = document.createElement('settings-search-and-assistant-card');
-    document.body.appendChild(card);
+    searchAndAssistantSettingsCard =
+        document.createElement('search-and-assistant-settings-card');
+    document.body.appendChild(searchAndAssistantSettingsCard);
     flush();
   }
 
   teardown(() => {
-    card.remove();
+    searchAndAssistantSettingsCard.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -45,7 +46,8 @@ suite('<settings-search-and-assistant-card>', () => {
     Router.getInstance().navigateTo(route, params);
 
     const settingsSearchEngine =
-        card.shadowRoot!.querySelector('settings-search-engine');
+        searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+            'settings-search-engine');
     assertTrue(!!settingsSearchEngine);
 
     const browserSearchSettingsLink =
@@ -86,7 +88,8 @@ suite('<settings-search-and-assistant-card>', () => {
           Router.getInstance().navigateTo(route);
 
           const subpageTrigger =
-              card.shadowRoot!.querySelector<HTMLElement>(triggerSelector);
+              searchAndAssistantSettingsCard.shadowRoot!
+                  .querySelector<HTMLElement>(triggerSelector);
           assertTrue(!!subpageTrigger);
 
           // Sub-page trigger navigates to subpage for route
@@ -97,10 +100,11 @@ suite('<settings-search-and-assistant-card>', () => {
           const popStateEventPromise = eventToPromise('popstate', window);
           Router.getInstance().navigateToPreviousRoute();
           await popStateEventPromise;
-          await waitAfterNextRender(card);
+          await waitAfterNextRender(searchAndAssistantSettingsCard);
 
           assertEquals(
-              subpageTrigger, card.shadowRoot!.activeElement,
+              subpageTrigger,
+              searchAndAssistantSettingsCard.shadowRoot!.activeElement,
               `${triggerSelector} should be focused.`);
         });
   });

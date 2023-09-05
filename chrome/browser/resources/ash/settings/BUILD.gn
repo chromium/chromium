@@ -295,7 +295,7 @@ build_webui("build") {
     "os_search_page/google_assistant_subpage.ts",
     "os_search_page/os_search_page.ts",
     "os_search_page/os_search_selection_dialog.ts",
-    "os_search_page/search_and_assistant_card.ts",
+    "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",
     "os_search_page/search_subpage.ts",
     "os_settings_main/os_settings_main.ts",
