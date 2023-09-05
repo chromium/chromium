@@ -528,6 +528,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES_LOW_USAGE,
                     "This flag allows non-standard CSS appearance values with page load "
                             + "usage < 0.001% and shows a deprecation warning."),
+            Flag.baseFeature(ContentFeatures.SERVICE_WORKER_STATIC_ROUTER,
+                    "Enables Service Worker static routing API."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
