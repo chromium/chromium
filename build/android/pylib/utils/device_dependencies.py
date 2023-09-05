@@ -48,7 +48,7 @@ _EXCLUSIONS = [
     re.compile(r'.*third_party/proguard/.*'),
 
     # Our tests don't need these.
-    re.compile(r'.*/devtools-frontend/src/front_end/.*'),
+    re.compile(r'.*/devtools-frontend/.*front_end/.*'),
 
     # Build artifacts:
     re.compile(r'.*\.stamp'),
