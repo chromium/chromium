@@ -391,7 +391,7 @@ class GaiaCookieManagerService
   virtual void StartGaiaLogOut();
 
   // Starts setting account using multilogin endpoint.
-  void StartSetAccounts();
+  virtual void StartSetAccounts();
 
   // Start the next request, if needed.
   void HandleNextRequest();
