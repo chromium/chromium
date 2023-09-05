@@ -168,7 +168,9 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibility) {
+// Flaky, see crbug.com/1477361
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+                       DISABLED_PdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
@@ -184,14 +186,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest, PdfAccessibility) {
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-// Flaky, see crbug.com/1477773
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PdfAccessibilityEnableLater DISABLED_PdfAccessibilityEnableLater
-#else
-#define MAYBE_PdfAccessibilityEnableLater PdfAccessibilityEnableLater
-#endif
+// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_PdfAccessibilityEnableLater) {
+                       DISABLED_PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -209,15 +206,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_MULTILINE_STREQ(kExpectedPDFAXTree, ax_tree_dump);
 }
 
-// Flaky, see crbug.com/1228762
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PdfAccessibilityInIframe DISABLED_PdfAccessibilityInIframe
-#else
-#define MAYBE_PdfAccessibilityInIframe PdfAccessibilityInIframe
-#endif
-
+// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_PdfAccessibilityInIframe) {
+                       DISABLED_PdfAccessibilityInIframe) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html")));
@@ -280,14 +271,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(found);
 }
 
-// Flaky, see crbug.com/1477773
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PdfAccessibilitySelection DISABLED_PdfAccessibilitySelection
-#else
-#define MAYBE_PdfAccessibilitySelection PdfAccessibilitySelection
-#endif
+// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_PdfAccessibilitySelection) {
+                       DISABLED_PdfAccessibilitySelection) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest);
@@ -334,16 +320,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
-// TODO(crbug.com/1477644): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PdfAccessibilityContextMenuAction \
-  DISABLED_PdfAccessibilityContextMenuAction
-#else
-#define MAYBE_PdfAccessibilityContextMenuAction \
-  PdfAccessibilityContextMenuAction
-#endif
+// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_PdfAccessibilityContextMenuAction) {
+                       DISABLED_PdfAccessibilityContextMenuAction) {
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =
@@ -399,16 +378,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   EXPECT_EQ(kExepectedPDFSelection, selected_text);
 }
 
-// Flaky, see crbug.com/1477773
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf \
-  DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf
-#else
-#define MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf \
-  RecordHasAccessibleTextToUmaWithAccessiblePdf
-#endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+// Flaky, see crbug.com/1477361
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionAccessibilityTest,
+    DISABLED_MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_view);
@@ -428,8 +401,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
                               /*expected_count=*/1);
 }
 
+// Flaky, see crbug.com/1477361
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       RecordInaccessiblePdfUKM) {
+                       DISABLED_RecordInaccessiblePdfUKM) {
   MimeHandlerViewGuest* guest_view =
       LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
           "/pdf/accessibility/hello-world-in-image.pdf"));
@@ -457,8 +431,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
   ASSERT_TRUE(ukm_recorded.Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
-                       RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
+// Flaky, see crbug.com/1477361
+IN_PROC_BROWSER_TEST_F(
+    PDFExtensionAccessibilityTest,
+    DISABLED_RecordHasAccessibleTextToUmaWithInaccessiblePdf) {
   MimeHandlerViewGuest* guest_view =
       LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
           "/pdf/accessibility/hello-world-in-image.pdf"));
