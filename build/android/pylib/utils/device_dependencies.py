@@ -20,6 +20,7 @@ _EXCLUSIONS = [
     re.compile(r'.*\.apk'),  # Should be installed separately.
     re.compile(r'.*\.jar'),  # Never need java intermediates.
     re.compile(r'.*\.crx'),  # Used by download_from_google_storage.
+    re.compile(r'.*\.wpr'),  # Web-page-relay files needed only on host.
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
     # Test filter files:
