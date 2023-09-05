@@ -46,7 +46,7 @@ BASE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem,
 // that open the companion.
 BASE_FEATURE(kCompanionEnableNewBadgesInContextMenu,
              "CompanionEnableNewBadgesInContextMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace switches {
