@@ -652,6 +652,21 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
   EXPECT_FALSE(tasks[0].is_file_extension_match);
 }
 
+TEST_F(AppServiceFileTasksTestEnabled,
+       FindAppServiceArcAppWithExtensionMatching) {
+  // Create an app with a text file filter.
+  std::string package_name = "com.example.xyzViewer";
+  std::string activity = "xyzViewerActivity";
+  std::string app_id = AddArcAppWithIntentFilter(
+      package_name, activity,
+      CreateExtensionTypeFileIntentFilter(apps_util::kIntentActionView, "xyz"));
+  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks({{"foo.xyz"}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(app_id, tasks[0].task_descriptor.app_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_TRUE(tasks[0].is_file_extension_match);
+}
+
 // Enable MV3 File Handlers.
 class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
  public:
