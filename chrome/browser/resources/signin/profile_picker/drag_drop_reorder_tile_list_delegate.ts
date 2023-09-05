@@ -466,6 +466,7 @@ export class DragDropReorderTileListDelegate {
       tile.classList.remove(SHIFTING_TAG);
       tile.style.removeProperty('transition');
       tile.style.removeProperty('transform');
+      tile.style.removeProperty('z-index');
     }
   }
 
