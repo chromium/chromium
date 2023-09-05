@@ -26,6 +26,9 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
+import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -36,6 +39,7 @@ import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.url.GURL;
 
+import java.util.HashMap;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -85,8 +89,12 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final BooleanSupplier mIsPageInsightsHubEnabled;
     private final Handler mHandler;
     private final Runnable mAutoTriggerRunnable = this::autoTriggerPageInsightsFromTimer;
+    private final HashMap<String, Object> mSurfaceRendererContextValues =
+            PageInsightsActionHandlerImpl.createContextValues();
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
+    @Nullable
+    private PageInsightsSurfaceRenderer mSurfaceRenderer;
 
     private boolean mAutoTriggerReady;
 
@@ -240,9 +248,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         mSheetController.expandSheet();
     }
 
-    // TODO(edmundw): Implement the complete function
     private View getXSurfaceView(ByteString elementsOutput) {
-        return new View(mContext);
+        return getSurfaceRenderer().render(
+                elementsOutput.toByteArray(), mSurfaceRendererContextValues);
     }
 
     @VisibleForTesting
@@ -340,5 +348,16 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     View getContainerForTesting() {
         return mSheetContainer;
+    }
+
+    private PageInsightsSurfaceRenderer getSurfaceRenderer() {
+        if (mSurfaceRenderer != null) {
+            return mSurfaceRenderer;
+        }
+        PageInsightsSurfaceScope surfaceScope =
+                XSurfaceProcessScopeProvider.getProcessScope().obtainPageInsightsSurfaceScope(
+                        new PageInsightsSurfaceScopeDependencyProviderImpl(mContext));
+        mSurfaceRenderer = surfaceScope.provideSurfaceRenderer();
+        return mSurfaceRenderer;
     }
 }

@@ -7,11 +7,13 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActionHandlerImpl.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoader.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
+    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSurfaceScopeDependencyProviderImpl.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java",
   ]
 
@@ -30,6 +32,8 @@ android_library("java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/xsurface:java",
+    "//chrome/browser/xsurface_provider:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/widget/android:java",
@@ -86,6 +90,8 @@ robolectric_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/xsurface:java",
+    "//chrome/browser/xsurface_provider:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/bottomsheet/android/test:java",
@@ -115,6 +121,8 @@ android_library("unit_device_javatests") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/xsurface:java",
+    "//chrome/browser/xsurface_provider:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",

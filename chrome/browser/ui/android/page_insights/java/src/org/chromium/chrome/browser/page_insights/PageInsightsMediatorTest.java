@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.page_insights;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,10 +20,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
+
+import com.google.protobuf.ByteString;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,6 +51,10 @@ import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekCond
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
 import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceRenderer;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
+import org.chromium.chrome.browser.xsurface_provider.XSurfaceProcessScopeProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -60,6 +68,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInsightsMediatorTest {
     private static final String TEST_CHILD_PAGE_TITLE = "People also View";
+    private static final byte[] TEST_FEED_ELEMENTS_OUTPUT = new byte[123];
+    private static final byte[] TEST_CHILD_ELEMENTS_OUTPUT = new byte[456];
 
     @Mock
     private LayoutInflater mLayoutInflater;
@@ -79,6 +89,12 @@ public class PageInsightsMediatorTest {
     private Tab mTab;
     @Mock
     private PageInsightsDataLoader mPageInsightsDataLoader;
+    @Mock
+    private ProcessScope mProcessScope;
+    @Mock
+    private PageInsightsSurfaceScope mSurfaceScope;
+    @Mock
+    private PageInsightsSurfaceRenderer mSurfaceRenderer;
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserver;
@@ -92,6 +108,11 @@ public class PageInsightsMediatorTest {
         MockitoAnnotations.initMocks(this);
         Context mContext = ContextUtils.getApplicationContext();
         mShadowLooper = ShadowLooper.shadowMainLooper();
+        XSurfaceProcessScopeProvider.setProcessScopeForTesting(mProcessScope);
+        when(mProcessScope.obtainPageInsightsSurfaceScope(
+                     any(PageInsightsSurfaceScopeDependencyProviderImpl.class)))
+                .thenReturn(mSurfaceScope);
+        when(mSurfaceScope.provideSurfaceRenderer()).thenReturn(mSurfaceRenderer);
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
         when(mPageInsightsDataLoader.getData()).thenReturn(getPageInsightsMetadata());
         mMediator = new PageInsightsMediator(mContext, mMockTabProvider, mBottomSheetController,
@@ -134,13 +155,14 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
     public void testAutoTrigger_enoughDuration_showsBottomSheet() throws Exception {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
         FeatureList.setTestValues(testValues);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
 
         mMediator.onLoadStopped(mTab, true);
 
@@ -160,18 +182,23 @@ public class PageInsightsMediatorTest {
                         .getContentView()
                         .findViewById(R.id.page_insights_feed_content)
                         .getVisibility());
+        assertEquals(feedView,
+                ((FrameLayout) mMediator.getSheetContent().getContentView().findViewById(
+                         R.id.page_insights_feed_content))
+                        .getChildAt(0));
         verify(mBottomSheetController, never()).expandSheet();
     }
 
     @Test
     @MediumTest
-    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
     public void testOpenInExpandedState_showsBottomSheet() throws Exception {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
         FeatureList.setTestValues(testValues);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
 
         setBackgroundDrawable();
         mMediator.openInExpandedState();
@@ -187,18 +214,23 @@ public class PageInsightsMediatorTest {
                         .getContentView()
                         .findViewById(R.id.page_insights_feed_content)
                         .getVisibility());
+        assertEquals(feedView,
+                ((FrameLayout) mMediator.getSheetContent().getContentView().findViewById(
+                         R.id.page_insights_feed_content))
+                        .getChildAt(0));
         verify(mBottomSheetController).expandSheet();
     }
 
     @Test
     @MediumTest
-    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
     public void changeToChildPage_childPageOpened() throws Exception {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
         FeatureList.setTestValues(testValues);
+        View childView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_CHILD_ELEMENTS_OUTPUT), any())).thenReturn(childView);
 
         mMediator.changeToChildPage(1);
 
@@ -212,6 +244,10 @@ public class PageInsightsMediatorTest {
                         .getContentView()
                         .findViewById(R.id.page_insights_child_content)
                         .getVisibility());
+        assertEquals(childView,
+                ((FrameLayout) mMediator.getSheetContent().getContentView().findViewById(
+                         R.id.page_insights_child_content))
+                        .getChildAt(0));
         TextView childPageTitle = mMediator.getSheetContent().getToolbarView().findViewById(
                 R.id.page_insights_child_title);
         assertEquals(childPageTitle.getText(), TEST_CHILD_PAGE_TITLE);
@@ -221,10 +257,12 @@ public class PageInsightsMediatorTest {
         Page childPage = Page.newBuilder()
                                  .setId(Page.PageID.PEOPLE_ALSO_VIEW)
                                  .setTitle(TEST_CHILD_PAGE_TITLE)
+                                 .setElementsOutput(ByteString.copyFrom(TEST_CHILD_ELEMENTS_OUTPUT))
                                  .build();
         Page feedPage = Page.newBuilder()
                                 .setId(Page.PageID.SINGLE_FEED_ROOT)
                                 .setTitle("Related Insights")
+                                .setElementsOutput(ByteString.copyFrom(TEST_FEED_ELEMENTS_OUTPUT))
                                 .build();
         AutoPeekConditions mAutoPeekConditions = AutoPeekConditions.newBuilder()
                                                          .setConfidence(0.51f)
