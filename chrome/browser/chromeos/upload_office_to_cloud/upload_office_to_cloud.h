@@ -18,23 +18,33 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
 
 namespace cloud_upload {
 
+constexpr char kCloudUploadPolicyAllowed[] = "allowed";
+constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
+constexpr char kCloudUploadPolicyAutomated[] = "automated";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// Returns true if `kUploadOfficeToCloudForEnteprise` is enabled and
-// `prefs::kMicrosoftOfficeCloudUpload` is set to `disallowed`.
-bool IsMicrosoftOfficeCloudUploadDisabledByPolicy(Profile* profile);
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
+// IsEligibleAndEnabledUploadOfficeToCloud() is true.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kMicrosoftOfficeCloudUpload` is set to `allowed` or `automated`.
+bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile);
 
-// Returns true if `kUploadOfficeToCloudForEnteprise` is enabled and
-// `prefs::kMicrosoftOfficeCloudUpload` is set to `automated`.
-bool IsMicrosoftOfficeCloudUploadAutomatedByPolicy(Profile* profile);
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kMicrosoftOfficeCloudUpload` is set to `automated`.
+bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile);
 
-// Returns true if `kUploadOfficeToCloudForEnteprise` is enabled and
-// `prefs::kGoogleWorkspaceCloudUpload` is set to `disallowed`.
-bool IsGoogleWorkspaceCloudUploadDisabledByPolicy(Profile* profile);
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns true if
+// IsEligibleAndEnabledUploadOfficeToCloud() is true.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kGoogleWorkspaceCloudUpload` is set to `allowed` or `automated`.
+bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile);
 
-// Returns true if `kUploadOfficeToCloudForEnteprise` is enabled and
-// `prefs::kGoogleWorkspaceCloudUpload` is set to `automated`.
-bool IsGoogleWorkspaceCloudUploadAutomatedByPolicy(Profile* profile);
+// If `kUploadOfficeToCloudForEnterprise` is disabled, returns false.
+// Otherwise returns true if IsEligibleAndEnabledUploadOfficeToCloud() is true
+// and `prefs::kGoogleWorkspaceCloudUpload` is set to `automated`.
+bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile);
 
 }  // namespace cloud_upload
 

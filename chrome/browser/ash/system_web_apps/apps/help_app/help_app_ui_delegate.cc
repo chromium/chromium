@@ -138,7 +138,7 @@ PrefService* ChromeHelpAppUIDelegate::GetLocalState() {
 
 void ChromeHelpAppUIDelegate::LaunchMicrosoft365Setup() {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  if (!chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
+  if (!chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile)) {
     return;
   }
   ash::cloud_upload::LaunchMicrosoft365Setup(

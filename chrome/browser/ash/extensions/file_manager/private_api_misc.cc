@@ -516,7 +516,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   // Show Connect To OneDrive dialog only when mounting ODFS for the first time.
   // There will already a ODFS mount if the user is requesting a new mount to
   // replace the unauthenticated one.
-  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+  if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
       params->provider_id == extension_misc::kODFSExtensionId &&
       first_file_system) {
     // Get Files App window, if it exists.

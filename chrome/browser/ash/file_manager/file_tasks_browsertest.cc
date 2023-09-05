@@ -64,6 +64,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -87,8 +88,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 namespace {
 
 using blink::features::kFileHandlingAPI;
@@ -890,6 +890,73 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccountWithEnterpriseFlag,
   ASSERT_TRUE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
+
+class NonManagedAccountWithEnterpriseFlagAndPrefs
+    : public NonManagedAccountWithEnterpriseFlag,
+      public testing::WithParamInterface<
+          std::tuple<base::StringPiece, base::StringPiece>> {
+ public:
+  void SetUpOnMainThread() override {
+    TestAccountBrowserTest::SetUpOnMainThread();
+    app_service_test_.SetUp(browser()->profile());
+  }
+
+ private:
+  apps::AppServiceTest app_service_test_;
+};
+
+// Tests that GoogleWorkspace and Microsoft365 tasks are only present in the
+// list of file tasks if the corresponding prefs allow it.
+IN_PROC_BROWSER_TEST_P(NonManagedAccountWithEnterpriseFlagAndPrefs,
+                       GoogleWorkspaceAndMicrosoft365Tasks) {
+  auto* profile = browser()->profile();
+
+  auto [google_workspace_cloud_upload, microsoft_office_cloud_upload] =
+      GetParam();
+  profile->GetPrefs()->SetString(prefs::kGoogleWorkspaceCloudUpload,
+                                 google_workspace_cloud_upload);
+  profile->GetPrefs()->SetString(prefs::kMicrosoftOfficeCloudUpload,
+                                 microsoft_office_cloud_upload);
+
+  for (const auto& extension_group :
+       {WordGroupExtensions(), ExcelGroupExtensions(),
+        PowerPointGroupExtensions()}) {
+    for (const auto& extension : extension_group) {
+      base::FilePath test_file_path =
+          web_app::CreateTestFileWithExtension(extension);
+
+      std::vector<FullTaskDescriptor> tasks =
+          file_manager::test::GetTasksForFile(profile, test_file_path);
+
+      const size_t google_workspace_task_count = base::ranges::count_if(
+          tasks, &IsWebDriveOfficeTask, &FullTaskDescriptor::task_descriptor);
+      EXPECT_EQ(
+          google_workspace_task_count,
+          chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(profile)
+              ? 1U
+              : 0U);
+
+      const size_t microsoft_office_task_count = base::ranges::count_if(
+          tasks, &IsOpenInOfficeTask, &FullTaskDescriptor::task_descriptor);
+      EXPECT_EQ(
+          microsoft_office_task_count,
+          chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile)
+              ? 1U
+              : 0U);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /**/,
+    NonManagedAccountWithEnterpriseFlagAndPrefs,
+    testing::Combine(
+        testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
+                        chromeos::cloud_upload::kCloudUploadPolicyAllowed,
+                        chromeos::cloud_upload::kCloudUploadPolicyAutomated),
+        testing::Values(chromeos::cloud_upload::kCloudUploadPolicyDisallowed,
+                        chromeos::cloud_upload::kCloudUploadPolicyAllowed,
+                        chromeos::cloud_upload::kCloudUploadPolicyAutomated)));
 
 // Test that the office PWA file handler is hidden from the available file
 // handlers when opening an office file and the |kUploadOfficeToCloud| flag is
@@ -1863,11 +1930,8 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
 
   // Triggers setup flow.
-  ExecuteFileTask(
-      profile(), open_in_office_task, file_urls, modal_parent,
-      base::BindOnce(
-          [](extensions::api::file_manager_private::TaskResult result,
-             std::string error_message) {}));
+  ExecuteFileTask(profile(), open_in_office_task, file_urls, modal_parent,
+                  base::DoNothing());
 
   // Wait for setup flow dialog to open.
   navigation_observer_dialog.Wait();
@@ -1879,5 +1943,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     FileTasksPolicyBrowserTest);
 
-}  // namespace file_tasks
-}  // namespace file_manager
+}  // namespace file_manager::file_tasks

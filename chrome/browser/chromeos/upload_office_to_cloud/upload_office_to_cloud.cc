@@ -11,15 +11,20 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
+namespace chromeos {
+
 namespace {
 
-constexpr char kCloudUploadPolicyAllowed[] = "allowed";
-constexpr char kCloudUploadPolicyDisallowed[] = "disallowed";
-constexpr char kCloudUploadPolicyAutomated[] = "automated";
+bool IsPrefValueSetToAllowed(base::StringPiece pref_value) {
+  return pref_value == cloud_upload::kCloudUploadPolicyAllowed ||
+         pref_value == cloud_upload::kCloudUploadPolicyAutomated;
+}
+
+bool IsPrefValueSetToAutomated(base::StringPiece pref_value) {
+  return pref_value == cloud_upload::kCloudUploadPolicyAutomated;
+}
 
 }  // namespace
-
-namespace chromeos {
 
 bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
@@ -49,28 +54,40 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                kCloudUploadPolicyAllowed);
 }
 
-bool IsMicrosoftOfficeCloudUploadDisabledByPolicy(Profile* profile) {
-  return chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
-         profile->GetPrefs()->GetString(prefs::kMicrosoftOfficeCloudUpload) ==
-             kCloudUploadPolicyDisallowed;
+bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
+  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+    return IsEligibleAndEnabledUploadOfficeToCloud(profile);
+  }
+  return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+         IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
+             prefs::kMicrosoftOfficeCloudUpload));
 }
 
-bool IsMicrosoftOfficeCloudUploadAutomatedByPolicy(Profile* profile) {
-  return chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
-         profile->GetPrefs()->GetString(prefs::kMicrosoftOfficeCloudUpload) ==
-             kCloudUploadPolicyAutomated;
+bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
+  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+    return false;
+  }
+  return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+         IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
+             prefs::kMicrosoftOfficeCloudUpload));
 }
 
-bool IsGoogleWorkspaceCloudUploadDisabledByPolicy(Profile* profile) {
-  return chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
-         profile->GetPrefs()->GetString(prefs::kGoogleWorkspaceCloudUpload) ==
-             kCloudUploadPolicyDisallowed;
+bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
+  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+    return IsEligibleAndEnabledUploadOfficeToCloud(profile);
+  }
+  return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+         IsPrefValueSetToAllowed(profile->GetPrefs()->GetString(
+             prefs::kGoogleWorkspaceCloudUpload));
 }
 
-bool IsGoogleWorkspaceCloudUploadAutomatedByPolicy(Profile* profile) {
-  return chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled() &&
-         profile->GetPrefs()->GetString(prefs::kGoogleWorkspaceCloudUpload) ==
-             kCloudUploadPolicyAutomated;
+bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
+  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+    return false;
+  }
+  return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+         IsPrefValueSetToAutomated(profile->GetPrefs()->GetString(
+             prefs::kGoogleWorkspaceCloudUpload));
 }
 
 }  // namespace cloud_upload

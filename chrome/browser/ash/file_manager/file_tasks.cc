@@ -324,6 +324,11 @@ Profile* GetProfileForExtensionTask(Profile* profile,
   return profile;
 }
 
+std::string ToSwaActionId(const std::string& action_id) {
+  return base::StrCat(
+      {ash::file_manager::kChromeUIFileManagerURL, "?", action_id});
+}
+
 void ExecuteTaskAfterMimeTypesCollected(
     Profile* profile,
     const TaskDescriptor& task,
@@ -378,14 +383,21 @@ void PostProcessFoundTasks(Profile* profile,
                               &FullTaskDescriptor::task_descriptor);
     if (it != resulting_tasks->tasks.end()) {
       FullTaskDescriptor office_task(*it);
-      office_task.task_descriptor.action_id =
-          base::StrCat({kChromeUIFileManagerURL, "?", kActionIdOpenInOffice});
-      // A transfer to OneDrive is required for the Office PWA to open files, if
-      // transferring files to OneDrive is restricted, we gray out the
-      // corresponding task.
-      office_task.is_dlp_blocked = policy::dlp::IsFilesTransferBlocked(
-          dlp_source_urls, data_controls::Component::kOneDrive);
-      resulting_tasks->tasks.push_back(office_task);
+      if (!chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(
+              profile)) {
+        resulting_tasks->tasks.erase(it);
+      }
+      if (chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(
+              profile)) {
+        office_task.task_descriptor.action_id =
+            ToSwaActionId(kActionIdOpenInOffice);
+        // A transfer to OneDrive is required for the Office PWA to open
+        // files, if transferring files to OneDrive is restricted, we gray out
+        // the corresponding task.
+        office_task.is_dlp_blocked = policy::dlp::IsFilesTransferBlocked(
+            dlp_source_urls, data_controls::Component::kOneDrive);
+        resulting_tasks->tasks.push_back(office_task);
+      }
     }
   }
 
@@ -1347,15 +1359,6 @@ bool IsOfficeFile(const base::FilePath& path) {
   }
   return false;
 }
-
-namespace {
-
-std::string ToSwaActionId(const std::string& action_id) {
-  return std::string(ash::file_manager::kChromeUIFileManagerURL) + "?" +
-         action_id;
-}
-
-}  // namespace
 
 std::set<std::string> WordGroupExtensions() {
   static const base::NoDestructor<std::set<std::string>> extensions(

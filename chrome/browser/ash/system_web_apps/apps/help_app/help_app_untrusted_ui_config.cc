@@ -143,7 +143,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   // If true, then the user may launch the setup flow for Microsoft 365.
   source->AddBoolean(
       "Microsoft365",
-      chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile));
+      chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile));
 
   // Checks if the Google Assistant is allowed on this device by going through
   // policies.
