@@ -90,6 +90,20 @@ namespace raster {
 
 namespace {
 
+BASE_FEATURE(kPaintCacheBudgetConfigurableFeature,
+             "PaintCacheBudgetConfigurableFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kNormalPaintCacheBudget(
+    &kPaintCacheBudgetConfigurableFeature,
+    "NormalPaintCacheBudgetBytes",
+    4 * 1024 * 1024);
+
+constexpr base::FeatureParam<int> kLowEndPaintCacheBudget(
+    &kPaintCacheBudgetConfigurableFeature,
+    "LowEndPaintCacheBudgetBytes",
+    256 * 1024);
+
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
 
@@ -1923,13 +1937,12 @@ void RasterImplementation::SetActiveURLCHROMIUM(const char* url) {
 
 cc::ClientPaintCache* RasterImplementation::GetOrCreatePaintCache() {
   if (!paint_cache_) {
-    constexpr size_t kNormalPaintCacheBudget = 4 * 1024 * 1024;
-    constexpr size_t kLowEndPaintCacheBudget = 256 * 1024;
     size_t paint_cache_budget = 0u;
-    if (base::SysInfo::IsLowEndDevice())
-      paint_cache_budget = kLowEndPaintCacheBudget;
-    else
-      paint_cache_budget = kNormalPaintCacheBudget;
+    if (base::SysInfo::IsLowEndDevice()) {
+      paint_cache_budget = kLowEndPaintCacheBudget.Get();
+    } else {
+      paint_cache_budget = kNormalPaintCacheBudget.Get();
+    }
     paint_cache_ = std::make_unique<cc::ClientPaintCache>(paint_cache_budget);
   }
   return paint_cache_.get();
