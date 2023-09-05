@@ -1504,11 +1504,8 @@ int FocusController::AdjustedTabIndex(const Element& element) {
     // missing values.
     return element.GetIntegralAttribute(html_names::kTabindexAttr, 0);
   }
-  bool default_focusable =
-      element.IsFocusable() ||
-      element.IsScrollableContainerThatShouldBeKeyboardFocusable();
   return element.GetIntegralAttribute(html_names::kTabindexAttr,
-                                      default_focusable ? 0 : -1);
+                                      element.IsFocusable() ? 0 : -1);
 }
 
 void FocusController::Trace(Visitor* visitor) const {
