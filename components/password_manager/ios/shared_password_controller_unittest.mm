@@ -1370,6 +1370,72 @@ TEST_F(SharedPasswordControllerTest,
                      inFrame:frame];
 }
 
+// Tests that password generation is terminated correctly when the
+// user declines the dialog.
+TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
+  autofill::FormRendererId form_id(0);
+  autofill::FieldRendererId field_id(1);
+  autofill::PasswordFormGenerationData form_generation_data = {
+      form_id, field_id, field_id};
+  [controller_ formEligibleForGenerationFound:form_generation_data];
+
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::FakeWebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  // Create a password generation suggestion.
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@"test-value"
+       displayDescription:@"test-description"
+                     icon:nil
+              popupItemId:autofill::PopupItemId::kGeneratePasswordEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
+
+  // Triggering password generation will trigger a new form extraction.
+  // Simulate it completes successfully.
+  autofill::FormData form_data = test_helpers::MakeSimpleFormData();
+  id extract_completion_handler_arg = [OCMArg
+      checkWithBlock:^(void (^completion_handler)(BOOL, autofill::FormData)) {
+        completion_handler(/*found=*/YES, form_data);
+        return YES;
+      }];
+  [[form_helper_ expect]
+      extractPasswordFormData:form_id
+                      inFrame:frame
+            completionHandler:extract_completion_handler_arg];
+
+  // Simulate the user declining the generated password in the dialog.
+  id decision_handler_arg =
+      [OCMArg checkWithBlock:^(void (^decision_handler)(BOOL)) {
+        decision_handler(/*accept=*/NO);
+        return YES;
+      }];
+  [[delegate_ expect] sharedPasswordController:controller_
+                showGeneratedPotentialPassword:[OCMArg isNotNil]
+                               decisionHandler:decision_handler_arg];
+
+  OCMStub([driver_helper_ PasswordManagerDriver:frame]);
+  EXPECT_CALL(password_generation_helper_, GeneratePassword);
+  EXPECT_CALL(password_manager_, SetGenerationElementAndTypeForForm);
+
+  // Check that the generation is terminated.
+  EXPECT_CALL(password_manager_, OnPasswordNoLongerGenerated);
+
+  [controller_ didSelectSuggestion:suggestion
+                              form:@"test-form-name"
+                      uniqueFormID:form_id
+                   fieldIdentifier:@"test-field-id"
+                     uniqueFieldID:field_id
+                           frameID:kTestFrameID
+                 completionHandler:nil];
+}
+
 // TODO(crbug.com/1097353): Finish unit testing the rest of the public API.
 
 }  // namespace password_manager

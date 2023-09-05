@@ -808,11 +808,16 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
               sharedPasswordController:self
         showGeneratedPotentialPassword:self.generatedPotentialPassword
                        decisionHandler:^(BOOL accept) {
+                         SharedPasswordController* strongSelf = weakSelf;
+                         if (!strongSelf) {
+                           return;
+                         }
+
                          if (accept) {
                            LogPasswordGenerationEvent(
                                autofill::password_generation::
                                    PASSWORD_ACCEPTED);
-                           [weakSelf
+                           [strongSelf
                                injectGeneratedPasswordForFormId:formIdentifier
                                                         inFrame:frame
                                               generatedPassword:
@@ -822,6 +827,11 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                                   clearPotentialPassword];
                          } else {
                            clearPotentialPassword();
+                           IOSPasswordManagerDriver* driver =
+                               [strongSelf->_driverHelper
+                                   PasswordManagerDriver:frame];
+                           strongSelf->_passwordManager
+                               ->OnPasswordNoLongerGenerated(driver);
                          }
                        }];
   };
