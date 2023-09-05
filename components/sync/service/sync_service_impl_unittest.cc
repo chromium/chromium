@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1907,6 +1908,13 @@ TEST_F(SyncServiceImplTest,
             service()->GetTransportState());
   EXPECT_EQ(ModelTypeSet(),
             service()->GetTypesWithPendingDownloadForInitialSync());
+}
+
+TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
+  InitializeService();
+  base::MockCallback<base::OnceCallback<void(ModelTypeSet)>> cb;
+  EXPECT_CALL(cb, Run(ModelTypeSet()));
+  service()->GetTypesWithUnsyncedData(cb.Get());
 }
 
 TEST_F(SyncServiceImplTest,

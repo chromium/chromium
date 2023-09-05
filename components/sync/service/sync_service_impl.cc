@@ -2394,6 +2394,11 @@ void SyncServiceImpl::DownloadStatusRecorder::OnTimeout() {
 
 void SyncServiceImpl::GetTypesWithUnsyncedData(
     base::OnceCallback<void(ModelTypeSet)> callback) const {
+  if (!engine_ || !engine_->IsInitialized()) {
+    // TODO(crbug.com/1477527): Wait for the sync engine to be initialized.
+    std::move(callback).Run(ModelTypeSet());
+    return;
+  }
   engine_->GetTypesWithUnsyncedData(std::move(callback));
 }
 
