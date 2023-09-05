@@ -1279,7 +1279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates3"
-    units="units" expires_after="2023-10-15">
+    units="units" expires_after="2024-02-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
