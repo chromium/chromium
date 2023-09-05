@@ -536,3 +536,26 @@ TEST_F(DownloadBubbleSecurityViewTest, ReturnToPrimaryDialog) {
   EXPECT_EQ(*bubble_navigator_->last_opened_page(),
             DownloadBubbleContentsView::Page::kPrimary);
 }
+
+// Test validating a dangerous download, such that it goes from having
+// a UI info subpage to not having one. See crbug.com/1478390.
+TEST_F(DownloadBubbleSecurityViewTest, ValidateDangerousDownload) {
+  ASSERT_TRUE(row_view1_->model()->GetBubbleUIInfo(true).HasSubpage());
+  security_view_->InitializeForDownload(*row_view1_->model());
+  EXPECT_TRUE(security_view_->IsInitialized());
+  EXPECT_EQ(security_view_->content_id(),
+            OfflineItemUtils::GetContentIdForDownload(&download_item1_));
+
+  // "Validate" the download.
+  ON_CALL(download_item1_, GetDangerType())
+      .WillByDefault(Return(
+          download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+  download_item1_.NotifyObserversDownloadUpdated();
+
+  ASSERT_FALSE(row_view1_->model()->GetBubbleUIInfo(true).HasSubpage());
+  EXPECT_TRUE(security_view_->IsInitialized());
+  EXPECT_EQ(security_view_->content_id(),
+            OfflineItemUtils::GetContentIdForDownload(&download_item1_));
+  EXPECT_EQ(DownloadBubbleContentsView::Page::kPrimary,
+            *bubble_navigator_->last_opened_page());
+}
