@@ -421,7 +421,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     const GURL& url,
     base::WeakPtr<PrefetchContainer> prefetch_container,
     OnEligibilityResultCallback result_callback) const {
-  DCHECK(prefetch_container);
+  CHECK(prefetch_container);
 
   // TODO(https://crbug.com/1299059): Clean up the following checks by: 1)
   // moving each check to a separate function, and 2) requiring that failed
@@ -495,25 +495,6 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
 
-  // This service worker check assumes that the prefetch will only ever be
-  // performed in a first-party context (main frame prefetch). At the moment
-  // that is true but if it ever changes then the StorageKey will need to be
-  // constructed with the top-level site to ensure correct partitioning.
-  ServiceWorkerContext* service_worker_context =
-      g_service_worker_context_for_testing
-          ? g_service_worker_context_for_testing
-          : browser_context_->GetDefaultStoragePartition()
-                ->GetServiceWorkerContext();
-  bool site_has_service_worker =
-      service_worker_context->MaybeHasRegistrationForStorageKey(
-          blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
-  if (site_has_service_worker) {
-    std::move(result_callback)
-        .Run(prefetch_container, false,
-             PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
-    return;
-  }
-
   // This blocks same-site cross-origin prefetches that require the prefetch
   // proxy. Same-site prefetches are made using the default network context, and
   // the prefetch request cannot be configured to use the proxy in that network
@@ -538,6 +519,57 @@ void PrefetchService::CheckEligibilityOfPrefetch(
     return;
   }
 
+  CheckHasServiceWorker(url, prefetch_container, std::move(result_callback));
+}
+
+void PrefetchService::CheckHasServiceWorker(
+    const GURL& url,
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    OnEligibilityResultCallback result_callback) const {
+  CHECK(prefetch_container);
+  // This service worker check assumes that the prefetch will only ever be
+  // performed in a first-party context (main frame prefetch). At the moment
+  // that is true but if it ever changes then the StorageKey will need to be
+  // constructed with the top-level site to ensure correct partitioning.
+  ServiceWorkerContext* service_worker_context =
+      g_service_worker_context_for_testing
+          ? g_service_worker_context_for_testing
+          : browser_context_->GetDefaultStoragePartition()
+                ->GetServiceWorkerContext();
+  auto key = blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
+  // Check `MaybeHasRegistrationForStorageKey` first as it is much faster than
+  // calling `CheckHasServiceWorker`.
+  if (!service_worker_context->MaybeHasRegistrationForStorageKey(key)) {
+    OnGotServiceWorkerResult(url, prefetch_container,
+                             std::move(result_callback),
+                             ServiceWorkerCapability::NO_SERVICE_WORKER);
+    return;
+  }
+  service_worker_context->CheckHasServiceWorker(
+      url, key,
+      base::BindOnce(&PrefetchService::OnGotServiceWorkerResult,
+                     weak_method_factory_.GetWeakPtr(), url, prefetch_container,
+                     std::move(result_callback)));
+}
+
+void PrefetchService::OnGotServiceWorkerResult(
+    const GURL& url,
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    OnEligibilityResultCallback result_callback,
+    ServiceWorkerCapability service_worker_capability) const {
+  switch (service_worker_capability) {
+    case ServiceWorkerCapability::NO_SERVICE_WORKER:
+    case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
+      break;
+    case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
+      std::move(result_callback)
+          .Run(prefetch_container, false,
+               PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker);
+      return;
+  }
+  StoragePartition* default_storage_partition =
+      browser_context_->GetDefaultStoragePartition();
+  CHECK(default_storage_partition);
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   options.set_return_excluded_cookies();
   default_storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(

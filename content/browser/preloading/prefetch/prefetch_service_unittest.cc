@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -228,6 +229,47 @@ net::RequestPriority ExpectedPriorityForEagerness(
       return net::RequestPriority::IDLE;
   }
 }
+
+class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
+ public:
+  PrefetchFakeServiceWorkerContext() = default;
+
+  PrefetchFakeServiceWorkerContext(const PrefetchFakeServiceWorkerContext&) =
+      delete;
+  PrefetchFakeServiceWorkerContext& operator=(
+      const PrefetchFakeServiceWorkerContext&) = delete;
+
+  ~PrefetchFakeServiceWorkerContext() override = default;
+
+  void CheckHasServiceWorker(const GURL& url,
+                             const blink::StorageKey& key,
+                             CheckHasServiceWorkerCallback callback) override {
+    if (!MaybeHasRegistrationForStorageKey(key)) {
+      std::move(callback).Run(ServiceWorkerCapability::NO_SERVICE_WORKER);
+      return;
+    }
+    auto service_worker_info = base::ranges::find_if(
+        service_worker_scopes_,
+        [url](const std::pair<GURL, ServiceWorkerCapability>&
+                  service_worker_info) {
+          return base::StartsWith(url.spec(), service_worker_info.first.spec());
+        });
+    if (service_worker_info != service_worker_scopes_.end()) {
+      std::move(callback).Run(service_worker_info->second);
+      return;
+    }
+    std::move(callback).Run(ServiceWorkerCapability::NO_SERVICE_WORKER);
+  }
+
+  void AddServiceWorkerScope(const GURL& scope,
+                             ServiceWorkerCapability capability) {
+    CHECK_NE(capability, ServiceWorkerCapability::NO_SERVICE_WORKER);
+    service_worker_scopes_[scope] = capability;
+  }
+
+ private:
+  std::map<GURL, ServiceWorkerCapability> service_worker_scopes_;
+};
 
 class PrefetchServiceTest : public RenderViewHostTestHarness {
  public:
@@ -696,7 +738,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  FakeServiceWorkerContext service_worker_context_;
+  PrefetchFakeServiceWorkerContext service_worker_context_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1655,6 +1697,9 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://example.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -1713,6 +1758,9 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://other.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://other.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -1759,6 +1807,139 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
 
   PrefetchContainer::Reader serveable_reader =
       GetPrefetchToServe(GURL("https://example.com"));
+  ASSERT_TRUE(serveable_reader);
+  EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
+  EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+
+  ExpectCorrectUkmLogs({});
+}
+
+TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://example.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER);
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
+
+  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+      GetMetricsForMostRecentNavigation();
+  ASSERT_TRUE(serving_page_metrics);
+  EXPECT_TRUE(serving_page_metrics->prefetch_status);
+  EXPECT_EQ(serving_page_metrics->prefetch_status.value(),
+            static_cast<int>(PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(serving_page_metrics->required_private_prefetch_proxy);
+  EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
+  EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
+  EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
+            base::Milliseconds(kHeaderLatency));
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com"));
+  ASSERT_TRUE(serveable_reader);
+  EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
+  EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_TRUE(serveable_reader.IsPrefetchServable(base::TimeDelta::Max()));
+
+  ExpectCorrectUkmLogs({});
+}
+
+TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegisteredAtThisPath) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://example.com/sw"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/non_sw/index.html"),
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com/non_sw/index.html"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  Navigate(GURL("https://example.com/non_sw/index.html"),
+           main_rfh()->GetFrameToken());
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
+
+  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+      GetMetricsForMostRecentNavigation();
+  ASSERT_TRUE(serving_page_metrics);
+  EXPECT_TRUE(serving_page_metrics->prefetch_status);
+  EXPECT_EQ(serving_page_metrics->prefetch_status.value(),
+            static_cast<int>(PrefetchStatus::kPrefetchSuccessful));
+  EXPECT_TRUE(serving_page_metrics->required_private_prefetch_proxy);
+  EXPECT_TRUE(serving_page_metrics->same_tab_as_prefetching_tab);
+  EXPECT_TRUE(serving_page_metrics->prefetch_header_latency);
+  EXPECT_EQ(serving_page_metrics->prefetch_header_latency.value(),
+            base::Milliseconds(kHeaderLatency));
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com/non_sw/index.html"));
   ASSERT_TRUE(serveable_reader);
   EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
   EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
@@ -3002,6 +3183,9 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://redirect.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://redirect.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
@@ -3687,6 +3871,9 @@ TEST_F(PrefetchServiceAllowRedirectTest,
 
   service_worker_context_.AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://redirect.com"));
+  service_worker_context_.AddServiceWorkerScope(
+      GURL("https://redirect.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
   MakePrefetchOnMainFrame(
       GURL("https://example.com"),
