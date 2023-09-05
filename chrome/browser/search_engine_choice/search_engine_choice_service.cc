@@ -7,8 +7,6 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -41,8 +39,10 @@ void SearchEngineChoiceService::BrowserObserver::OnBrowserRemoved(
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
-SearchEngineChoiceService::SearchEngineChoiceService(Profile& profile)
-    : profile_(profile) {}
+SearchEngineChoiceService::SearchEngineChoiceService(
+    Profile& profile,
+    TemplateURLService& template_url_service)
+    : profile_(profile), template_url_service_(template_url_service) {}
 
 void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
   // Sets the timestamp and search engine choice preferences.
@@ -64,10 +64,8 @@ void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
     SetDefaultSearchProviderPrefValue(*pref_service, search_engine->sync_guid);
   } else {
     // Make sure that the default search engine is a custom search engine.
-    TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(&profile_.get());
     const TemplateURL* default_search_provider =
-        template_url_service->GetDefaultSearchProvider();
+        template_url_service_->GetDefaultSearchProvider();
 
     CHECK_EQ(default_search_provider->prepopulate_id(), 0);
   }
@@ -113,13 +111,27 @@ SearchEngineChoiceService::GetSearchEngines() {
 }
 
 bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
-  PrefService* prefs = browser.profile()->GetPrefs();
+  // To avoid conflict, the dialog should not be shown if a sign-in dialog is
+  // being currently displayed.
+  if (browser.signin_view_controller()->ShowsModalDialog()) {
+    return false;
+  }
 
-  // Dialog should not be shown if it is currently displayed or if the pref was
-  // already set.
-  return !prefs->GetInt64(
-             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) &&
-         !IsShowingDialog(&browser) && !g_dialog_disabled_for_testing;
+  // Don't show the dialog if the default search engine is set by an extension.
+  if (template_url_service_->IsExtensionControlledDefaultSearch()) {
+    return false;
+  }
+
+  // Dialog should not be shown if it is currently displayed or if the user
+  // already made a choice.
+  return !HasUserMadeChoice() && !IsShowingDialog(&browser) &&
+         !g_dialog_disabled_for_testing;
+}
+
+bool SearchEngineChoiceService::HasUserMadeChoice() const {
+  PrefService* pref_service = profile_->GetPrefs();
+  return pref_service->GetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
 }
 
 bool SearchEngineChoiceService::HasPendingDialog(Browser& browser) {

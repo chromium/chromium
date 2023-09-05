@@ -29,6 +29,8 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -48,7 +50,9 @@ const std::string kCustomSearchEngineDomain = "bar.com";
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
   explicit MockSearchEngineChoiceService(Profile* profile)
-      : SearchEngineChoiceService(*profile) {
+      : SearchEngineChoiceService(
+            *profile,
+            *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, NotifyDialogOpened)
         .WillByDefault([this](Browser* browser, base::OnceClosure callback) {
           number_of_browsers_with_dialogs_open_++;
@@ -397,4 +401,27 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       template_url_service->GetDefaultSearchProvider();
   EXPECT_EQ(default_search_provider->short_name(),
             base::UTF8ToUTF16(kCustomSearchEngineDomain));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
+                       DialogDoesNotShowWithExtensionEnabledThatOverridesDSE) {
+  Profile* profile = browser()->profile();
+  auto* search_engine_choice_service =
+      static_cast<MockSearchEngineChoiceService*>(
+          SearchEngineChoiceServiceFactory::GetForProfile(profile));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+
+  std::unique_ptr<TemplateURLData> extension =
+      GenerateDummyTemplateURLData("extension");
+  template_url_service->ApplyDefaultSearchChangeForTesting(
+      extension.get(), DefaultSearchManager::FROM_EXTENSION);
+
+  // Navigate to a URL to display the dialog.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
 }

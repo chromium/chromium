@@ -457,6 +457,10 @@ class TemplateURLService : public WebDataServiceConsumer,
     return *search_terms_data_;
   }
 
+  // Calls `ApplyDefaultSearchChangeNoMetrics`. Used for testing.
+  bool ApplyDefaultSearchChangeForTesting(const TemplateURLData* data,
+                                          DefaultSearchManager::Source source);
+
   // Obtains a session token, regenerating if necessary.
   std::string GetSessionToken();
 

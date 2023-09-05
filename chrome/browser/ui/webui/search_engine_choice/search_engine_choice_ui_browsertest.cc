@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
@@ -20,6 +21,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
@@ -36,7 +38,9 @@ namespace {
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
   explicit MockSearchEngineChoiceService(Profile* profile)
-      : SearchEngineChoiceService(*profile) {
+      : SearchEngineChoiceService(
+            *profile,
+            *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
       std::vector<std::unique_ptr<TemplateURLData>> choices;
       auto choice = TemplateURLData();

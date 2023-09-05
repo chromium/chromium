@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 
 class Browser;
 class BrowserListObserver;
@@ -21,7 +22,8 @@ class BrowserListObserver;
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
  public:
-  explicit SearchEngineChoiceService(Profile& profile);
+  SearchEngineChoiceService(Profile& profile,
+                            TemplateURLService& template_url_service);
   ~SearchEngineChoiceService() override;
 
   // Informs the service that a Search Engine Choice dialog has been opened
@@ -57,6 +59,9 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether the Search Engine Choice dialog is either shown or
   // pending to be shown.
   bool HasPendingDialog(Browser& browser);
+
+  // Returns whether the user has already made a choice or not.
+  bool HasUserMadeChoice() const;
 
   // Returns the list of search engines.
   // Virtual to be able to mock in tests.
@@ -96,6 +101,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   // The `KeyedService` lifetime is expected to exceed the profile's.
   const raw_ref<Profile> profile_;
+  const raw_ref<TemplateURLService> template_url_service_;
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 

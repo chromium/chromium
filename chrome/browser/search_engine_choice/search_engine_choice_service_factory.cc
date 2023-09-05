@@ -10,7 +10,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -33,7 +35,9 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
           "SearchEngineChoiceServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+}
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
 
@@ -94,5 +98,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
           CHECK_DEREF(g_browser_process->policy_service()), profile)) {
     return nullptr;
   }
-  return std::make_unique<SearchEngineChoiceService>(profile);
+  TemplateURLService& template_url_service =
+      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
+  return std::make_unique<SearchEngineChoiceService>(profile,
+                                                     template_url_service);
 }

@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -1913,6 +1914,13 @@ void TemplateURLService::ApplyDefaultSearchChange(
     dsp_change_callback_.Run();
 }
 
+bool TemplateURLService::ApplyDefaultSearchChangeForTesting(
+    const TemplateURLData* data,
+    DefaultSearchManager::Source source) {
+  CHECK_IS_TEST();
+  return ApplyDefaultSearchChangeNoMetrics(data, source);
+}
+
 bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     const TemplateURLData* data,
     DefaultSearchManager::Source source) {
@@ -1972,7 +1980,10 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     default_search_provider_ = nullptr;
   } else if (source == DefaultSearchManager::FROM_EXTENSION) {
     default_search_provider_ = FindMatchingDefaultExtensionTemplateURL(*data);
-    DCHECK(default_search_provider_);
+    // Can be nullptr in tests.
+    if (!default_search_provider_) {
+      CHECK_IS_TEST();
+    }
   } else if (source == DefaultSearchManager::FROM_FALLBACK) {
     default_search_provider_ =
         FindPrepopulatedTemplateURL(data->prepopulate_id);

@@ -43,12 +43,6 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
 
   Browser& browser = CHECK_DEREF(
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents()));
-  // To avoid conflict, the dialog should not be show  if a sign-in dialog is
-  // being currently displayed.
-  if (browser.signin_view_controller()->ShowsModalDialog()) {
-    return;
-  }
-
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
   if (!search_engine_choice_service ||
