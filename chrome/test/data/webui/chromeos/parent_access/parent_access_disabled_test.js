@@ -43,8 +43,8 @@ suite(parent_access_disabled_tests.suiteName, function() {
     // Assert the disabled result is sent when the OK button is clicked.
     assertEquals(handler.getCallCount('onParentAccessDone'), 0);
     const okButton =
-        parentAccessAfter.shadowRoot.querySelector('.action-button');
-    okButton.parentAccessDisabled();
+        parentAccessDisabled.shadowRoot.querySelector('.action-button');
+    okButton.click();
     assertEquals(handler.getCallCount('onParentAccessDone'), 1);
     assertEquals(
         handler.getArgs('onParentAccessDone')[0], ParentAccessResult.kDisabled);

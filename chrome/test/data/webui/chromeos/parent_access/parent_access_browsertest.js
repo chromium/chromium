@@ -98,7 +98,7 @@ TEST_F(
                             .ParentAccessCallbackReceivedFnCalled);
     });
 
-var ParentAccessDisabledTest = class extends testing.Test {
+var ParentAccessDisabledTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://parent-access/test_loader.html?module=' +
