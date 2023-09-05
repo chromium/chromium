@@ -61,3 +61,8 @@
 -assumenosideeffects class android.**, java.** {
   static <fields>;
 }
+
+# Keep the names of exception types, to make it easier to understand stack
+# traces in contexts where it's not trivial to deobfuscate them - for example
+# when reported to app developers who are using WebView.
+-keepnames class ** extends java.lang.Throwable {}

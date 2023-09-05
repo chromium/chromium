@@ -206,6 +206,11 @@
   static <fields>;
 }
 
+# Keep the names of exception types, to make it easier to understand stack
+# traces in contexts where it's not trivial to deobfuscate them - for example
+# when reported to app developers who are using WebView.
+-keepnames class ** extends java.lang.Throwable {}
+
 # File: ../../base/android/proguard/chromium_code.flags
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
