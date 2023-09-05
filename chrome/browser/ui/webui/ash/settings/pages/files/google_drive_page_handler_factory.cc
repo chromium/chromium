@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/files_page/google_drive_page_handler_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/google_drive_page_handler_factory.h"
 
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 
 namespace ash::settings {
 

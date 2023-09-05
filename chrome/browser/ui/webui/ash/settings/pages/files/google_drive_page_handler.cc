@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/files_page/google_drive_page_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/google_drive_page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

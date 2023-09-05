@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_GOOGLE_DRIVE_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_GOOGLE_DRIVE_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,4 +62,4 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_GOOGLE_DRIVE_PAGE_HANDLER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/files_page/one_drive_page_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler.h"
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

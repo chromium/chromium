@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
@@ -186,7 +186,6 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
   SetUpSearchResultExpectations();
-
 
   // Each item is 125 MB in size, total required space should be 500 MB.
   int64_t file_size = 125 * 1024 * 1024;

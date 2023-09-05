@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/files_page/one_drive_page_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/files/one_drive_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -44,4 +44,4 @@ class OneDrivePageHandlerFactory : public one_drive::mojom::PageHandlerFactory {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_FILES_ONE_DRIVE_PAGE_HANDLER_FACTORY_H_
