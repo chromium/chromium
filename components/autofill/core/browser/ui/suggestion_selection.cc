@@ -470,7 +470,6 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
 std::vector<Suggestion> GetUniqueSuggestions(
     const ServerFieldTypeSet& field_types,
     const AutofillProfileComparator& comparator,
-    const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,
     const std::vector<Suggestion>& suggestions,
     std::vector<AutofillProfile*>* unique_matched_profiles) {
