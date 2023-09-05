@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHa
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.omnibox.status.PageInfoIPHController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -74,6 +75,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.content_settings.CookieControlsBreakageConfidenceLevel;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -127,6 +129,7 @@ public class CustomTabToolbarUnitTest {
     Callback<Integer> mContainerVisibilityChangeObserver;
     @Mock
     View mParentView;
+    private @Mock PageInfoIPHController mPageInfoIPHController;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -162,6 +165,7 @@ public class CustomTabToolbarUnitTest {
         mUrlBar = mToolbar.findViewById(R.id.url_bar);
         mTitleBar = mToolbar.findViewById(R.id.title_bar);
         mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
+        mLocationBar.setIPHControllerForTesting(mPageInfoIPHController);
     }
 
     @After
@@ -399,6 +403,24 @@ public class CustomTabToolbarUnitTest {
         mToolbar.removeContainerVisibilityChangeObserver(mContainerVisibilityChangeObserver);
         mToolbar.onVisibilityChanged(mParentView, View.VISIBLE);
         verify(mContainerVisibilityChangeObserver, never()).onResult(any());
+    }
+
+    @Test
+    public void testCookieControlsIcon_animateOnPageStoppedLoadingWithHighBreakageConfidence() {
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+
+        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.HIGH);
+        verify(mAnimationDelegate, never()).updateSecurityButton(anyInt(), anyBoolean());
+        verify(mPageInfoIPHController, never()).showCookieControlsIPH(anyInt(), anyInt());
+
+        mLocationBar.onPageLoadStopped();
+        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed, true);
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
+
+        mLocationBar.onBreakageConfidenceLevelChanged(CookieControlsBreakageConfidenceLevel.LOW);
+        mLocationBar.onPageLoadStopped();
+        verify(mAnimationDelegate, times(1)).updateSecurityButton(R.drawable.ic_eye_crossed, true);
+        verify(mPageInfoIPHController, times(1)).showCookieControlsIPH(anyInt(), anyInt());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
