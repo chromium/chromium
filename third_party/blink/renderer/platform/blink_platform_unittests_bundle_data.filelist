@@ -206,6 +206,9 @@
 ../../web_tests/images/resources/avif/star-animated-10bpc.avif
 ../../web_tests/images/resources/avif/star-animated-12bpc-with-alpha.avif
 ../../web_tests/images/resources/avif/star-animated-12bpc.avif
+../../web_tests/images/resources/avif/star-animated-8bpc-1-repetition.avif
+../../web_tests/images/resources/avif/star-animated-8bpc-10-repetition.avif
+../../web_tests/images/resources/avif/star-animated-8bpc-infinite-repetition.avif
 ../../web_tests/images/resources/avif/star-animated-8bpc-with-alpha.avif
 ../../web_tests/images/resources/avif/star-animated-8bpc.avif
 ../../web_tests/images/resources/avif/tiger_3layer_1res.avif

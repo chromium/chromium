@@ -887,7 +887,16 @@ TEST(AnimatedAVIFTests, ValidImages) {
       &CreateAVIFDecoder,
       "/images/resources/avif/star-animated-12bpc-with-alpha.avif", 5u,
       kAnimationLoopInfinite);
-  // TODO(ryoh): Add animated avif files with EditListBox.
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-8bpc-1-repetition.avif", 5u, 1);
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-8bpc-10-repetition.avif", 5u, 10);
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-8bpc-infinite-repetition.avif", 5u,
+      kAnimationLoopInfinite);
 }
 
 TEST(AnimatedAVIFTests, HasMultipleSubImages) {
