@@ -590,7 +590,8 @@ ContentDistributionType ComputedStyle::ResolvedAlignContentDistribution(
 }
 
 bool ComputedStyle::operator==(const ComputedStyle& o) const {
-  return InheritedEqual(o) && NonInheritedEqual(o);
+  return InheritedEqual(o) && NonInheritedEqual(o) &&
+         InheritedVariablesEqual(o);
 }
 
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
