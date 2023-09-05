@@ -7229,13 +7229,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_06262023",
+                    "name": "EnabledLowerTotalPages_08312023",
                     "params": {
-                        "AllocationSamplingMultiplier": "2147483647",
-                        "AllocationSamplingRange": "2147483647",
-                        "MaxAllocations": "50",
-                        "MaxMetadata": "210",
-                        "ProcessSamplingProbability": "1"
+                        "AllocationSamplingMultiplier": "2000",
+                        "AllocationSamplingRange": "20",
+                        "MaxAllocations": "70",
+                        "MaxMetadata": "255",
+                        "ProcessSamplingProbability": "0.015",
+                        "TotalPages": "512"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
