@@ -541,6 +541,19 @@ try_.builder(
             "third_party/gvr-android-sdk/.+",
             "third_party/arcore-android-sdk/.+",
             "third_party/arcore-android-sdk-client/.+",
+            # Diectories that have caused breakages in the past due to the
+            # TensorFlowLite roll.
+            "third_party/eigen3/.+",
+            "third_party/farmhash/.+",
+            "third_party/fft2d/.+",
+            "third_party/flatbuffers/.+",
+            "third_party/fp16/.+",
+            "third_party/fxdiv/.+",
+            "third_party/gemmlowp/.+",
+            "third_party/pthreadpool/.+",
+            "third_party/ruy/.+",
+            "third_party/tflite/.+",
+            "third_party/xnnpack/.+",
         ],
     ),
 )
@@ -724,7 +737,20 @@ try_.builder(
             "sandbox/linux/seccomp-bpf-helpers/.+",
             "sandbox/linux/system_headers/.+",
             "sandbox/linux/tests/.+",
+            # Diectories that have caused breakages in the past due to the
+            # TensorFlowLite roll.
+            "third_party/eigen3/.+",
+            "third_party/farmhash/.+",
+            "third_party/fft2d/.+",
+            "third_party/flatbuffers/.+",
+            "third_party/fp16/.+",
+            "third_party/fxdiv/.+",
+            "third_party/gemmlowp/.+",
             "third_party/gvr-android-sdk/.+",
+            "third_party/pthreadpool/.+",
+            "third_party/ruy/.+",
+            "third_party/tflite/.+",
+            "third_party/xnnpack/.+",
         ],
     ),
 )

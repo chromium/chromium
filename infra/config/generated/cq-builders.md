@@ -138,6 +138,17 @@ builder.
   * [`//third_party/gvr-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/gvr-android-sdk/)
   * [`//third_party/arcore-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk/)
   * [`//third_party/arcore-android-sdk-client/.+`](https://cs.chromium.org/chromium/src/third_party/arcore-android-sdk-client/)
+  * [`//third_party/eigen3/.+`](https://cs.chromium.org/chromium/src/third_party/eigen3/)
+  * [`//third_party/farmhash/.+`](https://cs.chromium.org/chromium/src/third_party/farmhash/)
+  * [`//third_party/fft2d/.+`](https://cs.chromium.org/chromium/src/third_party/fft2d/)
+  * [`//third_party/flatbuffers/.+`](https://cs.chromium.org/chromium/src/third_party/flatbuffers/)
+  * [`//third_party/fp16/.+`](https://cs.chromium.org/chromium/src/third_party/fp16/)
+  * [`//third_party/fxdiv/.+`](https://cs.chromium.org/chromium/src/third_party/fxdiv/)
+  * [`//third_party/gemmlowp/.+`](https://cs.chromium.org/chromium/src/third_party/gemmlowp/)
+  * [`//third_party/pthreadpool/.+`](https://cs.chromium.org/chromium/src/third_party/pthreadpool/)
+  * [`//third_party/ruy/.+`](https://cs.chromium.org/chromium/src/third_party/ruy/)
+  * [`//third_party/tflite/.+`](https://cs.chromium.org/chromium/src/third_party/tflite/)
+  * [`//third_party/xnnpack/.+`](https://cs.chromium.org/chromium/src/third_party/xnnpack/)
 
 * [android_compile_x64_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_x64_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_x64_dbg""))
 
@@ -149,7 +160,18 @@ builder.
   * [`//sandbox/linux/seccomp-bpf-helpers/.+`](https://cs.chromium.org/chromium/src/sandbox/linux/seccomp-bpf-helpers/)
   * [`//sandbox/linux/system_headers/.+`](https://cs.chromium.org/chromium/src/sandbox/linux/system_headers/)
   * [`//sandbox/linux/tests/.+`](https://cs.chromium.org/chromium/src/sandbox/linux/tests/)
+  * [`//third_party/eigen3/.+`](https://cs.chromium.org/chromium/src/third_party/eigen3/)
+  * [`//third_party/farmhash/.+`](https://cs.chromium.org/chromium/src/third_party/farmhash/)
+  * [`//third_party/fft2d/.+`](https://cs.chromium.org/chromium/src/third_party/fft2d/)
+  * [`//third_party/flatbuffers/.+`](https://cs.chromium.org/chromium/src/third_party/flatbuffers/)
+  * [`//third_party/fp16/.+`](https://cs.chromium.org/chromium/src/third_party/fp16/)
+  * [`//third_party/fxdiv/.+`](https://cs.chromium.org/chromium/src/third_party/fxdiv/)
+  * [`//third_party/gemmlowp/.+`](https://cs.chromium.org/chromium/src/third_party/gemmlowp/)
   * [`//third_party/gvr-android-sdk/.+`](https://cs.chromium.org/chromium/src/third_party/gvr-android-sdk/)
+  * [`//third_party/pthreadpool/.+`](https://cs.chromium.org/chromium/src/third_party/pthreadpool/)
+  * [`//third_party/ruy/.+`](https://cs.chromium.org/chromium/src/third_party/ruy/)
+  * [`//third_party/tflite/.+`](https://cs.chromium.org/chromium/src/third_party/tflite/)
+  * [`//third_party/xnnpack/.+`](https://cs.chromium.org/chromium/src/third_party/xnnpack/)
 
 * [android_compile_x86_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_x86_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_x86_dbg""))
 
@@ -417,6 +439,21 @@ builder.
 
   Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
+
+* [linux_chromium_cfi_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_cfi_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_cfi_rel_ng""))
+
+  Location filters:
+  * [`//third_party/eigen3/.+`](https://cs.chromium.org/chromium/src/third_party/eigen3/)
+  * [`//third_party/farmhash/.+`](https://cs.chromium.org/chromium/src/third_party/farmhash/)
+  * [`//third_party/fft2d/.+`](https://cs.chromium.org/chromium/src/third_party/fft2d/)
+  * [`//third_party/flatbuffers/.+`](https://cs.chromium.org/chromium/src/third_party/flatbuffers/)
+  * [`//third_party/fp16/.+`](https://cs.chromium.org/chromium/src/third_party/fp16/)
+  * [`//third_party/fxdiv/.+`](https://cs.chromium.org/chromium/src/third_party/fxdiv/)
+  * [`//third_party/gemmlowp/.+`](https://cs.chromium.org/chromium/src/third_party/gemmlowp/)
+  * [`//third_party/pthreadpool/.+`](https://cs.chromium.org/chromium/src/third_party/pthreadpool/)
+  * [`//third_party/ruy/.+`](https://cs.chromium.org/chromium/src/third_party/ruy/)
+  * [`//third_party/tflite/.+`](https://cs.chromium.org/chromium/src/third_party/tflite/)
+  * [`//third_party/xnnpack/.+`](https://cs.chromium.org/chromium/src/third_party/xnnpack/)
 
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_dbg_ng""))
 
