@@ -63,9 +63,7 @@ test(() => {
     'host/i7'
   ];
 
-  assert_focus_navigation_forward(elements);
-  elements.reverse();
-  assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Default tabindex for a slot node should be 0.');
 
 </script>

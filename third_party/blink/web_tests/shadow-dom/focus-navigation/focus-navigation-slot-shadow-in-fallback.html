@@ -38,8 +38,6 @@ test(() => {
         'fallback/x-foo/a2'
     ];
 
-    assert_focus_navigation_forward(elements);
-    elements.reverse();
-    assert_focus_navigation_backward(elements);
+    assert_focus_navigation_bidirectional(elements);
 }, 'Focus should cover assigned elements of an assigned slot, as well as elements that are directly assigned to a slot.');
 </script>

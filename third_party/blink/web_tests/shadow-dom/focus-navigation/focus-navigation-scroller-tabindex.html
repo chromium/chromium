@@ -74,9 +74,7 @@ promise_test(async () => {
     'end',
   ];
 
-  await assert_focus_navigation_forward(elements);
-  elements.reverse();
-  await assert_focus_navigation_backward(elements);
+  assert_focus_navigation_bidirectional(elements);
 }, 'Should focus on scroller depending on tabindex value.');
 
 </script>
