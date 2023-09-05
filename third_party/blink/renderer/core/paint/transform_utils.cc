@@ -10,8 +10,11 @@
 
 namespace blink {
 
-PhysicalRect ComputeReferenceBox(const NGPhysicalBoxFragment& fragment) {
-  PhysicalRect fragment_reference_box = fragment.LocalRect();
+namespace {
+
+PhysicalRect ComputeReferenceBoxInternal(const NGPhysicalBoxFragment& fragment,
+                                         PhysicalRect border_box_rect) {
+  PhysicalRect fragment_reference_box = border_box_rect;
   switch (fragment.Style().TransformBox()) {
     case ETransformBox::kFillBox:
     case ETransformBox::kContentBox:
@@ -26,16 +29,19 @@ PhysicalRect ComputeReferenceBox(const NGPhysicalBoxFragment& fragment) {
   return fragment_reference_box;
 }
 
+}  // namespace
+
+PhysicalRect ComputeReferenceBox(const NGPhysicalBoxFragment& fragment) {
+  return ComputeReferenceBoxInternal(fragment, fragment.LocalRect());
+}
+
 PhysicalRect ComputeReferenceBox(const LayoutBox& box) {
-  switch (box.StyleRef().TransformBox()) {
-    case ETransformBox::kFillBox:
-    case ETransformBox::kContentBox:
-      return box.PhysicalContentBoxRect();
-    case ETransformBox::kStrokeBox:
-    case ETransformBox::kBorderBox:
-    case ETransformBox::kViewBox:
-      return box.PhysicalBorderBoxRect();
+  // If the box is fragment-less return an empty reference box.
+  if (box.PhysicalFragmentCount() == 0u) {
+    return PhysicalRect();
   }
+  return ComputeReferenceBoxInternal(*box.GetPhysicalFragment(0),
+                                     box.PhysicalBorderBoxRect());
 }
 
 }  // namespace blink
