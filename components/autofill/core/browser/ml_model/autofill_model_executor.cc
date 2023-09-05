@@ -18,18 +18,19 @@
 
 namespace autofill {
 
-AutofillModelExecutor::AutofillModelExecutor() {
-  CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
-  vectorizer_ =
-      AutofillModelVectorizer::CreateVectorizer(base::FilePath::FromASCII(
-          features::kAutofillModelDictionaryFilePath.Get()));
-  CHECK(vectorizer_);
-}
+AutofillModelExecutor::AutofillModelExecutor() = default;
 AutofillModelExecutor::~AutofillModelExecutor() = default;
 
 bool AutofillModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const FormFieldData& input) {
+  CHECK(base::FeatureList::IsEnabled(features::kAutofillModelPredictions));
+  if (!vectorizer_) {
+    vectorizer_ =
+        AutofillModelVectorizer::CreateVectorizer(base::FilePath::FromASCII(
+            features::kAutofillModelDictionaryFilePath.Get()));
+    CHECK(vectorizer_);
+  }
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
   CHECK_EQ(kTfLiteFloat32, input_tensors[1]->type);

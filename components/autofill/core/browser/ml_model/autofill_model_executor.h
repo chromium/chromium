@@ -69,6 +69,9 @@ class AutofillModelExecutor
       UNKNOWN_TYPE};
 
   // optimization_guide::BaseModelExecutor:
+  // This function must be called on a background thread.
+  // It initilaizes the vectorizer by reading the dictionary file
+  // which can't be done on the UI thread.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   const FormFieldData& input) override;
   absl::optional<ServerFieldType> Postprocess(
