@@ -133,7 +133,8 @@ def GetDataDependencies(runtime_deps_path):
     return []
 
   with open(runtime_deps_path, 'r') as runtime_deps_file:
-    rel_host_files = [l.strip() for l in runtime_deps_file if l]
+    # .runtime_deps can contain duplicates.
+    rel_host_files = sorted({l.strip() for l in runtime_deps_file if l})
 
   output_directory = constants.GetOutDirectory()
   abs_host_files = [
