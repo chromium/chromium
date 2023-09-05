@@ -66,6 +66,7 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
   void OnDeviceSeen();
 
   void UpdateMonitoringStatus();
+  void InitializeMonitoring();
   void StartMonitoring();
   void StopMonitoring();
   void OnTimerExpired();
@@ -79,6 +80,7 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
   raw_ptr<EcheConnector, ExperimentalAsh> eche_connector_;
   raw_ptr<EcheMessageReceiver, ExperimentalAsh> eche_message_receiver_;
   base::RepeatingTimer timer_;
+  base::OneShotTimer shorter_duty_cycle_timer_;
 
   bool stream_running_ = false;
   bool is_monitoring_ = false;

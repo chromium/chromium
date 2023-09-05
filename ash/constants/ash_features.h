@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace ash::features {
 
@@ -367,11 +368,17 @@ BASE_DECLARE_FEATURE(kEcheLauncherIconsInMoreAppsButton);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEcheNetworkConnectionState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kEcheShorterScanningDutyCycle);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kEcheBackgroundConnectionAttemptThrottleTimeout;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kEcheConnectionStatusResetTimeout;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOnTime;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFocusMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev);
@@ -938,6 +945,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherListViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEcheLauncherIconsInMoreAppsButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheNetworkConnectionStateEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsEcheShorterScanningDutyCycleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();

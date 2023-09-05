@@ -1752,6 +1752,18 @@ const base::FeatureParam<base::TimeDelta> kEcheConnectionStatusResetTimeout{
     &kEcheNetworkConnectionState, "EcheConnectionStatusResetTimeout",
     base::Minutes(10)};
 
+BASE_FEATURE(kEcheShorterScanningDutyCycle,
+             "EcheShorterScanningDutyCycle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOnTime{
+    &kEcheShorterScanningDutyCycle, "EcheScanningCycleOnTime",
+    base::Seconds(30)};
+
+const base::FeatureParam<base::TimeDelta> kEcheScanningCycleOffTime{
+    &kEcheShorterScanningDutyCycle, "EcheScanningCycleOffTime",
+    base::Seconds(30)};
+
 // Enables multi-zone rgb keyboard customization.
 BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",
@@ -3612,6 +3624,10 @@ bool IsEcheLauncherListViewEnabled() {
 bool IsEcheNetworkConnectionStateEnabled() {
   return base::FeatureList::IsEnabled(kEcheNetworkConnectionState) &&
          base::FeatureList::IsEnabled(kEcheSWA);
+}
+
+bool IsEcheShorterScanningDutyCycleEnabled() {
+  return base::FeatureList::IsEnabled(kEcheShorterScanningDutyCycle);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {
