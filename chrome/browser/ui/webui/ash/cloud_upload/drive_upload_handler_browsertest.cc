@@ -31,7 +31,6 @@
 #include "content/public/test/network_connection_change_simulator.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
-#include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,7 +45,6 @@ using drive::DriveIntegrationService;
 using drive::util::ConnectionStatus;
 using drive::util::SetDriveConnectionStatusForTesting;
 using testing::_;
-using enum network::mojom::ConnectionType;
 
 namespace {
 
@@ -97,8 +95,6 @@ class DriveUploadHandlerTest
   }
 
   void SetUpOnMainThread() override {
-    content::NetworkConnectionChangeSimulator().SetConnectionType(
-        CONNECTION_ETHERNET);
     SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
     InProcessBrowserTest::SetUpOnMainThread();
   }
@@ -472,8 +468,6 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
-  content::NetworkConnectionChangeSimulator().SetConnectionType(
-      CONNECTION_NONE);
   SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
 
   // Define the source file as a test docx file within My files.
@@ -510,8 +504,6 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
       SetUpSourceFile(test_file_name, my_files_dir_);
 
   on_transfer_complete_callback_ = base::BindLambdaForTesting([this] {
-    content::NetworkConnectionChangeSimulator().SetConnectionType(
-        CONNECTION_NONE);
     SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
     drive_integration_service()->OnNetworkChanged();
   });
