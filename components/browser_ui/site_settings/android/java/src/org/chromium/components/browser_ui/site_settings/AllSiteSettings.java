@@ -45,6 +45,7 @@ import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -240,14 +241,23 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
-                clearZooms();
-                mDialogManager.destroy();
+                switch (buttonType) {
+                    case ButtonType.POSITIVE:
+                        clearZooms();
+                        mDialogManager.destroy();
+                        break;
+                    case ButtonType.NEGATIVE:
+                        mDialogManager.destroy();
+                        break;
+                    default:
+                        // Should never reach this case, as there are only two buttons displayed.
+                        assert false;
+                        break;
+                }
             }
 
             @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                mDialogManager.destroy();
-            }
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
     }
 
