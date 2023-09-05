@@ -714,8 +714,9 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       // didn't come from a service worker.
       scoped_refptr<ServiceWorkerRegistration> registration =
           context_->GetLiveRegistration(registration_id_);
-      DCHECK(registration) << "running workers should have a live registration";
-      registration->set_self_update_delay(base::TimeDelta());
+      if (registration) {
+        registration->set_self_update_delay(base::TimeDelta());
+      }
     }
   }
 
