@@ -428,6 +428,94 @@ class CORE_EXPORT CSSParserTokenStream {
     next_ = tokenizer_.Restore(next_, offset_);
   }
 
+  // A RestoringBlockGuard is an object that allows you to enter a block,
+  // and guarantees that (once destroyed) the stream is not left in the middle
+  // of that block. This guarantee is met one of two ways:
+  //
+  //  1. The guard is *released*, and no action is taken when it goes
+  //     out of scope, except consuming the block-end. Releasing a guard
+  //     is only possible at the block-end (or EOF).
+  //  2. The guard is not released, and the stream is restored to the
+  //     specified state when the guard goes out of scope. This is the default
+  //     behavior.
+  //
+  // This is useful in situations where you need to speculatively enter a block,
+  // but then expect to "abort" parsing depending on the first few tokens within
+  // that block.
+  //
+  // Note that the provided state must not cross another [Restoring]BlockGuard.
+  class RestoringBlockGuard {
+    STACK_ALLOCATED();
+
+   public:
+    RestoringBlockGuard(CSSParserTokenStream& stream, State state)
+        : stream_(stream), boundaries_(stream.boundaries_), state_(state) {
+      const CSSParserToken next = stream.ConsumeInternal();
+      DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
+      stream.boundaries_ = FlagForTokenType(kEOFToken);
+    }
+
+    // Attempts to release the guard. If the guard could not be released
+    // (i.e. we are not at the end of the block or EOF), then this call
+    // has no effect, and ~RestoringBlockGuard will restore the stream to
+    // the pre-guard state.
+    //
+    // The return value of this function is useful for checking whether or
+    // not we are at the end of the block. If we expect to be at the end
+    // of a block, we can try to Release the guard. If that succeeded
+    // we were indeed at the end, otherwise we had unexpected trailing
+    // tokens (a parse failure of whatever we're trying to parse).
+    //
+    // Note that the following examples ignore whitespace tokens.
+    //
+    //  Example 1: rgb(0, 128, 64)
+    //                           ^
+    //  After consuming '64' from this stream, we try to Release the guard.
+    //  Since we're at the end of the block, the guard is released.
+    //
+    //  Example 2: rgb(0, 128, 64 nonsense)
+    //                            ^
+    //  After consuming '64' from this stream, we try to Release the guard.
+    //  Since we're not at the end of the block, the guard isn't released,
+    //  which means that we have unknown trailing tokens.
+    bool Release() {
+      stream_.EnsureLookAhead();
+      if (stream_.next_.IsEOF() ||
+          stream_.next_.GetBlockType() == CSSParserToken::kBlockEnd) {
+        released_ = true;
+        return true;
+      }
+      return false;
+    }
+
+    ~RestoringBlockGuard() {
+      stream_.EnsureLookAhead();
+      if (released_) {
+        // The guard has been released, nothing to do except move past
+        // the block-end.
+        const CSSParserToken& token = stream_.UncheckedConsumeInternal();
+        DCHECK(token.GetType() == kEOFToken ||
+               token.GetBlockType() == CSSParserToken::kBlockEnd);
+      } else {
+        // The guard has not been released, and we need to restore to the
+        // pre-guard state.
+        stream_.Restore(state_);
+        // Pops the item pushed by the call to UncheckedConsumeInternal.
+        // Note that if we happen to be at the end of the block, then we already
+        // popped the block stack, but Restore would have pushed to the stack
+        // again.
+        stream_.PopBlockStack();
+      }
+      stream_.boundaries_ = boundaries_;
+    }
+
+   private:
+    CSSParserTokenStream& stream_;
+    uint64_t boundaries_;
+    State state_;
+    bool released_ = false;
+  };
+
  private:
   template <CSSParserTokenType... EndTypes>
   ALWAYS_INLINE bool TokenMarksEnd(const CSSParserToken& token) {
@@ -462,6 +550,8 @@ class CORE_EXPORT CSSParserTokenStream {
   // until the matching BlockEnd token or EOF. Requires but does _not_
   // leave a lookahead token active (for unknown reasons).
   void UncheckedSkipToEndOfBlock();
+
+  void PopBlockStack() { tokenizer_.block_stack_.pop_back(); }
 
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
   CSSTokenizer& tokenizer_;
