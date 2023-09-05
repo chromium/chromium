@@ -63,6 +63,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_util.h"
+#include "components/grit/components_resources.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_util.h"
@@ -2601,6 +2602,143 @@ IN_PROC_BROWSER_TEST_P(TrustSafetySentimentSurveyV2BrowserTest,
                                                      GetThreatType()));
   chrome::CloseTab(browser());
   observer.WaitForNavigationFinished();
+}
+
+class RedInterstitialFaceliftBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {
+ public:
+  RedInterstitialFaceliftBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kRedInterstitialFacelift);
+  }
+  ~RedInterstitialFaceliftBrowserTest() override = default;
+
+  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RedInterstitialFaceliftBrowserTestWithThreatTypeAndIsolationSetting,
+    RedInterstitialFaceliftBrowserTest,
+    testing::Combine(
+        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+                        SB_THREAT_TYPE_URL_MALWARE,
+                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+                        SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
+                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Bool()));  // If isolate all sites for testing.
+
+IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
+                       TestNewInterstitialPageStringsEnhancedEnabled) {
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+  GURL url = SetupWarningAndNavigate(browser());
+
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  SafeBrowsingBlockingPage* interstitial_page;
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          contents);
+  ASSERT_TRUE(helper);
+  interstitial_page = static_cast<SafeBrowsingBlockingPage*>(
+      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
+  BaseSafeBrowsingErrorUI* temp_var = interstitial_page->sb_error_ui();
+  base::Value::Dict load_time_data;
+  temp_var->PopulateStringsForHtml(load_time_data);
+
+  // Safe browsing blocking page should use new heading and primary,
+  // explanation, and proceed paragraph strings.
+  ASSERT_EQ(load_time_data.Find("heading")->GetString(),
+            base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_HEADING_NEW)));
+  SBThreatType threat_type = GetThreatType();
+  if (threat_type == SB_THREAT_TYPE_URL_PHISHING ||
+      threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
+    ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW)));
+    if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+                base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                    IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW)));
+    } else {
+      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+                base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+                    IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                    u"127.0.0.1")));
+    }
+    ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW)));
+  } else if (threat_type == SB_THREAT_TYPE_URL_MALWARE ||
+             threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE) {
+    ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW)));
+    if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+                base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                    IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW)));
+    } else {
+      ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+                base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+                    IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW,
+                    u"127.0.0.1")));
+    }
+    ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW)));
+  } else {
+    ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW)));
+    ASSERT_EQ(load_time_data.Find("explanationParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW)));
+    ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
+              base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+                  IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW)));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
+                       TestNewInterstitialPageStringsStandardEnabled) {
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+  GURL url = SetupWarningAndNavigate(browser());
+
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  SafeBrowsingBlockingPage* interstitial_page;
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          contents);
+  ASSERT_TRUE(helper);
+  interstitial_page = static_cast<SafeBrowsingBlockingPage*>(
+      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
+  BaseSafeBrowsingErrorUI* temp_var = interstitial_page->sb_error_ui();
+  base::Value::Dict load_time_data;
+  temp_var->PopulateStringsForHtml(load_time_data);
+
+  // Safe browsing blocking page should use new header and enhanced protection
+  // promo message strings.
+  ASSERT_EQ(load_time_data.Find("heading")->GetString(),
+            base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_HEADING_NEW)));
+  ASSERT_EQ(
+      load_time_data.Find(security_interstitials::kEnhancedProtectionMessage)
+          ->GetString(),
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(
+          IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW)));
 }
 
 class SafeBrowsingBlockingPageDelayedWarningBrowserTest

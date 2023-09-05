@@ -57,6 +57,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1408,6 +1409,102 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
             1);
 
   EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(), url);
+}
+
+class PageInfoBubbleViewBrowserTestWithRedInterstitialFaceliftEnabled
+    : public PageInfoBubbleViewBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageInfoBubbleViewBrowserTest::SetUpCommandLine(command_line);
+    feature_list.InitAndEnableFeature(safe_browsing::kRedInterstitialFacelift);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewBrowserTestWithRedInterstitialFaceliftEnabled,
+    MalwareNewStrings) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  // Setup the bogus identity with an expired cert and SB flagging.
+  PageInfoUI::IdentityInfo identity;
+  identity.safe_browsing_status = PageInfo::SAFE_BROWSING_STATUS_MALWARE;
+  OpenPageInfoBubble(browser());
+
+  SetPageInfoBubbleIdentityInfo(identity);
+
+  // Verify bubble uses new malware summary and details strings.
+  EXPECT_EQ(GetPageInfoBubbleViewSummaryText(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_SUMMARY_NEW));
+  EXPECT_EQ(GetPageInfoBubbleViewDetailText(),
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_MALWARE_DETAILS_NEW) +
+                u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewBrowserTestWithRedInterstitialFaceliftEnabled,
+    SocialEngineeringNewStrings) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  // Setup the bogus identity with an expired cert and SB flagging.
+  PageInfoUI::IdentityInfo identity;
+  identity.safe_browsing_status =
+      PageInfo::SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING;
+  OpenPageInfoBubble(browser());
+
+  SetPageInfoBubbleIdentityInfo(identity);
+
+  // Verify bubble uses new malware summary and details strings.
+  EXPECT_EQ(
+      GetPageInfoBubbleViewSummaryText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SOCIAL_ENGINEERING_SUMMARY_NEW));
+  EXPECT_EQ(
+      GetPageInfoBubbleViewDetailText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SOCIAL_ENGINEERING_DETAILS_NEW) +
+          u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewBrowserTestWithRedInterstitialFaceliftEnabled,
+    UnwantedSoftwareNewStrings) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
+
+  // Setup the bogus identity with an expired cert and SB flagging.
+  PageInfoUI::IdentityInfo identity;
+  identity.safe_browsing_status =
+      PageInfo::SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE;
+  OpenPageInfoBubble(browser());
+
+  SetPageInfoBubbleIdentityInfo(identity);
+
+  // Verify bubble uses new malware summary and details strings.
+  EXPECT_EQ(
+      GetPageInfoBubbleViewSummaryText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_UNWANTED_SOFTWARE_SUMMARY_NEW));
+  EXPECT_EQ(
+      GetPageInfoBubbleViewDetailText(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_UNWANTED_SOFTWARE_DETAILS_NEW) +
+          u" " + l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
