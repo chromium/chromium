@@ -564,7 +564,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
                 // Accessibility state may have changed while |this| was not shown, so refresh.
                 refreshNativeState();
-                if (isNativeInitialized()) mHistogramRecorder.updateTimeOfNativeInitialization();
+                if (isNativeInitialized()) {
+                    // When we are in an initialized state, accessibility may be disabled. In that
+                    // case, we should not update the time of native initialization, and instead
+                    // only update the time of the last disabled call so we don't count any time
+                    // while this instance was hidden/backgrounded.
+                    if (mIsCurrentlyAutoDisabled) {
+                        mHistogramRecorder.showAutoDisabledInstance();
+                    } else {
+                        mHistogramRecorder.updateTimeOfNativeInitialization();
+                    }
+                }
             }
 
             @Override
@@ -575,9 +585,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mHistogramRecorder.recordAccessibilityUsageHistograms();
 
                 // When the native code was initialized, also record performance metrics.
-                if (!isNativeInitialized()) return;
-                mHistogramRecorder.recordAccessibilityPerformanceHistograms();
-                mAutoDisableAccessibilityHandler.cancelDisableTimer();
+                if (isNativeInitialized()) {
+                    mHistogramRecorder.recordAccessibilityPerformanceHistograms();
+                    // When we are in an initialized state, accessibility may be disabled. In that
+                    // case, we should keep an on-going sum of the time spent disabled (without
+                    // counting time while hidden/backgrounded).
+                    if (mIsCurrentlyAutoDisabled) {
+                        mHistogramRecorder.hideAutoDisabledInstance();
+                    }
+                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
+                }
             }
         };
     }
@@ -600,11 +617,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 mWebContentsObserver = null;
             }
 
-            if (!isNativeInitialized()) return;
-
-            ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
-            mHistogramRecorder.recordAccessibilityPerformanceHistograms();
-            mAutoDisableAccessibilityHandler.cancelDisableTimer();
+            // When the native code was initialized, also record performance metrics unregister
+            // our broadcast receiver.
+            if (isNativeInitialized()) {
+                ContextUtils.getApplicationContext().unregisterReceiver(mBroadcastReceiver);
+                mHistogramRecorder.recordAccessibilityPerformanceHistograms();
+                // When we are in an initialized state, accessibility may be disabled. In that
+                // case, we should keep an on-going sum of the time spent disabled (without
+                // counting time while hidden/backgrounded).
+                if (mIsCurrentlyAutoDisabled) {
+                    mHistogramRecorder.hideAutoDisabledInstance();
+                }
+                mAutoDisableAccessibilityHandler.cancelDisableTimer();
+            }
         }
     }
 
@@ -741,6 +766,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // disabled and re-enabled when there is no root manager. See note in
                 // {@link web_contents_accessibility_android.h}.
                 if (!isRootManagerConnected()) return;
+
+                // If accessibility was auto-disabled, then we do not want to restart a new timer.
+                if (mIsCurrentlyAutoDisabled) return;
 
                 if (!AccessibilityState.isAnyAccessibilityServiceEnabled()) {
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
