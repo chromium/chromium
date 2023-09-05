@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -479,6 +480,44 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   http_response_a_c->set_code(net::HTTP_OK);
   response_a_c->Send(http_response_a_c->ToResponseString());
   response_a_c->Done();
+}
+
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
+                       NotAllowed_LabelError) {
+  MockCookieDeprecationLabelContentBrowserClientBase<
+      ContentBrowserTestContentBrowserClient>
+      browser_client;
+  EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowedForContext)
+      .WillOnce(testing::Return(false));
+
+  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server->GetURL("a.test", "/hello.html")));
+  EXPECT_EQ(EvalJs(shell(), R"((async () => {
+        return await navigator.cookieDeprecationLabel.getValue()
+                       .catch(() => 'error'); })())"),
+            "error");
+}
+
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
+                       Allowed_LabelReturned) {
+  MockCookieDeprecationLabelContentBrowserClientBase<
+      ContentBrowserTestContentBrowserClient>
+      browser_client;
+  EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowedForContext)
+      .WillOnce(testing::Return(true));
+
+  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+  ASSERT_TRUE(https_server->Start());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server->GetURL("a.test", "/hello.html")));
+  EXPECT_EQ(EvalJs(shell(), R"((async () => {
+        return await navigator.cookieDeprecationLabel.getValue();
+      })())"),
+            "label_test");
 }
 
 }  // namespace

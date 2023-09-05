@@ -5,6 +5,7 @@
 #include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -15,21 +16,6 @@
 
 namespace content {
 namespace {
-
-class MockContentBrowserClient : public TestContentBrowserClient {
- public:
-  // ContentBrowserClient:
-  MOCK_METHOD(bool,
-              IsCookieDeprecationLabelAllowed,
-              (content::BrowserContext * browser_context),
-              (override));
-  MOCK_METHOD(bool,
-              IsCookieDeprecationLabelAllowedForContext,
-              (content::BrowserContext * browser_context,
-               const url::Origin& top_frame_origin,
-               const url::Origin& context_origin),
-              (override));
-};
 
 class CookieDeprecationLabelManagerTest : public testing::Test {
  public:
@@ -47,7 +33,8 @@ class CookieDeprecationLabelManagerTest : public testing::Test {
 };
 
 TEST_F(CookieDeprecationLabelManagerTest, NotAllowed_NoLabelReturned) {
-  MockContentBrowserClient browser_client;
+  MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
+      browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowed)
       .WillOnce(testing::Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
@@ -56,7 +43,8 @@ TEST_F(CookieDeprecationLabelManagerTest, NotAllowed_NoLabelReturned) {
 }
 
 TEST_F(CookieDeprecationLabelManagerTest, Allowed_LabelReturned) {
-  MockContentBrowserClient browser_client;
+  MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
+      browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowed)
       .WillOnce(testing::Return(true));
   ScopedContentBrowserClientSetting setting(&browser_client);
@@ -66,7 +54,8 @@ TEST_F(CookieDeprecationLabelManagerTest, Allowed_LabelReturned) {
 
 TEST_F(CookieDeprecationLabelManagerTest,
        NotAllowedForContext_NoLabelReturned) {
-  MockContentBrowserClient browser_client;
+  MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
+      browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowedForContext)
       .WillOnce(testing::Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
@@ -80,7 +69,8 @@ TEST_F(CookieDeprecationLabelManagerTest,
 }
 
 TEST_F(CookieDeprecationLabelManagerTest, AllowedForContext_LabelReturned) {
-  MockContentBrowserClient browser_client;
+  MockCookieDeprecationLabelContentBrowserClientBase<TestContentBrowserClient>
+      browser_client;
   EXPECT_CALL(browser_client, IsCookieDeprecationLabelAllowedForContext)
       .WillOnce(testing::Return(true));
   ScopedContentBrowserClientSetting setting(&browser_client);

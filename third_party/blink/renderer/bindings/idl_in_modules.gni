@@ -117,6 +117,8 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/contacts_picker/contacts_manager.idl",
   "//third_party/blink/renderer/modules/contacts_picker/contacts_select_options.idl",
   "//third_party/blink/renderer/modules/contacts_picker/navigator_contacts.idl",
+  "//third_party/blink/renderer/modules/cookie_deprecation_label/cookie_deprecation_label.idl",
+  "//third_party/blink/renderer/modules/cookie_deprecation_label/navigator_cookie_deprecation_label.idl",
   "//third_party/blink/renderer/modules/content_index/content_description.idl",
   "//third_party/blink/renderer/modules/content_index/content_icon_definition.idl",
   "//third_party/blink/renderer/modules/content_index/content_index.idl",

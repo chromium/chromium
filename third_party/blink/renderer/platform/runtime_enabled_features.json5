@@ -745,6 +745,10 @@
       base_feature: "none",
     },
     {
+      name: "CookieDeprecationFacilitatedTestingLabels",
+      base_feature: "none",
+    },
+    {
       name: "CooperativeScheduling",
       base_feature: "none",
       public: true,
