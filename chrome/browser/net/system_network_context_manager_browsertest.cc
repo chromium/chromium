@@ -56,9 +56,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
@@ -221,11 +221,27 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
             dynamic_params->patterns_allowed_to_use_all_schemes);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// GSSAPI is currently incompatible with the network service sandbox
+// (crbug.com/1474362). It isn't known until the browser is already started
+// whether GSSAPI is desired, so if Chrome detects that GSSAPI is desired after
+// the network service has already started sandboxed, the network
+// service must be restarted so the sandbox can be removed.
 class SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
       public content::ServiceProcessHost::Observer {
  public:
+  // On both ChromeOS and Linux, a pref determines whether GSSAPI is desired in
+  // the network service. This pref will determine whether the network service
+  // is sandboxed, and when it changes from false to true this should trigger a
+  // network service restart to remove the sandbox.
+  const char* kGssapiDesiredPref =
+#if BUILDFLAG(IS_CHROMEOS)
+      prefs::kKerberosEnabled;
+#elif BUILDFLAG(IS_LINUX)
+      prefs::kReceivedHttpAuthNegotiateHeader;
+#endif
+
   SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest() {
     scoped_feature_list_.InitAndEnableFeature(
         sandbox::policy::features::kNetworkServiceSandbox);
@@ -303,17 +319,17 @@ class SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest
 
 IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    NetworkServiceRestartsUnsandboxedOnKerberosEnabled) {
+    NetworkServiceRestartsUnsandboxedOnGssapiDesired) {
   PrefService* local_state = g_browser_process->local_state();
 
-  // Ensure kerberos starts disabled.
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kKerberosEnabled));
+  // Ensure GSSAPI starts as "undesired".
+  EXPECT_FALSE(local_state->GetBoolean(kGssapiDesiredPref));
   // Ensure the network service starts sandboxed.
   ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/true);
 
-  // Now enable kerberos.
-  local_state->SetBoolean(prefs::kKerberosEnabled, true);
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
+  // Now signal that GSSAPI is desired.
+  local_state->SetBoolean(kGssapiDesiredPref, true);
+  EXPECT_TRUE(local_state->GetBoolean(kGssapiDesiredPref));
   // The network service should automatically restart, and be unsandboxed.
   WaitForNextLaunch();
   ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
@@ -328,21 +344,22 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    PRE_NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
+    PRE_NetworkServiceStartsUnsandboxedWithGssapiDesired) {
   PrefService* local_state = g_browser_process->local_state();
-  // Enable kerberos.
-  local_state->SetBoolean(prefs::kKerberosEnabled, true);
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kKerberosEnabled));
+  // Signal that GSSAPI is desired. This should persist across browser restarts
+  // like any pref.
+  local_state->SetBoolean(kGssapiDesiredPref, true);
+  EXPECT_TRUE(local_state->GetBoolean(kGssapiDesiredPref));
 }
 
 IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest,
-    NetworkServiceStartsUnsandboxedWithKerberosEnabled) {
+    NetworkServiceStartsUnsandboxedWithGssapiDesired) {
   // Ensure the network service starts sandboxed.
   ExpectNetworkServiceSeccompSandboxed(/*sandboxed=*/false);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
 class SystemNetworkContextManagerHttpNegotiateHeader
