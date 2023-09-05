@@ -1343,6 +1343,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 updateBackgroundColor(mSecondaryTasksSurfacePropertyModel);
             }
             if (mSecondaryTasksSurfaceController != null && !skipUpdateController) {
+                // Ensure the layout change listener and tabs are properly registered before
+                // showing.
+                if (mStartSurfaceSupplier.get() != null) {
+                    mStartSurfaceSupplier.get().getGridTabListDelegate().prepareTabGridView();
+                }
                 mSecondaryTasksSurfaceController.showTabSwitcherView(/* animate = */ true);
             }
         } else {
