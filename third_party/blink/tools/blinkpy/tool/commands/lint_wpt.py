@@ -18,7 +18,17 @@ import re
 import textwrap
 import typing
 import urllib.parse
-from typing import Dict, Hashable, List, Optional, Set, Tuple, Type, Union
+from typing import (
+    Dict,
+    FrozenSet,
+    Hashable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -33,7 +43,7 @@ from blinkpy.web_tests.port.base import Port
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
-from wptrunner import manifestupdate, metadata, wptmanifest
+from wptrunner import manifestupdate, metadata, wptmanifest, wpttest
 from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends import conditional, static
@@ -155,22 +165,6 @@ class MetadataBadValue(MetadataRule):
     Check that the value satisfies any required formats:
     https://web-platform-tests.org/tools/wptrunner/docs/expectation.html#web-platform-tests-metadata
     """
-    subtest_statuses = {
-        'PASS',
-        'FAIL',
-        'PRECONDITION_FAILED',
-        'TIMEOUT',
-        'NOTRUN',
-    }
-    common_test_statuses = {
-        'PRECONDITION_FAILED',
-        'TIMEOUT',
-        'CRASH',
-        'ERROR',
-    }
-    harness_statuses = common_test_statuses | {'OK'}
-    # Statuses for tests without subtests.
-    test_statuses = common_test_statuses | {'PASS', 'FAIL'}
     implementation_statuses = {'implementing', 'not-implementing', 'default'}
 
 
@@ -737,14 +731,15 @@ class MetadataLinter(static.Compiler):
                 break
 
     @property
-    def allowed_statuses(self) -> Set[str]:
+    def allowed_statuses(self) -> FrozenSet[str]:
+        test_cls = wpttest.manifest_test_cls[self.test_type]
         section_type = self.context['section_type']
         if section_type is SectionType.SUBTEST:
-            return MetadataBadValue.subtest_statuses
-        assert section_type is SectionType.TEST
-        if wpt_metadata.can_have_subtests(self.test_type):
-            return MetadataBadValue.harness_statuses
-        return MetadataBadValue.test_statuses
+            result_cls = test_cls.subtest_result_cls
+            assert result_cls, f'{self.test_type!r} test cannot have subtests'
+        else:
+            result_cls = test_cls.result_cls
+        return frozenset(result_cls.statuses)
 
 
 def _format_condition(condition: Condition) -> str:
