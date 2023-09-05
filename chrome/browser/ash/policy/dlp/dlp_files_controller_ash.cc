@@ -111,6 +111,7 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
     case apps::AppType::kPluginVm:
       return DlpFileDestination(data_controls::Component::kPluginVm);
     case apps::AppType::kWeb:
+    case apps::AppType::kSystemWeb:
       // Expecting `PublisherId()` to return an URL. For web apps this should be
       // the start URL.
       return DlpFileDestination(GURL(app_update.PublisherId()));
@@ -121,7 +122,6 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
     case apps::AppType::kRemote:
     case apps::AppType::kBorealis:
     case apps::AppType::kBruschetta:
-    case apps::AppType::kSystemWeb:
       return absl::nullopt;
   }
   return absl::nullopt;
