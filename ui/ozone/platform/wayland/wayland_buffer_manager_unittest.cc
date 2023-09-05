@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1234,6 +1235,105 @@ TEST_P(WaylandBufferManagerTest,
   DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
   DestroyBufferAndSetTerminateExpectation(kBufferId3, false /*fail*/);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// This test ensures that a failed presentation feedback (with flags set as
+// `gfx::PresentationFeedback::kFailure`) is received by the client and
+// propagated as a failed presentation.
+TEST_P(WaylandBufferManagerTest, EnsureFailedPresentationIsSent) {
+  constexpr uint32_t kBufferId1 = 1;
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    // Enable wp_presentation support.
+    auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
+    ASSERT_TRUE(mock_wp_presentation);
+  });
+
+  const gfx::AcceleratedWidget widget = window_->GetWidget();
+  const gfx::Rect bounds = gfx::Rect({0, 0}, kDefaultSize);
+  window_->SetBoundsInDIP(bounds);
+
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
+  });
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, kBufferId1);
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    auto* mock_surface = server->GetObject<wl::MockSurface>(id);
+
+    constexpr uint32_t kNumberOfCommits = 1;
+    EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+    EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+    EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+  });
+
+  // All the other expectations must come in order.
+  ::testing::InSequence sequence;
+  EXPECT_CALL(mock_surface_gpu,
+              OnSubmission(kBufferId1, gfx::SwapResult::SWAP_ACK, _))
+      .Times(1);
+  EXPECT_CALL(mock_surface_gpu, OnPresentation(_, _)).Times(0);
+
+  // Commit the buffer
+  CommitBuffer(widget, kBufferId1, kBufferId1,
+               gfx::FrameData(delegate_.viz_seq()), bounds,
+               gfx::RoundedCornersF(), kDefaultScale, bounds);
+
+  // Let the mojo message for OnSubmission go back.
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    // Verify we have a presentation callback now. This will be sent later.
+    EXPECT_EQ(
+        1u,
+        server->EnsureAndGetWpPresentation()->num_of_presentation_callbacks());
+
+    server->GetObject<wl::MockSurface>(id)->SendFrameCallback();
+  });
+
+  // Its all setup until this point.
+  // The main part of the test starts here.
+  EXPECT_CALL(
+      mock_surface_gpu,
+      OnPresentation(
+          kBufferId1,
+          ::testing::Field(
+              &gfx::PresentationFeedback::flags,
+              ::testing::Eq(gfx::PresentationFeedback::Flags::kFailure))))
+      .Times(1);
+
+  // Set `.flags` as `gfx::PresentationFeedback::kFailure`.
+  wl::MockWpPresentation::PresentationFeedbackParams params{
+      .tv_sec_hi = 1,
+      .tv_sec_lo = 1,
+      .tv_nsec = 1,
+      .refresh = 1,
+      .seq_hi = 1,
+      .seq_lo = 1,
+      .flags = gfx::PresentationFeedback::kFailure};
+
+  PostToServerAndWait([params](wl::TestWaylandServerThread* server) {
+    auto* mock_wp_presentation = server->EnsureAndGetWpPresentation();
+    EXPECT_EQ(1u, mock_wp_presentation->num_of_presentation_callbacks());
+    mock_wp_presentation->SendPresentationFeedbackToClient(/*last=*/false,
+                                                           params);
+  });
+
+  // Ensure that presentation feedback is flushed.
+  task_environment_.FastForwardBy(
+      WaylandFrameManager::GetPresentationFlushTimerDurationForTesting());
+
+  testing::Mock::VerifyAndClearExpectations(&mock_surface_gpu);
+
+  DestroyBufferAndSetTerminateExpectation(kBufferId1, false /*fail*/);
+}
+#endif
 
 TEST_P(WaylandBufferManagerTest, TestCommitBufferConditions) {
   constexpr uint32_t kDmabufBufferId = 1;

@@ -49,27 +49,38 @@ void MockWpPresentation::DropPresentationCallback(bool last) {
 }
 
 void MockWpPresentation::SendPresentationCallback() {
-  SendPresentationFeedbackToClient(/*last=*/false, /*discarded=*/false);
+  PresentationFeedbackParams params{
+      .tv_sec_hi = 1,
+      .tv_sec_lo = 1,
+      .tv_nsec = 1,
+      .refresh = 1,
+      .seq_hi = 1,
+      .seq_lo = 1,
+      .flags = static_cast<uint32_t>(WP_PRESENTATION_FEEDBACK_KIND_VSYNC)};
+  SendPresentationFeedbackToClient(
+      /*last=*/false, params);
 }
 
 void MockWpPresentation::SendPresentationCallbackDiscarded(bool last) {
-  SendPresentationFeedbackToClient(last, /*discarded=*/true);
+  SendPresentationFeedbackToClient(last, absl::nullopt);
 }
 
-void MockWpPresentation::SendPresentationFeedbackToClient(bool last,
-                                                          bool discarded) {
+void MockWpPresentation::SendPresentationFeedbackToClient(
+    bool last,
+    absl::optional<PresentationFeedbackParams> params) {
   wl_resource* callback_resource = GetPresentationCallbackResource(last);
-  if (!callback_resource)
+  if (!callback_resource) {
     return;
+  }
 
-  if (discarded) {
+  if (!params.has_value()) {
+    // If `params` is not present, consider that as discarded.
     wp_presentation_feedback_send_discarded(callback_resource);
   } else {
-    // TODO(msisov): add support for test provided presentation feedback values.
     wp_presentation_feedback_send_presented(
-        callback_resource, 0 /* tv_sec_hi */, 0 /* tv_sec_lo */,
-        0 /* tv_nsec */, 0 /* refresh */, 0 /* seq_hi */, 0 /* seq_lo */,
-        0 /* flags */);
+        callback_resource, params->tv_sec_hi, params->tv_sec_lo,
+        params->tv_nsec, params->refresh, params->seq_hi, params->seq_lo,
+        params->flags);
   }
   wl_client_flush(wl_resource_get_client(callback_resource));
   wl_resource_destroy(callback_resource);

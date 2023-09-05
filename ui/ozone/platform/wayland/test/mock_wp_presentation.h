@@ -18,6 +18,16 @@ extern const struct wp_presentation_interface kMockWpPresentationImpl;
 
 class MockWpPresentation : public GlobalObject {
  public:
+  struct PresentationFeedbackParams {
+    uint32_t tv_sec_hi;
+    uint32_t tv_sec_lo;
+    uint32_t tv_nsec;
+    uint32_t refresh;
+    uint32_t seq_hi;
+    uint32_t seq_lo;
+    uint32_t flags;
+  };
+
   MockWpPresentation();
 
   MockWpPresentation(const MockWpPresentation&) = delete;
@@ -46,10 +56,19 @@ class MockWpPresentation : public GlobalObject {
   // Sends successful presentation callback for the first callback item in
   // |presentation_callbacks| and deletes that.
   void SendPresentationCallback();
-  // Sends failed presentation callback for the first callback item (if |last|
-  // is true, then the very recent one) in |presentation_callbacks| and deletes
-  // that.
+
+  // Sends discarded presentation callback for the first callback item (if
+  // |last| is true, then the very recent one) in |presentation_callbacks| and
+  // deletes that.
   void SendPresentationCallbackDiscarded(bool last = false);
+
+  // Sends either discarded or feedback with `params` to client and deletes
+  // the feedback resource. If `params` is null, then send discarded feedback.
+  // Which feedback is sent (the oldest or the most recent) is based on |last|
+  // value.
+  void SendPresentationFeedbackToClient(
+      bool last,
+      absl::optional<PresentationFeedbackParams> params);
 
  private:
   // Sends either discarded or succeeded, which is based on |discarded|,
