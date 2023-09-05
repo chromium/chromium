@@ -1865,56 +1865,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.LanguagePacks.Mojo.BasePackStateResponse"
-    enum="LanguagePackMojoPackState" expires_after="2023-07-01">
-  <owner>mlcui@google.com</owner>
-  <owner>cros-borders-eng@google.com</owner>
-  <summary>
-    Records the state of what state a base pack is in (whether it's installed or
-    not) when the language packs Mojo interface responds to an IPC.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.LanguagePacks.Mojo.GetPackInfo.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2023-11-19">
-  <owner>mlcui@google.com</owner>
-  <owner>cros-borders-eng@google.com</owner>
-  <summary>
-    Records which feature was requested by callers of the language packs Mojo
-    interface's &quot;GetPackInfo&quot; IPC call.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.LanguagePacks.Mojo.InstallBasePack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2023-07-01">
-  <owner>mlcui@google.com</owner>
-  <owner>cros-borders-eng@google.com</owner>
-  <summary>
-    Records which feature was requested by callers of the language packs Mojo
-    interface's &quot;InstallBasePack&quot; IPC call.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.LanguagePacks.Mojo.InstallPack.Feature"
-    enum="LanguagePackMojoFeatureId" expires_after="2024-01-21">
-  <owner>mlcui@google.com</owner>
-  <owner>cros-borders-eng@google.com</owner>
-  <summary>
-    Records which feature was requested by callers of the language packs Mojo
-    interface's &quot;InstallPack&quot; IPC call.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.LanguagePacks.Mojo.PackStateResponse"
-    enum="LanguagePackMojoPackState" expires_after="2024-01-14">
-  <owner>mlcui@google.com</owner>
-  <owner>cros-borders-eng@google.com</owner>
-  <summary>
-    Records the state of what state a language pack is in (whether it's
-    installed or not) when the language packs Mojo interface responds to an IPC.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.LanguagePacks.Oobe.ValidLocale" enum="BooleanSuccess"
     expires_after="2024-02-20">
   <owner>claudiomagni@chromium.org</owner>
