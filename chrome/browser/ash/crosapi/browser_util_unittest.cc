@@ -178,6 +178,11 @@ TEST_F(BrowserUtilTest, LacrosDisallowedByCommandLineFlag) {
       ash::switches::kDisallowLacros);
 
   EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled());
+
+  cmd_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kDisableDisallowLacros);
+
+  EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled());
 }
 
 TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {

@@ -180,7 +180,8 @@ LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
 // Returns true if `kDisallowLacros` is set by command line.
 bool IsLacrosDisallowedByCommand() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return cmdline->HasSwitch(ash::switches::kDisallowLacros);
+  return cmdline->HasSwitch(ash::switches::kDisallowLacros) &&
+         !cmdline->HasSwitch(ash::switches::kDisableDisallowLacros);
 }
 
 // Returns whether or not lacros is allowed for the Primary user,
