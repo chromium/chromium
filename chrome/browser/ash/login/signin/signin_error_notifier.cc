@@ -207,9 +207,9 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
 void SigninErrorNotifier::OnTokenHandleCheck(
     const AccountId& account_id,
     const std::string& token,
-    const TokenHandleUtil::TokenHandleStatus& status) {
+    const TokenHandleUtil::Status& status) {
   token_handle_fetcher_->DiagnoseTokenHandleMapping(account_id, token);
-  if (status != TokenHandleUtil::INVALID) {
+  if (status != TokenHandleUtil::Status::kInvalid) {
     return;
   }
   RecordReauthReason(account_id, ReauthReason::kInvalidTokenHandle);

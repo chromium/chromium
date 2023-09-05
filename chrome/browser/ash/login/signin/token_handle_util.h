@@ -32,7 +32,8 @@ class TokenHandleUtil {
 
   ~TokenHandleUtil();
 
-  enum TokenHandleStatus { VALID, INVALID, UNKNOWN };
+  // Status of the token handle.
+  enum class Status { kValid, kInvalid, kUnknown };
 
   // `account_id`: The account for which the token handle check was performed.
   // `token`: The token which was checked. Empty if we could not find a token
@@ -41,7 +42,7 @@ class TokenHandleUtil {
   using TokenValidationCallback =
       base::OnceCallback<void(const AccountId& account_id,
                               const std::string& token,
-                              const TokenHandleStatus& status)>;
+                              const Status& status)>;
 
   // Returns true if UserManager has token handle associated with `account_id`.
   static bool HasToken(const AccountId& account_id);
