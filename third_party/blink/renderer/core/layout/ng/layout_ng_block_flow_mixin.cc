@@ -72,14 +72,6 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ResetNGInlineNodeData() {
   Base::CheckIsNotDestroyed();
   ng_inline_node_data_ = MakeGarbageCollected<NGInlineNodeData>();
-
-  // The offset_mapping determines the PlainText() output of text nodes,
-  // and depends non-locally on children inside the block flow. For example
-  // whitespace collapsing may happen or not based on the presence of a sibling
-  // inline object.
-  if (AXObjectCache* cache = Base::GetDocument().ExistingAXObjectCache()) {
-    cache->TextOffsetsChanged(this);
-  }
 }
 
 template <typename Base>

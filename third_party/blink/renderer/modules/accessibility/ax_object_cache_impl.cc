@@ -2184,29 +2184,6 @@ void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
   MarkAXObjectDirty(ax_object);
 }
 
-void AXObjectCacheImpl::TextOffsetsChanged(const LayoutBlockFlow* block_flow) {
-  if (AXObject* obj = Get(block_flow)) {
-    DeferTreeUpdate(TreeUpdateReason::kTextOffsetsChanged, obj);
-  }
-}
-
-void AXObjectCacheImpl::TextOffsetsChangedWithCleanLayout(AXObject* obj) {
-  if (!obj || obj->IsDetached()) {
-    return;
-  }
-#if DCHECK_IS_ON()
-  Document* document = obj->GetDocument();
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
-  // Text changing for a block flow invalidates all of the
-  // text strings for children, such as via LayoutObject::GetName().
-  if (obj->AccessibilityIsIncludedInTree()) {
-    MarkAXSubtreeDirtyWithCleanLayout(obj);
-  }
-}
-
 void AXObjectCacheImpl::TextChanged(Node* node) {
   if (!node)
     return;
@@ -3209,9 +3186,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
         break;
       case TreeUpdateReason::kTextChangedFromTextChangedAXObject:
         TextChangedWithCleanLayout(ax_object->GetNode(), ax_object);
-        break;
-      case TreeUpdateReason::kTextOffsetsChanged:
-        TextOffsetsChangedWithCleanLayout(ax_object);
         break;
       default:
         NOTREACHED() << "Update reason not handled: "

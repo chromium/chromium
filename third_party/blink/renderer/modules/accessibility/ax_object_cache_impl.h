@@ -235,9 +235,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
 
-  void TextOffsetsChanged(const LayoutBlockFlow*) override;
-  void TextOffsetsChangedWithCleanLayout(AXObject*);
-
   void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
   // Called when a node is connected to the document.
@@ -746,8 +743,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     kChildrenChanged = 100,
     kMarkAXObjectDirty = 101,
     kMarkAXSubtreeDirty = 102,
-    kTextChangedFromTextChangedAXObject = 103,
-    kTextOffsetsChanged = 104,
+    kTextChangedFromTextChangedAXObject = 103
   };
 
   struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
