@@ -336,7 +336,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   // Notify only after checking incognito match, otherwise the delegate will
   // take of changing the mode and try again. Notifying before the checks can
   // lead to be calling it twice, and calling 'did' below once.
-  notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
+  if (params.instant_load || !params.in_background()) {
+    notifier_->NewTabWillLoadUrl(params.web_params.url, params.user_initiated);
+  }
 
   if (!params.in_background()) {
     LoadUrlInNewTabImpl(params, absl::nullopt);
@@ -391,9 +393,11 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
   TabInsertion::Params insertion_params;
   insertion_params.parent = parent_web_state;
   insertion_params.index = insertion_index;
+  insertion_params.instant_load = params.instant_load;
   insertion_params.in_background = params.in_background();
   insertion_params.inherit_opener = params.inherit_opener;
   insertion_params.should_skip_new_tab_animation = params.from_external;
+  insertion_params.placeholder_title = params.placeholder_title;
 
   web::WebState* web_state =
       insertion_agent->InsertWebState(params.web_params, insertion_params);

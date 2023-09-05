@@ -182,8 +182,9 @@
   BOOL inIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   UrlLoadingBrowserAgent* URLLoader =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  OpenDistantSessionInBackground(session, inIncognito, URLLoader,
-                                 self.loadStrategy);
+  OpenDistantSessionInBackground(session, inIncognito,
+                                 GetDefaultNumberOfTabsToLoadSimultaneously(),
+                                 URLLoader, self.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];
 }

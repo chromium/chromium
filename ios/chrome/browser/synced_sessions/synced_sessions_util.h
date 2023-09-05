@@ -13,9 +13,14 @@ struct DistantSession;
 struct DistantTab;
 }  // namespace synced_sessions
 
+// The default number of tabs that are instantly loaded when a large batch of
+// URLs are loaded simultaneously.
+int GetDefaultNumberOfTabsToLoadSimultaneously();
+
 // Opens a tab in the background.
 void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
                                 bool in_incognito,
+                                bool instant_load,
                                 UrlLoadingBrowserAgent* url_loader,
                                 UrlLoadStrategy load_strategy);
 
@@ -23,6 +28,7 @@ void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
 void OpenDistantSessionInBackground(
     const synced_sessions::DistantSession* session,
     bool in_incognito,
+    int maximum_instant_load_tabs,
     UrlLoadingBrowserAgent* url_loader,
     UrlLoadStrategy load_strategy);
 

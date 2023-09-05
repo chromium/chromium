@@ -23,6 +23,8 @@ class FakeBringAndroidTabsToIOSService : public BringAndroidTabsToIOSService {
   // BringAndroidTabsToIOSService implementation.
   size_t GetNumberOfAndroidTabs() const override;
   synced_sessions::DistantTab* GetTabAtIndex(size_t index) const override;
+  void OpenTabsAtIndices(const std::vector<size_t>& indices,
+                         UrlLoadingBrowserAgent* url_loader) override;
   void OnBringAndroidTabsPromptDisplayed() override;
   void OnUserInteractWithBringAndroidTabsPrompt() override;
 
@@ -30,11 +32,14 @@ class FakeBringAndroidTabsToIOSService : public BringAndroidTabsToIOSService {
   bool displayed();
   // Returns true if OnUserInteractWithBringAndroidTabsPrompt() was called.
   bool interacted();
+  // Returns the indices of the tabs opened.
+  std::vector<size_t> opened_tabs_at_indices() const;
 
  private:
   std::vector<std::unique_ptr<synced_sessions::DistantTab>> tabs_;
   bool displayed_ = false;
   bool interacted_ = false;
+  std::vector<size_t> opened_tabs_at_indices_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FAKE_BRING_ANDROID_TABS_TO_IOS_SERVICE_H_

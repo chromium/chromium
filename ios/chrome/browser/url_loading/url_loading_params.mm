@@ -65,46 +65,11 @@ UrlLoadParams UrlLoadParams::SwitchToTab(
   return params;
 }
 
-UrlLoadParams::UrlLoadParams()
-    : web_params(GURL()),
-      disposition(WindowOpenDisposition::NEW_FOREGROUND_TAB),
-      in_incognito(false),
-      append_to(OpenPosition::kLastTab),
-      origin_point(CGPointZero),
-      from_chrome(false),
-      from_external(false),
-      user_initiated(true),
-      should_focus_omnibox(false),
-      inherit_opener(false),
-      load_strategy(UrlLoadStrategy::NORMAL) {}
+UrlLoadParams::UrlLoadParams() = default;
 
-UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
-    : web_params(other.web_params),
-      disposition(other.disposition),
-      in_incognito(other.in_incognito),
-      append_to(other.append_to),
-      origin_point(other.origin_point),
-      from_chrome(other.from_chrome),
-      from_external(other.from_external),
-      user_initiated(other.user_initiated),
-      should_focus_omnibox(other.should_focus_omnibox),
-      inherit_opener(other.inherit_opener),
-      load_strategy(other.load_strategy) {}
+UrlLoadParams::UrlLoadParams(const UrlLoadParams& other) = default;
 
-UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
-  web_params = other.web_params;
-  disposition = other.disposition;
-  in_incognito = other.in_incognito;
-  append_to = other.append_to;
-  origin_point = other.origin_point;
-  from_chrome = other.from_chrome;
-  from_external = other.from_external;
-  user_initiated = other.user_initiated;
-  should_focus_omnibox = other.should_focus_omnibox;
-  inherit_opener = other.inherit_opener;
-  load_strategy = other.load_strategy;
-  return *this;
-}
+UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) = default;
 
 void UrlLoadParams::SetInBackground(bool in_background) {
   this->disposition = in_background ? WindowOpenDisposition::NEW_BACKGROUND_TAB

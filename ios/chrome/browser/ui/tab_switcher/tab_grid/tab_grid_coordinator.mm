@@ -1249,7 +1249,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   BOOL inIncognito = self.regularBrowser->GetBrowserState()->IsOffTheRecord();
   OpenDistantSessionInBackground(
-      session, inIncognito,
+      session, inIncognito, GetDefaultNumberOfTabsToLoadSimultaneously(),
       UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser),
       self.baseViewController.remoteTabsViewController.loadStrategy);
 

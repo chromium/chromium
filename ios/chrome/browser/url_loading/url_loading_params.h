@@ -48,50 +48,59 @@ struct UrlLoadParams {
   UrlLoadParams& operator=(const UrlLoadParams& other);
 
   // The wrapped params.
-  web::NavigationManager::WebLoadParams web_params;
+  web::NavigationManager::WebLoadParams web_params =
+      web::NavigationManager::WebLoadParams(GURL());
 
   // The disposition of the URL being opened. Defaults to
   // `WindowOpenDisposition::NEW_FOREGROUND_TAB`.
-  WindowOpenDisposition disposition;
+  WindowOpenDisposition disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   // Whether this requests opening in incognito or not. Defaults to `false`.
-  bool in_incognito;
+  bool in_incognito = false;
 
   // Location where the new tab should be opened. Defaults to
   // `OpenPosition::kLastTab`.
-  OpenPosition append_to;
+  OpenPosition append_to = OpenPosition::kLastTab;
 
   // Specific index where tab should be opened if `append_to` is
   // `OpenPosition::kSpecifiedIndex`
-  int insertion_index;
+  int insertion_index = -1;
 
   // Origin point of the action triggering this command, in main window
   // coordinates. Defaults to `CGPointZero`.
-  CGPoint origin_point;
+  CGPoint origin_point = CGPointZero;
 
   // Whether or not this URL command comes from a chrome context (e.g.,
   // settings), as opposed to a web page context. Defaults to `false`.
-  bool from_chrome;
+  bool from_chrome = false;
 
   // Whether or not this URL command comes from an external source (e.g. a
   // widget).
-  bool from_external;
+  bool from_external = false;
 
   // Whether the new tab command was initiated by the user (e.g. by tapping the
   // new tab button in the tools menu) or not (e.g. opening a new tab via a
   // Javascript action). Defaults to `true`. Only used when the `web_params.url`
   // isn't valid.
-  bool user_initiated;
+  bool user_initiated = true;
 
   // Whether the new tab command should also trigger the omnibox to be focused.
   // Only used when the `web_params.url` isn't valid. Defaults to `false`.
-  bool should_focus_omnibox;
+  bool should_focus_omnibox = false;
 
   // Whether the new tab should inherit opener.
-  bool inherit_opener;
+  bool inherit_opener = false;
+
+  // Whether the URL should be loaded instantly. Defaults to `true`. If `false`,
+  // it should NOT be loaded until activated.
+  bool instant_load = true;
 
   // Opaque way of changing loading behavior.
-  UrlLoadStrategy load_strategy;
+  UrlLoadStrategy load_strategy = UrlLoadStrategy::NORMAL;
+
+  // Tentative title of the new tab before the tab URL is loaded.
+  // Note: Currently only applies to tabs that are not instant-loaded.
+  std::u16string placeholder_title;
 
   bool in_background() const {
     return disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;

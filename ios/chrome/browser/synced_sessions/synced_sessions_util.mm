@@ -8,9 +8,18 @@
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ui/base/device_form_factor.h"
+
+int GetDefaultNumberOfTabsToLoadSimultaneously() {
+  return ui::GetDeviceFormFactor() ==
+                 ui::DeviceFormFactor::DEVICE_FORM_FACTOR_PHONE
+             ? 6
+             : 20;
+}
 
 void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
                                 bool in_incognito,
+                                bool instant_load,
                                 UrlLoadingBrowserAgent* url_loader,
                                 UrlLoadStrategy load_strategy) {
   UrlLoadParams params = UrlLoadParams::InNewTab(tab->virtual_url);
@@ -18,16 +27,21 @@ void OpenDistantTabInBackground(const synced_sessions::DistantTab* tab,
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   params.load_strategy = load_strategy;
   params.in_incognito = in_incognito;
+  params.instant_load = instant_load;
+  params.placeholder_title = tab->title;
   url_loader->Load(params);
 }
 
 void OpenDistantSessionInBackground(
     const synced_sessions::DistantSession* session,
     bool in_incognito,
+    int maximum_instant_load_tabs,
     UrlLoadingBrowserAgent* url_loader,
     UrlLoadStrategy load_strategy) {
-  for (auto const& tab : session->tabs) {
-    OpenDistantTabInBackground(tab.get(), in_incognito, url_loader,
-                               load_strategy);
+  const int tab_count = static_cast<int>(session->tabs.size());
+  for (int i = 0; i < tab_count; i++) {
+    OpenDistantTabInBackground(session->tabs[i].get(), in_incognito,
+                               /*instant_load=*/i < maximum_instant_load_tabs,
+                               url_loader, load_strategy);
   }
 }

@@ -34,6 +34,12 @@ synced_sessions::DistantTab* FakeBringAndroidTabsToIOSService::GetTabAtIndex(
   return tabs_[index].get();
 }
 
+void FakeBringAndroidTabsToIOSService::OpenTabsAtIndices(
+    const std::vector<size_t>& indices,
+    UrlLoadingBrowserAgent* url_loader) {
+  opened_tabs_at_indices_ = indices;
+}
+
 void FakeBringAndroidTabsToIOSService::OnBringAndroidTabsPromptDisplayed() {
   displayed_ = true;
 }
@@ -49,4 +55,9 @@ bool FakeBringAndroidTabsToIOSService::displayed() {
 
 bool FakeBringAndroidTabsToIOSService::interacted() {
   return interacted_;
+}
+
+std::vector<size_t> FakeBringAndroidTabsToIOSService::opened_tabs_at_indices()
+    const {
+  return opened_tabs_at_indices_;
 }

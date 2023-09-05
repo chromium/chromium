@@ -64,8 +64,10 @@ source_set("agents") {
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/components/security_interstitials:security_interstitials",
     "//ios/web/common:features",
+    "//ios/web/common:user_agent",
     "//ios/web/public",
     "//ios/web/public/js_messaging:js_messaging",
+    "//ios/web/public/session",
   ]
   frameworks = [ "Foundation.framework" ]
 }

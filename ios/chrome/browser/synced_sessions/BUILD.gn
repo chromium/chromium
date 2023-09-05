@@ -25,6 +25,7 @@ source_set("synced_sessions") {
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//third_party/abseil-cpp:absl",
+    "//ui/base",
   ]
   public_deps = [ "//components/sync_sessions" ]
 }

@@ -54,6 +54,7 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlSingle) {
       agent_->InsertWebState(LoadParams(GURL(kURL1)), TabInsertion::Params());
   ASSERT_EQ(1, browser_->GetWebStateList()->count());
   EXPECT_EQ(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_TRUE(web_state->IsRealized());
 }
 
 TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
@@ -71,6 +72,36 @@ TEST_F(TabInsertionBrowserAgentTest, InsertUrlMultiple) {
   EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(0));
   EXPECT_EQ(web_state2, browser_->GetWebStateList()->GetWebStateAt(1));
   EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(2));
+}
+
+TEST_F(TabInsertionBrowserAgentTest, InsertUrlLazyLoad) {
+  // Make sure that the web state list already has an active web state.
+  web::WebState* active_web_state =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), TabInsertion::Params());
+  ASSERT_EQ(active_web_state, browser_->GetWebStateList()->GetActiveWebState());
+
+  // Insert one lazy loaded web state in background.
+  TabInsertion::Params lazy_load_params_background;
+  lazy_load_params_background.in_background = true;
+  lazy_load_params_background.instant_load = false;
+  web::WebState* unrealized_web_state_in_background = agent_->InsertWebState(
+      LoadParams(GURL(kURL1)), lazy_load_params_background);
+
+  // Insert one lazy loaded web state in foreground. Although it would be
+  // unrealized on initialization, it is immediately realized on activation.
+  TabInsertion::Params lazy_load_params_foreground;
+  lazy_load_params_foreground.instant_load = false;
+  lazy_load_params_foreground.index = 1;
+  web::WebState* unrealized_web_state_in_foreground = agent_->InsertWebState(
+      LoadParams(GURL(kURL1)), lazy_load_params_foreground);
+
+  ASSERT_EQ(3, browser_->GetWebStateList()->count());
+  EXPECT_EQ(unrealized_web_state_in_background,
+            browser_->GetWebStateList()->GetWebStateAt(2));
+  EXPECT_FALSE(unrealized_web_state_in_background->IsRealized());
+  EXPECT_EQ(unrealized_web_state_in_foreground,
+            browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_TRUE(unrealized_web_state_in_foreground->IsRealized());
 }
 
 TEST_F(TabInsertionBrowserAgentTest, AppendUrlSingle) {

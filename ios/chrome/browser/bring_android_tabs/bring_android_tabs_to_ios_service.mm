@@ -45,9 +45,6 @@ const base::TimeDelta kTimeRangeOfTabsImported = base::Days(14);
 
 // Maximum number of tabs that should be imported.
 const size_t kMaxNumberOfTabs = 20;
-// Tabs that should be loaded as soon as imported; this corresponds to the
-// maximum number of tabs fully visible in the tab grid on an iPhone device.
-const size_t kMaxNumberOfTabsForInstantLoad = 6;
 
 // Logs `status` on UMA.
 void RecordPromptAttemptStatus(PromptAttemptStatus status) {
@@ -168,17 +165,15 @@ synced_sessions::DistantTab* BringAndroidTabsToIOSService::GetTabAtIndex(
 void BringAndroidTabsToIOSService::OpenTabsAtIndices(
     const std::vector<size_t>& indices,
     UrlLoadingBrowserAgent* url_loader) {
-  size_t tab_count = indices.size();
-  for (size_t i = 0; i < tab_count; i++) {
-    if (i < kMaxNumberOfTabsForInstantLoad) {
-      OpenDistantTabInBackground(GetTabAtIndex(indices[i]), NO, url_loader,
-                                 UrlLoadStrategy::NORMAL);
-    } else {
-      // TODO(crbug.com/1468596): Load as an unrealized web state instead of
-      // opening.
-      OpenDistantTabInBackground(GetTabAtIndex(indices[i]), NO, url_loader,
-                                 UrlLoadStrategy::NORMAL);
-    }
+  const int tab_count = static_cast<int>(indices.size());
+  const bool in_incognito = false;
+  const int maximum_instant_load_tabs =
+      GetDefaultNumberOfTabsToLoadSimultaneously();
+  for (int i = 0; i < tab_count; i++) {
+    const bool instant_load = i < maximum_instant_load_tabs;
+    OpenDistantTabInBackground(GetTabAtIndex(indices[i]), in_incognito,
+                               instant_load, url_loader,
+                               UrlLoadStrategy::NORMAL);
   }
 }
 
