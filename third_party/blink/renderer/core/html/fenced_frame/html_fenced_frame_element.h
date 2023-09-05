@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element_sandbox.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -33,43 +34,36 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   using PassKey = base::PassKey<HTMLFencedFrameElement>;
 
  public:
-  //  Previously, there were two underlying implementations of Fenced Frames:
-  //   1.) The early Origin Trial implementation based on the ShadowDOM
-  //       encapsulating a neutered <iframe> element
-  //   2.) The MPArch implementation, which hosts a truly top-level FrameTree in
-  //       the browser process, and relies on the MPArch long-tail feature work
-  // A common API for both implementations was neatly captured by the below
-  // `FencedFrameDelegate`. However, the ShadowDOM implementation is now
-  // obsolete and the MPArch implementation is being deployed. Eventually, the
-  // MPArch-specific details will be merged back into this file. In the
-  // meantime, please see documentation above `FencedFrameMPArchDelegate` for
-  // implementation details.
+  // This is the underlying implementation of the `HTMLFencedFrameElement`
+  // interface, which creates a Fenced Frame via MPArch. It can be activated by
+  // enabling the `blink::features::kFencedFrames` feature.
   class CORE_EXPORT FencedFrameDelegate
       : public GarbageCollected<FencedFrameDelegate> {
    public:
-    static FencedFrameDelegate* Create(HTMLFencedFrameElement*);
-    explicit FencedFrameDelegate(HTMLFencedFrameElement* outer_element)
-        : outer_element_(outer_element) {}
-    virtual ~FencedFrameDelegate();
-    virtual void Trace(Visitor* visitor) const;
+    static FencedFrameDelegate* Create(HTMLFencedFrameElement* outer_element);
+    explicit FencedFrameDelegate(HTMLFencedFrameElement* outer_element);
+    ~FencedFrameDelegate() = default;
 
-    virtual void Navigate(const KURL&, const String&) = 0;
+    void Navigate(const KURL&, const String&);
     // This method is used to clean up all state in preparation for destruction,
     // even though the destruction may happen arbitrarily later during garbage
     // collection.
-    virtual void Dispose() {}
+    void Dispose();
 
-    virtual void AttachLayoutTree() {}
-    virtual bool SupportsFocus() { return false; }
-    virtual void MarkFrozenFrameSizeStale() {}
-    virtual void MarkContainerSizeStale() {}
-    virtual void DidChangeFramePolicy(const FramePolicy& frame_policy) {}
+    void AttachLayoutTree();
+    void MarkFrozenFrameSizeStale();
+    void MarkContainerSizeStale();
+    void DidChangeFramePolicy(const FramePolicy& frame_policy);
+    bool SupportsFocus();
+
+    void Trace(Visitor* visitor) const;
 
    protected:
     HTMLFencedFrameElement& GetElement() const { return *outer_element_; }
 
    private:
     Member<HTMLFencedFrameElement> outer_element_;
+    HeapMojoAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;
   };
 
   explicit HTMLFencedFrameElement(Document& document);
