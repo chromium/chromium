@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_
-#define CONTENT_PUBLIC_BROWSER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_
+#ifndef CONTENT_COMMON_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_
+#define CONTENT_COMMON_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -12,7 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 
-namespace features {
+namespace content::features {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices);
@@ -27,8 +27,8 @@ CONTENT_EXPORT base::TimeDelta InertIntervalFor6GbDevices();
 CONTENT_EXPORT base::TimeDelta MinUserMemoryPressureIntervalOn4GbDevices();
 CONTENT_EXPORT base::TimeDelta MinUserMemoryPressureIntervalOn6GbDevices();
 
-}  // namespace features
+}  // namespace content::features
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#endif  // CONTENT_PUBLIC_BROWSER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_
+#endif  // CONTENT_COMMON_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_FEATURES_H_

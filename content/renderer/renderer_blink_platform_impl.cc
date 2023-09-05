@@ -38,6 +38,7 @@
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
+#include "content/common/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -982,7 +983,7 @@ RendererBlinkPlatformImpl::GetAttributionReportingSupport() {
 scoped_refptr<base::SingleThreadTaskRunner>
 RendererBlinkPlatformImpl::VideoFrameCompositorTaskRunner() {
   auto compositor_task_runner = CompositorThreadTaskRunner();
-  if (features::UseSurfaceLayerForVideo() || !compositor_task_runner) {
+  if (::features::UseSurfaceLayerForVideo() || !compositor_task_runner) {
     if (!video_frame_compositor_thread_) {
       // All of Chromium's GPU code must know which thread it's running on, and
       // be the same thread on which the rendering context was initialized. This
@@ -1008,38 +1009,27 @@ void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
 }
 
 bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
-  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kUserLevelMemoryPressureSignalParams);
-  return enabled;
+  return features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices() ||
+         features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices();
 }
 
 std::pair<base::TimeDelta, base::TimeDelta> RendererBlinkPlatformImpl::
     InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
+  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
+    return std::make_pair(
+        features::InertIntervalFor4GbDevices(),
+        features::MinUserMemoryPressureIntervalOn4GbDevices());
+  }
+  if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
+    return std::make_pair(
+        features::InertIntervalFor6GbDevices(),
+        features::MinUserMemoryPressureIntervalOn6GbDevices());
+  }
+
   constexpr std::pair<base::TimeDelta, base::TimeDelta>
       kDefaultInertAndMinInterval =
           std::make_pair(base::TimeDelta::Min(), base::Minutes(10));
-
-  if (!IsUserLevelMemoryPressureSignalEnabled()) {
-    return kDefaultInertAndMinInterval;
-  }
-
-  std::vector<base::StringPiece> parameters = base::SplitStringPiece(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kUserLevelMemoryPressureSignalParams),
-      ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (parameters.size() != 2) {
-    return kDefaultInertAndMinInterval;
-  }
-
-  absl::optional<base::TimeDelta> inert_interval =
-      base::TimeDeltaFromString(parameters.at(0));
-  absl::optional<base::TimeDelta> minimum_interval =
-      base::TimeDeltaFromString(parameters.at(1));
-  if (!inert_interval.has_value() || !minimum_interval.has_value()) {
-    return kDefaultInertAndMinInterval;
-  }
-
-  return std::make_pair(inert_interval.value(), minimum_interval.value());
+  return kDefaultInertAndMinInterval;
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

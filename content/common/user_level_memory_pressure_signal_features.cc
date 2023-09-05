@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/user_level_memory_pressure_signal_features.h"
+#include "content/common/user_level_memory_pressure_signal_features.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -12,7 +12,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 
-namespace features {
+namespace content::features {
 
 namespace {
 
@@ -90,6 +90,6 @@ base::TimeDelta InertIntervalFor6GbDevices() {
   return kInertInterval.Get();
 }
 
-}  // namespace features
+}  // namespace content::features
 
 #endif  // BUILDFLAG(IS_ANDROID)

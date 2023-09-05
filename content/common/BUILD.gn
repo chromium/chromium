@@ -164,6 +164,8 @@ source_set("common") {
     "url_schemes.cc",
     "url_schemes.h",
     "user_agent.cc",
+    "user_level_memory_pressure_signal_features.cc",
+    "user_level_memory_pressure_signal_features.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
     "webid/identity_url_loader_throttle.cc",
