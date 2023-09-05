@@ -48,7 +48,6 @@ enum class GlanceablesViewId {
   // `GlanceablesErrorMessageView`
   kGlanceablesErrorMessageLabel,
   kGlanceablesErrorMessageButton,
-  kGlanceablesErrorMessageView,
 };
 
 }  // namespace ash

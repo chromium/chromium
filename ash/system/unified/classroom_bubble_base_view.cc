@@ -7,11 +7,9 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -54,8 +52,9 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
     DetailedViewDelegate* delegate,
     std::unique_ptr<ui::ComboboxModel> combobox_model)
     : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {
-  layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager_
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager
       ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                             kInteriorGlanceableBubbleMargin, 0,
                                             kInteriorGlanceableBubbleMargin))
@@ -206,18 +205,6 @@ void ClassroomBubbleBaseView::OnGetAssignments(
           "Ash.Glanceables.TimeManagement.Classroom."
           "OpenToInitialLoadTime.SubsequentOccurence",
           initial_load_time);
-    }
-  }
-  if (features::IsGlanceablesV2ErrorMessageEnabled()) {
-    if (success) {
-      MaybeDismissErrorMessage();
-    } else {
-      ShowErrorMessage(
-          l10n_util::GetStringUTF16(IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR));
-
-      // Explicitly signal to the layout manager to ignore the view.
-      layout_manager_->SetChildViewIgnoredByLayout(error_message(),
-                                                   /*ignored=*/true);
     }
   }
 }
