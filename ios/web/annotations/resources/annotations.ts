@@ -190,6 +190,7 @@ function extractText(maxChars: number, seqId: number): void {
     command: 'annotations.extractedText',
     text: getPageText(maxChars),
     seqId: seqId,
+    // When changing metadata please update i/w/p/a/annotations_text_observer.h
     metadata: {
       hasNoIntentDetection: hasNoIntentDetection(),
       hasNoTranslate: hasNoTranslate(),

@@ -19,6 +19,15 @@ class WebState;
 class AnnotationsTextObserver : public base::CheckedObserver {
  public:
   // Called on page load, after `text` has been extracted.
+  // 'metadata' contains the following key/pair values:
+  // Bool 'hasNoIntentDetection': true when web page has requested
+  //   'nointentdetection'.
+  // Bool 'hasNoTranslate': true when web page has
+  //   requested 'notranslate'.
+  // String 'htmlLang': value from document.documentElement.lang or
+  //   "".
+  // String 'httpContentLanguage': value of content from
+  //   <meta http-equiv="content-language" content="en"> or "".
   virtual void OnTextExtracted(WebState* web_state,
                                const std::string& text,
                                int seq_id,
