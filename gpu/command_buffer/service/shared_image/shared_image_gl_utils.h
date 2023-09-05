@@ -70,24 +70,6 @@ class ScopedUnpackState {
   absl::optional<gl::ScopedPixelStore> unpack_lsb_first_;
 };
 
-// At destruction time, restore `target`'s binding as of construction time. If
-// `new_binding` is non-zero, then bind `target` to it at construction time.
-// TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.
-class ScopedRestoreTexture {
- public:
-  ScopedRestoreTexture(gl::GLApi* api, GLenum target, GLuint new_binding = 0);
-
-  ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
-  ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;
-
-  ~ScopedRestoreTexture();
-
- private:
-  raw_ptr<gl::GLApi> api_;
-  GLenum target_;
-  GLuint old_binding_ = 0;
-};
-
 // Creates a new GL texture and returns GL texture ID.
 GLuint MakeTextureAndSetParameters(
     GLenum target,

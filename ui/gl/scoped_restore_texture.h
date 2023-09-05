@@ -12,7 +12,8 @@
 namespace gl {
 
 // Restores the texture binding that the passed-in target had at this object's
-// creation when this object is destroyed.
+// creation when this object is destroyed. If a non-zero `new_binding` is passed
+// in, binds `target` to it at construction time.
 class GL_EXPORT ScopedRestoreTexture {
  public:
   // Clients can pass true for `restore_prev_even_if_invalid` to have the
@@ -23,7 +24,8 @@ class GL_EXPORT ScopedRestoreTexture {
   // converted to the default behavior.
   ScopedRestoreTexture(gl::GLApi* api,
                        GLenum target,
-                       bool restore_prev_even_if_invalid = false);
+                       bool restore_prev_even_if_invalid = false,
+                       GLuint new_binding = 0);
 
   ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
   ScopedRestoreTexture& operator=(const ScopedRestoreTexture&) = delete;

@@ -40,6 +40,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
+#include "ui/gl/scoped_restore_texture.h"
 
 namespace gpu {
 
@@ -1319,9 +1320,14 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
             format().NumberOfPlanes());
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
-    ScopedRestoreTexture scoped_restore(gl::g_current_gl_context,
-                                        egl_state->GetGLTarget(),
-                                        egl_state->GetGLServiceId(plane_index));
+    // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain behavior
+    // from when this class was using a duplicate-but-not-identical utility.
+    // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
+    // killswitch.
+    gl::ScopedRestoreTexture scoped_restore(
+        gl::g_current_gl_context, egl_state->GetGLTarget(),
+        /*restore_prev_even_if_invalid=*/true,
+        egl_state->GetGLServiceId(plane_index));
     // Un-bind the IOSurface from the GL texture (this will be a no-op if it is
     // not yet bound).
     egl_state->egl_surfaces_[plane_index]->ReleaseTexImage();
@@ -1409,8 +1415,14 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
          plane_index++) {
       if (!egl_state->gl_textures_[plane_index]->is_bind_pending()) {
         if (!egl_state->egl_surfaces_.empty()) {
-          ScopedRestoreTexture scoped_restore(
+          // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain
+          // behavior from when this class was using a
+          // duplicate-but-not-identical utility.
+          // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
+          // killswitch.
+          gl::ScopedRestoreTexture scoped_restore(
               gl::g_current_gl_context, egl_state->GetGLTarget(),
+              /*restore_prev_even_if_invalid=*/true,
               egl_state->GetGLServiceId(plane_index));
           egl_state->egl_surfaces_[plane_index]->ReleaseTexImage();
         }
