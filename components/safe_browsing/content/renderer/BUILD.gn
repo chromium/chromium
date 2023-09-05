@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 source_set("renderer") {
   if (safe_browsing_mode != 0) {
@@ -43,6 +44,7 @@ source_set("throttles") {
     "//components/safe_browsing/core/common:interfaces",
     "//content/public/common:common",
     "//content/public/renderer:renderer",
+    "//extensions/buildflags",
     "//ipc",
     "//net",
     "//services/network/public/mojom",
@@ -50,6 +52,10 @@ source_set("throttles") {
     "//third_party/blink/public:blink",
     "//url:url",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
 }
 
 source_set("throttles_unittest") {

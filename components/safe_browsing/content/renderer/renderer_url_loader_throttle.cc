@@ -19,6 +19,10 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"  // nogncheck
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -54,6 +58,16 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     int render_frame_id)
     : safe_browsing_(safe_browsing), render_frame_id_(render_frame_id) {}
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+RendererURLLoaderThrottle::RendererURLLoaderThrottle(
+    mojom::SafeBrowsing* safe_browsing,
+    int render_frame_id,
+    mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
+    : safe_browsing_(safe_browsing),
+      render_frame_id_(render_frame_id),
+      extension_web_request_reporter_(extension_web_request_reporter) {}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
   if (deferred_)
     TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
@@ -66,6 +80,15 @@ void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
   safe_browsing_->Clone(
       safe_browsing_pending_remote_.InitWithNewPipeAndPassReceiver());
   safe_browsing_ = nullptr;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Create a new pipe to the ExtensionWebRequestReporter interface that can be
+  // bound to a different sequence.
+  extension_web_request_reporter_->Clone(
+      extension_web_request_reporter_pending_remote_
+          .InitWithNewPipeAndPassReceiver());
+  extension_web_request_reporter_ = nullptr;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void RendererURLLoaderThrottle::WillStartRequest(
@@ -74,6 +97,10 @@ void RendererURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
   DCHECK(!url_checker_);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  MaybeSendExtensionWebRequestData(request);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::UmaHistogramEnumeration(
       "SafeBrowsing.RendererThrottle.RequestDestination", request->destination);
@@ -131,6 +158,19 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
   // If |blocked_| is true, the resource load has been canceled and there
   // shouldn't be such a notification.
   DCHECK(!blocked_);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  BindExtensionWebRequestReporterPipeIfDetached();
+
+  // Send redirected request data to the browser if request originated from an
+  // extension and the redirected url is HTTP/HTTPS scheme only.
+  if (!origin_extension_id_.empty() &&
+      redirect_info->new_url.SchemeIsHTTPOrHTTPS()) {
+    extension_web_request_reporter_->SendWebRequestData(
+        origin_extension_id_, redirect_info->new_url,
+        mojom::WebRequestProtocolType::kHttpHttps);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!url_checker_) {
     DCHECK_EQ(0u, pending_checks_);
@@ -307,5 +347,31 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
     delegate_->Resume();
   }
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void RendererURLLoaderThrottle::
+    BindExtensionWebRequestReporterPipeIfDetached() {
+  if (extension_web_request_reporter_pending_remote_.is_valid()) {
+    extension_web_request_reporter_remote_.Bind(
+        std::move(extension_web_request_reporter_pending_remote_));
+    extension_web_request_reporter_ =
+        extension_web_request_reporter_remote_.get();
+  }
+}
+
+void RendererURLLoaderThrottle::MaybeSendExtensionWebRequestData(
+    network::ResourceRequest* request) {
+  BindExtensionWebRequestReporterPipeIfDetached();
+
+  if (request->request_initiator &&
+      request->request_initiator->scheme() == extensions::kExtensionScheme &&
+      request->url.SchemeIsHTTPOrHTTPS()) {
+    origin_extension_id_ = request->request_initiator->host();
+    extension_web_request_reporter_->SendWebRequestData(
+        origin_extension_id_, request->url,
+        mojom::WebRequestProtocolType::kHttpHttps);
+  }
+}
+#endif
 
 }  // namespace safe_browsing

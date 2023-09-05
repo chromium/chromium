@@ -381,15 +381,19 @@ bool ChromeExtensionsBrowserClient::DidVersionUpdate(
 
   // Unit tests may not provide prefs; assume everything is up to date.
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile);
-  if (!extension_prefs)
+  if (!extension_prefs) {
     return false;
+  }
 
-  if (g_did_chrome_update_for_testing)
+  if (g_did_chrome_update_for_testing) {
     return true;
+  }
 
   // If we're inside a browser test, then assume prefs are all up to date.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType))
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kTestType)) {
     return false;
+  }
 
   PrefService* pref_service = extension_prefs->pref_service();
   base::Version last_version;
@@ -404,11 +408,13 @@ bool ChromeExtensionsBrowserClient::DidVersionUpdate(
   pref_service->SetString(pref_names::kLastChromeVersion, current_version_str);
 
   // If there was no version string in prefs, assume we're out of date.
-  if (!last_version.IsValid())
+  if (!last_version.IsValid()) {
     return true;
+  }
   // If the current version string is invalid, assume we didn't update.
-  if (!current_version.IsValid())
+  if (!current_version.IsValid()) {
     return false;
+  }
 
   return last_version < current_version;
 }
@@ -624,8 +630,9 @@ void ChromeExtensionsBrowserClient::GetTabAndWindowIdForWebContents(
 }
 
 KioskDelegate* ChromeExtensionsBrowserClient::GetKioskDelegate() {
-  if (!kiosk_delegate_)
+  if (!kiosk_delegate_) {
     kiosk_delegate_ = std::make_unique<ChromeKioskDelegate>();
+  }
   return kiosk_delegate_.get();
 }
 
@@ -677,8 +684,9 @@ std::string ChromeExtensionsBrowserClient::GetUserAgent() const {
 
 bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
     const std::string& scheme) const {
-  if (scheme == chrome::kChromeSearchScheme)
+  if (scheme == chrome::kChromeSearchScheme) {
     return true;
+  }
 
   return ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(scheme);
 }
@@ -769,6 +777,13 @@ void ChromeExtensionsBrowserClient::NotifyExtensionRemoteHostContacted(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
     const GURL& url) const {
+  // Collect only if new interception feature is disabled to avoid duplicates.
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::
+              kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
+    return;
+  }
+
   safe_browsing::RemoteHostInfo::ProtocolType protocol =
       safe_browsing::RemoteHostInfo::UNSPECIFIED;
   if (base::FeatureList::IsEnabled(
@@ -853,8 +868,9 @@ void ChromeExtensionsBrowserClient::AddAdditionalAllowedHosts(
       // permission.
       bool is_chrome_favicon = pattern.scheme() == content::kChromeUIScheme &&
                                pattern.host() == chrome::kChromeUIFaviconHost;
-      if (is_chrome_favicon)
+      if (is_chrome_favicon) {
         new_patterns.AddPattern(pattern);
+      }
     }
     return new_patterns;
   };

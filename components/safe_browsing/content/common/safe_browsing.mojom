@@ -210,3 +210,29 @@ interface PhishingImageEmbedderDetector {
     => (PhishingImageEmbeddingResult result,
         mojo_base.mojom.ByteString image_embedding_request_proto);
 };
+
+// Enum representing protocol type of a web request.
+enum WebRequestProtocolType {
+  kHttpHttps = 0,
+  kWebSocket = 1,
+};
+
+// Interface to send extension web request data from the renderer to the
+// browser.
+interface ExtensionWebRequestReporter {
+  // Send the url contacted and connect protocol type from an extension web
+  // request.
+  //
+  // |origin_extension_id| is the id of the extension that initiated the web
+  // request. Only safe to use for telemetry purposes. Untrustworthy to use
+  // otherwise.
+  // |telemetry_url| indictates the host contacted. Only safe to use for
+  // telemetry purposes. Untrustworthy to use otherwise.
+  SendWebRequestData(string origin_extension_id,
+                     url.mojom.Url telemetry_url,
+                     WebRequestProtocolType protocol_type);
+
+  // Bind an additional pipe to this instance of the ExtensionWebRequestReporter
+  // interface.
+  Clone(pending_receiver<ExtensionWebRequestReporter> receiver);
+};

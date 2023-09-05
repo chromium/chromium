@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 
@@ -50,6 +51,11 @@ RemoteHostContactedSignalProcessor::GetSignalInfoForReport(
       remote_host_pb->set_connection_protocol(
           remote_host_urls_by_protocol_it.first);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
+    remote_host_contacted_info->set_collected_from_new_interception(true);
   }
 
   // Clear the data in the remote host urls store.

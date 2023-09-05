@@ -15,8 +15,13 @@
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif
 
 namespace safe_browsing {
 
@@ -24,6 +29,17 @@ WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
     mojom::SafeBrowsing* safe_browsing,
     int render_frame_id)
     : render_frame_id_(render_frame_id), safe_browsing_(safe_browsing) {}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
+    mojom::SafeBrowsing* safe_browsing,
+    int render_frame_id,
+    mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
+    : render_frame_id_(render_frame_id),
+      safe_browsing_(safe_browsing),
+      extension_web_request_reporter_(
+          std::move(extension_web_request_reporter)) {}
+#endif
 
 WebSocketSBHandshakeThrottle::~WebSocketSBHandshakeThrottle() = default;
 
@@ -36,6 +52,18 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
   completion_callback_ = std::move(completion_callback);
   url_ = url;
   int load_flags = 0;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Send web request data to the browser if destination is WS/WSS scheme.
+  if (creator_origin.Protocol().Ascii() == extensions::kExtensionScheme &&
+      url_.SchemeIsWSOrWSS()) {
+    const std::string& origin_extension_id =
+        creator_origin.Host().Utf8().data();
+    extension_web_request_reporter_->SendWebRequestData(
+        origin_extension_id, url, mojom::WebRequestProtocolType::kWebSocket);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   DCHECK_EQ(state_, State::kInitial);
   state_ = State::kStarted;
   safe_browsing_->CreateCheckerAndCheck(

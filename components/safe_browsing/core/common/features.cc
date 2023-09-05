@@ -151,6 +151,11 @@ BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
              "SafeBrowsingExtensionTelemetryReportHostsContactedViaWebsocket",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(
+    kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+    "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
              "SafeBrowsingExtensionTelemetryTabsApiSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -385,6 +390,7 @@ constexpr struct {
     {&kExtensionTelemetryDeclarativeNetRequestSignal, true},
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryFileData, true},
+    {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
     {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},

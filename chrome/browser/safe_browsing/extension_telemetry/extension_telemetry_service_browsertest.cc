@@ -165,6 +165,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     const RemoteHostContactedInfo& remote_host_contacted_info =
         signal.remote_host_contacted_info();
     ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
+    EXPECT_FALSE(remote_host_contacted_info.collected_from_new_interception());
+
     const RemoteHostInfo& remote_host_info =
         remote_host_contacted_info.remote_host(0);
     EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
@@ -581,6 +583,95 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(call_details.method(), TabsApiInfo::REMOVE);
     EXPECT_EQ(call_details.current_url(), "http://www.example.com/");
     EXPECT_EQ(call_details.new_url(), "");
+  }
+}
+
+// Test fixture with kExtensionTelemetryInterceptRemoteHostsContactedInRenderer
+// enabled, and
+// kExtensionTelemetryReportContactedHosts/kExtensionTelemetryReportHostsContactedViaWebSocket
+// disabled.
+class
+    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
+    : public ExtensionTelemetryServiceBrowserTest {
+ public:
+  ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {kExtensionTelemetry,
+         kExtensionTelemetryInterceptRemoteHostsContactedInRenderer},
+        {kExtensionTelemetryReportContactedHosts,
+         kExtensionTelemetryReportHostsContactedViaWebSocket});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
+    InterceptsRemoteHostContactedSignalInRenderer) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  extensions::ResultCatcher result_catcher;
+  // Load extension from the test extension directory.
+  const auto* extension =
+      LoadExtension(test_extension_dir_.AppendASCII("basic_crx"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+  // Retrieve extension telemetry service instance.
+  auto* telemetry_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(profile());
+  // Successfully retrieve the extension telemetry instance.
+  ASSERT_NE(telemetry_service, nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  // Process signal.
+  {
+    // Verify that the registered extension information is saved in the
+    // telemetry service's extension store.
+    const ExtensionInfo* info =
+        GetExtensionInfoFromExtensionStore(telemetry_service, extension->id());
+    EXPECT_EQ(extension->name(), kExtensionName);
+    EXPECT_EQ(extension->id(), extension->id());
+    EXPECT_EQ(info->version(), kExtensionVersion);
+  }
+  // Generate telemetry report and verify.
+  {
+    // Verify the contents of telemetry report generated.
+    std::unique_ptr<TelemetryReport> telemetry_report_pb =
+        GetTelemetryReport(telemetry_service);
+    ASSERT_NE(telemetry_report_pb, nullptr);
+    auto extension_report = base::ranges::find_if(
+        telemetry_report_pb->reports(), [&](const auto& report) {
+          return report.extension().id() == extension->id();
+        });
+    EXPECT_EQ(extension_report->extension().id(), extension->id());
+    EXPECT_EQ(extension_report->extension().name(), kExtensionName);
+    EXPECT_EQ(extension_report->extension().version(), kExtensionVersion);
+    // Verify the designated test extension's report has signal data.
+    ASSERT_EQ(extension_report->signals().size(), 1);
+    // Verify that extension store has been cleared after creating a telemetry
+    // report.
+    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+
+    // Verify signal proto from the reports.
+    const ExtensionTelemetryReportRequest_SignalInfo& signal =
+        extension_report->signals()[0];
+    const RemoteHostContactedInfo& remote_host_contacted_info =
+        signal.remote_host_contacted_info();
+    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
+    EXPECT_TRUE(remote_host_contacted_info.collected_from_new_interception());
+
+    const RemoteHostInfo& remote_host_info =
+        remote_host_contacted_info.remote_host(0);
+    EXPECT_EQ(remote_host_info.contact_count(), 1u);
+    EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
+    EXPECT_EQ(remote_host_info.connection_protocol(),
+              RemoteHostInfo::HTTP_HTTPS);
+    const RemoteHostInfo& remote_host_contacted_info_websocket =
+        remote_host_contacted_info.remote_host(1);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(), 1u);
+    EXPECT_EQ(remote_host_contacted_info_websocket.url(),
+              kExtensionContactedHost);
+    EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
+              RemoteHostInfo::WEBSOCKET);
   }
 }
 
