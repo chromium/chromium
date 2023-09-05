@@ -262,6 +262,8 @@ bool DeskMiniView::IsDeskNameBeingModified() const {
 }
 
 void DeskMiniView::UpdateDeskButtonVisibility() {
+  CHECK(desk_);
+
   auto* controller = DesksController::Get();
 
   // Don't show desk buttons when hovered while the dragged window is on
@@ -706,8 +708,13 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 
 void DeskMiniView::OnContextMenuClosed() {
   is_context_menu_open_ = false;
-  UpdateDeskButtonVisibility();
-  desk_preview_->SetHighlightOverlayVisibility(false);
+
+  // This mini view's desk may have been destroyed already. In that case, we are
+  // about to be destroyed and can't call functions that need a valid `desk_`.
+  if (desk_) {
+    UpdateDeskButtonVisibility();
+    desk_preview_->SetHighlightOverlayVisibility(false);
+  }
 }
 
 void DeskMiniView::OnDeskPreviewPressed() {
