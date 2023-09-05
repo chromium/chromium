@@ -506,6 +506,23 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_LargestContentfulPaint) {
   EXPECT_EQ(std::next(source_id_to_lcp_request_priority.cbegin())->second, 2u);
 }
 
+IN_PROC_BROWSER_TEST_P(SoftNavigationTest, NoSoftNavigation) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+
+  waiter->AddMinimumLargestContentfulPaintImageExpectation(1);
+
+  Start();
+  Load("/soft_navigation.html");
+
+  waiter->Wait();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  // Verify that no soft navigation metric is recorded.
+  ExpectUkmEventNotRecorded(ukm::builders::SoftNavigation::kEntryName);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SoftNavigationTest,
                          ::testing::Values(false, true));

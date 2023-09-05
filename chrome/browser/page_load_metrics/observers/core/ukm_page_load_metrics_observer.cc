@@ -1000,9 +1000,12 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
   builder.Record(ukm::UkmRecorder::Get());
 
-  // Record the LCP of the last soft navigation.
-  RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
-                              GetDelegate().GetSoftNavigationMetrics());
+  // Record last soft navigation metrics.
+  if (GetDelegate().GetSoftNavigationMetrics().count >= 1 &&
+      !GetDelegate().GetSoftNavigationMetrics().navigation_id.empty()) {
+    RecordSoftNavigationMetrics(GetDelegate().GetUkmSourceIdForSoftNavigation(),
+                                GetDelegate().GetSoftNavigationMetrics());
+  }
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(

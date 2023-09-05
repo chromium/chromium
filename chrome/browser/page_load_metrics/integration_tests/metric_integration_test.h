@@ -97,6 +97,8 @@ class MetricIntegrationTest : public InProcessBrowserTest {
 
   void ExpectUKMPageLoadMetricNonExistence(base::StringPiece metric_name);
 
+  void ExpectUkmEventNotRecorded(base::StringPiece event_name);
+
   void ExpectUKMPageLoadMetricNonExistenceWithExpectedPageLoadMetricsNum(
       unsigned long expected_num_page_load_metrics,
       base::StringPiece metric_name);

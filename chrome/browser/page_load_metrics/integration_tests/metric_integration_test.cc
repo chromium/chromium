@@ -178,6 +178,12 @@ void MetricIntegrationTest::
   }
 }
 
+void MetricIntegrationTest::ExpectUkmEventNotRecorded(
+    base::StringPiece event_name) {
+  auto merged_entries = ukm_recorder().GetMergedEntriesByName(event_name);
+  EXPECT_EQ(merged_entries.size(), 0u);
+}
+
 void MetricIntegrationTest::ExpectUKMPageLoadMetricGreaterThan(
     base::StringPiece metric_name,
     int64_t expected_value) {
