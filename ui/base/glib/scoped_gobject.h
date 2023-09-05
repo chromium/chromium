@@ -7,6 +7,8 @@
 
 #include <glib-object.h>
 
+#include <cstddef>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 
@@ -15,6 +17,10 @@ template <typename T>
 class ScopedGObject {
  public:
   ScopedGObject() = default;
+
+  // Deliberately implicit to allow returning nullptrs.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  ScopedGObject(std::nullptr_t ptr) {}
 
   ScopedGObject(const ScopedGObject<T>& other) : obj_(other.obj_) { Ref(); }
 

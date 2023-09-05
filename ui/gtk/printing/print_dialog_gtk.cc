@@ -36,10 +36,6 @@
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/printing/printing_gtk_util.h"
 
-#if BUILDFLAG(USE_CUPS)
-#include "printing/mojom/print.mojom.h"  // nogncheck
-#endif
-
 using printing::PageRanges;
 using printing::PrintSettings;
 
@@ -139,7 +135,7 @@ class GtkPrinterList {
   // - Querying for non-existent printers like 'Print to PDF'.
   ScopedGObject<GtkPrinter> GetPrinterWithName(const std::string& name) {
     if (name.empty()) {
-      return ScopedGObject<GtkPrinter>();
+      return nullptr;
     }
 
     for (ScopedGObject<GtkPrinter>& printer : printers_) {
@@ -148,17 +144,14 @@ class GtkPrinterList {
       }
     }
 
-    return ScopedGObject<GtkPrinter>();
+    return nullptr;
   }
 
  private:
   // Callback function used by gtk_enumerate_printers() to get all printer.
   static gboolean SetPrinter(GtkPrinter* printer, gpointer data) {
     GtkPrinterList* printer_list = reinterpret_cast<GtkPrinterList*>(data);
-    ScopedGObject<GtkPrinter> scoped_printer = WrapGObject(printer);
-
-    printer_list->printers_.push_back(scoped_printer);
-
+    printer_list->printers_.push_back(WrapGObject(printer));
     return FALSE;
   }
 
@@ -377,7 +370,7 @@ void PrintDialogGtk::LoadPrintSettings(const PrintSettings& settings) {
   GError* error = nullptr;
   auto printer_list = std::make_unique<GtkPrinterList>();
   printer_ = printer_list->GetPrinterWithName(*printer_name);
-  CHECK(printer_.get());
+  CHECK(printer_);
 
   if (!gtk_settings_) {
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
