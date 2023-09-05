@@ -16,8 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -41,8 +40,7 @@ class ProxyImplBase {
  public:
   // Releases `impl` on `task_runner_`.
   static void Destroy(scoped_refptr<Derived> impl) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        impl->task_runner_;
+    scoped_refptr<base::SequencedTaskRunner> task_runner = impl->task_runner_;
     task_runner->PostTask(FROM_HERE,
                           base::BindOnce([](scoped_refptr<Derived> /*impl*/) {},
                                          std::move(impl)));
@@ -131,17 +129,15 @@ class ProxyImplBase {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  // Runs the tasks which invoke outbound COM calls and receive inbound COM
-  // callbacks. This task runner is thread-affine with the platform COM STA.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
-      base::ThreadPool::CreateCOMSTATaskRunner(
+  // Sequences the outbound calls so that the main sequence is not blocked on an
+  // RPC call.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   const UpdaterScope scope_;
 
-  // Interface owned by the STA. It must be created and released by the STA.
   HResultOr<Microsoft::WRL::ComPtr<Interface>> interface_ =
       base::unexpected(S_OK);
 };
