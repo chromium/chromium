@@ -174,6 +174,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
 
   bool CanStartService() const;
 
+  void OnDataDeleted();
+
   // |ServiceContext| object passed to child classes so they can access some of
   // our functionality without depending on us.
   // Note: this is used by the other members here, so it must be defined first
@@ -201,6 +203,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   bool power_source_connected_ = false;
   // Whether the libassistant library is loaded.
   bool libassistant_loaded_ = false;
+  // Whether is deleting data.
+  bool is_deleting_data_ = false;
 
   // The value passed into |SetAssistantManagerServiceForTesting|.
   // Will be moved into |assistant_manager_service_| when the service is

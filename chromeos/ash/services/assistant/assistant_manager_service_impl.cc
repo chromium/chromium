@@ -784,6 +784,8 @@ void AssistantManagerServiceImpl::ClearAfterStop() {
   scoped_app_list_event_subscriber_.Reset();
   interaction_subscribers_.Clear();
   state_observers_.Clear();
+
+  is_first_init = true;
 }
 
 }  // namespace ash::assistant
