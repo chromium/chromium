@@ -13,6 +13,9 @@ import tempfile
 
 import gn_helpers
 
+from typing import Optional
+from typing import Sequence
+
 
 @contextlib.contextmanager
 def atomic_output(path, mode='w+b', only_if_changed=True):
@@ -60,7 +63,9 @@ def add_depfile_arg(parser):
   func('--depfile', help='Path to depfile (refer to "gn help depfile")')
 
 
-def write_depfile(depfile_path, first_gn_output, inputs=None):
+def write_depfile(depfile_path: str,
+                  first_gn_output: str,
+                  inputs: Optional[Sequence[str]] = None) -> None:
   """Writes a ninja depfile.
 
   See notes about how to use depfiles in //build/docs/writing_gn_templates.md.
