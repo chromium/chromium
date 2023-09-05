@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -140,6 +141,7 @@ IncomingPasswordSharingInvitationSpecifics CreateInvitationSpecifics(
   return specifics;
 }
 
+// Waits for the incoming password to be stored locally.
 class PasswordStoredChecker : public SingleClientStatusChangeChecker {
  public:
   PasswordStoredChecker(SyncServiceImpl* sync_service,
@@ -159,6 +161,30 @@ class PasswordStoredChecker : public SingleClientStatusChangeChecker {
 
  private:
   const raw_ptr<PasswordStoreInterface> password_store_;
+  const size_t expected_count_;
+};
+
+// Waits until all the incoming invitations are deleted from the fake server.
+class ServerPasswordInvitationChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  explicit ServerPasswordInvitationChecker(size_t expected_count)
+      : expected_count_(expected_count) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for incoming invitation entity count on the server: "
+        << expected_count_ << ". ";
+
+    size_t actual_count = fake_server()
+                              ->GetSyncEntitiesByModelType(
+                                  syncer::INCOMING_PASSWORD_SHARING_INVITATION)
+                              .size();
+    *os << "Actual count: " << actual_count;
+
+    return actual_count == expected_count_;
+  }
+
+ private:
   const size_t expected_count_;
 };
 
@@ -225,6 +251,24 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email), kSenderEmail);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name), kSenderDisplayName);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
+                       ShouldIssueTombstoneAfterProcessingInvitation) {
+  ASSERT_TRUE(SetupSync());
+
+  InjectInvitationToServer();
+
+  // Wait the invitation to be processed and the password stored.
+  ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
+                                    GetProfilePasswordStoreInterface(0),
+                                    /*expected_count=*/1)
+                  .Wait());
+
+  // Check that all the invitations are eventually deleted from the server.
+  // PasswordStoredChecker above guarantees that there is an invitation present
+  // on the server (which was injected earlier).
+  EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
 }
 
 }  // namespace

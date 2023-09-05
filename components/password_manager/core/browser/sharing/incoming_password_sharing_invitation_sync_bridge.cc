@@ -120,24 +120,23 @@ IncomingPasswordSharingInvitationSyncBridge::ApplyIncrementalSyncChanges(
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
-      // TODO(crbug.com/1445868): remove pending callbacks for deleted
-      // invitations.
-      NOTIMPLEMENTED();
+      // The bridge does not store any data hence just ignore incoming
+      // deletions.
       continue;
     }
 
     IncomingSharingInvitation invitation = InvitationFromSpecifics(
         change->data().specifics.incoming_password_sharing_invitation());
-    password_receiver_service_->ProcessIncomingSharingInvitation(invitation);
-    // TODO(crbug.com/1445868): add pending callbacks to issue an outgoing
-    // deletion after being processed.
+    password_receiver_service_->ProcessIncomingSharingInvitation(
+        std::move(invitation));
+
+    // After the invitation has been processed, delete it from the server, so
+    // that no other client will process it.
+    change_processor()->Delete(change->storage_key(),
+                               metadata_change_list.get());
   }
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  // TODO(crbug.com/1445868): the following CommitSyncMetadata() persists
-  // progress marker. Since the invitation data is not stored, it may result in
-  // data loss. Consider persisting data only after the invitation has been
-  // processed.
   CommitSyncMetadata(std::move(batch));
   return absl::nullopt;
 }
