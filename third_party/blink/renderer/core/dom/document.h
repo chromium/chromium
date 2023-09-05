@@ -693,6 +693,15 @@ class CORE_EXPORT Document : public ContainerNode,
            StyleAndLayoutTreeUpdate::kNone;
   }
 
+  // See `UpdateStyleAndLayoutTreeForThisDocument` for an explanation of the
+  // "ForThisDocument" suffix. This function does not take into account
+  // dirtiness of parent frames: they are assumed to be clean. If it isn't
+  // possible to guarantee clean parent frames, use `NeedsLayoutTreeUpdate`.
+  bool NeedsLayoutTreeUpdateForThisDocument() const {
+    return CalculateStyleAndLayoutTreeUpdateForThisDocument() !=
+           StyleAndLayoutTreeUpdate::kNone;
+  }
+
   // Whether we need layout tree update for this node or not, without
   // considering nodes in display locked subtrees.
   bool NeedsLayoutTreeUpdateForNode(const Node&) const;
@@ -2078,17 +2087,11 @@ class CORE_EXPORT Document : public ContainerNode,
   bool ShouldScheduleLayoutTreeUpdate() const;
   void ScheduleLayoutTreeUpdate();
 
-  // See UpdateStyleAndLayoutTreeForThisDocument for an explanation of
-  // the "ForThisDocument" suffix.
-  //
-  // These functions do not take into account dirtiness of parent frames:
-  // they are assumed to be clean. If it isn't possible to guarantee
-  // clean parent frames, use Needs[Full]LayoutTreeUpdate() instead.
-  bool NeedsLayoutTreeUpdateForThisDocument() const {
-    return CalculateStyleAndLayoutTreeUpdateForThisDocument() !=
-           StyleAndLayoutTreeUpdate::kNone;
-  }
-
+  // See `UpdateStyleAndLayoutTreeForThisDocument` for an explanation of the
+  // "ForThisDocument" suffix. This function does not take into account
+  // dirtiness of parent frames: they are assumed to be clean. If it isn't
+  // possible to guarantee clean parent frames, use
+  // `CalculateStyleAndLayoutTreeUpdate`.
   StyleAndLayoutTreeUpdate CalculateStyleAndLayoutTreeUpdateForThisDocument()
       const;
   StyleAndLayoutTreeUpdate CalculateStyleAndLayoutTreeUpdateForParentFrame()

@@ -1023,6 +1023,11 @@ class CORE_EXPORT LocalFrameView final
 
   bool HasViewTransitionThrottlingRendering() const;
 
+  // CHECKs that all non-throttled frames have clean style and layout (i.e., we
+  // do not need to run `RunStyleAndLayoutLifecyclePhases`). This should only be
+  // used for assertions as it does not perform an exhaustive dirtiness check.
+  void CheckStyleAndLayoutClean();
+
   typedef HeapHashSet<Member<LayoutEmbeddedObject>> EmbeddedObjectSet;
   EmbeddedObjectSet part_update_set_;
 
