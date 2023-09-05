@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -33,10 +34,12 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -1867,6 +1870,73 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest,
   EXPECT_TRUE(run_script_and_wait_for_callback(kUnsetGlobalText).GetBool());
   EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id1));
   EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
+}
+
+class ExtensionActionStableChannelApiTest : public ExtensionActionAPITest {
+ public:
+  ExtensionActionStableChannelApiTest() = default;
+  ~ExtensionActionStableChannelApiTest() override = default;
+
+ private:
+  ScopedCurrentChannel scoped_current_channel_{version_info::Channel::STABLE};
+};
+
+// Tests that the action.openPopup() API is available to policy-installed
+// extensions on stable. Since this is controlled through our features files
+// (which are tested separately), this is more of a smoke test than an
+// end-to-end test.
+// TODO(https://crbug.com/1245093): Remove this test when the API is available
+// for all extensions on stable.
+IN_PROC_BROWSER_TEST_F(ExtensionActionStableChannelApiTest,
+                       OpenPopupAvailabilityOnStableChannel) {
+  TestExtensionDir test_dir;
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "action": {}
+         })";
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     "chrome.test.sendMessage('ready');");
+
+  auto is_open_popup_defined = [this](const Extension& extension) {
+    static constexpr char kScript[] =
+        R"(chrome.test.sendScriptResult(!!chrome.action.openPopup);)";
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension.id(), kScript,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  // Technically, we don't need the "ready" listener here, but this ensures we
+  // don't cross streams with the policy extension loaded below (where we do
+  // need the listener).
+  ExtensionTestMessageListener non_policy_listener("ready");
+  const Extension* non_policy_extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(non_policy_extension);
+  ASSERT_TRUE(non_policy_listener.WaitUntilSatisfied());
+
+  // Somewhat annoying: due to how our test helpers are written,
+  // `EXPECT_EQ(false, base::Value)` works, but EXPECT_FALSE(base::Value) does
+  // not.
+  EXPECT_EQ(false, is_open_popup_defined(*non_policy_extension));
+
+  // Unlike `LoadExtension()`, `InstallExtension()` doesn't wait for the service
+  // worker to be ready, so we need a few manual waiters.
+  base::FilePath packed_path = test_dir.Pack();
+  service_worker_test_utils::TestRegistrationObserver registration_observer(
+      profile());
+  ExtensionTestMessageListener policy_listener("ready");
+  const Extension* policy_extension = InstallExtension(
+      packed_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(policy_extension);
+  ASSERT_TRUE(policy_listener.WaitUntilSatisfied());
+  registration_observer.WaitForRegistrationStored();
+
+  EXPECT_EQ(true, is_open_popup_defined(*policy_extension));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
