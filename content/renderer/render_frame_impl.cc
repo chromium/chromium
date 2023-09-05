@@ -5353,6 +5353,16 @@ void RenderFrameImpl::BeginNavigation(
       // when first creating the iframe with an unset/about:blank URL, which
       // means the origin should inherit from the parent.
       WebLocalFrame* parent = static_cast<WebLocalFrame*>(frame_->Parent());
+      SCOPED_CRASH_KEY_STRING256(
+          "sync_about_blank", "parent_origin",
+          url::Origin(parent->GetDocument().GetSecurityOrigin())
+              .GetDebugString());
+      SCOPED_CRASH_KEY_STRING256(
+          "sync_about_blank", "request_origin",
+          url::Origin(info->url_request.RequestorOrigin()).GetDebugString());
+      SCOPED_CRASH_KEY_STRING256(
+          "sync_about_blank", "current_origin",
+          url::Origin(frame_->GetSecurityOrigin()).GetDebugString());
       CHECK(parent);
       CHECK(parent->GetDocument().GetSecurityOrigin().IsSameOriginWith(
           info->url_request.RequestorOrigin()));

@@ -8997,7 +8997,8 @@ void RenderFrameHostImpl::BeginNavigation(
 
   blink::mojom::CommonNavigationParamsPtr validated_common_params =
       unvalidated_common_params.Clone();
-  if (!VerifyBeginNavigationCommonParams(*this, &*validated_common_params)) {
+  if (!VerifyBeginNavigationCommonParams(*this, &*validated_common_params,
+                                         begin_params->initiator_frame_token)) {
     return;
   }
 
@@ -10134,17 +10135,21 @@ void RenderFrameHostImpl::CommitNavigation(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock =
       ProcessLock::FromSiteInfo(GetSiteInstance()->GetSiteInfo());
-  if (!process_lock.is_error_page() && common_params->url.IsStandard() &&
-      !is_mhtml_subframe &&
-      // TODO(https://crbug.com/888079): Replace `common_params().url` with
-      // the origin to commit calculated on the browser side.
+  auto browser_calc_origin_to_commit =
+      navigation_request->GetOriginToCommitWithDebugInfo();
+  if (!process_lock.is_error_page() && !is_mhtml_subframe &&
       !policy->CanAccessDataForOrigin(
-          GetProcess()->GetID(), url::Origin::Create(common_params->url))) {
+          GetProcess()->GetID(), browser_calc_origin_to_commit.first.value())) {
     SCOPED_CRASH_KEY_STRING64("CommitNavigation", "lock_url",
                               process_lock.ToString());
     SCOPED_CRASH_KEY_STRING64(
-        "CommitNavigation", "commit_origin",
+        "CommitNavigation", "commit_url_origin",
         common_params->url.DeprecatedGetOriginAsURL().spec());
+    SCOPED_CRASH_KEY_STRING64(
+        "CommitNavigation", "browser_calc_origin",
+        browser_calc_origin_to_commit.first.value().GetDebugString());
+    SCOPED_CRASH_KEY_STRING64("CommitNavigation", "origin_debug_info",
+                              browser_calc_origin_to_commit.second);
     SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_main_frame", is_main_frame());
     // The reason this isn't is_outermost_main_frame is so that the full name of
     // the key does not exceed the 40 character limit.

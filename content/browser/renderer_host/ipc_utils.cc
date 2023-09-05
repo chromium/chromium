@@ -47,7 +47,7 @@ bool VerifyBlobToken(
 bool VerifyInitiatorOrigin(
     int process_id,
     const url::Origin& initiator_origin,
-    RenderFrameHostImpl* current_rfh = nullptr,
+    const RenderFrameHostImpl* current_rfh = nullptr,
     GURL* navigation_url = nullptr,
     absl::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
   // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor of
@@ -247,7 +247,8 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
 
 bool VerifyBeginNavigationCommonParams(
     const RenderFrameHostImpl& current_rfh,
-    blink::mojom::CommonNavigationParams* common_params) {
+    blink::mojom::CommonNavigationParams* common_params,
+    absl::optional<blink::LocalFrameToken>& initiator_frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(common_params);
   RenderProcessHost* process = current_rfh.GetProcess();
@@ -282,8 +283,9 @@ bool VerifyBeginNavigationCommonParams(
         process, bad_message::RFHI_BEGIN_NAVIGATION_MISSING_INITIATOR_ORIGIN);
     return false;
   }
-  if (!VerifyInitiatorOrigin(process_id,
-                             common_params->initiator_origin.value())) {
+  if (!VerifyInitiatorOrigin(
+          process_id, common_params->initiator_origin.value(), &current_rfh,
+          &common_params->url, &initiator_frame_token)) {
     return false;
   }
 
