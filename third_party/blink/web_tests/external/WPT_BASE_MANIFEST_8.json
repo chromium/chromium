@@ -279991,11 +279991,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "931ffc1e57e875222d1e00a8de6724b4425caa27",
+     "894b14a715b7f1ded682141ea19e0b837717ad3e",
      []
     ],
     "mtime.json": [
-     "9e0ce2f2f8a6bdf2fb0752d72e3e3cde4e139cef",
+     "3803de6478ca228875e48c2d03a588db51261559",
      []
     ]
    },
@@ -358564,7 +358564,7 @@
       []
      ],
      "fractional-translation-from-position.html.ini": [
-      "3ea4c98d190cf8df9725f8c3efd29a2ae74c7af2",
+      "b1b066e1c9328a88ca7dd2a4f70703704de095f2",
       []
      ],
      "fractional-translation-from-transform-ref.html": [
@@ -376570,7 +376570,7 @@
       []
      ],
      "iframe.tentative.https.window.js.ini": [
-      "1592b2cc4ba615c9347e1f2156c08863ff3f9907",
+      "814408b1dfc245b250e231f4b3e3be0246e38063",
       []
      ],
      "iframe.tentative.https.window_include=from-private-expected.txt": [
@@ -376728,7 +376728,7 @@
       ]
      },
      "service-worker-background-fetch.tentative.https.window.js.ini": [
-      "d1867ffdce60c098e5bae4472e8d63ebcb4598b9",
+      "f3d409e704b1c2aa094f4c5a868a646bb88b14ba",
       []
      ],
      "service-worker-fetch.tentative.https.window.js.ini": [
@@ -391411,7 +391411,7 @@
        ]
       },
       "hidden-elements-expected.txt": [
-       "78ec33ef02500ff93fd0a3caa04ba43b7e113931",
+       "72dd4769b90dbdf6d11cd1f20c8c70b02aa5300e",
        []
       ],
       "hidden-elements.html.ini": [
@@ -586118,7 +586118,7 @@
        ]
       },
       "hidden-elements.html": [
-       "4286681addd09cbd9df8491ec618ccadd55a8c0b",
+       "e1bcf508e5d91348f3963792df2ca03a71e8ebaf",
        [
         null,
         {}
@@ -594087,6 +594087,13 @@
        ],
        "inserted-or-removed.html": [
         "0db2bf0e77a4a8a76ebcef1b0879cac9bb8c3fea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "select-add-optgroup.html": [
+        "fab5332f26bf74ac23faa2affdca8c25d09de490",
         [
          null,
          {}

@@ -16,6 +16,8 @@ PASS script should be hidden
 PASS style should be hidden
 PASS template should be hidden
 PASS title should be hidden
-PASS [hidden] element should be hidden
+PASS div[hidden] element should be hidden
+PASS embed[hidden=''] element should be inline 0x0
+PASS embed[hidden='until-found'] element should be inline 0x0
 Harness: the test ran to completion.
 
