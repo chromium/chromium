@@ -2951,6 +2951,113 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                   HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1)));
 }
 
+// Same as above, but with clipping applied. The embedding render pass will have
+// mask and clip that are either smaller, equal, or bigger when combined than
+// the mask of a render pass where the SurfaceAggregator will try to merge that
+// embedding pass in.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       AggregateSharedQuadStateRoundedCornerBoundsClipping) {
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners1(
+      gfx::RRectF(0, 0, 900, 800, 2.5));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners2(
+      gfx::RRectF(31, 319, 888, 743, 14));
+  constexpr gfx::Size kSurfaceSize1(950, 875);
+
+  const std::vector<std::pair<bool, absl::optional<gfx::Rect>>> kTestData = {
+      {/*mask_will_merge=*/true, gfx::Rect(0, 0, 350, 750)},
+      {/*mask_will_merge=*/true, gfx::Rect(0, 0, 900, 750)},
+      {/*mask_will_merge=*/true, gfx::Rect(0, 0, 899, 799)},
+      {/*mask_will_merge=*/false, gfx::Rect(0, 0, 900, 800)},
+      {/*mask_will_merge=*/false, gfx::Rect(0, 0, 901, 799)},
+      {/*mask_will_merge=*/false, absl::nullopt},
+      {/*mask_will_merge=*/false, gfx::Rect(0, 0, 899, 801)},
+  };
+
+  for (auto& test_data : kTestData) {
+    auto child_root_support = std::make_unique<CompositorFrameSinkSupport>(
+        nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+    auto child_one_support = std::make_unique<CompositorFrameSinkSupport>(
+        nullptr, &manager_, kArbitraryFrameSinkId2, /*is_root=*/false);
+
+    constexpr float device_scale_factor = 1.0f;
+
+    TestSurfaceIdAllocator child_root_surface_id(
+        child_root_support->frame_sink_id());
+    TestSurfaceIdAllocator child_one_surface_id(
+        child_one_support->frame_sink_id());
+
+    auto child_one_pass =
+        RenderPassBuilder(kSurfaceSize1)
+            .AddSolidColorQuad(gfx::Rect(kSurfaceSize1), SkColors::kGreen)
+            .SetQuadClipRect(test_data.second)
+            .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners2,
+                           /*is_fast_rounded_corner=*/true)
+            .Build();
+    QueuePassAsFrame(std::move(child_one_pass),
+                     child_one_surface_id.local_surface_id(),
+                     device_scale_factor, child_one_support.get());
+
+    auto child_root_pass =
+        RenderPassBuilder(kSurfaceSize1)
+            .AddSurfaceQuad(gfx::Rect(kSurfaceSize1),
+                            SurfaceRange(absl::nullopt, child_one_surface_id))
+            .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
+            .Build();
+    QueuePassAsFrame(std::move(child_root_pass),
+                     child_root_surface_id.local_surface_id(),
+                     device_scale_factor, child_root_support.get());
+
+    auto root_pass =
+        RenderPassBuilder(kSurfaceSize1)
+            .AddSurfaceQuad(gfx::Rect(kSurfaceSize1),
+                            SurfaceRange(absl::nullopt, child_root_surface_id))
+            .SetQuadClipRect(gfx::Rect({0, 0}, kSurfaceSize1))
+            .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners1,
+                           /*is_fast_rounded_corner=*/true)
+            .Build();
+    QueuePassAsFrame(std::move(root_pass), root_surface_id_.local_surface_id(),
+                     device_scale_factor, root_sink_.get());
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
+
+    if (/*mask_will_merge=*/test_data.first) {
+      // Given clipping makes kMaskFilterInfoWithFastRoundedCorners2 fit
+      // kMaskFilterInfoWithFastRoundedCorners1, there must be only a root
+      // render pass.
+      ASSERT_EQ(1u, aggregated_pass_list.size());
+
+      const auto& root_aggregated_quad_list_of_surface =
+          aggregated_pass_list[0]->quad_list;
+      EXPECT_THAT(
+          root_aggregated_quad_list_of_surface,
+          ElementsAre(
+              HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners2),
+              HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1)));
+    } else {
+      // The kMaskFilterInfoWithFastRoundedCorners2 doesn't fit
+      // kMaskFilterInfoWithFastRoundedCorners1 and there is no clipping that
+      // could be applied. 2 render passes exist then.
+      ASSERT_EQ(2u, aggregated_pass_list.size());
+
+      const auto& aggregated_quad_list_of_surface1 =
+          aggregated_pass_list[0]->quad_list;
+      EXPECT_THAT(aggregated_quad_list_of_surface1,
+                  ElementsAre(HasMaskFilterInfo(
+                      kMaskFilterInfoWithFastRoundedCorners2)));
+
+      const auto& root_aggregated_quad_list_of_surface =
+          aggregated_pass_list[1]->quad_list;
+      EXPECT_THAT(
+          root_aggregated_quad_list_of_surface,
+          ElementsAre(
+              HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+              HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1)));
+    }
+  }
+}
+
 // Tests that transforms are properly handled.
 TEST_F(SurfaceAggregatorValidSurfaceTest,
        AggregateSharedQuadStateRoundedCornerBounds2) {

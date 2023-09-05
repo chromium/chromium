@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform_utils.h"
 
 namespace viz {
@@ -74,13 +75,15 @@ struct MaskFilterInfoExt {
 
     // If the embedding quad has no mask filter, then we do not have to block
     // merging.
-    if (mask_filter_info.IsEmpty())
+    if (mask_filter_info.IsEmpty()) {
       return true;
+    }
 
     // If the embedding quad has rounded corner and it is not a fast rounded
     // corner, we cannot merge.
-    if (mask_filter_info.HasRoundedCorners() && !is_fast_rounded_corner)
+    if (mask_filter_info.HasRoundedCorners() && !is_fast_rounded_corner) {
       return false;
+    }
 
     // If any of the quads in the render pass to merged has a mask filter of its
     // own, then we have to check if that has fast rounded corners and they fit
@@ -114,12 +117,20 @@ struct MaskFilterInfoExt {
       gfx::MaskFilterInfo sqs_filter = sqs->mask_filter_info;
       sqs_filter.ApplyTransform(parent_target_transform);
 
+      // Also apply clipping rect as it may make current mask fit the
+      // |mask_filter_info|'s bounds. Not doing so may result in marking this
+      // mask not suitable for merging while it never spans outside another
+      // mask.
+      auto clip_bounds = sqs_filter.bounds();
+      if (sqs->clip_rect.has_value()) {
+        clip_bounds.Intersect(gfx::RectF(*sqs->clip_rect));
+      }
+
       // This is the only case when quads of this render pass with a mask
       // filter info that has fast rounded corners set can be merged into the
       // embedding render pass. So, if they don't intersect with the "toplevel"
       // rounded corners, we can merge.
-      if (!mask_filter_info.rounded_corner_bounds().Contains(
-              sqs_filter.bounds())) {
+      if (!mask_filter_info.rounded_corner_bounds().Contains(clip_bounds)) {
         return false;
       }
     }
