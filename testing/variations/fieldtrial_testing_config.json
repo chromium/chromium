@@ -13852,6 +13852,27 @@
             ]
         }
     ],
+    "SaveForLater": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShoppingCollection",
+                        "ShoppingListWAARestrictionRemoval",
+                        "SimplifiedBookmarkSaveFlow"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScalableIphTeamFoodStudy": [
         {
             "platforms": [
