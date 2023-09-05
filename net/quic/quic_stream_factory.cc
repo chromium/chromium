@@ -1106,7 +1106,8 @@ QuicStreamFactory::QuicStreamFactory(
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
     QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
     QuicContext* quic_context)
-    : net_log_(net_log),
+    : net_log_(NetLogWithSource::Make(net_log,
+                                      NetLogSourceType::QUIC_STREAM_FACTORY)),
       host_resolver_(host_resolver),
       client_socket_factory_(client_socket_factory),
       http_server_properties_(http_server_properties),
@@ -1334,6 +1335,7 @@ void QuicStreamFactory::SetRequestPriority(QuicStreamRequest* request,
 
 void QuicStreamFactory::CloseAllSessions(int error,
                                          quic::QuicErrorCode quic_error) {
+  net_log_.AddEvent(NetLogEventType::QUIC_STREAM_FACTORY_CLOSE_ALL_SESSIONS);
   base::UmaHistogramSparse("Net.QuicSession.CloseAllSessionsError", -error);
   while (!active_sessions_.empty()) {
     size_t initial_size = active_sessions_.size();
@@ -1582,6 +1584,7 @@ std::unique_ptr<DatagramClientSocket> QuicStreamFactory::CreateSocket(
 }
 
 void QuicStreamFactory::OnIPAddressChanged() {
+  net_log_.AddEvent(NetLogEventType::QUIC_STREAM_FACTORY_ON_IP_ADDRESS_CHANGED);
   CollectDataOnPlatformNotification(NETWORK_IP_ADDRESS_CHANGED,
                                     handles::kInvalidNetworkHandle);
   // Do nothing if connection migration is turned on.
@@ -1602,11 +1605,9 @@ void QuicStreamFactory::OnIPAddressChanged() {
 void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_CONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    NetLogWithSource net_log = NetLogWithSource::Make(
-        net_log_, NetLogSourceType::QUIC_CONNECTION_MIGRATION);
-    net_log.AddEventWithStringParams(
-        NetLogEventType::QUIC_CONNECTION_MIGRATION_PLATFORM_NOTIFICATION,
-        "signal", "OnNetworkConnected");
+    net_log_.AddEventWithStringParams(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
+        "OnNetworkConnected");
   }
   // Broadcast network connected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1622,11 +1623,9 @@ void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
 void QuicStreamFactory::OnNetworkDisconnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_DISCONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
-    NetLogWithSource net_log = NetLogWithSource::Make(
-        net_log_, NetLogSourceType::QUIC_CONNECTION_MIGRATION);
-    net_log.AddEventWithStringParams(
-        NetLogEventType::QUIC_CONNECTION_MIGRATION_PLATFORM_NOTIFICATION,
-        "signal", "OnNetworkDisconnected");
+    net_log_.AddEventWithStringParams(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
+        "OnNetworkDisconnected");
   }
   // Broadcast network disconnected to all sessions.
   // If migration is not turned on, session will not migrate but collect data.
@@ -1662,11 +1661,9 @@ void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
   default_network_ = network;
 
   if (params_.migrate_sessions_on_network_change_v2) {
-    NetLogWithSource net_log = NetLogWithSource::Make(
-        net_log_, NetLogSourceType::QUIC_CONNECTION_MIGRATION);
-    net_log.AddEventWithStringParams(
-        NetLogEventType::QUIC_CONNECTION_MIGRATION_PLATFORM_NOTIFICATION,
-        "signal", "OnNetworkMadeDefault");
+    net_log_.AddEventWithStringParams(
+        NetLogEventType::QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION, "signal",
+        "OnNetworkMadeDefault");
   }
 
   auto it = all_sessions_.begin();
@@ -2062,6 +2059,8 @@ void QuicStreamFactory::ActivateSession(const QuicSessionAliasKey& key,
 
 void QuicStreamFactory::MarkAllActiveSessionsGoingAway(
     AllActiveSessionsGoingAwayReason reason) {
+  net_log_.AddEvent(
+      NetLogEventType::QUIC_STREAM_FACTORY_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY);
   while (!active_sessions_.empty()) {
     QuicChromiumClientSession* session = active_sessions_.begin()->second;
     // If IP address change is detected, disable session's connectivity

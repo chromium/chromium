@@ -1777,6 +1777,23 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 //   }
 
 // ------------------------------------------------------------------------
+// QuicStreamFactory
+// ------------------------------------------------------------------------
+
+// This event is emitted whenever a platform notification is received that
+// could possibly trigger connection migration.
+//   {
+//     "signal": <Type of the platform notification>
+//   }
+EVENT_TYPE(QUIC_STREAM_FACTORY_PLATFORM_NOTIFICATION)
+
+// These events track QuicStreamFactory's handling of OnIPAddressChanged and
+// whether QuicSessions are closed or marked as going away.
+EVENT_TYPE(QUIC_STREAM_FACTORY_ON_IP_ADDRESS_CHANGED)
+EVENT_TYPE(QUIC_STREAM_FACTORY_CLOSE_ALL_SESSIONS)
+EVENT_TYPE(QUIC_STREAM_FACTORY_MARK_ALL_ACTIVE_SESSIONS_GOING_AWAY)
+
+// ------------------------------------------------------------------------
 // QuicStreamFactory::Job
 // ------------------------------------------------------------------------
 
@@ -2441,13 +2458,6 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_TRIGGERED)
 //     "reason": <String of the failure reason>
 //  }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE)
-
-// This event is emitted whenenver a platform notification is received that
-// could possibly trigger connection migration.
-//   {
-//     "signal": <Type of the platform notification>
-//   }
-EVENT_TYPE(QUIC_CONNECTION_MIGRATION_PLATFORM_NOTIFICATION)
 
 // Records a successful QUIC connection migration attempt of the session
 // identified by connection_id.
