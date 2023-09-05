@@ -261,6 +261,11 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
           *base_computed_style, computed_style)) {
     exclusions.insert(DebugField::mask_);
   }
+  if (!CSSPropertyEquality::PropertiesEqual(
+          PropertyHandle(CSSProperty::Get(CSSPropertyID::kBorderImageSource)),
+          *base_computed_style, computed_style)) {
+    exclusions.insert(DebugField::border_image_);
+  }
 
   // Changes to this flag caused by history.pushState do not always mark
   // for recalc in time, yet VisitedLinkState::DetermineLinkState will provide
