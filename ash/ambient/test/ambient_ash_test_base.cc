@@ -36,6 +36,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -260,7 +261,8 @@ void AmbientAshTestBase::SetAmbientModeManagedScreensaverEnabled(bool enabled) {
       std::make_unique<base::Value>(enabled));
 }
 
-void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {
+void AmbientAshTestBase::SetAmbientTheme(
+    personalization_app::mojom::AmbientTheme theme) {
   SetAmbientUiSettings(AmbientUiSettings(theme));
 }
 

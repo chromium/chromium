@@ -33,6 +33,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -346,7 +347,7 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // decision is to just omit the tree shadow in portrait mode. If/when
   // portrait versions of the animation are made, this logic can be removed.
   if (static_resources_->GetUiSettings().theme() ==
-      AmbientTheme::kFeelTheBreeze) {
+      personalization_app::mojom::AmbientTheme::kFeelTheBreeze) {
     bool tree_shadow_toggled = animation_photo_provider_.ToggleStaticImageAsset(
         cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId),
         /*enabled=*/content_bounds.width() >= content_bounds.height());

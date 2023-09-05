@@ -62,10 +62,6 @@ mojom("mojom") {
           move_only = true
         },
         {
-          mojom = "ash.personalization_app.mojom.AmbientTheme"
-          cpp = "::ash::AmbientTheme"
-        },
-        {
           mojom = "ash.personalization_app.mojom.TopicSource"
           cpp = "::ash::AmbientModeTopicSource"
         },

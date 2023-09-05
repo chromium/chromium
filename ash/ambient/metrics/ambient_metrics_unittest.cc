@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/test/test_ash_web_view.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
@@ -26,6 +26,7 @@ namespace ash {
 namespace ambient {
 namespace metrics {
 using AmbientMetricsTest = testing::Test;
+using ash::personalization_app::mojom::AmbientTheme;
 
 TEST_F(AmbientMetricsTest, AmbientModePhotoSourceArt) {
   AmbientSettings settings;

@@ -14,6 +14,7 @@
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -707,8 +708,8 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, RecordsPhotoOrientationMatch) {
-  static_resources_.set_ui_settings(
-      AmbientUiSettings(AmbientTheme::kFeelTheBreeze));
+  static_resources_.set_ui_settings(AmbientUiSettings(
+      personalization_app::mojom::AmbientTheme::kFeelTheBreeze));
 
   // 2 landscape 2 portrait
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));

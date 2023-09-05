@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/public/cpp/personalization_app/user_display_info.h"
@@ -30,7 +29,6 @@ namespace mojo {
 using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
 using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
-using MojomAmbientTheme = ash::personalization_app::mojom::AmbientTheme;
 using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
 using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 using MojomAmbientUiVisibility =
@@ -369,41 +367,6 @@ bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   out->index = data.index();
   return data.ReadTitle(&out->title) && data.ReadUrl(&out->url) &&
          data.ReadSourceInfo(&out->source_info);
-}
-
-MojomAmbientTheme EnumTraits<MojomAmbientTheme, ash::AmbientTheme>::ToMojom(
-    ash::AmbientTheme input) {
-  switch (input) {
-    case ash::AmbientTheme::kSlideshow:
-      return MojomAmbientTheme::kSlideshow;
-    case ash::AmbientTheme::kFeelTheBreeze:
-      return MojomAmbientTheme::kFeelTheBreeze;
-    case ash::AmbientTheme::kFloatOnBy:
-      return MojomAmbientTheme::kFloatOnBy;
-    case ash::AmbientTheme::kVideo:
-      return MojomAmbientTheme::kVideo;
-  }
-}
-
-bool EnumTraits<MojomAmbientTheme, ash::AmbientTheme>::FromMojom(
-    MojomAmbientTheme input,
-    ash::AmbientTheme* output) {
-  switch (input) {
-    case MojomAmbientTheme::kSlideshow:
-      *output = ash::AmbientTheme::kSlideshow;
-      return true;
-    case MojomAmbientTheme::kFeelTheBreeze:
-      *output = ash::AmbientTheme::kFeelTheBreeze;
-      return true;
-    case MojomAmbientTheme::kFloatOnBy:
-      *output = ash::AmbientTheme::kFloatOnBy;
-      return true;
-    case MojomAmbientTheme::kVideo:
-      *output = ash::AmbientTheme::kVideo;
-      return true;
-  }
-  NOTREACHED();
-  return false;
 }
 
 // TODO (b/220933864): remove ash::AmbientModeTopicSource and

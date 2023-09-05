@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/default_user_image.h"
@@ -124,14 +123,6 @@ struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
   static bool Read(
       ash::personalization_app::mojom::DefaultUserImageDataView data,
       ash::default_user_image::DefaultUserImage* out);
-};
-
-template <>
-struct EnumTraits<ash::personalization_app::mojom::AmbientTheme,
-                  ash::AmbientTheme> {
-  using MojomAmbientTheme = ::ash::personalization_app::mojom::AmbientTheme;
-  static MojomAmbientTheme ToMojom(ash::AmbientTheme input);
-  static bool FromMojom(MojomAmbientTheme input, ash::AmbientTheme* output);
 };
 
 template <>

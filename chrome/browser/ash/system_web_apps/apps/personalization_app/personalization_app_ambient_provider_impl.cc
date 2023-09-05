@@ -10,7 +10,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
-#include "ash/constants/ambient_theme.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -175,12 +175,12 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
 }
 
 void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
-    ash::AmbientTheme to_theme) {
+    mojom::AmbientTheme to_theme) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   LogAmbientModeTheme(to_theme);
   AmbientUiSettings orig_settings = GetCurrentUiSettings();
-  AmbientTheme from_theme = orig_settings.theme();
+  mojom::AmbientTheme from_theme = orig_settings.theme();
   if (from_theme == to_theme) {
     return;
   }
@@ -188,7 +188,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
   // Attempt to retrieve the previously selected video. If not, fallback to the
   // default video. Only applicable when target theme is `AmbientTheme::kVideo`.
   AmbientVideo video = orig_settings.video().value_or(kDefaultAmbientVideo);
-  if (to_theme == AmbientTheme::kVideo) {
+  if (to_theme == mojom::AmbientTheme::kVideo) {
     LogAmbientModeVideo(video);
   }
   AmbientUiSettings(to_theme, video).WriteToPrefService(*pref_service);
@@ -198,20 +198,20 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientTheme(
   //
   // If `settings_` is null, the next call to `FetchSettingsAndAlbums()` will
   // broadcast the `OnTopicSourceChanged()` call that's being done here.
-  if (settings_ && (to_theme == AmbientTheme::kVideo ||
-                    from_theme == AmbientTheme::kVideo)) {
+  if (settings_ && (to_theme == mojom::AmbientTheme::kVideo ||
+                    from_theme == mojom::AmbientTheme::kVideo)) {
     OnTopicSourceChanged();
   }
 }
 
 void PersonalizationAppAmbientProviderImpl::SetTopicSource(
     ash::AmbientModeTopicSource topic_source) {
-  AmbientTheme current_theme = GetCurrentUiSettings().theme();
+  mojom::AmbientTheme current_theme = GetCurrentUiSettings().theme();
   // The presence of the `kVideo` theme in pref automatically means the `kVideo`
   // topic source is active. `settings_` should be kept as the server's view of
   // the user's ambient settings, and `SetAmbientTheme(kVideo)` already
   // broadcasts an `OnTopicSourceChanged()`, so there's no work to do here.
-  if (current_theme == AmbientTheme::kVideo) {
+  if (current_theme == mojom::AmbientTheme::kVideo) {
     if (topic_source != AmbientModeTopicSource::kVideo) {
       LOG(ERROR) << "Cannot set topic source to "
                  << static_cast<int>(topic_source) << " for video theme";
@@ -221,7 +221,7 @@ void PersonalizationAppAmbientProviderImpl::SetTopicSource(
 
   if (topic_source == AmbientModeTopicSource::kVideo) {
     LOG(ERROR) << "Video topic source does not apply to theme "
-               << ToString(current_theme);
+               << ambient::util::AmbientThemeToString(current_theme);
     return;
   }
 
@@ -359,7 +359,7 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
     // incremented though every time the hub is simply opened.
     AmbientUiSettings current_ui_settings = GetCurrentUiSettings();
     LogAmbientModeTheme(current_ui_settings.theme());
-    if (current_ui_settings.theme() == AmbientTheme::kVideo) {
+    if (current_ui_settings.theme() == mojom::AmbientTheme::kVideo) {
       LogAmbientModeVideo(*current_ui_settings.video());
     }
   }
@@ -649,7 +649,7 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
 void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
-  if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
+  if (GetCurrentUiSettings().theme() == mojom::AmbientTheme::kVideo) {
     absl::optional<AmbientVideo> video = GetCurrentUiSettings().video();
     DCHECK(video.has_value());
     auto url_arr =
@@ -750,7 +750,7 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientUiVisibilityChanged(
 
 AmbientModeTopicSource
 PersonalizationAppAmbientProviderImpl::GetCurrentTopicSource() const {
-  if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
+  if (GetCurrentUiSettings().theme() == mojom::AmbientTheme::kVideo) {
     return AmbientModeTopicSource::kVideo;
   } else {
     DCHECK(settings_);

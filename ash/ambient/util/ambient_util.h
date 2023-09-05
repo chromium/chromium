@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/strings/string_piece.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
@@ -92,6 +93,12 @@ struct ASH_EXPORT ParsedDynamicAssetId {
 };
 ASH_EXPORT bool ParseDynamicLottieAssetId(base::StringPiece asset_id,
                                           ParsedDynamicAssetId& parsed_output);
+
+// AmbientTheme converted to a string for readability. The returned StringPiece
+// is guaranteed to be null-terminated and point to memory valid for the
+// lifetime of the program.
+ASH_EXPORT base::StringPiece AmbientThemeToString(
+    personalization_app::mojom::AmbientTheme theme);
 
 }  // namespace util
 }  // namespace ambient

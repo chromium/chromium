@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "ash/constants/ambient_theme.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -15,7 +15,7 @@
 namespace ash {
 
 FakeAmbientAnimationStaticResources::FakeAmbientAnimationStaticResources()
-    : ui_settings_(AmbientTheme::kFeelTheBreeze) {}
+    : ui_settings_(personalization_app::mojom::AmbientTheme::kFeelTheBreeze) {}
 
 FakeAmbientAnimationStaticResources::~FakeAmbientAnimationStaticResources() =
     default;

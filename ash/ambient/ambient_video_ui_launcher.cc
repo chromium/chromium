@@ -8,6 +8,7 @@
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ui/ambient_video_view.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/public/cpp/personalization_app/time_of_day_paths.h"
 #include "ash/shell.h"
 #include "base/check.h"
@@ -52,7 +53,7 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
       AmbientUiSettings::ReadFromPrefService(*pref_service_);
   CHECK(ui_settings.video())
       << "AmbientVideoUiLauncher should not be active for "
-      << ToString(ui_settings.theme());
+      << ambient::util::AmbientThemeToString(ui_settings.theme());
   current_video_ = *ui_settings.video();
   weather_refresher_ = Shell::Get()
                            ->ambient_controller()

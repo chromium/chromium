@@ -9,7 +9,6 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
@@ -66,7 +65,7 @@ class TestAmbientObserver
     ambient_mode_enabled_ = ambient_mode_enabled;
   }
 
-  void OnAmbientThemeChanged(ash::AmbientTheme ambient_theme) override {
+  void OnAmbientThemeChanged(mojom::AmbientTheme ambient_theme) override {
     ambient_theme_ = ambient_theme;
   }
 
@@ -112,7 +111,7 @@ class TestAmbientObserver
     return ambient_mode_enabled_;
   }
 
-  ash::AmbientTheme ambient_theme() {
+  mojom::AmbientTheme ambient_theme() {
     ambient_observer_receiver_.FlushForTesting();
     return ambient_theme_;
   }
@@ -149,7 +148,7 @@ class TestAmbientObserver
 
   bool ambient_mode_enabled_ = false;
 
-  ash::AmbientTheme ambient_theme_ = ash::AmbientTheme::kSlideshow;
+  mojom::AmbientTheme ambient_theme_ = mojom::AmbientTheme::kSlideshow;
   uint32_t duration_ = 10;
   ash::AmbientModeTopicSource topic_source_ =
       ash::AmbientModeTopicSource::kArtGallery;
@@ -243,7 +242,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return test_ambient_observer_.is_ambient_mode_enabled();
   }
 
-  ash::AmbientTheme ObservedAmbientTheme() {
+  mojom::AmbientTheme ObservedAmbientTheme() {
     ambient_provider_remote_.FlushForTesting();
     return test_ambient_observer_.ambient_theme();
   }
@@ -283,7 +282,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
                                       enabled);
   }
 
-  void SetAmbientTheme(ash::AmbientTheme ambient_theme) {
+  void SetAmbientTheme(mojom::AmbientTheme ambient_theme) {
     ambient_provider_->SetAmbientTheme(ambient_theme);
   }
 
@@ -487,26 +486,26 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   // should become active by default since the corresponding experiment flags
   // are on. That should count as +1 in the usage metrics for the video theme.
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kVideo, 1);
+                                       mojom::AmbientTheme::kVideo, 1);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
                                        ash::kDefaultAmbientVideo, 1);
 
   SetAmbientObserver();
   FetchSettings();
-  SetAmbientTheme(ash::AmbientTheme::kSlideshow);
-  EXPECT_EQ(ash::AmbientTheme::kSlideshow, ObservedAmbientTheme());
+  SetAmbientTheme(mojom::AmbientTheme::kSlideshow);
+  EXPECT_EQ(mojom::AmbientTheme::kSlideshow, ObservedAmbientTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kSlideshow, 1);
+                                       mojom::AmbientTheme::kSlideshow, 1);
 
-  SetAmbientTheme(ash::AmbientTheme::kFeelTheBreeze);
-  EXPECT_EQ(ash::AmbientTheme::kFeelTheBreeze, ObservedAmbientTheme());
+  SetAmbientTheme(mojom::AmbientTheme::kFeelTheBreeze);
+  EXPECT_EQ(mojom::AmbientTheme::kFeelTheBreeze, ObservedAmbientTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kFeelTheBreeze, 1);
+                                       mojom::AmbientTheme::kFeelTheBreeze, 1);
 
-  SetAmbientTheme(ash::AmbientTheme::kVideo);
-  EXPECT_EQ(ash::AmbientTheme::kVideo, ObservedAmbientTheme());
+  SetAmbientTheme(mojom::AmbientTheme::kVideo);
+  EXPECT_EQ(mojom::AmbientTheme::kVideo, ObservedAmbientTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kVideo, 2);
+                                       mojom::AmbientTheme::kVideo, 2);
   histogram_tester().ExpectBucketCount(kAmbientModeVideoHistogramName,
                                        ash::kDefaultAmbientVideo, 2);
 }
@@ -515,12 +514,12 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
        RestoresOldThemeAfterReenabling) {
   SetAmbientObserver();
   FetchSettings();
-  SetAmbientTheme(ash::AmbientTheme::kFeelTheBreeze);
+  SetAmbientTheme(mojom::AmbientTheme::kFeelTheBreeze);
   SetEnabledPref(false);
   SetEnabledPref(true);
-  EXPECT_EQ(ash::AmbientTheme::kFeelTheBreeze, ObservedAmbientTheme());
+  EXPECT_EQ(mojom::AmbientTheme::kFeelTheBreeze, ObservedAmbientTheme());
   histogram_tester().ExpectBucketCount(kAmbientModeAnimationThemeHistogramName,
-                                       ash::AmbientTheme::kFeelTheBreeze, 2);
+                                       mojom::AmbientTheme::kFeelTheBreeze, 2);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, FetchPreviewImages) {
@@ -547,7 +546,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_EQ(AmbientModeTopicSource::kVideo, ObservedTopicSource());
 
   // Set to a different theme and select different topic source.
-  SetAmbientTheme(AmbientTheme::kSlideshow);
+  SetAmbientTheme(mojom::AmbientTheme::kSlideshow);
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, ObservedTopicSource());
 
   SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
@@ -588,7 +587,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
   // Even while the video topic source is active, temperature settings changes
   // should still be sent to the backend.
-  SetAmbientTheme(AmbientTheme::kVideo);
+  SetAmbientTheme(mojom::AmbientTheme::kVideo);
   SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
   ReplyUpdateSettings(/*success=*/true);
   EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
@@ -611,7 +610,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   // Default screen saver is video theme with only kVideo topic source option.
   // Switch to other theme (kSlideshow) to try different topic sources.
-  SetAmbientTheme(AmbientTheme::kSlideshow);
+  SetAmbientTheme(mojom::AmbientTheme::kSlideshow);
 
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
 
@@ -1045,7 +1044,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        HandlesTransitionToFromVideoTopicSource) {
   // Start with the video topic source already active on boot.
-  AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds)
+  AmbientUiSettings(mojom::AmbientTheme::kVideo, AmbientVideo::kClouds)
       .WriteToPrefService(*profile()->GetPrefs());
 
   SetAmbientObserver();
@@ -1059,13 +1058,13 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
                         Field(&mojom::AmbientModeAlbum::checked, IsTrue())))));
 
   // Switch to slide show mode and change settings to some custom configuration.
-  SetAmbientTheme(AmbientTheme::kSlideshow);
+  SetAmbientTheme(mojom::AmbientTheme::kSlideshow);
   SetTopicSource(AmbientModeTopicSource::kArtGallery);
   SetAlbumSelected("1", AmbientModeTopicSource::kArtGallery, /*selected=*/true);
   ReplyUpdateSettings(/*success=*/true);
 
   // Switch back to video theme. Same video settings should remain.
-  SetAmbientTheme(AmbientTheme::kVideo);
+  SetAmbientTheme(mojom::AmbientTheme::kVideo);
   EXPECT_EQ(ObservedTopicSource(), AmbientModeTopicSource::kVideo);
   EXPECT_THAT(ObservedAlbums(),
               Contains(Pointee(
@@ -1073,7 +1072,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
                         Field(&mojom::AmbientModeAlbum::checked, IsTrue())))));
 
   // Switch back to slide show. The custom setting set previously should stick.
-  SetAmbientTheme(AmbientTheme::kSlideshow);
+  SetAmbientTheme(mojom::AmbientTheme::kSlideshow);
   EXPECT_EQ(ObservedTopicSource(), AmbientModeTopicSource::kArtGallery);
   EXPECT_THAT(ObservedAlbums(),
               Contains(Pointee(
@@ -1089,12 +1088,12 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
 
-  SetAmbientTheme(AmbientTheme::kVideo);
+  SetAmbientTheme(mojom::AmbientTheme::kVideo);
   // Let retries happen and try to expose any erroneous settings changes.
   task_environment()->FastForwardBy(base::Minutes(1));
   // Should not get stuck in a state where video theme is active with a
   // non-video topic source.
-  ASSERT_EQ(ObservedAmbientTheme(), AmbientTheme::kVideo);
+  ASSERT_EQ(ObservedAmbientTheme(), mojom::AmbientTheme::kVideo);
   EXPECT_EQ(ObservedTopicSource(), AmbientModeTopicSource::kVideo);
   EXPECT_THAT(ObservedAlbums(),
               Contains(Pointee(AllOf(

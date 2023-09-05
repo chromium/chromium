@@ -8,10 +8,10 @@
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -75,7 +75,8 @@ AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
 }
 
 AmbientVideoView::~AmbientVideoView() {
-  AmbientUiSettings ui_settings(AmbientTheme::kVideo, video_);
+  AmbientUiSettings ui_settings(
+      personalization_app::mojom::AmbientTheme::kVideo, video_);
   ambient::RecordAmbientModeVideoSessionStatus(ash_web_view_.get(),
                                                ui_settings);
   ambient::RecordAmbientModeVideoSmoothness(ash_web_view_.get(), ui_settings);
