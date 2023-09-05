@@ -1134,6 +1134,11 @@ BASE_FEATURE(kFederatedStringsService,
              "FederatedStringsService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the federated strings service to schedule tasks.
+BASE_FEATURE(kFederatedStringsServiceScheduleTasks,
+             "FederatedStringsServiceScheduleTasks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFederatedTimezoneCodePhh,
              "FederatedTimezoneCodePhh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3303,6 +3308,16 @@ bool IsFederatedServiceEnabled() {
 bool IsFederatedServiceScheduleTasksEnabled() {
   return IsFederatedServiceEnabled() &&
          base::FeatureList::IsEnabled(kFederatedServiceScheduleTasks);
+}
+
+bool IsFederatedStringsServiceEnabled() {
+  return base::FeatureList::IsEnabled(kFederatedService) &&
+         base::FeatureList::IsEnabled(kFederatedStringsService);
+}
+
+bool IsFederatedStringsServiceScheduleTasksEnabled() {
+  return IsFederatedStringsServiceEnabled() &&
+         base::FeatureList::IsEnabled(kFederatedStringsServiceScheduleTasks);
 }
 
 bool IsFileManagerFuseBoxDebugEnabled() {

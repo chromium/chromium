@@ -56,13 +56,15 @@ class FederatedClientManagerTest : public NoSessionAshTestBase {
 
 // TODO(b/289140140): Add more tests when implementation is completed.
 
-TEST_F(FederatedClientManagerTest, ServiceAvailableAfterLogin) {
+TEST_F(FederatedClientManagerTest, ServicesAvailableAfterLogin) {
   // Before login.
-  EXPECT_FALSE(manager_->IsServiceAvailable());
+  EXPECT_FALSE(manager_->IsFederatedServiceAvailable());
+  EXPECT_FALSE(manager_->IsFederatedStringsServiceAvailable());
 
   // After login.
   SimulateUserLogin("user@gmail.com");
-  EXPECT_TRUE(manager_->IsServiceAvailable());
+  EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
+  EXPECT_TRUE(manager_->IsFederatedStringsServiceAvailable());
 }
 
 // Demonstration of using a faked FederatedServiceController in a non-ash
@@ -70,7 +72,12 @@ TEST_F(FederatedClientManagerTest, ServiceAvailableAfterLogin) {
 // AshTestBase.
 class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
  public:
-  FederatedClientManagerFakeAshInteractionTest() = default;
+  FederatedClientManagerFakeAshInteractionTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFederatedService,
+                              features::kFederatedStringsService},
+        /*disabled_features=*/{});
+  }
   FederatedClientManagerFakeAshInteractionTest(
       const FederatedClientManagerFakeAshInteractionTest&) = delete;
   FederatedClientManagerFakeAshInteractionTest& operator=(
@@ -87,10 +94,14 @@ class FederatedClientManagerFakeAshInteractionTest : public testing::Test {
 
  protected:
   std::unique_ptr<FederatedClientManager> manager_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(FederatedClientManagerFakeAshInteractionTest, ServiceAvailable) {
-  EXPECT_TRUE(manager_->IsServiceAvailable());
+TEST_F(FederatedClientManagerFakeAshInteractionTest, ServicesAvailable) {
+  EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
+  EXPECT_TRUE(manager_->IsFederatedStringsServiceAvailable());
 }
 
 }  // namespace ash::federated

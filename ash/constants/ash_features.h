@@ -330,6 +330,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFederatedServiceScheduleTasks);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFederatedStringsService);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFederatedStringsServiceScheduleTasks);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFederatedTimezoneCodePhh);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFederatedLauncherQueryAnalyticsTask);
@@ -931,6 +933,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairDevicesBluetoothSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedServiceScheduleTasksEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFederatedStringsServiceEnabled();
+
+// TODO revisit structure of feature flags w.r.t. gating task scheduling.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsFederatedStringsServiceScheduleTasksEnabled();
+
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerFuseBoxDebugEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesConflictDialogEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFilesSearchV2Enabled();

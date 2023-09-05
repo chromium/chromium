@@ -29,6 +29,9 @@ constexpr char kHistogramReportStatus[] =
 // Records launcher search backend federated analytics.
 // Requires that OnDefaultSearchIsGoogleSet() is called after class creation and
 // before any logging is triggered. Enforced by a CHECK().
+//
+// TODO(b/289140140): Consider migrating to FederatedClientManager utility class
+// after that class is completed.
 class FederatedMetricsManager : ash::AppListNotifier::Observer {
  public:
   using Result = ash::AppListNotifier::Result;
