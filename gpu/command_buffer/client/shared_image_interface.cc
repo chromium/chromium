@@ -118,4 +118,8 @@ SharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
   return nullptr;
 }
 
+void SharedImageInterface::WaitForMailboxToBeMappable(const Mailbox& mailbox) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace gpu

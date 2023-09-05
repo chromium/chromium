@@ -111,6 +111,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox) override;
 
+  void WaitForMailboxToBeMappable(const Mailbox& mailbox) override;
+
  private:
   Mailbox AddMailbox(const Mailbox& mailbox);
 

@@ -232,6 +232,12 @@ ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
   return scoped_mapping;
 }
 
+void ClientSharedImageInterface::WaitForMailboxToBeMappable(
+    const Mailbox& mailbox) {
+  [[maybe_unused]] auto handle_info =
+      proxy_->GetGpuMemoryBufferHandleInfo(mailbox);
+}
+
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return proxy_->UsageForMailbox(mailbox);
 }

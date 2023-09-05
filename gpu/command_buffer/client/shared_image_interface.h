@@ -333,6 +333,14 @@ class GPU_EXPORT SharedImageInterface {
   // and blocks on the clients thread only the first time for a given |mailbox|.
   virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox);
+
+  // MapSharedImage() is a blocking call and blocks on the client thread where
+  // it is called. WaitForMailboxToBeMappable() can be used to issue the
+  // blocking call instead. This ensures that MapSharedImage() will not block if
+  // WaitForMailboxToBeMappable() have been already called on that mailbox.
+  // This api is required to provide flexibility to clients by allowing them to
+  // choose where it wants the blocking to happen.
+  virtual void WaitForMailboxToBeMappable(const Mailbox& mailbox);
 };
 
 }  // namespace gpu
