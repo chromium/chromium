@@ -641,6 +641,7 @@ public class LocationBarMediatorTest {
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_9, mKeyEvent));
+        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_9, mKeyEvent);
         verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
     }
 

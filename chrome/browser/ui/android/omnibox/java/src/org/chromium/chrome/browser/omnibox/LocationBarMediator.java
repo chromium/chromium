@@ -1447,15 +1447,17 @@ class LocationBarMediator
     // OnKeyListener implementation.
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent event) {
-        boolean result = handleKeyEvent(view, keyCode, event);
-
-        if (result && mUrlHasFocus && mUrlFocusedWithoutAnimations
-                && event.getAction() == KeyEvent.ACTION_DOWN && event.isPrintingKey()
-                && event.hasNoModifiers()) {
+        // Trigger focus animations to adequately set system state before potentially handling the
+        // key event. This is required only when the intention is to trigger the suggestions
+        // dropdown after the omnibox has gained focus without animations and a valid key is
+        // pressed. All printing keys will be taken into account as long as CTRL is not pressed,
+        // since that may trigger special functionality.
+        if (mUrlFocusedWithoutAnimations && event.getAction() == KeyEvent.ACTION_DOWN
+                && event.isPrintingKey() && !event.isCtrlPressed()) {
             handleUrlFocusAnimation(/*hasFocus=*/true);
         }
 
-        return result;
+        return handleKeyEvent(view, keyCode, event);
     }
 
     // ComponentCallbacks implementation.
