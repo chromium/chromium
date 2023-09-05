@@ -339,10 +339,13 @@ class DenseSet {
     }
   }
 
+  // Returns a set containing all values from `kMinValue` to `kMaxValue`,
+  // regardless of whether the values represent an existing enum.
   static constexpr DenseSet all() {
     DenseSet set;
-    for (auto x = Traits::kMinValue; x <= Traits::kMaxValue; ++x) {
-      set.insert(x);
+    for (Index x = value_to_index(Traits::kMinValue);
+         x <= value_to_index(Traits::kMaxValue); ++x) {
+      set.insert(index_to_value(x));
     }
     return set;
   }
@@ -496,7 +499,7 @@ class DenseSet {
   }
 
   static constexpr T index_to_value(Index i) {
-    DCHECK_LE(i, base::checked_cast<Index>(Traits::kMaxValue));
+    DCHECK_LE(i, kMaxBitIndex);
     return static_cast<T>(base::checked_cast<UnderlyingType>(i) +
                           to_underlying(Traits::kMinValue));
   }

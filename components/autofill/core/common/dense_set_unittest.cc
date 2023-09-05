@@ -110,12 +110,29 @@ TEST(DenseSetTest, initializer_list) {
   }
 }
 
-TEST(DenseSetTest, all) {
+TEST(DenseSetTest, all_non_enum) {
   constexpr DenseSetWrapper<int, 0, 10> set =
       DenseSetWrapper<int, 0, 10>::all();
   EXPECT_EQ(set.size(), 11u);
   EXPECT_THAT(std::vector<int>(set.begin(), set.end()),
               ElementsAre(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+}
+
+TEST(DenseSetTest, all_enum) {
+  enum class T {
+    kMinusOne = -1,
+    kOne = 1,
+    kTwo = 2,
+    kMaxValue = kTwo,
+  };
+
+  constexpr DenseSetWrapper<T, T::kMinusOne> set =
+      DenseSetWrapper<T, T::kMinusOne>::all();
+  // `set` will contain all values from -1 to 2, including 0 even if 0 doesn't
+  // correspond to any value of `T`.
+  EXPECT_EQ(set.size(), 4u);
+  EXPECT_THAT(std::vector<T>(set.begin(), set.end()),
+              ElementsAre(T::kMinusOne, static_cast<T>(0), T::kOne, T::kTwo));
 }
 
 TEST(DenseSetTest, data) {
