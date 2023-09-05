@@ -10,8 +10,6 @@
 
 void GoogleTtsSetLogger(void (*logger_func)(int severity, const char* message));
 
-void GoogleTtsPreSandboxInit();
-
 bool GoogleTtsInit(const char* pipeline_path, const char* path_prefix);
 
 void GoogleTtsShutdown();

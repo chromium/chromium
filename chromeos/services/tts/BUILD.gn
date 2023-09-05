@@ -50,7 +50,6 @@ generate_library_loader("libchrometts") {
 
   functions = [
     "GoogleTtsSetLogger",
-    "GoogleTtsPreSandboxInit",
     "GoogleTtsInit",
     "GoogleTtsShutdown",
     "GoogleTtsInstallVoice",
