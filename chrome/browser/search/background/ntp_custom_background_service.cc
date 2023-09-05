@@ -118,6 +118,13 @@ void CopyFileToProfilePath(const base::FilePath& from_path,
                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename));
 }
 
+void WriteFileToProfilePath(const std::string& data,
+                            const base::FilePath& profile_path) {
+  base::WriteFile(profile_path.AppendASCII(
+                      chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+                  base::as_bytes(base::make_span(data)));
+}
+
 void RemoveLocalBackgroundImageCopy(Profile* profile) {
   base::FilePath path = profile->GetPath().AppendASCII(
       chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
@@ -304,6 +311,20 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
+      base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void NtpCustomBackgroundService::SelectLocalBackgroundImage(
+    const std::string& data) {
+  if (IsCustomBackgroundDisabledByPolicy()) {
+    return;
+  }
+  previous_background_info_.reset();
+  previous_local_background_ = true;
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&WriteFileToProfilePath, data, profile_->GetPath()),
       base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
                      weak_ptr_factory_.GetWeakPtr()));
 }

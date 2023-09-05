@@ -360,6 +360,27 @@ TEST_F(NtpCustomBackgroundServiceTest, SetLocalImage) {
   EXPECT_EQ(true, custom_background->is_uploaded_image);
 }
 
+TEST_F(NtpCustomBackgroundServiceTest, SetLocalImageWithFileString) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(1);
+  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      profile().GetTestingPrefService();
+
+  custom_background_service_->SelectLocalBackgroundImage("background_image");
+  task_environment_.RunUntilIdle();
+
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_TRUE(
+      base::StartsWith(custom_background->custom_background_url.spec(),
+                       chrome::kChromeUIUntrustedNewTabPageBackgroundUrl,
+                       base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(
+      pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+  EXPECT_EQ(true, custom_background->is_uploaded_image);
+}
+
 TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
   EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(2);
   ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
