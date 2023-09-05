@@ -559,21 +559,41 @@ void FederatedAuthRequestImpl::CompleteMDocRequest(std::string mdoc) {
 }
 
 std::string BuildMDocRequest(blink::mojom::MDocProviderPtr provider) {
+  auto formats = Value::List();
+  for (auto& format : provider->selector->format) {
+    formats.Append(format);
+  }
+
+  auto params = Value::Dict();
+  for (const auto& pair : provider->params) {
+    params.Set(pair.first, pair.second);
+  }
+
   auto fields = Value::List();
 
-  for (auto& field : provider->requested_elements) {
-    fields.Append(Value::Dict().Set("name", field->name));
+  if (provider->selector->doctype) {
+    auto doctype = Value::Dict();
+    doctype.Set("name", "doctype");
+    doctype.Set("equals", provider->selector->doctype.value());
+    fields.Append(std::move(doctype));
+  }
+
+  for (auto& value : provider->selector->fields) {
+    auto field = Value::Dict();
+    field.Set("name", value->name);
+    if (value->equals) {
+      field.Set("equals", value->equals.value());
+    }
+    fields.Append(std::move(field));
   }
 
   auto dict = Value::Dict().Set(
-      "providers",
-      Value::List().Append(
-          Value::Dict()
-              .Set("responseFormat", Value::List().Append("mdoc"))
-              .Set("request", Value::Dict().Set("readerPublicKey",
-                                                provider->reader_public_key))
-              .Set("selector",
-                   Value::Dict().Set("fields", std::move(fields)))));
+      "providers", Value::List().Append(
+                       Value::Dict()
+                           .Set("responseFormat", std::move(formats))
+                           .Set("request", std::move(params))
+                           .Set("selector", Value::Dict().Set(
+                                                "fields", std::move(fields)))));
 
   return WriteJson(dict).value();
 }

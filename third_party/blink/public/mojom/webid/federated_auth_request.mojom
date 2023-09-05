@@ -74,21 +74,24 @@ union IdentityProvider {
 
 // The details of an mdoc provider.
 struct MDocProvider {
-  // base64-encoded reader HPKE public key.
-  string reader_public_key;
-
-  // The type of the document (e.g. a passport, a driver's license, etc).
-  string document_type;
-
-  // The attributes requested.
-  array<MDocElement> requested_elements;
+  map<string, string> params;
+  MDocSelector selector;
 };
 
-// The details of MDocElement.
+// The details of the selector.
+struct MDocSelector {
+  array<string> format;
+  string? doctype;
+  array<MDocElement> fields;
+};
+
+// The requirements that the verifier needs on fields.
 struct MDocElement {
-  // The namespace of the element (e.g. a "name" in a passport vs a "name" in a driver's license).
-  string element_namespace;
+  // The name of the field (e.g. "org.iso.18013.5.1.family_name").
   string name;
+
+  // Optionally, whether the field's value is equal to a specific value or not.
+  string? equals;
 };
 
 // The details of a federated identity provider.

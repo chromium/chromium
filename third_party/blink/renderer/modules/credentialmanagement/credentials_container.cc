@@ -1413,7 +1413,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           !RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
         // TODO(https://crbug.com/1416939): make sure the MDocs API
         // works well with the Multiple IdP API.
-        if (provider->hasMdoc()) {
+        if (provider->hasHolder()) {
           auto identity_provider =
               blink::mojom::blink::IdentityProvider::From(*provider);
           identity_provider_ptrs.push_back(std::move(identity_provider));

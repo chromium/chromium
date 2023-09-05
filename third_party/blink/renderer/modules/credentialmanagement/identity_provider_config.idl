@@ -16,30 +16,37 @@ dictionary IdentityProviderConfig {
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
 };
 
-// extends the IdentityProviderConfig with mDoc-specific attributes
+// extends the IdentityProviderConfig with Wallet-specific attributes
 partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=WebIdentityMDocs] MDocProvider mdoc;
+  [RuntimeEnabled=WebIdentityMDocs] MDocProvider holder;
 };
 
 dictionary MDocProvider  {
-  // base64-encoded reader HPKE public key.
-  required DOMString readerPublicKey;
+  // A query selector.
+  MDocSelector selector;
 
-  // base64-encoded reader certification chain, if the platform requires it.
-  sequence<DOMString> certificates;
+  // An opaque map of parameters.
+  record<USVString, USVString> params;
+};
+
+dictionary MDocSelector {
+  // A list of desired response types.
+  sequence<USVString> format;
+
+  // The top-level type of document (e.g. a passport, driver's license, etc).
+  DOMString doctype;
 
   // Omitting `retention` implies that the identity information will not be stored.
+  // How long the verifier intends to retent the credential.
   MDocStorageDuration retention;
 
-  required DOMString documentType;
-  required sequence<MDocElement> requestedElements;
+  // The requested fields.
+  sequence<(MDocElement or DOMString)> fields;
 };
 
 dictionary MDocElement {
-  // As defined in ISO 18013-5 clause 8.
-  [ImplementedAs=elementNamespace]
-  required DOMString _namespace;
   required DOMString name;
+  DOMString equals;
 };
 
 dictionary MDocStorageDuration {

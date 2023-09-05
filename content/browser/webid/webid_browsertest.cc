@@ -634,17 +634,20 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, RequestMDoc) {
           const {token} = await navigator.credentials.get({
             identity: {
               providers: [{
-                configURL: '',
-                clientId: '',
-                mdoc: {
-                  documentType: 'test_document_type',
-                  readerPublicKey: 'test_reader_public_key',
-                  requestedElements: [
-                    {
-                      namespace: 'test_namespace',
-                      name: 'test_name'
-                    }
-                  ],
+                holder: {
+                  selector: {
+                    format: ['mdoc'],
+                    doctype: 'org.iso.18013.5.1.mDL',
+                    fields: [
+                      'org.iso.18013.5.1.family_name',
+                      'org.iso.18013.5.1.portrait',
+                    ]
+                  },
+                  params: {
+                    nonce: '1234',
+                    readerPublicKey: 'test_reader_public_key',
+                    extraParamAsNeededByWallets: true,
+                  },
                 },
               }],
             },
@@ -669,17 +672,20 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest,
           const {token} = await navigator.credentials.get({
             identity: {
               providers: [{
-                configURL: '',
-                clientId: '',
-                mdoc: {
-                  documentType: 'test_document_type',
-                  readerPublicKey: 'test_reader_public_key',
-                  requestedElements: [
-                    {
-                      namespace: 'test_namespace',
-                      name: 'test_name'
-                    }
-                  ],
+                holder: {
+                  selector: {
+                    format: ["mdoc"],
+                    doctype: 'org.iso.18013.5.1.mDL',
+                    fields: [
+                      'org.iso.18013.5.1.family_name',
+                      'org.iso.18013.5.1.portrait',
+                    ],
+                  },
+                  params: {
+                    nonce: '1234',
+                    readerPublicKey: 'test_reader_public_key',
+                    extraParamAsNeededByWallets: true,
+                  },
                 },
               }],
             },

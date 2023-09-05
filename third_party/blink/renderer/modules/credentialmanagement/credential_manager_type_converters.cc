@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_element.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_selector.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_mdocelement_string.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -73,6 +75,8 @@ using blink::mojom::blink::MDocElement;
 using blink::mojom::blink::MDocElementPtr;
 using blink::mojom::blink::MDocProvider;
 using blink::mojom::blink::MDocProviderPtr;
+using blink::mojom::blink::MDocSelector;
+using blink::mojom::blink::MDocSelectorPtr;
 using blink::mojom::blink::PRFValues;
 using blink::mojom::blink::PRFValuesPtr;
 using blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr;
@@ -763,21 +767,48 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
 IdentityProviderPtr
 TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
     const blink::IdentityProviderConfig& provider) {
-  if (provider.hasMdoc() &&
+  if (provider.hasHolder() &&
       blink::RuntimeEnabledFeatures::WebIdentityMDocsEnabled() &&
       // TODO(https://crbug.com/1416939): make sure the MDocs API
       // works well with the Multiple IdP API.
       !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    WTF::Vector<MDocElementPtr> requested_elements;
-    for (auto element : provider.mdoc()->requestedElements()) {
-      auto requested_element =
-          MDocElement::New(element->elementNamespace(), element->name());
-      requested_elements.push_back(std::move(requested_element));
+    auto mojo_provider = MDocProvider::New();
+    if (provider.holder()->hasParams()) {
+      HashMap<String, String> params;
+      for (const auto& pair : provider.holder()->params()) {
+        params.Set(pair.first, pair.second);
+      }
+      mojo_provider->params = std::move(params);
     }
-    auto mdoc = MDocProvider::New(provider.mdoc()->documentType(),
-                                  provider.mdoc()->readerPublicKey(),
-                                  std::move(requested_elements));
-    return IdentityProvider::NewMdoc(std::move(mdoc));
+    mojo_provider->selector = MDocSelector::New();
+    if (provider.holder()->hasSelector()) {
+      if (provider.holder()->selector()->hasFormat()) {
+        mojo_provider->selector->format =
+            provider.holder()->selector()->format();
+      }
+      if (provider.holder()->selector()->hasDoctype()) {
+        mojo_provider->selector->doctype =
+            provider.holder()->selector()->doctype();
+      }
+      if (provider.holder()->selector()->hasFields()) {
+        WTF::Vector<MDocElementPtr> fields;
+        for (auto element : provider.holder()->selector()->fields()) {
+          auto requested_element = MDocElement::New();
+          if (element->IsString()) {
+            requested_element->name = element->GetAsString();
+          } else {
+            requested_element->name = element->GetAsMDocElement()->name();
+            if (element->GetAsMDocElement()->hasEquals()) {
+              requested_element->equals = element->GetAsMDocElement()->equals();
+            }
+          }
+
+          fields.push_back(std::move(requested_element));
+        }
+        mojo_provider->selector->fields = std::move(fields);
+      }
+    }
+    return IdentityProvider::NewMdoc(std::move(mojo_provider));
   } else {
     auto config = IdentityProviderConfig::From(provider);
     return IdentityProvider::NewFederated(std::move(config));
