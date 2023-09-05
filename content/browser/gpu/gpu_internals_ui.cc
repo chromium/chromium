@@ -74,7 +74,7 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
       WebUIDataSource::CreateAndAdd(browser_context, kChromeUIGpuHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types;");

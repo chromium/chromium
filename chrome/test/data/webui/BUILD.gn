@@ -434,6 +434,8 @@ ts_library("build_ts") {
     "mojo_webui_test_support.js",
     "media/media_engagement_test.js",
     "media/media_history_test.js",
+    "sandbox/gpu_test.js",
+    "sandbox/sandbox_test.js",
   ]
 
   if (is_chromeos_ash) {

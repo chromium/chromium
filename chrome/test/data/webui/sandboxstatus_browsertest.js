@@ -19,6 +19,10 @@ SandboxStatusUITest.prototype = {
    */
   browsePreload: 'chrome://sandbox',
 
+  extraLibraries: [
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+  ],
 };
 
 // This test is for Linux only.
@@ -41,16 +45,17 @@ GEN('#endif');
  */
 TEST_F(
     'SandboxStatusUITest', 'MAYBE_testSUIDorNamespaceSandboxEnabled',
-    function() {
-      var sandboxnamespacestring = 'Layer 1 Sandbox\tNamespace';
-      var sandboxsuidstring = 'Layer 1 Sandbox\tSUID';
-
-      var namespaceyes = document.body.innerText.match(sandboxnamespacestring);
-      var suidyes = document.body.innerText.match(sandboxsuidstring);
-
-      // Exactly one of the namespace or suid sandbox should be enabled.
-      assertTrue(suidyes !== null || namespaceyes !== null);
-      assertFalse(suidyes !== null && namespaceyes !== null);
+    async function() {
+      const module = await import('chrome://resources/js/static_types.js');
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.onload = () => {
+        runMochaTest('Sandbox', 'SUIDorNamespaceSandboxEnabled');
+      };
+      script.src =
+          module
+              .getTrustedScriptURL`chrome://webui-test/sandbox/sandbox_test.js`;
+      document.body.appendChild(script);
     });
 
 // The seccomp-bpf sandbox is also not compatible with ASAN.
@@ -65,15 +70,16 @@ GEN('#endif');
 /**
  * Test if the seccomp-bpf sandbox is enabled.
  */
-TEST_F('SandboxStatusUITest', 'MAYBE_testBPFSandboxEnabled', function() {
-  var bpfyesstring = 'Seccomp-BPF sandbox\tYes';
-  var bpfnostring = 'Seccomp-BPF sandbox\tNo';
-  var bpfyes = document.body.innerText.match(bpfyesstring);
-  var bpfno = document.body.innerText.match(bpfnostring);
-
-  assertEquals(null, bpfno);
-  assertFalse(bpfyes === null);
-  assertEquals(bpfyesstring, bpfyes[0]);
+TEST_F('SandboxStatusUITest', 'MAYBE_testBPFSandboxEnabled', async function() {
+  const module = await import('chrome://resources/js/static_types.js');
+  const script = document.createElement('script');
+  script.type = 'module';
+  script.onload = () => {
+    runMochaTest('Sandbox', 'BPFSandboxEnabled');
+  };
+  script.src =
+      module.getTrustedScriptURL`chrome://webui-test/sandbox/sandbox_test.js`;
+  document.body.appendChild(script);
 });
 
 /**
@@ -90,6 +96,11 @@ GPUSandboxStatusUITest.prototype = {
    */
   browsePreload: 'chrome://gpu',
   isAsync: true,
+
+  extraLibraries: [
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+  ],
 };
 
 // This test is disabled because it can only pass on real hardware. We
@@ -100,31 +111,19 @@ GPUSandboxStatusUITest.prototype = {
 /**
  * Test if the GPU sandbox is enabled.
  */
-TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
-  const gpuyesstring = 'Sandboxed\ttrue';
-  const gpunostring = 'Sandboxed\tfalse';
-
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      for (var i = 0; i < mutation.addedNodes.length; i++) {
-        // Here we can inspect each of the added nodes. We expect
-        // to find one that contains one of the GPU status strings.
-        const addedNode = mutation.addedNodes[i];
-        // Check for both. If it contains neither, it's an unrelated
-        // mutation event we don't care about. But if it contains one,
-        // pass or fail accordingly.
-        const gpuyes = addedNode.innerText.match(gpuyesstring);
-        const gpuno = addedNode.innerText.match(gpunostring);
-        if (gpuyes || gpuno) {
-          assertEquals(null, gpuno);
-          assertTrue(gpuyes && (gpuyes[0] === gpuyesstring));
-          testDone();
-        }
-      }
+TEST_F(
+    'GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled',
+    async function() {
+      const module = await import('chrome://resources/js/static_types.js');
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.onload = () => {
+        runMochaTest('GPU', 'GPUSandboxEnabled');
+      };
+      script.src =
+          module.getTrustedScriptURL`chrome://webui-test/sandbox/gpu_test.js`;
+      document.body.appendChild(script);
     });
-  });
-  observer.observe(document.getElementById('basic-info'), {childList: true});
-});
 
 /**
  * TestFixture for chrome://sandbox on Windows.
@@ -140,6 +139,11 @@ SandboxStatusWindowsUITest.prototype = {
    */
   browsePreload: 'chrome://sandbox',
   isAsync: true,
+
+  extraLibraries: [
+    '//third_party/mocha/mocha.js',
+    '//chrome/test/data/webui/mocha_adapter.js',
+  ],
 };
 
 // This test is for Windows only.
@@ -155,19 +159,16 @@ GEN('#endif');
 /**
  * Test that chrome://sandbox functions on Windows.
  */
-TEST_F('SandboxStatusWindowsUITest', 'MAYBE_testSandboxStatus', function() {
-  var sandboxTitle = 'Sandbox Status';
-  var sandboxPolicies = 'policies:';
-  var sandboxMitigations = 'platformMitigations';
-
-  var titleyes = document.body.innerText.match(sandboxTitle);
-  assertTrue(titleyes !== null);
-
-  var rawNode = document.getElementById('raw-info');
-  var policiesyes = rawNode.innerText.match(sandboxPolicies);
-  assertTrue(policiesyes !== null);
-  var mitigationsyes = rawNode.innerText.match(sandboxMitigations);
-  assertTrue(mitigationsyes !== null);
-
-  testDone();
-});
+TEST_F(
+    'SandboxStatusWindowsUITest', 'MAYBE_testSandboxStatus', async function() {
+      const module = await import('chrome://resources/js/static_types.js');
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.onload = () => {
+        runMochaTest('Sandbox', 'SandboxStatus');
+      };
+      script.src =
+          module
+              .getTrustedScriptURL`chrome://webui-test/sandbox/sandbox_test.js`;
+      document.body.appendChild(script);
+    });
