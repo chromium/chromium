@@ -590,7 +590,7 @@
 <translation id="1485015260175968628">Сада може да:</translation>
 <translation id="1485141095922496924">Верзија <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Претражите лозинке</translation>
-<translation id="1486486872607808064">Скенирајте овај QR кôд камером на уређају на ком желите да направите приступни кôд за апликацију <ph name="APP_NAME" /></translation>
+<translation id="1486486872607808064">Скенирајте овај QR кôд камером на уређају на ком желите да направите приступни кључ за апликацију <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Укључено – прилагођена подешавања</translation>
 <translation id="1493892686965953381">Чека се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сајтови могу да траже да користе фонтове инсталиране на уређају</translation>
@@ -905,7 +905,7 @@
 <translation id="1744108098763830590">страница у позадини</translation>
 <translation id="1745732479023874451">Управљајте контактима</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Желите да отворите и измените # фајл у овој веб-апликацији?}few{Желите да отворите и измените # фајла у овој веб-апликацији?}other{Желите да отворите и измените # фајлова у овој веб-апликацији?}}</translation>
-<translation id="1748329107062243374">Користите приступни кôд уређаја <ph name="DEVICE_NAME" /> да бисте се пријавили на <ph name="WEBSITE" /></translation>
+<translation id="1748329107062243374">Користите приступни кључ уређаја <ph name="DEVICE_NAME" /> да бисте се пријавили на <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Можете да сачувате ову лозинку на Google налогу или само на овом уређају</translation>
 <translation id="1749733017156547309">Лозинка је обавезна</translation>
 <translation id="1750172676754093297">Безбедносни кључ не може да чува отиске прстију</translation>
@@ -4529,7 +4529,7 @@
 <translation id="481574578487123132">Повезани уређаји</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, детаљи</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележивач је избрисан}one{{COUNT} обележивач је избрисан}few{{COUNT} обележивача су избрисана}other{{COUNT} обележивача је избрисано}}</translation>
-<translation id="4816900689218414104">Направите приступни кôд на телефону или таблету</translation>
+<translation id="4816900689218414104">Направите приступни кључ на телефону или таблету</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затвара се одмах.}=1{Затвара се за 1 секунду}one{Затвара се за # секунду}few{Затвара се за # секунде}other{Затвара се за # секунди}}</translation>
 <translation id="4819607494758673676">Обавештења Google помоћника</translation>
 <translation id="4820236583224459650">Подеси као активни тикет</translation>
@@ -4538,7 +4538,7 @@
 <translation id="4823484602432206655">Читање и мењање подешавања корисника и уређаја</translation>
 <translation id="4824037980212326045">Linux резервне копије и враћање</translation>
 <translation id="4824958205181053313">Желите ли да откажете синхронизацију?</translation>
-<translation id="4825532258163983651">Брисање приступног кода није успело</translation>
+<translation id="4825532258163983651">Брисање приступног кључа није успело</translation>
 <translation id="4827283332383516812">Избришите картицу</translation>
 <translation id="4827675678516992122">Повезивање није успело</translation>
 <translation id="4827784381479890589">Побољшана провера правописа у прегледачу Chrome (текст се шаље Google-у да бисте добијали предлоге за правопис)</translation>
@@ -6792,7 +6792,7 @@
 <translation id="6790497603648687708">Додатак <ph name="EXTENSION_NAME" /> је додат даљински</translation>
 <translation id="6790820461102226165">Додај особу...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
-<translation id="679486139907144816">Да бисте се пријавили на овај сајт помоћу приступног кода, треба да укључите Windows Hello у подешавањима. Затим се вратите на овај сајт и пробајте поново.</translation>
+<translation id="679486139907144816">Да бисте се пријавили на овај сајт помоћу приступног кључа, треба да укључите Windows Hello у подешавањима. Затим се вратите на овај сајт и пробајте поново.</translation>
 <translation id="6795371939514004514">Аутоматско скенирање вам омогућава да се аутоматски крећете кроз ставке на екрану. Када је ставка истакнута, притисните Изабери да бисте је активирали.</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6796509790850723820">Рендеруј</translation>
@@ -7314,7 +7314,7 @@
 <translation id="7240339475467890413">Желите ли да се повежете на нови хотспот?</translation>
 <translation id="7241389281993241388">Пријавите се на <ph name="TOKEN_NAME" /> да бисте увезли сертификат клијента.</translation>
 <translation id="7241763419756062043">Одаберите квалитет претраге и прегледања</translation>
-<translation id="7243092385765551741">Желите да избришете приступни кôд?</translation>
+<translation id="7243092385765551741">Желите да избришете приступни кључ?</translation>
 <translation id="7243632151880336635">Обриши и одјави ме</translation>
 <translation id="7245162963905242662">Претражи ову страницу помоћу Google-а...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Најбоље)</translation>
@@ -7383,7 +7383,7 @@
 <translation id="7299515639584427954">Желите да промените подразумевану апликацију за подржане линкове?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Можете да питате „Хеј Google, која је ово песма?“ или „Хеј Google, шта је приказано на мом екрану?“</translation>
-<translation id="7301812050652048720">Приступни кôд је избрисан</translation>
+<translation id="7301812050652048720">Приступни кључ је избрисан</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ова апликација би могла да омета правилно функционисање Chrome-а.}one{Ове апликације би могле да ометају правилно функционисање Chrome-а.}few{Ове апликације би могле да ометају правилно функционисање Chrome-а.}other{Ове апликације би могле да ометају правилно функционисање Chrome-а.}}</translation>
 <translation id="7303281435234579599">Упс! Дошло је до проблема при подешавању режима демонстрације.</translation>
 <translation id="7303900363563182677">Овом сајту је блокиран увид у текст и слике који су копирани у привремену меморију</translation>

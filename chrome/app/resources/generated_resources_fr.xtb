@@ -1521,7 +1521,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2247870315273396641">Aperçu de la voix</translation>
 <translation id="2249111429176737533">Ouvrir dans une fenêtre à onglets</translation>
 <translation id="2249605167705922988">par exemple : 1-5, 8, 11-13</translation>
-<translation id="2249635629516220541">Personnaliser les infos utilisées par les sites pour vous présenter des annonces</translation>
+<translation id="2249635629516220541">Personnaliser les informations utilisées par les sites pour vous montrer des annonces</translation>
 <translation id="2251218783371366160">Ouvrir avec le lecteur système</translation>
 <translation id="225163402930830576">Actualiser les réseaux</translation>
 <translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
@@ -8338,7 +8338,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
     <ph name="BEGIN_PARAGRAPH3" />Vous pouvez désactiver ce service dans les paramètres.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8076835018653442223">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre appareil</translation>
-<translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous présenter des annonces</translation>
+<translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="80798452873915119">Les sites peuvent demander à gérer les fenêtres de tous vos écrans</translation>
 <translation id="808089508890593134">Google</translation>
@@ -9282,7 +9282,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Comment vous pouvez gérer vos données<ph name="END_BOLD" /> : pour protéger votre confidentialité, nous supprimons automatiquement les sites de la liste s'ils datent de plus de quatre semaines. Un site peut réapparaître dans la liste si vous le consultez à nouveau. Vous pouvez également supprimer un site si vous ne souhaitez pas qu'il définisse des centres d'intérêt pour vous.</translation>
 <translation id="8884570509232205463">Ton appareil se verrouille désormais à <ph name="UNLOCK_TIME" />.</translation>
 <translation id="8888253246822647887">Votre application s'ouvrira une fois la mise à jour terminée. Les mises à jour peuvent prendre quelques minutes.</translation>
-<translation id="8889294078294184559">À mesure que vous naviguez, les sites peuvent vérifier à partir des données de Chrome et d'un site auquel vous avez accédé précédemment que vous êtes probablement une personne réelle</translation>
+<translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>
 <translation id="8889651696183044030">Le site <ph name="ORIGIN" /> peut modifier les fichiers et les dossiers suivants</translation>
 <translation id="8890170499370378450">Des frais liés à la consommation de données mobiles peuvent s'appliquer</translation>
 <translation id="8890516388109605451">Sources</translation>

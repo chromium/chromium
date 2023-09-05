@@ -2794,7 +2794,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7201591969684833065">Administrator može da vidi:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste otvorili novu karticu bez arhiviranja i pregledali privatno</translation>
 <translation id="7203375778433816396">Podesite Chrome kao podrazumevani pregledač sistema</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Nijedan}=1{1 pristupni kôd}one{# pristupni kôd}few{# pristupna koda}other{# pristupnih kodova}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Nijedan}=1{1 pristupni ključ}one{# pristupni ključ}few{# pristupna ključa}other{# pristupnih ključeva}}</translation>
 <translation id="7210863904660874423">Host <ph name="HOST_NAME" /> ne poštuje bezbednosne standarde.</translation>
 <translation id="7210993021468939304">Linux aktivnosti unutar kontejnera i može da instalira i pokreće Linux aplikacije unutar kontejnera</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>

@@ -2794,7 +2794,7 @@
 <translation id="7201591969684833065">Администратор може да види:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="7203375778433816396">Подесите Chrome као подразумевани прегледач система</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Ниједан}=1{1 приступни кôд}one{# приступни кôд}few{# приступна кода}other{# приступних кодова}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ниједан}=1{1 приступни кључ}one{# приступни кључ}few{# приступна кључа}other{# приступних кључева}}</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не поштује безбедносне стандарде.</translation>
 <translation id="7210993021468939304">Linux активности унутар контејнера и може да инсталира и покреће Linux апликације унутар контејнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> о овом проблему.</translation>

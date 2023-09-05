@@ -328,7 +328,7 @@
 <translation id="6992289844737586249">Demander avant d'autoriser des sites à utiliser mon micro (recommandé)</translation>
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="7016516562562142042">Autorisé pour le moteur de recherche actuel</translation>
-<translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires via Chrome pour vous présenter des annonces plus pertinentes.</translation>
+<translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="702463548815491781">Recommandé quand TalkBack ou Switch Access sont activés</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
@@ -381,7 +381,7 @@
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>
 <translation id="8068648041423924542">Impossible de sélectionner le certificat</translation>
-<translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous présenter des annonces</translation>
+<translation id="8077120325605624147">Tous les sites que vous consultez peuvent vous montrer des annonces</translation>
 <translation id="8087000398470557479">Ce contenu est issu de <ph name="DOMAIN_NAME" />. Il est diffusé par Google.</translation>
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
@@ -418,7 +418,7 @@
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8528440122773422556">L'ensemble des données et cookies stockés par tous les sites dépendant de <ph name="ORIGIN" /> ou par l'application associée sur votre écran d'accueil seront effacés</translation>
-<translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces auprès de Chrome pour vous présenter des annonces plus pertinentes</translation>
+<translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}one{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}other{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
@@ -437,7 +437,7 @@
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
 <translation id="8823559166155093873">Bloquer les cookies</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8889294078294184559">À mesure que vous naviguez, les sites peuvent vérifier à partir des données de Chrome et d'un site auquel vous avez accédé précédemment que vous êtes probablement une personne réelle</translation>
+<translation id="8889294078294184559">Lorsque vous continuez à naviguer, les sites peuvent vérifier avec Chrome et avec un site que vous avez déjà visité si vous êtes une personne réelle</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

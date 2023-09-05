@@ -913,7 +913,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur Tabulation, puis sur Entrée pour supprimer la suggestion.</translation>
-<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité, tout en permettant aux sites de vous présenter des annonces pertinentes. En fonction de votre activité, un site auquel vous avez accédé peut suggérer des annonces associées à mesure que vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
+<translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité tout en permettant aux sites de vous montrer des annonces pertinentes. En fonction de votre activité, un site que vous avez visité peut suggérer des annonces s'y rapportant lorsque vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
 <translation id="3029752078111257850">Actualités internationales</translation>
 <translation id="3036894576201005614">Produits ménagers de nettoyage</translation>
@@ -1017,7 +1017,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement un événement dans Google Agenda</translation>
 <translation id="3261488570342242926">En savoir plus sur les cartes virtuelles</translation>
 <translation id="3262698603497362968">Options d'achat</translation>
-<translation id="3266367459139339908">Nous proposons de nouvelles méthodes permettant de limiter les informations que les sites peuvent obtenir à votre sujet lorsqu'ils vous présentent des annonces personnalisées, par exemple :</translation>
+<translation id="3266367459139339908">Nous lançons de nouvelles façons de limiter ce que les sites peuvent apprendre à votre sujet lorsqu'ils vous montrent des annonces personnalisées, par exemple :</translation>
 <translation id="3266793032086590337">Valeur (conflit)</translation>
 <translation id="3266972086368072861">{NUM_COOKIES,plural, =0{Aucun site bloqué, en incluant les sites associés}=1{1 site bloqué, en incluant les sites associés}one{# site bloqué, en incluant les sites associés}other{# sites bloqués, en incluant les sites associés}}</translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
@@ -1496,7 +1496,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4287495839370498922">Confidentialité des annonces améliorée dans Chrome</translation>
 <translation id="4287885627794386150">Essai possible, mais non actif</translation>
 <translation id="4290920330097335010">Ne jamais autoriser</translation>
-<translation id="4296207570293932800">Nouvelle fonctionnalité de confidentialité des annonces disponible</translation>
+<translation id="4296207570293932800">Nouvelle fonctionnalité de confidentialité disponible pour les annonces</translation>
 <translation id="4297502707443874121">Vignette de la page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="42981349822642051">Développer</translation>
@@ -2243,7 +2243,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="598637245381783098">Impossible d'ouvrir l'application de paiement</translation>
 <translation id="5989320800837274978">Aucun serveur proxy déterminé ou URL de script .pac n'a été indiqué.</translation>
 <translation id="5992691462791905444">Technique de pli en Z</translation>
-<translation id="5992805036496113940">Voir les infos utilisées pour vous présenter des annonces</translation>
+<translation id="5992805036496113940">Voir les informations utilisées pour vous montrer des annonces</translation>
 <translation id="5995727681868049093">Gérez vos infos, la confidentialité de vos données et votre sécurité dans votre compte Google</translation>
 <translation id="5997247540087773573">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement et de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats pour "<ph name="SEARCH_TEXT" />"</translation>
@@ -2322,7 +2322,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6157754950574419155">Tout supprimer de l'historique</translation>
 <translation id="6157877588268064908">Sélectionnez une adresse pour consulter les modes et conditions d'expédition disponibles</translation>
 <translation id="6159554577634054750">Désinsectisation et dératisation</translation>
-<translation id="6160391204859821737">Activer une fonctionnalité de confidentialité des annonces</translation>
+<translation id="6160391204859821737">Activez une fonctionnalité de confidentialité pour les annonces</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6167577165590485365">Dernière tentative d'extraction :</translation>
 <translation id="6169916984152623906">Vous pouvez désormais naviguer de façon privée. Les autres utilisateurs de cet appareil ne verront pas votre activité. Les téléchargements et les favoris seront cependant enregistrés.</translation>
@@ -2598,7 +2598,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6786145470008421571">Enveloppe 150x230</translation>
 <translation id="67862343314499040">Mauve</translation>
 <translation id="6786747875388722282">Extensions</translation>
-<translation id="6787094689637422836">Nous lançons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces diffusées.</translation>
+<translation id="6787094689637422836">Nous lançons de nouvelles fonctionnalités de confidentialité qui vous offrent une plus grande liberté de choix sur les annonces que vous voyez.</translation>
 <translation id="678982761784843853">ID de contenu protégé</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="679355240208270552">Règle ignorée, car le moteur de recherche par défaut n'est pas activé par une règle.</translation>
@@ -2707,7 +2707,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7016992613359344582">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés.</translation>
 <translation id="701757816833614688">Études d'art et de design visuels</translation>
 <translation id="702146556168549005">Les URL des pages que vous consultez sont envoyées à Google Cloud ou à des tiers pour analyse (par exemple, pour détecter les sites dangereux ou filtrer des sites en fonction des règles définies par l'administrateur).</translation>
-<translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires via Chrome pour vous présenter des annonces plus pertinentes.</translation>
+<translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030436163253143341">Certificat non valide</translation>
@@ -2863,7 +2863,7 @@ Informations supplémentaires :
 <translation id="736592699917579616">Restauration</translation>
 <translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Gestionnaires de paiement</translation>
-<translation id="7367985555340314048">Les thèmes qui vous intéressent sont basés sur votre historique de navigation récent et utilisés par les sites pour vous présenter des annonces personnalisées</translation>
+<translation id="7367985555340314048">Les thèmes d'intérêt sont basés sur votre historique de navigation récent et sont utilisés par les sites pour vous montrer des annonces personnalisées</translation>
 <translation id="7372973238305370288">résultat de recherche</translation>
 <translation id="7374461526650987610">Gestionnaires de protocoles</translation>
 <translation id="7374733840632556089">Ce problème est dû à un certificat installé sur votre appareil par vous-même ou par quelqu'un d'autre. Ce certificat est utilisé pour surveiller et intercepter des réseaux, et n'est pas approuvé par Chrome. Bien qu'il existe des cas légitimes de surveillance (sur un réseau scolaire ou d'entreprise, par exemple), Chrome souhaite s'assurer que vous êtes au courant de cette activité, même si vous ne pouvez pas l'empêcher. La surveillance peut se produire sur n'importe quel navigateur ou application qui accède au Web.</translation>
@@ -3095,7 +3095,7 @@ Informations supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Règle ignorée, car non configurée par une source cloud.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. De plus, les sites que vous consultez peuvent déterminer vos centres d'intérêt. Par la suite, les sites peuvent demander ces informations pour vous présenter des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous présenter des annonces.</translation>
+<translation id="7800977246388195491">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent. Les sites que vous consultez peuvent aussi déterminer vos centres d'intérêt. Par la suite, les sites peuvent demander ces informations pour vous montrer des annonces personnalisées. Vous pouvez choisir les thèmes et les sites qui sont utilisés pour vous montrer des annonces.</translation>
 <translation id="7802523362929240268">Ce site est légitime</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres indiqué à l'<ph name="SIDE_OF_CARD" /> pour que votre banque puisse vérifier votre identité</translation>
 <translation id="780301667611848630">Non, merci</translation>
@@ -3305,7 +3305,7 @@ Informations supplémentaires :
 <translation id="827820107214076967">Actualiser les journaux</translation>
 <translation id="8279611986089885641">Les notifications Chrome doivent être activées. Vous pouvez les activer dans <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Bac 11</translation>
-<translation id="8281730697546299650">Autres fonctionnalités de confidentialité des annonces désormais disponibles</translation>
+<translation id="8281730697546299650">Autres fonctionnalités de confidentialité désormais disponibles pour les annonces</translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8282409409360764263">Entretien de jardins</translation>
 <translation id="8282947398454257691">Connaître l'identifiant unique de votre appareil</translation>
@@ -3421,7 +3421,7 @@ Informations supplémentaires :
 <translation id="8533619373899488139">Pour consulter la liste des URL bloquées et des autres règles définies par votre administrateur système, rendez-vous sur &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
 <translation id="8539500321752640291">Accorder les deux autorisations ?</translation>
 <translation id="8541158209346794904">Appareil Bluetooth</translation>
-<translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces auprès de Chrome pour vous présenter des annonces plus pertinentes</translation>
+<translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="8541579497401304453">Contactez un établissement par téléphone.</translation>
 <translation id="8542014550340843547">Triple agrafe en bas</translation>
 <translation id="8542617028204211143">SRA0</translation>
@@ -3453,7 +3453,7 @@ Informations supplémentaires :
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : Votre activité sur un site que vous consultez dans Chrome sur cet appareil.</translation>
 <translation id="8601456038554914806">Équipement pour sports nautiques</translation>
 <translation id="8606726445206553943">Utiliser vos appareils MIDI</translation>
-<translation id="8606988009912891950">Les thèmes d'annonces aident les sites à vous présenter des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut déterminer les thèmes qui vous intéressent en fonction de votre historique de navigation récent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces qui vous seront présentées.</translation>
+<translation id="8606988009912891950">Les thèmes d'annonces aident les sites à vous montrer des annonces pertinentes tout en protégeant votre historique de navigation et votre identité. Chrome peut déterminer les thèmes qui vous intéressent en fonction de votre historique de navigation récent. Par la suite, un site que vous consultez pourra demander à Chrome des thèmes pertinents pour personnaliser les annonces que vous verrez.</translation>
 <translation id="8617269623452051934">si vous utilisez cet appareil</translation>
 <translation id="861775596732816396">Taille 4</translation>
 <translation id="8620276786115098679">Enveloppe Kaku 7</translation>
@@ -3637,7 +3637,7 @@ Informations supplémentaires :
 <translation id="9049981332609050619">Vous avez tenté de contacter <ph name="DOMAIN" />, mais le certificat présenté par le serveur est incorrect.</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>
 <translation id="9051072642122229460">Cafetières et machines à espresso</translation>
-<translation id="9053840549256861041">Nous lançons une nouvelle fonctionnalité de confidentialité des annonces : la mesure des annonces. Chrome ne partage que des informations très limitées entre les sites, comme le moment où une annonce vous a été présentée, afin d'aider les sites à mesurer les performances des annonces.</translation>
+<translation id="9053840549256861041">Nous lançons une nouvelle fonctionnalité de confidentialité des annonces : la mesure des annonces. Chrome ne partage que des informations très limitées entre les sites, comme le moment où une annonce vous a été montrée, afin d'aider les sites à mesurer la performance des annonces.</translation>
 <translation id="9056953843249698117">Magasin</translation>
 <translation id="9062620674789239642">Il a peut-être été déplacé, modifié ou supprimé.</translation>
 <translation id="9063398205799684336">Enveloppe Kaku 2</translation>

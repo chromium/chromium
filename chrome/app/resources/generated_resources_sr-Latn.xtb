@@ -590,7 +590,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1485015260175968628">Sada može da:</translation>
 <translation id="1485141095922496924">Verzija <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Pretražite lozinke</translation>
-<translation id="1486486872607808064">Skenirajte ovaj QR kôd kamerom na uređaju na kom želite da napravite pristupni kôd za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="1486486872607808064">Skenirajte ovaj QR kôd kamerom na uređaju na kom želite da napravite pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Uključeno – prilagođena podešavanja</translation>
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Sajtovi mogu da traže da koriste fontove instalirane na uređaju</translation>
@@ -905,7 +905,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1744108098763830590">stranica u pozadini</translation>
 <translation id="1745732479023874451">Upravljajte kontaktima</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Želite da otvorite i izmenite # fajl u ovoj veb-aplikaciji?}few{Želite da otvorite i izmenite # fajla u ovoj veb-aplikaciji?}other{Želite da otvorite i izmenite # fajlova u ovoj veb-aplikaciji?}}</translation>
-<translation id="1748329107062243374">Koristite pristupni kôd uređaja <ph name="DEVICE_NAME" /> da biste se prijavili na <ph name="WEBSITE" /></translation>
+<translation id="1748329107062243374">Koristite pristupni ključ uređaja <ph name="DEVICE_NAME" /> da biste se prijavili na <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Možete da sačuvate ovu lozinku na Google nalogu ili samo na ovom uređaju</translation>
 <translation id="1749733017156547309">Lozinka je obavezna</translation>
 <translation id="1750172676754093297">Bezbednosni ključ ne može da čuva otiske prstiju</translation>
@@ -4529,7 +4529,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="481574578487123132">Povezani uređaji</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalji</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 obeleživač je izbrisan}one{{COUNT} obeleživač je izbrisan}few{{COUNT} obeleživača su izbrisana}other{{COUNT} obeleživača je izbrisano}}</translation>
-<translation id="4816900689218414104">Napravite pristupni kôd na telefonu ili tabletu</translation>
+<translation id="4816900689218414104">Napravite pristupni ključ na telefonu ili tabletu</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvara se odmah.}=1{Zatvara se za 1 sekundu}one{Zatvara se za # sekundu}few{Zatvara se za # sekunde}other{Zatvara se za # sekundi}}</translation>
 <translation id="4819607494758673676">Obaveštenja Google pomoćnika</translation>
 <translation id="4820236583224459650">Podesi kao aktivni tiket</translation>
@@ -4538,7 +4538,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4823484602432206655">Čitanje i menjanje podešavanja korisnika i uređaja</translation>
 <translation id="4824037980212326045">Linux rezervne kopije i vraćanje</translation>
 <translation id="4824958205181053313">Želite li da otkažete sinhronizaciju?</translation>
-<translation id="4825532258163983651">Brisanje pristupnog koda nije uspelo</translation>
+<translation id="4825532258163983651">Brisanje pristupnog ključa nije uspelo</translation>
 <translation id="4827283332383516812">Izbrišite karticu</translation>
 <translation id="4827675678516992122">Povezivanje nije uspelo</translation>
 <translation id="4827784381479890589">Poboljšana provera pravopisa u pregledaču Chrome (tekst se šalje Google-u da biste dobijali predloge za pravopis)</translation>
@@ -6792,7 +6792,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6790497603648687708">Dodatak <ph name="EXTENSION_NAME" /> je dodat daljinski</translation>
 <translation id="6790820461102226165">Dodaj osobu...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
-<translation id="679486139907144816">Da biste se prijavili na ovaj sajt pomoću pristupnog koda, treba da uključite Windows Hello u podešavanjima. Zatim se vratite na ovaj sajt i probajte ponovo.</translation>
+<translation id="679486139907144816">Da biste se prijavili na ovaj sajt pomoću pristupnog ključa, treba da uključite Windows Hello u podešavanjima. Zatim se vratite na ovaj sajt i probajte ponovo.</translation>
 <translation id="6795371939514004514">Automatsko skeniranje vam omogućava da se automatski krećete kroz stavke na ekranu. Kada je stavka istaknuta, pritisnite Izaberi da biste je aktivirali.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6796509790850723820">Renderuj</translation>
@@ -7314,7 +7314,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7240339475467890413">Želite li da se povežete na novi hotspot?</translation>
 <translation id="7241389281993241388">Prijavite se na <ph name="TOKEN_NAME" /> da biste uvezli sertifikat klijenta.</translation>
 <translation id="7241763419756062043">Odaberite kvalitet pretrage i pregledanja</translation>
-<translation id="7243092385765551741">Želite da izbrišete pristupni kôd?</translation>
+<translation id="7243092385765551741">Želite da izbrišete pristupni ključ?</translation>
 <translation id="7243632151880336635">Obriši i odjavi me</translation>
 <translation id="7245162963905242662">Pretraži ovu stranicu pomoću Google-a...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Najbolje)</translation>
@@ -7383,7 +7383,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7299515639584427954">Želite da promenite podrazumevanu aplikaciju za podržane linkove?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Možete da pitate „Hej Google, koja je ovo pesma?“ ili „Hej Google, šta je prikazano na mom ekranu?“</translation>
-<translation id="7301812050652048720">Pristupni kôd je izbrisan</translation>
+<translation id="7301812050652048720">Pristupni ključ je izbrisan</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ova aplikacija bi mogla da ometa pravilno funkcionisanje Chrome-a.}one{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}few{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}other{Ove aplikacije bi mogle da ometaju pravilno funkcionisanje Chrome-a.}}</translation>
 <translation id="7303281435234579599">Ups! Došlo je do problema pri podešavanju režima demonstracije.</translation>
 <translation id="7303900363563182677">Ovom sajtu je blokiran uvid u tekst i slike koji su kopirani u privremenu memoriju</translation>

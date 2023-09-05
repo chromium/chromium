@@ -223,7 +223,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2234827758954819389">Guide sur la confidentialité</translation>
 <translation id="2239812875700136898">Contrôlez vos articles à l'aide du bouton Options pour Discover</translation>
 <translation id="2248941474044011069">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
-<translation id="2249635629516220541">Personnaliser les infos utilisées par les sites pour vous présenter des annonces</translation>
+<translation id="2249635629516220541">Personnaliser les informations utilisées par les sites pour vous montrer des annonces</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276231040576210443">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
@@ -691,7 +691,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4763480195061959176">vidéo</translation>
 <translation id="4766313118839197559">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe sur cet appareil</translation>
 <translation id="4766678251456904326">Ajouter un compte à l'appareil</translation>
-<translation id="4767947714785277816">Nous lançons une nouvelle fonctionnalité de confidentialité des annonces : la mesure des annonces. Chrome ne partage que des informations très limitées entre les sites et les applis, comme le moment où une annonce vous a été présentée, afin d'aider à mesurer les performances des annonces.</translation>
+<translation id="4767947714785277816">Nous lançons une nouvelle fonctionnalité de confidentialité pour les annonces : la mesure des annonces. Chrome ne partage que des informations très limitées entre les sites et les applis, comme le moment où une annonce vous a été montrée, afin d'aider les sites à mesurer la performance des annonces.</translation>
 <translation id="4769095993849849966">Nouveau nom de fichier</translation>
 <translation id="4778653490315793244">Rien à afficher pour le moment</translation>
 <translation id="4787736314074622408">Voulez-vous supprimer <ph name="ITEM_TITLE" /> ?</translation>
@@ -808,7 +808,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5361107212971249203">texte</translation>
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
-<translation id="5375577065097716013">Rechercher image avec Google Lens <ph name="BEGIN_NEW" />Nouvelle<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Rechercher image avec Google Lens <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="539881862970320163">Un mot de passe sécurisé est suggéré. Clavier masqué.</translation>
 <translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil.</translation>
 <translation id="5409881200985013443">Envoyer <ph name="ONE_TIME_CODE" /> sur <ph name="CLIENT_NAME" /> ?</translation>
