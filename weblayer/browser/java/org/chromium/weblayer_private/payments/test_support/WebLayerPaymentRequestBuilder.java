@@ -63,13 +63,9 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
         mDelegate = this;
         mJourneyLogger = Mockito.mock(JourneyLogger.class);
         mWebContents = Mockito.mock(WebContents.class);
-        Mockito.doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1))
-                .when(mWebContents)
-                .getLastCommittedUrl();
+        Mockito.doReturn(JUnitTestGURLs.URL_1).when(mWebContents).getLastCommittedUrl();
         mRenderFrameHost = Mockito.mock(RenderFrameHost.class);
-        Mockito.doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2))
-                .when(mRenderFrameHost)
-                .getLastCommittedURL();
+        Mockito.doReturn(JUnitTestGURLs.URL_2).when(mRenderFrameHost).getLastCommittedURL();
         Origin origin = Mockito.mock(Origin.class);
         Mockito.doReturn(origin).when(mRenderFrameHost).getLastCommittedOrigin();
         mMethodData = new PaymentMethodData[1];

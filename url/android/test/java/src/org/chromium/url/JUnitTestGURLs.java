@@ -35,14 +35,4 @@ public class JUnitTestGURLs {
     public static final GURL GOOGLE_URL_CAT = new GURL("http://www.google.com/cat");
     public static final GURL ABOUT_BLANK = new GURL("about:blank");
     public static final GURL CHROME_ABOUT = new GURL("chrome://about");
-
-    // TODO(https://crbug.com/1223993): Remove
-    public static GURL getGURL(GURL gurl) {
-        return gurl;
-    }
-
-    // TODO(https://crbug.com/1223993): Remove
-    public static GURL getGURL(String url) {
-        return new GURL(url);
-    }
 }
