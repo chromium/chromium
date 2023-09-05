@@ -171,7 +171,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool IsPrerendering() const;
 
   const blink::WebFormControlElement& focused_element() const {
-    return element_;
+    return last_queried_element_;
   }
 
  protected:
@@ -356,7 +356,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // the direction to traverse in.
   blink::WebNode NextWebNode(const blink::WebNode& current_node, bool next);
 
-  // Contains the form of the document. Does not survive navigations and is
+  // Contains the form of the document. Does not survive navigation and is
   // reset when the AutofillAgent is pending deletion.
   std::unique_ptr<FormCache> form_cache_;
 
@@ -364,7 +364,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
 
   // The element corresponding to the last request sent for form field Autofill.
-  blink::WebFormControlElement element_;
+  blink::WebFormControlElement last_queried_element_;
 
   // The elements that currently are being previewed.
   std::vector<blink::WebFormControlElement> previewed_elements_;
