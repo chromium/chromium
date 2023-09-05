@@ -214,8 +214,12 @@ void HeadlessBrowserImpl::Shutdown() {
     content::GetIOThreadTaskRunner({})->DeleteSoon(
         FROM_HERE, system_request_context_manager_.release());
   }
+  // We might have posted task during shutdown, let these run
+  // before quitting the message loop. See ~HeadlessWebContentsImpl
+  // for additional context.
   if (quit_main_message_loop_) {
-    std::move(quit_main_message_loop_).Run();
+    BrowserMainThread()->PostTask(FROM_HERE,
+                                  std::move(quit_main_message_loop_));
   }
 }
 
