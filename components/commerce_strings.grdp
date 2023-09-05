@@ -206,6 +206,20 @@
       Something went wrong.
     </message>
 
+    <message name="IDS_SHOPPING_COLLECTION_IPH_TITLE" desc="The title of the in-product-help explaining what the shopping list bookmark folder is.">
+      What is the Shopping list?
+    </message>
+    <if expr="use_titlecase">
+      <message name="IDS_SHOPPING_COLLECTION_IPH_BODY" desc="The body text of the in-product-help explaining what the shopping list bookmark folder is.">
+        A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more.
+      </message>
+    </if> <!-- use_titlecase -->
+    <if expr="not use_titlecase">
+      <message name="IDS_SHOPPING_COLLECTION_IPH_BODY" desc="The body text of the in-product-help explaining what the shopping list bookmark folder is.">
+        A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more
+      </message>
+    </if> <!-- not use_titlecase -->
+
     <!-- For Desktop Price Insights -->
     <if expr="use_titlecase">
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
