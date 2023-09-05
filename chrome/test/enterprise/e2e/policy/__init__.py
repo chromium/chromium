@@ -17,7 +17,8 @@ from .homepage.homepage import *
 from .password_manager_enabled.password_manager_enabled import *
 from .popups_allowed.popups_allowed import *
 from .restore_on_startup.restore_on_startup import *
-from .safe_browsing.safe_browsing import *
+# Disable safe_browsing test due to chrome://downloads shadow DOM issue http://b/298889715
+# from .safe_browsing.safe_browsing import *
 from .translate_enabled.translate_enabled import *
 from .url_blocklist.url_blocklist import *
 from .url_allowlist.url_allowlist import *
