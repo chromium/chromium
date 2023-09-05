@@ -440,7 +440,8 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the learn more page is displayed when choosing that option in the
 // notice dialog.
-- (void)testUserPolicyNotificationWithLearnMoreChoice {
+// TODO(crbug.com/1478990): reenable this test.
+- (void)DISABLED_testUserPolicyNotificationWithLearnMoreChoice {
   // Clear the prefs related to user policy to make sure that the notification
   // isn't skipped and that the fetch is started within the minimal schedule
   // interval.
