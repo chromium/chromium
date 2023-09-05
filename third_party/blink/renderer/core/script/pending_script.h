@@ -28,6 +28,7 @@
 
 #include "base/check_op.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -141,7 +142,10 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   bool IsWatchingForLoad() const { return client_; }
 
  protected:
-  PendingScript(ScriptElementBase*, const TextPosition& starting_position);
+  PendingScript(ScriptElementBase*,
+                const TextPosition& starting_position,
+                absl::optional<scheduler::TaskAttributionId> parent_task_id =
+                    absl::nullopt);
 
   virtual void DisposeInternal() = 0;
 
@@ -188,6 +192,9 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   WeakMember<ExecutionContext> original_execution_context_;
 
   const bool created_during_document_write_;
+
+  // The ID of the parent task that loaded the script.
+  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
 };
 
 }  // namespace blink

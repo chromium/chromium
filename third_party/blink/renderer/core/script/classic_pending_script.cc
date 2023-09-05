@@ -62,7 +62,8 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
     ScriptElementBase* element,
-    FetchParameters::DeferOption defer) {
+    FetchParameters::DeferOption defer,
+    absl::optional<scheduler::TaskAttributionId> parent_task_id) {
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       url, context->GetSecurityOrigin(), context->GetCurrentWorld(),
@@ -80,7 +81,7 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
       MakeGarbageCollected<ClassicPendingScript>(
           element, TextPosition::MinimumPosition(), KURL(), KURL(), String(),
           ScriptSourceLocationType::kExternalFile, options,
-          true /* is_external */);
+          /*is_external=*/true, parent_task_id);
 
   // [Intervention]
   // For users on slow connections, we want to avoid blocking the parser in
@@ -110,11 +111,12 @@ ClassicPendingScript* ClassicPendingScript::CreateInline(
     const KURL& base_url,
     const String& source_text,
     ScriptSourceLocationType source_location_type,
-    const ScriptFetchOptions& options) {
+    const ScriptFetchOptions& options,
+    absl::optional<scheduler::TaskAttributionId> parent_task_id) {
   ClassicPendingScript* pending_script =
       MakeGarbageCollected<ClassicPendingScript>(
           element, starting_position, source_url, base_url, source_text,
-          source_location_type, options, false /* is_external */);
+          source_location_type, options, /*is_external=*/false, parent_task_id);
   pending_script->CheckState();
   return pending_script;
 }
@@ -127,8 +129,9 @@ ClassicPendingScript::ClassicPendingScript(
     const String& source_text_for_inline_script,
     ScriptSourceLocationType source_location_type,
     const ScriptFetchOptions& options,
-    bool is_external)
-    : PendingScript(element, starting_position),
+    bool is_external,
+    absl::optional<scheduler::TaskAttributionId> parent_task_id)
+    : PendingScript(element, starting_position, parent_task_id),
       options_(options),
       source_url_for_inline_script_(source_url_for_inline_script),
       base_url_for_inline_script_(base_url_for_inline_script),

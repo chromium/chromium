@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -86,6 +87,18 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
+namespace {
+absl::optional<blink::scheduler::TaskAttributionId> GetRunningTaskId(
+    blink::ScriptState* script_state) {
+  auto* tracker =
+      blink::ThreadScheduler::Current()->GetTaskAttributionTracker();
+  if (!script_state || !script_state->World().IsMainWorld() || !tracker) {
+    return absl::nullopt;
+  }
+  return tracker->RunningTaskAttributionId(script_state);
+}
+
+}  // namespace
 namespace blink {
 
 ScriptLoader::ScriptLoader(ScriptElementBase* element,
@@ -723,12 +736,13 @@ PendingScript* ScriptLoader::PrepareScript(
   // |content_document| is used.
   // TODO(hiroshige): Use a consistent Document everywhere.
   auto* fetch_client_settings_object_fetcher = context_window->Fetcher();
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(context_window->GetFrame());
 
   // https://wicg.github.io/import-maps/#integration-prepare-a-script
   // If the script’s type is "importmap": [spec text]
   if (GetScriptType() == ScriptTypeAtPrepare::kImportMap) {
-    Modulator* modulator =
-        Modulator::From(ToScriptStateForMainWorld(context_window->GetFrame()));
+    Modulator* modulator = Modulator::From(script_state);
     auto aquiring_state = modulator->GetAcquiringImportMapsState();
     switch (aquiring_state) {
       case Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad:
@@ -899,7 +913,7 @@ PendingScript* ScriptLoader::PrepareScript(
         }
         ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
             url, element_document, options, cross_origin, encoding, element_,
-            defer);
+            defer, GetRunningTaskId(script_state));
         prepared_pending_script_ = pending_script;
         Resource* resource = pending_script->GetResource();
         resource_keep_alive_ = resource;
@@ -919,8 +933,7 @@ PendingScript* ScriptLoader::PrepareScript(
         //
         // Fetch an external module script graph given url, settings object, and
         // options.</spec>
-        Modulator* modulator = Modulator::From(
-            ToScriptStateForMainWorld(context_window->GetFrame()));
+        Modulator* modulator = Modulator::From(script_state);
         FetchModuleScriptTree(url, fetch_client_settings_object_fetcher,
                               modulator, options);
       } break;
@@ -990,9 +1003,6 @@ PendingScript* ScriptLoader::PrepareScript(
           if (error.GetType() == ScriptWebBundleError::Type::kSystemError) {
             element_->DispatchErrorEvent();
           } else {
-            ScriptState* script_state = ToScriptStateForMainWorld(
-                To<LocalDOMWindow>(element_->GetExecutionContext())
-                    ->GetFrame());
             if (script_state->ContextIsValid()) {
               ScriptState::Scope scope(script_state);
               V8ScriptRunner::ReportException(script_state->GetIsolate(),
@@ -1040,7 +1050,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
         prepared_pending_script_ = ClassicPendingScript::CreateInline(
             element_, position, source_url, base_url, source_text,
-            script_location_type, options);
+            script_location_type, options, GetRunningTaskId(script_state));
 
         // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
@@ -1063,8 +1073,7 @@ PendingScript* ScriptLoader::PrepareScript(
         // scripts, see crbug.com/1338257 for more details.
         if (source_url.HasFragmentIdentifier())
           source_url.RemoveFragmentIdentifier();
-        Modulator* modulator = Modulator::From(
-            ToScriptStateForMainWorld(context_window->GetFrame()));
+        Modulator* modulator = Modulator::From(script_state);
 
         // <spec label="fetch-an-inline-module-script-graph" step="1">Let script
         // be the result of creating a JavaScript module script using source
@@ -1095,7 +1104,8 @@ PendingScript* ScriptLoader::PrepareScript(
             mojom::blink::RequestContextType::SCRIPT,
             network::mojom::RequestDestination::kScript, module_tree_client);
         prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
-            element_, module_tree_client, is_external_script_);
+            element_, module_tree_client, is_external_script_,
+            GetRunningTaskId(script_state));
         break;
       }
     }
@@ -1324,7 +1334,8 @@ void ScriptLoader::FetchModuleScriptTree(
                        network::mojom::RequestDestination::kScript, options,
                        ModuleScriptCustomFetchType::kNone, module_tree_client);
   prepared_pending_script_ = MakeGarbageCollected<ModulePendingScript>(
-      element_, module_tree_client, is_external_script_);
+      element_, module_tree_client, is_external_script_,
+      GetRunningTaskId(modulator->GetScriptState()));
 }
 
 PendingScript* ScriptLoader::TakePendingScript(

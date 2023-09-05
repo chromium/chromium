@@ -60,8 +60,10 @@ WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
 
 // See the comment about |is_in_document_write| in ScriptLoader::PrepareScript()
 // about IsInDocumentWrite() use here.
-PendingScript::PendingScript(ScriptElementBase* element,
-                             const TextPosition& starting_position)
+PendingScript::PendingScript(
+    ScriptElementBase* element,
+    const TextPosition& starting_position,
+    absl::optional<scheduler::TaskAttributionId> parent_task_id)
     : element_(element),
       starting_position_(starting_position),
       virtual_time_pauser_(CreateWebScopedVirtualTimePauser(element)),
@@ -69,7 +71,8 @@ PendingScript::PendingScript(ScriptElementBase* element,
       original_element_document_(&element->GetDocument()),
       original_execution_context_(element->GetExecutionContext()),
       created_during_document_write_(
-          element->GetDocument().IsInDocumentWrite()) {}
+          element->GetDocument().IsInDocumentWrite()),
+      parent_task_id_(parent_task_id) {}
 
 PendingScript::~PendingScript() {}
 
@@ -167,7 +170,7 @@ void PendingScript::ExecuteScriptBlock() {
     if (auto* tracker =
             ThreadScheduler::Current()->GetTaskAttributionTracker()) {
       task_attribution_scope = tracker->CreateTaskScope(
-          script_state, absl::nullopt,
+          script_state, parent_task_id_,
           scheduler::TaskAttributionTracker::TaskScopeType::kScriptExecution);
     }
   }
