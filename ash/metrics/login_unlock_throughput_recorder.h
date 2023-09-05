@@ -12,8 +12,11 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,6 +100,10 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // Records that ARC has finished booting.
   void ArcUiAvailableAfterLogin();
 
+  base::SequencedTaskRunner* post_login_deferred_task_runner() const {
+    return post_login_deferred_task_runner_.get();
+  }
+
  private:
   class TimeMarker {
    public:
@@ -128,6 +135,8 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   void OnAllExpectedShelfIconsLoaded();
 
   void MaybeReportLoginFinished();
+
+  void OnLoginAnimationFinishedTimerFired();
 
   UiMetricsRecorder ui_recorder_;
 
@@ -192,6 +201,14 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
       scoped_throughput_reporter_blocker_;
 
   std::vector<TimeMarker> login_time_markers_;
+
+  // Timer that sets the limit to wait for the login animation to finish
+  // before scheduling post-login tasks.
+  base::OneShotTimer login_animation_finished_timer_;
+
+  // Deferred task runner for the post-login tasks.
+  scoped_refptr<base::DeferredSequencedTaskRunner>
+      post_login_deferred_task_runner_;
 
   base::WeakPtrFactory<LoginUnlockThroughputRecorder> weak_ptr_factory_{this};
 };

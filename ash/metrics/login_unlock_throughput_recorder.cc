@@ -195,7 +195,10 @@ bool HasPendingIcon(const ShelfModel* model) {
 
 }  // namespace
 
-LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder() {
+LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder()
+    : post_login_deferred_task_runner_(
+          base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
+              base::SequencedTaskRunner::GetCurrentDefault())) {
   Shell::Get()->session_controller()->AddObserver(this);
   LoginState::Get()->AddObserver(this);
 }
@@ -256,6 +259,13 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   // were loaded.
   scoped_throughput_reporter_blocker_ =
       login_animation_throughput_reporter_->NewScopedBlocker();
+
+  constexpr base::TimeDelta kLoginAnimationDelayTimer = base::Seconds(20);
+  // login_animation_finished_timer_ is owned by this class so it's safe to
+  // use unretained pointer here.
+  login_animation_finished_timer_.Start(
+      FROM_HERE, kLoginAnimationDelayTimer, this,
+      &LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired);
 }
 
 void LoginUnlockThroughputRecorder::AddScheduledRestoreWindow(
@@ -612,6 +622,17 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
 
   ui_recorder_.OnPostLoginAnimationFinish();
   ReportLoginFinished();
+  login_animation_finished_timer_.Stop();
+  if (!post_login_deferred_task_runner_->Started()) {
+    post_login_deferred_task_runner_->Start();
+  }
+}
+
+void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
+  TRACE_EVENT0(
+      "startup",
+      "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
+  post_login_deferred_task_runner_->Start();
 }
 
 }  // namespace ash
