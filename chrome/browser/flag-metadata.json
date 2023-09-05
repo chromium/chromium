@@ -3423,6 +3423,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-red-interstitial-facelift",
+    "owners": ["skrakowi", "chrome-counter-abuse-alerts@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-refine-data-source-reload-reporting",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 120
