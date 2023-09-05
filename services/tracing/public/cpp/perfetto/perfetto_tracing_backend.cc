@@ -280,6 +280,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
         [](ProducerEndpoint* endpoint) { endpoint->receiver_->reset(); },
         base::Unretained(this)));
 
+    // The shared memory arbiter can call producer host methods if it has
+    // uncommitted requests at this moment. So bind it to the producer only
+    // after it has been connected to the host.
     if (shared_memory_arbiter_) {
       shared_memory_arbiter_->BindToProducerEndpoint(this,
                                                      producer_task_runner);
@@ -288,8 +291,10 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
           shared_memory_.get(), shmem_page_size_bytes_, ShmemMode::kDefault,
           this, producer_task_runner);
     }
+
+    // This backend connects to the custom mojo-based tracing service, which
+    // always supports direct SMB patching.
     shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
-    shared_memory_arbiter_->EnableDirectSMBPatching();
 
     producer_->OnConnect();
   }
