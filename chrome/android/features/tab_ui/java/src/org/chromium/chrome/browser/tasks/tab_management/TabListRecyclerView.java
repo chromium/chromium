@@ -597,37 +597,6 @@ class TabListRecyclerView
     }
 
     /**
-     * A structure for holding the a recycler view position and offset.
-     */
-    public static class RecyclerViewPosition {
-        private int mPosition;
-        private int mOffset;
-
-        /**
-         * @param position The position of the first visible item in the recyclerView.
-         * @param offset The scroll offset of the recyclerView;
-         */
-        public RecyclerViewPosition(int position, int offset) {
-            mPosition = position;
-            mOffset = offset;
-        }
-
-        /**
-         * @return the position of the first visible item in the RecyclerView.
-         */
-        public int getPosition() {
-            return mPosition;
-        }
-
-        /**
-         * @return the offset from the first item in the RecyclerView.
-         */
-        public int getOffset() {
-            return mOffset;
-        }
-    }
-
-    /**
      * @return the position and offset of the first visible element in the list.
      */
     @NonNull

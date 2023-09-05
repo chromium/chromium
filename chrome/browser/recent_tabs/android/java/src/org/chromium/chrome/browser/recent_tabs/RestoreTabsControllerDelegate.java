@@ -29,4 +29,14 @@ public interface RestoreTabsControllerDelegate {
      * Helper method to retrieve the param value stored for skipping the feature engagement check.
      */
     public BooleanCachedFieldTrialParameter getSkipFeatureEngagementParam();
+
+    /**
+     * Get the tab switcher's current tab list model size.
+     */
+    public int getGTSTabListModelSize();
+
+    /**
+     * Action to perform at the end of the workflow after the user has restored their chosen tabs.
+     */
+    public void scrollGTSToRestoredTabs(int tabListModelSize);
 }

@@ -208,11 +208,13 @@ public class RestoreTabsMediatorUnitTest {
         when(mParam.getValue()).thenReturn(false);
         mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onAllTabsChosen();
+        verify(mDelegate).getGTSTabListModelSize();
         verify(mForeignSessionHelper)
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
+        verify(mDelegate).scrollGTSToRestoredTabs(0);
         RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
@@ -419,11 +421,13 @@ public class RestoreTabsMediatorUnitTest {
         when(mParam.getValue()).thenReturn(false);
         mMediator.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
         delegate.onSelectedTabsChosen();
+        verify(mDelegate).getGTSTabListModelSize();
         verify(mForeignSessionHelper)
                 .openForeignSessionTabsAsBackgroundTabs(
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
+        verify(mDelegate).scrollGTSToRestoredTabs(0);
         RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 

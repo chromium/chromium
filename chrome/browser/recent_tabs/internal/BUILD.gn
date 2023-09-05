@@ -141,7 +141,7 @@ robolectric_library("junit") {
   ]
 }
 
-android_library("javatests") {
+android_library("recent_tabs_javatests") {
   testonly = true
   sources = [ "android/java/src/org/chromium/chrome/browser/recent_tabs/RestoreTabsTest.java" ]
 
@@ -150,6 +150,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base:jni_java",
     "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_java",
     "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
@@ -162,6 +163,7 @@ android_library("javatests") {
     "//components/feature_engagement/public:public_java",
     "//components/sync_device_info:sync_device_info_java",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",

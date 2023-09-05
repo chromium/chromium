@@ -23,6 +23,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -63,6 +65,10 @@ public class RestoreTabsFeatureHelperUnitTest {
     private TabCreatorManager mTabCreatorManager;
     @Mock
     private BottomSheetController mBottomSheetController;
+    @Mock
+    private Supplier<Integer> mGTSTabListModelSizeSupplier;
+    @Mock
+    private Callback<Integer> mScrollGTSToRestoredTabsCallback;
 
     private Activity mActivity;
     private RestoreTabsFeatureHelper mHelper;
@@ -84,7 +90,8 @@ public class RestoreTabsFeatureHelperUnitTest {
 
     @Test
     public void testRestoreTabsFeatureHelper_noSyncedDevices() {
-        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
+        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController,
+                mGTSTabListModelSizeSupplier, mScrollGTSToRestoredTabsCallback);
         verify(mForeignSessionHelperJniMock, times(1))
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
         verify(mForeignSessionHelperJniMock, times(1)).destroy(1L);
@@ -111,7 +118,8 @@ public class RestoreTabsFeatureHelperUnitTest {
         })
                 .when(mForeignSessionHelperJniMock)
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
-        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
+        mHelper.maybeShowPromo(mActivity, mProfile, mTabCreatorManager, mBottomSheetController,
+                mGTSTabListModelSizeSupplier, mScrollGTSToRestoredTabsCallback);
         verify(mDelegate, times(1)).showPromo(anyList());
     }
 }

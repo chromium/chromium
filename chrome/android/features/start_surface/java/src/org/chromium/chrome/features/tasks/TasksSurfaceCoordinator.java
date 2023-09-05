@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -256,6 +257,23 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public @Nullable TabSwitcher.TabListDelegate getTabListDelegate() {
         return mTabSwitcher != null ? mTabSwitcher.getTabListDelegate() : null;
+    }
+
+    @Override
+    public int getTabSwitcherTabListModelSize() {
+        if (mTabSwitcher != null
+                && mTabSwitcher.getController().getTabSwitcherType() == TabSwitcherType.GRID) {
+            return mTabSwitcher.getTabSwitcherTabListModelSize();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
+        if (mTabSwitcher != null
+                && mTabSwitcher.getController().getTabSwitcherType() == TabSwitcherType.GRID) {
+            mTabSwitcher.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
+        }
     }
 
     @Override

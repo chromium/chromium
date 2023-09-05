@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 
@@ -135,4 +136,14 @@ public interface TasksSurface {
      */
     @Nullable
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
+
+    /**
+     * @return The number of elements in the tab switcher's tab list model.
+     */
+    int getTabSwitcherTabListModelSize();
+
+    /**
+     * Set the tab switcher's current RecyclerViewPosition.
+     */
+    void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

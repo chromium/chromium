@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
@@ -222,6 +223,14 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     public boolean onBackPressed() {
         return false;
     }
+
+    @Override
+    public int getTabSwitcherTabListModelSize() {
+        return 0;
+    }
+
+    @Override
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {}
 
     /** @see SingleTabSwitcherOnTabletMediator#setVisibility. */
     void setVisibility(boolean isVisible) {

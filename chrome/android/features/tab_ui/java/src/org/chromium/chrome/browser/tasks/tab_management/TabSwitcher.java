@@ -283,4 +283,14 @@ public interface TabSwitcher {
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
 
     boolean onBackPressed();
+
+    /**
+     * @return The number of elements in the tab switcher's tab list model.
+     */
+    int getTabSwitcherTabListModelSize();
+
+    /**
+     * Set the tab switcher's current RecyclerViewPosition.
+     */
+    void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

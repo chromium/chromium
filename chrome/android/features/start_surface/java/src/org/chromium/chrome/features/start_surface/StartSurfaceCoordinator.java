@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -660,6 +661,25 @@ public class StartSurfaceCoordinator implements StartSurface {
             return mSecondaryTasksSurface.getTabListDelegate();
         } else {
             return mGridTabSwitcher.getTabListDelegate();
+        }
+    }
+
+    @Override
+    public int getTabSwitcherTabListModelSize() {
+        if (mGridTabSwitcher != null) {
+            return mGridTabSwitcher.getTabSwitcherTabListModelSize();
+        } else if (mSecondaryTasksSurface != null) {
+            return mSecondaryTasksSurface.getTabSwitcherTabListModelSize();
+        }
+        return 0;
+    }
+
+    @Override
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition) {
+        if (mGridTabSwitcher != null) {
+            mGridTabSwitcher.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
+        } else if (mSecondaryTasksSurface != null) {
+            mSecondaryTasksSurface.setTabSwitcherRecyclerViewPosition(recyclerViewPosition);
         }
     }
 

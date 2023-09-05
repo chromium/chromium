@@ -15,6 +15,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
+import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 import org.chromium.chrome.features.tasks.TasksView;
@@ -293,4 +294,14 @@ public interface StartSurface {
      */
     @NonNull
     ObservableSupplier<TabSwitcherCustomViewManager> getTabSwitcherCustomViewManagerSupplier();
+
+    /**
+     * @return The number of elements in the tab switcher's tab list model.
+     */
+    int getTabSwitcherTabListModelSize();
+
+    /**
+     * Set the tab switcher's current RecyclerViewPosition.
+     */
+    void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition recyclerViewPosition);
 }

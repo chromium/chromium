@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
-import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -695,5 +694,9 @@ public class TabListCoordinator
 
     void runAnimationOnNextLayout(Runnable runnable) {
         mRecyclerView.runAnimationOnNextLayout(runnable);
+    }
+
+    int getTabListModelSize() {
+        return mModel.size();
     }
 }

@@ -10,8 +10,10 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +25,8 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Build;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -173,8 +177,9 @@ public class RestoreTabsTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1459179")
     public void testRestoreTabsPromo_testOpenDeviceScreenAndRestore() {
+        TabUiTestHelper.createTabs(mActivityTestRule.getActivity(), false, 6);
         setupMultipleDevicesAndTabsMockData();
-        Assert.assertEquals(1, mActivityTestRule.tabsCount(false));
+        Assert.assertEquals(6, mActivityTestRule.tabsCount(false));
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         // Check the latest device is selected with the proper info.
@@ -202,8 +207,21 @@ public class RestoreTabsTest {
         // Accept the bottom sheet.
         onView(withId(R.id.restore_tabs_button_open_tabs)).check(matches(withText("Open 1 tab")));
         onView(withId(R.id.restore_tabs_button_open_tabs)).perform(click());
-        Assert.assertEquals(2, mActivityTestRule.tabsCount(false));
+        Assert.assertEquals(7, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(mBottomSheetController.isSheetOpen());
+
+        int tabSwitcherParentViewId =
+                TabUiTestHelper.getTabSwitcherParentId(mActivityTestRule.getActivity());
+        // Make sure the grid tab switcher is scrolled down to show the selected tab.
+        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_view),
+                       withParent(withId(tabSwitcherParentViewId))))
+                .check((v, noMatchException) -> {
+                    if (noMatchException != null) throw noMatchException;
+                    Assert.assertTrue(v instanceof RecyclerView);
+                    LinearLayoutManager layoutManager =
+                            (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+                    Assert.assertEquals(4, layoutManager.findFirstCompletelyVisibleItemPosition());
+                });
     }
 
     @Test

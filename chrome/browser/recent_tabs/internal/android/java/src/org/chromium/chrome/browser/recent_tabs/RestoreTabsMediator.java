@@ -361,6 +361,9 @@ public class RestoreTabsMediator {
             }
         }
 
+        // Get the tab switcher's current tab list model size.
+        int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
+
         // TODO(crbug.com/1426921): Consider adding a spinner if restoring the tabs becomes
         // a batched process.
         assert tabs.size() > 0 && mForeignSessionHelper != null;
@@ -374,6 +377,9 @@ public class RestoreTabsMediator {
 
         recordTabRestorationMetrics(tabs, selectedTabs);
         mModel.set(RestoreTabsProperties.VISIBLE, false);
+
+        // After restoration scroll GTS to the first restored tab in the tab list.
+        mDelegate.scrollGTSToRestoredTabs(currentGTSTabListModelSize);
     }
 
     private void recordTabRestorationMetrics(List<ForeignSessionTab> tabs, ModelList selectedTabs) {

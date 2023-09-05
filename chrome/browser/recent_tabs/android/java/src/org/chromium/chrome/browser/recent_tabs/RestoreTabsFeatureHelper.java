@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.app.Activity;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,7 +59,9 @@ public class RestoreTabsFeatureHelper {
      * Check the criteria for displaying the restore tabs promo.
      */
     public void maybeShowPromo(Activity activity, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController,
+            Supplier<Integer> gtsTabListModelSizeSupplier,
+            Callback<Integer> scrollGTSToRestoredTabsCallback) {
         if (profile == null || profile.isOffTheRecord()) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NULL_PROFILE);
@@ -98,7 +102,8 @@ public class RestoreTabsFeatureHelper {
                 && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
                         || tracker.shouldTriggerHelpUI(
                                 FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
-            setDelegate(activity, profile, tabCreatorManager, bottomSheetController);
+            setDelegate(activity, profile, tabCreatorManager, bottomSheetController,
+                    gtsTabListModelSizeSupplier, scrollGTSToRestoredTabsCallback);
             mDelegate.showPromo(sessions);
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.SHOWN);
@@ -116,7 +121,9 @@ public class RestoreTabsFeatureHelper {
     }
 
     private void setDelegate(Activity activity, Profile profile,
-            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
+            TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController,
+            Supplier<Integer> gtsTabListModelSizeSupplier,
+            Callback<Integer> scrollGTSToRestoredTabsCallback) {
         mDelegate = (mDelegateForTesting != null)
                 ? mDelegateForTesting
                 : new RestoreTabsControllerDelegate() {
@@ -145,6 +152,16 @@ public class RestoreTabsFeatureHelper {
                       @Override
                       public BooleanCachedFieldTrialParameter getSkipFeatureEngagementParam() {
                           return RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT;
+                      }
+
+                      @Override
+                      public int getGTSTabListModelSize() {
+                          return gtsTabListModelSizeSupplier.get();
+                      }
+
+                      @Override
+                      public void scrollGTSToRestoredTabs(int tabListModelSize) {
+                          scrollGTSToRestoredTabsCallback.onResult(tabListModelSize);
                       }
                   };
     }
