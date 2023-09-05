@@ -28,6 +28,7 @@ namespace policies {
 //
 // Tabs in one of the following states won't be frozen:
 //   - Audible;
+//   - Recently audible;
 //   - Holding at least one WebLock.
 //   - Holding at least one IndexedDB lock;
 //   - Connected to a USB device;
@@ -64,6 +65,7 @@ class PageFreezingPolicy : public GraphObserver,
   // List of states that prevent a tab from being frozen.
   enum CannotFreezeReason {
     kAudible = 0,
+    kRecentlyAudible,
     kHoldingWebLock,
     kHoldingIndexedDBLock,
     kConnectedToUsbDevice,
@@ -146,6 +148,12 @@ class PageFreezingPolicy : public GraphObserver,
       const PageNode*,
       std::pair<PageNodeUnfreezeAction, std::unique_ptr<base::OneShotTimer>>>
       page_nodes_unfreeze_tasks_;
+
+  // Map that associates the PageNodes that have recently been audible with a
+  // timer used to clear the negative freezing vote used to protect these pages
+  // from freezing.
+  base::flat_map<const PageNode*, std::unique_ptr<base::OneShotTimer>>
+      page_nodes_recently_audible_;
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.

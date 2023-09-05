@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
@@ -123,6 +124,12 @@ void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
 
   page_nodes_unfreeze_tasks_.erase(page_node);
 
+  if (auto iter = page_nodes_recently_audible_.find(page_node);
+      iter != page_nodes_recently_audible_.end()) {
+    // This will remove |page_node| from |page_nodes_recently_audible_|.
+    iter->second->FireNow();
+  }
+
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->RemoveObserver(this);
 
@@ -162,6 +169,32 @@ void PageFreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
 void PageFreezingPolicy::OnIsAudibleChanged(const PageNode* page_node) {
   OnPropertyChanged(page_node, page_node->IsAudible(),
                     CannotFreezeReason::kAudible);
+  // Gives the page a grace period after being audible to avoid freezing it
+  // during a short silence (e.g. between tracks in an audio player).
+  if (!page_node->IsAudible()) {
+    DCHECK(!base::Contains(page_nodes_unfreeze_tasks_, page_node));
+    SubmitNegativeFreezingVote(page_node, CannotFreezeReason::kRecentlyAudible);
+    base::OnceClosure remove_was_recently_audible_vote_after_timeout =
+        base::BindOnce(
+            [](PageFreezingPolicy* policy, const PageNode* page_node) {
+              policy->InvalidateNegativeFreezingVote(
+                  page_node, CannotFreezeReason::kRecentlyAudible);
+              // The OneShotTimer class allows the deletion of the timer from
+              // the callback.
+              policy->page_nodes_recently_audible_.erase(page_node);
+            },
+            base::Unretained(this), page_node);
+    auto timer = std::make_unique<base::OneShotTimer>();
+    timer->Start(FROM_HERE, kTabAudioProtectionTime,
+                 std::move(remove_was_recently_audible_vote_after_timeout));
+    page_nodes_recently_audible_.emplace(page_node, std::move(timer));
+  } else {
+    if (auto iter = page_nodes_recently_audible_.find(page_node);
+        iter != page_nodes_recently_audible_.end()) {
+      // This will remove |page_node| from |page_nodes_recently_audible_|.
+      iter->second->FireNow();
+    }
+  }
 }
 
 void PageFreezingPolicy::OnPageIsHoldingWebLockChanged(
@@ -303,6 +336,8 @@ const char* PageFreezingPolicy::CannotFreezeReasonToString(
   switch (reason) {
     case CannotFreezeReason::kAudible:
       return "Page is audible";
+    case CannotFreezeReason::kRecentlyAudible:
+      return "Page was recently audible";
     case CannotFreezeReason::kHoldingWebLock:
       return "Page is holding a Web Lock";
     case CannotFreezeReason::kHoldingIndexedDBLock:

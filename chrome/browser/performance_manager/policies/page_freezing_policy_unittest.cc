@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -105,6 +106,20 @@ TEST_F(PageFreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {
   EXPECT_EQ(page_node()->freezing_vote()->reason(),
             PageFreezingPolicyAccess::CannotFreezeReasonToString(
                 PageFreezingPolicyAccess::CannotFreezeReason::kAudible));
+}
+
+TEST_F(PageFreezingPolicyTest, RecentlyAudiblePageGetsCannotFreezeVote) {
+  page_node()->SetIsAudible(true);
+  EXPECT_EQ(page_node()->freezing_vote()->value(),
+            freezing::FreezingVoteValue::kCannotFreeze);
+  task_env().FastForwardBy(base::Seconds(1));
+  page_node()->SetIsAudible(false);
+  EXPECT_EQ(
+      page_node()->freezing_vote()->reason(),
+      PageFreezingPolicyAccess::CannotFreezeReasonToString(
+          PageFreezingPolicyAccess::CannotFreezeReason::kRecentlyAudible));
+  task_env().FastForwardBy(policies::kTabAudioProtectionTime);
+  EXPECT_FALSE(page_node()->freezing_vote().has_value());
 }
 
 TEST_F(PageFreezingPolicyTest, PageHoldingWeblockGetsCannotFreezeVote) {
