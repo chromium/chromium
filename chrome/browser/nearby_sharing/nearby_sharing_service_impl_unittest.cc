@@ -5342,16 +5342,40 @@ TEST_P(NearbySharingServiceImplTest, SelfShareAutoAccept) {
 TEST_P(NearbySharingServiceImplTest,
        SelfShareEnabled_YourDevicesVisibilityOnScreenLock) {
   if (features::IsSelfShareEnabled()) {
-    SetIsEnabled(true);
+    const std::set<std::string> contacts = {"1", "2"};
     SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+    contact_manager()->SetAllowedContacts(contacts);
 
     // Lock screen, expect Your Devices visibility.
     session_controller_->SetScreenLocked(true);
     EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
+    EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
 
     // Unlock screen, expect visibility to return to All Contacts.
     session_controller_->SetScreenLocked(false);
     EXPECT_EQ(nearby_share::mojom::Visibility::kAllContacts, GetVisibility());
+    EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
+  }
+}
+
+TEST_P(
+    NearbySharingServiceImplTest,
+    SelfShareEnabled_YourDevicesVisibilityOnScreenLock_DefaultSelectedContactsVisibility) {
+  if (features::IsSelfShareEnabled()) {
+    const std::set<std::string> contacts = {"1", "2"};
+    SetVisibility(nearby_share::mojom::Visibility::kSelectedContacts);
+    contact_manager()->SetAllowedContacts(contacts);
+
+    // Lock screen, expect Your Devices visibility.
+    session_controller_->SetScreenLocked(true);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kYourDevices, GetVisibility());
+    EXPECT_EQ(std::set<std::string>(), contact_manager()->GetAllowedContacts());
+
+    // Unlock screen, expect visibility to return to All Contacts.
+    session_controller_->SetScreenLocked(false);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kSelectedContacts,
+              GetVisibility());
+    EXPECT_EQ(contacts, contact_manager()->GetAllowedContacts());
   }
 }
 

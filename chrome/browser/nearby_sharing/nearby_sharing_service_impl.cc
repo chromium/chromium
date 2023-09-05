@@ -1395,11 +1395,14 @@ void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
     if (locked) {
       // Store old visibility setting.
       user_visibility_ = settings_.GetVisibility();
+      user_allowed_contacts_ = contact_manager_->GetAllowedContacts();
 
       // Set visibility to Your Devices.
       settings_.SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
+      contact_manager_->SetAllowedContacts(std::set<std::string>());
     } else {
       settings_.SetVisibility(user_visibility_);
+      contact_manager_->SetAllowedContacts(user_allowed_contacts_);
     }
   }
 

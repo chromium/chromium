@@ -600,9 +600,10 @@ class NearbySharingServiceImpl
   // Called when cleanup for ARC is needed as part of the transfer.
   base::OnceCallback<void()> arc_transfer_cleanup_callback_;
 
-  // Stores the user's selected visibility state when the
-  // screen is locked and visibility is set to Your Devices.
+  // Stores the user's selected visibility state and allowed contacts when the
+  // screen is locked and visibility is set to kYourDevices.
   nearby_share::mojom::Visibility user_visibility_;
+  std::set<std::string> user_allowed_contacts_ = {};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
