@@ -57,6 +57,8 @@ class CORE_EXPORT StyleInheritedVariables
   StyleInheritedVariables();
   StyleInheritedVariables(StyleInheritedVariables& other);
 
+  bool HasEquivalentRoots(const StyleInheritedVariables& other) const;
+
   StyleVariables variables_;
   scoped_refptr<StyleInheritedVariables> root_;
 
