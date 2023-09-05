@@ -19,6 +19,11 @@ inline constexpr char kBlockAll3pcToggleEnabled[] =
 inline constexpr char kTrackingProtectionLevel[] =
     "tracking_protection.tracking_protection_level";
 
+// Unsynced boolean that indicates whether 3PCD tracking protection (prefs + UI)
+// are enabled on the current device.
+inline constexpr char k3pcdTrackingProtectionEnabled[] =
+    "tracking_protection.3pcd_tracking_protection_enabled";
+
 }  // namespace prefs
 
 namespace privacy_sandbox::tracking_protection {
