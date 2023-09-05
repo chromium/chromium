@@ -1,5 +1,6 @@
 <style include="cr-icons tangible-sync-style-shared">
   :host {
+    --iron-icon-fill-color: var(--google-blue-700);
     color: var(--cr-primary-text-color);
   }
 
@@ -19,7 +20,6 @@
     max-width: 115px;
     pointer-events: all;
   }
-
 
   .content-container {
     align-items: center;
@@ -103,7 +103,6 @@
   }
 
   iron-icon {
-    --iron-icon-fill-color: var(--google-blue-700);
     margin: 0 12px 0 15px;
   }
 
@@ -146,6 +145,7 @@
   }
 
   .button-container {
+    --button-container-background-color: white;
     bottom: 0;
     display: flex;
     justify-content: flex-end;
@@ -155,12 +155,33 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    :host {
+      --iron-icon-fill-color: var(--google-blue-300);
+    }
+
+    .hint-placeholder {
+      background-color: var(--google-grey-800);
+    }
+
     .tangible-sync-style-left-banner {
       content: url(images/left_illustration_dark.svg);
     }
 
     .tangible-sync-style-right-banner {
       content: url(images/right_illustration_dark.svg);
+    }
+
+    .info-link {
+      color: var(--google-blue-300);
+    }
+
+    cr-radio-button {
+      --cr-radio-button-unchecked-color: var(--google-grey-100);
+      background-color: var(--google-grey-800);
+    }
+
+    .button-container {
+      --button-container-background-color: var(--md-background-color);
     }
   }
 
@@ -185,7 +206,7 @@
 
 @media screen and (max-width: 920px) {
   .button-container {
-    background-color: white;
+    background-color: var(--button-container-background-color);
     border-top: var(--cr-separator-line);
     pointer-events: unset;
   }
