@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
@@ -403,6 +405,17 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
       kServiceWorkerAutoPreload, "use_allowlist",
       /*default_value=*/false);
   if (use_allowlist && !HasRaceNetworkRequestEligibleScript(version)) {
+    return false;
+  }
+
+  // Hosts to disable AutoPreload feature. This mechanism is needed to address
+  // the case when the AutoPreload behavior is problematic for some websites and
+  // those should be opted out from the feature.
+  const static base::NoDestructor<base::flat_set<std::string>> blocked_hosts(
+      base::SplitString(base::GetFieldTrialParamValueByFeature(
+                            kServiceWorkerAutoPreload, "blocked_hosts"),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  if (blocked_hosts->contains(resource_request_.url.host())) {
     return false;
   }
 

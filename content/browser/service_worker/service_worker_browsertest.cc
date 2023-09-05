@@ -6341,6 +6341,52 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadBrowserTest,
   EXPECT_EQ(1, GetRequestCount(relative_url));
 }
 
+class ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest
+    : public ServiceWorkerAutoPreloadBrowserTest {
+ public:
+  ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kServiceWorkerAutoPreload, {{"blocked_hosts", blocked_host()}}}}, {});
+  }
+
+  void RegisterServiceWorkerWithBlockedHost() {
+    const GURL create_service_worker_url(embedded_test_server()->GetURL(
+        blocked_host(), "/service_worker/create_service_worker.html"));
+    WorkerRunningStatusObserver observer1(public_context());
+    EXPECT_TRUE(NavigateToURL(shell(), create_service_worker_url));
+    EXPECT_EQ("DONE",
+              EvalJs(GetPrimaryMainFrame(),
+                     "register('/service_worker/race_network_request.js')"));
+    observer1.WaitUntilRunning();
+  }
+
+  std::string blocked_host() { return "localhost"; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAutoPreloadWithBlockedHostsBrowserTest,
+                       BlockedHosts) {
+  // Register the ServiceWorker and navigate to the in scope URL.
+  SetupAndRegisterServiceWorker();
+  RegisterServiceWorkerWithBlockedHost();
+
+  const std::string relative_url =
+      "/service_worker/mock_response?sw_slow&sw_respond";
+  const GURL test_url =
+      embedded_test_server()->GetURL(blocked_host(), relative_url);
+
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
+
+  // Request count should be 0. AutoPreload is not triggered when the navigation
+  // request is for the host in the blocked host params.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
 class ServiceWorkerRaceNetworkRequestOriginTrialBrowserTest
     : public ServiceWorkerRaceNetworkRequestBrowserTest {
  public:
