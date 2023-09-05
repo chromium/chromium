@@ -903,8 +903,10 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
 
 bool ImageLoader::HasPendingEvent() const {
   // Regular image loading is in progress.
-  if (image_content_ && !image_complete_)
+  if (image_content_ && !image_complete_ &&
+      lazy_image_load_state_ != LazyImageLoadState::kDeferred) {
     return true;
+  }
 
   if (pending_load_event_.IsActive() || pending_error_event_.IsActive())
     return true;

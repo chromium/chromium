@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -1021,6 +1022,38 @@ TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
   test::RunPendingTasks();
 
   EXPECT_TRUE(lazy->CachedImage()->IsLoading());
+}
+
+// This is a regression test added for https://crbug.com/1213045, which was
+// filed for a memory leak whereby lazy loaded images currently being deferred
+// but that were removed from the DOM were never actually garbage collected.
+TEST_F(LazyLoadImagesTest, GarbageCollectDeferredLazyLoadImages) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body>
+        <div style='height: %dpx;'></div>
+        <img src='https://example.com/image.png' loading='lazy'>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  WeakPersistent<HTMLImageElement> image =
+      To<HTMLImageElement>(GetDocument().QuerySelector(AtomicString("img")));
+  EXPECT_FALSE(image->complete());
+  image->remove();
+  EXPECT_FALSE(image->isConnected());
+  EXPECT_FALSE(image->complete());
+  EXPECT_NE(image, nullptr);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_EQ(nullptr, image);
 }
 
 class DelayOutOfViewportLazyImagesTest : public SimTest {
