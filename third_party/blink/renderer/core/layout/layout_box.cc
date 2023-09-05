@@ -873,7 +873,7 @@ void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
   auto SnapAreaDidChange = [&]() {
     if (RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
       auto* snap_container = ContainingScrollContainer();
-      if (!snap_container->NeedsLayout()) {
+      if (snap_container && !snap_container->NeedsLayout()) {
         snap_container->GetScrollableArea()->EnqueueForSnapUpdateIfNeeded();
       }
     } else {
