@@ -2268,6 +2268,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateStyle();
   GetStyleResolver().ClearResizedForViewportUnits();
 
+  rendering_had_begun_for_last_style_update_ = RenderingHasBegun();
+
   GetLayoutView()->ClearHitTestCache();
 
   DCHECK(!document_animations_->NeedsAnimationTimingUpdate());

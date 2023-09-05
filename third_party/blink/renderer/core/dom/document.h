@@ -931,7 +931,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool BeforePrintingOrPrinting() const {
     return printing_ == kPrinting || printing_ == kBeforePrinting;
   }
-  bool FinishingOrIsPrinting() {
+  bool FinishingOrIsPrinting() const {
     return printing_ == kPrinting || printing_ == kFinishingPrinting;
   }
   void SetPrinting(PrintingState);
@@ -1917,6 +1917,9 @@ class CORE_EXPORT Document : public ContainerNode,
   void RenderBlockingResourceUnblocked();
 
   bool RenderingHasBegun() const { return rendering_has_begun_; }
+  bool RenderingHadBegunForLastStyleUpdate() const {
+    return rendering_had_begun_for_last_style_update_;
+  }
 
   void IncrementLazyAdsFrameCount();
   void IncrementLazyEmbedsFrameCount();
@@ -2667,6 +2670,13 @@ class CORE_EXPORT Document : public ContainerNode,
   bool supports_reduced_motion_ = false;
 
   Member<RenderBlockingResourceManager> render_blocking_resource_manager_;
+
+  // Record if the previous UpdateStyleAndLayoutTreeForThisDocument() happened
+  // while RenderingHasBegun() returned true.
+  // UpdateStyleAndLayoutTreeForThisDocument() can happen while render-blocking.
+  // For instance a forced update from devtools queries. If rendering_had_begun
+  // is false we should not
+  bool rendering_had_begun_for_last_style_update_ = false;
 
   bool rendering_has_begun_ = false;
 

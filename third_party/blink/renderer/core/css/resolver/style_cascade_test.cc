@@ -1833,6 +1833,8 @@ TEST_F(StyleCascadeTest, RevertToCycleInKeyframe) {
 }
 
 TEST_F(StyleCascadeTest, RevertCausesTransition) {
+  UpdateAllLifecyclePhasesForTest();
+
   TestCascade cascade1(GetDocument());
   cascade1.Add("width:200px", CascadeOrigin::kUser);
   cascade1.Add("width:100px", CascadeOrigin::kAuthor);
@@ -2157,6 +2159,8 @@ TEST_F(StyleCascadeTest, AnimationApplyFilter) {
 }
 
 TEST_F(StyleCascadeTest, TransitionApplyFilter) {
+  UpdateAllLifecyclePhasesForTest();
+
   TestCascade cascade1(GetDocument());
   cascade1.Add("background-color: white");
   cascade1.Add("color: white");
@@ -2229,6 +2233,8 @@ TEST_F(StyleCascadeTest, PendingKeyframeAnimationApply) {
 }
 
 TEST_F(StyleCascadeTest, TransitionCausesInterpolationValue) {
+  UpdateAllLifecyclePhasesForTest();
+
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
 
   // First, simulate an "old style".
@@ -2255,6 +2261,8 @@ TEST_F(StyleCascadeTest, TransitionCausesInterpolationValue) {
 }
 
 TEST_F(StyleCascadeTest, TransitionDetectedForChangedFontSize) {
+  UpdateAllLifecyclePhasesForTest();
+
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
 
   TestCascade cascade1(GetDocument());
@@ -2413,6 +2421,8 @@ TEST_F(StyleCascadeTest, AuthorImportantWinOverAnimations) {
 }
 
 TEST_F(StyleCascadeTest, TransitionsWinOverAuthorImportant) {
+  UpdateAllLifecyclePhasesForTest();
+
   // First, simulate an "old style".
   TestCascade cascade1(GetDocument());
   cascade1.Add("width:10px !important");

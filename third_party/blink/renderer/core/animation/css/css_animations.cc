@@ -2514,8 +2514,9 @@ void CSSAnimations::CalculateTransitionUpdate(
     const ComputedStyleBuilder& style_builder,
     const ComputedStyle* old_style,
     bool can_trigger_animations) {
-  if (animating_element.GetDocument().FinishingOrIsPrinting())
+  if (animating_element.GetDocument().FinishingOrIsPrinting()) {
     return;
+  }
 
   ElementAnimations* element_animations =
       animating_element.GetElementAnimations();
@@ -2544,6 +2545,12 @@ void CSSAnimations::CalculateTransitionUpdate(
          "beginning of the lifecycle update, or a style based on the "
          "@starting-style style";
 #endif
+
+  if (old_style && !old_style->IsStartingStyle() &&
+      !animating_element.GetDocument().RenderingHadBegunForLastStyleUpdate()) {
+    // Only allow transitions on the first rendered frame for @starting-style.
+    old_style = nullptr;
+  }
 
   if (!animation_style_recalc && old_style) {
     // TODO: Don't run transitions if style.Display() == EDisplay::kNone
