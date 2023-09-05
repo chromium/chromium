@@ -472,6 +472,9 @@ export class AppElement extends AppElementBase {
                   'background-image-loaded',
                   this.backgroundImageLoadStart_ + duration);
             }
+          },
+          () => {
+              // Ignore. Failed to capture background image load time.
           });
     }
     FocusOutlineManager.forDocument(document);
