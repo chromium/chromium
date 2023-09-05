@@ -3883,6 +3883,17 @@
         },
         'os_type': 'mac',
       },
+      'mac11-arm64-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
       'mac11-wpt-content-shell-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',

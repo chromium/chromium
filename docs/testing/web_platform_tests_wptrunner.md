@@ -78,6 +78,7 @@ on different platforms:
 * [`mac11-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac11-wpt-content-shell-fyi-rel)
 * [`mac12-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac12-wpt-content-shell-fyi-rel)
 * [`mac13-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac13-wpt-content-shell-fyi-rel)
+* [`mac11-arm64-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac11-arm64-wpt-content-shell-fyi-rel)
 * [`mac12-arm64-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac12-arm64-wpt-content-shell-fyi-rel)
 * [`mac13-arm64-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/mac13-arm64-wpt-content-shell-fyi-rel)
 * [`linux-wpt-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-fyi-rel)

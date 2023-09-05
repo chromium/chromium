@@ -1233,6 +1233,15 @@
       "use_remoteexec": true
     }
   },
+  "mac11-arm64-wpt-content-shell-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
   "mac11-wpt-content-shell-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

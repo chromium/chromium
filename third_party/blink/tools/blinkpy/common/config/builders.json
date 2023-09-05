@@ -109,6 +109,17 @@
             }
         }
     },
+    "mac11-arm64-wpt-content-shell-fyi-rel": {
+        "main": "chromium.fyi",
+        "port_name": "mac-mac11-arm64",
+        "specifiers": ["Mac11-arm64", "Release"],
+        "is_try_builder": true,
+        "steps": {
+            "wpt_tests_suite (with patch)": {
+                "uses_wptrunner": true
+            }
+        }
+    },
     "mac12-wpt-content-shell-fyi-rel": {
         "main": "chromium.fyi",
         "port_name": "mac-mac12",

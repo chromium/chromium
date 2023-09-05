@@ -166,6 +166,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "mac11-arm64-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/mac11-arm64-wpt-content-shell-fyi-rel",
+    ],
+)
+
+try_.builder(
     name = "mac11-wpt-content-shell-fyi-rel",
     mirrors = [
         "ci/mac11-wpt-content-shell-fyi-rel",
