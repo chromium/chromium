@@ -980,11 +980,16 @@ BASE_FEATURE(kOobeMarketingDoubleOptInCountriesSupported,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables or disabled the OOM intervention.
+// Enables or disables the OOM intervention.
 BASE_FEATURE(kOomIntervention,
              "OomIntervention",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Enables or disables the page content opt-in and setting.
+BASE_FEATURE(kPageContentOptIn,
+             "PageContentOptIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables usage of Parent Access Code in the login flow for reauth and add

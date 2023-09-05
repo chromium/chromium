@@ -367,6 +367,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean(
+      "enablePageContentSetting",
+      base::FeatureList::IsEnabled(features::kPageContentOptIn));
+
+  html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
       download::IsDownloadBubbleEnabled(profile) &&
           download::IsDownloadBubblePartialViewControlledByPref());
