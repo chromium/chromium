@@ -24452,6 +24452,45 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TabStripOrganization">
+  <owner>dpenning@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Collects information about UKMSourceIDs group affiliation in a tab strip
+    when group organization actions are taken up to 30 SourceIDs.
+  </summary>
+  <metric name="IsActiveTab">
+    <summary>
+      Whether this source is the active tab for the trigger, only recorded for 1
+      tab within all TabStripOrganization events recorded with the same
+      TabStripEventID.
+    </summary>
+  </metric>
+  <metric name="MinutesSinceLastActive">
+    <summary>
+      Number of minutes since the tab was last active. exponentially bucketed
+      using GetExponentialBucketMin with a spacing of 1.3
+    </summary>
+  </metric>
+  <metric name="SuggestedTabStripOrganizationReason">
+    <summary>
+      The trigger reason for when this tab strip event was taken.
+    </summary>
+  </metric>
+  <metric name="TabGroupID">
+    <summary>
+      The lower 64 bits of the The tab group id corresponding to the
+      TabStripEventID.
+    </summary>
+  </metric>
+  <metric name="TabStripEventID">
+    <summary>
+      An ID corresponding to the event that will enable joining all active tabs
+      for the window and the event together.
+    </summary>
+  </metric>
+</event>
+
 <event name="ThirdPartyCookies.BreakageIndicator">
   <owner>3pcd-core@google.com</owner>
   <owner>johannhof@chromium.org</owner>

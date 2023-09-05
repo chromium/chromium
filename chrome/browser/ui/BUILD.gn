@@ -1396,6 +1396,8 @@ static_library("ui") {
       "tabs/existing_window_sub_menu_model.h",
       "tabs/hover_tab_selector.cc",
       "tabs/hover_tab_selector.h",
+      "tabs/organization/metrics.cc",
+      "tabs/organization/metrics.h",
       "tabs/pinned_tab_codec.cc",
       "tabs/pinned_tab_codec.h",
       "tabs/pinned_tab_service.cc",
