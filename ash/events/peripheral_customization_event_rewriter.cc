@@ -8,6 +8,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -78,6 +79,25 @@ mojom::ButtonPtr GetButtonFromMouseEventFlag(int flag) {
   NOTREACHED_NORETURN();
 }
 
+int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
+  switch (key_code) {
+    case ui::VKEY_LWIN:
+    case ui::VKEY_RWIN:
+      return ui::EF_COMMAND_DOWN;
+    case ui::VKEY_CONTROL:
+      return ui::EF_CONTROL_DOWN;
+    case ui::VKEY_SHIFT:
+    case ui::VKEY_LSHIFT:
+    case ui::VKEY_RSHIFT:
+      return ui::EF_SHIFT_DOWN;
+    case ui::VKEY_MENU:
+    case ui::VKEY_RMENU:
+      return ui::EF_ALT_DOWN;
+    default:
+      return ui::EF_NONE;
+  }
+}
+
 int ConvertButtonToFlags(const mojom::Button& button) {
   if (button.is_customizable_button()) {
     switch (button.get_customizable_button()) {
@@ -99,27 +119,57 @@ int ConvertButtonToFlags(const mojom::Button& button) {
   }
 
   if (button.is_vkey()) {
-    switch (button.get_vkey()) {
-      case ui::VKEY_LWIN:
-      case ui::VKEY_RWIN:
-        return ui::EF_COMMAND_DOWN;
-      case ui::VKEY_CONTROL:
-        return ui::EF_CONTROL_DOWN;
-      case ui::VKEY_SHIFT:
-      case ui::VKEY_LSHIFT:
-      case ui::VKEY_RSHIFT:
-        return ui::EF_SHIFT_DOWN;
-      case ui::VKEY_MENU:
-        return ui::EF_ALT_DOWN;
-      default:
-        return ui::EF_NONE;
-    }
+    return ConvertKeyCodeToFlags(button.get_vkey());
   }
 
   return ui::EF_NONE;
 }
 
 }  // namespace
+
+// Compares the `DeviceIdButton` struct based on first the device id, and then
+// the button stored within the `DeviceIdButton` struct.
+bool operator<(
+    const PeripheralCustomizationEventRewriter::DeviceIdButton& left,
+    const PeripheralCustomizationEventRewriter::DeviceIdButton& right) {
+  if (right.device_id != left.device_id) {
+    return left.device_id < right.device_id;
+  }
+
+  // If both are VKeys, compare them.
+  if (left.button->is_vkey() && right.button->is_vkey()) {
+    return left.button->get_vkey() < right.button->get_vkey();
+  }
+
+  // If both are customizable buttons, compare them.
+  if (left.button->is_customizable_button() &&
+      right.button->is_customizable_button()) {
+    return left.button->get_customizable_button() <
+           right.button->get_customizable_button();
+  }
+
+  // Otherwise, return true if the lhs is a VKey as they mismatch and VKeys
+  // should be considered less than customizable buttons.
+  return left.button->is_vkey();
+}
+
+PeripheralCustomizationEventRewriter::DeviceIdButton::DeviceIdButton(
+    int device_id,
+    mojom::ButtonPtr button)
+    : device_id(device_id), button(std::move(button)) {}
+
+PeripheralCustomizationEventRewriter::DeviceIdButton::DeviceIdButton(
+    DeviceIdButton&& device_id_button)
+    : device_id(device_id_button.device_id),
+      button(std::move(device_id_button.button)) {}
+
+PeripheralCustomizationEventRewriter::DeviceIdButton::~DeviceIdButton() =
+    default;
+
+PeripheralCustomizationEventRewriter::DeviceIdButton&
+PeripheralCustomizationEventRewriter::DeviceIdButton::operator=(
+    PeripheralCustomizationEventRewriter::DeviceIdButton&& device_id_button) =
+    default;
 
 PeripheralCustomizationEventRewriter::PeripheralCustomizationEventRewriter() =
     default;
@@ -269,18 +319,43 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
   }
 
   std::unique_ptr<ui::Event> rewritten_event;
-  if (RewriteEventFromButton(key_event,
-                             *mojom::Button::NewVkey(key_event.key_code()),
-                             rewritten_event)) {
+  mojom::ButtonPtr button = mojom::Button::NewVkey(key_event.key_code());
+  if (RewriteEventFromButton(key_event, *button, rewritten_event)) {
     return DiscardEvent(continuation);
   }
+  UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
 
   if (!rewritten_event) {
     rewritten_event = std::make_unique<ui::KeyEvent>(key_event);
   }
 
   RemoveRemappedModifiers(*rewritten_event);
+  ApplyRemappedModifiers(*rewritten_event);
   return SendEvent(continuation, rewritten_event.get());
+}
+
+void PeripheralCustomizationEventRewriter::UpdatePressedButtonMap(
+    mojom::ButtonPtr button,
+    const ui::Event& original_event,
+    const std::unique_ptr<ui::Event>& rewritten_event) {
+  DeviceIdButton device_id_button_key =
+      DeviceIdButton{original_event.source_device_id(), std::move(button)};
+  const int flags =
+      (rewritten_event && rewritten_event->IsKeyEvent())
+          ? ConvertKeyCodeToFlags(rewritten_event->AsKeyEvent()->key_code())
+          : 0;
+
+  // If the button is released, the entry must be removed from the map.
+  if (original_event.type() == ui::ET_MOUSE_RELEASED ||
+      original_event.type() == ui::ET_KEY_RELEASED) {
+    device_button_to_flags_.erase(device_id_button_key);
+    return;
+  }
+
+  // Add the entry to the map with the flags that must be applied to other
+  // events.
+  device_button_to_flags_.insert_or_assign(std::move(device_id_button_key),
+                                           flags);
 }
 
 ui::EventDispatchDetails
@@ -306,14 +381,13 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
   }
 
   std::unique_ptr<ui::Event> rewritten_event;
-  if (IsMouseButtonEvent(mouse_event)) {
-    if (mouse_event.changed_button_flags() &&
-        RewriteEventFromButton(
-            mouse_event,
-            *GetButtonFromMouseEventFlag(mouse_event.changed_button_flags()),
-            rewritten_event)) {
+  if (IsMouseButtonEvent(mouse_event) && mouse_event.changed_button_flags()) {
+    mojom::ButtonPtr button =
+        GetButtonFromMouseEventFlag(mouse_event.changed_button_flags());
+    if (RewriteEventFromButton(mouse_event, *button, rewritten_event)) {
       return DiscardEvent(continuation);
     }
+    UpdatePressedButtonMap(std::move(button), mouse_event, rewritten_event);
   }
 
   if (!rewritten_event) {
@@ -326,6 +400,7 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
   }
 
   RemoveRemappedModifiers(*rewritten_event);
+  ApplyRemappedModifiers(*rewritten_event);
   return SendEvent(continuation, rewritten_event.get());
 }
 
@@ -395,6 +470,15 @@ void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
   // this needs to track what keys are being pressed by the device that have
   // modifiers attached to them. For now, this is close enough to being correct.
   event.set_flags(event.flags() & ~modifiers);
+}
+
+void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
+    ui::Event& event) {
+  int flags = 0;
+  for (const auto& [_, flag] : device_button_to_flags_) {
+    flags |= flag;
+  }
+  event.set_flags(event.flags() | flags);
 }
 
 void PeripheralCustomizationEventRewriter::SetRemappingActionForTesting(

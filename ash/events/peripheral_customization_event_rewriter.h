@@ -29,6 +29,19 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
+  struct DeviceIdButton {
+    int device_id;
+    mojom::ButtonPtr button;
+
+    DeviceIdButton(int device_id, mojom::ButtonPtr button);
+    DeviceIdButton(DeviceIdButton&& device_id_button);
+    ~DeviceIdButton();
+
+    DeviceIdButton& operator=(DeviceIdButton&& device_id_button);
+    friend bool operator<(const DeviceIdButton& left,
+                          const DeviceIdButton& right);
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when a mouse that is currently being observed presses a button
@@ -104,13 +117,25 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   const mojom::RemappingAction* GetRemappingAction(int device_id,
                                                    const mojom::Button& button);
 
+  void UpdatePressedButtonMap(
+      mojom::ButtonPtr button,
+      const ui::Event& original_event,
+      const std::unique_ptr<ui::Event>& rewritten_event);
+
   // Removes the set of remapped modifiers from the event that should be
   // discarded.
   void RemoveRemappedModifiers(ui::Event& event);
 
+  // Applies all remapped modifiers.
+  void ApplyRemappedModifiers(ui::Event& event);
+
   base::flat_set<int> mice_to_observe_;
   base::flat_set<int> graphics_tablets_to_observe_;
   base::ObserverList<Observer> observers_;
+
+  // Maintains a list of currently pressed buttons and the flags that should
+  // be applied to other events processed.
+  base::flat_map<DeviceIdButton, int> device_button_to_flags_;
 
   // TODO(dpad): Remove once `InputDeviceSettingsController` is updated to
   // handle button remappings.

@@ -211,8 +211,8 @@ std::string ConvertToString(const ui::KeyEvent& key_event) {
   return base::StringPrintf(
       "KeyboardEvent type=%d code=0x%06X flags=0x%X vk=0x%02X key=0x%08X "
       "scan=0x%08X",
-      key_event.type(), key_event.key_code(),
-      static_cast<uint32_t>(key_event.code()), key_event.flags(),
+      key_event.type(), static_cast<uint32_t>(key_event.code()),
+      key_event.flags(), key_event.key_code(),
       static_cast<uint32_t>(key_event.GetDomKey()), key_event.scan_code());
 }
 
@@ -810,6 +810,183 @@ TEST_P(ButtonRewritingTest, RewriteEvent) {
 
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(*data.rewritten_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+class ModifierRewritingTest
+    : public PeripheralCustomizationEventRewriterTest,
+      public testing::WithParamInterface<
+          std::tuple<ui::KeyboardCode, ui::EventFlags>> {
+  void SetUp() override {
+    PeripheralCustomizationEventRewriterTest::SetUp();
+    std::tie(key_code, flag) = GetParam();
+  }
+
+  void TearDown() override {
+    PeripheralCustomizationEventRewriterTest::TearDown();
+  }
+
+ protected:
+  ui::KeyboardCode key_code;
+  ui::EventFlags flag;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ModifierRewritingTest,
+    testing::ValuesIn(
+        std::vector<std::tuple<ui::KeyboardCode, ui::EventFlags>>({
+            {ui::VKEY_LWIN, ui::EF_COMMAND_DOWN},
+            {ui::VKEY_RWIN, ui::EF_COMMAND_DOWN},
+            {ui::VKEY_SHIFT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_LSHIFT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_RSHIFT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN},
+            {ui::VKEY_MENU, ui::EF_ALT_DOWN},
+            {ui::VKEY_RMENU, ui::EF_ALT_DOWN},
+        })));
+
+TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->SetRemappingActionForTesting(
+      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(
+      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
+      ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(
+                CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, flag)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(
+                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                                 ui::EF_NONE)),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
+  TestEventRewriterContinuation continuation;
+
+  rewriter_->SetRemappingActionForTesting(
+      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+
+  const ui::EventFlags test_flag =
+      flag == ui::EF_COMMAND_DOWN ? ui::EF_SHIFT_DOWN : ui::EF_COMMAND_DOWN;
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(
+      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
+      ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, test_flag),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                                 test_flag | flag)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(
+                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, test_flag),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A,
+                                                 test_flag)),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_P(ModifierRewritingTest, MouseEvent) {
+  TestEventRewriterContinuation continuation;
+  const ui::EventFlags test_flag =
+      flag == ui::EF_COMMAND_DOWN ? ui::EF_SHIFT_DOWN : ui::EF_COMMAND_DOWN;
+
+  rewriter_->SetRemappingActionForTesting(
+      kDeviceId, mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag)));
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(
+      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
+      ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
+                             test_flag | ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(
+      ConvertToString(CreateMouseButtonEvent(
+          ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON | test_flag | flag,
+          ui::EF_FORWARD_MOUSE_BUTTON)),
+      ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_0, ui::EF_NONE),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(
+                CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code, flag)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
+                             test_flag | ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateMouseButtonEvent(
+                ui::ET_MOUSE_PRESSED, test_flag | ui::EF_FORWARD_MOUSE_BUTTON,
+                ui::EF_FORWARD_MOUSE_BUTTON)),
             ConvertToString(*continuation.passthrough_event));
 }
 
