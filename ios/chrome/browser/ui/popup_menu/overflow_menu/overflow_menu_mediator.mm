@@ -930,24 +930,31 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::Destination::Settings:
     case overflow_menu::Destination::SpotlightDebugger:
       // These items are unhideable.
-      return @"";
+      return nil;
     case overflow_menu::Destination::Bookmarks:
-      // TODO(crbug.com/1477431): Add all these strings
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_BOOKMARKS);
     case overflow_menu::Destination::History:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_HISTORY);
     case overflow_menu::Destination::ReadingList:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_READING_LIST);
     case overflow_menu::Destination::Passwords:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_PASSWORDS);
     case overflow_menu::Destination::Downloads:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_DOWNLOADS);
     case overflow_menu::Destination::RecentTabs:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_RECENT_TABS);
     case overflow_menu::Destination::WhatsNew:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_WHATS_NEW);
     case overflow_menu::Destination::PriceNotifications:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_PRICE_NOTIFICATIONS);
   }
 }
 
@@ -962,24 +969,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::ShareChrome:
     case overflow_menu::ActionType::EditActions:
       // These items are unhideable
-      return @"";
+      return nil;
     case overflow_menu::ActionType::Follow:
-      // TODO(crbug.com/1477431): Add all these strings
-      return @"";
+      return l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW);
     case overflow_menu::ActionType::Bookmark:
-      return @"";
+      return l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_BOOKMARK);
     case overflow_menu::ActionType::ReadingList:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_READING_LIST);
     case overflow_menu::ActionType::ClearBrowsingData:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_CLEAR_BROWSING_DATA);
     case overflow_menu::ActionType::Translate:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE);
     case overflow_menu::ActionType::DesktopSite:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_DESKTOP_SITE);
     case overflow_menu::ActionType::FindInPage:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE);
     case overflow_menu::ActionType::TextZoom:
-      return @"";
+      return l10n_util::GetNSString(
+          IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TEXT_ZOOM);
   }
 }
 
@@ -1019,21 +1031,28 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   result.destination = static_cast<NSInteger>(destination);
 
   if (IsOverflowMenuCustomizationEnabled()) {
-    result.longPressItems = @[
-      [[OverflowMenuLongPressItem alloc]
-          initWithTitle:[self hideItemTextForDestination:destination]
-             symbolName:@"eye.slash"
-                handler:^{
-                  [weakSelf hideDestination:destination];
-                }],
-      [[OverflowMenuLongPressItem alloc]
-          initWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
-             symbolName:@"pencil"
-                handler:^{
-                  [weakSelf beginCustomization];
-                }],
-    ];
+    NSMutableArray<OverflowMenuLongPressItem*>* longPressItems =
+        [[NSMutableArray alloc] init];
+
+    NSString* hideItemText = [self hideItemTextForDestination:destination];
+    if (hideItemText) {
+      [longPressItems addObject:[[OverflowMenuLongPressItem alloc]
+                                    initWithTitle:hideItemText
+                                       symbolName:@"eye.slash"
+                                          handler:^{
+                                            [weakSelf
+                                                hideDestination:destination];
+                                          }]];
+    }
+    [longPressItems
+        addObject:[[OverflowMenuLongPressItem alloc]
+                      initWithTitle:l10n_util::GetNSString(
+                                        IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS)
+                         symbolName:@"pencil"
+                            handler:^{
+                              [weakSelf beginCustomization];
+                            }]];
+    result.longPressItems = longPressItems;
   }
 
   return result;

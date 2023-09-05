@@ -1013,8 +1013,16 @@ TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
   mediator_.model = model_;
 
   // The 1st action group should contain modifiable actions with 2 longpress
-  // items.
+  // items. Settings and Site Info are exceptions, as they are not hideable, so
+  // they shold only have one longpress item
   for (OverflowMenuDestination* destination in mediator_.model.destinations) {
+    overflow_menu::Destination destinationType =
+        static_cast<overflow_menu::Destination>(destination.destination);
+    if (destinationType == overflow_menu::Destination::Settings ||
+        destinationType == overflow_menu::Destination::SiteInfo) {
+      EXPECT_EQ(destination.longPressItems.count, 1ul);
+      continue;
+    }
     EXPECT_EQ(destination.longPressItems.count, 2ul);
   }
 }
