@@ -132,6 +132,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<ColorPickerView> color_selector_;
 
   raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
+  raw_ptr<views::ImageView> save_group_icon_ = nullptr;
+  raw_ptr<views::Label> save_group_label_ = nullptr;
   std::vector<raw_ptr<views::LabelButton>> menu_items_;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
