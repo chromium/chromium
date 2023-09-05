@@ -270,6 +270,7 @@ class VotesUploader {
   // a username form that preceded the password form, and on the type of user
   // input it had (e.g. email-like, phone-like, arbitrary string).
   void SetSingleUsernameVoteOnPasswordForm(
+      const SingleUsernameVoteData& vote_data,
       autofill::FormStructure& form_structure);
 
   // Calculates whether the |saved_username| (the value actually saved in the
