@@ -719,7 +719,8 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   if (icon.name == vector_icons::kGoogleSitesIcon.name) {
     return kGoogleSitesIconResourceName;
   }
-  if (icon.name == vector_icons::kGoogleSuperGIcon.name) {
+  if (icon.name == vector_icons::kGoogleSuperGIcon.name ||
+      icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
     return kGoogleGIconResourceName;
   }
 #endif
