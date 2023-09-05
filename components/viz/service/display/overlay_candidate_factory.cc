@@ -126,7 +126,8 @@ bool ShouldApplyRoundedCorner(OverlayCandidate& candidate,
   const gfx::RRectF& rounded_corner_bounds =
       mask_filter_info.rounded_corner_bounds();
 
-  const gfx::RectF target_rect = candidate.display_rect;
+  const gfx::RectF target_rect =
+      OverlayCandidate::DisplayRectInTargetSpace(candidate);
 
   const gfx::RRectF::Corner corners[] = {
       gfx::RRectF::Corner::kUpperLeft, gfx::RRectF::Corner::kUpperRight,
@@ -215,7 +216,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
   // is known.
   // TODO(https://crbug.com/1462171): Consider moving this code to
   // FromDrawQuadResource() that covers all of delegated compositing.
-  if (ShouldApplyRoundedCorner(candidate, sqs)) {
+  if (context_.disable_wire_size_optimization ||
+      ShouldApplyRoundedCorner(candidate, sqs)) {
     candidate.rounded_corners = sqs->mask_filter_info.rounded_corner_bounds();
   }
 
@@ -237,6 +239,8 @@ OverlayCandidateFactory::OverlayCandidateFactory(
       render_pass_filters_(render_pass_filters),
       context_(context) {
   DCHECK(context_.supports_clip_rect || !context_.supports_arbitrary_transform);
+  DCHECK(!context_.disable_wire_size_optimization ||
+         context_.supports_arbitrary_transform);
 
   has_custom_color_matrix_ = *output_color_matrix != SkM44();
 
@@ -371,25 +375,11 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   SetDisplayRect(*quad, candidate);
 
   const SharedQuadState* sqs = quad->shared_quad_state;
-  gfx::OverlayTransform overlay_transform =
-      GetOverlayTransform(sqs->quad_to_target_transform, y_flipped);
-  if (overlay_transform != gfx::OVERLAY_TRANSFORM_INVALID) {
-    candidate.transform = overlay_transform;
 
-    candidate.display_rect =
-        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
-  } else if (context_.supports_arbitrary_transform &&
-             !sqs->quad_to_target_transform.HasPerspective()) {
-    gfx::Transform transform = sqs->quad_to_target_transform;
-    if (y_flipped) {
-      transform.PreConcat(gfx::OverlayTransformToTransform(
-          gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
-    }
-    candidate.transform = transform;
-  } else {
-    return context_.is_delegated_context ? GetReasonForTransformNotAxisAligned(
-                                               sqs->quad_to_target_transform)
-                                         : CandidateStatus::kFailNotAxisAligned;
+  if (auto status =
+          ApplyTransform(sqs->quad_to_target_transform, y_flipped, candidate);
+      status != CandidateStatus::kSuccess) {
+    return status;
   }
 
   candidate.is_opaque =
@@ -510,6 +500,40 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
   candidate.clip_rect = absl::nullopt;
 
   return CandidateStatus::kSuccess;
+}
+
+OverlayCandidate::CandidateStatus OverlayCandidateFactory::ApplyTransform(
+    const gfx::Transform& quad_to_target_transform,
+    const bool y_flipped,
+    OverlayCandidate& candidate) const {
+  // Try to bake |quad_to_target_transform| into |display_rect| to avoid sending
+  // a full |gfx::Transform|.
+  if (!context_.disable_wire_size_optimization) {
+    gfx::OverlayTransform overlay_transform =
+        GetOverlayTransform(quad_to_target_transform, y_flipped);
+    if (overlay_transform != gfx::OVERLAY_TRANSFORM_INVALID) {
+      candidate.transform = overlay_transform;
+      candidate.display_rect =
+          quad_to_target_transform.MapRect(candidate.display_rect);
+      return OverlayCandidate::CandidateStatus::kSuccess;
+    }
+  }
+
+  // Otherwise, try to set an arbitrary transform, if possible.
+  if (context_.supports_arbitrary_transform &&
+      !quad_to_target_transform.HasPerspective()) {
+    gfx::Transform transform = quad_to_target_transform;
+    if (y_flipped) {
+      transform.PreConcat(gfx::OverlayTransformToTransform(
+          gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
+    }
+    candidate.transform = transform;
+    return OverlayCandidate::CandidateStatus::kSuccess;
+  }
+
+  return context_.is_delegated_context
+             ? GetReasonForTransformNotAxisAligned(quad_to_target_transform)
+             : CandidateStatus::kFailNotAxisAligned;
 }
 
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromAggregateQuad(

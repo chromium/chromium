@@ -48,6 +48,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   struct VIZ_SERVICE_EXPORT OverlayContext {
     bool is_delegated_context = false;
+    // When false, the factory can modify the candidate to provide the same
+    // output but result in a smaller serialization size.
+    bool disable_wire_size_optimization = false;
     bool supports_clip_rect = false;
     bool supports_out_of_window_clip_rect = false;
     bool supports_arbitrary_transform = false;
@@ -146,6 +149,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
   // to be applied is empty.
   CandidateStatus DoGeometricClipping(const DrawQuad* quad,
                                       OverlayCandidate& candidate) const;
+
+  // Apply |quad_to_target_transform| to the candidate, based on
+  // |OverlayContext| settings.
+  CandidateStatus ApplyTransform(const gfx::Transform& quad_to_target_transform,
+                                 const bool y_flipped,
+                                 OverlayCandidate& candidate) const;
 
   // Set |candidate.display_rect| based on |quad|. In delegated contexts, this
   // will also apply content clipping in the quad, and expand to a render pass's

@@ -106,6 +106,81 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
         primary_rect, &render_pass_filters_, context);
   }
 
+  void RunRoundedCornerTest(bool disable_wire_size_optimization) {
+    AggregatedRenderPass render_pass;
+    render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
+                       gfx::Rect(0, 0, 100, 100), gfx::Rect(),
+                       gfx::Transform());
+
+    // We're creating a tile layer, 3 columns by 2 rows, with a rounded corner
+    // affecting the outer tiles. This is a case similar to the open omnibox.
+    gfx::Rect layer_rect = gfx::Rect(0, 0, 90, 60);
+    gfx::RRectF rounded_corners = gfx::RRectF(gfx::RectF(layer_rect), 10);
+    gfx::Rect tile_rects[] = {
+        // Row 1
+        gfx::Rect(0, 0, 30, 30),
+        gfx::Rect(30, 0, 30, 30),
+        gfx::Rect(60, 0, 30, 30),
+        // Row 2
+        gfx::Rect(0, 30, 30, 30),
+        gfx::Rect(30, 30, 30, 30),
+        gfx::Rect(60, 30, 30, 30),
+    };
+
+    SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
+    sqs->SetAll(
+        /*transform=*/gfx::Transform(), /*layer_rect=*/layer_rect,
+        /*visible_layer_rect=*/layer_rect,
+        /*filter_info=*/gfx::MaskFilterInfo(rounded_corners),
+        /*clip=*/absl::nullopt,
+        /*contents_opaque=*/true,
+        /*opacity_f=*/1.f,
+        /*blend=*/SkBlendMode::kSrcOver, /*sorting_context=*/0);
+
+    for (const auto& tile_rect : tile_rects) {
+      SolidColorDrawQuad* solid_quad =
+          render_pass.CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+      solid_quad->SetNew(sqs, /*rect=*/tile_rect, /*visible_rect=*/tile_rect,
+                         SkColors::kBlack,
+                         /*anti_aliasing_off=*/false);
+    }
+
+    OverlayCandidateFactory factory = CreateCandidateFactory(
+        render_pass, gfx::RectF(render_pass.output_rect),
+        OverlayCandidateFactory::OverlayContext{
+            .is_delegated_context = true,
+            .disable_wire_size_optimization = disable_wire_size_optimization,
+            .supports_clip_rect = true,
+            .supports_arbitrary_transform = true,
+            .supports_mask_filter = true,
+        });
+
+    OverlayCandidateList candidates;
+    for (const auto* quad : render_pass.quad_list) {
+      OverlayCandidate candidate;
+      OverlayCandidate::CandidateStatus status =
+          factory.FromDrawQuad(quad, candidate);
+      ASSERT_EQ(status, OverlayCandidate::CandidateStatus::kSuccess);
+      candidates.push_back(candidate);
+    }
+
+    // We expect the outer quads that intersect the rounded corner mask will
+    // always have rounded corners.
+    EXPECT_FALSE(candidates[0].rounded_corners.IsEmpty());
+    EXPECT_FALSE(candidates[2].rounded_corners.IsEmpty());
+    EXPECT_FALSE(candidates[3].rounded_corners.IsEmpty());
+    EXPECT_FALSE(candidates[5].rounded_corners.IsEmpty());
+
+    // We expect the inner quads that do not intersect with the rounded corner
+    // mask to optionally have it set.
+    const bool expect_rounded_corner_on_inner_quads =
+        disable_wire_size_optimization;
+    EXPECT_EQ(!candidates[1].rounded_corners.IsEmpty(),
+              expect_rounded_corner_on_inner_quads);
+    EXPECT_EQ(!candidates[4].rounded_corners.IsEmpty(),
+              expect_rounded_corner_on_inner_quads);
+  }
+
   ClientResourceProvider child_resource_provider_;
   DisplayResourceProviderNull resource_provider_;
   SurfaceDamageRectList surface_damage_list_;
@@ -249,6 +324,14 @@ TEST_F(OverlayCandidateFactoryTest, IsOccludedScaled) {
                                  render_pass.quad_list.end()));
 }
 
+TEST_F(OverlayCandidateFactoryTest, RoundedCorner) {
+  RunRoundedCornerTest(/*disable_wire_size_optimization=*/true);
+}
+
+TEST_F(OverlayCandidateFactoryTest, RoundedCornerOptimizedwireSize) {
+  RunRoundedCornerTest(/*disable_wire_size_optimization=*/false);
+}
+
 class OverlayCandidateFactoryArbitraryTransformTest
     : public OverlayCandidateFactoryTestBase {
  protected:
@@ -291,6 +374,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
   OverlayCandidate::CandidateStatus result =
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+  ASSERT_TRUE(
+      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
   EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(1, 2, 3, 4));
@@ -316,6 +401,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, SupportsNonAxisAligned) {
   OverlayCandidate::CandidateStatus result =
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
   EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }
@@ -347,6 +433,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   transform_y_flipped.SkewX(45.0);
   transform_y_flipped.Translate(0, 1);
   transform_y_flipped.Scale(1, -1);
+  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
   EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform),
             transform_y_flipped);
   gfx::PointF display_rect_origin =
@@ -357,27 +444,104 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }
 
-#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST)
-// Check that OverlayCandidateFactory isn't changed to allow for arbitrary
-// transform support when clip support is not available. Such a configuration
-// would likely be incorrect since clip rects are generally provided in target
-// space and cannot be baked into the display rect when there is an arbitrary
-// transform in between.
-TEST_F(OverlayCandidateFactoryArbitraryTransformTest, DeathOnNoClipSupport) {
+TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
+       UseArbitraryTransformWhenSupported) {
   AggregatedRenderPass render_pass;
   render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
                      gfx::Rect(0, 0, 1, 1), gfx::Rect(), gfx::Transform());
 
   const OverlayCandidateFactory::OverlayContext context = {
       .is_delegated_context = true,
-      .supports_clip_rect = false,
-      .supports_out_of_window_clip_rect = false,
+      .disable_wire_size_optimization = true,
+      .supports_clip_rect = true,
       .supports_arbitrary_transform = true};
+  OverlayCandidateFactory factory = CreateCandidateFactory(
+      render_pass, gfx::RectF(render_pass.output_rect), context);
 
-  EXPECT_DEATH(CreateCandidateFactory(
-                   render_pass, gfx::RectF(render_pass.output_rect), context),
-               "context_.supports_clip_rect \\|\\| "
-               "!context_.supports_arbitrary_transform");
+  gfx::Transform transform = gfx::Transform::MakeTranslation(1, 1);
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
+
+  OverlayCandidate candidate;
+  OverlayCandidate::CandidateStatus result =
+      factory.FromDrawQuad(&quad, candidate);
+  ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+
+  EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
+  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
+}
+
+TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
+       UseOverlayTransformWhenPossibleForWireSize) {
+  AggregatedRenderPass render_pass;
+  render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
+                     gfx::Rect(0, 0, 2, 2), gfx::Rect(), gfx::Transform());
+
+  const OverlayCandidateFactory::OverlayContext context = {
+      .is_delegated_context = true,
+      .disable_wire_size_optimization = false,
+      .supports_clip_rect = true,
+      .supports_arbitrary_transform = true};
+  OverlayCandidateFactory factory = CreateCandidateFactory(
+      render_pass, gfx::RectF(render_pass.output_rect), context);
+
+  gfx::Transform transform = gfx::Transform::MakeTranslation(0.5, 0.5);
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
+
+  OverlayCandidate candidate;
+  OverlayCandidate::CandidateStatus result =
+      factory.FromDrawQuad(&quad, candidate);
+  ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+
+  EXPECT_EQ(candidate.display_rect, gfx::RectF(0.5, 0.5, 1, 1));
+  ASSERT_TRUE(
+      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+            gfx::OVERLAY_TRANSFORM_NONE);
+}
+
+#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST)
+class OverlayCandidateFactoryInvalidContextTest
+    : public OverlayCandidateFactoryTestBase {
+ protected:
+  void CheckContext(const OverlayCandidateFactory::OverlayContext& context,
+                    const char* expected_assertion) {
+    AggregatedRenderPass render_pass;
+    render_pass.SetNew(AggregatedRenderPassId::FromUnsafeValue(1),
+                       gfx::Rect(0, 0, 1, 1), gfx::Rect(), gfx::Transform());
+    EXPECT_DEATH(CreateCandidateFactory(
+                     render_pass, gfx::RectF(render_pass.output_rect), context),
+                 expected_assertion);
+  }
+};
+
+// Check that OverlayCandidateFactory isn't changed to allow for arbitrary
+// transform support when clip support is not available. Such a configuration
+// would likely be incorrect since clip rects are generally provided in target
+// space and cannot be baked into the display rect when there is an arbitrary
+// transform in between.
+TEST_F(OverlayCandidateFactoryInvalidContextTest, NoClipSupport) {
+  CheckContext(
+      OverlayCandidateFactory::OverlayContext{
+          .is_delegated_context = true,
+          .supports_clip_rect = false,
+          .supports_out_of_window_clip_rect = false,
+          .supports_arbitrary_transform = true},
+      "context_.supports_clip_rect \\|\\| "
+      "!context_.supports_arbitrary_transform");
+}
+
+// All quads have a transform on their |sqs|, we need to support some way to
+// store it on our OverlayCandidates. This test checks that an
+// OverlayCandidateFactory without transform support is invalid.
+TEST_F(OverlayCandidateFactoryInvalidContextTest, NoTransformSupport) {
+  CheckContext(
+      OverlayCandidateFactory::OverlayContext{
+          .is_delegated_context = true,
+          .disable_wire_size_optimization = true,
+          .supports_arbitrary_transform = false},
+      "!context_.disable_wire_size_optimization \\|\\| "
+      "context_.supports_arbitrary_transform");
 }
 #endif
 
@@ -574,6 +738,8 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
+    ASSERT_TRUE(
+        absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
     EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
               overlay_transform);
     EXPECT_EQ(candidate.display_rect, gfx::RectF(50, 50, 50, 50));
