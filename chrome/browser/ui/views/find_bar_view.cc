@@ -243,7 +243,11 @@ FindBarView::FindBarView(FindBarHost* host) {
                                                base::Unretained(this)))
               .SetProperty(views::kMarginsKey, image_button_margins))
       .BuildChildren();
-
+  if (features::IsChromeRefresh2023()) {
+    find_text_->SetFontList(
+        views::Textfield::GetDefaultFontList().DeriveWithWeight(
+            gfx::Font::Weight::MEDIUM));
+  }
   SetFlexForView(find_text_, 1, true);
   SetCommonButtonAttributes(find_previous_button_);
   SetCommonButtonAttributes(find_next_button_);
