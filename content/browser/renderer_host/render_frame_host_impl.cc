@@ -15516,7 +15516,11 @@ void RenderFrameHostImpl::Clone(
 
 void RenderFrameHostImpl::OnCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
+  UMA_HISTOGRAM_COUNTS_1M("Cookie.OnCookiesAccessed.BatchSize",
+                          details_vector.size());
+  size_t access_sum = 0;
   for (auto& details : details_vector) {
+    access_sum += details->cookie_list.size();
     EmitCookieWarningsAndMetrics(this, details);
 
     CookieAccessDetails allowed;
@@ -15529,6 +15533,7 @@ void RenderFrameHostImpl::OnCookiesAccessed(
       delegate_->OnCookiesAccessed(this, blocked);
     }
   }
+  UMA_HISTOGRAM_COUNTS_1M("Cookie.OnCookiesAccessed.TotalAccesses", access_sum);
 }
 
 void RenderFrameHostImpl::OnTrustTokensAccessed(
