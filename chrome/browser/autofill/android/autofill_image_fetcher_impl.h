@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -30,6 +31,8 @@ class AutofillImageFetcherImpl : public AutofillImageFetcherBase,
 
  private:
   raw_ptr<ProfileKey> key_;
+
+  base::android::ScopedJavaLocalRef<jobject> java_image_fetcher_;
 };
 
 }  // namespace autofill

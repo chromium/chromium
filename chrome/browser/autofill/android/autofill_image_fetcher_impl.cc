@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/android/autofill_image_fetcher_impl.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/autofill/android/jni_headers/AutofillImageFetcher_jni.h"
 #include "url/android/gurl_android.h"
 
 namespace autofill {
@@ -18,7 +19,21 @@ void AutofillImageFetcherImpl::FetchImagesForURLs(
     base::span<const GURL> card_art_urls,
     base::OnceCallback<void(
         const std::vector<std::unique_ptr<CreditCardArtImage>>&)> callback) {
-  // TODO (crbug.com/1467754): Implement images prefetching for Android.
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  if (!java_image_fetcher_) {
+    java_image_fetcher_ = Java_AutofillImageFetcher_create(
+        env, key_->GetProfileKeyAndroid()->GetJavaObject());
+  }
+
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_urls;
+  for (const auto& url : card_art_urls) {
+    java_urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, url));
+  }
+
+  Java_AutofillImageFetcher_prefetchImages(
+      env, java_image_fetcher_,
+      url::GURLAndroid::ToJavaArrayOfGURLs(env, java_urls));
 }
 
 }  // namespace autofill

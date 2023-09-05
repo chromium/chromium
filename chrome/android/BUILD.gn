@@ -1118,6 +1118,7 @@ if (current_toolchain == default_toolchain) {
       "//components/feed/core/proto:proto_java_v2",
       "//components/feed/core/v2:feedv2_core_java",
       "//components/image_fetcher:java",
+      "//components/image_fetcher:test_support_java",
       "//components/infobars/android:java",
       "//components/messages/android:java",
       "//components/messages/android:manager_java",
