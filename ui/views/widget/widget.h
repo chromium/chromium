@@ -1158,6 +1158,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     native_theme_set_for_testing_ = true;
   }
 
+  ui::ColorProviderKey GetColorProviderKeyForTesting() const;
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.

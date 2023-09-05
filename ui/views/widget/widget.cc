@@ -2008,6 +2008,10 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
       GetColorProviderKey());
 }
 
+ui::ColorProviderKey Widget::GetColorProviderKeyForTesting() const {
+  return GetColorProviderKey();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 
