@@ -1122,39 +1122,39 @@
   <message name="IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_SUCCESS_MESSAGE" desc="The message shown when a new SMB share is successfully mounted.">
     Share mounted successfully.
   </message>
-  <!-- TODO(b/254586358): Finalise Office files strings -->
-  <message name="IDS_SETTINGS_ONE_DRIVE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the OneDrive account settings.">
+
+  <message name="IDS_SETTINGS_ONE_DRIVE_LABEL" desc="Label for the Settings link that takes the user to the OneDrive account settings.">
     OneDrive
   </message>
-  <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" translateable="false" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
+  <message name="IDS_SETTINGS_ONE_DRIVE_SIGNED_IN_AS" desc="Label indicating, in the Files Settings subpage, the email address with which the user is currently signed in in OneDrive">
     Signed in as <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DRIVE_ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" translateable="false" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
-    Disconnected
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECTED" desc="Label indicating, in the Files Settings subpage, that the user is currently not signed in in OneDrive">
+    Add your Microsoft account
   </message>
-  <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" translateable="false" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
-    Connect account
+  <message name="IDS_SETTINGS_ONE_DRIVE_CONNECT" desc="Action to connect OneDrive in Settings: Files: OneDrive.">
+    Add
   </message>
-  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" translateable="false" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
-    Disconnect
+  <message name="IDS_SETTINGS_ONE_DRIVE_DISCONNECT" desc="Action to disconnect from OneDrive in Settings: Files: OneDrive.">
+    Remove
   </message>
-  <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" translateable="false" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
+  <message name="IDS_SETTINGS_OPEN_ONE_DRIVE_FOLDER" desc="Label for the Settings link in the OneDrive subpage to open the OneDrive folder">
     Open OneDrive folder
   </message>
-  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
+  <message name="IDS_SETTINGS_OFFICE_LABEL" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
     Microsoft 365
   </message>
-  <message name="IDS_SETTINGS_OFFICE_SUBLABEL" translateable="false" desc="Sub-label that describes that users can open Microsoft 365 files.">
+  <message name="IDS_SETTINGS_OFFICE_SUBLABEL" desc="Sub-label that describes that users can open Microsoft 365 files.">
     Open Word, Excel, and PowerPoint files
   </message>
-  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Microsoft 365 subpage.">
+  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" desc="Title of the Microsoft 365 subpage.">
     Microsoft 365 files
   </message>
-  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
-    Ask before moving Microsoft files to Google Drive
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
+    Ask before copying or moving Microsoft files to Google Drive
   </message>
-  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to OneDrive without asking for confirmation.">
-    Ask before moving Microsoft files to OneDrive
+  <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_ONEDRIVE_PREFERENCE_LABEL" desc="Label for the preference that allows users to always move files to OneDrive without asking for confirmation.">
+    Ask before copying or moving Microsoft files to Microsoft OneDrive
   </message>
 
   <!-- Accessibility -->

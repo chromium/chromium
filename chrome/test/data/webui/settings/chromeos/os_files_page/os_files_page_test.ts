@@ -240,7 +240,7 @@ suite('<os-settings-files-page>', () => {
       const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
           '#OneDriveLink');
       assert(oneDriveRow);
-      assertEquals('Disconnected', oneDriveRow.subLabel);
+      assertEquals('Add your Microsoft account', oneDriveRow.subLabel);
     });
 
     test('OneDrive row shows email address', async () => {
@@ -259,7 +259,7 @@ suite('<os-settings-files-page>', () => {
       const oneDriveRow = filesPage.shadowRoot!.querySelector<CrLinkRowElement>(
           '#OneDriveLink');
       assert(oneDriveRow);
-      assertEquals('Disconnected', oneDriveRow.subLabel);
+      assertEquals('Add your Microsoft account', oneDriveRow.subLabel);
 
       // Simulate OneDrive mount: mount signal to observer and ability to return
       // an email address.
@@ -287,7 +287,8 @@ suite('<os-settings-files-page>', () => {
           'getUserEmailAddress', {email: null});
       testOneDriveProxy.observerRemote.onODFSMountOrUnmount();
 
-      await assertAsync(() => oneDriveRow.subLabel === 'Disconnected');
+      await assertAsync(
+          () => oneDriveRow.subLabel === 'Add your Microsoft account');
     });
 
     test('Navigates to OFFICE route on click', async () => {
