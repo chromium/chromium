@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { addSingletonGetter } from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import { BrowserTabsModel, CameraRollManager, FeatureStatus, FindMyDeviceStatus, Notification, PhoneStatusModel, TetherStatus } from './types.js';
 
@@ -131,6 +130,12 @@ export class MultidevicePhoneHubBrowserProxy {
   setFakeCameraRoll(cameraRollManager) {
     chrome.send('setFakeCameraRoll', [cameraRollManager]);
   }
+
+  /** @return {!MultidevicePhoneHubBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new MultidevicePhoneHubBrowserProxy());
+  }
 }
 
-addSingletonGetter(MultidevicePhoneHubBrowserProxy);
+/** @type {?MultidevicePhoneHubBrowserProxy} */
+let instance = null;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {LogMessage} from './types.js';
 
 /**
@@ -17,6 +16,12 @@ export class MultideviceLogsBrowserProxy {
   getLogMessages() {
     return sendWithPromise('getMultideviceLogMessages');
   }
+
+  /** @return {!MultideviceLogsBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new MultideviceLogsBrowserProxy());
+  }
 }
 
-addSingletonGetter(MultideviceLogsBrowserProxy);
+/** @type {?MultideviceLogsBrowserProxy} */
+let instance = null;
