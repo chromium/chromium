@@ -3506,7 +3506,7 @@ const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
 const char kWallpaperRefreshRevampName[] =
-    "Enable daily wallapper refresh revamp";
+    "Enable daily wallpaper refresh revamp";
 const char kWallpaperRefreshRevampDescription[] =
     "Allows users to switch to checkpoint based wallpaper daily refresh "
     "feature.";
