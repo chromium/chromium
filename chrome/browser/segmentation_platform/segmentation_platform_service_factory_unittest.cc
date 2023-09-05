@@ -64,18 +64,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
   }
 
   void InitServiceAndCacheResults(const std::string& segmentation_key) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{optimization_guide::features::kOptimizationTargetPrediction, {}},
-         {features::kSegmentationPlatformFeature, {}},
-         {features::kSegmentationPlatformUkmEngine, {}}},
-        {});
-
-    // Creating profile and initialising segmentation service.
-    TestingProfile::Builder profile_builder;
-    testing_profile_ = profile_builder.Build();
-    service_ = SegmentationPlatformServiceFactory::GetForProfile(
-        testing_profile_.get());
-    WaitForServiceInit();
+    InitService();
     WaitForClientResultPrefUpdate(segmentation_key);
     // Getting the updated prefs from this session to be copied to the next
     // session. In the test environment, new session doesn't have prefs from
@@ -97,6 +86,23 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     // Copying the prefs from last session.
     testing_profile_->GetPrefs()->SetString(kSegmentationClientResultPrefs,
                                             output);
+    service_ = SegmentationPlatformServiceFactory::GetForProfile(
+        testing_profile_.get());
+    WaitForServiceInit();
+    // TODO(b/297091996): Remove this when leak is fixed.
+    task_environment_.RunUntilIdle();
+  }
+
+  void InitService() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{optimization_guide::features::kOptimizationTargetPrediction, {}},
+         {features::kSegmentationPlatformFeature, {}},
+         {features::kSegmentationPlatformUkmEngine, {}}},
+        {});
+
+    // Creating profile and initialising segmentation service.
+    TestingProfile::Builder profile_builder;
+    testing_profile_ = profile_builder.Build();
     service_ = SegmentationPlatformServiceFactory::GetForProfile(
         testing_profile_.get());
     WaitForServiceInit();
@@ -131,6 +137,29 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
                 actual_result.ordered_labels.size());
       ASSERT_EQ(expected_labels.value(), actual_result.ordered_labels);
     }
+    std::move(closure).Run();
+  }
+
+  void ExpectGetAnnotatedNumericResult(
+      const std::string& segmentation_key,
+      const PredictionOptions& prediction_options,
+      scoped_refptr<InputContext> input_context,
+      segmentation_platform::PredictionStatus expected_status) {
+    base::RunLoop loop;
+    service_->GetAnnotatedNumericResult(
+        segmentation_key, prediction_options, input_context,
+        base::BindOnce(&SegmentationPlatformServiceFactoryTest::
+                           OnGetAnnotatedNumericResult,
+                       base::Unretained(this), loop.QuitClosure(),
+                       expected_status));
+    loop.Run();
+  }
+
+  void OnGetAnnotatedNumericResult(
+      base::RepeatingClosure closure,
+      segmentation_platform::PredictionStatus expected_status,
+      const AnnotatedNumericResult& actual_result) {
+    ASSERT_EQ(expected_status, actual_result.status);
     std::move(closure).Run();
   }
 
@@ -210,6 +239,25 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestSearchUserModel) {
       /*expected_labels=*/
       std::vector<std::string>(
           1, segmentation_platform::kSearchUserModelLabelNone));
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
+  InitService();
+
+  segmentation_platform::PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  input_context->metadata_args.emplace(
+      "wait_for_device_info_in_seconds",
+      segmentation_platform::processing::ProcessedValue(0));
+
+  ExpectGetClassificationResult(
+      segmentation_platform::kDeviceSwitcherKey, prediction_options,
+      input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/std::vector<std::string>(1, "NotSynced"));
 }
 
 #if BUILDFLAG(IS_ANDROID)
