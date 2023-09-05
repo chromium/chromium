@@ -10,6 +10,5 @@ namespace metrics::structured {
 
 BASE_FEATURE(kAppDiscoveryLogging,
              "AppDiscoveryLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }

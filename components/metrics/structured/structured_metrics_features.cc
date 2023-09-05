@@ -8,7 +8,7 @@ namespace metrics::structured {
 
 BASE_FEATURE(kEventSequenceLogging,
              "EnableEventSequenceLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(b/181724341): Remove this experimental once the feature is rolled out.
 BASE_FEATURE(kBluetoothSessionizedMetrics,
