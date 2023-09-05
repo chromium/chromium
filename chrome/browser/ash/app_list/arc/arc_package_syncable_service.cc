@@ -112,10 +112,10 @@ ArcPackageSyncableService::~ArcPackageSyncableService() {
 }
 
 // static
-ArcPackageSyncableService* ArcPackageSyncableService::Create(
+std::unique_ptr<ArcPackageSyncableService> ArcPackageSyncableService::Create(
     Profile* profile,
     ArcAppListPrefs* prefs) {
-  return new ArcPackageSyncableService(profile, prefs);
+  return std::make_unique<ArcPackageSyncableService>(profile, prefs);
 }
 
 // static

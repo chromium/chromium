@@ -47,14 +47,17 @@ class ArcPackageSyncableService : public syncer::SyncableService,
     int64_t last_backup_time;
   };
 
+  // Use ArcPackageSyncableServiceFactory instead.
+  ArcPackageSyncableService(Profile* profile, ArcAppListPrefs* prefs);
   ArcPackageSyncableService(const ArcPackageSyncableService&) = delete;
   ArcPackageSyncableService& operator=(const ArcPackageSyncableService&) =
       delete;
 
   ~ArcPackageSyncableService() override;
 
-  static ArcPackageSyncableService* Create(Profile* profile,
-                                           ArcAppListPrefs* prefs);
+  static std::unique_ptr<ArcPackageSyncableService> Create(
+      Profile* profile,
+      ArcAppListPrefs* prefs);
   static ArcPackageSyncableService* Get(content::BrowserContext* context);
 
   // Returns true if requested package has pending sync request.
@@ -76,8 +79,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
  private:
   using SyncItemMap =
       std::unordered_map<std::string, std::unique_ptr<SyncItem>>;
-
-  ArcPackageSyncableService(Profile* profile, ArcAppListPrefs* prefs);
 
   // ArcAppListPrefs::Observer:
   void OnPackageInstalled(const mojom::ArcPackageInfo& package_info) override;
