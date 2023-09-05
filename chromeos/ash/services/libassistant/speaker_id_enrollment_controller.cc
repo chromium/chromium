@@ -48,8 +48,8 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
     }
 
     ::assistant::api::GetSpeakerIdEnrollmentInfoRequest request;
-    auto* cloud_request = request.mutable_cloud_enrollment_status_request();
-    cloud_request->set_user_id(user_gaia_id);
+    auto* user_model_request = request.mutable_user_model_status_request();
+    user_model_request->set_user_id(user_gaia_id);
     assistant_client->GetSpeakerIdEnrollmentInfo(
         request, base::BindOnce(&GetStatusWaiter::SendResponse,
                                 weak_ptr_factory_.GetWeakPtr()));

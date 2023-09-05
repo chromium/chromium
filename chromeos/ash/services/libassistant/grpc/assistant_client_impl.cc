@@ -170,11 +170,9 @@ void AssistantClientImpl::GetSpeakerIdEnrollmentInfo(
             bool has_model = false;
             //  `response` could have an error field.
             // Treat any error as no existing model.
-            if (response.has_cloud_enrollment_status_response()) {
-              has_model = response.cloud_enrollment_status_response()
-                              .utterance_status() ==
-                          ::assistant::api::CloudEnrollmentStatusResponse::
-                              HAS_UTTERANCES;
+            if (response.has_user_model_status_response()) {
+              has_model =
+                  response.user_model_status_response().user_model_exists();
             }
             std::move(on_done).Run(has_model);
           },

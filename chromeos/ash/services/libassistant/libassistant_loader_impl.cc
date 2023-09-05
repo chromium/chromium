@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -104,8 +105,15 @@ void LibassistantLoaderImpl::LoadBlocking(const std::string& root_path) {
   // If the gRPC socket files exist, libassistant gRPC server could not start
   // because the binding to the new socket files will fail, with error message
   // that the files already exist.
+  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
   DVLOG(3) << "Clean up temporary libassistant directory.";
-  base::DeletePathRecursively(base::FilePath(kLibAssistantSocketPath));
+  auto socket_path = base::FilePath(kLibAssistantSocketPath);
+  base::DeletePathRecursively(socket_path);
+  if (!is_chromeos_device) {
+    // Make sure the directory exists. On a real device, this directory will be
+    // created on the OS side when Chrome starts.
+    CHECK(base::CreateDirectory(socket_path));
+  }
 
   base::FilePath path = GetLibassisantPath(root_path);
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
@@ -167,6 +175,14 @@ void LibassistantLoaderImpl::OnInstallDlcComplete(
       FROM_HERE,
       base::BindOnce(
           [](const base::FilePath& path) {
+            const bool is_chromeos_device =
+                base::SysInfo::IsRunningOnChromeOS();
+            if (!is_chromeos_device) {
+              // Make sure the directory exists. On a real device, this
+              // directory will be created on the OS side when Chrome starts.
+              auto socket_path = base::FilePath(kLibAssistantSocketPath);
+              CHECK(base::CreateDirectory(socket_path));
+            }
             return base::ScopedNativeLibrary(path);
           },
           path),
