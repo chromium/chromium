@@ -37,9 +37,10 @@ ReadingListManagerFactory::ReadingListManagerFactory()
 
 ReadingListManagerFactory::~ReadingListManagerFactory() = default;
 
-KeyedService* ReadingListManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ReadingListManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(context);
-  return new ReadingListManagerImpl(reading_list_model);
+  return std::make_unique<ReadingListManagerImpl>(reading_list_model);
 }
