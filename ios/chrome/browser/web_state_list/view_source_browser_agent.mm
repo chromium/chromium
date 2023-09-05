@@ -61,9 +61,7 @@ void ViewSourceBrowserAgent::InsertSourceViewTab(NSString* source,
   loadParams.transition_type = ui::PAGE_TRANSITION_LINK;
   TabInsertionBrowserAgent* insertionAgent =
       TabInsertionBrowserAgent::FromBrowser(browser_);
-  insertionAgent->InsertWebState(
-      loadParams, web_state, true, TabInsertion::kPositionAutomatically,
-      /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*should_skip_new_tab_animation=*/false);
+  TabInsertion::Params insertionParams;
+  insertionParams.opened_by_dom = true;
+  insertionAgent->InsertWebState(loadParams, insertionParams);
 }

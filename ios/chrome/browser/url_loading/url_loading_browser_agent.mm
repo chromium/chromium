@@ -388,12 +388,15 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
 
   TabInsertionBrowserAgent* insertion_agent =
       TabInsertionBrowserAgent::FromBrowser(browser_);
+  TabInsertion::Params insertion_params;
+  insertion_params.parent = parent_web_state;
+  insertion_params.index = insertion_index;
+  insertion_params.in_background = params.in_background();
+  insertion_params.inherit_opener = params.inherit_opener;
+  insertion_params.should_skip_new_tab_animation = params.from_external;
 
-  web::WebState* web_state = insertion_agent->InsertWebState(
-      params.web_params, parent_web_state, /*opened_by_dom=*/false,
-      insertion_index, params.in_background(), params.inherit_opener,
-      /*should_show_start_surface=*/false,
-      /*should_skip_new_tab_animation=*/params.from_external);
+  web::WebState* web_state =
+      insertion_agent->InsertWebState(params.web_params, insertion_params);
   web_state->GetNavigationManager()->LoadIfNecessary();
   notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
 }

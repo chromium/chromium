@@ -23,10 +23,7 @@ void CaptivePortalTabHelper::DisplayCaptivePortalLoginPage(GURL landing_url) {
   insertionAgent_->InsertWebState(
       web_navigation_util::CreateWebLoadParams(
           landing_url, ui::PAGE_TRANSITION_TYPED, nullptr),
-      nil, false, TabInsertion::kPositionAutomatically,
-      /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*should_skip_new_tab_animation=*/false);
+      TabInsertion::Params());
 }
 
 CaptivePortalTabHelper::~CaptivePortalTabHelper() = default;

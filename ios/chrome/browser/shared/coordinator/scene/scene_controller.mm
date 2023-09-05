@@ -3654,11 +3654,11 @@ void InjectNTP(Browser* browser) {
 // it.
 - (void)addANewTabAndPresentBrowser:(Browser*)browser
                   withURLLoadParams:(const UrlLoadParams&)urlLoadParams {
+  TabInsertion::Params tabInsertionParams;
+  tabInsertionParams.should_skip_new_tab_animation =
+      urlLoadParams.from_external;
   TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
-      urlLoadParams.web_params, nil, false, browser->GetWebStateList()->count(),
-      /*in_background=*/false, /*inherit_opener=*/false,
-      /*should_show_start_surface=*/false,
-      /*should_skip_new_tab_animation=*/urlLoadParams.from_external);
+      urlLoadParams.web_params, tabInsertionParams);
   [self beginActivatingBrowser:browser focusOmnibox:NO];
 }
 

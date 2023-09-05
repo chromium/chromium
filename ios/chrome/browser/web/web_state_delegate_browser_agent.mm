@@ -230,25 +230,25 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
   load_params.is_renderer_initiated = params.is_renderer_initiated;
   load_params.virtual_url = params.virtual_url;
 
+  TabInsertion::Params insertion_params;
+  insertion_params.parent = source;
+
   switch (params.disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB: {
-      return tab_insertion_agent_->InsertWebState(
-          load_params, source, false, TabInsertion::kPositionAutomatically,
-          (params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB),
-          /*inherit_opener=*/false, /*should_show_start_surface=*/false,
-          /*should_skip_new_tab_animation=*/false);
+      insertion_params.in_background =
+          params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      return tab_insertion_agent_->InsertWebState(load_params,
+                                                  insertion_params);
     }
     case WindowOpenDisposition::CURRENT_TAB: {
       source->GetNavigationManager()->LoadURLWithParams(load_params);
       return source;
     }
     case WindowOpenDisposition::NEW_POPUP: {
-      return tab_insertion_agent_->InsertWebState(
-          load_params, source, true, TabInsertion::kPositionAutomatically,
-          /*in_background=*/false, /*inherit_opener=*/false,
-          /*should_show_start_surface=*/false,
-          /*should_skip_new_tab_animation=*/false);
+      insertion_params.opened_by_dom = true;
+      return tab_insertion_agent_->InsertWebState(load_params,
+                                                  insertion_params);
     }
     default:
       NOTIMPLEMENTED();
