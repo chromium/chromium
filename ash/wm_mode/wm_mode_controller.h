@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm_mode/pie_menu_view.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -42,8 +44,19 @@ class ASH_EXPORT WmModeController : public ShellObserver,
                                     public ui::LayerOwner,
                                     public ui::LayerDelegate,
                                     public aura::WindowObserver,
-                                    public PieMenuView::Delegate {
+                                    public PieMenuView::Delegate,
+                                    public DesksController::Observer {
  public:
+  enum PieMenuButtonIds {
+    kSnapButtonId = 0,
+    kMoveToDeskButtonId = 1,
+    kResizeButtonId = 2,
+
+    kDeskButtonIdStart = 3,
+    // Keep this range reserved for desk button IDs.
+    kDeskButtonIdEnd = kDeskButtonIdStart + desks_util::kDesksUpperLimit - 1,
+  };
+
   WmModeController();
   WmModeController(const WmModeController&) = delete;
   WmModeController& operator=(const WmModeController&) = delete;
@@ -78,10 +91,18 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // PieMenuView::Delegate:
   void OnPieMenuButtonPressed(int button_id) override;
 
-  // Returns true if the given `root` window is being dimmed.
-  bool IsRootWindowDimmedForTesting(aura::Window* root) const;
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override;
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
  private:
+  friend class WmModeTests;
+
   void UpdateDimmers();
 
   // Updates the state of all the WM Mode tray buttons on all displays.
@@ -110,6 +131,9 @@ class ASH_EXPORT WmModeController : public ShellObserver,
   // Builds the pie menu widget.
   void BuildPieMenu();
 
+  // If the pie menu is available, it rebuilds the move-to-desk sub menu items.
+  void MaybeRebuildMoveToDeskSubMenu();
+
   // Returns true if the given `event_target` is contained within the window
   // tree of the pie menu if it exists.
   bool IsTargetingPieMenu(aura::Window* event_target) const;
@@ -121,6 +145,9 @@ class ASH_EXPORT WmModeController : public ShellObserver,
 
   // Refreshes the visibility and the bounds of the pie menu (if it exists).
   void MaybeRefreshPieMenu();
+
+  // Moves the `selected_window_` to the desk at the given `index`.
+  void MoveSelectedWindowToDeskAtIndex(int index);
 
   bool is_active_ = false;
 

@@ -12,7 +12,13 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_animations.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm_mode/pie_menu_view.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
@@ -30,12 +36,6 @@
 namespace ash {
 
 namespace {
-
-enum PieMenuButtonIds {
-  kSnapButtonId = 0,
-  kMoveToDeskButtonId = 1,
-  kResizeButtonId = 2,
-};
 
 constexpr gfx::Size kPieMenuSize{300, 300};
 
@@ -65,6 +65,30 @@ gfx::Rect GetPieMenuScreenBounds(const gfx::Point& center_point_in_screen,
                  center_point_in_screen.y() - kPieMenuSize.height() / 2),
       kPieMenuSize);
   bounds.AdjustToFit(current_root->GetBoundsInScreen());
+  return bounds;
+}
+
+// Returns the bounds of the given `window` in screen coordinates, taking into
+// account the transformed bounds of it when it's shown in overview.
+gfx::Rect GetWindowTargetBoundsInScreen(aura::Window* window) {
+  DCHECK(window);
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  if (overview_controller->InOverviewSession()) {
+    auto* overview_session = overview_controller->overview_session();
+    if (auto* item = overview_session->GetOverviewItemForWindow(window)) {
+      return gfx::ToRoundedRect(item->target_bounds());
+    }
+  }
+
+  return window->GetBoundsInScreen();
+}
+
+// Returns the bounds in the root coordinates of the given `window` which should
+// be used to highlight it when it's selected by WM Mode.
+gfx::Rect GetWindowHighlightBounds(aura::Window* window) {
+  gfx::Rect bounds = GetWindowTargetBoundsInScreen(window);
+  wm::ConvertRectFromScreen(window->GetRootWindow(), &bounds);
   return bounds;
 }
 
@@ -108,7 +132,9 @@ void WmModeController::Toggle() {
     CreateLayer();
     MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow());
     BuildPieMenu();
+    DesksController::Get()->AddObserver(this);
   } else {
+    DesksController::Get()->RemoveObserver(this);
     SetSelectedWindow(nullptr);
     pie_menu_widget_.reset();
     pie_menu_view_ = nullptr;
@@ -148,8 +174,10 @@ void WmModeController::OnPaintLayer(const ui::PaintContext& context) {
   gfx::Canvas* canvas = recorder.canvas();
   canvas->DrawColor(SK_ColorTRANSPARENT);
 
-  if (selected_window_)
-    canvas->FillRect(selected_window_->bounds(), kSelectedWindowHighlightColor);
+  if (selected_window_) {
+    canvas->FillRect(GetWindowHighlightBounds(selected_window_),
+                     kSelectedWindowHighlightColor);
+  }
 }
 
 void WmModeController::OnWindowDestroying(aura::Window* window) {
@@ -157,10 +185,50 @@ void WmModeController::OnWindowDestroying(aura::Window* window) {
   SetSelectedWindow(nullptr);
 }
 
-void WmModeController::OnPieMenuButtonPressed(int button_id) {}
+void WmModeController::OnPieMenuButtonPressed(int button_id) {
+  if (button_id >= kDeskButtonIdStart && button_id <= kDeskButtonIdEnd) {
+    MoveSelectedWindowToDeskAtIndex(button_id - kDeskButtonIdStart);
+  }
+}
 
-bool WmModeController::IsRootWindowDimmedForTesting(aura::Window* root) const {
-  return dimmers_.contains(root);
+void WmModeController::OnDeskAdded(const Desk* desk, bool from_undo) {
+  MaybeRebuildMoveToDeskSubMenu();
+}
+
+void WmModeController::OnDeskRemoved(const Desk* desk) {
+  MaybeRebuildMoveToDeskSubMenu();
+
+  // Desk removal can mean two desks have been merged, which may affect the
+  // bounds of the selected window. Hence, we need to refresh the bounds of the
+  // pie menu, and repaint the highlight.
+  MaybeRefreshPieMenu();
+  ScheduleRepaint();
+}
+
+void WmModeController::OnDeskReordered(int old_index, int new_index) {
+  MaybeRebuildMoveToDeskSubMenu();
+}
+
+void WmModeController::OnDeskActivationChanged(const Desk* activated,
+                                               const Desk* deactivated) {
+  CHECK(is_active_);
+  // The below toggle will turn off WM Mode in response to a desk change.
+  Toggle();
+}
+
+void WmModeController::OnDeskNameChanged(const Desk* desk,
+                                         const std::u16string& new_name) {
+  auto* desks_controller = DesksController::Get();
+  if (!pie_menu_view_ ||
+      pie_menu_view_->GetOrAddSubMenuForButton(kMoveToDeskButtonId)
+              ->button_count() != desks_controller->desks().size()) {
+    // Sometimes we received the desk-name change notification before the desk-
+    // addition notification. This has been reported in b/298726506.
+    return;
+  }
+  const int index = desks_controller->GetDeskIndex(desk);
+  CHECK_GE(index, 0);
+  pie_menu_view_->SetButtonLabelText(kDeskButtonIdStart + index, new_name);
 }
 
 void WmModeController::UpdateDimmers() {
@@ -286,12 +354,39 @@ void WmModeController::BuildPieMenu() {
   // TODO(b/252558235): Localize once approved.
   pie_menu_view_->main_menu_container()->AddMenuButton(
       kSnapButtonId, u"Snap window", &kWmModeGestureSnapIcon);
+  // TODO(b/296643766): Don't add this option for visible-on-all-desks windows.
   pie_menu_view_->main_menu_container()->AddMenuButton(
       kMoveToDeskButtonId, u"Move to desk", &kWmModeGestureMoveToDeskIcon);
   pie_menu_view_->main_menu_container()->AddMenuButton(
       kResizeButtonId, u"Resize window", &kWmModeGestureResizeIcon);
 
-  // TODO(b/296464906): Add the sub menu buttons for the move-to-desk menu item.
+  MaybeRebuildMoveToDeskSubMenu();
+}
+
+void WmModeController::MaybeRebuildMoveToDeskSubMenu() {
+  if (!pie_menu_view_) {
+    return;
+  }
+
+  auto* move_to_desk_sub_menu =
+      pie_menu_view_->GetOrAddSubMenuForButton(kMoveToDeskButtonId);
+  move_to_desk_sub_menu->RemoveAllButtons();
+
+  const auto& desks = DesksController::Get()->desks();
+  const int desks_count = desks.size();
+  for (int i = 0; i < desks_count; ++i) {
+    const int desk_button_id = kDeskButtonIdStart + i;
+    DCHECK_LE(desk_button_id, kDeskButtonIdEnd);
+    auto* desk = desks[i].get();
+    auto* button = move_to_desk_sub_menu->AddMenuButton(
+        desk_button_id, desks[i]->name(), &kWmModeGestureMoveToDeskIcon);
+
+    // The button that corresponds to the active desk is dimmed, since windows
+    // in the current desk are already on it.
+    button->SetEnabled(!desk->is_active());
+  }
+
+  pie_menu_view_->Layout();
 }
 
 bool WmModeController::IsTargetingPieMenu(aura::Window* event_target) const {
@@ -323,15 +418,50 @@ void WmModeController::MaybeRefreshPieMenu() {
   }
 
   if (!selected_window_) {
+    // Before we hide the pie menu, we must return to the main menu, so that the
+    // next time we show it for a new selected window, it's already showing the
+    // main menu.
+    pie_menu_view_->ReturnToMainMenu();
     pie_menu_widget_->Hide();
     return;
   }
 
   pie_menu_widget_->SetBounds(GetPieMenuScreenBounds(
       last_release_event_screen_point_.value_or(
-          selected_window_->GetBoundsInScreen().CenterPoint()),
+          GetWindowTargetBoundsInScreen(selected_window_).CenterPoint()),
       current_root_));
   pie_menu_widget_->Show();
+}
+
+void WmModeController::MoveSelectedWindowToDeskAtIndex(int index) {
+  if (!selected_window_) {
+    return;
+  }
+
+  auto* desks_controller = DesksController::Get();
+
+  // The sideways move-window-to-desk animation is not allowed when overview is
+  // active.
+  auto* overview_controller = Shell::Get()->overview_controller();
+  const bool in_overview_session = overview_controller->InOverviewSession();
+  if (!in_overview_session) {
+    const int cur_index = desks_controller->GetActiveDeskIndex();
+    CHECK_NE(index, cur_index);
+    const bool going_left = (index - cur_index) < 0;
+    desks_animations::PerformWindowMoveToDeskAnimation(selected_window_,
+                                                       going_left);
+  }
+
+  desks_controller->MoveWindowFromActiveDeskTo(
+      selected_window_, desks_controller->desks()[index].get(),
+      selected_window_->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+
+  SetSelectedWindow(nullptr);
+
+  if (in_overview_session) {
+    overview_controller->overview_session()->PositionWindows(/*animate=*/true);
+  }
 }
 
 }  // namespace ash

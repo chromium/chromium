@@ -10,8 +10,13 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm_mode/pie_menu_view.h"
 #include "ash/wm_mode/wm_mode_button_tray.h"
 #include "ash/wm_mode/wm_mode_controller.h"
+#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -28,16 +33,42 @@ class WmModeTests : public AshTestBase {
   WmModeTests& operator=(const WmModeTests&) = delete;
   ~WmModeTests() override = default;
 
+  static WmModeButtonTray* GetWmModeButtonTrayForRoot(aura::Window* root) {
+    auto* root_controller = RootWindowController::ForWindow(root);
+    DCHECK(root_controller);
+    return root_controller->GetStatusAreaWidget()->wm_mode_button_tray();
+  }
+
+  static bool IsRootWindowDimmed(aura::Window* root) {
+    return WmModeController::Get()->dimmers_.contains(root);
+  }
+
+  static views::View* GetPieMenuButtonById(int button_id) {
+    auto* controller = WmModeController::Get();
+    CHECK(controller->pie_menu_view_);
+    return controller->pie_menu_view_->GetButtonByIdAsView(button_id);
+  }
+
+  static PieMenuView* GetPieMenuView() {
+    return WmModeController::Get()->pie_menu_view_;
+  }
+
+  static PieSubMenuContainerView* GetPieSubMenuContainerView(int button_id) {
+    return GetPieMenuView()->GetOrAddSubMenuForButton(button_id);
+  }
+
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kWmMode);
     AshTestBase::SetUp();
   }
 
-  WmModeButtonTray* GetWmModeButtonTrayForRoot(aura::Window* root) {
-    auto* root_controller = RootWindowController::ForWindow(root);
-    DCHECK(root_controller);
-    return root_controller->GetStatusAreaWidget()->wm_mode_button_tray();
+  void LeftClickPieMenuButton(int button_id) {
+    auto* event_generator = GetEventGenerator();
+    const auto button_center =
+        GetPieMenuView()->GetButtonContentsCenterInScreen(button_id);
+    event_generator->MoveMouseTo(button_center);
+    event_generator->ClickLeftButton();
   }
 
  private:
@@ -119,23 +150,23 @@ TEST_F(WmModeTests, ScreenDimming) {
   EXPECT_FALSE(controller->is_active());
   auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots.size(), 1u);
-  EXPECT_FALSE(controller->IsRootWindowDimmedForTesting(roots[0]));
+  EXPECT_FALSE(IsRootWindowDimmed(roots[0]));
 
   controller->Toggle();
-  EXPECT_TRUE(controller->IsRootWindowDimmedForTesting(roots[0]));
+  EXPECT_TRUE(IsRootWindowDimmed(roots[0]));
   EXPECT_TRUE(roots[0]->layer()->Contains(controller->layer()));
 
   // Add a new display while the mode is active, and expect that it gets dimmed.
   display_manager()->AddRemoveDisplay();
   roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots.size(), 2u);
-  EXPECT_TRUE(controller->IsRootWindowDimmedForTesting(roots[0]));
-  EXPECT_TRUE(controller->IsRootWindowDimmedForTesting(roots[1]));
+  EXPECT_TRUE(IsRootWindowDimmed(roots[0]));
+  EXPECT_TRUE(IsRootWindowDimmed(roots[1]));
 
   // Deactivate the mode, and all displays are back to normal.
   controller->Toggle();
-  EXPECT_FALSE(controller->IsRootWindowDimmedForTesting(roots[0]));
-  EXPECT_FALSE(controller->IsRootWindowDimmedForTesting(roots[1]));
+  EXPECT_FALSE(IsRootWindowDimmed(roots[0]));
+  EXPECT_FALSE(IsRootWindowDimmed(roots[1]));
 }
 
 TEST_F(WmModeTests, WindowSelection) {
@@ -143,8 +174,8 @@ TEST_F(WmModeTests, WindowSelection) {
   UpdateDisplay("800x700,801+0-800x700");
   auto roots = Shell::GetAllRootWindows();
   EXPECT_EQ(roots.size(), 2u);
-  auto win1 = CreateTestWindow(gfx::Rect(50, 60, 400, 400));
-  auto win2 = CreateTestWindow(gfx::Rect(1000, 200, 400, 400));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 60, 400, 400));
+  auto win2 = CreateAppWindow(gfx::Rect(1000, 200, 400, 400));
 
   auto* controller = WmModeController::Get();
   controller->Toggle();
@@ -203,8 +234,8 @@ TEST_F(WmModeTests, RemovingSelectedRoot) {
 TEST_F(WmModeTests, PieMenuVisibility) {
   UpdateDisplay("800x700");
   auto roots = Shell::GetAllRootWindows();
-  auto win1 = CreateTestWindow(gfx::Rect(400, 400));
-  auto win2 = CreateTestWindow(gfx::Rect(400, 300, 400, 400));
+  auto win1 = CreateAppWindow(gfx::Rect(400, 400));
+  auto win2 = CreateAppWindow(gfx::Rect(400, 300, 400, 400));
 
   auto* controller = WmModeController::Get();
   controller->Toggle();
@@ -230,6 +261,98 @@ TEST_F(WmModeTests, PieMenuVisibility) {
   event_generator->MoveMouseTo(win1->GetBoundsInScreen().bottom_center() +
                                gfx::Vector2d(20, 20));
   event_generator->ClickLeftButton();
+  EXPECT_FALSE(controller->selected_window());
+  EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
+}
+
+TEST_F(WmModeTests, MoveToDeskSubMenu) {
+  // Start with 2 desks.
+  UpdateDisplay("800x700");
+  NewDesk();
+  auto* controller = WmModeController::Get();
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+  // The pie menu should be created but not visible.
+  ASSERT_TRUE(controller->pie_menu_widget());
+  EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
+
+  // There should be 2 buttons on the move-to-desk sub menu, one for each
+  // available desk.
+  EXPECT_EQ(GetPieSubMenuContainerView(WmModeController::kMoveToDeskButtonId)
+                ->button_count(),
+            2u);
+
+  // Add 2 new desks, the menu should be updated.
+  NewDesk();
+  NewDesk();
+  EXPECT_EQ(GetPieSubMenuContainerView(WmModeController::kMoveToDeskButtonId)
+                ->button_count(),
+            4u);
+
+  // Removing a desk will also be observed.
+  auto* desks_controller = DesksController::Get();
+  RemoveDesk(desks_controller->desks().back().get());
+  EXPECT_EQ(GetPieSubMenuContainerView(WmModeController::kMoveToDeskButtonId)
+                ->button_count(),
+            3u);
+
+  // Only the active desk button is disabled, since you can't move the window to
+  // it.
+  EXPECT_FALSE(
+      GetPieMenuButtonById(WmModeController::kDeskButtonIdStart)->GetEnabled());
+  EXPECT_TRUE(GetPieMenuButtonById(WmModeController::kDeskButtonIdStart + 1)
+                  ->GetEnabled());
+  EXPECT_TRUE(GetPieMenuButtonById(WmModeController::kDeskButtonIdStart + 2)
+                  ->GetEnabled());
+
+  // Switching desks will turn off WM Mode.
+  ActivateDesk(desks_controller->desks().back().get());
+  EXPECT_FALSE(controller->is_active());
+
+  // Activate WM Mode again, and expect that the pie menu's active desk button
+  // is disabled.
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+
+  EXPECT_TRUE(
+      GetPieMenuButtonById(WmModeController::kDeskButtonIdStart)->GetEnabled());
+  EXPECT_TRUE(GetPieMenuButtonById(WmModeController::kDeskButtonIdStart + 1)
+                  ->GetEnabled());
+  EXPECT_FALSE(GetPieMenuButtonById(WmModeController::kDeskButtonIdStart + 2)
+                   ->GetEnabled());
+}
+
+TEST_F(WmModeTests, MoveWindowToDeskFromPieMenu) {
+  // Start with 2 desks.
+  UpdateDisplay("800x700");
+  NewDesk();
+  auto window = CreateAppWindow(gfx::Rect(400, 400));
+  auto* controller = WmModeController::Get();
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window.get());
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(controller->selected_window(), window.get());
+  EXPECT_TRUE(controller->pie_menu_widget()->IsVisible());
+
+  // The move-to-desk sub menu is initially hidden.
+  auto* move_to_desk_sub_menu =
+      GetPieSubMenuContainerView(WmModeController::kMoveToDeskButtonId);
+  EXPECT_FALSE(move_to_desk_sub_menu->GetVisible());
+  // Once the associated menu button is pressed, the sub menu is shown.
+  LeftClickPieMenuButton(WmModeController::kMoveToDeskButtonId);
+  EXPECT_TRUE(move_to_desk_sub_menu->GetVisible());
+
+  // Clicking on the button for the second desk will move the window to that
+  // desk.
+  LeftClickPieMenuButton(WmModeController::kDeskButtonIdStart + 1);
+  EXPECT_TRUE(base::Contains(DesksController::Get()->desks().back()->windows(),
+                             window.get()));
+
+  // The pie menu should have been hidden, and the selected window is now
+  // cleared.
+  EXPECT_TRUE(controller->is_active());
   EXPECT_FALSE(controller->selected_window());
   EXPECT_FALSE(controller->pie_menu_widget()->IsVisible());
 }
