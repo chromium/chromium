@@ -3459,8 +3459,15 @@ class PageLoadMetricsBrowserTestCrashedPage
     : public PageLoadMetricsBrowserTestTerminatedPage,
       public ::testing::WithParamInterface<const char*> {};
 
+// TODO(crbug.com/1479116): Very flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_UkmIsRecordedForCrashedTabPage \
+  DISABLED_UkmIsRecordedForCrashedTabPage
+#else
+#define MAYBE_UkmIsRecordedForCrashedTabPage UkmIsRecordedForCrashedTabPage
+#endif
 IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestCrashedPage,
-                       UkmIsRecordedForCrashedTabPage) {
+                       MAYBE_UkmIsRecordedForCrashedTabPage) {
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
