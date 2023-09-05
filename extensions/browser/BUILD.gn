@@ -538,6 +538,8 @@ source_set("browser_sources") {
     "service_worker_task_queue_factory.h",
     "state_store.cc",
     "state_store.h",
+    "state_store_test_observer.cc",
+    "state_store_test_observer.h",
     "suggest_permission_util.cc",
     "suggest_permission_util.h",
     "supervised_user_extensions_delegate.h",

@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/state_store.h"
+#include "extensions/browser/state_store_test_observer.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_channel.h"
@@ -53,50 +54,6 @@ using extensions::ResultCatcher;
 using ui::MenuModel;
 
 namespace {
-
-using extensions::MenuManager;
-using extensions::StateStore;
-
-// Observe when an extension's context menu data is written to the state store.
-class StateStoreObserver final : public StateStore::TestObserver {
- public:
-  explicit StateStoreObserver(content::BrowserContext* context)
-      : state_store_(extensions::ExtensionSystem::Get(context)->state_store()) {
-    observed_.Observe(state_store_.get());
-  }
-
-  ~StateStoreObserver() override = default;
-
-  void WaitForExtension(const std::string& extension_id) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (ids_with_writes_.count(extension_id) == 0) {
-      waiting_for_id_ = extension_id;
-    } else {
-      state_store_->FlushForTesting(run_loop_.QuitWhenIdleClosure());
-    }
-    run_loop_.Run();
-  }
-
-  void WillSetExtensionValue(const std::string& extension_id,
-                             const std::string& key) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (key != "context_menus")
-      return;
-
-    if (extension_id == waiting_for_id_) {
-      state_store_->FlushForTesting(run_loop_.QuitWhenIdleClosure());
-    } else {
-      ids_with_writes_.insert(extension_id);
-    }
-  }
-
- private:
-  const raw_ptr<StateStore> state_store_;
-  std::set<std::string> ids_with_writes_;
-  std::string waiting_for_id_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<StateStore, StateStore::TestObserver> observed_{this};
-};
 
 constexpr char kPersistentExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
@@ -381,7 +338,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Simple) {
 // Tests that context menus for event page and Service Worker-based
 // extensions are stored properly.
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
-  StateStoreObserver observer(profile());
+  extensions::StateStoreTestObserver observer(profile());
   ResultCatcher catcher;
   const extensions::Extension* extension =
       LoadContextMenuExtension("persistent");
@@ -392,7 +349,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Wait for the context menu to be stored.
-  observer.WaitForExtension(extension->id());
+  observer.WaitForExtensionAndKey(extension->id(), "context_menus");
 }
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Persistent) {
