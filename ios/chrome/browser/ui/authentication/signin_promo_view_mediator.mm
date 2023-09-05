@@ -55,14 +55,16 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
     case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      return true;
+    // TODO(crbug.com/1478824): Pass ACCESS_POINT_TAB_SWITCHER and not recent
+    // tabs in the tab switcher promo.
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
-    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
-      return true;
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
     case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
