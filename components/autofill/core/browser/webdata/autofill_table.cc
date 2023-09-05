@@ -1704,13 +1704,17 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
-    int type_id = s.ColumnInt(0);
-    // TODO(crbug.com/1478823): Remove these special cases.
-    if (type_id == 111 || type_id == 112) {
+    ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
+    if (type == UNKNOWN_TYPE) {
+      // This is possible in two cases:
+      // - The database was tampered with by external means.
+      // - The type corresponding to `s.ColumnInt(0)` was deprecated. In this
+      //   case, due to the structure of
+      //   `GetProfileTypeTokensTable(profile_source)`, it is not necessary to
+      //   add database migration logic or drop a column. Instead, during the
+      //   next update, the data will be dropped.
       continue;
     }
-    ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
-    DCHECK(type != UNKNOWN_TYPE);
     profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
                                                  s.ColumnInt(2));
     profile->token_quality().LoadSerializedObservationsForStoredType(
