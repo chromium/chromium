@@ -2871,6 +2871,33 @@ IN_PROC_BROWSER_TEST_P(
       PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameNavigation_NonHttpUrl) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  // Note that local schemes (e.g., data URL) don't work for this test as
+  // renderer-initiated navigation to those schemes are blocked by unrelated
+  // navigation throttles like BlockedSchemeNavigationThrottle.
+  const GURL non_http_url("ftp://example.com/");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), initial_url);
+
+  // Start prerendering.
+  int host_id = AddPrerender(prerendering_url);
+  WaitForPrerenderLoadCompletion(prerendering_url);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
+  // Navigation to a non-http(s) URL on a prerendered page should cancel
+  // prerendering.
+  TestNavigationManager navigation_observer(web_contents(), non_http_url);
+  NavigatePrerenderedPage(host_id, non_http_url);
+  ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
+  EXPECT_FALSE(navigation_observer.was_successful());
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kInvalidSchemeNavigation);
+}
+
 // Regression test for https://crbug.com/1198051
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
   const GURL kInitialUrl = GetUrl("/empty.html");
