@@ -144,8 +144,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
  protected:
   PendingScript(ScriptElementBase*,
                 const TextPosition& starting_position,
-                absl::optional<scheduler::TaskAttributionId> parent_task_id =
-                    absl::nullopt);
+                absl::optional<scheduler::TaskAttributionId> parent_task_id);
 
   virtual void DisposeInternal() = 0;
 
@@ -194,7 +193,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   const bool created_during_document_write_;
 
   // The ID of the parent task that loaded the script.
-  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
+  const absl::optional<scheduler::TaskAttributionId> parent_task_id_;
 };
 
 }  // namespace blink

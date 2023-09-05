@@ -43,7 +43,9 @@ class MockPendingScript : public PendingScript {
 
   MockPendingScript(ScriptElementBase* element,
                     ScriptSchedulingType scheduling_type)
-      : PendingScript(element, TextPosition::MinimumPosition()) {
+      : PendingScript(element,
+                      TextPosition::MinimumPosition(),
+                      /*parent_task_id=*/absl::nullopt) {
     SetSchedulingType(scheduling_type);
   }
   ~MockPendingScript() override {}
