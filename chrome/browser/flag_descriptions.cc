@@ -256,6 +256,11 @@ const char kEnableBenchmarkingDescription[] =
     "after 3 restarts. On the third restart, the flag will appear to be off "
     "but the effect is still active.";
 
+const char kPreloadingOnPerformancePageName[] =
+    "Preloading Settings on Performance Page";
+const char kPreloadingOnPerformancePageDescription[] =
+    "Moves preloading settings to the performance page.";
+
 const char kPrivacyIndicatorsName[] = "Enable Privacy Indicators";
 const char kPrivacyIndicatorsDescription[] =
     "While screen sharing or camera/microphone is being accessed, show a green "

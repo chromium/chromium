@@ -6716,6 +6716,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "preloading-on-performance-page",
+    "owners": [ "fmacintosh@google.com", "koilos@google.com" ],
+    "expiry_milestone": 121
+  },
+  {
     "name": "price-insights",
     "owners": [ "zhiyuancai", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 120

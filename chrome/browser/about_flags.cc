@@ -52,6 +52,7 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing/features.h"
@@ -8210,6 +8211,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"user-bypass-ui", flag_descriptions::kUserBypassUIName,
      flag_descriptions::kUserBypassUIDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(content_settings::features::kUserBypassUI)},
+
+    {"preloading-on-performance-page",
+     flag_descriptions::kPreloadingOnPerformancePageName,
+     flag_descriptions::kPreloadingOnPerformancePageDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kPerformanceSettingsPreloadingSubpage)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryLongpressInternalName,
