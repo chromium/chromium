@@ -22,6 +22,8 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -434,19 +436,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 }
 
 - (void)updateFormManagers {
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!activeWebState) {
-    // PasswordDetailsCoordinator and other settings coordinators always receive
-    // a normal Browser, even if they are started from incognito. So if only
-    // incognito tabs are open, `activeWebState` is null, causing a crash
-    // (crbug.com/1468506).
-    return;
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(browserState);
+
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    [self updateFormManagersForBrowser:browser];
   }
-  password_manager::PasswordManagerClient* passwordManagerClient =
-      PasswordTabHelper::FromWebState(activeWebState)
-          ->GetPasswordManagerClient();
-  passwordManagerClient->UpdateFormManagers();
+
+  for (Browser* browser : browserList->AllIncognitoBrowsers()) {
+    [self updateFormManagersForBrowser:browser];
+  }
 }
 
 #pragma mark - ReauthenticationCoordinatorDelegate
@@ -526,6 +526,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     case DetailsContext::kOutsideSettings:
       return YES;
   }
+}
+
+// Refreshes the password suggestions list for a specific `browser`.
+- (void)updateFormManagersForBrowser:(Browser*)browser {
+  web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+  password_manager::PasswordManagerClient* passwordManagerClient =
+      PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
+  passwordManagerClient->UpdateFormManagers();
 }
 
 @end
