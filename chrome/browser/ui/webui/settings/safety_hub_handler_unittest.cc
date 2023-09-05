@@ -9,6 +9,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -31,6 +33,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 enum SettingManager { USER, ADMIN, EXTENSION };
@@ -186,6 +189,18 @@ class SafetyHubHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
+};
+
+class SafetyHubHandlerParameterizedTest
+    : public SafetyHubHandlerTest,
+      public testing::WithParamInterface<
+          testing::tuple</*compromised_issues*/ int,
+                         /*weak_issues*/ int,
+                         /*reused_issues*/ int>> {
+ public:
+  int compromised_issues() const { return std::get<0>(GetParam()); }
+  int weak_issues() const { return std::get<1>(GetParam()); }
+  int reused_issues() const { return std::get<2>(GetParam()); }
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
@@ -480,3 +495,102 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
     }
   }
 }
+
+TEST_P(SafetyHubHandlerParameterizedTest, PasswordCardState) {
+  base::Value::Dict card = handler()->GetPasswordCardData(
+      /*compromised_count=*/compromised_issues(),
+      /*weak_count=*/weak_issues(),
+      /*reused_count=*/reused_issues(), base::Time::Now());
+
+  std::u16string header = base::UTF8ToUTF16(*card.FindString("header"));
+  std::u16string subheader = base::UTF8ToUTF16(*card.FindString("subheader"));
+  int state = card.FindInt("state").value();
+
+  if (compromised_issues() > 0) {
+    EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
+                          IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT,
+                          compromised_issues()));
+    EXPECT_EQ(subheader,
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_UI_HAS_COMPROMISED_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWarning));
+    return;
+  }
+
+  if (reused_issues() > 0) {
+    EXPECT_EQ(header, l10n_util::GetPluralStringFUTF16(
+                          IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT,
+                          reused_issues()));
+    EXPECT_EQ(subheader, l10n_util::GetStringUTF16(
+                             IDS_PASSWORD_MANAGER_UI_HAS_REUSED_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  if (weak_issues() > 0) {
+    EXPECT_EQ(header,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT, weak_issues()));
+    EXPECT_EQ(subheader, l10n_util::GetStringUTF16(
+                             IDS_PASSWORD_MANAGER_UI_HAS_WEAK_PASSWORDS));
+    EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kWeak));
+    return;
+  }
+
+  // When there are no issues, state is safe.
+  EXPECT_EQ(compromised_issues(), 0);
+  EXPECT_EQ(weak_issues(), 0);
+  EXPECT_EQ(reused_issues(), 0);
+  EXPECT_EQ(header,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PASSWORD_MANAGER_UI_COMPROMISED_PASSWORDS_COUNT, 0));
+  EXPECT_EQ(subheader,
+            l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_RECENTLY));
+  EXPECT_EQ(state, static_cast<int>(SafetyHubCardState::kSafe));
+}
+
+TEST_F(SafetyHubHandlerTest, PasswordCardCheckTime) {
+  const std::string kSubheader = "subheader";
+  const base::Value::Dict password_card_now =
+      handler()->GetPasswordCardData(0, 0, 0, base::Time::Now());
+  EXPECT_EQ(*password_card_now.FindString(kSubheader),
+            std::string("Checked just now"));
+
+  const base::Value::Dict password_card_3_sec_ago =
+      handler()->GetPasswordCardData(
+          0, 0, 0, base::Time::Now() - base::TimeDelta(base::Seconds(3)));
+  EXPECT_EQ(*password_card_3_sec_ago.FindString(kSubheader),
+            std::string("Checked just now"));
+
+  const base::Value::Dict password_card_3_min_ago =
+      handler()->GetPasswordCardData(
+          0, 0, 0, base::Time::Now() - base::TimeDelta(base::Minutes(3)));
+  EXPECT_EQ(*password_card_3_min_ago.FindString(kSubheader),
+            std::string("Checked 3 minutes ago"));
+
+  const base::Value::Dict password_card_3_hours_ago =
+      handler()->GetPasswordCardData(
+          0, 0, 0, base::Time::Now() - base::TimeDelta(base::Hours(3)));
+  EXPECT_EQ(*password_card_3_hours_ago.FindString(kSubheader),
+            std::string("Checked 3 hours ago"));
+
+  const base::Value::Dict password_card_3_days_ago =
+      handler()->GetPasswordCardData(
+          0, 0, 0, base::Time::Now() - base::TimeDelta(base::Days(3)));
+  EXPECT_EQ(*password_card_3_days_ago.FindString(kSubheader),
+            std::string("Checked 3 days ago"));
+
+  const base::Value::Dict password_card_300_days_ago =
+      handler()->GetPasswordCardData(
+          0, 0, 0, base::Time::Now() - base::TimeDelta(base::Days(300)));
+  EXPECT_EQ(*password_card_300_days_ago.FindString(kSubheader),
+            std::string("Checked 300 days ago"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SafetyHubHandlerParameterizedTest,
+    ::testing::Combine(/*compromised_issues*/ ::testing::Values(0, 1, 2),
+                       /*weak_issues*/ ::testing::Values(0, 1, 2),
+                       /*reused_issues*/ ::testing::Values(0, 1, 2)));
