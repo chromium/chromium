@@ -264,7 +264,8 @@ NGInlineBoxFragmentPainterBase::GetBorderPaintType(
   // The simple case is where we either have no border image or we are the
   // only box for this object.  In those cases only a single call to draw is
   // required.
-  if (!has_border_image || !object_has_multiple_boxes) {
+  if (!has_border_image || !object_has_multiple_boxes ||
+      style.BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
     adjusted_clip_rect = ToPixelSnappedRect(adjusted_frame_rect);
     return kPaintBordersWithoutClip;
   }
