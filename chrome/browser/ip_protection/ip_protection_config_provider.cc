@@ -7,6 +7,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,8 +47,19 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
 }
 
 void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
-  // TODO(crbug.com/1475977): Temporary until we can fetch this from Phosphor.
-  std::move(callback).Run({net::features::kIpPrivacyProxyServer.Get()});
+  ip_protection_config_http_->GetProxyConfig(base::BindOnce(
+      [](GetProxyListCallback callback,
+         absl::StatusOr<ip_protection::GetProxyConfigResponse> response) {
+        if (!response.ok()) {
+          std::move(callback).Run(absl::nullopt);
+          return;
+        }
+        std::vector<std::string> proxy_list(
+            response->first_hop_hostnames().begin(),
+            response->first_hop_hostnames().end());
+        std::move(callback).Run(std::move(proxy_list));
+      },
+      std::move(callback)));
 }
 
 void IpProtectionConfigProvider::RequestOAuthToken(
@@ -301,4 +313,16 @@ void IpProtectionConfigProvider::AddReceiver(
   // (if an incognito window is open). However, if the network service crashes
   // and is restarted, there might be lingering receivers that are bound until
   // they are eventually cleaned up.
+}
+
+void IpProtectionConfigProvider::SetIpProtectionConfigHttpForTesting(
+    std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http) {
+  // `blind_sign_auth_` carries a raw pointer to `ip_protection_config_http_`,
+  // and `bsa_` is a raw pointer to `blind_sign_auth_`, so carefully update
+  // those without leaving dangling pointers.
+  bsa_ = nullptr;
+  blind_sign_auth_ =
+      std::make_unique<quiche::BlindSignAuth>(ip_protection_config_http.get());
+  bsa_ = blind_sign_auth_.get();
+  ip_protection_config_http_ = std::move(ip_protection_config_http);
 }

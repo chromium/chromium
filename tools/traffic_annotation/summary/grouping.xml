@@ -295,6 +295,7 @@ after discussions on the right group.
       <annotation id="iwa_update_discovery_update_manifest"/>
       <annotation id="iwa_update_discovery_web_bundle"/>
       <annotation id="almanac_launcher_app"/>
+      <annotation id="ip_protection_service_get_proxy_config"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

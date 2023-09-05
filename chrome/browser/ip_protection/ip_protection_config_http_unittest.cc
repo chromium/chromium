@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -33,6 +34,10 @@ class IpProtectionConfigHttpTest : public testing::Test {
         {net::features::kIpPrivacyTokenServer.Get(),
          net::features::kIpPrivacyTokenServerGetTokensPath.Get()}));
     ASSERT_TRUE(token_server_get_tokens_url_.is_valid());
+    token_server_get_proxy_config_url_ = GURL(base::StrCat(
+        {net::features::kIpPrivacyTokenServer.Get(),
+         net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
+    ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -42,6 +47,7 @@ class IpProtectionConfigHttpTest : public testing::Test {
       identity_test_env_adaptor_;
   GURL token_server_get_initial_data_url_;
   GURL token_server_get_tokens_url_;
+  GURL token_server_get_proxy_config_url_;
 };
 
 TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
@@ -167,4 +173,65 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestHttpFailureStatus) {
 
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(net::HTTP_BAD_REQUEST, result.value().status_code());
+}
+
+TEST_F(IpProtectionConfigHttpTest, GetProxyConfigSuccess) {
+  ip_protection::GetProxyConfigResponse response_proto;
+  response_proto.add_first_hop_hostnames("host1");
+  response_proto.add_first_hop_hostnames("host2");
+  std::string response_str = response_proto.SerializeAsString();
+
+  auto head = network::mojom::URLResponseHead::New();
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_, std::move(head), response_str,
+      network::URLLoaderCompletionStatus(net::OK));
+
+  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+      result_future;
+  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+
+  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+      result_future.Get();
+
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(2, result->first_hop_hostnames_size());
+  EXPECT_EQ("host1", result->first_hop_hostnames(0));
+  EXPECT_EQ("host2", result->first_hop_hostnames(1));
+}
+
+TEST_F(IpProtectionConfigHttpTest, GetProxyConfigEmpty) {
+  ip_protection::GetProxyConfigResponse response_proto;
+  std::string response_str = response_proto.SerializeAsString();
+
+  auto head = network::mojom::URLResponseHead::New();
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_, std::move(head), response_str,
+      network::URLLoaderCompletionStatus(net::OK));
+
+  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+      result_future;
+  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+
+  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+      result_future.Get();
+
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(0, result->first_hop_hostnames_size());
+}
+
+TEST_F(IpProtectionConfigHttpTest, GetProxyConfigFails) {
+  auto head = network::mojom::URLResponseHead::New();
+  test_url_loader_factory_.AddResponse(
+      token_server_get_proxy_config_url_, std::move(head), "uhoh",
+      network::URLLoaderCompletionStatus(net::HTTP_BAD_REQUEST));
+
+  base::test::TestFuture<absl::StatusOr<ip_protection::GetProxyConfigResponse>>
+      result_future;
+  http_fetcher_->GetProxyConfig(result_future.GetCallback());
+
+  absl::StatusOr<ip_protection::GetProxyConfigResponse> result =
+      result_future.Get();
+
+  ASSERT_FALSE(result.ok());
+  ASSERT_TRUE(absl::IsInternal(result.status()));
 }

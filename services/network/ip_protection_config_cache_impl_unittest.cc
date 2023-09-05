@@ -68,6 +68,11 @@ class MockIpProtectionConfigGetter
     expected_get_proxy_list_calls_.push_back(std::move(proxy_list));
   }
 
+  // Register an expectation of a call to `GetProxyList()`, returning nullopt.
+  void ExpectGetProxyListCallFailure() {
+    expected_get_proxy_list_calls_.push_back(absl::nullopt);
+  }
+
   // True if all expected `TryGetAuthTokens` calls have occurred.
   bool GotAllExpectedMockCalls() {
     return num_try_get_auth_token_calls_ ==
@@ -106,7 +111,8 @@ class MockIpProtectionConfigGetter
  protected:
   std::vector<ExpectedTryGetAuthTokensCall> expected_try_get_auth_token_calls_;
   size_t num_try_get_auth_token_calls_ = 0;
-  std::vector<std::vector<std::string>> expected_get_proxy_list_calls_;
+  std::vector<absl::optional<std::vector<std::string>>>
+      expected_get_proxy_list_calls_;
   size_t num_get_proxy_list_calls_ = 0;
 };
 
@@ -505,6 +511,28 @@ TEST_F(IpProtectionConfigCacheImplTest, IsProxyListAvailableEvenIfEmpty) {
   WaitForProxyListRefresh();
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+}
+
+// The cache keeps its existing proxy list if it fails to fetch a new one.
+TEST_F(IpProtectionConfigCacheImplTest, ProxyListKeptAfterFailure) {
+  std::vector<std::string> exp_proxy_list = {"a-proxy"};
+  mock_.ExpectGetProxyListCall(exp_proxy_list);
+  ipp_config_cache_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
+
+  // Fast-forward long enough that we can fetch again
+  task_environment_.FastForwardBy(
+      net::features::kIpPrivacyProxyListMinFetchInterval.Get());
+
+  mock_.ExpectGetProxyListCallFailure();
+  ipp_config_cache_->RequestRefreshProxyList();
+  WaitForProxyListRefresh();
+  ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
+  EXPECT_TRUE(ipp_config_cache_->IsProxyListAvailable());
+  EXPECT_EQ(ipp_config_cache_->ProxyList(), exp_proxy_list);
 }
 
 }  // namespace network

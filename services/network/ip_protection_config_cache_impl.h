@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   void ScheduleMaybeRefillCache();
 
   void RefreshProxyList();
-  void OnGotProxyList(const std::vector<std::string>&);
+  void OnGotProxyList(const absl::optional<std::vector<std::string>>&);
 
   // Batch size and cache low-water mark as determined from feature params at
   // construction time.

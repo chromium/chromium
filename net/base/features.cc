@@ -378,6 +378,11 @@ const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
     /*default_value=*/"/v1/authWithHeaderCreds"};
 
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetProxyConfigPath{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyTokenServerGetProxyConfigPath",
+    /*default_value=*/"/v1/ipblinding/getProxyConfig"};
+
 const base::FeatureParam<int> kIpPrivacyAuthTokenCacheBatchSize{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheBatchSize",
     /*default_value=*/64};
