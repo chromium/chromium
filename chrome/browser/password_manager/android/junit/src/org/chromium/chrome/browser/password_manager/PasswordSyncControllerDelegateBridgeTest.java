@@ -27,9 +27,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  * Tests that bridge calls as invoked by the password sync controller delegate reach the delegate
@@ -38,7 +36,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 public class PasswordSyncControllerDelegateBridgeTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
