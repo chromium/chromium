@@ -37,10 +37,14 @@ void FrameTimingHistory::FrameSubmitted(uint32_t frame_token,
 
   RecordFrameResponseToRemote(/*did_not_produce=*/false);
   RecordFrameHandled(/*discarded=*/false);
+
+  consecutive_did_not_produce_count_ = 0;
 }
 
 void FrameTimingHistory::FrameDidNotProduce() {
   RecordFrameResponseToRemote(/*did_not_produce=*/true);
+
+  consecutive_did_not_produce_count_++;
 }
 
 void FrameTimingHistory::FrameReceivedAtRemoteSide(

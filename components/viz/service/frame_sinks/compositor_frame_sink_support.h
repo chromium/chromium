@@ -399,6 +399,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Whether a request for begin frames has been issued.
   bool client_needs_begin_frame_ = false;
 
+  bool handling_auto_needs_begin_frame_ = false;
+
   // Whether the sink currently needs begin frames for any reason.
   bool needs_begin_frame_ = false;
 

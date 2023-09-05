@@ -598,6 +598,12 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
+  if (!client_needs_begin_frame_ && features::IsAutoNeedsBeginFrameEnabled()) {
+    handling_auto_needs_begin_frame_ = true;
+    SetNeedsBeginFrame(true);
+    handling_auto_needs_begin_frame_ = false;
+  }
+
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global((frame.metadata.begin_frame_ack.trace_id)),
@@ -989,24 +995,40 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     frames_throttled_since_last_ = 0;
 
     last_frame_time_ = adjusted_args.frame_time;
+
     if (ShouldMergeBeginFrameWithAcks()) {
       bool frame_ack = ack_queued_for_client_count_ > 0;
       ack_pending_during_on_begin_frame_ =
           !frame_ack && !pending_frames_.empty();
-      client_->OnBeginFrame(adjusted_args, frame_timing_details_, frame_ack,
-                            std::move(surface_returned_resources_));
+
+      // No need to send a BeginFrame request immediately to the client if this
+      // OnBeginFrame() call is triggered by an unsolicited frame in the
+      // AutoNeedsBeginFrame mode.
+      if (!handling_auto_needs_begin_frame_) {
+        client_->OnBeginFrame(adjusted_args, frame_timing_details_, frame_ack,
+                              std::move(surface_returned_resources_));
+        frame_timing_details_.clear();
+      } else {
+        if (frame_ack) {
+          client_->DidReceiveCompositorFrameAck(
+              std::move(surface_returned_resources_));
+        } else if (!surface_returned_resources_.empty()) {
+          client_->ReclaimResources(std::move(surface_returned_resources_));
+        }
+      }
+
       if (frame_ack) {
         ack_queued_for_client_count_--;
       }
       surface_returned_resources_.clear();
-    } else {
+    } else if (!handling_auto_needs_begin_frame_) {
       client_->OnBeginFrame(adjusted_args, frame_timing_details_,
                             /*frame_ack=*/false,
                             std::vector<ReturnedResource>());
+      frame_timing_details_.clear();
     }
     begin_frame_tracker_.SentBeginFrame(adjusted_args);
     frame_sink_manager_->DidBeginFrame(frame_sink_id_, adjusted_args);
-    frame_timing_details_.clear();
     UpdateNeedsBeginFramesInternal();
   } else if (begin_frame_source_) {
     begin_frame_source_->DidFinishFrame(this);

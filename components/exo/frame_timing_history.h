@@ -49,6 +49,12 @@ class FrameTimingHistory {
   //     next frame arrival.
   void MayRecordDidNotProduceToFrameArrvial(bool valid);
 
+  // The number of DidNotProduceFrame responses since the last time when a frame
+  // is submitted.
+  int32_t consecutive_did_not_produce_count() const {
+    return consecutive_did_not_produce_count_;
+  }
+
  private:
   void RecordFrameResponseToRemote(bool did_not_produce);
   void RecordFrameHandled(bool discarded);
@@ -60,6 +66,8 @@ class FrameTimingHistory {
   // Records the time of sending the last DidNotProduceFrame response. It is
   // used to report DidNotProduceToFrameArrival metric and then reset.
   base::TimeTicks last_did_not_produce_time_;
+
+  int32_t consecutive_did_not_produce_count_ = 0;
 
   // Counters used to report metrics.
   int32_t frame_response_count_ = 0;

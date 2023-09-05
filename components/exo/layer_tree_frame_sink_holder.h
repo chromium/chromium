@@ -133,6 +133,13 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   bool ShouldSubmitFrameNow() const;
 
+  void ObserveBeginFrameSource(bool start);
+
+  // Returns true if the feature AutoNeedsBeginFrame is enabled, and currently
+  // we are not receiving BeginFrame requests. In this case, it is allowed to
+  // submit an unsolicited frame.
+  bool UnsolicitedFrameAllowed() const;
+
   raw_ptr<SurfaceTreeHost, ExperimentalAsh> surface_tree_host_;
   std::unique_ptr<cc::mojo_embedder::AsyncLayerTreeFrameSink> frame_sink_;
 
@@ -152,6 +159,7 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
       nullptr;
 
   raw_ptr<viz::BeginFrameSource, ExperimentalAsh> begin_frame_source_ = nullptr;
+  bool observing_begin_frame_source_ = false;
 
   base::queue<PendingBeginFrame> pending_begin_frames_;
 

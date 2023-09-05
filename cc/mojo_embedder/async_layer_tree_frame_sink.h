@@ -86,6 +86,14 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // If |true|, presentation feedback will be used on every begin frame to
     // update the vsync parameters of the |synthetic_begin_frame_source|.
     bool use_begin_frame_presentation_feedback = false;
+
+    // If `true`, SetNeedsBeginFrame(true) IPCs are omitted. Instead, the client
+    // relies on unsolicited compositor frame submission to notify the server
+    // side to start sending BeginFrame requests.
+    //
+    // Note: SetNeedsBeginFrame(false) IPCs are sent regardless what value
+    // `auto_needs_begin_frame` is.
+    bool auto_needs_begin_frame = false;
   };
 
   AsyncLayerTreeFrameSink(
@@ -108,6 +116,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   const gfx::Size& last_submitted_size_in_pixels() const {
     return last_submitted_size_in_pixels_;
   }
+
+  bool auto_needs_begin_frame() const { return auto_needs_begin_frame_; }
 
   // LayerTreeFrameSink implementation.
   bool BindToClient(LayerTreeFrameSinkClient* client) override;
@@ -144,6 +154,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   void OnMojoConnectionError(uint32_t custom_reason,
                              const std::string& description);
 
+  void UpdateNeedsBeginFramesInternal(bool needs_begin_frames);
+
   const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
@@ -175,6 +187,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   THREAD_CHECKER(thread_checker_);
   const bool wants_animate_only_begin_frames_;
+
+  // Please see comment of `InitParams::auto_needs_begin_frame`.
+  const bool auto_needs_begin_frame_;
 
   viz::HitTestRegionList last_hit_test_data_;
 
