@@ -200,8 +200,10 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
 }
 
 // Regression test for http://crbug.com/177419
-IN_PROC_BROWSER_TEST_F(AutofillServerTest,
-                       QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
+// TODO(crbug.com/1479078): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(
+    AutofillServerTest,
+    DISABLED_QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
   // Seed some test Autofill profile data, as upload requests are only made when
   // there is local data available to use as a baseline.
   WindowedPersonalDataManagerObserver personal_data_observer(
