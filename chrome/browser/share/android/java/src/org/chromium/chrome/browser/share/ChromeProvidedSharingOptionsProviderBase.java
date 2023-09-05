@@ -253,7 +253,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected void initializeFirstPartyOptionsInOrder() {
         // Only show a limited first party share selection for automotive
         if (BuildInfo.getInstance().isAutomotive) {
-            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
+            maybeAddCopyFirstPartyOption();
             maybeAddSendTabToSelfFirstPartyOption();
             maybeAddQrCodeFirstPartyOption();
             return;
