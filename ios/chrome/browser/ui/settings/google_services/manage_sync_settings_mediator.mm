@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
 #import "base/check_op.h"
+#import "base/containers/contains.h"
+#import "base/containers/enum_set.h"
 #import "base/containers/fixed_flat_map.h"
 #import "base/i18n/message_formatter.h"
 #import "base/notreached.h"
@@ -17,7 +19,9 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/model_type.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -141,10 +145,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       _accountAccountManagerServiceObserver;
   // Signed-in identity. Note: may be nil while signing out.
   id<SystemIdentity> _signedInIdentity;
-  // Number of local items to upload excluding passwords.
-  NSInteger _localItemsToUpload;
-  // Number of local passwords to upload.
-  NSInteger _localPasswordsToUpload;
 }
 
 - (instancetype)
@@ -170,9 +170,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _initialAccountState = initialAccountState;
-    // TODO(crbug.com/1451508):Remove initial values.
-    _localItemsToUpload = 0;
-    _localPasswordsToUpload = 0;
   }
   return self;
 }
@@ -681,7 +678,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 - (NSString*)itemsToUploadRecommendationString {
   // _localPasswordsToUpload and _localItemsToUpload should be updated by
-  // hasLocalDataToUpload before calling this method, which also checks for
+  // updateBatchUploadSection before calling this method, which also checks for
   // the case of having no items to upload, thus this case is not reached here.
   if (!_localPasswordsToUpload && !_localItemsToUpload) {
     NOTREACHED();
@@ -723,31 +720,52 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   return item;
 }
 
-- (BOOL)hasLocalDataToUpload {
+- (void)updateBatchUploadSection {
   if (self.syncAccountState != SyncSettingsAccountState::kSignedIn ||
       !base::FeatureList::IsEnabled(syncer::kSyncEnableBatchUploadLocalData)) {
-    return NO;
+    return;
   }
 
-  // Batch upload option is not shown if sync is disabled by policy, or if the
-  // account is in a persistent error state that requires a user action.
-  if (self.syncErrorItem || self.isSyncDisabledByAdministrator) {
-    return NO;
+  // Types that are disabled by policy will be ignored.
+  syncer::ModelTypeSet requestedTypes;
+  for (syncer::UserSelectableType userSelectableType : kAccountSwitchItems) {
+    if (![self isManagedSyncSettingsDataType:userSelectableType]) {
+      requestedTypes.Put(
+          syncer::UserSelectableTypeToCanonicalModelType(userSelectableType));
+    }
   }
 
-  // TODO(crbug.com/1451508): Use API counts to update the hard-coded ivars
-  // _localPasswordsToUpload and _localItemsToUpload. Make sure to ignore all
-  // types that are disabled by policy.
-  if (!_localPasswordsToUpload && !_localItemsToUpload) {
-    return NO;
-  }
+  __weak __typeof__(self) weakSelf = self;
+  _syncService->GetLocalDataDescriptions(
+      requestedTypes,
+      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+                           description) {
+        [weakSelf localDataDescriptionsFetchedWithDescription:description];
+      }));
 
-  return YES;
+  return;
 }
 
-// Deletes the batch upload section. If `notifyConsumer` is YES, the consumer is
-// notified about model changes.
-- (void)removeBatchUploadSection:(BOOL)notifyConsumer {
+- (void)localDataDescriptionsFetchedWithDescription:
+    (std::map<syncer::ModelType, syncer::LocalDataDescription>)description {
+  self.localPasswordsToUpload = 0;
+  self.localItemsToUpload = 0;
+
+  for (auto& type : description) {
+    if (type.first == syncer::PASSWORDS) {
+      self.localPasswordsToUpload = type.second.item_count;
+      continue;
+    } else {
+      self.localItemsToUpload += type.second.item_count;
+    }
+  }
+
+  [self loadBatchUploadSection];
+}
+
+// Deletes the batch upload section and notifies the consumer about model
+// changes.
+- (void)removeBatchUploadSection {
   TableViewModel* model = self.consumer.tableViewModel;
   if (![model hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]) {
     return;
@@ -758,23 +776,19 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   self.batchUploadItem = nil;
 
   // Remove the batch upload section from the table view model.
-  if (notifyConsumer) {
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-    [self.consumer deleteSections:indexSet];
-  }
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+  [self.consumer deleteSections:indexSet];
 }
 
-// Updates the batch upload section. If `notifyConsumer` is YES, the consumer is
-// notified about model changes.
-- (void)updateBatchUploadSection:(BOOL)notifyConsumer {
-  if (self.syncAccountState != SyncSettingsAccountState::kSignedIn) {
-    return;
-  }
-
-  if (![self hasLocalDataToUpload]) {
-    // The section should be removed if there is no more reason to offer the
-    // batch upload.
-    [self removeBatchUploadSection:notifyConsumer];
+// This is always called after the model is loaded, so it will always notify the
+// consumer of the model updates.
+- (void)loadBatchUploadSection {
+  // Batch upload option is not shown if sync is disabled by policy, if the
+  // account is in a persistent error state that requires a user action, or if
+  // there is no local data to offer the batch upload.
+  if (self.syncErrorItem || self.isSyncDisabledByAdministrator ||
+      (!_localPasswordsToUpload && !_localItemsToUpload)) {
+    [self removeBatchUploadSection];
     return;
   }
 
@@ -796,27 +810,19 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         toSectionWithIdentifier:BatchUploadSectionIdentifier];
     [model addItem:[self batchUploadButtonItem]
         toSectionWithIdentifier:BatchUploadSectionIdentifier];
-  } else if (notifyConsumer) {
+  } else {
     // The section already exists, update it.
     self.batchUploadItem.detailText = [self itemsToUploadRecommendationString];
     [self.consumer reloadItem:self.batchUploadItem];
   }
 
-  if (notifyConsumer) {
-    NSIndexSet* indexSet =
-        [NSIndexSet indexSetWithIndex:batchUploadSectionIndex];
-    if (batchUploadSectionAlreadyExists) {
-      // The section should be updated if it already exists.
-      [self.consumer reloadSections:indexSet];
-    } else {
-      [self.consumer insertSections:indexSet];
-    }
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:batchUploadSectionIndex];
+  if (batchUploadSectionAlreadyExists) {
+    // The section should be updated if it already exists.
+    [self.consumer reloadSections:indexSet];
+  } else {
+    [self.consumer insertSections:indexSet];
   }
-}
-
-- (void)loadBatchUploadSection {
-  self.batchUploadItem = nil;
-  [self updateBatchUploadSection:NO];
 }
 
 #pragma mark - Private
@@ -986,7 +992,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
   [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
-  [self loadBatchUploadSection];
+  [self updateBatchUploadSection];
   [self loadSyncDataTypeSection];
   [self loadSignOutAndTurnOffSyncSection];
   [self loadAdvancedSettingsSection];
@@ -1001,7 +1007,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return;
   }
   [self updateSyncErrorsSection:YES];
-  [self updateBatchUploadSection:YES];
+  [self updateBatchUploadSection];
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   [self updateEncryptionItem:YES];
@@ -1032,7 +1038,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     [self updateIdentityAccountSection];
     [self updateSyncItemsNotifyConsumer:YES];
     [self updateSyncErrorsSection:YES];
-    [self updateBatchUploadSection:YES];
+    [self updateBatchUploadSection];
     [self updateEncryptionItem:YES];
   }
 }
@@ -1129,7 +1135,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self updateSyncEverythingItemNotifyConsumer:YES];
   [self updateSyncItemsNotifyConsumer:YES];
   // Switching toggles might affect the batch upload recommendation.
-  [self updateBatchUploadSection:YES];
+  [self updateBatchUploadSection];
 }
 
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect {

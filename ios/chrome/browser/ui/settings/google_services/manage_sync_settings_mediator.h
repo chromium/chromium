@@ -51,6 +51,10 @@ class SyncService;
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
 // Returns the default title for the Sync Settings based on the account state.
 @property(nonatomic, strong, readonly) NSString* overrideViewControllerTitle;
+// Number of local items to upload excluding passwords.
+@property(nonatomic, assign) NSInteger localItemsToUpload;
+// Number of local passwords to upload.
+@property(nonatomic, assign) NSInteger localPasswordsToUpload;
 
 // Designated initializer.
 // `syncService`: Sync service. Should not be null.
