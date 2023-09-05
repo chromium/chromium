@@ -35,8 +35,6 @@ class ShortcutsAppManagerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSearchInShortcutsApp},
-                                          {});
     ui::ResourceBundle::CleanupSharedInstance();
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();

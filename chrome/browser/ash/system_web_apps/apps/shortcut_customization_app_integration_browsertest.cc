@@ -25,10 +25,8 @@ class ShortcutCustomizationAppIntegrationTest
     : public ash::SystemWebAppIntegrationTest {
  public:
   ShortcutCustomizationAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kShortcutCustomizationApp,
-         ash::features::kSearchInShortcutsApp},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kShortcutCustomizationApp},
+                                          {});
   }
 
  protected:

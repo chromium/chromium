@@ -189,10 +189,6 @@ class SearchHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSearchInShortcutsApp},
-        /*disabled_features=*/{});
-
     handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
     handler_remote_->AddSearchResultsAvailabilityObserver(
         results_availability_observer_.GenerateRemote());
