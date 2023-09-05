@@ -164,15 +164,6 @@ BASE_FEATURE(kPrivateStateTokens,
 // PSTs are fully rolled out to stable.
 BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Gate access to cookie deprecation API which allows developers to opt in
-// server side testing without cookies. This doesn't actually do anything in
-// terms of deprecating cookies.
-// (See
-// https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a)
-BASE_FEATURE(kCookieDeprecationFacilitatedTestingLabels,
-             "CookieDeprecationFacilitatedTestingLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
 // Tokens operations of issuance, redemption, and signing are compatible with

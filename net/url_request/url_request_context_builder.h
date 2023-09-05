@@ -44,6 +44,7 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_job_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::android {
 class ApplicationStatusListener;
@@ -352,6 +353,10 @@ class NET_EXPORT URLRequestContextBuilder {
     client_socket_factory_ = std::move(client_socket_factory);
   }
 
+  void set_cookie_deprecation_label(const std::string& label) {
+    cookie_deprecation_label_ = label;
+  }
+
   // Binds the context to `network`. All requests scheduled through the context
   // built by this builder will be sent using `network`. Requests will fail if
   // `network` disconnects. `options` allows to specify the ManagerOptions that
@@ -412,6 +417,8 @@ class NET_EXPORT URLRequestContextBuilder {
   std::string accept_language_;
   std::string user_agent_;
   std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings_;
+
+  absl::optional<std::string> cookie_deprecation_label_;
 
   bool http_cache_enabled_ = true;
   bool throttling_enabled_ = false;

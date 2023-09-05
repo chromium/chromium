@@ -586,6 +586,12 @@ struct NetworkContextParams {
   // TODO(crbug.com/1228178): This flag is intended to be temporary and to be
   // removed (always enabled) in the future.
   bool acam_preflight_spec_conformant = true;
+
+  // To support 3PCD experimentation, a per-partition `cookie_deprecation_label`
+  // will be sent to developers who opt-in to receiving it. This enables server
+  // side opt-in to testing without cookies. See:
+  // https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a
+  string? cookie_deprecation_label;
 };
 
 struct NetworkConditions {

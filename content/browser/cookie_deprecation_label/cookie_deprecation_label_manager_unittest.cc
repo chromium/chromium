@@ -9,7 +9,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
-#include "services/network/public/cpp/features.h"
+#include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,7 @@ class CookieDeprecationLabelManagerTest : public testing::Test {
  public:
   CookieDeprecationLabelManagerTest() : label_manager_(&browser_context_) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        network::features::kCookieDeprecationFacilitatedTestingLabels,
+        net::features::kCookieDeprecationFacilitatedTestingLabels,
         {{"label", "label_test"}});
   }
 

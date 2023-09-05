@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -33,6 +34,7 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
@@ -766,6 +768,10 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                             cookie_line);
 
       size_t n_partitioned_cookies = 0;
+      bool may_set_sec_cookie_deprecation_header =
+          base::FeatureList::IsEnabled(
+              net::features::kCookieDeprecationFacilitatedTestingLabels) &&
+          request_->context()->cookie_deprecation_label().has_value();
 
       // TODO(crbug.com/1031664): Reduce the number of times the cookie list
       // is iterated over. Get metrics for every cookie which is included.
@@ -798,6 +804,15 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                   cookie_request_schemes);
         if (c.cookie.IsPartitioned()) {
           ++n_partitioned_cookies;
+
+          if (may_set_sec_cookie_deprecation_header &&
+              c.cookie.Name() == "receive-cookie-deprecation" &&
+              c.cookie.IsHttpOnly() && c.cookie.IsSecure()) {
+            request_info_.extra_headers.SetHeader(
+                "Sec-Cookie-Deprecation",
+                *request_->context()->cookie_deprecation_label());
+            may_set_sec_cookie_deprecation_header = false;
+          }
         }
       }
 

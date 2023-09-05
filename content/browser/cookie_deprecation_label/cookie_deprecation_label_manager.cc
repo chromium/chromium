@@ -10,7 +10,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "services/network/public/cpp/features.h"
+#include "net/base/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -18,8 +18,7 @@ namespace content {
 namespace {
 
 const base::FeatureParam<std::string> kCookieDeprecationLabel{
-    &network::features::kCookieDeprecationFacilitatedTestingLabels, "label",
-    ""};
+    &net::features::kCookieDeprecationFacilitatedTestingLabels, "label", ""};
 
 }  // namespace
 

@@ -127,6 +127,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/ssl/client_cert_store.h"
@@ -1448,6 +1449,13 @@ void StoragePartitionImpl::Initialize(
   bluetooth_allowed_devices_map_ =
       std::make_unique<BluetoothAllowedDevicesMap>();
 
+  // Must be initialized before the `url_loader_factory_getter_`.
+  if (base::FeatureList::IsEnabled(
+          net::features::kCookieDeprecationFacilitatedTestingLabels)) {
+    cookie_deprecation_label_manager_ =
+        std::make_unique<CookieDeprecationLabelManager>(browser_context_);
+  }
+
   url_loader_factory_getter_ = new URLLoaderFactoryGetter();
   url_loader_factory_getter_->Initialize(this);
 
@@ -1573,12 +1581,6 @@ void StoragePartitionImpl::Initialize(
 
   if (base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache)) {
     resource_cache_manager_ = std::make_unique<ResourceCacheManager>();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          network::features::kCookieDeprecationFacilitatedTestingLabels)) {
-    cookie_deprecation_label_manager_ =
-        std::make_unique<CookieDeprecationLabelManager>(browser_context_);
   }
 }
 
@@ -3310,6 +3312,11 @@ void StoragePartitionImpl::InitNetworkContext() {
       CalculateAndSetSharedDictionaryCacheMaxSize(
           GetWeakPtr(), is_in_memory() ? base::FilePath() : partition_path_);
     }
+  }
+
+  if (cookie_deprecation_label_manager_) {
+    context_params->cookie_deprecation_label =
+        cookie_deprecation_label_manager_->GetValue();
   }
 
   network_context_.reset();

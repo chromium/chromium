@@ -2708,6 +2708,10 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   builder.set_check_cleartext_permitted(params_->check_clear_text_permitted);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  if (params_->cookie_deprecation_label.has_value()) {
+    builder.set_cookie_deprecation_label(*params_->cookie_deprecation_label);
+  }
+
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);
   }

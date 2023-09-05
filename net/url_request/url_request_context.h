@@ -241,6 +241,10 @@ class NET_EXPORT URLRequestContext final {
     job_factory_ = job_factory;
   }
 
+  const absl::optional<std::string>& cookie_deprecation_label() const {
+    return cookie_deprecation_label_;
+  }
+
  private:
   friend class URLRequestContextBuilder;
 
@@ -300,6 +304,10 @@ class NET_EXPORT URLRequestContext final {
   }
   void set_bound_network(handles::NetworkHandle network) {
     bound_network_ = network;
+  }
+
+  void set_cookie_deprecation_label(const std::string& label) {
+    cookie_deprecation_label_ = label;
   }
 
   void set_transport_security_persister(
@@ -364,6 +372,8 @@ class NET_EXPORT URLRequestContext final {
   // Triggers a DCHECK if a NetworkAnonymizationKey/IsolationInfo is not
   // provided to a request when true.
   bool require_network_anonymization_key_ = false;
+
+  absl::optional<std::string> cookie_deprecation_label_;
 
   handles::NetworkHandle bound_network_;
 

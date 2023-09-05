@@ -468,4 +468,8 @@ BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
              "ThirdPartyPartitionedStorageAllowedByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCookieDeprecationFacilitatedTestingLabels,
+             "CookieDeprecationFacilitatedTestingLabels",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

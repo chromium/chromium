@@ -57,9 +57,6 @@ BASE_DECLARE_FEATURE(kAttributionReportingCrossAppWeb);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPrivateStateTokens);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kFledgePst);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kCookieDeprecationFacilitatedTestingLabels);
-
 enum class TrustTokenOriginTrialSpec {
   // See the .cc file for definitions.
   kAllOperationsRequireOriginTrial,
