@@ -15694,12 +15694,47 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(last_request_is_ad_auction_header_request());
 }
 
+class BiddingAndAuctionServerAPIsOriginTrialBrowserTest
+    : public AdsAPIsOriginTrialBrowserTest {
+ public:
+  BiddingAndAuctionServerAPIsOriginTrialBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledge,
+                              blink::features::kInterestGroupStorage,
+                              blink::features::kFledgeBiddingAndAuctionServer},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAPIsOriginTrialBrowserTest,
+                       RightOTFeatureEnabled) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
+
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(),
+                         "'getInterestGroupAdAuctionData' in navigator"));
+}
+
+IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAPIsOriginTrialBrowserTest,
+                       WrongOTFeatureDisabled) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_EQ(false, EvalJs(shell()->web_contents(),
+                          "'getInterestGroupAdAuctionData' in navigator"));
+}
+
 class InterestGroupBiddingAndAuctionServerBrowserTest
     : public InterestGroupBrowserTest {
  public:
   InterestGroupBiddingAndAuctionServerBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgeBiddingAndAuctionServer);
+    feature_list_.InitWithFeatures(
+        {blink::features::kFledgeBiddingAndAuctionServer,
+         blink::features::kFledgeBiddingAndAuctionServerAPI},
+        {});
   }
 
   // Attempts to get the auction blob for seller.  Returns kSuccess if the

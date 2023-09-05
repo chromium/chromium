@@ -1775,11 +1775,9 @@
       public: true,
     },
     {
-      name: "FledgeBiddingAndAuctionServer",
-      base_feature: "none",
+      name: "FledgeBiddingAndAuctionServerAPI",
       origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
       origin_trial_allows_third_party: true,
-      public: true,
     },
     {
       name: "FledgeDirectFromSellerSignalsHeaderAdSlot",

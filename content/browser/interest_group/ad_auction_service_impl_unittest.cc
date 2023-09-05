@@ -8194,9 +8194,11 @@ INSTANTIATE_TEST_SUITE_P(
 class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
  public:
   AdAuctionServiceImplBAndATest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFledgeBiddingAndAuctionServer,
-        {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFledgeBiddingAndAuctionServer,
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
+         {blink::features::kFledgeBiddingAndAuctionServerAPI, {}}},
+        {});
   }
 
   void ProvideKeys() {

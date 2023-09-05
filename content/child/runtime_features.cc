@@ -367,11 +367,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
      kSetOnlyIfOverridden},
-    {"FledgeBiddingAndAuctionServer",
-     raw_ref(blink::features::kFledgeBiddingAndAuctionServer),
-     kSetOnlyIfOverridden},
-    {"FledgeBiddingAndAuctionServer",
-     raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
 #if BUILDFLAG(USE_FONTATIONS_BACKEND)
     {"FontationsFontBackend", raw_ref(blink::features::kFontationsFontBackend)},
 #endif
@@ -720,16 +715,6 @@ void ResolveInvalidConfigurations() {
         << blink::features::kInterestGroupStorage.name << " in addition.";
     WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
     WebRuntimeFeatures::EnableFledge(false);
-  } else if (!base::FeatureList::IsEnabled(
-                 blink::features::kFledgeBiddingAndAuctionServer)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsFledgeBiddingAndAuctionServerEnabled())
-        << "FledgeBiddingAndAuctionServer cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << blink::features::kFledgeBiddingAndAuctionServer.name
-        << " in addition.";
-    WebRuntimeFeatures::EnableFledgeBiddingAndAuctionServer(false);
   }
 }
 
