@@ -1843,6 +1843,13 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
 
   [self removeEmptyStateAnimated:YES];
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    // TODO(crbug.com/1473625): There are crash reports that show there could be
+    // cases where the open tabs section is not present in the snapshot. If so,
+    // don't perform the update.
+    if ([snapshot indexOfSectionIdentifier:kOpenTabsSectionIdentifier] ==
+        NSNotFound) {
+      return;
+    }
     // The snapshot API doesn't provide a way to insert at a given index (that's
     // its purpose actually), only before/after an existing item, or by
     // appending to an existing section.
