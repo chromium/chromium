@@ -287,9 +287,14 @@ const tests = [
         toolbar.shadowRoot!.querySelector<HTMLElement>('#present-button');
     chrome.test.assertTrue(!!button);
 
+    chrome.test.assertFalse(toolbar.$['present-button'].disabled);
     const whenFired = eventToPromise('present-click', toolbar);
     button!.click();
     await whenFired;
+
+    // The present button should be disabled if the PDF Viewer is embedded.
+    toolbar.embeddedViewer = true;
+    chrome.test.assertTrue(toolbar.$['present-button'].disabled);
     chrome.test.succeed();
   },
 

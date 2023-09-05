@@ -66,8 +66,10 @@ export class ViewerToolbarElement extends PolymerElement {
         reflectToAttribute: true,
       },
       // </if>
+
       docTitle: String,
       docLength: Number,
+      embeddedViewer: Boolean,
       hasEdits: Boolean,
       hasEnteredAnnotationMode: Boolean,
       isFormFieldFocused: Boolean,
@@ -87,6 +89,18 @@ export class ViewerToolbarElement extends PolymerElement {
       // <if expr="enable_screen_ai_service">
       pdfOcrEnabled: Boolean,
       // </if>
+
+      presentationModeAvailable_: {
+        type: Boolean,
+        // <if expr="enable_ink">
+        computed: 'computePresentationModeAvailable_(' +
+            'annotationMode, embeddedViewer)',
+        // </if>
+        // <if expr="not enable_ink">
+        computed: 'computePresentationModeAvailable_(embeddedViewer)',
+        //</if>
+      },
+
       printingEnabled: Boolean,
       rotated: Boolean,
       viewportZoom: Number,
@@ -137,6 +151,7 @@ export class ViewerToolbarElement extends PolymerElement {
 
   docTitle: string;
   docLength: number;
+  embeddedViewer: boolean;
   hasEdits: boolean;
   hasEnteredAnnotationMode: boolean;
   isFormFieldFocused: boolean;
@@ -153,6 +168,7 @@ export class ViewerToolbarElement extends PolymerElement {
   private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
   private fitToButtonIcon_: string;
   private moreMenuOpen_: boolean = false;
+  private presentationModeAvailable_: boolean;
   private loading_: boolean = true;
   private viewportZoomPercent_: number;
 
@@ -411,6 +427,19 @@ export class ViewerToolbarElement extends PolymerElement {
     this.pdfOcrAlwaysActive_ = isPdfOcrAlwaysActive;
   }
   // </if>
+
+  /**
+   * Updates the toolbar's presentation mode available flag depending on current
+   * conditions.
+   */
+  private computePresentationModeAvailable_() {
+    // <if expr="enable_ink">
+    return !this.annotationMode && !this.embeddedViewer;
+    // </if>
+    // <if expr="not enable_ink">
+    return !this.embeddedViewer;
+    // </if>
+  }
 }
 
 declare global {

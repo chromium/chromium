@@ -249,6 +249,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private docLength_: number;
   private documentHasFocus_: boolean;
   private documentMetadata_: DocumentMetadata;
+  private embedded_: boolean;
   private fileName_: string;
   private hadPassword_: boolean;
   private hasEdits_: boolean;
@@ -337,6 +338,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (chrome.mimeHandlerPrivate && chrome.mimeHandlerPrivate.onSave) {
       chrome.mimeHandlerPrivate.onSave.addListener(this.onSave_.bind(this));
     }
+
+    this.embedded_ = this.browserApi!.getStreamInfo().embedded;
   }
 
   handleKeyEvent(e: KeyboardEvent) {
