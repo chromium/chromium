@@ -332,17 +332,23 @@ def _check_expectations(host, port, path, test_expectations, options,
     failures.extend(
         _check_stable_webexposed_not_disabled(host, path, expectations))
     failures.extend(_check_skip_in_test_expectations(host, path, expectations))
-    # TODO(crbug.com/1474771): Enable this rule by default after the switch.
-    if host.project_config.switched_to_wptrunner:
-        ban_wpt_failures = _check_no_wpt_lines(host, port, path, expectations)
-        failures.extend(ban_wpt_failures)
-        if ban_wpt_failures:
-            _log.warning(
-                'TestExpectation lines should not be used anymore for WPT. '
-                'Please see this doc for the new way to set WPT expectations '
-                'in `.ini` files: '
-                'https://chromium.googlesource.com/chromium/src/+/HEAD'
-                '/docs/testing/web_platform_tests_wptrunner.md#Expectations')
+    webdriver_port = host.port_factory.get()
+    # `port` already updated the manifest.
+    webdriver_port.set_option_default('manifest_update', False)
+    # TODO(crbug.com/1474771): Enable this rule by default after the switch. For
+    # now, only ban `external/wpt/webdriver/` lines.
+    if not host.project_config.switched_to_wptrunner:
+        webdriver_port.set_option_default('test_types', ['wdspec'])
+    ban_wpt_failures = _check_no_wpt_lines(host, webdriver_port, path,
+                                           expectations)
+    failures.extend(ban_wpt_failures)
+    if ban_wpt_failures:
+        _log.warning(
+            'TestExpectation lines should not be used anymore for WPT. '
+            'Please see this doc for the new way to set WPT expectations '
+            'in `.ini` files: '
+            'https://chromium.googlesource.com/chromium/src/+/HEAD'
+            '/docs/testing/web_platform_tests_wptrunner.md#Expectations')
     # TODO(crbug.com/1080691): Change this to failures once
     # wpt_expectations_updater is fixed.
     warnings.extend(
