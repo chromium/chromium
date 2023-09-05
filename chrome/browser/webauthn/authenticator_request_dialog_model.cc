@@ -472,12 +472,16 @@ void AuthenticatorRequestDialogModel::
               device::FidoRequestHandlerBase::RecognizedCredential::
                   kHasRecognizedCredential &&
           allow_icloud_keychain_) {
+        ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
+            true;
         StartICloudKeychain();
         return;
       }
       if (transport_availability_.has_platform_authenticator_credential ==
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential) {
+        ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
+            true;
         if (transport_availability_.has_win_native_api_authenticator) {
           StartWinNativeApi();
         } else {
@@ -497,6 +501,8 @@ void AuthenticatorRequestDialogModel::
                   absl::get<Mechanism::Credential>(mech.type).value().source ==
                       device::AuthenticatorType::kWinNative);
         })) {
+      ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
+          true;
       StartWinNativeApi();
       return;
     }
@@ -830,14 +836,27 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
   }
 
   if (ephemeral_state_.did_dispatch_to_icloud_keychain_) {
-    // If we dispatched automatically to iCloud Keychain for a create(), and the
-    // user clicked cancel, give them the option to create in the profile
-    // authenticator.
-    if (transport_availability_.request_type ==
-            device::FidoRequestType::kMakeCredential &&
-        ephemeral_state_.priority_mechanism_index_.has_value() &&
-        absl::holds_alternative<Mechanism::ICloudKeychain>(
-            mechanisms_[*ephemeral_state_.priority_mechanism_index_].type)) {
+    // If we dispatched automatically to iCloud Keychain and the
+    // user clicked cancel, give them the option to try something else.
+    bool did_trigger_automatically =
+        ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_;
+    if (!did_trigger_automatically &&
+        ephemeral_state_.priority_mechanism_index_.has_value()) {
+      const auto& priority_type =
+          mechanisms_[*ephemeral_state_.priority_mechanism_index_].type;
+      if (absl::holds_alternative<Mechanism::Credential>(priority_type)) {
+        const Mechanism::CredentialInfo* cred_info =
+            &absl::get<Mechanism::Credential>(priority_type).value();
+        if (cred_info->source == device::AuthenticatorType::kICloudKeychain) {
+          did_trigger_automatically = true;
+        }
+      } else if (absl::holds_alternative<Mechanism::ICloudKeychain>(
+                     priority_type)) {
+        did_trigger_automatically = true;
+      }
+    }
+
+    if (did_trigger_automatically) {
       StartOver();
     } else {
       // Otherwise, respect the "Cancel" button in macOS UI as if it were our

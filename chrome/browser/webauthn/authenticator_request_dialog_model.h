@@ -698,6 +698,12 @@ class AuthenticatorRequestDialogModel {
     // did_dispatch_to_icloud_keychain_ is true if iCloud Keychain has been
     // triggered.
     bool did_dispatch_to_icloud_keychain_ = false;
+
+    // did_invoke_platform_despite_no_priority_mechanism_ is true if a platform
+    // authenticator was triggered despite there not being a
+    // `priority_mechanism_index_` set. For example, this can happen if there's
+    // an allowlist match.
+    bool did_invoke_platform_despite_no_priority_mechanism_ = false;
   };
 
   void ResetEphemeralState();
