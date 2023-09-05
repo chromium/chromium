@@ -142,16 +142,8 @@ void WindowMiniViewHeaderView::ResetRoundedCorners() {
 
 gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
     aura::Window* window) const {
-  const float scale = window->layer()->GetTargetTransform().To2dScale().x();
-  if (header_view_rounded_corners_.has_value()) {
-    const auto raw_value = header_view_rounded_corners_.value();
-    return gfx::RoundedCornersF(
-        raw_value.upper_left() / scale, raw_value.upper_right() / scale,
-        raw_value.lower_right() / scale, raw_value.lower_left() / scale);
-  }
-
-  return gfx::RoundedCornersF(kHeaderTopCornerRadius / scale,
-                              kHeaderTopCornerRadius / scale, 0, 0);
+  return header_view_rounded_corners_.value_or(gfx::RoundedCornersF(
+      kHeaderTopCornerRadius, kHeaderTopCornerRadius, 0, 0));
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView, views::View)
