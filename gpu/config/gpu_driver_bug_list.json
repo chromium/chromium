@@ -4231,6 +4231,24 @@
         "disable_accelerated_vp9_encode",
         "disable_accelerated_vp9_profile2_decode"
       ]
+    },
+    {
+      "id": 417,
+      "cr_bugs": [1473665],
+      "description": "Corruption when consecutive VP9 keyframes are requested from MFVEA on Intel.",
+      "comment": [
+        "In MFVEA, the Intel MFT driver currently misbehaves when requesting ",
+        "two consecutive keyframes. MFVEA fixes this by causing a delta frame ",
+        "encode in between the keyframes whose results are thrown away. ",
+        "External bitrate control isn't made aware that this happens."
+      ],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "avoid_consecutive_keyframes_for_vp9"
+      ]
     }
   ]
 }

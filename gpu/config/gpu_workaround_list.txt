@@ -1,5 +1,6 @@
 add_and_true_to_loop_condition
 adjust_src_dst_region_for_blitframebuffer
+avoid_consecutive_keyframes_for_vp9
 avoid_one_component_egl_images
 avoid_stencil_buffers
 broken_egl_image_ref_counting
