@@ -251,24 +251,37 @@ class Combobox::ComboboxEventHandler : public ui::EventHandler {
 
  private:
   void OnLocatedEvent(ui::LocatedEvent* event) {
-    // If there is a mouse, scroll or touch event happening outside the combobox
-    // and drop down menu, the drop down menu should be closed.
-    if (event->type() != ui::ET_MOUSE_PRESSED &&
-        event->type() != ui::ET_TOUCH_PRESSED &&
-        event->type() != ui::ET_MOUSEWHEEL) {
-      return;
-    }
-
+    // Close drop down menu if certain mouse or touch events happening outside
+    // combobox or menu area.
     if (!combobox_->IsMenuRunning()) {
       return;
     }
 
+    // Get event location in screen.
     gfx::Point event_location = event->location();
     aura::Window* event_target = static_cast<aura::Window*>(event->target());
     wm::ConvertPointToScreen(event_target, &event_location);
-    if (!combobox_->menu_->GetWindowBoundsInScreen().Contains(event_location) &&
-        !combobox_->GetBoundsInScreen().Contains(event_location)) {
-      combobox_->CloseDropDownMenu();
+
+    const bool event_in_combobox =
+        combobox_->GetBoundsInScreen().Contains(event_location);
+    const bool event_in_menu =
+        combobox_->menu_->GetWindowBoundsInScreen().Contains(event_location);
+    switch (event->type()) {
+      case ui::ET_MOUSEWHEEL:
+        // Close menu if scrolling outside menu.
+        if (!event_in_menu) {
+          combobox_->CloseDropDownMenu();
+        }
+        break;
+      case ui::ET_MOUSE_PRESSED:
+      case ui::ET_TOUCH_PRESSED:
+        // Close menu if pressing outside menu and combobox.
+        if (!event_in_menu && !event_in_combobox) {
+          combobox_->CloseDropDownMenu();
+        }
+        break;
+      default:
+        break;
     }
   }
 
