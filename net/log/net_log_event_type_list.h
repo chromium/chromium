@@ -2186,6 +2186,24 @@ EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_SESSION_READY)
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 
+// Records that the QUIC session received a default network change signal.
+//   {
+//     "new_default_network": <The new default network>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_MADE_DEFAULT)
+
+// Records that the QUIC session received a network disconnected signal.
+//   {
+//     "disconnected_network": <The network which was disconnected>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_DISCONNECTED)
+
+// Records that the QUIC session received a network connected signal.
+//   {
+//     "connected_network": <The network which was connected>
+//   }
+EVENT_TYPE(QUIC_SESSION_NETWORK_CONNECTED)
+
 // Session was closed, either remotely or by the peer.
 //   {
 //     "quic_error": <quic::QuicErrorCode which caused the connection to be
@@ -2468,19 +2486,35 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS)
 
 // Records that a QUIC connection migration attempt due to new network
 // being connected.
+// {
+//     "connected_network": <The network we will try to migrate to>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED)
 
 // Records that a QUIC connection migration attempt due to new network
 // being marked as default network.
+// {
+//     "new_default_network": <The new default network>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_MADE_DEFAULT)
 
 // Records that a QUIC connection migration attempt due to old network
 // being disconnected.
+// {
+//     "disconnected_network": <The network which was disconnected>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_NETWORK_DISCONNECTED)
 
 // Records that a QUIC connection migration attempt due to encountering
 // packet write error on the current network.
+// {
+//     "network": <Current network where we encountered the write error>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_WRITE_ERROR)
+
+// Records that no alternate networks were available after either the default
+// network was or a we encountered a packet write error.
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK)
 
 // Records that a QUIC connection migration attempt due to path
 // degrading on the current network.
@@ -2488,13 +2522,29 @@ EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_PATH_DEGRADING)
 
 // Records that a QUIC connection migration attempt due to efforts to
 // migrate back to the default network.
+// {
+//     "retry_count": <Number of attempts to migrate back so far>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_ON_MIGRATE_BACK)
 
 // Records a QUIC connection migration failure after probing.
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING)
 
 // Records a QUIC connection migration success after probing.
+// {
+//     "migrate_to_network": <The network the probe was successful for>
+// }
 EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING)
+
+// Records a QUIC connection migration timeout while waiting for a new network.
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK)
+
+// Records that a new network was found before QUIC connection migration timed
+// out.
+// {
+//     "network": <The network that was found and we will try to migrate to>
+// }
+EVENT_TYPE(QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK)
 
 // ------------------------------------------------------------------------
 // QuicConnectivityProbingManager

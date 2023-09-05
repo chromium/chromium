@@ -2150,6 +2150,8 @@ void QuicChromiumClientSession::FinishMigrateSessionOnWriteError(
 void QuicChromiumClientSession::OnNoNewNetwork() {
   DCHECK(OneRttKeysAvailable());
   wait_for_new_network_ = true;
+  net_log_.AddEvent(
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_WAITING_FOR_NEW_NETWORK);
 
   DVLOG(1) << "Force blocking the packet writer";
   // Force blocking the packet writer to avoid any writes since there is no
@@ -2188,6 +2190,9 @@ void QuicChromiumClientSession::OnMigrationTimeout(size_t num_sockets) {
   if (num_sockets != packet_readers_.size()) {
     return;
   }
+
+  net_log_.AddEvent(
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_WAITING_FOR_NETWORK);
 
   int net_error = current_migration_cause_ == ON_NETWORK_DISCONNECTED
                       ? ERR_INTERNET_DISCONNECTED
@@ -2412,23 +2417,30 @@ void QuicChromiumClientSession::OnNetworkConnected(
                                duration, base::Milliseconds(1),
                                base::Minutes(10), 50);
   }
+  net_log_.AddEventWithInt64Params(
+      NetLogEventType::QUIC_SESSION_NETWORK_CONNECTED, "connected_network",
+      network);
   if (!migrate_session_on_network_change_v2_) {
     return;
   }
 
-  net_log_.AddEventWithInt64Params(
-      NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED,
-      "connected_network", network);
   // If there was no migration waiting for new network and the path is not
   // degrading, ignore this signal.
   if (!wait_for_new_network_ && !connection()->IsPathDegrading())
     return;
+
+  net_log_.AddEventWithInt64Params(
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED,
+      "connected_network", network);
 
   if (connection()->IsPathDegrading())
     current_migration_cause_ = NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING;
 
   if (wait_for_new_network_) {
     wait_for_new_network_ = false;
+    net_log_.AddEventWithInt64Params(
+        NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_WAITING_FOR_NETWORK,
+        "network", network);
     if (current_migration_cause_ == ON_WRITE_ERROR)
       current_migrations_to_non_default_network_on_write_error_++;
     // |wait_for_new_network_| is true, there was no working network previously.
@@ -2444,6 +2456,9 @@ void QuicChromiumClientSession::OnNetworkConnected(
 void QuicChromiumClientSession::OnNetworkDisconnectedV2(
     handles::NetworkHandle disconnected_network) {
   LogMetricsOnNetworkDisconnected();
+  net_log_.AddEventWithInt64Params(
+      NetLogEventType::QUIC_SESSION_NETWORK_DISCONNECTED,
+      "disconnected_network", disconnected_network);
   if (!migrate_session_on_network_change_v2_) {
     return;
   }
@@ -2501,6 +2516,9 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
 void QuicChromiumClientSession::OnNetworkMadeDefault(
     handles::NetworkHandle new_network) {
   LogMetricsOnNetworkMadeDefault();
+  net_log_.AddEventWithInt64Params(
+      NetLogEventType::QUIC_SESSION_NETWORK_MADE_DEFAULT, "new_default_network",
+      new_network);
 
   if (!migrate_session_on_network_change_v2_) {
     return;
