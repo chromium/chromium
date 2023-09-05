@@ -103,30 +103,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> D3DSharedFence::GetD3D11Device() const {
 }
 
 bool D3DSharedFence::IsSameFenceAsHandle(HANDLE shared_handle) const {
-  using PFN_COMPARE_OBJECT_HANDLES =
-      BOOL(WINAPI*)(HANDLE hFirstObjectHandle, HANDLE hSecondObjectHandle);
-  static PFN_COMPARE_OBJECT_HANDLES compare_object_handles_fn =
-      []() -> PFN_COMPARE_OBJECT_HANDLES {
-    HMODULE kernelbase_module = ::GetModuleHandle(L"kernelbase.dll");
-    if (!kernelbase_module) {
-      DVLOG(1) << "kernelbase.dll not found";
-      return nullptr;
-    }
-    PFN_COMPARE_OBJECT_HANDLES fn =
-        reinterpret_cast<PFN_COMPARE_OBJECT_HANDLES>(
-            ::GetProcAddress(kernelbase_module, "CompareObjectHandles"));
-    if (!fn) {
-      DVLOG(1) << "CompareObjectHandles not found";
-    }
-    return fn;
-  }();
-  if (compare_object_handles_fn) {
-    return compare_object_handles_fn(shared_handle_.Get(), shared_handle);
-  }
-  // CompareObjectHandles isn't available before Windows 10 but we shouldn't be
-  // using fences in that case either.
-  NOTREACHED();
-  return false;
+  return CompareObjectHandles(shared_handle_.Get(), shared_handle);
 }
 
 void D3DSharedFence::Update(uint64_t fence_value) {

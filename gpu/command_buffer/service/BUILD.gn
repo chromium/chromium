@@ -95,6 +95,17 @@ target(link_target_type, "service_sources") {
   }
 }
 
+if (is_win) {
+  config("service_win_linker_flags") {
+    # This is in a separate config so the flags can be applied to dependents.
+    # ldflags in GN aren't automatically inherited.
+    ldflags = [
+      # Linking with OneCore.lib causes the following dlls to load.
+      "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
+    ]
+  }
+}
+
 target(link_target_type, "gles2_sources") {
   # External code should depend on this via //gpu/command_buffer/service:gles2
   # above rather than depending on this directly or the component build will
@@ -615,7 +626,11 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_representation.cc",
       "shared_image/dxgi_swap_chain_image_representation.h",
     ]
-    libs = [ "dxguid.lib" ]
+    libs = [
+      "dxguid.lib",
+      "onecore.lib",
+    ]
+    all_dependent_configs = [ ":service_win_linker_flags" ]
   }
 }
 

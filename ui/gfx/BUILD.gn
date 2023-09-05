@@ -57,6 +57,17 @@ component("gfx_skia") {
   defines = [ "GFX_SKIA_IMPLEMENTATION" ]
 }
 
+if (is_win) {
+  config("gfx_win_linker_flags") {
+    # This is in a separate config so the flags can be applied to dependents.
+    # ldflags in GN aren't automatically inherited.
+    ldflags = [
+      # Linking with OneCore.lib causes the following dlls to load.
+      "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
+    ]
+  }
+}
+
 component("gfx") {
   sources = [
     "break_list.h",
@@ -387,7 +398,10 @@ component("gfx") {
       "setupapi.lib",
       "dwmapi.lib",
       "dwrite.lib",
+      "onecore.lib",
     ]
+
+    all_dependent_configs = [ ":gfx_win_linker_flags" ]
     public_deps += [ "//components/crash/core/common" ]
   } else {
     sources -= [
