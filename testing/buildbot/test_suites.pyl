@@ -5826,16 +5826,25 @@
     },
 
     'wpt_web_tests_android': {
-      'wpt_tests_suite': {
+      'chrome_public_wpt': {
         'merge': {
           'args': [
             '--verbose',
-            '--test-list',
-            '//third_party/blink/web_tests/TestLists/Default.txt'
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'chrome_public_wpt',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 15,
+        },
+      },
+      'system_webview_wpt': {
+        'merge': {
+          'args': [
+            '--verbose',
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
