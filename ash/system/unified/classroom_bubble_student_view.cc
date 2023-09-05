@@ -11,6 +11,7 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -20,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -31,13 +33,6 @@
 
 namespace ash {
 namespace {
-
-enum class StudentAssignmentsListType {
-  kAssigned,
-  kNoDueDate,
-  kMissing,
-  kDone,
-};
 
 // Helps to map `combo_box_view_` selected index to the corresponding
 // `StudentAssignmentsListType` value.
@@ -122,7 +117,17 @@ ClassroomBubbleStudentView::ClassroomBubbleStudentView(
   SelectedAssignmentListChanged(/*initial_update=*/true);
 }
 
-ClassroomBubbleStudentView::~ClassroomBubbleStudentView() = default;
+ClassroomBubbleStudentView::~ClassroomBubbleStudentView() {
+  if (list_shown_start_time_.has_value()) {
+    RecordStudentAssignmentListShowTime(
+        selected_list_type_,
+        base::TimeTicks::Now() - list_shown_start_time_.value(),
+        /*default_list=*/selected_list_change_count_ == 0);
+  }
+  if (first_assignment_list_shown_) {
+    RecordStudentSelectedListChangeCount(selected_list_change_count_);
+  }
+}
 
 // static
 void ClassroomBubbleStudentView::RegisterUserProfilePrefs(
@@ -142,11 +147,8 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_SeeAllPressed"));
   CHECK(combo_box_view_->GetSelectedIndex());
-  const auto selected_index = combo_box_view_->GetSelectedIndex().value();
-  CHECK(selected_index >= 0 ||
-        selected_index < kStudentAssignmentsListTypeOrdered.size());
 
-  switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
+  switch (selected_list_type_) {
     case StudentAssignmentsListType::kAssigned:
     case StudentAssignmentsListType::kNoDueDate:
       return OpenUrl(GURL(kClassroomWebUIAssignedUrl));
@@ -159,10 +161,6 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
 
 void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
     bool initial_update) {
-  if (!initial_update) {
-    base::RecordAction(
-        base::UserMetricsAction("Glanceables_Classroom_SelectedListChanged"));
-  }
   auto* const client =
       Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
   if (!client) {
@@ -171,14 +169,30 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
     return;
   }
 
+  const auto prev_selected_list_type = selected_list_type_;
   CHECK(combo_box_view_->GetSelectedIndex());
   const auto selected_index = combo_box_view_->GetSelectedIndex().value();
   CHECK(selected_index >= 0 ||
         selected_index < kStudentAssignmentsListTypeOrdered.size());
+  selected_list_type_ = kStudentAssignmentsListTypeOrdered[selected_index];
+
+  if (!initial_update) {
+    base::RecordAction(
+        base::UserMetricsAction("Glanceables_Classroom_SelectedListChanged"));
+    if (list_shown_start_time_.has_value()) {
+      RecordStudentAssignmentListShowTime(
+          prev_selected_list_type,
+          base::TimeTicks::Now() - list_shown_start_time_.value(),
+          /*default_list=*/selected_list_change_count_ == 0);
+    }
+    RecordStudentAssignmentListSelected(selected_list_type_);
+    selected_list_change_count_++;
+  }
+  list_shown_start_time_.reset();
 
   Shell::Get()->session_controller()->GetActivePrefService()->SetInteger(
       kLastSelectedAssignmentsListPref,
-      base::to_underlying(kStudentAssignmentsListTypeOrdered[selected_index]));
+      base::to_underlying(selected_list_type_));
 
   // Cancel any old pending assignment requests.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -189,7 +203,7 @@ void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
       base::BindOnce(&ClassroomBubbleStudentView::OnGetAssignments,
                      weak_ptr_factory_.GetWeakPtr(),
                      GetAssignmentListName(selected_index), initial_update);
-  switch (kStudentAssignmentsListTypeOrdered[selected_index]) {
+  switch (selected_list_type_) {
     case StudentAssignmentsListType::kAssigned:
       empty_list_label_->SetText(l10n_util::GetStringUTF16(
           IDS_GLANCEABLES_CLASSROOM_STUDENT_EMPTY_ITEM_DUE_LIST));

@@ -49594,6 +49594,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="UNSET"/>
 </enum>
 
+<enum name="GlanceableStudentAssignmentList">
+  <int value="0" label="Assigned"/>
+  <int value="1" label="NoDueDate"/>
+  <int value="2" label="Missing"/>
+  <int value="3" label="Done"/>
+</enum>
+
 <enum name="GLError">
   <int value="0" label="0x0000 - GL_NO_ERROR"/>
   <int value="1280" label="0x0500 - GL_INVALID_ENUM"/>

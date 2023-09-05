@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -345,17 +346,25 @@ TEST_F(ClassroomBubbleStudentViewTest, ReadsInitialComboBoxViewValueFromPrefs) {
 TEST_F(ClassroomBubbleStudentViewTest,
        CallsClassroomClientAfterChangingActiveList) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(GetComboBoxView());
   ASSERT_TRUE(GetListFooterSeeAllButton());
   EXPECT_TRUE(GetListFooter()->GetVisible());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 0,
+      /*expected_bucket_count=*/0);
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
         std::move(cb).Run(/*success=*/true, CreateAssignments(3));
       });
+
   GetComboBoxView()->SelectMenuItemForTest(1);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 1,
+      /*expected_bucket_count=*/1);
   EXPECT_CALL(
       classroom_client_,
       OpenUrl(GURL("https://classroom.google.com/u/0/a/not-turned-in/all")));
@@ -369,6 +378,9 @@ TEST_F(ClassroomBubbleStudentViewTest,
   GetComboBoxView()->SelectMenuItemForTest(2);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 2,
+      /*expected_bucket_count=*/1);
   EXPECT_CALL(classroom_client_,
               OpenUrl(GURL("https://classroom.google.com/u/0/a/missing/all")));
   LeftClickOn(GetListFooterSeeAllButton());
@@ -378,6 +390,9 @@ TEST_F(ClassroomBubbleStudentViewTest,
         std::move(cb).Run(/*success=*/true, CreateAssignments(3));
       });
   GetComboBoxView()->SelectMenuItemForTest(3);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 3,
+      /*expected_bucket_count=*/1);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
   EXPECT_CALL(
@@ -385,8 +400,34 @@ TEST_F(ClassroomBubbleStudentViewTest,
       OpenUrl(GURL("https://classroom.google.com/u/0/a/turned-in/all")));
   LeftClickOn(GetListFooterSeeAllButton());
 
+  // Switch from the final assignment list back to no due date list.
+  EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
+      .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
+        std::move(cb).Run(/*success=*/true, CreateAssignments(3));
+      });
+  GetComboBoxView()->SelectMenuItemForTest(1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 1,
+      /*expected_bucket_count=*/2);
+
   EXPECT_EQ(3,
             user_actions.GetActionCount("Glanceables_Classroom_SeeAllPressed"));
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.Classroom.Student.AssignmentListShownTime.DefaultList."
+      "Assigned",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.Classroom.Student.AssignmentListShownTime.ChangedList."
+      "NoDueDate",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.Classroom.Student.AssignmentListShownTime.ChangedList."
+      "Missing",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.Classroom.Student.AssignmentListShownTime.ChangedList."
+      "Done",
+      1);
 }
 
 TEST_F(ClassroomBubbleTeacherViewTest,
@@ -617,6 +658,7 @@ TEST_F(ClassroomBubbleStudentViewTest, ClickHeaderIconButton) {
 
 TEST_F(ClassroomBubbleStudentViewTest, ClickItemViewUserAction) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
 
   EXPECT_CALL(classroom_client_,
               OpenUrl(GURL("https://classroom.google.com/test-link-1")));
@@ -638,6 +680,9 @@ TEST_F(ClassroomBubbleStudentViewTest, ClickItemViewUserAction) {
 
   EXPECT_EQ(2, user_actions.GetActionCount(
                    "Glanceables_Classroom_AssignmentPressed"));
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.Classroom.Student.ListSelected", 3,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace ash

@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "ash/system/unified/classroom_bubble_student_view.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 
 namespace {
 
@@ -116,6 +118,77 @@ void RecordTasksChangeLoadTime(base::TimeDelta load_time) {
   base::UmaHistogramMediumTimes(
       base::StrCat({kTimeManagementTaskPrefix, ".ChangeListToLoadTime"}),
       load_time);
+}
+
+void RecordStudentAssignmentListShowTime(StudentAssignmentsListType list_type,
+                                         base::TimeDelta time_shown,
+                                         bool default_list) {
+  if (default_list) {
+    switch (list_type) {
+      case StudentAssignmentsListType::kAssigned:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "DefaultList.Assigned",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kNoDueDate:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "DefaultList.NoDueDate",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kMissing:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "DefaultList.Missing",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kDone:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "DefaultList.Done",
+            time_shown);
+        break;
+    }
+  } else {
+    switch (list_type) {
+      case StudentAssignmentsListType::kAssigned:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "ChangedList.Assigned",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kNoDueDate:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "ChangedList.NoDueDate",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kMissing:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "ChangedList.Missing",
+            time_shown);
+        break;
+      case StudentAssignmentsListType::kDone:
+        base::UmaHistogramMediumTimes(
+            "Ash.Glanceables.Classroom.Student.AssignmentListShownTime."
+            "ChangedList.Done",
+            time_shown);
+        break;
+    }
+  }
+}
+
+void RecordStudentSelectedListChangeCount(int change_count) {
+  base::UmaHistogramCounts100(
+      "Ash.Glanceables.Classroom.Student.SelectedListChangeCount",
+      change_count);
+}
+
+void RecordStudentAssignmentListSelected(StudentAssignmentsListType list_type) {
+  base::UmaHistogramEnumeration(
+      "Ash.Glanceables.Classroom.Student.ListSelected", list_type);
 }
 
 }  // namespace ash

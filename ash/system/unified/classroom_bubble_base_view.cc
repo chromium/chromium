@@ -201,6 +201,9 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     RecordClassroomChangeLoadTime(
         success, base::TimeTicks::Now() - assignments_requested_time_);
   }
+
+  list_shown_start_time_ = base::TimeTicks::Now();
+  first_assignment_list_shown_ = true;
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {

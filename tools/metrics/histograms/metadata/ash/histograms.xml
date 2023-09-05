@@ -3873,6 +3873,51 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.Glanceables.Classroom.Student.AssignmentListShownTime.{OccurrenceType}.{AssignmentListType}"
+    units="ms" expires_after="2024-08-29">
+  <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The amount of time that the user had the student assignment list selected
+    and shown. This metric is split between the default list which is shown when
+    the bubble is first opened and assignment lists which are shown after
+    chaning the selection. The time is measured from the moment that the list is
+    shown to the moment that either the selection is changed or the bubble is
+    closed.
+  </summary>
+  <token key="AssignmentListType">
+    <variant name="Assigned"/>
+    <variant name="Done"/>
+    <variant name="Missing"/>
+    <variant name="NoDueDate"/>
+  </token>
+  <token key="OccurrenceType">
+    <variant name="ChangedList"/>
+    <variant name="DefaultList"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Glanceables.Classroom.Student.ListSelected"
+    enum="GlanceableStudentAssignmentList" expires_after="2024-08-29">
+  <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of times that the assignment list has been selected. Recorded
+    every time a new assignment list is selected.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.Classroom.Student.SelectedListChangeCount"
+    units="int" expires_after="2024-08-29">
+  <owner>mmourgos@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The total number of times that a new student assignment list is selected.
+    The total count is recorded when the glanceable bubble is closed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.LoginToShowTime" units="ms"
     expires_after="2024-08-31">
   <owner>anasalazar@google.com</owner>
