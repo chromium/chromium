@@ -409,6 +409,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   TokenManager* GetTokenManagerForTesting();
 
+  // Functions to get/set the status of the service loop.
+  bool IsServiceLoopRunning();
+  void SetServiceLoopStatus(bool is_running);
+
+  base::Lock service_loop_status_lock_;
+  bool is_service_loop_running_ GUARDED_BY(service_loop_status_lock_);
+
   base::ScopedFD proxy_fd_;
   base::ScopedFD cancel_pipe_;
 

@@ -419,7 +419,8 @@ void CameraHalDispatcherImpl::DisableSensorForTesting() {
 }
 
 CameraHalDispatcherImpl::CameraHalDispatcherImpl()
-    : proxy_thread_("CameraProxyThread"),
+    : is_service_loop_running_(false),
+      proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       camera_hal_server_callbacks_(this),
@@ -725,6 +726,16 @@ void CameraHalDispatcherImpl::CreateSocket(base::WaitableEvent* started) {
                      base::Unretained(started)));
 }
 
+bool CameraHalDispatcherImpl::IsServiceLoopRunning() {
+  base::AutoLock lock(service_loop_status_lock_);
+  return is_service_loop_running_;
+}
+
+void CameraHalDispatcherImpl::SetServiceLoopStatus(bool is_running) {
+  base::AutoLock lock(service_loop_status_lock_);
+  is_service_loop_running_ = is_running;
+}
+
 void CameraHalDispatcherImpl::StartServiceLoop(base::ScopedFD socket_fd,
                                                base::WaitableEvent* started) {
   DCHECK(blocking_io_task_runner_->BelongsToCurrentThread());
@@ -740,12 +751,14 @@ void CameraHalDispatcherImpl::StartServiceLoop(base::ScopedFD socket_fd,
   }
 
   proxy_fd_ = std::move(socket_fd);
+  SetServiceLoopStatus(true);
   started->Signal();
   VLOG(1) << "CameraHalDispatcherImpl started; waiting for incoming connection";
 
   while (true) {
     if (!WaitForSocketReadable(proxy_fd_.get(), cancel_fd.get())) {
       VLOG(1) << "Quit CameraHalDispatcherImpl IO thread";
+      SetServiceLoopStatus(false);
       return;
     }
 
@@ -992,7 +1005,15 @@ void CameraHalDispatcherImpl::StopOnProxyThread() {
     LOG(ERROR) << "Failed to delete " << kArcCamera3SocketPath;
   }
   // Close |cancel_pipe_| to quit the loop in WaitForIncomingConnection.
-  cancel_pipe_.reset();
+  // If poll() is called after signaling |cancel_pipe_| without a while loop,
+  // the service loop will deadlock because it will be blocked in poll() since
+  // it is unable to receive the signal from |cancel_pipe_|. To avoid the
+  // deadlock, |cancel_pipe_| is kept signaling until the service loop stops.
+  while (IsServiceLoopRunning()) {
+    cancel_pipe_.reset();
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  }
+
   mojo_client_observers_.clear();
   client_observers_.clear();
   camera_hal_server_callbacks_.reset();
