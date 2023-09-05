@@ -60,6 +60,7 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::password_generation::PasswordGenerationType;
 using base::TimeTicks;
+using password_manager_util::IsSingleUsernameType;
 using signin::GaiaIdHash;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -1262,12 +1263,15 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
   // Iterated over text fields that the user has interacted with recently to
   // find possible username fields.
   for (const auto& field : field_info) {
-    // Skip the field if the user has erased the value, or if the field is a
-    // part of the observed password form.
-    // TODO(crbug/1468297): Propagate is_likely_otp flag to FieldInfo struct and
-    // check for it too.
-    if (field.value.empty() ||
-        ObservedFormHasField(field.driver_id, field.field_id)) {
+    // Skip the field if any of the following is true:
+    // (1) The user has erased the value.
+    // (2) The field is a part of the observed password form.
+    // (3) PasswordManager's heuristics suggest it's an OTP field, and there
+    // is no serverside data supporting that it's a single username field.
+    if (field.value.empty() ||                                    // Case (1).
+        ObservedFormHasField(field.driver_id, field.field_id) ||  // Case (2).
+        (field.is_likely_otp &&
+         !IsSingleUsernameType(field.type))) {  // Case (3).
       continue;
     }
 
