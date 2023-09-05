@@ -8,8 +8,6 @@ include_rules = [
   "+base/win/windows_types.h",
   # Nothing from chrome.
   "-chrome",
-  # Except Chrome for Testing.
-  "+chrome/browser/chrome_for_testing/buildflags.h",
   # For the app icon resource identifiers.
   "+chrome/app/chrome_dll_resource.h",
   # All registry access should go through nt_registry.

@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/browser/chrome_for_testing/buildflags.h",
   # This file is generated but otherwise would be excluded because of the
   # "-chrome" rule in a parent dir.
   "+chrome/grit/chromium_strings.h",
