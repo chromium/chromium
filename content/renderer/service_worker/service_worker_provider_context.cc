@@ -395,6 +395,8 @@ void ServiceWorkerProviderContext::SetController(
   sha256_script_checksum_ = controller_info->sha256_script_checksum;
   if (controller_info->router_data) {
     router_rules_ = controller_info->router_data->router_rules;
+    initial_running_status_ =
+        controller_info->router_data->initial_running_status;
     remote_cache_storage_ =
         std::move(controller_info->router_data->remote_cache_storage);
   }
