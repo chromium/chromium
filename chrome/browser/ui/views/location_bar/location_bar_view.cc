@@ -640,7 +640,7 @@ void LocationBarView::Layout() {
     text_left = 8;
     icon_indent = 7;
     text_indent = 6;
-    icon_keyword_indent = 3;
+    icon_keyword_indent = 9;
     text_keyword_indent = -9;
   } else if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     icon_left = 5;
