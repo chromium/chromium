@@ -14,10 +14,6 @@ class Profile;
 
 namespace web_app {
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kCursiveManagedStylusPreinstall);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate
 // installation on features listed in |kPreinstalledAppInstallFeatures|.
