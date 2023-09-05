@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -115,6 +116,43 @@ std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
     os << field << ", \n";
   }
   return os << "]";
+}
+
+PasskeySection::PasskeySection(std::string display_name,
+                               std::vector<uint8_t> passkey_id)
+    : display_name_(std::move(display_name)),
+      passkey_id_(std::move(passkey_id)),
+      estimated_dynamic_memory_use_(
+          base::trace_event::EstimateMemoryUsage(display_name_) +
+          base::trace_event::EstimateMemoryUsage(passkey_id_)) {}
+
+PasskeySection::PasskeySection(const PasskeySection& passkey_section) = default;
+
+PasskeySection::PasskeySection(PasskeySection&& passkey_section) = default;
+
+PasskeySection::~PasskeySection() = default;
+
+PasskeySection& PasskeySection::operator=(
+    const PasskeySection& passkey_section) = default;
+
+PasskeySection& PasskeySection::operator=(PasskeySection&& passkey_section) =
+    default;
+
+bool PasskeySection::operator==(const PasskeySection& passkey_section) const {
+  return display_name_ == passkey_section.display_name_ &&
+         base::ranges::equal(passkey_id_, passkey_section.passkey_id_);
+}
+
+size_t PasskeySection::EstimateMemoryUsage() const {
+  return sizeof(PasskeySection) + estimated_dynamic_memory_use_;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const PasskeySection& passkey_section) {
+  os << "display_name: \"" << passkey_section.display_name() << "\", "
+     << "passkey_id: \"" << base::Base64Encode(passkey_section.passkey_id())
+     << "\"";
+  return os;
 }
 
 PromoCodeInfo::PromoCodeInfo(std::u16string promo_code,
@@ -296,7 +334,11 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetData& data) {
     os << "\", with option toggle: \"none";
   }
 
-  os << "\", warning: \"" << data.warning() << "\", and user info list: [";
+  os << "\", warning: \"" << data.warning() << "\", and passkey list: [";
+  for (const PasskeySection& passkey_section : data.passkey_section_list()) {
+    os << passkey_section << ", ";
+  }
+  os << "], and user info list: [";
   for (const UserInfo& user_info : data.user_info_list()) {
     os << user_info << ", ";
   }
@@ -428,6 +470,22 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::AppendField(
       AccessorySheetField(std::move(display_text), std::move(text_to_fill),
                           std::move(a11y_description), std::move(id),
                           is_obfuscated, selectable));
+  return *this;
+}
+
+AccessorySheetData::Builder&& AccessorySheetData::Builder::AddPasskeySection(
+    std::string username,
+    std::vector<uint8_t> credential_id) && {
+  // Calls PasskeySection(...)& since |this| is an lvalue.
+  return std::move(
+      AddPasskeySection(std::move(username), std::move(credential_id)));
+}
+
+AccessorySheetData::Builder& AccessorySheetData::Builder::AddPasskeySection(
+    std::string username,
+    std::vector<uint8_t> credential_id) & {
+  accessory_sheet_data_.add_passkey_section(
+      (PasskeySection(std::move(username), std::move(credential_id))));
   return *this;
 }
 

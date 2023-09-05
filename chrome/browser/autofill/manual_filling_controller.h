@@ -119,6 +119,11 @@ class ManualFillingController {
       autofill::AccessoryTabType type,
       const autofill::AccessorySheetField& selection) = 0;
 
+  // Called by the UI code to request that `passkey_id` should be used to
+  // authenticate the user.
+  virtual void OnPasskeySelected(autofill::AccessoryTabType type,
+                                 const std::vector<uint8_t>& passkey_id) = 0;
+
   // Called by the UI code because a user triggered the |selected_action|,
   // such as "Manage passwords...".
   virtual void OnOptionSelected(

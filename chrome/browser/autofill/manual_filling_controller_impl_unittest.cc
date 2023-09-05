@@ -9,32 +9,20 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
 #include "chrome/browser/autofill/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/password_accessory_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 using autofill::AccessoryAction;
@@ -44,15 +32,13 @@ using autofill::mojom::FocusedFieldType;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
+using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::SaveArg;
-using testing::StrictMock;
-using testing::WithArgs;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
-using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
@@ -65,6 +51,10 @@ AccessorySheetData filled_passwords_sheet() {
 AccessorySheetData populate_sheet(AccessoryTabType type) {
   constexpr char16_t kTitle[] = u"Suggestions available!";
   return AccessorySheetData::Builder(type, kTitle).AddUserInfo().Build();
+}
+
+std::vector<uint8_t> test_passkey_id() {
+  return {23, 24, 25, 26, 27};
 }
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
@@ -121,8 +111,6 @@ class ManualFillingControllerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -252,6 +240,14 @@ TEST_F(ManualFillingControllerTest, ForwardsCredManActionToPasswordController) {
       OnOptionSelected(AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
   controller()->OnOptionSelected(
       AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ForwardsPasskeySelectionToPasswordController) {
+  EXPECT_CALL(mock_pwd_controller_, OnPasskeySelected(Eq(test_passkey_id())));
+  EXPECT_CALL(*view(), Hide());  // Make room for passkey sheet!
+  controller()->OnPasskeySelected(AccessoryTabType::PASSWORDS,
+                                  test_passkey_id());
 }
 
 TEST_F(ManualFillingControllerTest,

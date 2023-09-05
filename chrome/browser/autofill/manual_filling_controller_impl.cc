@@ -264,6 +264,17 @@ void ManualFillingControllerImpl::OnFillingTriggered(
   view_->SwapSheetWithKeyboard();  // Soft-close the keyboard.
 }
 
+void ManualFillingControllerImpl::OnPasskeySelected(
+    AccessoryTabType type,
+    const std::vector<uint8_t>& passkey_id) {
+  AccessoryController* controller = GetControllerForTabType(type);
+  if (!controller) {
+    return;  // Controller not available anymore.
+  }
+  controller->OnPasskeySelected(passkey_id);
+  view_->Hide();  // Close the sheet since the passkey sheet will be triggered.
+}
+
 void ManualFillingControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) const {
   UMA_HISTOGRAM_ENUMERATION("KeyboardAccessory.AccessoryActionSelected",

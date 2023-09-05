@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -42,7 +44,6 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
@@ -53,6 +54,7 @@
 using autofill::AccessorySheetData;
 using autofill::AccessorySheetField;
 using autofill::FooterCommand;
+using autofill::PasskeySection;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using password_manager::CredentialCache;
@@ -162,6 +164,7 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
   if (!last_focused_field_info_->origin.IsSameOriginWith(origin))
     return absl::nullopt;
 
+  std::vector<PasskeySection> passkeys_to_add;
   std::vector<UserInfo> info_to_add;
   std::vector<FooterCommand> footer_commands_to_add;
   const bool is_password_field = last_focused_field_info_->focused_field_type ==
@@ -204,6 +207,14 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
           driver_supplier_.Run((&GetWebContents()))) {
     if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
             password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
+      if (auto passkeys = credentials_delegate->GetPasskeys()) {
+        passkeys_to_add.reserve(passkeys->size());
+        for (const password_manager::PasskeyCredential& passkey :
+             passkeys.value()) {
+          passkeys_to_add.emplace_back(passkey.display_name(),
+                                       passkey.credential_id());
+        }
+      }
       if (credentials_delegate->IsAndroidHybridAvailable()) {
         std::u16string passkey_other_device_title = l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
@@ -214,10 +225,14 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
     }
   }
 
-  bool has_suggestions = !info_to_add.empty();
+  bool has_suggestions = !info_to_add.empty() || !passkeys_to_add.empty();
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
       std::move(info_to_add), std::move(footer_commands_to_add));
+  base::ranges::for_each(std::move(passkeys_to_add),
+                         [&data](PasskeySection section) {
+                           data.add_passkey_section(std::move(section));
+                         });
 
   if (ShouldShowRecoveryToggle(origin)) {
     BlocklistedStatus blocklisted_status =
@@ -251,6 +266,17 @@ void PasswordAccessoryControllerImpl::OnFillingTriggered(
       base::BindOnce(&PasswordAccessoryControllerImpl::OnReauthCompleted,
                      base::Unretained(this), selection),
       /*use_last_valid_auth=*/true);
+}
+
+void PasswordAccessoryControllerImpl::OnPasskeySelected(
+    const std::vector<uint8_t>& passkey_id) {
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run((&GetWebContents()))) {
+    if (password_manager::WebAuthnCredentialsDelegate* credentials_delegate =
+            password_client_->GetWebAuthnCredentialsDelegateForDriver(driver)) {
+      credentials_delegate->SelectPasskey(base::Base64Encode(passkey_id));
+    }
+  }
 }
 
 // static

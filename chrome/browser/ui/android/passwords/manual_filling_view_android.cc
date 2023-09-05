@@ -97,6 +97,8 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
         toggle.is_enabled(), static_cast<int>(toggle.accessory_action()));
   }
 
+  // TODO(crbug.com/1477267): Send passkeys to java side.
+
   for (const UserInfo& user_info : tab_data.user_info_list()) {
     ScopedJavaLocalRef<jobject> j_user_info =
         Java_ManualFillingComponentBridge_addUserInfoToAccessorySheetData(
@@ -223,6 +225,17 @@ void ManualFillingViewAndroid::OnFillingTriggered(
   controller_->OnFillingTriggered(
       static_cast<autofill::AccessoryTabType>(tab_type),
       ConvertJavaUserInfoField(env, j_user_info_field));
+}
+
+void ManualFillingViewAndroid::OnPasskeySelected(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jint tab_type,
+    const base::android::JavaParamRef<jbyteArray>& j_passkey_id) {
+  std::vector<uint8_t> passkey;
+  base::android::AppendJavaByteArrayToByteVector(env, j_passkey_id, &passkey);
+  controller_->OnPasskeySelected(
+      static_cast<autofill::AccessoryTabType>(tab_type), passkey);
 }
 
 void ManualFillingViewAndroid::OnOptionSelected(

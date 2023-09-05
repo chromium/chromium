@@ -43,6 +43,9 @@ class AccessoryController {
       autofill::FieldGlobalId focused_field_id,
       const autofill::AccessorySheetField& selection) = 0;
 
+  // Triggered when a user selects a passkey.
+  virtual void OnPasskeySelected(const std::vector<uint8_t>& passkey_id) = 0;
+
   // Triggered when a user selects an option.
   virtual void OnOptionSelected(autofill::AccessoryAction selected_action) = 0;
 

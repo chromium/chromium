@@ -59,6 +59,7 @@ class PasswordAccessoryControllerImpl
   void OnFillingTriggered(
       autofill::FieldGlobalId focused_field_id,
       const autofill::AccessorySheetField& selection) override;
+  void OnPasskeySelected(const std::vector<uint8_t>& passkey_id) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) override;

@@ -32,6 +32,10 @@ class MockCreditCardAccessoryController
               OnFillingTriggered,
               (autofill::FieldGlobalId, const autofill::AccessorySheetField&),
               (override));
+  MOCK_METHOD((void),
+              OnPasskeySelected,
+              (const std::vector<uint8_t>& credential_id),
+              (override));
   MOCK_METHOD(void, OnOptionSelected, (autofill::AccessoryAction), (override));
   MOCK_METHOD(void,
               OnToggleChanged,

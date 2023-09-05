@@ -48,6 +48,11 @@ class MockManualFillingController
                const autofill::AccessorySheetField&),
               (override));
   MOCK_METHOD((void),
+              OnPasskeySelected,
+              (autofill::AccessoryTabType type,
+               const std::vector<uint8_t>& passkey_id),
+              (override));
+  MOCK_METHOD((void),
               OnOptionSelected,
               (autofill::AccessoryAction selected_action),
               (const, override));

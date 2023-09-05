@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
+#include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -28,7 +28,6 @@
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -49,7 +48,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/features.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -70,6 +68,7 @@ using password_manager::CreateEntry;
 using password_manager::CredentialCache;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::OriginCredentialStore;
+using password_manager::PasskeyCredential;
 using password_manager::PasswordForm;
 using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
@@ -79,6 +78,7 @@ using testing::Eq;
 using testing::Mock;
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 using testing::SaveArg;
 using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
@@ -94,6 +94,8 @@ constexpr char kExampleSignonRealm[] = "https://example.com/";
 constexpr char16_t kExampleDomain[] = u"example.com";
 constexpr char16_t kUsername[] = u"alice";
 constexpr char16_t kPassword[] = u"password123";
+const absl::optional<std::vector<PasskeyCredential>> kNoPasskeys =
+    absl::nullopt;
 
 class MockPasswordGenerationController
     : public PasswordGenerationControllerImpl {
@@ -249,6 +251,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
     webauthn_credentials_delegate_ =
         std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
+    ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
+        .WillByDefault(ReturnRef(kNoPasskeys));
     ON_CALL(*password_client(), GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate()));
     ON_CALL(*password_client(), GetWebAuthnCredManDelegateForDriver)
@@ -1158,6 +1162,44 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
 
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
+}
+
+// Verify that when WebAuthnCredentialsDelegate::SelectPasskey can be invoked
+// with a passkey shown in the fallback sheet.
+TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
+  const PasskeyCredential kTestPasskey(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("rpid.com"),
+      PasskeyCredential::CredentialId({21, 22, 23, 24}),
+      PasskeyCredential::UserId({81, 28, 83, 84}),
+      PasskeyCredential::Username("someone@example.com"));
+  const absl::optional<std::vector<PasskeyCredential>> kTestPasskeys(
+      {kTestPasskey});
+  ON_CALL(*webauthn_credentials_delegate(), GetPasskeys)
+      .WillByDefault(ReturnRef(kTestPasskeys));
+  CreateSheetController();
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_title_str(kExampleDomain))
+          .AddPasskeySection(kTestPasskey.username(),
+                             kTestPasskey.credential_id())
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .Build());
+
+  EXPECT_CALL(
+      *webauthn_credentials_delegate(),
+      SelectPasskey(Eq(base::Base64Encode(kTestPasskey.credential_id()))));
+  controller()->OnPasskeySelected(kTestPasskey.credential_id());
 }
 
 // Verify that when WebAuthnCredentialsDelegate::IsAndroidHybridAvailable

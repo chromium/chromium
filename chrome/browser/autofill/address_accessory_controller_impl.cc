@@ -128,6 +128,11 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
       focused_field_id, selection.display_text());
 }
 
+void AddressAccessoryControllerImpl::OnPasskeySelected(
+    const std::vector<uint8_t>& passkey_id) {
+  NOTIMPLEMENTED() << "Passkey support not available in address controller.";
+}
+
 void AddressAccessoryControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) {
   if (selected_action == AccessoryAction::MANAGE_ADDRESSES) {

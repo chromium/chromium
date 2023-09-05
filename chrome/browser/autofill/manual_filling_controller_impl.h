@@ -55,6 +55,8 @@ class ManualFillingControllerImpl
   void OnFillingTriggered(
       autofill::AccessoryTabType type,
       const autofill::AccessorySheetField& selection) override;
+  void OnPasskeySelected(autofill::AccessoryTabType type,
+                         const std::vector<uint8_t>& passkey_id) override;
   void OnOptionSelected(
       autofill::AccessoryAction selected_action) const override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,

@@ -63,6 +63,11 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       const base::android::JavaParamRef<jobject>& obj,
       jint tab_type,
       const base::android::JavaParamRef<jobject>& j_user_info_field);
+  void OnPasskeySelected(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint tab_type,
+      const base::android::JavaParamRef<jbyteArray>& j_passkey_id);
   void OnOptionSelected(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jint selected_action);
