@@ -5,8 +5,10 @@
 #include "components/segmentation_platform/internal/metrics/field_trial_recorder.h"
 
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 
 namespace segmentation_platform {
 
@@ -23,13 +25,19 @@ void FieldTrialRecorder::RecordFieldTrialAtStartup(
       continue;
     }
 
-    const std::string& trial_name = config->GetSegmentationFilterName();
-    ClassificationResult cached_results =
-        cached_result_provider->GetCachedResultForClient(
+    std::string trial_name = config->GetSegmentationFilterName();
+    absl::optional<proto::PredictionResult> cached_results =
+        cached_result_provider->GetPredictionResultForClient(
             config->segmentation_key);
-    const std::string& group_name = cached_results.ordered_labels.size() > 0
-                                        ? cached_results.ordered_labels[0]
-                                        : "Unselected";
+    std::string group_name = "Unselected";
+    if (cached_results &&
+        PostProcessor::IsClassificationResult(*cached_results)) {
+      std::vector<std::string> ordered_labels =
+          PostProcessor().GetClassifierResults(*cached_results);
+      if (ordered_labels.size() > 0) {
+        group_name = ordered_labels[0];
+      }
+    }
     field_trial_register_->RegisterFieldTrial(trial_name, group_name);
   }
 }

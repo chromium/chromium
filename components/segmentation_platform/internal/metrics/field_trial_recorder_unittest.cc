@@ -99,4 +99,22 @@ TEST_F(FieldTrialRecorderTest, RecordFieldTrial) {
       configs_, cached_result_provider_.get());
 }
 
+TEST_F(FieldTrialRecorderTest, RecordFieldTrialForNonClassification) {
+  result_prefs_->SaveClientResultToPrefs(
+      "test_key",
+      CreateClientResult(metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.8},
+          test_utils::GetTestOutputConfigForGenericPredictor({"label1"}),
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1)));
+  cached_result_provider_ = std::make_unique<CachedResultProvider>(
+      std::move(result_prefs_), configs_);
+
+  EXPECT_CALL(field_trial_register_,
+              RegisterFieldTrial(base::StringPiece("Segmentation_test_key"),
+                                 base::StringPiece("Unselected")));
+
+  field_trial_recorder_->RecordFieldTrialAtStartup(
+      configs_, cached_result_provider_.get());
+}
+
 }  // namespace segmentation_platform

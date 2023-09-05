@@ -39,11 +39,6 @@ class CachedResultProvider {
   CachedResultProvider(CachedResultProvider&) = delete;
   CachedResultProvider& operator=(CachedResultProvider&) = delete;
 
-  // Returns cached post-processed result from last session for the client.
-  // TODO(salg): Remove this and replace with GetPredictionResultForClient.
-  ClassificationResult GetCachedResultForClient(
-      const std::string& segmentation_key);
-
   // Returns cached un-processed result from last session for the client.
   absl::optional<proto::PredictionResult> GetPredictionResultForClient(
       const std::string& segmentation_key);

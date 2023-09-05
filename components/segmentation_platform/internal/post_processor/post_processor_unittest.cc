@@ -371,4 +371,19 @@ TEST(PostProcessorTest, GetRawResult) {
   EXPECT_NEAR(0.1, *result.GetResultForLabel("Output1"), 0.001);
 }
 
+TEST(PostProcessorTest, IsClassificationModel) {
+  proto::PredictionResult pred_result1 = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0.1, 0.2, 0.3},
+      GetTestOutputConfigForGenericClassifier(),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  EXPECT_FALSE(PostProcessor().IsClassificationResult(pred_result1));
+
+  proto::PredictionResult pred_result2 = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0, 0, 0, 0},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  EXPECT_TRUE(PostProcessor().IsClassificationResult(pred_result2));
+}
+
 }  // namespace segmentation_platform

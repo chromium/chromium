@@ -10,7 +10,6 @@
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
-#include "components/segmentation_platform/internal/proto/client_results.pb.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,10 +28,6 @@ class SegmentInfo;
 
 namespace {
 
-// Labels for BinaryClassifier.
-const char kNotShowShare[] = "Not Show Share";
-const char kShowShare[] = "Show Share";
-
 const char kClientKey[] = "test_key";
 
 // Labels for MultiClassClassifier.
@@ -47,17 +42,6 @@ std::unique_ptr<Config> CreateTestConfig() {
   config->unknown_selection_ttl = base::Days(14);
   config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
   return config;
-}
-
-proto::OutputConfig GetTestOutputConfigForBinaryClassifier() {
-  proto::SegmentationModelMetadata model_metadata;
-  MetadataWriter writer(&model_metadata);
-
-  writer.AddOutputConfigForBinaryClassifier(
-      /*threshold=*/0.5, /*positive_label=*/kShowShare,
-      /*negative_label=*/kNotShowShare);
-
-  return model_metadata.output_config();
 }
 
 proto::OutputConfig GetTestOutputConfigForMultiClassClassifier() {
@@ -94,43 +78,12 @@ class CachedResultProviderTest : public testing::Test {
   std::vector<std::unique_ptr<Config>> configs_;
 };
 
-TEST_F(CachedResultProviderTest, CachedResultProviderWithNonEmptyPredResult) {
-  result_prefs_->SaveClientResultToPrefs(
-      kClientKey,
-      metadata_utils::CreateClientResultFromPredResult(
-          metadata_utils::CreatePredictionResult(
-              /*model_scores=*/{0.8}, GetTestOutputConfigForBinaryClassifier(),
-              /*timestamp=*/base::Time::Now(), /*model_version=*/1),
-          /*timestamp=*/base::Time::Now()));
-  cached_result_provider_ = std::make_unique<CachedResultProvider>(
-      std::move(result_prefs_), configs_);
-  ClassificationResult classification_result =
-      cached_result_provider_->GetCachedResultForClient(kClientKey);
-  EXPECT_THAT(classification_result.status, PredictionStatus::kSucceeded);
-  EXPECT_THAT(classification_result.ordered_labels,
-              testing::ElementsAre(kShowShare));
-}
-
-TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPredResult) {
-  proto::PredictionResult pred_result;
-  result_prefs_->SaveClientResultToPrefs(
-      kClientKey, metadata_utils::CreateClientResultFromPredResult(
-                      pred_result, /*timestamp=*/base::Time::Now()));
-  cached_result_provider_ = std::make_unique<CachedResultProvider>(
-      std::move(result_prefs_), configs_);
-  ClassificationResult classification_result =
-      cached_result_provider_->GetCachedResultForClient(kClientKey);
-  EXPECT_THAT(classification_result.status, PredictionStatus::kFailed);
-  EXPECT_TRUE(classification_result.ordered_labels.empty());
-}
-
 TEST_F(CachedResultProviderTest, CachedResultProviderWithEmptyPrefs) {
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       std::move(result_prefs_), configs_);
-  ClassificationResult classification_result =
-      cached_result_provider_->GetCachedResultForClient(kClientKey);
-  EXPECT_THAT(classification_result.status, PredictionStatus::kFailed);
-  EXPECT_TRUE(classification_result.ordered_labels.empty());
+  absl::optional<proto::PredictionResult> retrieved_prediction_result =
+      cached_result_provider_->GetPredictionResultForClient(kClientKey);
+  EXPECT_FALSE(retrieved_prediction_result);
 }
 
 TEST_F(CachedResultProviderTest,

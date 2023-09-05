@@ -93,6 +93,14 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
   return model_metadata.output_config();
 }
 
+proto::OutputConfig GetTestOutputConfigForGenericPredictor(
+    const std::vector<std::string>& labels) {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor(labels);
+  return model_metadata.output_config();
+}
+
 proto::ClientResult CreateClientResult(proto::PredictionResult pred_result) {
   proto::ClientResult client_result;
   client_result.mutable_client_result()->CopyFrom(pred_result);

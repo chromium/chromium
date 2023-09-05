@@ -37,6 +37,21 @@ bool IsScoreBelowMultiClassThreshold(
 
 }  // namespace
 
+// static
+bool PostProcessor::IsClassificationResult(
+    const proto::PredictionResult& prediction_result) {
+  const proto::Predictor& predictor =
+      prediction_result.output_config().predictor();
+  switch (predictor.PredictorType_case()) {
+    case proto::Predictor::kBinaryClassifier:
+    case proto::Predictor::kMultiClassClassifier:
+    case proto::Predictor::kBinnedClassifier:
+      return true;
+    default:
+      return false;
+  }
+}
+
 std::vector<std::string> PostProcessor::GetClassifierResults(
     const proto::PredictionResult& prediction_result) {
   const std::vector<float> model_scores(prediction_result.result().begin(),
