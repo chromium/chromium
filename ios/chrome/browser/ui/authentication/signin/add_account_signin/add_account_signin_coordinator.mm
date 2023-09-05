@@ -201,7 +201,11 @@ using signin_metrics::PromoAction;
                                       identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
     case AddAccountSigninIntent::kSigninAndSyncReauth:
-      [self presentUserConsentWithIdentity:identity];
+      if (signinResult == SigninCoordinatorResultSuccess) {
+        [self presentUserConsentWithIdentity:identity];
+      } else {
+        [self addAccountDoneWithSigninResult:signinResult identity:identity];
+      }
       break;
     case AddAccountSigninIntent::kAddAccount:
     case AddAccountSigninIntent::kPrimaryAccountReauth:
