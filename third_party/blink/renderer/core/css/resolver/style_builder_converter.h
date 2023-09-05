@@ -115,11 +115,10 @@ class StyleBuilderConverter {
   template <typename T>
   static T ConvertComputedLength(const StyleResolverState&, const CSSValue&);
   static LengthBox ConvertClip(StyleResolverState&, const CSSValue&);
-  static scoped_refptr<ClipPathOperation> ConvertClipPath(StyleResolverState&,
-                                                          const CSSValue&);
-  static scoped_refptr<StyleSVGResource> ConvertElementReference(
-      StyleResolverState&,
-      const CSSValue&);
+  static ClipPathOperation* ConvertClipPath(StyleResolverState&,
+                                            const CSSValue&);
+  static StyleSVGResource* ConvertElementReference(StyleResolverState&,
+                                                   const CSSValue&);
   static FilterOperations ConvertFilterOperations(StyleResolverState&,
                                                   const CSSValue&,
                                                   CSSPropertyID);
@@ -304,9 +303,8 @@ class StyleBuilderConverter {
                                                     const CSSValue&);
   static scoped_refptr<BasicShape> ConvertObjectViewBox(StyleResolverState&,
                                                         const CSSValue&);
-  static scoped_refptr<OffsetPathOperation> ConvertOffsetPath(
-      StyleResolverState&,
-      const CSSValue&);
+  static OffsetPathOperation* ConvertOffsetPath(StyleResolverState&,
+                                                const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
   static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);

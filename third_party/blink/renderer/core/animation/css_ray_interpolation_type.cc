@@ -201,8 +201,9 @@ void CSSRayInterpolationType::ApplyStandardPropertyValue(
       CreateCoordinate(*list.Get(kRayCenterYIndex),
                        state.CssToLengthConversionData()),
       To<InterpolableNumber>(list.Get(kRayHasExplicitCenterIndex))->Value());
-  state.StyleBuilder().SetOffsetPath(ShapeOffsetPathOperation::Create(
-      style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
+  state.StyleBuilder().SetOffsetPath(
+      MakeGarbageCollected<ShapeOffsetPathOperation>(
+          style_ray, ray_non_interpolable_value.Mode().GetCoordBox()));
 }
 
 void CSSRayInterpolationType::Composite(

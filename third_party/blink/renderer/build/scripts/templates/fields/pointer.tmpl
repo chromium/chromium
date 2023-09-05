@@ -3,7 +3,11 @@
 
 {% macro decl_public_methods(field) %}
 {{field.type_name}}* {{field.getter_method_name}}() const {
+{% if field.wrapper_pointer_name == 'Member' %}
+  return {{decode(field, getter_expression(field))}}.Get();
+{% else %}
   return {{decode(field, getter_expression(field))}}.get();
+{% endif %}
 }
 
 {% if field.builder %}

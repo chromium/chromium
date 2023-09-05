@@ -16,10 +16,14 @@ class SVGResourceClient;
 
 class ReferenceOffsetPathOperation final : public OffsetPathOperation {
  public:
-  static scoped_refptr<ReferenceOffsetPathOperation>
-  Create(const AtomicString& url, SVGResource* resource, CoordBox coord_box) {
-    return base::AdoptRef(
-        new ReferenceOffsetPathOperation(url, resource, coord_box));
+  ReferenceOffsetPathOperation(const String& url,
+                               SVGResource* resource,
+                               CoordBox coord_box)
+      : OffsetPathOperation(coord_box), url_(url), resource_(resource) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(resource_);
+    OffsetPathOperation::Trace(visitor);
   }
 
   bool IsEqualAssumingSameType(const OffsetPathOperation& o) const override {
@@ -44,13 +48,8 @@ class ReferenceOffsetPathOperation final : public OffsetPathOperation {
   const AtomicString& Url() const { return url_; }
 
  private:
-  ReferenceOffsetPathOperation(const String& url,
-                               SVGResource* resource,
-                               CoordBox coord_box)
-      : OffsetPathOperation(coord_box), resource_(resource), url_(url) {}
-
-  Persistent<SVGResource> resource_;
   AtomicString url_;
+  Member<SVGResource> resource_;
 };
 
 template <>

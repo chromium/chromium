@@ -30,20 +30,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CLIP_PATH_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CLIP_PATH_OPERATION_H_
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class ClipPathOperation : public RefCounted<ClipPathOperation> {
-  USING_FAST_MALLOC(ClipPathOperation);
-
+class ClipPathOperation : public GarbageCollected<ClipPathOperation> {
  public:
   // TODO(pdr): Support <geometry-box>.
   enum OperationType { kReference, kShape };
 
   virtual ~ClipPathOperation() = default;
+  virtual void Trace(Visitor* visitor) const {}
 
   virtual bool operator==(const ClipPathOperation&) const = 0;
   bool operator!=(const ClipPathOperation& o) const { return !(*this == o); }

@@ -41,11 +41,16 @@ class StyleSVGResource;
 enum class SVGPaintType { kColor, kNone, kUriNone, kUriColor, kUri };
 
 struct SVGPaint {
+  DISALLOW_NEW();
+
+ public:
   CORE_EXPORT SVGPaint();
   explicit SVGPaint(Color color);
   SVGPaint(const SVGPaint& paint);
   CORE_EXPORT ~SVGPaint();
   CORE_EXPORT SVGPaint& operator=(const SVGPaint& paint);
+
+  void Trace(Visitor* visitor) const { visitor->Trace(resource); }
 
   CORE_EXPORT bool operator==(const SVGPaint&) const;
   bool operator!=(const SVGPaint& other) const { return !(*this == other); }
@@ -60,13 +65,13 @@ struct SVGPaint {
   bool HasColor() const { return IsColor() || type == SVGPaintType::kUriColor; }
   bool HasUrl() const { return type >= SVGPaintType::kUriNone; }
   bool HasCurrentColor() const { return HasColor() && color.IsCurrentColor(); }
-  StyleSVGResource* Resource() const { return resource.get(); }
+  StyleSVGResource* Resource() const { return resource.Get(); }
 
   const StyleColor& GetColor() const { return color; }
   const AtomicString& GetUrl() const;
 
-  scoped_refptr<StyleSVGResource> resource;
   StyleColor color;
+  Member<StyleSVGResource> resource{nullptr};
   SVGPaintType type{SVGPaintType::kNone};
 };
 

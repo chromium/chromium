@@ -160,7 +160,7 @@ scoped_refptr<StyleReflection> StyleBuilderConverter::ConvertBoxReflect(
   return reflection;
 }
 
-scoped_refptr<StyleSVGResource> StyleBuilderConverter::ConvertElementReference(
+StyleSVGResource* StyleBuilderConverter::ConvertElementReference(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -172,7 +172,8 @@ scoped_refptr<StyleSVGResource> StyleBuilderConverter::ConvertElementReference(
   SVGResource* resource =
       state.GetElementStyleResources().GetSVGResourceFromValue(
           CSSPropertyID::kInvalid, url_value);
-  return StyleSVGResource::Create(resource, url_value.ValueForSerialization());
+  return MakeGarbageCollected<StyleSVGResource>(
+      resource, url_value.ValueForSerialization());
 }
 
 LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
@@ -185,7 +186,7 @@ LengthBox StyleBuilderConverter::ConvertClip(StyleResolverState& state,
                    ConvertLengthOrAuto(state, *rect.Left()));
 }
 
-scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
+ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
@@ -199,7 +200,7 @@ scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
       GeometryBox geometry_box =
           geometry_box_value ? geometry_box_value->ConvertTo<GeometryBox>()
                              : GeometryBox::kBorderBox;
-      return ShapeClipPathOperation::Create(
+      return MakeGarbageCollected<ShapeClipPathOperation>(
           BasicShapeForValue(state, shape_value), geometry_box);
     }
 
@@ -212,7 +213,7 @@ scoped_refptr<ClipPathOperation> StyleBuilderConverter::ConvertClipPath(
         state.GetElementStyleResources().GetSVGResourceFromValue(
             CSSPropertyID::kClipPath, *url_value);
     // TODO(fs): Doesn't work with external SVG references (crbug.com/109212.)
-    return ReferenceClipPathOperation::Create(
+    return MakeGarbageCollected<ReferenceClipPathOperation>(
         url_value->ValueForSerialization(), resource);
   }
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -2587,29 +2588,29 @@ scoped_refptr<StylePath> StyleBuilderConverter::ConvertPathOrNone(
 
 namespace {
 
-scoped_refptr<OffsetPathOperation> ConvertOffsetPathValueToOperation(
+OffsetPathOperation* ConvertOffsetPathValueToOperation(
     StyleResolverState& state,
     const CSSValue& value,
     CoordBox coord_box) {
   if (value.IsRayValue() || value.IsBasicShapeValue()) {
-    return ShapeOffsetPathOperation::Create(BasicShapeForValue(state, value),
-                                            coord_box);
+    return MakeGarbageCollected<ShapeOffsetPathOperation>(
+        BasicShapeForValue(state, value), coord_box);
   }
   if (auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value)) {
-    return ShapeOffsetPathOperation::Create(path_value->GetStylePath(),
-                                            coord_box);
+    return MakeGarbageCollected<ShapeOffsetPathOperation>(
+        path_value->GetStylePath(), coord_box);
   }
   const auto& url_value = To<cssvalue::CSSURIValue>(value);
   SVGResource* resource =
       state.GetElementStyleResources().GetSVGResourceFromValue(
           CSSPropertyID::kOffsetPath, url_value);
-  return ReferenceOffsetPathOperation::Create(url_value.ValueForSerialization(),
-                                              resource, coord_box);
+  return MakeGarbageCollected<ReferenceOffsetPathOperation>(
+      url_value.ValueForSerialization(), resource, coord_box);
 }
 
 }  // namespace
 
-scoped_refptr<OffsetPathOperation> StyleBuilderConverter::ConvertOffsetPath(
+OffsetPathOperation* StyleBuilderConverter::ConvertOffsetPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsIdentifierValue()) {
@@ -2622,7 +2623,7 @@ scoped_refptr<OffsetPathOperation> StyleBuilderConverter::ConvertOffsetPath(
     // If <offset-path> is omitted, it defaults to inset(0 round X),
     // where X is the value of border-radius on the element that
     // establishes the containing block for this element.
-    return CoordBoxOffsetPathOperation::Create(
+    return MakeGarbageCollected<CoordBoxOffsetPathOperation>(
         identifier->ConvertTo<CoordBox>());
   }
   // If <coord-box> is omitted, it defaults to border-box.
