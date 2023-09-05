@@ -1007,7 +1007,7 @@ BASE_FEATURE(kKeepAliveInBrowserMigration,
 // painted.
 BASE_FEATURE(kLCPAnimatedImagesReporting,
              "LCPAnimatedImagesReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLCPCriticalPathPredictor,
              "LCPCriticalPathPredictor",
@@ -1037,7 +1037,7 @@ BASE_FEATURE(kLCPScriptObserver,
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A feature to reduce the set of resources fetched by No-State Prefetch.
 BASE_FEATURE(kLightweightNoStatePrefetch,
