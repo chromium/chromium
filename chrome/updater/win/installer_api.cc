@@ -137,6 +137,47 @@ bool ClientStateAppKeyExists(UpdaterScope updater_scope,
       .Valid();
 }
 
+absl::optional<InstallerOutcome> GetLastInstallerOutcome(
+    absl::optional<base::win::RegKey> key) {
+  if (!key) {
+    return absl::nullopt;
+  }
+  InstallerOutcome installer_outcome;
+  {
+    DWORD val = 0;
+    if (key->ReadValueDW(kRegValueLastInstallerResult, &val) == ERROR_SUCCESS) {
+      installer_outcome.installer_result =
+          *CheckedCastToEnum<InstallerResult>(val);
+    }
+    if (key->ReadValueDW(kRegValueLastInstallerError, &val) == ERROR_SUCCESS) {
+      installer_outcome.installer_error = val;
+    }
+    if (key->ReadValueDW(kRegValueLastInstallerExtraCode1, &val) ==
+        ERROR_SUCCESS) {
+      installer_outcome.installer_extracode1 = val;
+    }
+  }
+  {
+    std::wstring val;
+    if (key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
+        ERROR_SUCCESS) {
+      std::string installer_text;
+      if (base::WideToUTF8(val.c_str(), val.size(), &installer_text)) {
+        installer_outcome.installer_text = installer_text;
+      }
+    }
+    if (key->ReadValue(kRegValueLastInstallerSuccessLaunchCmdLine, &val) ==
+        ERROR_SUCCESS) {
+      std::string installer_cmd_line;
+      if (base::WideToUTF8(val.c_str(), val.size(), &installer_cmd_line)) {
+        installer_outcome.installer_cmd_line = installer_cmd_line;
+      }
+    }
+  }
+
+  return installer_outcome;
+}
+
 }  // namespace
 
 InstallerOutcome::InstallerOutcome() = default;
@@ -271,6 +312,26 @@ absl::optional<InstallerOutcome> GetInstallerOutcome(
   PersistLastInstallerResultValues(updater_scope, app_id);
 
   return installer_outcome;
+}
+
+absl::optional<InstallerOutcome> GetClientStateKeyLastInstallerOutcome(
+    UpdaterScope updater_scope,
+    const std::string& app_id) {
+  return GetLastInstallerOutcome(
+      ClientStateAppKeyOpen(updater_scope, app_id, KEY_READ));
+}
+
+absl::optional<InstallerOutcome> GetUpdaterKeyLastInstallerOutcome(
+    UpdaterScope updater_scope) {
+  return GetLastInstallerOutcome(
+      [&updater_scope]() -> absl::optional<base::win::RegKey> {
+        if (base::win::RegKey updater_key(UpdaterScopeToHKeyRoot(updater_scope),
+                                          UPDATER_KEY, Wow6432(KEY_READ));
+            updater_key.Valid()) {
+          return updater_key;
+        }
+        return {};
+      }());
 }
 
 bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,

@@ -20,67 +20,6 @@ namespace {
 
 constexpr char kAppId[] = "{55d6c27c-8b97-4b76-a691-2df8810004ed}";
 
-absl::optional<InstallerOutcome> GetLastInstallerOutcomeForTesting(
-    absl::optional<base::win::RegKey> key) {
-  if (!key) {
-    return absl::nullopt;
-  }
-  InstallerOutcome installer_outcome;
-  {
-    DWORD val = 0;
-    if (key->ReadValueDW(kRegValueLastInstallerResult, &val) == ERROR_SUCCESS) {
-      installer_outcome.installer_result =
-          *CheckedCastToEnum<InstallerResult>(val);
-    }
-    if (key->ReadValueDW(kRegValueLastInstallerError, &val) == ERROR_SUCCESS) {
-      installer_outcome.installer_error = val;
-    }
-    if (key->ReadValueDW(kRegValueLastInstallerExtraCode1, &val) ==
-        ERROR_SUCCESS) {
-      installer_outcome.installer_extracode1 = val;
-    }
-  }
-  {
-    std::wstring val;
-    if (key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
-        ERROR_SUCCESS) {
-      std::string installer_text;
-      if (base::WideToUTF8(val.c_str(), val.size(), &installer_text)) {
-        installer_outcome.installer_text = installer_text;
-      }
-    }
-    if (key->ReadValue(kRegValueLastInstallerSuccessLaunchCmdLine, &val) ==
-        ERROR_SUCCESS) {
-      std::string installer_cmd_line;
-      if (base::WideToUTF8(val.c_str(), val.size(), &installer_cmd_line)) {
-        installer_outcome.installer_cmd_line = installer_cmd_line;
-      }
-    }
-  }
-
-  return installer_outcome;
-}
-
-absl::optional<InstallerOutcome>
-GetClientStateKeyLastInstallerOutcomeForTesting(UpdaterScope updater_scope,
-                                                const std::string& app_id) {
-  return GetLastInstallerOutcomeForTesting(
-      ClientStateAppKeyOpen(updater_scope, app_id, KEY_READ));
-}
-
-absl::optional<InstallerOutcome> GetUpdaterKeyLastInstallerOutcomeForTesting(
-    UpdaterScope updater_scope) {
-  return GetLastInstallerOutcomeForTesting(
-      [&updater_scope]() -> absl::optional<base::win::RegKey> {
-        if (base::win::RegKey updater_key(UpdaterScopeToHKeyRoot(updater_scope),
-                                          UPDATER_KEY, Wow6432(KEY_READ));
-            updater_key.Valid()) {
-          return updater_key;
-        }
-        return {};
-      }());
-}
-
 }  // namespace
 
 class InstallerAPITest : public ::testing::TestWithParam<UpdaterScope> {
@@ -123,9 +62,8 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
 
   // No installer outcome if the ClientState for the app it does not exist.
   EXPECT_FALSE(GetInstallerOutcome(updater_scope_, kAppId));
-  EXPECT_FALSE(
-      GetClientStateKeyLastInstallerOutcomeForTesting(updater_scope_, kAppId));
-  EXPECT_FALSE(GetUpdaterKeyLastInstallerOutcomeForTesting(updater_scope_));
+  EXPECT_FALSE(GetClientStateKeyLastInstallerOutcome(updater_scope_, kAppId));
+  EXPECT_FALSE(GetUpdaterKeyLastInstallerOutcome(updater_scope_));
 
   {
     InstallerOutcome installer_outcome;
@@ -149,8 +87,8 @@ TEST_P(InstallerAPITest, GetInstallerOutcome) {
 
   // Checks that LastInstallerXXX values match the installer outcome.
   for (absl::optional<InstallerOutcome> last_installer_outcome :
-       {GetClientStateKeyLastInstallerOutcomeForTesting(updater_scope_, kAppId),
-        GetUpdaterKeyLastInstallerOutcomeForTesting(updater_scope_)}) {
+       {GetClientStateKeyLastInstallerOutcome(updater_scope_, kAppId),
+        GetUpdaterKeyLastInstallerOutcome(updater_scope_)}) {
     ASSERT_TRUE(last_installer_outcome);
     EXPECT_EQ(last_installer_outcome->installer_result,
               installer_outcome->installer_result);

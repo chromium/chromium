@@ -117,6 +117,14 @@ bool DeleteInstallerOutput(UpdaterScope updater_scope,
 // until the next update or install.
 absl::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
                                                      const std::string& app_id);
+
+// Returns the Last Installer API outcome, i.e., the LastInstallerXXX values.
+absl::optional<InstallerOutcome> GetClientStateKeyLastInstallerOutcome(
+    UpdaterScope updater_scope,
+    const std::string& app_id);
+absl::optional<InstallerOutcome> GetUpdaterKeyLastInstallerOutcome(
+    UpdaterScope updater_scope);
+
 bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
                                    const std::string& app_id,
                                    const InstallerOutcome& installer_outcome);

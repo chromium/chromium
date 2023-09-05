@@ -54,6 +54,10 @@
 #include "components/update_client/update_client_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/updater/win/installer_api.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace updater {
 
 // The functions below are various adaptors between |update_client| and
@@ -177,26 +181,39 @@ MakeUpdateClientCrxStateChangeCallback(
         update_state.error_code = crx_update_item.error_code;
         update_state.extra_code1 = crx_update_item.extra_code1;
 
-        // TODO(crbug.com/1352307): Investigate if it is desirable to read the
-        // result from the installer result API here when update completes.
+        if (update_state.state == UpdateService::UpdateState::State::kUpdated ||
+            update_state.state ==
+                UpdateService::UpdateState::State::kUpdateError ||
+            update_state.state ==
+                UpdateService::UpdateState::State::kNoUpdate) {
+#if BUILDFLAG(IS_WIN)
+          // Read the installer API results from the registry.
+          // TODO(crbug.com/1478305): Remove this code if `update_client`
+          // provides these values in the future.
+          const Installer::Result result =
+              MakeInstallerResult(GetClientStateKeyLastInstallerOutcome(
+                                      GetUpdaterScope(), update_state.app_id),
+                                  update_state.error_code);
+          update_state.installer_cmd_line = result.installer_cmd_line;
+          update_state.extra_code1 = result.extended_error;
+          update_state.installer_text = result.installer_text;
+#endif  // BUILDFLAG(IS_WIN)
 
-        // If a new install encounters an error, the AppId registered in
-        // `UpdateServiceImpl::Install` needs to be removed here. Otherwise the
-        // updater may remain installed even if there are no other apps to
-        // manage, and try to update the app even though the app was not
-        // installed.
-        if (new_install &&
-            (update_state.state ==
-                 UpdateService::UpdateState::State::kUpdateError ||
-             update_state.state ==
-                 UpdateService::UpdateState::State::kNoUpdate)) {
-          persisted_data->RemoveApp(update_state.app_id);
-          config->GetPrefService()->CommitPendingWrite();
-        }
+          // If a new install encounters an error, the AppId registered in
+          // `UpdateServiceImpl::Install` needs to be removed here. Otherwise
+          // the updater may remain installed even if there are no other apps to
+          // manage, and try to update the app even though the app was not
+          // installed.
+          if (new_install &&
+              (update_state.state ==
+                   UpdateService::UpdateState::State::kUpdateError ||
+               update_state.state ==
+                   UpdateService::UpdateState::State::kNoUpdate)) {
+            persisted_data->RemoveApp(update_state.app_id);
+          }
 
-        // Commit the prefs values written by |update_client| when the
-        // update has completed, such as `pv` and `fingerprint`.
-        if (update_state.state == UpdateService::UpdateState::State::kUpdated) {
+          // Commit the prefs values written by |update_client| when the
+          // update has completed, such as `pv` and `fingerprint`.
           config->GetPrefService()->CommitPendingWrite();
         }
 

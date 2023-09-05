@@ -2077,15 +2077,16 @@ INSTANTIATE_TEST_SUITE_P(
     IntegrationInstallerResultsTest,
     ::testing::ValuesIn(std::vector<IntegrationInstallerResultsTestCase>{
         // InstallerResult::kMsiError, explicit error code.
-        {"INSTALLER_RESULT=2 INSTALLER_ERROR=1603", 1603, {}, {}},
+        {"INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
+         1603,
+         "Fatal error during installation. ",
+         {}},
 
         // `InstallerResult::kCustomError`, implicit error code
         // `kErrorApplicationInstallerFailed`.
-        // TODO(crbug.com/1478305): test the results for `installer_text`. It
-        // needs to match `INSTALLER_RESULT_UI_STRING`.
         {"INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
          kErrorApplicationInstallerFailed,
-         {},
+         "TestUIString",
          {}},
 
         // InstallerResult::kSystemError, explicit error code.
@@ -2093,6 +2094,13 @@ INSTANTIATE_TEST_SUITE_P(
 
         // InstallerResult::kSuccess.
         {"INSTALLER_RESULT=0", 0, {}, {}},
+
+        // InstallerResult::kSuccess.
+        {"INSTALLER_RESULT=0 "
+         "REGISTER_LAUNCH_COMMAND=MORE",
+         0,
+         {},
+         "MORE"},
     }));
 
 TEST_P(IntegrationInstallerResultsTest, TestCases) {
