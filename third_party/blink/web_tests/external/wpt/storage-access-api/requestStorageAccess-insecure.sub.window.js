@@ -33,6 +33,7 @@ if (topLevelDocument) {
     return CreateDetachedFrame().requestStorageAccess()
       .then(t.unreached_func("Should have rejected: " + description), (e) => {
         assert_equals(e.name, 'InvalidStateError', description);
+        t.done();
       });
   }, "[non-fully-active] document.requestStorageAccess() should reject when run in a detached frame");
 
