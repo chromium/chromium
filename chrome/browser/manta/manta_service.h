@@ -14,6 +14,7 @@ class Profile;
 
 namespace manta {
 
+class OrcaProvider;
 class SnapperProvider;
 
 // The MantaService class is a Profile keyed service for the chrome Manta
@@ -29,12 +30,13 @@ class MantaService : public KeyedService {
   MantaService(const MantaService&) = delete;
   MantaService& operator=(const MantaService&) = delete;
 
-  // Returns a unique pointer to an instance of the `SnapperProvider` for the
+  // Returns a unique pointer to an instance of the Providers for the
   // profile associated with the MantaService instance from which this method
   // is called.
-  // NOTE: The returned `SnapperProvider` instance is tied to the
+  // NOTE: The returned Provider instance is tied to the
   // IdentityManager and should not be called past its lifetime. See
-  // `SnapperProvider` header for details.
+  // `Provider` header for details.
+  std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   std::unique_ptr<SnapperProvider> CreateSnapperProvider();
 
  private:
