@@ -75,9 +75,6 @@ void CreateAndAddDataSource(Profile* profile) {
   source->SetDefaultResource(IDR_SANDBOX_INTERNALS_SANDBOX_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
-  source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
