@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_
-#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_CONTEXT_H_
+#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_CONTEXT_H_
 
 #include <stdint.h>
 #include <memory>
@@ -20,7 +20,7 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -38,20 +38,26 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // shut off.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompactIDBOnClose);
 
-// IndexedDBBucketState manages the per-bucket IndexedDB state, and
-// contains the backing store for the bucket.
+// IndexedDBBucketContext manages the per-bucket IndexedDB state, and other
+// important context like the backing store and lock manager.
 //
-// This class is expected to manage its own lifetime by using the
-// `destruct_myself_` closure, which is expected to destroy this object in the
-// parent IndexedDBFactory (and remove it from any collections, etc).
-// However, IndexedDBBucketState should still handle destruction without the
-// use of that closure when the storage partition is destructed.
-//
-// IndexedDBBucketState will keep itself alive while:
+// IndexedDBBucketContext will keep itself alive while any of these is true:
 // * There are handles referencing the factory,
-// * There are outstanding blob references to this database's blob files, and
+// * There are outstanding blob references to this database's blob files, or
 // * The factory is in an incognito profile.
-class CONTENT_EXPORT IndexedDBBucketState {
+//
+// When these qualities are no longer true, `RunTasks()` will return
+// `kCanBeDestroyed` which lets the owning `IndexedDBFactory` know it's time to
+// delete this object.
+//
+// TODO(crbug.com/1474996): it's intended that each bucket gets its own
+// IndexedDB task runner. To facilitate IndexedDB code running on multiple task
+// runners, `IndexedDBBucketContext` is in the process of becoming the single
+// point of communication between classes running on the main task runner, such
+// as `IndexedDBFactory`, and those that pertain to a specific bucket and
+// therefore run on a bucket's IDB task runner, such as `IndexedDBDatabase` or
+// `IndexedDBCursor`.
+class CONTENT_EXPORT IndexedDBBucketContext {
  public:
   using TearDownCallback = base::RepeatingCallback<void(leveldb::Status)>;
   using DBMap =
@@ -80,9 +86,9 @@ class CONTENT_EXPORT IndexedDBBucketState {
       base::Days(3);
 
   enum class ClosingState {
-    // IndexedDBBucketState isn't closing.
+    // IndexedDBBucketContext isn't closing.
     kNotClosing,
-    // IndexedDBBucketState is pausing for kBackingStoreGracePeriodSeconds
+    // IndexedDBBucketContext is pausing for kBackingStoreGracePeriodSeconds
     // to allow new references to open before closing the backing store.
     kPreCloseGracePeriod,
     // The `pre_close_task_queue` is running any pre-close tasks.
@@ -90,10 +96,9 @@ class CONTENT_EXPORT IndexedDBBucketState {
     kClosed,
   };
 
-  // Calling `destruct_myself` should destruct this object.
   // `earliest_global_sweep_time` and `earliest_global_compaction_time` are
   // expected to outlive this object.
-  IndexedDBBucketState(
+  IndexedDBBucketContext(
       storage::BucketLocator bucket_locator,
       bool persist_for_incognito,
       base::Clock* clock,
@@ -105,10 +110,10 @@ class CONTENT_EXPORT IndexedDBBucketState {
       TearDownCallback tear_down_callback,
       std::unique_ptr<IndexedDBBackingStore> backing_store);
 
-  IndexedDBBucketState(const IndexedDBBucketState&) = delete;
-  IndexedDBBucketState& operator=(const IndexedDBBucketState&) = delete;
+  IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
+  IndexedDBBucketContext& operator=(const IndexedDBBucketContext&) = delete;
 
-  ~IndexedDBBucketState();
+  ~IndexedDBBucketContext();
 
   void ForceClose();
 
@@ -148,7 +153,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
     return notify_tasks_callback_;
   }
 
-  // Note: calling this callback will destroy the IndexedDBBucketState.
+  // Note: calling this callback will destroy the IndexedDBBucketContext.
   const TearDownCallback& tear_down_callback() { return tear_down_callback_; }
 
   bool is_running_tasks() const { return running_tasks_; }
@@ -163,13 +168,13 @@ class CONTENT_EXPORT IndexedDBBucketState {
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
-  base::WeakPtr<IndexedDBBucketState> AsWeakPtr() {
+  base::WeakPtr<IndexedDBBucketContext> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
   friend IndexedDBFactory;
-  friend IndexedDBBucketStateHandle;
+  friend IndexedDBBucketContextHandle;
 
   // Test needs access to ShouldRunTombstoneSweeper.
   FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTestWithMockTime,
@@ -187,7 +192,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
 
   // Returns a new handle to this factory. If this object was in its closing
   // sequence, then that sequence will be halted by this call.
-  [[nodiscard]] IndexedDBBucketStateHandle CreateHandle();
+  [[nodiscard]] IndexedDBBucketContextHandle CreateHandle();
 
   void OnHandleDestruction();
 
@@ -197,6 +202,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
 
   void MaybeStartClosing();
   void StartClosing();
+  void CloseNow();
   void StartPreCloseTasks();
 
   // Executes database operations, and if `true` is returned by this function,
@@ -238,7 +244,7 @@ class CONTENT_EXPORT IndexedDBBucketState {
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
 
   DBMap databases_;
-  // This is the refcount for the number of IndexedDBBucketStateHandle's
+  // This is the refcount for the number of IndexedDBBucketContextHandle's
   // given out for this factory using OpenReference. This is used as closing
   // criteria for this object, see CanCloseFactory.
   int64_t open_handles_ = 0;
@@ -248,9 +254,9 @@ class CONTENT_EXPORT IndexedDBBucketState {
   TasksAvailableCallback notify_tasks_callback_;
   TearDownCallback tear_down_callback_;
 
-  base::WeakPtrFactory<IndexedDBBucketState> weak_factory_{this};
+  base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_STATE_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_CONTEXT_H_

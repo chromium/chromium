@@ -45,7 +45,7 @@ struct IndexedDBObjectStoreMetadata;
 }  // namespace blink
 
 namespace content {
-class IndexedDBBucketStateHandle;
+class IndexedDBBucketContextHandle;
 class IndexedDBClassFactory;
 class IndexedDBConnection;
 class IndexedDBDatabaseCallbacks;
@@ -101,7 +101,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // The database object (this object) must be kept alive for the duration of
   // this call. This means the caller should own an
-  // IndexedDBBucketStateHandle while calling this methods.
+  // IndexedDBBucketContextHandle while calling this methods.
   leveldb::Status ForceCloseAndRunTasks();
 
   void Commit(IndexedDBTransaction* transaction);
@@ -111,12 +111,12 @@ class CONTENT_EXPORT IndexedDBDatabase {
                            bool committed);
 
   void ScheduleOpenConnection(
-      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBBucketContextHandle bucket_state_handle,
       std::unique_ptr<IndexedDBPendingConnection> connection,
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   void ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBBucketContextHandle bucket_state_handle,
       std::unique_ptr<IndexedDBFactoryClient> factory_client,
       base::OnceClosure on_deletion_complete);
 
@@ -346,7 +346,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   void MaybeReleaseDatabase();
 
   std::unique_ptr<IndexedDBConnection> CreateConnection(
-      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBBucketContextHandle bucket_state_handle,
       scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 

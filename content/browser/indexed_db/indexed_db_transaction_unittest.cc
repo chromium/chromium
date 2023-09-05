@@ -133,7 +133,7 @@ class IndexedDBTransactionTest : public testing::Test {
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         remote;
     auto connection = std::make_unique<IndexedDBConnection>(
-        IndexedDBBucketStateHandle(), IndexedDBClassFactory::Get(),
+        IndexedDBBucketContextHandle(), IndexedDBClassFactory::Get(),
         db_->AsWeakPtr(), base::DoNothing(), base::DoNothing(),
         base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>(),
         base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(

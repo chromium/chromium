@@ -21,7 +21,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
@@ -56,7 +56,7 @@ enum class RequestState {
 // callback.
 class IndexedDBConnectionCoordinator::ConnectionRequest {
  public:
-  ConnectionRequest(IndexedDBBucketStateHandle bucket_state_handle,
+  ConnectionRequest(IndexedDBBucketContextHandle bucket_state_handle,
                     IndexedDBDatabase* db,
                     IndexedDBConnectionCoordinator* connection_coordinator,
                     TasksAvailableCallback tasks_available_callback)
@@ -125,7 +125,7 @@ class IndexedDBConnectionCoordinator::ConnectionRequest {
 
   RequestState state_ = RequestState::kNotStarted;
 
-  IndexedDBBucketStateHandle bucket_state_handle_;
+  IndexedDBBucketContextHandle bucket_state_handle_;
   // This is safe because IndexedDBDatabase owns this object.
   raw_ptr<IndexedDBDatabase> db_;
 
@@ -143,7 +143,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
     : public IndexedDBConnectionCoordinator::ConnectionRequest {
  public:
   OpenRequest(
-      IndexedDBBucketStateHandle bucket_state_handle,
+      IndexedDBBucketContextHandle bucket_state_handle,
       IndexedDBDatabase* db,
       std::unique_ptr<IndexedDBPendingConnection> pending_connection,
       IndexedDBConnectionCoordinator* connection_coordinator,
@@ -424,7 +424,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
 class IndexedDBConnectionCoordinator::DeleteRequest
     : public IndexedDBConnectionCoordinator::ConnectionRequest {
  public:
-  DeleteRequest(IndexedDBBucketStateHandle bucket_state_handle,
+  DeleteRequest(IndexedDBBucketContextHandle bucket_state_handle,
                 IndexedDBDatabase* db,
                 std::unique_ptr<IndexedDBFactoryClient> factory_client,
                 base::OnceClosure on_database_deleted,
@@ -575,7 +575,7 @@ IndexedDBConnectionCoordinator::IndexedDBConnectionCoordinator(
 IndexedDBConnectionCoordinator::~IndexedDBConnectionCoordinator() = default;
 
 void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     std::unique_ptr<IndexedDBPendingConnection> connection,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   request_queue_.push(std::make_unique<OpenRequest>(
@@ -585,7 +585,7 @@ void IndexedDBConnectionCoordinator::ScheduleOpenConnection(
 }
 
 void IndexedDBConnectionCoordinator::ScheduleDeleteDatabase(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     std::unique_ptr<IndexedDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   request_queue_.push(std::make_unique<DeleteRequest>(

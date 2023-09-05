@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -30,7 +30,7 @@ static int32_t g_next_indexed_db_connection_id;
 }  // namespace
 
 IndexedDBConnection::IndexedDBConnection(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     IndexedDBClassFactory* indexed_db_class_factory,
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
@@ -120,7 +120,7 @@ IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  IndexedDBBucketState* bucket_state = bucket_state_handle_.bucket_state();
+  IndexedDBBucketContext* bucket_state = bucket_state_handle_.bucket_state();
   std::unique_ptr<IndexedDBTransaction> transaction =
       indexed_db_class_factory_->CreateIndexedDBTransaction(
           id, this, scope, mode, database()->tasks_available_callback(),

@@ -30,7 +30,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
@@ -217,8 +217,8 @@ class IndexedDBFactoryTest : public testing::Test {
     return task_environment_.get();
   }
 
-  IndexedDBBucketState* StorageBucketFromHandle(
-      IndexedDBBucketStateHandle& handle) {
+  IndexedDBBucketContext* StorageBucketFromHandle(
+      IndexedDBBucketContextHandle& handle) {
     return handle.bucket_state();
   }
 
@@ -319,11 +319,11 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   ASSERT_TRUE(base::WriteFile(file_5, std::string(20000, 'a')));
   EXPECT_NE(file_5.DirName(), file_1.DirName());
 
-  IndexedDBBucketStateHandle bucket_state1_handle;
-  IndexedDBBucketStateHandle bucket_state2_handle;
-  IndexedDBBucketStateHandle bucket_state3_handle;
-  IndexedDBBucketStateHandle bucket_state4_handle;
-  IndexedDBBucketStateHandle bucket_state5_handle;
+  IndexedDBBucketContextHandle bucket_state1_handle;
+  IndexedDBBucketContextHandle bucket_state2_handle;
+  IndexedDBBucketContextHandle bucket_state3_handle;
+  IndexedDBBucketContextHandle bucket_state4_handle;
+  IndexedDBBucketContextHandle bucket_state5_handle;
   leveldb::Status s;
 
   std::tie(bucket_state1_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -419,7 +419,7 @@ TEST_F(IndexedDBFactoryTest, CloseSequenceStarts) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -446,7 +446,7 @@ TEST_F(IndexedDBFactoryTest, ImmediateClose) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -471,7 +471,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
@@ -486,7 +486,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());
 
-  EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
+  EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
             factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
 
   task_environment()->FastForwardBy(base::Seconds(2));
@@ -497,7 +497,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   // Move the clock to run the tasks in the next close sequence.
   // NOTE: The constants rate-limiting sweeps and compaction are currently the
   // same. This test may need to be restructured if these values diverge.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   // Open a connection & immediately release it to cause the closing sequence to
   // start again.
@@ -514,7 +514,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   // The pre-close tasks should be running now.
   ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
-  EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
+  EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
             factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
   ASSERT_TRUE(
       factory()->GetBucketFactory(bucket_locator.id)->pre_close_task_queue());
@@ -535,11 +535,11 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   bucket_state_handle.Release();
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
-  EXPECT_EQ(IndexedDBBucketState::ClosingState::kPreCloseGracePeriod,
+  EXPECT_EQ(IndexedDBBucketContext::ClosingState::kPreCloseGracePeriod,
             factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
 
   // Manually execute the timer so that the PreCloseTaskList task doesn't also
@@ -550,7 +550,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
       factory()->GetOrOpenBucketFactory(bucket_locator,
                                         context()->GetDataPath(bucket_locator),
@@ -559,7 +559,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, PreCloseTasksStart) {
   factory()->GetBucketFactory(bucket_locator.id)->close_timer()->FireNow();
 
   ASSERT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
-  EXPECT_EQ(IndexedDBBucketState::ClosingState::kRunningPreCloseTasks,
+  EXPECT_EQ(IndexedDBBucketContext::ClosingState::kRunningPreCloseTasks,
             factory()->GetBucketFactory(bucket_locator.id)->closing_stage());
   ASSERT_TRUE(
       factory()->GetBucketFactory(bucket_locator.id)->pre_close_task_queue());
@@ -578,7 +578,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
@@ -593,18 +593,18 @@ TEST_F(IndexedDBFactoryTestWithMockTime, TombstoneSweeperTiming) {
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   // Move clock forward to trigger next sweep, but storage key has longer
   // sweep minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalSweepFromNow);
 
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 
   //  Finally, move the clock forward so the storage key should allow a sweep.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketSweepFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketSweepFromNow);
 
   EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunTombstoneSweeper());
 }
@@ -618,7 +618,7 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
@@ -633,19 +633,19 @@ TEST_F(IndexedDBFactoryTestWithMockTime, CompactionTaskTiming) {
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   // Move the clock to run the tasks in the next close sequence.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
 
   EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   // Move clock forward to trigger next compaction, but storage key has longer
   // compaction minimum, so no tasks should execute.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestGlobalCompactionFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestGlobalCompactionFromNow);
 
   EXPECT_FALSE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 
   //  Finally, move the clock forward so the storage key should allow a
   //  compaction.
-  clock.Advance(IndexedDBBucketState::kMaxEarliestBucketCompactionFromNow);
+  clock.Advance(IndexedDBBucketContext::kMaxEarliestBucketCompactionFromNow);
 
   EXPECT_TRUE(bucket_state_handle.bucket_state()->ShouldRunCompaction());
 }
@@ -661,7 +661,7 @@ TEST_F(IndexedDBFactoryTest, CompactionKillSwitchWorks) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   // Open a connection & immediately release it to cause the closing sequence to
@@ -683,7 +683,7 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   storage::BucketLocator bucket_locator = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(storage_key));
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -720,7 +720,7 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
                                                     ":81/");
   storage::BucketLocator bucket_locator = GetOrCreateBucket(
       storage::BucketInitParams::ForDefaultBucket(too_long_storage_key));
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -762,7 +762,7 @@ TEST_F(IndexedDBFactoryTest, ContextDestructionClosesHandles) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -783,7 +783,7 @@ TEST_F(IndexedDBFactoryTest, FactoryForceClose) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -1018,7 +1018,7 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
-  IndexedDBBucketStateHandle bucket_state_handle;
+  IndexedDBBucketContextHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =

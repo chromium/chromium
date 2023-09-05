@@ -4477,7 +4477,7 @@ void IndexedDBBackingStore::Transaction::Rollback() {
 
   if (transaction_) {
     // The RollbackAndMaybeTearDown method could tear down the
-    // IndexedDBBucketState, which would destroy `this`.
+    // IndexedDBBucketContext, which would destroy `this`.
     scoped_refptr<TransactionalLevelDBTransaction> transaction =
         std::move(transaction_);
     transaction->Rollback();

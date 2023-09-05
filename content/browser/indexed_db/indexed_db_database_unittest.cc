@@ -131,7 +131,7 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -143,7 +143,7 @@ TEST_F(IndexedDBDatabaseTest, ConnectionLifecycle) {
       std::make_unique<ThunkFactoryClient>(request2), callbacks2,
       transaction_id2, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -169,7 +169,7 @@ TEST_F(IndexedDBDatabaseTest, ForcedClose) {
       std::make_unique<ThunkFactoryClient>(request), callbacks,
       upgrade_transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -233,7 +233,7 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -245,7 +245,7 @@ TEST_F(IndexedDBDatabaseTest, PendingDelete) {
   bool deleted = false;
   MockCallbacks request2;
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(),
+      IndexedDBBucketContextHandle(),
       std::make_unique<ThunkFactoryClient>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
@@ -279,7 +279,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   auto connection1 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, kDatabaseVersion, base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -295,7 +295,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request2), callbacks2,
       transaction_id2, kDatabaseVersion, base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -311,7 +311,7 @@ TEST_F(IndexedDBDatabaseTest, OpenDeleteClear) {
   auto connection3 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request3), callbacks3,
       transaction_id3, kDatabaseVersion, base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection3),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -342,7 +342,7 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -354,7 +354,7 @@ TEST_F(IndexedDBDatabaseTest, ForceDelete) {
   bool deleted = false;
   MockCallbacks request2;
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(),
+      IndexedDBBucketContextHandle(),
       std::make_unique<ThunkFactoryClient>(request2),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
@@ -377,7 +377,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -393,7 +393,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenPending) {
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id2, 3, base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -417,7 +417,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
       std::make_unique<ThunkFactoryClient>(request1), callbacks1,
       transaction_id1, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection1),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -432,7 +432,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   auto connection2 = std::make_unique<IndexedDBPendingConnection>(
       std::make_unique<ThunkFactoryClient>(request1), callbacks2,
       transaction_id2, 3, base::DoNothing());
-  db_->ScheduleOpenConnection(IndexedDBBucketStateHandle(),
+  db_->ScheduleOpenConnection(IndexedDBBucketContextHandle(),
                               std::move(connection2),
                               CreateTestClientStateWrapper());
   RunPostedTasks();
@@ -440,7 +440,7 @@ TEST_F(IndexedDBDatabaseTest, ForceCloseWhileOpenAndDeletePending) {
   bool deleted = false;
   auto request3 = std::make_unique<MockCallbacks>();
   db_->ScheduleDeleteDatabase(
-      IndexedDBBucketStateHandle(), std::move(request3),
+      IndexedDBBucketContextHandle(), std::move(request3),
       base::BindLambdaForTesting([&]() { deleted = true; }));
   RunPostedTasks();
   EXPECT_FALSE(deleted);
@@ -498,7 +498,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
     mojo::PendingAssociatedRemote<storage::mojom::IndexedDBClientStateChecker>
         remote;
     db_->ScheduleOpenConnection(
-        IndexedDBBucketStateHandle(), std::move(connection),
+        IndexedDBBucketContextHandle(), std::move(connection),
         base::MakeRefCounted<IndexedDBClientStateCheckerWrapper>(
             std::move(remote)));
     RunPostedTasks();

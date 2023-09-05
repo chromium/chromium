@@ -54,7 +54,7 @@ struct IndexedDBDatabaseMetadata;
 
 namespace content {
 class AutoDidCommitTransaction;
-class IndexedDBBucketState;
+class IndexedDBBucketContext;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
@@ -657,7 +657,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       blink::mojom::IDBTransactionDurability durability);
 
  protected:
-  friend class IndexedDBBucketState;
+  friend class IndexedDBBucketContext;
 
   leveldb::Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 

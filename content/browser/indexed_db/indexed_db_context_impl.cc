@@ -41,8 +41,8 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -704,7 +704,7 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
-  IndexedDBBucketStateHandle handle;
+  IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
       GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
@@ -733,7 +733,7 @@ void IndexedDBContextImpl::GetNextBlobNumberForTesting(
     const storage::BucketLocator& bucket_locator,
     int64_t database_id,
     GetNextBlobNumberForTestingCallback callback) {
-  IndexedDBBucketStateHandle handle;
+  IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
       GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,
@@ -765,7 +765,7 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
-  IndexedDBBucketStateHandle handle;
+  IndexedDBBucketContextHandle handle;
   leveldb::Status s;
   std::tie(handle, s, std::ignore, std::ignore, std::ignore) =
       GetIDBFactory()->GetOrOpenBucketFactory(bucket_locator,

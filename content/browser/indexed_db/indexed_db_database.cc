@@ -30,7 +30,7 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
-#include "content/browser/indexed_db/indexed_db_bucket_state_handle.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -390,7 +390,7 @@ void IndexedDBDatabase::TransactionFinished(
 }
 
 void IndexedDBDatabase::ScheduleOpenConnection(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     std::unique_ptr<IndexedDBPendingConnection> connection,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   connection_coordinator_.ScheduleOpenConnection(
@@ -399,7 +399,7 @@ void IndexedDBDatabase::ScheduleOpenConnection(
 }
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     std::unique_ptr<IndexedDBFactoryClient> factory_client,
     base::OnceClosure on_deletion_complete) {
   connection_coordinator_.ScheduleDeleteDatabase(
@@ -1579,7 +1579,7 @@ Status IndexedDBDatabase::OpenInternal() {
 }
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
-    IndexedDBBucketStateHandle bucket_state_handle,
+    IndexedDBBucketContextHandle bucket_state_handle,
     scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
   std::unique_ptr<IndexedDBConnection> connection =
