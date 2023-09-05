@@ -1,4 +1,0 @@
- 
- 
-This test checks that <ruby> doesn't leave any pointer in the percentage height descendant when it splits a ruby run, or merges ruby runs.
-For this test to pass it should not crash or ASSERT!

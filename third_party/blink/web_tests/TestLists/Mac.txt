@@ -830,12 +830,12 @@ fast/peerconnection/RTCPeerConnection-lifetime.html
 fast/reflections/inline-crash.html
 fast/replaced/no-focus-ring-object.html
 fast/ruby/nested-ruby.html
+fast/ruby/ruby-column-break.html
+fast/ruby/ruby-columns-spans.html
+fast/ruby/ruby-columns.html
 fast/ruby/ruby-empty-rt.html
 fast/ruby/ruby-inline-table.html
 fast/ruby/ruby-length.html
-fast/ruby/ruby-run-break.html
-fast/ruby/ruby-runs-spans.html
-fast/ruby/ruby-runs.html
 fast/ruby/ruby-simple-rp.html
 fast/ruby/ruby-simple.html
 fast/ruby/ruby-text-before-after-content.html
