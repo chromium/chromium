@@ -41,6 +41,8 @@ TEST_F(ResourceContextTest, NodeContexts) {
   EXPECT_EQ(
       ToPublic<ProcessNode>(mock_graph.utility_process)->GetResourceContext(),
       mock_graph.utility_process->resource_context());
+  EXPECT_EQ(ToPublic<WorkerNode>(mock_graph.worker)->GetResourceContext(),
+            mock_graph.worker->resource_context());
 
   // Ensure each node gets a fresh token.
   const std::set<FrameContext> frame_contexts{
@@ -58,6 +60,8 @@ TEST_F(ResourceContextTest, NodeContexts) {
       mock_graph.utility_process->resource_context(),
   };
   EXPECT_EQ(process_contexts.size(), 4u);
+  EXPECT_NE(mock_graph.worker->resource_context(),
+            mock_graph.other_worker->resource_context());
 }
 
 TEST_F(ResourceContextTest, ResourceContextComparators) {

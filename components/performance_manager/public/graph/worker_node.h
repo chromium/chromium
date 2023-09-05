@@ -13,6 +13,7 @@
 #include "base/types/token_type.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -84,6 +85,10 @@ class WorkerNode : public Node {
 
   // Returns the unique token identifying this worker.
   virtual const blink::WorkerToken& GetWorkerToken() const = 0;
+
+  // Gets the unique token identifying this node for resource attribution. This
+  // token will not be reused after the node is destroyed.
+  virtual resource_attribution::WorkerContext GetResourceContext() const = 0;
 
   // Returns the URL of the worker script. This is the final response URL which
   // takes into account redirections.

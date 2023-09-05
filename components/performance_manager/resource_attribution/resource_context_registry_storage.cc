@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -84,6 +85,9 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   content::BrowserChildProcessHost* GetBrowserChildProcessHostFromContext(
       const ProcessContext& context) const;
 
+  // WorkerContext accessors.
+  bool IsRegisteredWorkerContext(const WorkerContext& context) const;
+
   // Update storage based on changes in the PM graph.
 
   // Called when the FrameNode with context `frame_context`, belonging to the
@@ -126,6 +130,10 @@ class ResourceContextRegistryStorage::UIThreadStorage {
       const ProcessContext& process_context,
       const BrowserChildProcessHostProxy& bcph_proxy);
 
+  void OnWorkerNodeAdded(const WorkerContext& worker_context);
+
+  void OnWorkerNodeRemoved(const WorkerContext& worker_context);
+
  private:
   // Asserts that `context` isn't in any map.
   void CheckProcessContextUnregistered(const ProcessContext& context) const;
@@ -165,6 +173,13 @@ class ResourceContextRegistryStorage::UIThreadStorage {
   std::map<ProcessContext, RenderProcessHostId> rph_ids_by_process_context_;
   std::map<ProcessContext, BrowserChildProcessHostId>
       bcph_ids_by_process_context_;
+
+  // WorkerContext storage
+
+  // All contexts known to the registry. Prevents the registry from converting a
+  // randomly-generated blink::WorkerToken that doesn't correspond to a real
+  // worker into a WorkerContext.
+  std::set<WorkerContext> worker_contexts_;
 };
 
 content::RenderFrameHost* UIThreadStorage::GetRenderFrameHostFromContext(
@@ -298,6 +313,12 @@ UIThreadStorage::GetBrowserChildProcessHostFromContext(
              ? nullptr
              : content::BrowserChildProcessHost::FromID(
                    it->second.GetUnsafeValue());
+}
+
+bool UIThreadStorage::IsRegisteredWorkerContext(
+    const WorkerContext& context) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return base::Contains(worker_contexts_, context);
 }
 
 void UIThreadStorage::OnFrameNodeAdded(const FrameContext& frame_context,
@@ -456,6 +477,18 @@ void UIThreadStorage::OnBrowserChildProcessNodeRemoved(
   bcph_ids_by_process_context_.erase(bcph_it);
 }
 
+void UIThreadStorage::OnWorkerNodeAdded(const WorkerContext& worker_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const auto [_, inserted] = worker_contexts_.insert(worker_context);
+  CHECK(inserted);
+}
+
+void UIThreadStorage::OnWorkerNodeRemoved(const WorkerContext& worker_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const size_t erased = worker_contexts_.erase(worker_context);
+  CHECK_EQ(erased, 1u);
+}
+
 void UIThreadStorage::CheckProcessContextUnregistered(
     const ProcessContext& context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -486,8 +519,8 @@ ResourceContextRegistryStorage::FrameContextForRenderFrameHost(
     content::RenderFrameHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (static_ui_thread_storage_ && host) {
-    // Re-use the LocalFrameToken as a ResourceContext token. There's no need to
-    // check if the token is in storage since `host` is a live frame.
+    // Re-use the LocalFrameToken as a ResourceContext token. There's no need
+    // to check if the token is in storage since `host` is a live frame.
     return FrameContext(host->GetFrameToken());
   }
   return absl::nullopt;
@@ -626,6 +659,33 @@ ResourceContextRegistryStorage::BrowserChildProcessHostFromContext(
              : nullptr;
 }
 
+// static
+absl::optional<WorkerContext>
+ResourceContextRegistryStorage::WorkerContextForWorkerToken(
+    const blink::WorkerToken& token) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Re-use the WorkerToken as a ResourceContext token.
+  const resource_attribution::WorkerContext context(token);
+  if (static_ui_thread_storage_ &&
+      static_ui_thread_storage_->IsRegisteredWorkerContext(context)) {
+    return context;
+  }
+  return absl::nullopt;
+}
+
+// static
+absl::optional<blink::WorkerToken>
+ResourceContextRegistryStorage::WorkerTokenFromContext(
+    const WorkerContext& context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (static_ui_thread_storage_ &&
+      static_ui_thread_storage_->IsRegisteredWorkerContext(context)) {
+    // The ResourceContext token is a converted WorkerToken.
+    return blink::WorkerToken(context.value());
+  }
+  return absl::nullopt;
+}
+
 const FrameNode* ResourceContextRegistryStorage::GetFrameNodeForContext(
     const FrameContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -647,12 +707,19 @@ const ProcessNode* ResourceContextRegistryStorage::GetProcessNodeForContext(
   return it != process_nodes_by_context_.end() ? it->second : nullptr;
 }
 
+const WorkerNode* ResourceContextRegistryStorage::GetWorkerNodeForContext(
+    const WorkerContext& context) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto it = worker_nodes_by_context_.find(context);
+  return it != worker_nodes_by_context_.end() ? it->second : nullptr;
+}
+
 void ResourceContextRegistryStorage::OnFrameNodeAdded(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ui_thread_storage_);
-  // Unretained is safe because `ui_thread_storage_` is passed to the UI thread
-  // to delete.
+  // Unretained is safe because `ui_thread_storage_` is passed to the UI
+  // thread to delete.
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&UIThreadStorage::OnFrameNodeAdded,
@@ -673,8 +740,8 @@ void ResourceContextRegistryStorage::OnBeforeFrameNodeRemoved(
       frame_nodes_by_context_.erase(frame_node->GetResourceContext());
   CHECK_EQ(erased, 1u);
   CHECK(ui_thread_storage_);
-  // Unretained is safe because `ui_thread_storage_` is passed to the UI thread
-  // to delete.
+  // Unretained is safe because `ui_thread_storage_` is passed to the UI
+  // thread to delete.
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&UIThreadStorage::OnFrameNodeRemoved,
                                 base::Unretained(ui_thread_storage_.get()),
@@ -737,8 +804,8 @@ void ResourceContextRegistryStorage::OnProcessNodeAdded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ui_thread_storage_);
   ProcessContext process_context = process_node->GetResourceContext();
-  // Unretained is safe because `ui_thread_storage_` is passed to the UI thread
-  // to delete.
+  // Unretained is safe because `ui_thread_storage_` is passed to the UI
+  // thread to delete.
   switch (process_node->GetProcessType()) {
     case content::PROCESS_TYPE_BROWSER:
       content::GetUIThreadTaskRunner()->PostTask(
@@ -774,8 +841,8 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
   const ProcessContext& process_context = process_node->GetResourceContext();
   const size_t erased = process_nodes_by_context_.erase(process_context);
   CHECK_EQ(erased, 1u);
-  // Unretained is safe because `ui_thread_storage_` is passed to the UI thread
-  // to delete.
+  // Unretained is safe because `ui_thread_storage_` is passed to the UI
+  // thread to delete.
   switch (process_node->GetProcessType()) {
     case content::PROCESS_TYPE_BROWSER:
       content::GetUIThreadTaskRunner()->PostTask(
@@ -803,14 +870,42 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
   }
 }
 
+void ResourceContextRegistryStorage::OnWorkerNodeAdded(
+    const WorkerNode* worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto [_, inserted] = worker_nodes_by_context_.emplace(
+      worker_node->GetResourceContext(), worker_node);
+  CHECK(inserted);
+  // Unretained is safe because the pointer is deleted on the UI thread.
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeAdded,
+                                base::Unretained(ui_thread_storage_.get()),
+                                worker_node->GetResourceContext()));
+}
+
+void ResourceContextRegistryStorage::OnBeforeWorkerNodeRemoved(
+    const WorkerNode* worker_node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const size_t erased =
+      worker_nodes_by_context_.erase(worker_node->GetResourceContext());
+  CHECK_EQ(erased, 1u);
+  // Unretained is safe because the pointer is deleted on the UI thread.
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeRemoved,
+                                base::Unretained(ui_thread_storage_.get()),
+                                worker_node->GetResourceContext()));
+}
+
 void ResourceContextRegistryStorage::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RegisterObject(&frame_registry_);
   graph->RegisterObject(&page_registry_);
   graph->RegisterObject(&process_registry_);
+  graph->RegisterObject(&worker_registry_);
   graph->AddFrameNodeObserver(this);
   graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);
+  graph->AddWorkerNodeObserver(this);
 }
 
 void ResourceContextRegistryStorage::OnTakenFromGraph(Graph* graph) {
@@ -818,9 +913,11 @@ void ResourceContextRegistryStorage::OnTakenFromGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
   graph->RemoveProcessNodeObserver(this);
+  graph->RemoveWorkerNodeObserver(this);
   graph->UnregisterObject(&frame_registry_);
   graph->UnregisterObject(&page_registry_);
   graph->UnregisterObject(&process_registry_);
+  graph->UnregisterObject(&worker_registry_);
 }
 
 // static

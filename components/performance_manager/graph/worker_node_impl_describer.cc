@@ -52,6 +52,7 @@ base::Value::Dict WorkerNodeImplDescriber::DescribeWorkerNodeData(
   ret.Set("url", impl->url().spec());
   ret.Set("worker_type", WorkerTypeToString(impl->worker_type()));
   ret.Set("priority", PriorityAndReasonToValue(impl->priority_and_reason()));
+  ret.Set("resource_context", impl->resource_context().ToString());
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",

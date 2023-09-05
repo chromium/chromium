@@ -166,6 +166,7 @@ static_library("performance_manager") {
     "public/resource_attribution/process_context_registry.h",
     "public/resource_attribution/resource_contexts.h",
     "public/resource_attribution/type_helpers.h",
+    "public/resource_attribution/worker_context_registry.h",
     "public/user_tuning/prefs.h",
     "public/v8_memory/v8_detailed_memory.h",
     "public/v8_memory/v8_detailed_memory_any_seq.h",
@@ -183,6 +184,7 @@ static_library("performance_manager") {
     "resource_attribution/process_context_registry.cc",
     "resource_attribution/resource_context_registry_storage.cc",
     "resource_attribution/resource_context_registry_storage.h",
+    "resource_attribution/worker_context_registry.cc",
     "service_worker_client.cc",
     "service_worker_client.h",
     "service_worker_context_adapter.cc",
@@ -405,6 +407,7 @@ source_set("browser_tests") {
     "resource_attribution/frame_context_registry_browsertest.cc",
     "resource_attribution/page_context_registry_browsertest.cc",
     "resource_attribution/process_context_registry_browsertest.cc",
+    "resource_attribution/worker_context_registry_browsertest.cc",
     "v8_memory/v8_context_tracker_browsertest.cc",
   ]
 
