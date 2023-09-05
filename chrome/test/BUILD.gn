@@ -9402,7 +9402,6 @@ test("unit_tests") {
   if (!is_android && !is_chromeos_ash) {
     sources += [
       "../browser/device_identity/device_oauth2_token_store_desktop_unittest.cc",
-      "../browser/enterprise/remote_commands/clear_browsing_data_job_unittest.cc",
       "../browser/media/webrtc/native_desktop_media_list_unittest.cc",
       "../browser/metrics/upgrade_metrics_provider_unittest.cc",
       "../browser/policy/cbcm_invalidations_initializer_unittest.cc",
@@ -9628,6 +9627,8 @@ test("unit_tests") {
     }
     if (!is_chromeos_ash) {
       sources += [
+        "../browser/enterprise/remote_commands/clear_browsing_data_job_unittest.cc",
+        "../browser/enterprise/remote_commands/user_remote_commands_factory_unittest.cc",
         "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
         "../browser/ui/views/sync/one_click_signin_dialog_view_unittest.cc",
         "../browser/ui/webui/settings/settings_default_browser_handler_unittest.cc",
