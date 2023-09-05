@@ -68,6 +68,12 @@ class CopyOutputScalingPixelTest
   // The scene is drawn, which also causes the copy request to execute. Then,
   // the resulting bitmap is compared against an expected bitmap.
   void RunTest() {
+    // TODO(b/297344089): Enable these tests once Skia Graphite supports stale
+    // mipmap regeneration.
+    if (is_skia_graphite()) {
+      GTEST_SKIP();
+    }
+
     const char* result_format_as_str = "<unknown>";
 
     // Tests only issue requests for system-memory destinations, no need to
