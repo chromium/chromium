@@ -134,6 +134,14 @@ class CONTENT_EXPORT ControllerServiceWorkerConnector
   // browser process.
   blink::EmbeddedWorkerStatus GetRecentRunningStatus();
 
+  // Calls the Cache Storage API match if the cache storage is accessible.
+  // `callback` will be called with `CacheStorageError::kErrorStorage` if the
+  // cache storage cannot be accessed.
+  void CallCacheStorageMatch(
+      absl::optional<std::string> cache_name,
+      blink::mojom::FetchAPIRequestPtr request,
+      blink::mojom::CacheStorage::MatchCallback callback);
+
  private:
   void SetControllerServiceWorker(
       mojo::PendingRemote<blink::mojom::ControllerServiceWorker> controller);

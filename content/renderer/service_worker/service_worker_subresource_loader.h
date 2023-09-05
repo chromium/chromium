@@ -223,6 +223,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   bool MaybeStartAutoPreload();
 
+  void DidCacheStorageMatch(base::TimeTicks event_dispatch_time,
+                            blink::mojom::MatchResultPtr result);
+
   network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;

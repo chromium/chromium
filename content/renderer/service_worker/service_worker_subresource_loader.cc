@@ -389,8 +389,13 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
         race_network_request_mode = kSkipped;
         break;
       case blink::ServiceWorkerRouterSource::SourceType::kCache:
-        NOTIMPLEMENTED();
-        break;
+        controller_connector_->CallCacheStorageMatch(
+            sources[0].cache_source->cache_name,
+            blink::mojom::FetchAPIRequest::From(resource_request_),
+            base::BindOnce(
+                &ServiceWorkerSubresourceLoader::DidCacheStorageMatch,
+                weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+        return;
     }
   }
 
@@ -1358,6 +1363,39 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
 
   if (new_status == Status::kCompleted) {
     completion_time_ = base::TimeTicks::Now();
+  }
+}
+
+void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
+    base::TimeTicks event_dispatch_time,
+    blink::mojom::MatchResultPtr result) {
+  auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+  timing->dispatch_event_time = event_dispatch_time;
+  timing->respond_with_settled_time = base::TimeTicks::Now();
+  switch (result->which()) {
+    case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
+      // TODO(crbug.com/1371756): add UMA to track cases other than not found.
+      OnFallback(absl::nullopt, std::move(timing));
+      return;
+    case blink::mojom::MatchResult::Tag::kResponse:  // we got fetch response.
+      if (result->get_response()->parsed_headers) {
+        // We intend to reset the parsed header. Or, invalid parsed headers
+        // should be set.
+        //
+        // According to content/browser/cache_storage/cache_storage_cache.cc,
+        // the field looks not set up with the meaningful value.
+        // Also, the Cache Storage API code looks not using the parsed_header
+        // according to third_party/blink/renderer/core/fetch/response.cc.
+        // (It can be tracked from
+        // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
+        result->get_response()->parsed_headers.reset();
+      }
+      OnResponse(std::move(result->get_response()), std::move(timing));
+      return;
+    case blink::mojom::MatchResult::Tag::kEagerResponse:
+      // EagerResponse, which should be used only if `in_related_fetch_event`
+      // is set.
+      NOTREACHED_NORETURN();
   }
 }
 
