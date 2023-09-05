@@ -373,6 +373,7 @@ public abstract class ChromeFeatureList {
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
     public static final String PRIVACY_GUIDE = "PrivacyGuideAndroid";
     public static final String PRIVACY_GUIDE_ANDROID_3 = "PrivacyGuideAndroid3";
+    public static final String PRIVACY_GUIDE_PRELOAD_ANDROID = "PrivacyGuidePreloadAndroid";
     public static final String PRIVACY_GUIDE_POST_MVP = "PrivacyGuideAndroidPostMVP";
     public static final String PRIVACY_SANDBOX_FPS_UI = "PrivacySandboxFirstPartySetsUI";
     public static final String PRIVACY_SANDBOX_SETTINGS_3 = "PrivacySandboxSettings3";
@@ -570,6 +571,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             new CachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
+    public static final CachedFlag sPrivacyGuidePreloadAndroid =
+            new CachedFlag(PRIVACY_GUIDE_PRELOAD_ANDROID, false);
     public static final CachedFlag sPrivacyGuidePostMVP =
             new CachedFlag(PRIVACY_GUIDE_POST_MVP, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
@@ -659,6 +662,7 @@ public abstract class ChromeFeatureList {
         sInterestFeedV2,
         sNewTabSearchEngineUrlAndroid,
         sPrivacyGuideAndroid3,
+        sPrivacyGuidePreloadAndroid,
         sPrivacyGuidePostMVP,
         sOmniboxMatchToolbarAndStatusBarColor,
         sOmniboxModernizeVisualUpdate,

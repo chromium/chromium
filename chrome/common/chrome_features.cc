@@ -478,6 +478,12 @@ BASE_FEATURE(kPrivacyGuideAndroid3,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPrivacyGuidePreloadAndroid,
+             "PrivacyGuidePreloadAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
 // Chrome.
