@@ -90,7 +90,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mCoordinator.requestShowContent(mWindow);
 
         verify(mBottomSheetController)
-                .requestShowContent(any(AutofillVcnEnrollBottomSheetMediator.class),
+                .requestShowContent(any(AutofillVcnEnrollBottomSheetContent.class),
                         /*animate=*/eq(true));
     }
 
@@ -110,7 +110,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mCoordinator.hide();
 
         verify(mBottomSheetController)
-                .hideContent(any(AutofillVcnEnrollBottomSheetMediator.class),
+                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
                         /*animate=*/eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }

@@ -137,7 +137,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         requestShowContent(mWebContents);
 
         verify(mBottomSheetController)
-                .requestShowContent(any(AutofillVcnEnrollBottomSheetMediator.class),
+                .requestShowContent(any(AutofillVcnEnrollBottomSheetContent.class),
                         /*animate=*/eq(true));
     }
 

@@ -4,17 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -31,8 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -45,6 +38,8 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock
+    private AutofillVcnEnrollBottomSheetContent mContent;
     @Mock
     private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
     @Mock
@@ -61,13 +56,8 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        Context context = mWindow.getContext().get();
-        mContentView = new View(context);
-        mScrollView = new ScrollView(context);
-        mDismissed = false;
         when(mLifecycle.canBegin()).thenReturn(true);
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(
-                mContentView, mScrollView, this::onDismiss, mLifecycle);
+        mMediator = new AutofillVcnEnrollBottomSheetMediator(mContent, mLifecycle);
     }
 
     private void onDismiss() {
@@ -85,7 +75,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.requestShowContent(mWindow);
 
         verify(mBottomSheetController)
-                .requestShowContent(/*content=*/eq(mMediator), /*animate=*/eq(true));
+                .requestShowContent(/*content=*/eq(mContent), /*animate=*/eq(true));
     }
 
     @Test
@@ -102,12 +92,8 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.requestShowContent(mWindow);
         mMediator.hide();
 
-        verifyBottomSheetControllerHideContentCalled();
-    }
-
-    private void verifyBottomSheetControllerHideContentCalled() {
         verify(mBottomSheetController)
-                .hideContent(/*content=*/eq(mMediator), /*animate=*/eq(true),
+                .hideContent(/*content=*/eq(mContent), /*animate=*/eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
@@ -116,73 +102,5 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.hide();
 
         verifyNoInteractions(mBottomSheetController);
-    }
-
-    @Test
-    public void testContentView() {
-        assertThat(mMediator.getContentView(), equalTo(mContentView));
-    }
-
-    @Test
-    public void testBottomSheetHasNoToolbar() {
-        assertThat(mMediator.getToolbarView(), nullValue());
-    }
-
-    @Test
-    public void testNoVerticalScrollOffset() {
-        assertThat(mMediator.getVerticalScrollOffset(), equalTo(0));
-    }
-
-    @Test
-    public void testVerticalScrollOffset() {
-        mScrollView.setScrollY(1337);
-
-        assertThat(mMediator.getVerticalScrollOffset(), equalTo(1337));
-    }
-
-    @Test
-    public void testDismissBottomSheet() {
-        mMediator.destroy();
-
-        assertTrue(mDismissed);
-    }
-
-    @Test
-    public void testBottomSheetPriority() {
-        assertThat(mMediator.getPriority(), equalTo(BottomSheetContent.ContentPriority.HIGH));
-    }
-
-    @Test
-    public void testCannotSwipeToDismissBottomSheet() {
-        assertThat(mMediator.swipeToDismissEnabled(), equalTo(false));
-    }
-
-    @Test
-    public void testBottomSheetAccessibilityContentDescriotion() {
-        assertThat(mMediator.getSheetContentDescriptionStringId(),
-                equalTo(R.string.autofill_virtual_card_enroll_content_description));
-    }
-
-    @Test
-    public void testBottomSheetFullHeightAccessibilityDescription() {
-        assertThat(mMediator.getSheetFullHeightAccessibilityStringId(),
-                equalTo(R.string.autofill_virtual_card_enroll_full_height_content_description));
-    }
-
-    @Test
-    public void testBottomSheetClosedAccessibilityDescription() {
-        assertThat(mMediator.getSheetClosedAccessibilityStringId(),
-                equalTo(R.string.autofill_virtual_card_enroll_closed_description));
-    }
-
-    @Test
-    public void testBottomSheetCannotPeek() {
-        assertThat(mMediator.getPeekHeight(), equalTo(BottomSheetContent.HeightMode.DISABLED));
-    }
-
-    @Test
-    public void testContentDeterminesBottomSheetHeight() {
-        assertThat(mMediator.getFullHeightRatio(),
-                equalTo((float) BottomSheetContent.HeightMode.WRAP_CONTENT));
     }
 }

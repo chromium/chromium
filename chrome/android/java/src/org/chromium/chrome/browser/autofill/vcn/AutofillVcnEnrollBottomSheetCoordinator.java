@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -57,15 +58,16 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                         cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
         PropertyModelChangeProcessor.create(modelBuilder.build(), view, viewBinder::bind);
 
-        mMediator = new AutofillVcnEnrollBottomSheetMediator(view.mContentView, view.mScrollView,
-                delegate::onDismiss,
+        mMediator = new AutofillVcnEnrollBottomSheetMediator(
+                new AutofillVcnEnrollBottomSheetContent(
+                        view.mContentView, view.mScrollView, delegate::onDismiss),
                 new AutofillVcnEnrollBottomSheetLifecycle(
                         layoutStateProvider, tabModelSelectorSupplier));
     }
 
     private void launchChromeCustomTab(String url) {
         new CustomTabsIntent.Builder().setShowTitle(true).build().launchUrl(
-                mMediator.getContentView().getContext(), Uri.parse(url));
+                ContextUtils.getApplicationContext(), Uri.parse(url));
     }
 
     /**
