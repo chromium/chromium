@@ -36,9 +36,8 @@
                 function() {
                     var box = document.getElementById("box");
                     box.className = "end";
+                    box.ontransitionend = notifyDone;
                     resolve();
-                    // We need to wait >1s for the animation to complete.
-                    window.setTimeout(notifyDone, 1200);
             });
             window.resizeTo(1600,1200);
             await resizePromise;

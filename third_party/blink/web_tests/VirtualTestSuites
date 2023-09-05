@@ -2624,7 +2624,6 @@
       "compositing/squashing/squash-above-fixed-1.html",
       "compositing/squashing/squash-above-fixed-3.html",
       "compositing/transform-gained-3d.html",
-      "compositing/transitions/transform-on-large-layer.html",
       "compositing/video/video-reflection.html",
       "compositing/webgl/webgl-copy-image.html",
       "css1/pseudo/pseudo_elements_in_selectors.html",
