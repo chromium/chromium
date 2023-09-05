@@ -211,7 +211,7 @@ export const REFERENCE_OPACITY = css`var(--cros-reference-opacity)`;
 
 export const FONT_FAMILY_TEST = css`var(--cros-font-family-test)`;
 export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other)`;
-export const HEADLINE_1_FONT = css`var(--cros-headline-1)`;
+export const HEADLINE_1_FONT = css`var(--cros-headline-1-font)`;
 export const HEADLINE_1_FONT_FAMILY = css`var(--cros-headline-1-font-family)`;
 export const HEADLINE_1_FONT_SIZE = css`var(--cros-headline-1-font-size)`;
 export const HEADLINE_1_FONT_WEIGHT = css`var(--cros-headline-1-font-weight)`;

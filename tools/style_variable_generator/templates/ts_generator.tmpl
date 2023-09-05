@@ -162,7 +162,7 @@ export const {{name | to_ts_var_name}} = css`var({{name | to_css_var_name}})`;
 export const {{name | to_ts_var_name}} = css`var({{name | to_css_var_name}})`;
 {%-     endfor %}
 {%-   for name, typeface in typefaces.items() %}
-export const {{name | to_ts_var_name}}_FONT = css`var({{name | to_css_var_name}})`;
+export const {{name | to_ts_var_name}}_FONT = css`var({{name | to_css_var_name}}-font)`;
 export const {{name | to_ts_var_name}}_FONT_FAMILY = css`var({{name | to_css_var_name}}-font-family)`;
 export const {{name | to_ts_var_name}}_FONT_SIZE = css`var({{name | to_css_var_name}}-font-size)`;
 export const {{name | to_ts_var_name}}_FONT_WEIGHT = css`var({{name | to_css_var_name}}-font-weight)`;
