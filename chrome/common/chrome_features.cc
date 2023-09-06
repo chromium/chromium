@@ -809,6 +809,10 @@ BASE_FEATURE(kIsolatedWebAppDevMode,
 BASE_FEATURE(kKioskEnableAppService,
              "KioskEnableAppService",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kKioskEnableSystemWebApps,
+             "KioskEnableSystemWebApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, allows other features to use the k-Anonymity Service.
