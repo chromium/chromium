@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 
 #include <utility>
 
@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_type_mojom_traits.h"
 #include "chrome/common/url_constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -86,8 +86,9 @@ void AppNotificationHandler::AddObserver(
 void AppNotificationHandler::BindInterface(
     mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
         receiver) {
-  if (receiver_.is_bound())
+  if (receiver_.is_bound()) {
     receiver_.reset();
+  }
   receiver_.Bind(std::move(receiver));
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/apps_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/apps_section.h"
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -18,8 +18,8 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/android_apps_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/android_apps_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/guest_os_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/plugin_vm_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -404,14 +404,16 @@ AppsSection::AppsSection(Profile* profile,
         base::BindRepeating(&AppsSection::UpdateAndroidSearchTags,
                             base::Unretained(this)));
 
-    if (arc_app_list_prefs_)
+    if (arc_app_list_prefs_) {
       arc_app_list_prefs_->AddObserver(this);
+    }
 
     UpdateAndroidSearchTags();
   }
 
-  if (ShouldShowStartup(profile))
+  if (ShouldShowStartup(profile)) {
     updater.AddSearchTags(GetOnStartupSearchConcepts());
+  }
 }
 
 AppsSection::~AppsSection() {
@@ -423,8 +425,9 @@ AppsSection::~AppsSection() {
   }
 
   if (arc::IsArcAllowedForProfile(profile())) {
-    if (arc_app_list_prefs_)
+    if (arc_app_list_prefs_) {
       arc_app_list_prefs_->RemoveObserver(this);
+    }
   }
 }
 
@@ -495,8 +498,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void AppsSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<AndroidAppsHandler>(profile(), app_service_proxy_));
-  if (arc::IsArcVmEnabled())
+  if (arc::IsArcVmEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
+  }
 
   if (ShowPluginVm(profile(), *pref_service_)) {
     web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));

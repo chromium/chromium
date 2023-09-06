@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
 
 #include <memory>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -177,8 +177,9 @@ class AppNotificationHandlerTest : public testing::Test {
 
   bool CheckIfFakeAppInList(std::string fake_id) {
     for (app_notification::mojom::AppPtr const& app : observer_->apps()) {
-      if (app->id.compare(fake_id) == 0)
+      if (app->id.compare(fake_id) == 0) {
         return true;
+      }
     }
     return false;
   }

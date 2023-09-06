@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/android_apps_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/android_apps_handler.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -69,8 +69,9 @@ void AndroidAppsHandler::OnAppRemoved(const std::string& app_id) {
 }
 
 void AndroidAppsHandler::HandleAppChanged(const std::string& app_id) {
-  if (app_id != arc::kSettingsAppId)
+  if (app_id != arc::kSettingsAppId) {
     return;
+  }
   SendAndroidAppsInfo();
 }
 
@@ -103,8 +104,9 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   bool activated_from_keyboard = false;
-  if (args[0].is_bool())
+  if (args[0].is_bool()) {
     activated_from_keyboard = args[0].GetBool();
+  }
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
   app_service_proxy_->Launch(
