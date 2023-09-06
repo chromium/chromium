@@ -39,7 +39,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
@@ -62,18 +61,12 @@ class TabListRecyclerView
     private static final String TAG = "TabListRecyclerView";
     private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
 
-    private static final String MAX_DUTY_CYCLE_PARAM = "max-duty-cycle";
+    // Default values from experimentation.
+    private static final float DEFAULT_DOWNSAMPLING_SCALE = 0.5f;
     private static final float DEFAULT_MAX_DUTY_CYCLE = 0.2f;
 
     public static final long BASE_ANIMATION_DURATION_MS = 218;
     public static final long FINAL_FADE_IN_DURATION_MS = 50;
-
-    /**
-     * Field trial parameter for downsampling scaling factor.
-     */
-    private static final String DOWNSAMPLING_SCALE_PARAM = "downsampling-scale";
-
-    private static final float DEFAULT_DOWNSAMPLING_SCALE = 0.5f;
 
     /**
      * An interface to listen to visibility related changes on this {@link RecyclerView}.
@@ -389,13 +382,7 @@ class TabListRecyclerView
     }
 
     private float getDownsamplingScale() {
-        String scale = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.TAB_TO_GTS_ANIMATION, DOWNSAMPLING_SCALE_PARAM);
-        try {
-            return Float.valueOf(scale);
-        } catch (NumberFormatException e) {
-            return DEFAULT_DOWNSAMPLING_SCALE;
-        }
+        return DEFAULT_DOWNSAMPLING_SCALE;
     }
 
     /**
@@ -403,6 +390,9 @@ class TabListRecyclerView
      * The view resource can be obtained by {@link #getResourceId} in compositor layer.
      */
     void createDynamicView(DynamicResourceLoader loader) {
+        // If there is no resource loader it isn't necessary to create a dynamic view.
+        if (loader == null) return;
+
         // TODO(crbug/1409886): Consider reducing capture frequency or only capturing once. There
         // was some discussion about this in crbug/1386265. However, it was punted on due to mid-end
         // devices having difficulty producing thumbnails before the first capture to avoid the
