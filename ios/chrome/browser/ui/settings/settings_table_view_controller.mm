@@ -2339,16 +2339,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
-- (void)signinPromoViewMediator:(SigninPromoViewMediator*)mediator
-    shouldOpenSigninWithIdentity:(id<SystemIdentity>)identity
-                     promoAction:(signin_metrics::PromoAction)promoAction
-                      completion:
-                          (ShowSigninCommandCompletionCallback)completion {
-  [self showSignInWithIdentity:identity
-                   promoAction:promoAction
-                    completion:completion];
-}
-
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   [self reloadData];

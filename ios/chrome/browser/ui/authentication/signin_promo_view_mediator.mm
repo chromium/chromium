@@ -925,23 +925,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
           [weakConsumer signinDidFinish];
         }
       };
-  if ([self.consumer respondsToSelector:@selector
-                     (signinPromoViewMediator:shouldOpenSigninWithIdentity
-                                                :promoAction:completion:)]) {
-    CHECK(!base::FeatureList::IsEnabled(kHideSettingsSyncPromo));
-    [self.consumer signinPromoViewMediator:self
-              shouldOpenSigninWithIdentity:identity
-                               promoAction:promoAction
-                                completion:completion];
-  } else {
-    ShowSigninCommand* command =
-        [[ShowSigninCommand alloc] initWithOperation:operation
-                                            identity:identity
-                                         accessPoint:self.accessPoint
-                                         promoAction:promoAction
-                                            callback:completion];
-    [self.presenter showSignin:command];
-  }
+  ShowSigninCommand* command =
+      [[ShowSigninCommand alloc] initWithOperation:operation
+                                          identity:identity
+                                       accessPoint:self.accessPoint
+                                       promoAction:promoAction
+                                          callback:completion];
+  [self.presenter showSignin:command];
 }
 
 // Changes the promo view state, and records the metrics.

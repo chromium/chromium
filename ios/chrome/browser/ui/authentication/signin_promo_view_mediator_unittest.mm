@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -103,6 +104,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 
   void CreateMediator(signin_metrics::AccessPoint access_point) {
     consumer_ = OCMStrictProtocolMock(@protocol(SigninPromoViewConsumer));
+    signin_presenter_ = OCMStrictProtocolMock(@protocol(SigninPresenter));
     mediator_ = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                           GetForBrowserState(
@@ -111,7 +113,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                           prefService:chrome_browser_state_.get()->GetPrefs()
                           syncService:GetSyncService()
                           accessPoint:access_point
-                            presenter:nil
+                            presenter:signin_presenter_
                    baseViewController:nil];
     mediator_.consumer = consumer_;
 
@@ -356,6 +358,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   SigninPromoViewConfigurator* configurator_;
 
   // Mocks.
+  id<SigninPresenter> signin_presenter_;
   id<SigninPromoViewConsumer> consumer_;
   SigninPromoView* signin_promo_view_;
   UIButton* primary_button_;
@@ -371,15 +374,6 @@ class SigninPromoViewMediatorTest : public PlatformTest {
 // Tests signin promo view and its configurator with no accounts on the device.
 TEST_F(SigninPromoViewMediatorTest, NoAccountsConfigureSigninPromoView) {
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
-  TestSigninPromoWithNoAccounts(SigninPromoViewStyleStandard);
-}
-
-// Tests signin promo view and its configurator settings view with no accounts
-// on the device.
-TEST_F(SigninPromoViewMediatorTest,
-       NoAccountsConfigureSigninPromoViewFromSettings) {
-  close_button_hidden_ = NO;
-  CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   TestSigninPromoWithNoAccounts(SigninPromoViewStyleStandard);
 }
 
@@ -469,37 +463,28 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateVisible) {
 
 // Tests the view state while signing in.
 TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kHideSettingsSyncPromo);
-
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
-  __block ShowSigninCommandCompletionCallback completion;
-  ShowSigninCommandCompletionCallback completion_arg =
-      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-        completion = value;
+  __block ShowSigninCommand* command;
+  ShowSigninCommand* command_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommand* value) {
+        command = value;
         return YES;
       }];
   // Start sign-in.
-  OCMExpect([consumer_
-           signinPromoViewMediator:mediator_
-      shouldOpenSigninWithIdentity:nil
-                       promoAction:
-                           signin_metrics::PromoAction::
-                               PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-                        completion:completion_arg]);
+  OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewDidTapSigninWithNewAccount:signin_promo_view_];
   EXPECT_TRUE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
-  EXPECT_NE(nil, (id)completion);
+  EXPECT_NE(nil, command.callback);
   // Stop sign-in.
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess, nil);
+  command.callback(SigninCoordinatorResultSuccess, nil);
   EXPECT_FALSE(mediator_.showSpinner);
   EXPECT_EQ(SigninPromoViewState::kUsedAtLeastOnce,
             mediator_.signinPromoViewState);
@@ -509,24 +494,15 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoViewStateSignedin) {
 // while the sign-in is in progress, when an identity is added.
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kHideSettingsSyncPromo);
-
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
-  __block ShowSigninCommandCompletionCallback completion;
-  ShowSigninCommandCompletionCallback completion_arg =
-      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-        completion = value;
+  __block ShowSigninCommand* command;
+  ShowSigninCommand* command_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommand* value) {
+        command = value;
         return YES;
       }];
-  OCMExpect([consumer_
-           signinPromoViewMediator:mediator_
-      shouldOpenSigninWithIdentity:nil
-                       promoAction:
-                           signin_metrics::PromoAction::
-                               PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-                        completion:completion_arg]);
+  OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in without identity.
@@ -539,30 +515,23 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess, nil);
+  command.callback(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that no update notification is sent by the mediator to its consumer,
 // while the sign-in is in progress.
 TEST_F(SigninPromoViewMediatorTest,
        SigninPromoViewNoUpdateNotificationWhileSignin2) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kHideSettingsSyncPromo);
-
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
-  __block ShowSigninCommandCompletionCallback completion;
-  ShowSigninCommandCompletionCallback completion_arg =
-      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-        completion = value;
+  __block ShowSigninCommand* command;
+  ShowSigninCommand* command_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommand* value) {
+        command = value;
         return YES;
       }];
-  OCMExpect([consumer_ signinPromoViewMediator:mediator_
-                  shouldOpenSigninWithIdentity:identity_
-                                   promoAction:signin_metrics::PromoAction::
-                                                   PROMO_ACTION_WITH_DEFAULT
-                                    completion:completion_arg]);
+  OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Starts sign-in with an identity.
@@ -579,7 +548,7 @@ TEST_F(SigninPromoViewMediatorTest,
   OCMExpect([consumer_ promoProgressStateDidChange]);
   OCMExpect([consumer_ signinDidFinish]);
   ExpectConfiguratorNotification(NO /* identity changed */);
-  completion(SigninCoordinatorResultSuccess, nil);
+  command.callback(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that promos aren't shown if browser sign-in is disabled by policy
@@ -620,29 +589,22 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
 // called at the end of the sign-in.
 TEST_F(SigninPromoViewMediatorTest,
        RemoveSigninPromoAndDeallocMediatorWhileSignedIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kHideSettingsSyncPromo);
-
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   __weak __typeof(mediator_) weak_mediator = mediator_;
-  __block ShowSigninCommandCompletionCallback completion;
+  __block ShowSigninCommand* command;
   // This test wants to verify behavior when `mediator_` gets deallocated.
   // OCMock uses autorelease in places, which could result in `mediator_`
   // staying allocated longer than we want without this @autoreleasepool.
   @autoreleasepool {
     [mediator_ signinPromoViewIsVisible];
-    id completion_arg = [OCMArg
-        checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-          completion = value;
+    ShowSigninCommand* command_arg =
+        [OCMArg checkWithBlock:^BOOL(ShowSigninCommand* value) {
+          command = value;
           return YES;
         }];
-    OCMExpect([consumer_ signinPromoViewMediator:mediator_
-                    shouldOpenSigninWithIdentity:identity_
-                                     promoAction:signin_metrics::PromoAction::
-                                                     PROMO_ACTION_WITH_DEFAULT
-                                      completion:completion_arg]);
+    OCMExpect([signin_presenter_ showSignin:command_arg]);
     OCMExpect([consumer_ promoProgressStateDidChange]);
     ExpectConfiguratorNotification(NO /* identity changed */);
     // Start sign-in with an identity.
@@ -663,30 +625,23 @@ TEST_F(SigninPromoViewMediatorTest,
   EXPECT_EQ(weak_mediator, nil);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  completion(SigninCoordinatorResultSuccess, nil);
+  command.callback(SigninCoordinatorResultSuccess, nil);
 }
 
 // Tests that the sign-in promo view being removed, and tests the consumer is
 // still called at the end of the sign-in.
 TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kHideSettingsSyncPromo);
-
   // Setup.
   AddDefaultIdentity();
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   [mediator_ signinPromoViewIsVisible];
-  __block ShowSigninCommandCompletionCallback completion;
-  id completion_arg =
-      [OCMArg checkWithBlock:^BOOL(ShowSigninCommandCompletionCallback value) {
-        completion = value;
+  __block ShowSigninCommand* command;
+  ShowSigninCommand* command_arg =
+      [OCMArg checkWithBlock:^BOOL(ShowSigninCommand* value) {
+        command = value;
         return YES;
       }];
-  OCMExpect([consumer_ signinPromoViewMediator:mediator_
-                  shouldOpenSigninWithIdentity:identity_
-                                   promoAction:signin_metrics::PromoAction::
-                                                   PROMO_ACTION_WITH_DEFAULT
-                                    completion:completion_arg]);
+  OCMExpect([signin_presenter_ showSignin:command_arg]);
   OCMExpect([consumer_ promoProgressStateDidChange]);
   ExpectConfiguratorNotification(NO /* identity changed */);
   // Start sign-in with an identity.
@@ -696,7 +651,7 @@ TEST_F(SigninPromoViewMediatorTest, RemoveSigninPromoWhileSignedIn) {
   EXPECT_EQ(SigninPromoViewState::kInvalid, mediator_.signinPromoViewState);
   // Finish the sign-in.
   OCMExpect([consumer_ signinDidFinish]);
-  completion(SigninCoordinatorResultSuccess, nil);
+  command.callback(SigninCoordinatorResultSuccess, nil);
   // Set mediator_ to nil to avoid the TearDown doesn't call
   // -[mediator_ disconnect] again.
   mediator_ = nil;
