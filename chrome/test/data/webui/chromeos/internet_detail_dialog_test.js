@@ -64,8 +64,8 @@ suite('internet-detail-dialog', () => {
 
   setup(async () => {
     PolymerTest.clearBody();
-    InternetDetailDialogBrowserProxyImpl.instance_ =
-        new TestInternetDetailDialogBrowserProxy();
+    InternetDetailDialogBrowserProxyImpl.setInstance(
+        new TestInternetDetailDialogBrowserProxy());
     mojoApi_.resetForTest();
   });
 
