@@ -58,6 +58,9 @@ MockQuotaManager::MockQuotaManager(
 void MockQuotaManager::UpdateOrCreateBucket(
     const BucketInitParams& params,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  // Make sure serialization doesn't fail.
+  params.storage_key.Serialize();
+
   if (db_disabled_) {
     std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
     return;

@@ -38,9 +38,9 @@ class LevelDBDirectTransaction;
 namespace indexed_db {
 
 extern const base::FilePath::CharType kBlobExtension[];
-extern const base::FilePath::CharType kIndexedDBExtension[];
+extern CONTENT_EXPORT const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kIndexedDBFile[];
-extern const base::FilePath::CharType kLevelDBExtension[];
+extern CONTENT_EXPORT const base::FilePath::CharType kLevelDBExtension[];
 
 // Returns whether the legacy (first-party/default-bucket) path should be used
 // for storing IDB files for the given bucket.

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,6 +23,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -216,6 +218,19 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
       mock_factory_client->CreateInterfacePtrAndBind(), u"database_name",
       /*force_close=*/true);
   loop_3.Run();
+}
+
+// Regression test for crbug.com/1472826
+TEST_F(IndexedDBContextTest, DontChokeOnBadLegacyFiles) {
+  base::CreateDirectory(indexed_db_context_->GetFirstPartyDataPathForTesting()
+                            .AppendASCII("invalid_storage_key")
+                            .AddExtension(indexed_db::kIndexedDBExtension)
+                            .AddExtension(indexed_db::kLevelDBExtension));
+
+  base::RunLoop run_loop;
+  indexed_db_context_->ForceInitializeFromFilesForTesting(
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace content

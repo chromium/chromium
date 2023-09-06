@@ -1300,8 +1300,9 @@ TEST_F(ServiceWorkerJobTest, RegisterSameScriptMultipleTimesWhileUninstalling) {
 // script with bad origin. (see https://crbug.com/1312995)
 TEST_F(ServiceWorkerJobTest, RegisterBadOrigin) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
-  options.scope = GURL("bad-origin://www.example.com/");
-  GURL script_url("bad-origin://www.example.com/service_worker.js");
+  // http fails the trustworthiness check.
+  options.scope = GURL("http://www.example.com/");
+  GURL script_url("http://www.example.com/service_worker.js");
 
   base::RunLoop run_loop;
   scoped_refptr<ServiceWorkerRegistration> registration;
