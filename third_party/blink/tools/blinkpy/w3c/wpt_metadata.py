@@ -115,11 +115,13 @@ class TestConfigurations(collections.abc.Mapping):
                     }))
                 product = host.builders.product_for_build_step(builder, step)
                 debug = port.get_option('configuration') == 'Debug'
-                virtual_suites = {
-                    suite.full_prefix.split('/')[1]
-                    for suite in port.virtual_test_suites()
-                }
-                for virtual_suite in {'', *virtual_suites}:
+                virtual_suites = {''}
+                # Only `content_shell` runs virtual tests, currently.
+                if product == Port.CONTENT_SHELL_NAME:
+                    virtual_suites.update(
+                        suite.full_prefix.split('/')[1]
+                        for suite in port.virtual_test_suites())
+                for virtual_suite in virtual_suites:
                     config = metadata.RunInfo({
                         'product': product,
                         'os': port.operating_system(),
