@@ -22,8 +22,8 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/file_manager/grit/file_manager_gen_resources.h"
 #include "ui/file_manager/grit/file_manager_gen_resources_map.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/file_manager/grit/file_manager_resources_map.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
@@ -93,8 +93,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
-  source->AddResourcePath("", IDR_FILE_MANAGER_SWA_MAIN_HTML);
-
+  source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
   source->AddResourcePaths(
       base::make_span(kFileManagerSwaResources, kFileManagerSwaResourcesSize));

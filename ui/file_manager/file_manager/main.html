@@ -7,9 +7,10 @@ found in the LICENSE file.
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <title>$i18n{FILEMANAGER_APP_NAME}</title>
+    <script src="chrome://file-manager/init_globals.js"></script>
 
-    <meta name="google" value="notranslate">
-    <meta name="color-scheme" content="light dark">
+    <meta charset="utf-8" name="google" value="notranslate">
+    <meta charset="utf-8" name="color-scheme" content="light dark">
 
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
@@ -24,7 +25,7 @@ found in the LICENSE file.
     <link rel="stylesheet" href="foreground/css/file_types.css">
     <link rel="stylesheet" href="foreground/css/common.css">
 
-    <script type="module" src="foreground/js/main.js" defer></script>
+    <script type="module" src="chrome://file-manager/main.js"></script>
   </head>
 
   <body aria-label="$i18n{FILEMANAGER_APP_NAME}" tabindex="-1" class="files-ng">

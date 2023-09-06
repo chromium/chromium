@@ -63,24 +63,6 @@ js_type_check("closure_compile") {
       ]
 }
 
-action("gen_main_html") {
-  inputs = [ "//ui/file_manager/file_manager/main.html" ]
-
-  script = "//ash/webui/file_manager/resources/gen_main_html.py"
-
-  args = [
-    "--source",
-    rebase_path("//ui/file_manager/file_manager/main.html", root_build_dir),
-    "--target",
-    rebase_path("$target_gen_dir/main.html", root_build_dir),
-  ]
-
-  outputs = [
-    "$target_gen_dir/main.html",
-    "$target_gen_dir/main.html.stamp",
-  ]
-}
-
 preprocess_if_expr("preprocess") {
   in_folder = "./"  #target_gen_dir
   out_folder = preprocess_folder
@@ -180,12 +162,11 @@ generate_grd("build_grd") {
   deps = [
     ":build",
     ":build_static_grdp",
-    ":gen_main_html",
     ":preprocess",
     ":preprocess_mojo",
   ]
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [ "main.html" ]
+  input_files = []
   manifest_files = [ "$target_gen_dir/manifest_preprocess_mojo.json" ]
 
   if (optimize_webui) {
