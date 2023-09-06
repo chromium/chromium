@@ -1062,6 +1062,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       if (!ShouldHideIrrelevantModules() || [magicStackOrder count] == 0) {
         [self addSafetyCheckToMagicStackOrder:magicStackOrder];
       }
+    } else if (moduleType == ContentSuggestionsModuleType::kTabResumption) {
+      if (IsTabResumptionEnabled() &&
+          !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
+          _tabResumptionItem) {
+        [magicStackOrder addObject:moduleNumber];
+      }
+
     } else {
       [magicStackOrder addObject:moduleNumber];
     }
@@ -1130,6 +1137,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     } else if (label == segmentation_platform::kSafetyCheck) {
       [magicStackOrder
           addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
+    } else if (label == segmentation_platform::kTabResumption) {
+      [magicStackOrder
+          addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
     }
   }
   _magicStackOrderFromSegmentation = magicStackOrder;
@@ -1281,16 +1291,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
   _tabResumptionItem = item;
-  MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert,
-                               ContentSuggestionsModuleType::kTabResumption};
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
           ? [self segmentationMagicStackOrder]
           : [self magicStackOrder];
-  change.index = [self
-      indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
-  [self.consumer updateMagicStackOrder:change];
+  if ([_latestMagicStackOrder count] > 0) {
+    // Only indicate the need for an explicit insertion if the tab resumption
+    // item was received after building the initial Magic Stack order or getting
+    // the Magic Stack Order from Segmentation.
+    MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert,
+                                 ContentSuggestionsModuleType::kTabResumption};
+    change.index = [self
+        indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+    [self.consumer updateMagicStackOrder:change];
+  }
   [self.consumer showTabResumptionWithItem:_tabResumptionItem];
 }
 
