@@ -58,6 +58,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
@@ -671,6 +672,22 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testCanInteractWithBackground() {
+        Intent intent = new Intent();
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertTrue("Background interaction should be enabled by default",
+                provider.canInteractWithBackground());
+
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ENABLE_BACKGROUND_INTERACTION,
+                BackgroundInteractBehavior.OFF);
+        provider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertFalse("Background interaction should be overridden by the legacy extra",
+                provider.canInteractWithBackground());
+    }
+
+    @Test
     public void testActivityDecorationType_Default() {
         // Decoration not set
         Intent intent = new CustomTabsIntent.Builder().build().intent;
@@ -767,7 +784,7 @@ public class CustomTabIntentDataProviderTest {
         bundle.putParcelable(CustomTabsIntent.KEY_PENDING_INTENT,
                 PendingIntent.getBroadcast(mContext, 0, new Intent(),
                         IntentUtils.getPendingIntentMutabilityFlag(true)));
-        bundle.putBoolean(CustomButtonParamsImpl.SHOW_ON_TOOLBAR, true);
+        bundle.putBoolean(CustomTabsIntent.EXTRA_SHOW_ON_TOOLBAR, true);
         return bundle;
     }
 

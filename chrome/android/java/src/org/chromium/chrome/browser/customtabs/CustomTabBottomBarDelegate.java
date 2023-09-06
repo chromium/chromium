@@ -27,6 +27,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -63,7 +64,7 @@ public class CustomTabBottomBarDelegate
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final BrowserServicesIntentDataProvider mDataProvider;
-    private final CustomTabActivityTabProvider mTabProvider;
+    private final Supplier<Tab> mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
     private final SystemNightModeMonitor mSystemNightModeMonitor;
 
@@ -107,7 +108,7 @@ public class CustomTabBottomBarDelegate
         mBrowserControlsSizer = browserControlsSizer;
         mNightModeStateController = nightModeStateController;
         mSystemNightModeMonitor = systemNightModeMonitor;
-        mTabProvider = tabProvider;
+        mTabProvider = () -> tabProvider.getTab();
         browserControlsSizer.addObserver(this);
 
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
@@ -368,9 +369,9 @@ public class CustomTabBottomBarDelegate
     }
 
     private static void sendPendingIntentWithUrl(PendingIntent pendingIntent, Intent extraIntent,
-            Activity activity, CustomTabActivityTabProvider tabProvider) {
+            Activity activity, Supplier<Tab> tabProvider) {
         Intent addedIntent = extraIntent == null ? new Intent() : new Intent(extraIntent);
-        Tab tab = tabProvider.getTab();
+        Tab tab = tabProvider.get();
         if (tab != null) addedIntent.setData(Uri.parse(tab.getUrl().getSpec()));
         try {
             ActivityOptions options = ActivityOptions.makeBasic();
@@ -467,7 +468,8 @@ public class CustomTabBottomBarDelegate
     @Override
     public void onSwipeStarted(@ScrollDirection int direction, MotionEvent ev) {
         if (mSwipeUpPendingIntent == null) return;
-        sendPendingIntentWithUrl(mSwipeUpPendingIntent, null, mActivity, mTabProvider);
+        // Do not send URL for swipe action.
+        sendPendingIntentWithUrl(mSwipeUpPendingIntent, null, mActivity, () -> null);
     }
 
     @Override

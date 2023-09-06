@@ -928,7 +928,7 @@ public class MainActivity
                 PendingIntent pi = PendingIntent.getBroadcast(
                         this, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
                 customTabsIntent.intent.putExtra(
-                        "androidx.browser.customtabs.extra.SECONDARY_TOOLBAR_SWIPE_UP_ACTION", pi);
+                        CustomTabsIntent.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_GESTURE, pi);
             }
             // NOTE: opening in incognito may be restricted. This assumes it is not.
             customTabsIntent.intent.putExtra(

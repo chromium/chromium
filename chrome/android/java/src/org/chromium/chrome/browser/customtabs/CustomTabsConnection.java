@@ -735,16 +735,25 @@ public class CustomTabsConnection {
                     () -> handler.updateRemoteViews(remoteViews, clickableIDs, pendingIntent));
         }
 
-        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()
-                && bundle.containsKey(
-                        CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION)) {
-            PendingIntent pendingIntent = IntentUtils.safeGetParcelable(
-                    bundle, CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
-            result &= PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
-                    () -> handler.updateSecondaryToolbarSwipeUpPendingIntent(pendingIntent));
+        if (ChromeFeatureList.sCctBottomBarSwipeUpGesture.isEnabled()) {
+            PendingIntent pendingIntent = getSecondarySwipeToolbarSwipeUpGesture(bundle);
+            if (pendingIntent != null) {
+                result &= PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
+                        () -> handler.updateSecondaryToolbarSwipeUpPendingIntent(pendingIntent));
+            }
         }
         logCall("updateVisuals()", result);
         return result;
+    }
+
+    private static PendingIntent getSecondarySwipeToolbarSwipeUpGesture(Bundle bundle) {
+        PendingIntent pendingIntent = IntentUtils.safeGetParcelable(
+                bundle, CustomTabsIntent.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_GESTURE);
+        if (pendingIntent == null) {
+            pendingIntent = IntentUtils.safeGetParcelable(
+                    bundle, CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
+        }
+        return pendingIntent;
     }
 
     public boolean requestPostMessageChannel(CustomTabsSessionToken session,
