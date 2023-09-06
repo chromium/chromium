@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -38,6 +39,8 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/permissions/permission_message.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/verifier_formats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -103,6 +106,8 @@ struct PrepareDiagnosticsAppProfileState {
   raw_ptr<content::BrowserContext> context;
   absl::optional<std::string> extension_id;
   absl::optional<web_package::SignedWebBundleId> iwa_id;
+  absl::optional<std::string> name;
+  absl::optional<std::string> permission_message;
 };
 
 PrepareDiagnosticsAppProfileState::PrepareDiagnosticsAppProfileState() =
@@ -123,11 +128,10 @@ void ReportSuccess(std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
 
   std::move(state->callback)
       .Run(base::ok(
-          ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult{
-              .context = state->context,
-              .extension_id = state->extension_id.value(),
-              .iwa_id = state->iwa_id.value(),
-          }));
+          ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContextResult(
+              state->context, state->extension_id.value(),
+              state->iwa_id.value(), state->name.value(),
+              state->permission_message)));
 }
 
 void OnIsolatedWebAppInstalled(
@@ -156,6 +160,7 @@ void OnIsolatedWebAppInstalled(
     ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
     return;
   }
+  state->name = web_app->untranslated_name();
 
   ReportSuccess(std::move(state));
 }
@@ -263,6 +268,21 @@ void OnExtensionInstalled(
     for (const auto& warning : extension->install_warnings()) {
       LOG(ERROR) << warning.message;
     }
+  }
+
+  extensions::PermissionMessages permission_messages =
+      extension->permissions_data()->GetPermissionMessages();
+  if (permission_messages.empty()) {
+    state->permission_message = absl::nullopt;
+  } else {
+    std::u16string message;
+    for (const auto& permission_message : permission_messages) {
+      base::StrAppend(&message, {permission_message.message(), u"\n"});
+      for (const auto& submessage : permission_message.submessages()) {
+        base::StrAppend(&message, {u"- ", submessage, u"\n"});
+      }
+    }
+    state->permission_message = base::UTF16ToUTF8(message);
   }
 
   GetExtensionService(state->context)->EnableExtension(extension->id());

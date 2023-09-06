@@ -107,6 +107,7 @@ content::WebContents* ExternalAppDialog::GetWebContents() {
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
     : content::WebContentsObserver(nullptr),
       content_url_(params.content_url),
+      app_name_(params.app_name),
       on_console_log_(params.on_console_log) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
@@ -137,7 +138,7 @@ ui::ModalType ExternalAppDialog::GetDialogModalType() const {
 }
 
 std::u16string ExternalAppDialog::GetDialogTitle() const {
-  return base::ASCIIToUTF16(base::StringPiece{"Tmp Dialog Title"});
+  return base::UTF8ToUTF16(app_name_);
 }
 
 GURL ExternalAppDialog::GetDialogContentURL() const {

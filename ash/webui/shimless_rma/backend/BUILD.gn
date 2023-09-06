@@ -8,6 +8,7 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("backend") {
   sources = [
+    "shimless_rma_delegate.cc",
     "shimless_rma_delegate.h",
     "shimless_rma_service.cc",
     "shimless_rma_service.h",

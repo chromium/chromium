@@ -268,6 +268,8 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
 
 // Verify the whole flow of `PrepareDiagnosticsAppProfile`.
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
+  fake_diagnostics_app_profile_helper_delegate_->web_app().SetName("App Name");
+
   // Call this twice to verify that even if the profile has already been loaded
   // it still works.
   for (int i = 0; i < 2; ++i) {
@@ -276,6 +278,13 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
             .Append(kTestCrxPath));
 
     EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(result->extension_id, "jmalcmbicpnakfkncbgbcmlmgpfkhdca");
+    EXPECT_EQ(result->iwa_id.id(),
+              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic");
+    EXPECT_EQ(result->name, "App Name");
+    EXPECT_EQ(result->permission_message,
+              "Run ChromeOS diagnostic tests\nRead ChromeOS device information "
+              "and data\nRead ChromeOS device and component serial numbers\n");
 
     content::BrowserContext* context = result->context;
     EXPECT_FALSE(context->IsOffTheRecord());

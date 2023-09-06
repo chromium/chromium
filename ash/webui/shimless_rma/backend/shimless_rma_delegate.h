@@ -9,8 +9,10 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -47,9 +49,25 @@ class ShimlessRmaDelegate {
   // object or an error message. This method is also responsible to check if the
   // extension and the IWA are allowed by the system.
   struct PrepareDiagnosticsAppBrowserContextResult {
+    PrepareDiagnosticsAppBrowserContextResult(
+        const raw_ptr<content::BrowserContext>& context,
+        const std::string& extension_id,
+        const web_package::SignedWebBundleId& iwa_id,
+        const std::string& name,
+        const absl::optional<std::string>& permission_message);
+    PrepareDiagnosticsAppBrowserContextResult(
+        const PrepareDiagnosticsAppBrowserContextResult&);
+    PrepareDiagnosticsAppBrowserContextResult& operator=(
+        const PrepareDiagnosticsAppBrowserContextResult&);
+    ~PrepareDiagnosticsAppBrowserContextResult();
+
     raw_ptr<content::BrowserContext> context;
     std::string extension_id;
     web_package::SignedWebBundleId iwa_id;
+    std::string name;
+    // Permission message to show. This is a multi-line string. Is omitted if no
+    // permission is required.
+    absl::optional<std::string> permission_message;
   };
   using PrepareDiagnosticsAppBrowserContextCallback = base::OnceCallback<void(
       base::expected<PrepareDiagnosticsAppBrowserContextResult, std::string>)>;

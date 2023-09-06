@@ -44,6 +44,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
 
     // The BrowserContext for the dialog.
     raw_ptr<content::BrowserContext> context;
+    // App name.
+    std::string app_name;
     // The url of the dialog content.
     GURL content_url;
     // Callback for handling the console log from the app.
@@ -95,6 +97,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
 
   // The url of the content.
   GURL content_url_;
+  // App name.
+  std::string app_name_;
   // views::WebDialogView that owns this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;
   // Callback for handling the console log from the app.
