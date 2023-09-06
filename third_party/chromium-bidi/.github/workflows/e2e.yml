@@ -6,7 +6,7 @@ name: E2E tests
 permissions: read-all
 
 env:
-  DEBUG: 'bidi:server:*,bidi:mapper:debug:*'
+  DEBUG: 'bidi:server:*,bidi:mapper:*'
   FORCE_COLOR: 3
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
@@ -68,7 +68,7 @@ jobs:
         run: >
           xvfb-run --auto-servernum
           npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:debug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -76,7 +76,7 @@ jobs:
         if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:debug:*'` and `VERBOSE: true`.
+        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
