@@ -44,11 +44,16 @@
   }
 </style>
 <div class="toolbar-container">
-  <span id="play-pause-container" hidden="[[!isReadAloudEnabled_]]">
+  <span id="read-aloud-container" hidden="[[!isReadAloudEnabled_]]">
     <cr-icon-button
       id="play-pause"
       iron-icon="read-anything-20:play"
       on-click="onPlayPauseClick_">
+    </cr-icon-button>
+    <cr-icon-button
+      id="rate"
+      iron-icon="voice-rate:1"
+      on-click="onShowRateMenuClick_">
     </cr-icon-button>
   </span>
   <cr-icon-button
@@ -77,6 +82,13 @@
       on-click="onShowLetterSpacingSubMenuClick_">
   </cr-icon-button>
 
+  <cr-action-menu id="rateMenu">
+    <template is="dom-repeat" items="[[rateOptions_]]">
+      <button class="dropdown-item" on-click="onRateClick_">
+        [[item]]x
+      </button>
+    </template>
+  </cr-action-menu>
   <cr-action-menu id="fontSizeMenu">
     <cr-icon-button
         class="font-size"

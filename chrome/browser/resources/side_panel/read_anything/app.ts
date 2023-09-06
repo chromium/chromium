@@ -165,6 +165,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // window.speechSynthesis.speaking on some platforms.
   paused = true;
   speechStarted = false;
+  // TODO(crbug.com/1474951): Make this the screen reader default speed if a
+  // TTS speed has been set
+  private rate_: number = 1;
 
   constructor() {
     super();
@@ -369,6 +372,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
+  onSpeechRateChange(rate: number) {
+    this.rate_ = rate;
+  }
 
   stopSpeech() {
     // TODO(crbug.com/1474951): When pausing, can we pause on the previous
@@ -447,8 +453,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.volume = 1;
     message.pitch = 1;
 
-    // TODO(crbug.com/1474951): Allow rate to be customized.
-    message.rate = 1;
+    // TODO(crbug.com/1474951): Ensure rate change happens immediately, rather
+    // than on the next set of text.
+    message.rate = this.rate_;
 
     this.speechStarted = true;
     this.synth.cancel();
@@ -518,6 +525,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   restoreSettingsFromPrefs() {
+    // TODO(crbug.com/1474951): Restore rate settings
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
     this.updateFont(chrome.readingMode.fontName);

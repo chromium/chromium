@@ -12,12 +12,13 @@ import './icons.html.js';
 import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './read_anything_toolbar.html.js';
 
 export interface ReadAnythingToolbar {
   $: {
+    rateMenu: CrActionMenuElement,
     colorSubmenu: CrActionMenuElement,
     lineSpacingSubmenu: CrActionMenuElement,
     letterSpacingSubmenu: CrActionMenuElement,
@@ -74,8 +75,11 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         type: Object,
         value: MenuStateValue,
       },
+      rateOptions_: Array,
     };
   }
+
+  private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
   private showAtPositionConfig_: ShowAtPositionConfig = {
     top: 20,
@@ -280,10 +284,15 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
   }
 
   private closeMenus_() {
+    this.$.rateMenu.close();
     this.$.colorSubmenu.close();
     this.$.lineSpacingSubmenu.close();
     this.$.letterSpacingSubmenu.close();
     this.$.fontSubmenu.close();
+  }
+
+  private onShowRateMenuClick_(event: MouseEvent) {
+    this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
   }
 
   private onShowColorSubMenuClick_(event: MouseEvent) {
@@ -328,6 +337,23 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     }
 
     this.closeMenus_();
+  }
+
+  private onRateClick_(event: DomRepeatEvent<number>) {
+    if (this.contentPage) {
+      this.contentPage.onSpeechRateChange(event.model.item);
+      this.setRateIcon(event.model.item);
+    }
+
+    this.closeMenus_();
+  }
+
+  setRateIcon(rate: number) {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('rate');
+    assert(button);
+    button.setAttribute('iron-icon', 'voice-rate:' + rate);
   }
 
   private onFontSizeIncreaseClick_() {

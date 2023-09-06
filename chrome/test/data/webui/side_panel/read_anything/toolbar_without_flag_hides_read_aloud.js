@@ -18,10 +18,10 @@
   // TODO(crbug.com/1474951): As more Read Aloud UI elements are added, add
   // tests
   //  for other UI elements.
-  const read_aloud_button = toolbar.getElementById('play-pause-container');
+  const read_aloud_container = toolbar.getElementById('read-aloud-container');
 
   const expected = true;
-  const actual = read_aloud_button.hidden;
+  const actual = read_aloud_container.hidden;
   const isEqual = actual === expected;
   if (!isEqual) {
     console.error(
