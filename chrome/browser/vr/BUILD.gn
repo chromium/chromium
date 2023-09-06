@@ -65,6 +65,8 @@ component("vr_ui") {
     "renderers/base_quad_renderer.h",
     "renderers/base_renderer.cc",
     "renderers/base_renderer.h",
+    "renderers/grid_renderer.cc",
+    "renderers/grid_renderer.h",
     "renderers/radial_gradient_quad_renderer.cc",
     "renderers/radial_gradient_quad_renderer.h",
     "renderers/texture_copy_renderer.cc",
@@ -205,7 +207,10 @@ component("vr_common") {
       "win/vr_browser_renderer_thread_win.h",
     ]
 
-    deps += [ "//services/viz/public/cpp/gpu" ]
+    deps += [
+      "//gpu/command_buffer/client:gles2_c_lib",
+      "//services/viz/public/cpp/gpu",
+    ]
 
     # Windows doesn't have app bundles, so include the UI directly.
     deps += [ ":vr_ui" ]

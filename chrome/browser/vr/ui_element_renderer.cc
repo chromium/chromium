@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"
+#include "chrome/browser/vr/renderers/grid_renderer.h"
 #include "chrome/browser/vr/renderers/radial_gradient_quad_renderer.h"
 #include "chrome/browser/vr/renderers/texture_copy_renderer.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
@@ -38,7 +39,7 @@ void UiElementRenderer::Init() {
   radial_gradient_quad_renderer_ =
       std::make_unique<RadialGradientQuadRenderer>();
   texture_copy_renderer_ = std::make_unique<TextureCopyRenderer>();
-  gradient_grid_renderer_ = std::make_unique<Grid::Renderer>();
+  gradient_grid_renderer_ = std::make_unique<GridRenderer>();
 }
 
 void UiElementRenderer::DrawTexturedQuad(
