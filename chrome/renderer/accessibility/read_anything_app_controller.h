@@ -147,7 +147,7 @@ class ReadAnythingAppController
   void OnCollapseSelection() const;
   bool IsSelectable() const;
   bool IsWebUIToolbarEnabled() const;
-  bool isReadAloudEnabled() const;
+  bool IsReadAloudEnabled() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
