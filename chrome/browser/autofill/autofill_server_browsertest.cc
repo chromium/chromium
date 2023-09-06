@@ -201,9 +201,8 @@ MATCHER_P(EqualsUploadProto, expected_const, "") {
 
 // Regression test for http://crbug.com/177419
 // TODO(crbug.com/1479078): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(
-    AutofillServerTest,
-    DISABLED_QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
+IN_PROC_BROWSER_TEST_F(AutofillServerTest,
+                       QueryAndUploadBothIncludeFieldsWithAutocompleteOff) {
   // Seed some test Autofill profile data, as upload requests are only made when
   // there is local data available to use as a baseline.
   WindowedPersonalDataManagerObserver personal_data_observer(
@@ -271,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(
           features::kAutofillEnableSupportForHonorificPrefixes)) {
     data_present = "1f7e0003f80000080004000001c424180002";
   } else {
-    data_present = "1f7e0003f80000080004000001c420780002";
+    data_present = "1f7e0003f80000080004000001c420180002";
   }
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present
