@@ -50,6 +50,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
@@ -123,12 +124,7 @@ public class SecurePaymentConfirmationAuthnTest {
                         Mockito.anyString());
 
         mPayeeName = "My Store";
-        org.chromium.url.internal.mojom.Origin origin =
-                new org.chromium.url.internal.mojom.Origin();
-        origin.scheme = "https";
-        origin.host = "store.example";
-        origin.port = 443;
-        mPayeeOrigin = new Origin(origin);
+        mPayeeOrigin = Origin.create(new GURL("https://store.example:443"));
         mTotal = new PaymentItem();
         mTotal.amount = new PaymentCurrencyAmount();
         mTotal.amount.currency = "USD";

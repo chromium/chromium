@@ -79,6 +79,11 @@ buildflag_header("chromeos_buildflags") {
   ]
 }
 
+buildflag_header("robolectric_buildflags") {
+  header = "robolectric_buildflags.h"
+  flags = [ "IS_ROBOLECTRIC=$is_robolectric" ]
+}
+
 if (build_with_chromium) {
   group("gold_common_pytype") {
     testonly = true

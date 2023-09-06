@@ -113,7 +113,7 @@ ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedURL(
 ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return render_frame_host_->GetLastCommittedOrigin().CreateJavaObject();
+  return render_frame_host_->GetLastCommittedOrigin().ToJavaObject();
 }
 
 void RenderFrameHostAndroid::GetCanonicalUrlForSharing(

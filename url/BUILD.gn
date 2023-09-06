@@ -62,7 +62,15 @@ component("url") {
 
   defines = [ "IS_URL_IMPL" ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//build:robolectric_buildflags",
+  ]
+
+  if (is_robolectric) {
+    # Make jni.h available.
+    public_configs = [ "//third_party/jdk" ]
+  }
 
   deps = [ "//base/third_party/dynamic_annotations" ]
 
@@ -107,13 +115,10 @@ if (is_android || is_robolectric) {
     sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
   }
 
-  generate_jni("origin_jni_headers") {
-    sources = [ "android/java/src/org/chromium/url/Origin.java" ]
-  }
-
   generate_jni("gurl_jni_headers") {
     sources = [
       "android/java/src/org/chromium/url/GURL.java",
+      "android/java/src/org/chromium/url/Origin.java",
       "android/java/src/org/chromium/url/Parsed.java",
     ]
   }
@@ -122,6 +127,7 @@ if (is_android || is_robolectric) {
     sources = [
       "android/gurl_android.cc",
       "android/gurl_android.h",
+      "android/origin_android.cc",
       "android/parsed_android.cc",
       "android/parsed_android.h",
     ]
@@ -130,22 +136,6 @@ if (is_android || is_robolectric) {
       ":gurl_jni_headers",
       ":url",
       "//base:base",
-    ]
-
-    if (is_robolectric) {
-      # Make jni.h available.
-      configs += [ "//third_party/jdk" ]
-    }
-  }
-
-  static_library("origin_android") {
-    sources = [ "android/origin_android.cc" ]
-
-    deps = [
-      ":gurl_android",
-      ":origin_jni_headers",
-      ":url",
-      "//base",
     ]
   }
 }
@@ -162,6 +152,7 @@ if (is_android && !is_cronet_build) {
     srcjar_deps = [ ":gurl_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/url/GURL.java",
+      "android/java/src/org/chromium/url/Origin.java",
       "android/java/src/org/chromium/url/Parsed.java",
       "android/java/src/org/chromium/url/URI.java",
     ]
@@ -169,23 +160,18 @@ if (is_android && !is_cronet_build) {
       "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
+      "//mojo/public/java:bindings_java",
+      "//mojo/public/mojom/base:base_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//url/mojom:url_mojom_gurl_java",
+      "//url/mojom:url_mojom_origin_java",
     ]
   }
 
-  android_library("origin_java") {
-    srcjar_deps = [ ":origin_jni_headers" ]
-    sources = [ "android/java/src/org/chromium/url/Origin.java" ]
-    deps = [
-      ":gurl_java",
-      "//base:jni_java",
-      "//build/android:build_java",
-      "//mojo/public/java:bindings_java",
-      "//mojo/public/mojom/base:base_java",
-      "//url/mojom:url_mojom_origin_java",
-    ]
+  # TODO(agrieve): Inline this target.
+  java_group("origin_java") {
+    deps = [ ":gurl_java" ]
   }
 }
 
@@ -301,7 +287,6 @@ if (is_android && !is_cronet_build) {
     deps = [
       ":gurl_android",
       ":j_test_jni_headers",
-      ":origin_android",
       ":url",
       "//base/test:test_support",
     ]
@@ -375,9 +360,9 @@ if (!is_cronet_build && target_os == "android") {
     enable_target = is_robolectric
     sources = [ "android/robolectric_test_main.cc" ]
     deps = [
+      ":gurl_android",
       "//base",
       "//url",
-      "//url:gurl_android",
     ]
 
     # Make jni.h available.

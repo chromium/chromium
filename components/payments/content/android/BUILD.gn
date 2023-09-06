@@ -64,7 +64,6 @@ static_library("android") {
     "//content/public/browser",
     "//net",
     "//url:gurl_android",
-    "//url:origin_android",
   ]
 }
 

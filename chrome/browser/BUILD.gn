@@ -3521,7 +3521,6 @@ static_library("browser") {
       "//third_party/smhasher:murmurhash2",
       "//ui/accessibility",
       "//url:gurl_android",
-      "//url:origin_android",
     ]
 
     if (safe_browsing_mode == 2) {

@@ -47,7 +47,7 @@ class DownloadCallback {
       Java_ManifestDownloadCallback_onPaymentMethodManifestDownloadSuccess(
           env, jcallback_,
           url::GURLAndroid::FromNativeGURL(env, url_after_redirects),
-          url::Origin::Create(url_after_redirects).CreateJavaObject(),
+          url::Origin::Create(url_after_redirects).ToJavaObject(),
           base::android::ConvertUTF8ToJavaString(env, content));
     }
   }
@@ -139,7 +139,7 @@ static jlong JNI_PaymentManifestDownloader_Init(
 // Static free function declared and called directly from java.
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_PaymentManifestDownloader_CreateOpaqueOriginForTest(JNIEnv* unused_env) {
-  return url::Origin().CreateJavaObject();
+  return url::Origin().ToJavaObject();
 }
 
 }  // namespace payments

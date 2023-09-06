@@ -94,14 +94,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
         MockitoAnnotations.initMocks(this);
 
-        org.chromium.url.internal.mojom.Origin mojomOrigin =
-                new org.chromium.url.internal.mojom.Origin();
-        mojomOrigin.scheme = "https";
-        mojomOrigin.host = "subdomain.example.test";
-        mojomOrigin.port = 443;
         GURL gurl = new GURL(
                 "https://subdomain.example.test:443/content/test/data/android/authenticator.html");
-        mOrigin = new Origin(mojomOrigin);
+        mOrigin = Origin.create(gurl);
 
         mMocker.mock(GURLUtilsJni.TEST_HOOKS, mGURLUtilsJniMock);
         Mockito.when(mGURLUtilsJniMock.getOrigin(any(String.class)))

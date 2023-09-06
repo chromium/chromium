@@ -28,7 +28,6 @@ static_library("navigation_interception") {
     deps += [
       ":jni_headers",
       "//url:gurl_android",
-      "//url:origin_android",
     ]
   }
 }
