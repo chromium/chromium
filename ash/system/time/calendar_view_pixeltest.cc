@@ -111,7 +111,7 @@ TEST_F(CalendarViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view",
-      /*revision_number=*/2, GetCalendarView()));
+      /*revision_number=*/3, GetCalendarView()));
 }
 
 TEST_F(CalendarViewPixelTest, EventList) {
@@ -141,7 +141,7 @@ TEST_F(CalendarViewPixelTest, EventList) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "event_list_view",
-      /*revision_number=*/4, GetEventListView()));
+      /*revision_number=*/5, GetEventListView()));
 }
 
 }  // namespace ash

@@ -127,7 +127,7 @@ TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/5, vpn_detailed_view_));
+      /*revision_number=*/6, vpn_detailed_view_));
 }
 
 TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
@@ -136,7 +136,7 @@ TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/5, vpn_detailed_view_));
+      /*revision_number=*/6, vpn_detailed_view_));
 }
 
 }  // namespace ash

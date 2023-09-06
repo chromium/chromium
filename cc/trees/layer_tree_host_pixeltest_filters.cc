@@ -91,6 +91,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(LayerTreeHostFiltersPixelTestGPU);
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
       gfx::Rect(200, 200), SK_ColorWHITE);
 
@@ -195,6 +200,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
 }
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
+#if defined(MEMORY_SANITIZER)
+  if (renderer_type() == viz::RendererType::kSkiaVk) {
+    GTEST_SKIP() << "TODO(crbug.com/1324336): Uninitialized data error";
+  }
+#endif
   scoped_refptr<SolidColorLayer> background =
       CreateSolidColorLayer(gfx::Rect(200, 200), SK_ColorWHITE);
 

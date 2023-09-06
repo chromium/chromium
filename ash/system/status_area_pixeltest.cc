@@ -136,7 +136,7 @@ TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
   system_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "system_tray" + GetScreenshotNameSuffix(), /*revision_number=*/0,
+      "system_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
       system_tray));
 }
 
@@ -149,7 +149,7 @@ TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
   date_tray->SetIsActive(IsActive());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "date_tray" + GetScreenshotNameSuffix(), /*revision_number=*/0,
+      "date_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
       date_tray));
 }
 
@@ -164,7 +164,7 @@ TEST_P(StatusAreaParameterizedPixelTest,
   notification_tray->SetIsActive(IsActive());
   EXPECT_TRUE(notification_tray->GetVisible());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "notification_tray" + GetScreenshotNameSuffix(), /*revision_number=*/0,
+      "notification_tray" + GetScreenshotNameSuffix(), /*revision_number=*/1,
       notification_tray));
 }
 

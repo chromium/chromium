@@ -150,7 +150,7 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", /*revision_number=*/0, notification_view));
+      "close_button_focused", /*revision_number=*/1, notification_view));
 }
 
 // Regression test for http://b/267195370. Tests that a notification with no
@@ -173,7 +173,7 @@ TEST_P(AshNotificationViewPixelTest, CollapsedNoMessage) {
   // Verify with a pixel test that the notification's title is vertically
   // centered.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "collapsed_no_message", /*revision_number=*/0, notification_view));
+      "collapsed_no_message", /*revision_number=*/1, notification_view));
 }
 
 class AshNotificationViewTitlePixelTest
@@ -242,7 +242,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot_name, /*revision_number=*/4, notification_view));
+      screenshot_name, /*revision_number=*/5, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest
@@ -319,7 +319,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetDisplayType())}),
-      /*revision_number=*/8,
+      /*revision_number=*/9,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
