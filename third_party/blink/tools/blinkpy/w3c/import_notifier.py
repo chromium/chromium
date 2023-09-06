@@ -24,6 +24,7 @@ from blinkpy.w3c import wpt_metadata
 from blinkpy.w3c.common import WPT_GH_URL, WPT_GH_RANGE_URL_TEMPLATE
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
 from blinkpy.w3c.monorail import MonorailAPI, MonorailIssue
+from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 
 path_finder.bootstrap_wpt_imports()
@@ -34,6 +35,9 @@ _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
 SHORT_GERRIT_PREFIX = 'https://crrev.com/c/'
+
+USE_BUGANIZER = False
+BUGANIZER_WPT_COMPONENT = "1415957"
 
 MetadataChange = Tuple[manifestexpected.ExpectedManifest,
                        manifestexpected.ExpectedManifest]
@@ -58,6 +62,12 @@ class ImportNotifier:
         self.finder = path_finder.PathFinder(host.filesystem)
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
+
+        try:
+            self.buganizer_client = BuganizerClient()
+        except Exception as e:
+            _log.warning('buganizer instantiation failed')
+            _log.warning(e)
 
     def main(self,
              wpt_revision_start,
@@ -441,9 +451,19 @@ class ImportNotifier:
         _log.info('Filing %d bugs in the pending list to Monorail', len(bugs))
         api = self._get_monorail_api(service_account_key_json)
         for index, bug in enumerate(bugs, start=1):
-            response = api.insert_issue(bug)
-            _log.info('[%d] Filed bug: %s', index,
-                      MonorailIssue.crbug_link(response['id']))
+
+            if USE_BUGANIZER:
+                buganizer_res = self.buganizer_client.NewIssue(
+                    title=bug.summary,
+                    description=bug.description,
+                    cc=bug.cc,
+                    status="New",
+                    componentId=BUGANIZER_WPT_COMPONENT)
+            else:
+                # using monorail
+                response = api.insert_issue(bug)
+                _log.info('[%d] Filed bug: %s', index,
+                          MonorailIssue.crbug_link(response['id']))
 
     def _get_monorail_api(self, service_account_key_json):
         if service_account_key_json:
