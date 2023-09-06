@@ -42,6 +42,9 @@ const char kSecurityKeyServiceUUID[] = "FFFD";
 
 constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
 
+constexpr uint8_t kLimitedDiscoveryFlag = 0x01;
+constexpr uint8_t kGeneralDiscoveryFlag = 0x02;
+
 // Get limited number of devices from |devices| and
 // prioritize paired/connecting devices over other devices.
 BluetoothAdapter::DeviceList GetLimitedNumDevices(
@@ -283,9 +286,17 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     // Device with invalid bluetooth transport is filtered out.
     case BLUETOOTH_TRANSPORT_INVALID:
       break;
-    // For LE devices, check the service UUID to determine if it supports HID
-    // or second factor authenticator (security key).
+    // For LE devices, check the discoverable flag and UUIDs.
     case BLUETOOTH_TRANSPORT_LE:
+      // Hide the LE device that mark itself as non-discoverble.
+      if (device->GetAdvertisingDataFlags().has_value()) {
+        if (!((kLimitedDiscoveryFlag | kGeneralDiscoveryFlag) &
+              device->GetAdvertisingDataFlags().value())) {
+          return true;
+        }
+      }
+      // Check the service UUID to determine if it supports HID or second factor
+      // authenticator (security key).
       if (base::Contains(device->GetUUIDs(),
                          device::BluetoothUUID(kHIDServiceUUID)) ||
           base::Contains(device->GetUUIDs(),
