@@ -19,7 +19,7 @@
 
 import {execSync, spawnSync} from 'child_process';
 import {cpus} from 'os';
-import {join, resolve, sep} from 'path';
+import {join, resolve} from 'path';
 
 import {packageDirectorySync} from 'pkg-dir';
 

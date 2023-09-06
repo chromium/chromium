@@ -17,21 +17,30 @@
 
 import type Protocol from 'devtools-protocol';
 import WebSocket from 'ws';
-import debug from 'debug';
+import debug, {type Debugger} from 'debug';
 
 import {CdpConnection} from '../cdp/cdpConnection.js';
 import type {CdpClient} from '../cdp/cdpClient.js';
-import {LogType} from '../utils/log.js';
+import type {LogType, LogPrefix} from '../utils/log.js';
 import {WebSocketTransport} from '../utils/websocketTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 const debugInfo = debug('bidi:mapper:info');
-const debugMapperDebugOthers = debug('bidi:mapper:debug:others');
-const debugMapperDebugPrefix = 'bidi:mapper:debug:';
+const debugOthers = debug('bidi:mapper:debug:others');
+// Memorizes a debug creation
+const loggers = new Map<string, Debugger>();
+const getLogger = (type: LogPrefix) => {
+  const prefix = `bidi:mapper:${type}`;
+  let logger = loggers.get(prefix);
+  if (!logger) {
+    logger = debug(prefix);
+    loggers.set(prefix, logger);
+  }
+  return logger;
+};
 
 export class MapperServer {
   #handlers: ((message: string) => void)[] = [];
-
   #cdpConnection: CdpConnection;
   #mapperCdpClient: CdpClient;
 
@@ -77,8 +86,8 @@ export class MapperServer {
     this.#handlers.push(handler);
   }
 
-  sendMessage(messageJson: string): Promise<void> {
-    return this.#sendBidiMessage(messageJson);
+  sendMessage(message: string): Promise<void> {
+    return this.#sendBidiMessage(message);
   }
 
   close() {
@@ -103,61 +112,50 @@ export class MapperServer {
     });
   }
 
-  async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
+  async #sendBidiMessage(json: string): Promise<void> {
     try {
       await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
-        expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
+        expression: `onBidiMessage(${JSON.stringify(json)})`,
       });
     } catch (error) {
       debugInternal('Call to onBidiMessage failed', error);
     }
   }
 
-  #onBidiMessage(bidiMessage: string): void {
-    for (const handler of this.#handlers) handler(bidiMessage);
+  #onBidiMessage(message: string): void {
+    for (const handler of this.#handlers) {
+      handler(message);
+    }
   }
 
   #onBindingCalled = (params: Protocol.Runtime.BindingCalledEvent) => {
     if (params.name === 'sendBidiResponse') {
       this.#onBidiMessage(params.payload);
-    }
-    if (params.name === 'sendDebugMessage') {
+    } else if (params.name === 'sendDebugMessage') {
       this.#onDebugMessage(params.payload);
     }
   };
 
-  #onDebugMessage = (debugMessageStr: string) => {
+  #onDebugMessage = (json: string) => {
     try {
-      const debugMessage = JSON.parse(debugMessageStr) as {
-        logType: LogType;
-        messages: unknown[];
-      };
+      const log: {
+        logType?: LogType;
+        messages?: unknown[];
+      } = JSON.parse(json);
 
-      // BiDi traffic is logged in `bidi:server:SEND ▸`
-      if (debugMessage.logType.startsWith(LogType.bidi)) {
-        return;
+      if (log.logType !== undefined && log.messages !== undefined) {
+        const logger = getLogger(log.logType);
+        logger(log.messages);
       }
-
-      if (
-        debugMessage.logType !== undefined &&
-        debugMessage.messages !== undefined
-      ) {
-        debug(debugMapperDebugPrefix + debugMessage.logType)(
-          // No formatter is needed as the messages will be formatted
-          // automatically.
-          '',
-          ...debugMessage.messages
-        );
-        return;
-      }
-    } catch {}
-    // Fall back to raw log in case of unknown
-    debugMapperDebugOthers(debugMessageStr);
+    } catch {
+      // Fall back to raw log in case of unknown
+      debugOthers(json);
+    }
   };
 
   #onConsoleAPICalled = (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
     debugInfo(
-      'consoleAPICalled %s %O',
+      'consoleAPICalled: %s %O',
       params.type,
       params.args.map((arg) => arg.value)
     );
@@ -166,7 +164,7 @@ export class MapperServer {
   #onRuntimeExceptionThrown = (
     params: Protocol.Runtime.ExceptionThrownEvent
   ) => {
-    debugInfo('exceptionThrown', params);
+    debugInfo('exceptionThrown:', params);
   };
 
   static async #initMapper(
@@ -234,7 +232,7 @@ export class MapperServer {
 
     // Let Mapper know what is it's TargetId to filter out related targets.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `window.setSelfTargetId(${JSON.stringify(targetId)})`,
+      expression: `window.setSelfTargetId('${targetId}')`,
     });
 
     await launchedPromise;

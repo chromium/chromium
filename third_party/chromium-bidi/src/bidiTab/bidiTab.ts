@@ -68,7 +68,7 @@ void (async () => {
 
   const bidiServer = await createBidiServer(selfTargetId);
 
-  log(LogType.debug, 'Launched');
+  log(LogType.debugInfo, 'Launched');
 
   bidiServer.emitOutgoingMessage(
     OutgoingMessage.createResolved({
@@ -111,25 +111,28 @@ function createCdpConnection() {
 
 function createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements BidiTransport {
+    static readonly LOGGER_PREFIX_RECV = `${LogType.bidi}:RECV ◂` as const;
+    static readonly LOGGER_PREFIX_SEND = `${LogType.bidi}:SEND ▸` as const;
+
     #onMessage: ((message: ChromiumBidi.Command) => void) | null = null;
 
     constructor() {
-      window.onBidiMessage = (messageStr: string) => {
-        log(`${LogType.bidi}:RECV ◂`, messageStr);
-        let messageObject: ChromiumBidi.Command;
+      window.onBidiMessage = (message: string) => {
+        log(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
+        let command: ChromiumBidi.Command;
         try {
-          messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
+          command = WindowBidiTransport.#parseBidiMessage(message);
         } catch (e: any) {
           // Transport-level error does not provide channel.
           this.#respondWithError(
-            messageStr,
+            message,
             ErrorCode.InvalidArgument,
             e.message,
             null
           );
           return;
         }
-        this.#onMessage?.call(null, messageObject);
+        this.#onMessage?.call(null, command);
       };
     }
 
@@ -140,7 +143,7 @@ function createBidiServer(selfTargetId: string) {
     sendMessage(message: ChromiumBidi.Message) {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
-      log(`${LogType.bidi}:SEND ▸`, messageStr);
+      log(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
     }
 
     close() {
@@ -182,7 +185,7 @@ function createBidiServer(selfTargetId: string) {
     }
 
     static #getErrorResponse(
-      messageStr: string,
+      message: string,
       errorCode: ErrorCode,
       errorMessage: string
     ): ErrorResponse {
@@ -190,12 +193,12 @@ function createBidiServer(selfTargetId: string) {
       // extract the ID, regardless of what kind of value it was.
       let messageId;
       try {
-        const messageObj = JSON.parse(messageStr);
+        const command = JSON.parse(message);
         if (
-          WindowBidiTransport.#getJsonType(messageObj) === 'object' &&
-          'id' in messageObj
+          WindowBidiTransport.#getJsonType(command) === 'object' &&
+          'id' in command
         ) {
-          messageId = messageObj.id;
+          messageId = command.id;
         }
       } catch {}
 
@@ -270,7 +273,7 @@ function createBidiServer(selfTargetId: string) {
 async function waitSelfTargetId(): Promise<string> {
   return new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
-      log(LogType.debug, 'Current target ID:', targetId);
+      log(LogType.debugInfo, 'Current target ID:', targetId);
       resolve(targetId);
     };
   });

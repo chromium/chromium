@@ -42,6 +42,9 @@ export interface ICdpConnection {
  * CDP session.
  */
 export class CdpConnection implements ICdpConnection {
+  static readonly LOGGER_PREFIX_RECV = `${LogType.cdp}:RECV ◂` as const;
+  static readonly LOGGER_PREFIX_SEND = `${LogType.cdp}:SEND ▸` as const;
+
   readonly #transport: ITransport;
 
   /** The CdpClient object attached to the root browser session. */
@@ -109,51 +112,48 @@ export class CdpConnection implements ICdpConnection {
         cdpMessage.sessionId = sessionId;
       }
 
-      const cdpMessageStr = JSON.stringify(cdpMessage);
-      void this.#transport.sendMessage(cdpMessageStr)?.catch((error) => {
-        this.#logger?.(LogType.debug, error);
-        this.#transport.close();
-      });
-      this.#logger?.(
-        `${LogType.cdp}:SEND ▸`,
-        JSON.stringify(cdpMessage, null, 2)
-      );
+      void this.#transport
+        .sendMessage(JSON.stringify(cdpMessage))
+        ?.catch((error) => {
+          this.#logger?.(LogType.debugError, error);
+          this.#transport.close();
+        });
+      this.#logger?.(CdpConnection.LOGGER_PREFIX_SEND, cdpMessage);
     });
   }
 
-  #onMessage = (message: string) => {
-    const messageParsed: CdpMessage<any> = JSON.parse(message);
-    const messagePretty = JSON.stringify(messageParsed, null, 2);
-    this.#logger?.(`${LogType.cdp}:RECV ◂`, messagePretty);
+  #onMessage = (json: string) => {
+    const message: CdpMessage<any> = JSON.parse(json);
+    this.#logger?.(CdpConnection.LOGGER_PREFIX_RECV, message);
 
     // Update client map if a session is attached
     // Listen for these events on every session.
-    if (messageParsed.method === 'Target.attachedToTarget') {
-      const {sessionId} = messageParsed.params;
+    if (message.method === 'Target.attachedToTarget') {
+      const {sessionId} = message.params;
       this.#sessionCdpClients.set(sessionId, new CdpClient(this, sessionId));
     }
 
-    if (messageParsed.id !== undefined) {
+    if (message.id !== undefined) {
       // Handle command response.
-      const callbacks = this.#commandCallbacks.get(messageParsed.id);
-      this.#commandCallbacks.delete(messageParsed.id);
+      const callbacks = this.#commandCallbacks.get(message.id);
+      this.#commandCallbacks.delete(message.id);
       if (callbacks) {
-        if (messageParsed.result) {
-          callbacks.resolve(messageParsed.result);
-        } else if (messageParsed.error) {
-          callbacks.reject(messageParsed.error);
+        if (message.result) {
+          callbacks.resolve(message.result);
+        } else if (message.error) {
+          callbacks.reject(message.error);
         }
       }
-    } else if (messageParsed.method) {
-      const client = messageParsed.sessionId
-        ? this.#sessionCdpClients.get(messageParsed.sessionId)
+    } else if (message.method) {
+      const client = message.sessionId
+        ? this.#sessionCdpClients.get(message.sessionId)
         : this.#browserCdpClient;
-      client?.emit(messageParsed.method, messageParsed.params || {});
+      client?.emit(message.method, message.params || {});
 
       // Update client map if a session is detached
       // But emit on that session
-      if (messageParsed.method === 'Target.detachedFromTarget') {
-        const {sessionId} = messageParsed.params;
+      if (message.method === 'Target.detachedFromTarget') {
+        const {sessionId} = message.params;
         const client = this.#sessionCdpClients.get(sessionId);
         if (client) {
           this.#sessionCdpClients.delete(sessionId);

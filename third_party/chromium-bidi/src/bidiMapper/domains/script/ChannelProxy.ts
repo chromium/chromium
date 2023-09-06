@@ -213,7 +213,7 @@ export class ChannelProxy {
       } catch (error) {
         // If an error is thrown, then the channel is permanently broken, so we
         // exit the loop.
-        this.#logger?.(LogType.debug, error);
+        this.#logger?.(LogType.debugError, error);
         break;
       }
     }

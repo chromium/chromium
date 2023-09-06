@@ -179,27 +179,27 @@ export class BidiServerRunner {
         onBidiConnectionClosed();
       });
 
-      transport.initialize((messageStr) => {
-        return this.#sendClientMessageStr(messageStr, connection);
+      transport.initialize((message) => {
+        return this.#sendClientMessageString(message, connection);
       });
     });
   }
 
-  #sendClientMessageStr(
-    messageStr: string,
+  #sendClientMessageString(
+    message: string,
     connection: websocket.connection
   ): Promise<void> {
-    debugSend(messageStr);
-    connection.sendUTF(messageStr);
+    debugSend(message);
+    connection.sendUTF(message);
     return Promise.resolve();
   }
 
   #sendClientMessage(
-    messageObj: unknown,
+    object: unknown,
     connection: websocket.connection
   ): Promise<void> {
-    const messageStr = JSON.stringify(messageObj);
-    return this.#sendClientMessageStr(messageStr, connection);
+    const json = JSON.stringify(object);
+    return this.#sendClientMessageString(json, connection);
   }
 
   #respondWithError(
@@ -250,8 +250,9 @@ class MessageTransport implements ITransport {
   }
 
   sendMessage(message: string) {
-    if (!this.#sendBidiMessage)
-      throw new Error('BiDi connection is not initialised yet');
+    if (!this.#sendBidiMessage) {
+      throw new Error('BiDi connection is not initialized yet');
+    }
 
     return this.#sendBidiMessage(message);
   }
@@ -260,7 +261,7 @@ class MessageTransport implements ITransport {
     // Intentionally empty.
   }
 
-  initialize(sendBidiMessage: (messageStr: string) => Promise<void>) {
+  initialize(sendBidiMessage: (message: string) => Promise<void>) {
     this.#sendBidiMessage = sendBidiMessage;
   }
 
