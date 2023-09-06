@@ -54,6 +54,7 @@ import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers.html.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
+import {SettingsCupsSavedPrintersElement} from './cups_saved_printers.js';
 import {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_printer_dialog.js';
 
 /**
@@ -374,6 +375,9 @@ export class SettingsCupsPrintersElement extends
         this.onPrintersChangedListener_ = null;
       }
       this.entryManager_.removeWebUiListeners();
+      this.shadowRoot!
+          .querySelector<SettingsCupsSavedPrintersElement>('#savedPrinters')
+          ?.removeFocusListener();
       return;
     }
 
@@ -385,6 +389,9 @@ export class SettingsCupsPrintersElement extends
         this.onEnterprisePrintersChanged_.bind(this));
     this.updateCupsPrintersList_();
     this.attemptDeepLink();
+    this.shadowRoot!
+        .querySelector<SettingsCupsSavedPrintersElement>('#savedPrinters')
+        ?.addFocusListener();
   }
 
   /**
