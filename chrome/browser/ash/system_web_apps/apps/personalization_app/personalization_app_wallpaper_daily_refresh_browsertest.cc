@@ -286,5 +286,40 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperDailyRefreshBrowserTest,
+                       DailyGooglePhotosWallpaperIsRefreshed) {
+  Browser* browser;
+  auto* web_contents = LaunchAppAtWallpaperSubpage(&browser);
+  ASSERT_EQ(ScheduleType::kCustom, scheduler()->GetScheduleType());
+  const char kAlbumId[] = "test_album";
+  {
+    // Enables daily refresh.
+    base::RunLoop loop;
+    WallpaperChangedWaiter waiter(loop.QuitClosure());
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"personalizationTestApi.enableDailyGooglePhotosRefresh('test_album');",
+        base::DoNothing());
+    loop.Run();
+  }
+  WallpaperInfo original_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+  ASSERT_EQ(WallpaperType::kDailyGooglePhotos, original_info.type);
+  EXPECT_EQ(kAlbumId, original_info.collection_id);
+  // Fast forwards to the next day. Extra 1 minute is used to account for
+  // delays.
+  const bool checkpoint_change =
+      FastForwardBy(base::Hours(24) + base::Minutes(1));
+  ASSERT_TRUE(checkpoint_change);
+  base::RunLoop loop;
+  WallpaperChangedWaiter waiter(loop.QuitClosure());
+  loop.Run();
+  WallpaperInfo new_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+  EXPECT_FALSE(original_info.MatchesSelection(new_info))
+      << "Expect new Google photo wallpaper after 24 hours have elapsed";
+  EXPECT_EQ(original_info.collection_id, new_info.collection_id)
+      << "Expect same album";
+}
+
 }  // namespace
 }  // namespace ash::personalization_app

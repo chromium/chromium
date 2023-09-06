@@ -12,7 +12,7 @@ import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 import {isNonEmptyArray} from './utils.js';
 import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
-import {selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
+import {selectGooglePhotosAlbum, selectWallpaper, setDailyRefreshCollectionId} from './wallpaper/wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper/wallpaper_interface_provider.js';
 
 /**
@@ -72,6 +72,12 @@ async function disableDailyRefresh() {
   await setDailyRefreshCollectionId('', getWallpaperProvider(), store);
 }
 
+async function enableDailyGooglePhotosRefresh(albumId: string) {
+  const store = PersonalizationStore.getInstance();
+  assert(!!store);
+  await selectGooglePhotosAlbum(albumId, getWallpaperProvider(), store);
+}
+
 declare global {
   interface Window {
     personalizationTestApi: {
@@ -82,6 +88,7 @@ declare global {
       selectTimeOfDayWallpaper: () => Promise<void>,
       enableDailyRefresh: (collectionId: string) => Promise<void>,
       disableDailyRefresh: () => Promise<void>,
+      enableDailyGooglePhotosRefresh: (albumId: string) => Promise<void>,
     };
   }
 }
@@ -94,4 +101,5 @@ window.personalizationTestApi = {
   selectTimeOfDayWallpaper,
   enableDailyRefresh,
   disableDailyRefresh,
+  enableDailyGooglePhotosRefresh,
 };
