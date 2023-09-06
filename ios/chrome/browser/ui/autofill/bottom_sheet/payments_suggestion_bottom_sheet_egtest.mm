@@ -175,7 +175,18 @@ id<GREYMatcher> ExpirationDateLabel() {
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
-- (void)testOpenPaymentsBottomSheetAfterLongPress {
+// TODO(crbug.com/1479580): Test fails on iPhone simulator only.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
+  DISABLED_testOpenPaymentsBottomSheetAfterLongPress
+#else
+#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
+  testOpenPaymentsBottomSheetAfterLongPress
+#endif
+- (void)MAYBE_testOpenPaymentsBottomSheetAfterLongPress {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone 14 Pro Max 16.4.");
+  }
   [self loadPaymentsPage];
 
   // Open the Payments Bottom Sheet.
