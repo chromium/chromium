@@ -4216,8 +4216,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledLauncherQueryAnalytics_20230731",
+                    "name": "EnabledLauncherQueryAnalytics_20230906",
+                    "params": {
+                        "launch_stage": "prod"
+                    },
                     "enable_features": [
+                        "FederatedLauncherQueryAnalyticsTask",
                         "FederatedService",
                         "FederatedServiceScheduleTasks",
                         "LauncherQueryFederatedAnalyticsPHH"
@@ -4227,7 +4231,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledTimezoneCodePhh_20230731",
+                    "name": "EnabledTimezoneCodePhh_20230906",
                     "params": {
                         "launch_stage": "prod"
                     },
@@ -4237,6 +4241,7 @@
                         "FederatedTimezoneCodePhh"
                     ],
                     "disable_features": [
+                        "FederatedLauncherQueryAnalyticsTask",
                         "LauncherQueryFederatedAnalyticsPHH"
                     ]
                 }
