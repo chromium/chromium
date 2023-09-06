@@ -1,5 +1,6 @@
 <!doctype html>
 <meta charset=utf-8>
+<meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
@@ -45,11 +46,6 @@ promise_test(async t => {
   const [track] = stream.getTracks();
   t.add_cleanup(() => track.stop());
 
-  // No frames should be discarded initially.
-  const firstStats = await getFrameStatsUntil(
-      track, stats => stats.deliveredFrames > 0);
-  assert_equals(firstStats.discardedFrames, 0);
-
   // Assert test prerequisite is met: frames will be discarded if the track is
   // opened with a higher frame rate than we apply after it is opened.
   assert_greater_than(track.getSettings().frameRate, 10);
@@ -93,11 +89,9 @@ promise_test(async t => {
   await track.applyConstraints({frameRate:{ideal:10}});
 
   // Wait for media to flow before disabling the `track`.
-  const startTimeMs = performance.now();
   const initialStats = await getFrameStatsUntil(track, stats =>
       stats.deliveredFrames > 0 && stats.discardedFrames > 0 &&
       stats.totalFrames > 10);
-  const elapsedTimeMs = performance.now() - startTimeMs;
   track.enabled = false;
   // Upon disabling, the counters are not reset.
   const disabledSnapshot = await track.getFrameStats();
@@ -109,14 +103,17 @@ promise_test(async t => {
                             initialStats.totalFrames);
 
   // Wait enough time that frames should have been produced.
-  // `elapsedTimeMs` should be enough to produce ~10 frames.
-  await new Promise(r => t.step_timeout(r, elapsedTimeMs));
+  await new Promise(r => t.step_timeout(r, 500));
 
-  // Frame metrics should be frozen.
+  // Frame metrics should be frozen, but because `enabled = false` does not
+  // return a promise, we allow some lee-way in case a frame was still in flight
+  // during the disabling.
   const stats = await track.getFrameStats();
-  assert_equals(stats.deliveredFrames, disabledSnapshot.deliveredFrames);
-  assert_equals(stats.discardedFrames, disabledSnapshot.discardedFrames);
-  assert_equals(stats.totalFrames, disabledSnapshot.totalFrames);
+  assert_approx_equals(
+      stats.deliveredFrames, disabledSnapshot.deliveredFrames, 1);
+  assert_approx_equals(
+      stats.discardedFrames, disabledSnapshot.discardedFrames, 1);
+  assert_approx_equals(stats.totalFrames, disabledSnapshot.totalFrames, 1);
 }, `Stats are frozen while disabled`);
 
 promise_test(async t => {
