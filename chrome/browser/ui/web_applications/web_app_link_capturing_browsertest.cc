@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "base/location.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -35,6 +36,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -320,6 +323,46 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   GURL url = other_server.GetURL("/web_apps/basic.html");
   Navigate(browser(), url);
   ExpectTabs(browser(), {url});
+}
+
+// Tests that links to apps from sandboxed iframes can be captured.
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       HandleClickFromSandboxedIframe) {
+  const auto [app_id, in_scope_1, _, scope] =
+      InstallTestApp("/web_apps/basic.html");
+  TurnOnLinkCapturing(app_id);
+
+  // Create a sandboxed iframe, which contains a link to the installed app,
+  // covering the full viewport of the iframe.
+  constexpr char kIframeCaptureJs[] = R"js(
+    (() => {
+      let i = document.createElement("iframe");
+      i.id = 'iframe';
+      i.sandbox = "allow-popups allow-popups-to-escape-sandbox";
+      i.srcdoc = `<a href="$1"
+          target="_blank"
+          style="position: absolute; top: 0; left: 0; bottom: 0; right: 0;">
+        </a>`
+      document.body.appendChild(i);
+    })();
+  )js";
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      base::ReplaceStringPlaceholders(kIframeCaptureJs, {in_scope_1.spec()},
+                                      /*offsets=*/nullptr)));
+
+  BrowserChangeObserver added_observer(
+      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+
+  // Click the iframe, which should click the <a> tag and open the app.
+  content::SimulateMouseClickOrTapElementWithId(web_contents, "iframe");
+
+  Browser* app_browser = added_observer.Wait();
+  EXPECT_NE(browser(), app_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,

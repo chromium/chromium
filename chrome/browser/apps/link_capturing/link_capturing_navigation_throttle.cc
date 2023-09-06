@@ -240,13 +240,6 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  // When the navigation is initiated in a web page where sending a referrer
-  // is disabled, |previous_url| can be empty. In this case, we should open
-  // it in the desktop browser.
-  if (!starting_url_.is_valid()) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   const GURL& url = handle->GetURL();
   if (!url.is_valid()) {
     DVLOG(1) << "Unexpected URL: " << url << ", opening in Chrome.";
