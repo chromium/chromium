@@ -247,4 +247,16 @@ AddressSpace CalculateIPAddressSpace(
   return IPAddressSpaceForSpecialScheme(url, client);
 }
 
+network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
+    network::mojom::PrivateNetworkRequestPolicy policy) {
+  switch (policy) {
+    case network::mojom::PrivateNetworkRequestPolicy::kWarn:
+      return network::mojom::PrivateNetworkRequestPolicy::kBlock;
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
+      return network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+    default:
+      return policy;
+  }
+}
+
 }  // namespace content

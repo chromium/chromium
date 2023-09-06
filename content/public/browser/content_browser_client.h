@@ -2400,7 +2400,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   enum class PrivateNetworkRequestPolicyOverride {
     kForceAllow,
-    kForcePreflightBlock,
+    kBlockInsteadOfWarn,
     kDefault,
   };
 

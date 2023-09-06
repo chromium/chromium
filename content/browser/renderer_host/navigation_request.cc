@@ -7160,18 +7160,14 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
       frame_tree_node_->navigator().controller().GetBrowserContext();
 
   url::Origin origin = GetOriginToCommit().value();
-  switch (client->ShouldOverridePrivateNetworkRequestPolicy(context, origin)) {
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kForceAllow:
-      private_network_request_policy_ =
-          network::mojom::PrivateNetworkRequestPolicy::kAllow;
-      return;
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kForcePreflightBlock:
-      private_network_request_policy_ =
-          network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
-      return;
-    case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kDefault:
-      break;
+  ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
+      client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+
+  if (policy_override ==
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kForceAllow) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return;
   }
 
   const PolicyContainerPolicies& policies =
@@ -7196,6 +7192,13 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
 
   private_network_request_policy_ = DerivePrivateNetworkRequestPolicy(
       policies, PrivateNetworkRequestContext::kSubresource);
+
+  if (policy_override ==
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+          kBlockInsteadOfWarn) {
+    private_network_request_policy_ =
+        OverrideBlockWithWarn(private_network_request_policy_);
+  }
 }
 
 std::vector<blink::mojom::WebFeature>

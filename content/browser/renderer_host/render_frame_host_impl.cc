@@ -4461,9 +4461,9 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
           network::mojom::PrivateNetworkRequestPolicy::kAllow;
       break;
     case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kForcePreflightBlock:
+        kBlockInsteadOfWarn:
       private_network_request_policy_ =
-          network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+          OverrideBlockWithWarn(private_network_request_policy_);
       break;
     case ContentBrowserClient::PrivateNetworkRequestPolicyOverride::kDefault:
       break;

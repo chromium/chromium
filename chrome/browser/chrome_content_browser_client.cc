@@ -7512,7 +7512,7 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
           kPrivateNetworkAccessRestrictionsForAutomotive) &&
       base::android::BuildInfo::GetInstance()->is_automotive()) {
     return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kForcePreflightBlock;
+        kBlockInsteadOfWarn;
   }
 #endif
 

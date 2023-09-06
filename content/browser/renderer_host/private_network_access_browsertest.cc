@@ -147,10 +147,16 @@ class PolicyTestContentBrowserClient
     allowlisted_origins_.insert(origin);
   }
 
+  void SetBlockInsteadOfWarn() { block_instead_of_warn_ = true; }
+
   ContentBrowserClient::PrivateNetworkRequestPolicyOverride
   ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override {
+    if (block_instead_of_warn_) {
+      return ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
+          kBlockInsteadOfWarn;
+    }
     return allowlisted_origins_.find(origin) != allowlisted_origins_.end()
                ? ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
                      kForceAllow
@@ -159,6 +165,7 @@ class PolicyTestContentBrowserClient
   }
 
  private:
+  bool block_instead_of_warn_ = false;
   std::set<url::Origin> allowlisted_origins_;
 };
 
@@ -571,6 +578,10 @@ class PrivateNetworkAccessBrowserTest
             },
             {}) {}
 };
+
+class PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption
+    : public PrivateNetworkAccessBrowserTest,
+      public testing::WithParamInterface<bool> {};
 
 class PrivateNetworkAccessBrowserTestDisableWebSecurity
     : public PrivateNetworkAccessBrowserTest {
@@ -2407,11 +2418,23 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
             network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    testing::Values(false, true));
+
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to block requests from non-secure
 // contexts in the `public` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsBlockByDefaultForInsecurePublic) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsBlockByDefaultForInsecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2426,8 +2449,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `private` address space with a warning.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsWarnByDefaultForInsecurePrivate) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyForInsecurePrivate) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2436,7 +2466,9 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            block_instead_of_warn
+                ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+                : network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that when the right feature is enabled, the private
@@ -2458,8 +2490,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
 // This test verifies that by default, the private network request policy used
 // by RenderFrameHostImpl for requests is set to allow requests from non-secure
 // contexts in the `unknown` address space.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsAllowByDefaultForInsecureUnknown) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsAllowByDefaultForInsecureUnknown) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2505,8 +2544,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoPreflights,
 
 // This test verifies that when sending preflights is enabled, the private
 // network request policy for secure contexts is `kPreflightWarn`.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsPreflightWarnForSecureContexts) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyForSecureContexts) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2515,31 +2561,22 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
-}
-
-// This test verifies that when sending preflights is enabled, the private
-// network request policy for non-secure contexts in the `kPrivate` address
-// space is `kWarn`.
-// This checks that as long as the "block from insecure private" feature flag
-// is not enabled, we will only show warnings for these requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsWarnForInsecurePrivate) {
-  EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
-
-  const network::mojom::ClientSecurityStatePtr security_state =
-      root_frame_host()->BuildClientSecurityState();
-  ASSERT_FALSE(security_state.is_null());
-
-  EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kWarn);
+            block_instead_of_warn
+                ? network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock
+                : network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
 }
 
 // This test verifies that blocking insecure private network requests from the
 // `kPublic` address space takes precedence over sending preflight requests.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkPolicyIsBlockForInsecurePublic) {
+IN_PROC_BROWSER_TEST_P(
+    PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption,
+    PrivateNetworkPolicyIsBlockForInsecurePublic) {
+  PolicyTestContentBrowserClient client;
+  bool block_instead_of_warn = GetParam();
+  if (block_instead_of_warn) {
+    client.SetBlockInsteadOfWarn();
+  }
+
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
