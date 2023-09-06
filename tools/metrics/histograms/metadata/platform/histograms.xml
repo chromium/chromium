@@ -1628,6 +1628,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Segmentation.FeatureLevel" units="level number"
+    expires_after="2024-08-09">
+  <owner>mutexlox@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the feature level of the device. Recorded in every UMA upload.
+
+    See libsegmentation in platform2 for context.
+  </summary>
+</histogram>
+
 <histogram name="Platform.SmartTransferErrors" units="units"
     expires_after="2024-01-14">
   <owner>gwendal@google.com</owner>

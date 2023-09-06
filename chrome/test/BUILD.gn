@@ -6197,6 +6197,7 @@ test("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "../browser/metrics/chrome_metrics_service_client_ash_unittest.cc",
+      "../browser/metrics/chromeos_metrics_provider_unittest.cc",
       "../browser/policy/messaging_layer/upload/file_upload_impl_unittest.cc",
       "../browser/ui/ash/arc_vm_data_migration_confirmation_dialog_unittest.cc",
       "../browser/ui/ash/clipboard_history_url_title_fetcher_impl_unittest.cc",
