@@ -24,6 +24,9 @@ inline constexpr char kTrackingProtectionLevel[] =
 inline constexpr char kTrackingProtection3pcdEnabled[] =
     "tracking_protection.tracking_protection_3pcd_enabled";
 
+// Whether to send the DNT header.
+inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
+
 // Unsynced boolean that indicates what status the profile is at with regards to
 // tracking protections (3PCD Onboarding Notice).
 inline constexpr char kTrackingProtectionOnboardingStatus[] =
