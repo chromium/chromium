@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -20,6 +21,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
@@ -174,7 +176,16 @@ bool SyncLoadContext::OnReceivedRedirect(
     response_->has_authorization_header_between_cross_origin_redirect_ = true;
   }
 
+  // TODO(https://crbug.com/471397, https://crbug.com/1406737): Reconsider
+  // the placement of this code, together with the //net counterpart.
   if (removed_headers) {
+    // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
+    if (base::FeatureList::IsEnabled(
+            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
+        !url::Origin::Create(response_->url)
+             .IsSameOriginWith(redirect_info.new_url)) {
+      removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
+    }
     // TODO(yoav): Get the actual PermissionsPolicy here to support selective
     // removal for sync XHR.
     FindClientHintsToRemove(nullptr /* permissions_policy */,

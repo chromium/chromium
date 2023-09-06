@@ -828,7 +828,16 @@ bool ResourceLoader::WillFollowRedirect(
         mojom::WebFeature::kAuthorizationCrossOrigin);
   }
 
+  // TODO(https://crbug.com/471397, https://crbug.com/1406737): Reconsider
+  // the placement of this code, together with the //net counterpart.
   if (removed_headers) {
+    // Step 13 of https://fetch.spec.whatwg.org/#http-redirect-fetch
+    if (base::FeatureList::IsEnabled(
+            features::kRemoveAuthroizationOnCrossOriginRedirect) &&
+        !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
+                                       new_url)) {
+      removed_headers->push_back(net::HttpRequestHeaders::kAuthorization);
+    }
     FindClientHintsToRemove(Context().GetPermissionsPolicy(),
                             GURL(new_url.GetString().Utf8()), removed_headers);
   }

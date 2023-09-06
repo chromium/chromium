@@ -1330,6 +1330,10 @@ BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 // true if any of them is true.
 BLINK_COMMON_EXPORT bool IsKeepAliveInBrowserMigrationEnabled();
 
+// Kill-switch for removing Authorization header upon cross origin redirects.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRemoveAuthroizationOnCrossOriginRedirect);
+
 }  // namespace features
 }  // namespace blink
 
