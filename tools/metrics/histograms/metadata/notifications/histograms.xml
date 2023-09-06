@@ -503,23 +503,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
-    expires_after="2022-08-07">
+    expires_after="2024-08-07">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The runtime of the macOS notification service process to display alerts
     before it got killed unexpectedly. Logged when the service process dies.
+
+    This histogram was expired between 2022-08-07 and 2023-09-06. Data might be
+    missing or incomplete for this period.
   </summary>
 </histogram>
 
 <histogram name="Notifications.macOS.ServiceProcessRuntime" units="ms"
-    expires_after="2022-08-14">
+    expires_after="2024-08-14">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The runtime of the macOS notification service process to display alerts.
     Logged when we close the connection to the service process either on purpose
     or after it got killed unexpectedly.
+
+    This histogram was expired between 2022-08-14 and 2023-09-06. Data might be
+    missing or incomplete for this period.
   </summary>
 </histogram>
 
