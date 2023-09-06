@@ -1578,6 +1578,30 @@ chromium-metrics-reviews@google.com.
   <token key="ActivityType" variants="ActivityType"/>
 </histogram>
 
+<histogram base="true"
+    name="Android.GridTabSwitcher.Animation.FirstFrameLatency" units="ms"
+    expires_after="2024-07-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-isochron-team@google.com</owner>
+  <summary>
+    This histogram records the time taken between the tab and tab switcher
+    layout. Timing starts when the layout transition begins and ends on the
+    first frame. This is recorded each time the layout transition animation
+    occurs.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Android.GridTabSwitcher.Animation.TotalDuration"
+    units="ms" expires_after="2024-07-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-isochron-team@google.com</owner>
+  <summary>
+    This histogram records the time taken between the tab and tab switcher
+    layout. Timing starts when the layout transition begins and ends on the last
+    frame. This is recorded each time the layout transition animation occurs.
+  </summary>
+</histogram>
+
 <histogram name="Android.GridTabSwitcher.ThumbnailFetchingResult"
     enum="GridTabSwitcherThumbnailFetchingResult" expires_after="2024-02-25">
   <owner>ckitagawa@chromium.org</owner>

@@ -16,6 +16,7 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
@@ -55,6 +56,8 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,6 +69,14 @@ import java.util.Locale;
  */
 public class TabSwitcherLayout extends Layout {
     private static final String TAG = "TSLayout";
+
+    @IntDef({TransitionType.NONE, TransitionType.SHRINK, TransitionType.EXPAND})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface TransitionType {
+        int NONE = 0;
+        int SHRINK = 1;
+        int EXPAND = 2;
+    }
 
     // Duration of the transition animation
     public static final long ZOOMING_DURATION = 325;
@@ -104,11 +115,12 @@ public class TabSwitcherLayout extends Layout {
     private Boolean mCachedIsTabGtsAnimationEnabled;
     private float mBackgroundAlpha;
 
+    private @TransitionType int mFirstFrameTransitionType;
+    private long mTransitionStartTime;
     private int mFrameCount;
-    private long mStartTime;
+    private long mAnimationStartTime;
     private long mLastFrameTime;
     private long mMaxFrameInterval;
-    private int mStartFrame;
 
     private boolean mAndroidViewFinishedShowing;
 
@@ -289,6 +301,12 @@ public class TabSwitcherLayout extends Layout {
     @Override
     public void show(long time, boolean animate) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_SHOW_TAB_SWITCHER)) {
+            // This is already in the process of showing (no-op).
+            if (isStartingToShow()) return;
+
+            mTransitionStartTime = SystemClock.elapsedRealtime();
+            mFirstFrameTransitionType = TransitionType.SHRINK;
+
             super.show(time, animate);
 
             // Prevent pending thumbnail captures from running if we start to show again very
@@ -371,6 +389,12 @@ public class TabSwitcherLayout extends Layout {
     @Override
     public void startHiding(int nextId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
+            // This is already in the process of hiding. No-op.
+            if (isStartingToHide()) return;
+
+            mTransitionStartTime = SystemClock.elapsedRealtime();
+            mFirstFrameTransitionType = TransitionType.EXPAND;
+
             super.startHiding(nextId, hintAtTabSelection);
 
             // If the hiding of TabSwitcherLayout is triggered by
@@ -563,13 +587,10 @@ public class TabSwitcherLayout extends Layout {
                 // Step 2: fade in the real GTS RecyclerView.
                 mController.showTabSwitcherView(true);
 
-                reportAnimationPerf(true);
+                reportAnimationPerf(TransitionType.SHRINK);
             }
         });
-        mStartFrame = mFrameCount;
-        mStartTime = SystemClock.elapsedRealtime();
-        mLastFrameTime = SystemClock.elapsedRealtime();
-        mMaxFrameInterval = 0;
+        resetPerfCounters();
         mTabToSwitcherAnimation.start();
     }
 
@@ -626,13 +647,10 @@ public class TabSwitcherLayout extends Layout {
                 mTabToSwitcherAnimation = null;
                 postHiding();
 
-                reportAnimationPerf(false);
+                reportAnimationPerf(TransitionType.EXPAND);
             }
         });
-        mStartFrame = mFrameCount;
-        mStartTime = SystemClock.elapsedRealtime();
-        mLastFrameTime = SystemClock.elapsedRealtime();
-        mMaxFrameInterval = 0;
+        resetPerfCounters();
         mTabToSwitcherAnimation.start();
     }
 
@@ -729,22 +747,60 @@ public class TabSwitcherLayout extends Layout {
         return mTabSwitcher;
     }
 
-    private void reportAnimationPerf(boolean isShrinking) {
-        int frameRendered = mFrameCount - mStartFrame;
-        long elapsedMs = SystemClock.elapsedRealtime() - mStartTime;
-        long lastDirty = mGridTabListDelegate.getLastDirtyTime();
-        int dirtySpan = (int) (lastDirty - mStartTime);
-        float fps = 1000.f * frameRendered / elapsedMs;
-        String message = String.format(Locale.US,
-                "fps = %.2f (%d / %dms), maxFrameInterval = %d, dirtySpan = %d", fps, frameRendered,
-                elapsedMs, mMaxFrameInterval, dirtySpan);
+    private String transitionTypeToString(@TransitionType int transitionType) {
+        switch (transitionType) {
+            case TransitionType.SHRINK:
+                return ".Shrink";
+            case TransitionType.EXPAND:
+                return ".Expand";
+            case TransitionType.NONE:
+                assert false : "TransitionType should not be none for string conversion.";
+        }
+        return "";
+    }
+
+    private void resetPerfCounters() {
+        mFrameCount = 0;
+        mAnimationStartTime = SystemClock.elapsedRealtime();
+        mLastFrameTime = SystemClock.elapsedRealtime();
+        mMaxFrameInterval = 0;
+    }
+
+    private void updatePerfCounters() {
+        final long currentTime = SystemClock.elapsedRealtime();
+        if (mFrameCount == 0 && mFirstFrameTransitionType != TransitionType.NONE) {
+            String suffix = transitionTypeToString(mFirstFrameTransitionType);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.GridTabSwitcher.Animation.FirstFrameLatency" + suffix,
+                    currentTime - mTransitionStartTime);
+            mFirstFrameTransitionType = TransitionType.NONE;
+        }
+        mFrameCount++;
+        if (mLastFrameTime != 0) {
+            mMaxFrameInterval = Math.max(mMaxFrameInterval, currentTime - mLastFrameTime);
+        }
+        mLastFrameTime = currentTime;
+    }
+
+    private void reportAnimationPerf(@TransitionType int transitionType) {
+        if (mFrameCount == 0) return;
+
+        final long currentTime = SystemClock.elapsedRealtime();
+        final long elapsedMs = currentTime - mAnimationStartTime;
+        final long totalDurationMs = currentTime - mTransitionStartTime;
+        final long lastDirty = mGridTabListDelegate.getLastDirtyTime();
+        final int dirtySpan = (int) (lastDirty - mAnimationStartTime);
+        final float fps = 1000.f * mFrameCount / elapsedMs;
 
         // TODO(crbug.com/964406): stop logging it after this feature stabilizes.
         if (!VersionInfo.isStableBuild()) {
+            String message = String.format(Locale.US,
+                    "fps = %.2f (%d / %dms), maxFrameInterval = %d, dirtySpan = %d", fps,
+                    mFrameCount, elapsedMs, mMaxFrameInterval, dirtySpan);
             Log.i(TAG, message);
         }
 
-        String suffix = isShrinking ? ".Shrink" : ".Expand";
+        String suffix = transitionTypeToString(transitionType);
 
         // TODO(crbug.com/982018): Separate histograms for carousel tab switcher.
         RecordHistogram.recordCount100Histogram(
@@ -752,10 +808,12 @@ public class TabSwitcherLayout extends Layout {
         RecordHistogram.recordTimesHistogram(
                 "GridTabSwitcher.MaxFrameInterval" + suffix, mMaxFrameInterval);
         RecordHistogram.recordTimesHistogram("GridTabSwitcher.DirtySpan" + suffix, dirtySpan);
+        RecordHistogram.recordTimesHistogram(
+                "Android.GridTabSwitcher.Animation.TotalDuration" + suffix, totalDurationMs);
 
         if (mPerfListenerForTesting != null) {
             mPerfListenerForTesting.onAnimationDone(
-                    frameRendered, elapsedMs, mMaxFrameInterval, dirtySpan);
+                    mFrameCount, elapsedMs, mMaxFrameInterval, dirtySpan);
         }
     }
 
@@ -777,12 +835,8 @@ public class TabSwitcherLayout extends Layout {
                 tabContentManager, resourceManager, browserControls,
                 isTabGtsAnimationEnabled(false) ? mGridTabListDelegate.getResourceId() : 0,
                 mBackgroundAlpha, 0);
-        mFrameCount++;
-        if (mLastFrameTime != 0) {
-            long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;
-            mMaxFrameInterval = Math.max(mMaxFrameInterval, elapsed);
-        }
-        mLastFrameTime = SystemClock.elapsedRealtime();
+
+        updatePerfCounters();
     }
 
     @Override

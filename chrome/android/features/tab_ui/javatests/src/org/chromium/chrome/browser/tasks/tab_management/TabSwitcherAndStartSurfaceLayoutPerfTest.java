@@ -27,6 +27,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +66,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.File;
@@ -90,6 +92,11 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     /** Flip this to {@code true} to run performance tests locally. */
     private static final boolean PERF_RUN = false;
+
+    // Animations are required for these tests.
+    @ClassRule
+    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
+            new DisableAnimationsTestRule(true);
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -153,6 +160,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testTabToGridFromLiveTab(boolean isStartSurfaceRefactorEnabled)
@@ -163,6 +171,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testTabToGridFromLiveTabWith10Tabs(boolean isStartSurfaceRefactorEnabled)
@@ -173,6 +182,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
@@ -186,6 +196,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
@@ -200,6 +211,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/downsampling-scale/1"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
@@ -213,6 +225,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/max-duty-cycle/1"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
@@ -226,6 +239,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @DisabledTest(message = "https://crbug.com/1045938")
     @CommandLineFlags.Add({BASE_PARAMS})
@@ -238,6 +252,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1048268")
@@ -251,6 +266,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testTabToGridFromNtp(boolean isStartSurfaceRefactorEnabled)
@@ -326,10 +342,10 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
         List<Float> dirtySpans = new LinkedList<>();
-        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+        PerfListener collector = (mFrameCount, elapsedMs, maxFrameInterval, dirtySpan) -> {
             assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
                             * CompositorAnimator.sDurationScale);
-            float fps = 1000.f * frameRendered / elapsedMs;
+            float fps = 1000.f * mFrameCount / elapsedMs;
             frameRates.add(fps);
             frameInterval.add((float) maxFrameInterval);
             dirtySpans.add((float) dirtySpan);
@@ -366,6 +382,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
@@ -377,6 +394,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
@@ -388,6 +406,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
@@ -399,6 +418,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1225926")
@@ -410,6 +430,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @DisableAnimationsTestRule.EnsureAnimationsOn
     @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
