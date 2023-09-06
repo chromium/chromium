@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_report_database.h"
 
 #include <string>
 
@@ -42,17 +42,17 @@ TEST(TraceReportDatabaseNoOpenTest, OpenDatabaseIfExists) {
   EXPECT_TRUE(trace_report.OpenDatabase(temp_dir.GetPath()));
 }
 
-TEST_F(TraceReportDatabaseTest, AddingNewReport) {
+TEST_F(TraceReportDatabaseTest, AddingNewTraceReport) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario1";
   new_report.upload_rule_name = "rules1";
   new_report.total_size = 23192873129873128;
   new_report.proto = "Proto1";
-  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
+  new_report.skip_reason = SkipUploadReason::kNoSkip;
 
   const auto new_size = new_report.total_size;
 
@@ -64,13 +64,12 @@ TEST_F(TraceReportDatabaseTest, AddingNewReport) {
   EXPECT_EQ(received_reports[0].scenario_name, "scenario1");
   EXPECT_EQ(received_reports[0].upload_rule_name, "rules1");
   EXPECT_EQ(received_reports[0].total_size, new_size);
-  EXPECT_EQ(received_reports[0].state,
-            TraceReportDatabase::ReportUploadState::kPending);
+  EXPECT_EQ(received_reports[0].upload_state, ReportUploadState::kPending);
 }
 
 TEST_F(TraceReportDatabaseTest, RetreiveProtoFromTrace) {
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario2";
   new_report.upload_rule_name = "rules2";
@@ -92,7 +91,7 @@ TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario3";
   new_report.upload_rule_name = "rules3";
@@ -111,10 +110,11 @@ TEST_F(TraceReportDatabaseTest, DeletingSingleTrace) {
 TEST_F(TraceReportDatabaseTest, DeletingAllTraces) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
-  // Create multiple NewReport and add to the local_traces table.
+  // Create multiple NewTraceReport and add to the
+  // local_traces table.
 
   for (int i = 0; i < 5; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.scenario_name = "scenario";
     new_report.upload_rule_name = "rules";
@@ -134,10 +134,10 @@ TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   const base::Time today = base::Time::Now();
-  // Create multiple NewReport and add to the local_traces table.
+  // Create multiple NewTraceReport and add to the local_traces table.
 
   for (int i = 0; i < 5; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.creation_time = today;
     new_report.scenario_name = "scenario";
@@ -149,7 +149,7 @@ TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
   }
 
   for (int i = 0; i < 3; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.creation_time = base::Time(today - base::Days(20));
     new_report.scenario_name = "scenario";
@@ -161,7 +161,7 @@ TEST_F(TraceReportDatabaseTest, DeletingTracesInRange) {
   }
 
   for (int i = 0; i < 2; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.creation_time = base::Time(today - base::Days(10));
     new_report.scenario_name = "scenario";
@@ -186,9 +186,9 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
 
   const base::Time today = base::Time::Now();
 
-  // Create multiple NewReport and add to the local_traces table.
+  // Create multiple NewTraceReport and add to the local_traces table.
   for (int i = 0; i < 5; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.creation_time = today;
     new_report.scenario_name = "scenario";
@@ -200,7 +200,7 @@ TEST_F(TraceReportDatabaseTest, DeleteTracesOlderThan) {
   }
 
   for (int i = 0; i < 3; i++) {
-    TraceReportDatabase::NewReport new_report;
+    NewTraceReport new_report;
     new_report.uuid = base::Uuid::GenerateRandomV4();
     new_report.creation_time = base::Time(today - base::Days(20));
     new_report.scenario_name = "scenario";
@@ -221,7 +221,7 @@ TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario3";
   new_report.upload_rule_name = "rules3";
@@ -237,21 +237,21 @@ TEST_F(TraceReportDatabaseTest, UserRequestedUpload) {
 
   auto all_traces = trace_report_.GetAllReports();
   EXPECT_EQ(all_traces.size(), 1u);
-  EXPECT_EQ(all_traces[0].state,
-            TraceReportDatabase::ReportUploadState::kPending_UserRequested);
+  EXPECT_EQ(all_traces[0].upload_state,
+            ReportUploadState::kPending_UserRequested);
 }
 
 TEST_F(TraceReportDatabaseTest, UploadComplete) {
   EXPECT_EQ(trace_report_.GetAllReports().size(), 0u);
 
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario3";
   new_report.upload_rule_name = "rules3";
   new_report.total_size = 23192873129873128;
   new_report.proto = "Proto3";
-  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
+  new_report.skip_reason = SkipUploadReason::kNoSkip;
 
   const auto report_uuid = new_report.uuid;
 
@@ -263,8 +263,7 @@ TEST_F(TraceReportDatabaseTest, UploadComplete) {
 
   auto all_traces = trace_report_.GetAllReports();
   EXPECT_EQ(all_traces.size(), 1u);
-  EXPECT_EQ(all_traces[0].state,
-            TraceReportDatabase::ReportUploadState::kUploaded);
+  EXPECT_EQ(all_traces[0].upload_state, ReportUploadState::kUploaded);
   EXPECT_EQ(all_traces[0].upload_time, uploaded_time);
 
   EXPECT_FALSE(trace_report_.GetProtoValue(report_uuid));
@@ -274,13 +273,13 @@ TEST_F(TraceReportDatabaseTest, GetNextReportPendingUpload) {
   EXPECT_FALSE(trace_report_.GetNextReportPendingUpload());
 
   // Create Report for the local traces database.
-  TraceReportDatabase::NewReport new_report;
+  NewTraceReport new_report;
   new_report.uuid = base::Uuid::GenerateRandomV4();
   new_report.scenario_name = "scenario3";
   new_report.upload_rule_name = "rules3";
   new_report.total_size = 23192873129873128;
   new_report.proto = "Proto3";
-  new_report.skip_reason = TraceReportDatabase::SkipUploadReason::kNoSkip;
+  new_report.skip_reason = SkipUploadReason::kNoSkip;
 
   const auto copie_value = new_report.uuid;
 

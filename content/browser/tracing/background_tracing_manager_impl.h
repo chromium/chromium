@@ -16,7 +16,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
-#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/browser/tracing/tracing_scenario.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -41,6 +42,7 @@ class TracingDelegate;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingDatabase);
 
 class BackgroundTracingManagerImpl : public BackgroundTracingManager,
+                                     public TraceUploadList,
                                      public TracingScenario::Delegate {
  public:
   class AgentObserver {
@@ -121,6 +123,17 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
 
+  // TraceUploadList
+  void OpenDatabaseIfExists() override;
+  void GetAllTraceReports(GetReportsCallback callback) override;
+  void DeleteSingleTrace(const base::Uuid& trace_uuid,
+                         FinishedProcessingCallback callback) override;
+  void DeleteAllTraces(FinishedProcessingCallback callback) override;
+  void UserUploadSingleTrace(const base::Uuid& trace_uuid,
+                             FinishedProcessingCallback callback) override;
+  void DownloadTrace(const base::Uuid& trace_uuid,
+                     GetProtoCallback callback) override;
+
   // Add/remove EnabledStateTestObserver.
   CONTENT_EXPORT void AddEnabledStateObserverForTesting(
       BackgroundTracingManager::EnabledStateTestObserver* observer);
@@ -176,14 +189,11 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   static void ClearPendingAgent(int child_process_id);
   void MaybeConstructPendingAgents();
   void InitializeTraceReportDatabase(bool open_in_memory = false);
-  void OnFinalizeComplete(
-      absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
-      bool success);
-  void OnTraceDatabaseCreated(
-      absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
-      bool success);
-  void OnTraceSaved(
-      absl::optional<TraceReportDatabase::NewReport> trace_to_upload);
+  void OnFinalizeComplete(absl::optional<BaseTraceReport> trace_to_upload,
+                          bool success);
+  void OnTraceDatabaseCreated(absl::optional<BaseTraceReport> trace_to_upload,
+                              bool success);
+  void OnTraceSaved(absl::optional<NewTraceReport> trace_to_upload);
   void CleanDatabase();
   size_t GetTraceUploadLimitKb() const;
 
@@ -214,7 +224,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::unique_ptr<TraceReportDatabase, base::OnTaskRunnerDeleter>
       trace_database_;
 
-  absl::optional<TraceReportDatabase::NewReport> trace_report_to_upload_;
+  absl::optional<NewTraceReport> trace_report_to_upload_;
 
   // Timer to delete traces older than 2 weeks.
   base::RepeatingTimer clean_database_timer_;

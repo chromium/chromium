@@ -27,7 +27,8 @@
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
-#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
@@ -62,8 +63,8 @@ BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 void OpenDatabaseOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     absl::optional<base::FilePath> database_dir,
-    base::OnceCallback<void(absl::optional<TraceReportDatabase::BaseReport>,
-                            bool)> on_database_created) {
+    base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
+        on_database_created) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
   bool success;
   if (!database_dir) {
@@ -77,19 +78,19 @@ void OpenDatabaseOnDatabaseTaskRunner(
                      database->GetNextReportPendingUpload(), success));
 }
 
-absl::optional<TraceReportDatabase::NewReport> AddTraceOnDatabaseTaskRunner(
+absl::optional<NewTraceReport> AddTraceOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     std::string&& serialized_trace,
     const std::string& scenario_name,
     const std::string& rule_name,
-    TraceReportDatabase::SkipUploadReason skip_reason) {
+    SkipUploadReason skip_reason) {
   std::string compressed_trace;
   bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
   if (success) {
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
                                 compressed_trace.size() / 1024);
 
-    TraceReportDatabase::NewReport trace_report;
+    NewTraceReport trace_report;
     trace_report.uuid = base::Uuid::GenerateRandomV4();
     trace_report.creation_time = base::Time::Now();
     trace_report.scenario_name = scenario_name;
@@ -108,7 +109,7 @@ absl::optional<TraceReportDatabase::NewReport> AddTraceOnDatabaseTaskRunner(
     } else {
       // Return the report as-is to hold the trace content in memory until it
       // can be uploaded.
-      if (skip_reason == TraceReportDatabase::SkipUploadReason::kNoSkip) {
+      if (skip_reason == SkipUploadReason::kNoSkip) {
         return std::move(trace_report);
       }
     }
@@ -127,11 +128,11 @@ void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     base::Uuid uuid,
     base::OnceCallback<void(std::string)> receive_callback,
-    base::OnceCallback<void(absl::optional<TraceReportDatabase::BaseReport>,
-                            bool)> on_finalize_complete) {
+    base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
+        on_finalize_complete) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
   auto trace_content = database->GetProtoValue(uuid);
-  absl::optional<TraceReportDatabase::ClientReport> next_report;
+  absl::optional<ClientTraceReport> next_report;
   if (trace_content) {
     if (database->UploadComplete(uuid, base::Time::Now())) {
       next_report = database->GetNextReportPendingUpload();
@@ -241,8 +242,98 @@ BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
   g_background_tracing_manager_impl = nullptr;
 }
 
+void BackgroundTracingManagerImpl::OpenDatabaseIfExists() {
+  // Exit early if |trace_database_| was not initialized successfully.
+  if (!trace_database_) {
+    return;
+  }
+
+  auto database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
+  if (database_dir.has_value()) {
+    database_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](TraceReportDatabase* trace_database, base::FilePath path) {
+              trace_database->OpenDatabaseIfExists(path);
+            },
+            base::Unretained(trace_database_.get()), database_dir.value()));
+  }
+}
+
+void BackgroundTracingManagerImpl::GetAllTraceReports(
+    GetReportsCallback callback) {
+  if (!trace_database_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TraceReportDatabase::GetAllReports,
+                     base::Unretained(trace_database_.get())),
+      std::move(callback));
+}
+
+void BackgroundTracingManagerImpl::DeleteSingleTrace(
+    const base::Uuid& trace_uuid,
+    FinishedProcessingCallback callback) {
+  if (!trace_database_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TraceReportDatabase::DeleteTrace,
+                     base::Unretained(trace_database_.get()), trace_uuid),
+      std::move(callback));
+}
+
+void BackgroundTracingManagerImpl::DeleteAllTraces(
+    FinishedProcessingCallback callback) {
+  if (!trace_database_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TraceReportDatabase::DeleteAllTraces,
+                     base::Unretained(trace_database_.get())),
+      std::move(callback));
+}
+
+void BackgroundTracingManagerImpl::UserUploadSingleTrace(
+    const base::Uuid& trace_uuid,
+    FinishedProcessingCallback callback) {
+  if (!trace_database_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TraceReportDatabase::UserRequestedUpload,
+                     base::Unretained(trace_database_.get()), trace_uuid),
+      std::move(callback));
+}
+
+void BackgroundTracingManagerImpl::DownloadTrace(const base::Uuid& trace_uuid,
+                                                 GetProtoCallback callback) {
+  if (!trace_database_) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  database_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&TraceReportDatabase::GetProtoValue,
+                     base::Unretained(trace_database_.get()), trace_uuid),
+      std::move(callback));
+}
+
 void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
-    absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
+    absl::optional<BaseTraceReport> trace_to_upload,
     bool creation_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   trace_report_to_upload_ = std::move(trace_to_upload);
@@ -258,7 +349,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
 }
 
 void BackgroundTracingManagerImpl::OnTraceSaved(
-    absl::optional<TraceReportDatabase::NewReport> trace_to_upload) {
+    absl::optional<NewTraceReport> trace_to_upload) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   trace_report_to_upload_ = std::move(trace_to_upload);
   for (auto* observer : background_tracing_observers_) {
@@ -509,8 +600,7 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
   }
 
   DCHECK(trace_database_);
-  TraceReportDatabase::BaseReport trace_report =
-      *std::move(trace_report_to_upload_);
+  BaseTraceReport trace_report = *std::move(trace_report_to_upload_);
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -522,7 +612,7 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
 }
 
 void BackgroundTracingManagerImpl::OnFinalizeComplete(
-    absl::optional<TraceReportDatabase::BaseReport> trace_to_upload,
+    absl::optional<BaseTraceReport> trace_to_upload,
     bool success) {
   trace_report_to_upload_ = std::move(trace_to_upload);
   if (success) {
@@ -624,12 +714,11 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     observer->OnTraceReceived(serialized_trace);
   }
   if (!receive_callback_) {
-    TraceReportDatabase::SkipUploadReason skip_reason =
-        TraceReportDatabase::SkipUploadReason::kNoSkip;
+    SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
     if (serialized_trace.size() > upload_limit_kb_ * 1024) {
-      skip_reason = TraceReportDatabase::SkipUploadReason::kSizeLimitExceeded;
+      skip_reason = SkipUploadReason::kSizeLimitExceeded;
     }
-    if (skip_reason != TraceReportDatabase::SkipUploadReason::kNoSkip &&
+    if (skip_reason != SkipUploadReason::kNoSkip &&
         !(delegate_ && delegate_->ShouldSaveUnuploadedTrace())) {
       return;
     }

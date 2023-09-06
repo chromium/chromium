@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/tracing/trace_report_database.h"
+#include "content/browser/tracing/trace_report/trace_report_database.h"
 
 #include <string>
 #include <vector>
@@ -25,21 +25,19 @@ const base::FilePath::CharType kLocalTracesDatabasePath[] =
 const char kLocalTracesTableName[] = "local_traces";
 constexpr int kCurrentVersionNumber = 2;
 
-TraceReportDatabase::ClientReport GetReportFromStatement(
-    sql::Statement& statement) {
-  TraceReportDatabase::ClientReport client_report;
+ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
+  ClientTraceReport client_report;
   client_report.uuid = base::Uuid::ParseLowercase(statement.ColumnString(0));
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
   client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
 
-  client_report.state = static_cast<TraceReportDatabase::ReportUploadState>(
-      statement.ColumnInt(4));
+  client_report.upload_state =
+      static_cast<ReportUploadState>(statement.ColumnInt(4));
   client_report.upload_time = statement.ColumnTime(5);
   client_report.skip_reason =
-      static_cast<TraceReportDatabase::SkipUploadReason>(
-          statement.ColumnInt(6));
+      static_cast<SkipUploadReason>(statement.ColumnInt(6));
   return client_report;
 }
 
@@ -68,22 +66,22 @@ constexpr char kLocalTracesTableSql[] = R"sql(
 
 }  // namespace
 
+BaseTraceReport::BaseTraceReport() = default;
+BaseTraceReport::BaseTraceReport(const BaseTraceReport& other) = default;
+BaseTraceReport::~BaseTraceReport() = default;
+
+NewTraceReport::NewTraceReport() = default;
+NewTraceReport::~NewTraceReport() = default;
+
+ClientTraceReport::ClientTraceReport() = default;
+ClientTraceReport::~ClientTraceReport() = default;
+
 TraceReportDatabase::TraceReportDatabase()
     : database_(sql::DatabaseOptions{.exclusive_locking = true,
                                      .page_size = 4096,
                                      .cache_size = 128}) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
-
-TraceReportDatabase::BaseReport::BaseReport() = default;
-TraceReportDatabase::BaseReport::BaseReport(const BaseReport& other) = default;
-TraceReportDatabase::BaseReport::~BaseReport() = default;
-
-TraceReportDatabase::NewReport::NewReport() = default;
-TraceReportDatabase::NewReport::~NewReport() = default;
-
-TraceReportDatabase::ClientReport::ClientReport() = default;
-TraceReportDatabase::ClientReport::~ClientReport() = default;
 
 bool TraceReportDatabase::OpenDatabase(const base::FilePath& path) {
   if (database_.is_open()) {
@@ -143,7 +141,7 @@ bool TraceReportDatabase::OpenDatabaseIfExists(const base::FilePath& path) {
   return EnsureTableCreated();
 }
 
-bool TraceReportDatabase::AddTrace(NewReport new_report) {
+bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
@@ -175,7 +173,7 @@ bool TraceReportDatabase::AddTrace(NewReport new_report) {
   return create_local_trace.Run();
 }
 
-bool TraceReportDatabase::UserRequestedUpload(base::Uuid uuid) {
+bool TraceReportDatabase::UserRequestedUpload(const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
@@ -196,7 +194,8 @@ bool TraceReportDatabase::UserRequestedUpload(base::Uuid uuid) {
   return update_local_trace.Run();
 }
 
-bool TraceReportDatabase::UploadComplete(base::Uuid uuid, base::Time time) {
+bool TraceReportDatabase::UploadComplete(const base::Uuid& uuid,
+                                         base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!database_.is_open()) {
@@ -219,7 +218,7 @@ bool TraceReportDatabase::UploadComplete(base::Uuid uuid, base::Time time) {
 }
 
 absl::optional<std::string> TraceReportDatabase::GetProtoValue(
-    base::Uuid uuid) {
+    const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return absl::nullopt;
@@ -246,7 +245,7 @@ absl::optional<std::string> TraceReportDatabase::GetProtoValue(
   return received_value;
 }
 
-bool TraceReportDatabase::DeleteTrace(base::Uuid uuid) {
+bool TraceReportDatabase::DeleteTrace(const base::Uuid& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
     return false;
@@ -349,10 +348,9 @@ bool TraceReportDatabase::EnsureTableCreated() {
   return initialized_;
 }
 
-std::vector<TraceReportDatabase::ClientReport>
-TraceReportDatabase::GetAllReports() {
+std::vector<ClientTraceReport> TraceReportDatabase::GetAllReports() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<TraceReportDatabase::ClientReport> all_reports;
+  std::vector<ClientTraceReport> all_reports;
 
   if (!database_.is_open()) {
     return all_reports;
@@ -370,7 +368,7 @@ TraceReportDatabase::GetAllReports() {
   return all_reports;
 }
 
-absl::optional<TraceReportDatabase::ClientReport>
+absl::optional<ClientTraceReport>
 TraceReportDatabase::GetNextReportPendingUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!database_.is_open()) {
