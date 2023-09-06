@@ -2040,6 +2040,26 @@ TEST_F(IntegrationTestMsi, Install) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
+  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation({}, kMsiAppId, base::Version({0, 0, 0, 0}),
+                               kMsiUpdatedVersion,
+                               /*is_install=*/true,
+                               /*should_update=*/true, false, "", crx_path),
+      });
+
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(kMsiAppId));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTestMsi, Upgrade) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
