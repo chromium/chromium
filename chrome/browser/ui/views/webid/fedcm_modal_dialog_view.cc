@@ -75,7 +75,11 @@ void FedCmModalDialogView::ClosePopupWindow() {
     return;
   }
 
-  popup_window_->Close();
+  // Store this in a local variable to avoid triggering the dangling pointer
+  // detector.
+  content::WebContents* popup = popup_window_;
+  popup_window_ = nullptr;
+  popup->Close();
 
   UMA_HISTOGRAM_ENUMERATION(
       "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
