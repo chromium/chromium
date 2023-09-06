@@ -437,6 +437,8 @@ void MouseEventManager::SetElementUnderMouse(
   Element* last_element_under_mouse = element_under_mouse_;
   element_under_mouse_ = target;
 
+  // TODO(mustaq): Why do we need the `ScrollableArea` code below and not in
+  // `PointerEventManager::SetElementUnderPointer()`?
   PaintLayer* layer_for_last_node =
       event_handling_util::LayerForNode(last_element_under_mouse);
   PaintLayer* layer_for_node_under_mouse =

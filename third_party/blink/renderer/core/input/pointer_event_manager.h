@@ -115,20 +115,13 @@ class CORE_EXPORT PointerEventManager final
   Element* CurrentTouchDownElement();
 
  private:
-  class EventTargetAttributes : public GarbageCollected<EventTargetAttributes> {
-   public:
-    void Trace(Visitor* visitor) const { visitor->Trace(target); }
-    Member<Element> target;
-    EventTargetAttributes() : target(nullptr) {}
-    EventTargetAttributes(Element* target) : target(target) {}
-  };
   // We use int64_t to cover the whole range for PointerId with no
   // deleted hash value.
   template <typename T>
   using PointerIdKeyMap =
       HeapHashMap<int64_t, T, IntWithZeroKeyHashTraits<int64_t>>;
   using PointerCapturingMap = PointerIdKeyMap<Member<Element>>;
-  using ElementUnderPointerMap = PointerIdKeyMap<Member<EventTargetAttributes>>;
+  using ElementUnderPointerMap = PointerIdKeyMap<Member<Element>>;
 
   class PointerEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
    public:

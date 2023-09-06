@@ -290,23 +290,20 @@ void PointerEventManager::SendBoundaryEvents(EventTarget* exited_target,
 
 void PointerEventManager::SetElementUnderPointer(PointerEvent* pointer_event,
                                                  Element* target) {
-  if (element_under_pointer_.Contains(pointer_event->pointerId())) {
-    EventTargetAttributes* node =
-        element_under_pointer_.at(pointer_event->pointerId());
+  Element* exited_target =
+      element_under_pointer_.Contains(pointer_event->pointerId())
+          ? element_under_pointer_.at(pointer_event->pointerId())
+          : nullptr;
+  if (exited_target) {
     if (!target) {
       element_under_pointer_.erase(pointer_event->pointerId());
-    } else if (target != node->target) {
-      element_under_pointer_.Set(
-          pointer_event->pointerId(),
-          MakeGarbageCollected<EventTargetAttributes>(target));
+    } else if (target != exited_target) {
+      element_under_pointer_.Set(pointer_event->pointerId(), target);
     }
-    SendBoundaryEvents(node->target, target, pointer_event);
   } else if (target) {
-    element_under_pointer_.insert(
-        pointer_event->pointerId(),
-        MakeGarbageCollected<EventTargetAttributes>(target));
-    SendBoundaryEvents(nullptr, target, pointer_event);
+    element_under_pointer_.insert(pointer_event->pointerId(), target);
   }
+  SendBoundaryEvents(exited_target, target, pointer_event);
 }
 
 void PointerEventManager::HandlePointerInterruption(
@@ -347,7 +344,7 @@ void PointerEventManager::HandlePointerInterruption(
     // target before.
     Element* target = nullptr;
     if (element_under_pointer_.Contains(pointer_event->pointerId()))
-      target = element_under_pointer_.at(pointer_event->pointerId())->target;
+      target = element_under_pointer_.at(pointer_event->pointerId());
 
     DispatchPointerEvent(
         GetEffectiveTargetForPointerEvent(target, pointer_event->pointerId()),
@@ -1155,8 +1152,9 @@ Element* PointerEventManager::ProcessCaptureAndPositionOfPointerEvent(
   PointerCapturingMap::const_iterator it =
       pointer_capture_target_.find(pointer_event->pointerId());
   if (Element* pointercapture_target =
-          (it != pointer_capture_target_.end()) ? it->value : nullptr)
+          (it != pointer_capture_target_.end()) ? it->value : nullptr) {
     hit_test_target = pointercapture_target;
+  }
 
   SetElementUnderPointer(pointer_event, hit_test_target);
   if (mouse_event) {
@@ -1303,7 +1301,7 @@ bool PointerEventManager::IsPointerIdActiveOnFrame(PointerId pointer_id,
                                                    LocalFrame* frame) const {
   Element* last_element_receiving_event =
       element_under_pointer_.Contains(pointer_id)
-          ? element_under_pointer_.at(pointer_id)->target
+          ? element_under_pointer_.at(pointer_id)
           : nullptr;
   return last_element_receiving_event &&
          last_element_receiving_event->GetDocument().GetFrame() == frame;
@@ -1336,7 +1334,7 @@ void PointerEventManager::SetLastPointerPositionForFrameBoundary(
   PointerId pointer_id =
       pointer_event_factory_.GetPointerEventId(web_pointer_event);
   Element* last_target = element_under_pointer_.Contains(pointer_id)
-                             ? element_under_pointer_.at(pointer_id)->target
+                             ? element_under_pointer_.at(pointer_id)
                              : nullptr;
   if (!new_target) {
     pointer_event_factory_.RemoveLastPosition(pointer_id);
