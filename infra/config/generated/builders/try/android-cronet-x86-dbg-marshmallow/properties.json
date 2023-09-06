@@ -75,17 +75,24 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-cronet-x86-dbg-marshmallow-tests",
+          "builder": "android-cronet-x86-dbg",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "android-cronet-x86-dbg-marshmallow",
-          "group": "tryserver.chromium.android"
+          "bucket": "ci",
+          "builder": "android-cronet-x86-dbg-marshmallow-tests",
+          "project": "chromium"
         }
       ]
     }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -94,6 +101,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

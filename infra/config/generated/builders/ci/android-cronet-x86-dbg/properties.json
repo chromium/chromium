@@ -346,6 +346,14 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-cronet-x86-dbg-lolipop",
+          "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-cronet-x86-dbg-marshmallow",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-cronet-x86-dbg-nougat-tests",
           "group": "tryserver.chromium.android"
         },

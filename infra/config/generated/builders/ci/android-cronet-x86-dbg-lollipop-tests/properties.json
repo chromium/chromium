@@ -78,6 +78,12 @@
           "builder": "android-cronet-x86-dbg-lollipop-tests",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-cronet-x86-dbg-lolipop",
+          "group": "tryserver.chromium.android"
+        }
       ]
     }
   },
