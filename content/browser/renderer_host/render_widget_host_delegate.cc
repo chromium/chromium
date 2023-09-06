@@ -86,6 +86,10 @@ blink::mojom::DisplayMode RenderWidgetHostDelegate::GetDisplayMode() const {
   return blink::mojom::DisplayMode::kBrowser;
 }
 
+ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
+  return ui::WindowShowState::SHOW_STATE_DEFAULT;
+}
+
 gfx::Rect RenderWidgetHostDelegate::GetWindowsControlsOverlayRect() const {
   return gfx::Rect();
 }

@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {

@@ -867,6 +867,16 @@ _CONFIG = [
             'viz::SurfaceId',
         ],
     },
+    { # Needed for display-state CSS media query
+        'paths': [
+            'third_party/blink/renderer/core/frame',
+            'third_party/blink/renderer/core/css'
+        ],
+        'allowed': [
+            'ui::WindowShowState',
+            'ui::SHOW_STATE_.+',
+        ],
+    },
     {
         'paths': ['third_party/blink/renderer/core/exported/web_view_impl.cc'],
         'allowed': [

@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -62,6 +61,12 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
            ident == CSSValueID::kMinimalUi ||
            ident == CSSValueID::kWindowControlsOverlay ||
            ident == CSSValueID::kBrowser || ident == CSSValueID::kTabbed;
+  }
+
+  if (RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled() &&
+      media_feature == media_feature_names::kDisplayStateMediaFeature) {
+    return ident == CSSValueID::kFullscreen || ident == CSSValueID::kNormal ||
+           ident == CSSValueID::kMinimized || ident == CSSValueID::kMaximized;
   }
 
   if (media_feature == media_feature_names::kOrientationMediaFeature) {

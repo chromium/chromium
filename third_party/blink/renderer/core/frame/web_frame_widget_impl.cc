@@ -148,6 +148,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -1673,6 +1674,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // independently.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
   SetDisplayMode(visual_properties.display_mode);
+  SetWindowShowState(visual_properties.window_show_state);
 
   if (ForMainFrame()) {
     SetAutoResizeMode(
@@ -1929,6 +1931,10 @@ cc::EventListenerProperties WebFrameWidgetImpl::EventListenerProperties(
 
 mojom::blink::DisplayMode WebFrameWidgetImpl::DisplayMode() const {
   return display_mode_;
+}
+
+ui::WindowShowState WebFrameWidgetImpl::WindowShowState() const {
+  return window_show_state_;
 }
 
 const WebVector<gfx::Rect>& WebFrameWidgetImpl::WindowSegments() const {
@@ -2702,6 +2708,17 @@ void WebFrameWidgetImpl::SetDisplayMode(mojom::blink::DisplayMode mode) {
     frame->MediaQueryAffectingValueChangedForLocalSubtree(
         MediaValueChange::kOther);
   }
+}
+
+void WebFrameWidgetImpl::SetWindowShowState(ui::WindowShowState state) {
+  if (state == window_show_state_) {
+    return;
+  }
+
+  window_show_state_ = state;
+  LocalFrame* frame = LocalRootImpl()->GetFrame();
+  frame->MediaQueryAffectingValueChangedForLocalSubtree(
+      MediaValueChange::kOther);
 }
 
 void WebFrameWidgetImpl::SetWindowSegments(

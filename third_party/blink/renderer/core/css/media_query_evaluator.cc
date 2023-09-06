@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -450,6 +451,40 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
     default:
       NOTREACHED();
       return false;
+  }
+}
+
+// WindowShowState is mapped into a CSS media query value `display-state`.
+static bool DisplayStateMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+
+  if (!value.IsId()) {
+    return false;
+  }
+
+  ui::WindowShowState state = media_values.WindowShowState();
+  MaybeRecordMediaFeatureValue(
+      media_values, IdentifiableSurface::MediaFeatureName::kDisplayState,
+      state);
+
+  switch (value.Id()) {
+    case CSSValueID::kFullscreen:
+      return state == ui::SHOW_STATE_FULLSCREEN;
+    case CSSValueID::kMaximized:
+      return state == ui::SHOW_STATE_MAXIMIZED;
+    case CSSValueID::kMinimized:
+      return state == ui::SHOW_STATE_MINIMIZED;
+    case CSSValueID::kNormal:
+      return state == ui::SHOW_STATE_DEFAULT ||
+             state == ui::SHOW_STATE_INACTIVE || state == ui::SHOW_STATE_NORMAL;
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 

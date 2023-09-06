@@ -940,6 +940,12 @@
 "accentcolor"
 "accentcolortext"
 
+# display-state
+# normal
+# fullscreen
+"minimized"
+"maximized"
+
 # at-rules
 "@charset"
 "@import"

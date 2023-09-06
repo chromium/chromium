@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/base/ui_base_types.h"
 
 namespace blink {
 
@@ -65,6 +66,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     String media_type;
     mojom::blink::DisplayMode display_mode =
         mojom::blink::DisplayMode::kBrowser;
+    ui::WindowShowState window_show_state =
+        ui::WindowShowState::SHOW_STATE_DEFAULT;
     ColorSpaceGamut color_gamut = ColorSpaceGamut::kUnknown;
     mojom::blink::PreferredColorScheme preferred_color_scheme =
         mojom::blink::PreferredColorScheme::kLight;
@@ -150,6 +153,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   bool HasValues() const override;
   const String MediaType() const override;
   blink::mojom::DisplayMode DisplayMode() const override;
+  ui::WindowShowState WindowShowState() const override;
   ColorSpaceGamut ColorGamut() const override;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const override;
   mojom::blink::PreferredContrast GetPreferredContrast() const override;

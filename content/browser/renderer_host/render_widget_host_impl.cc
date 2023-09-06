@@ -1077,9 +1077,11 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
         delegate_->GetWindowsControlsOverlayRect();
     visual_properties.virtual_keyboard_resize_height_physical_px =
         delegate_->GetVirtualKeyboardResizeHeight();
+    visual_properties.window_show_state = delegate_->GetWindowShowState();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
+    visual_properties.window_show_state = ui::SHOW_STATE_DEFAULT;
   }
 
   // These properties come from the top-level main frame's renderer. The
@@ -2862,6 +2864,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.is_fullscreen_granted ||
          old_visual_properties->display_mode !=
              new_visual_properties.display_mode ||
+         old_visual_properties->window_show_state !=
+             new_visual_properties.window_show_state ||
          old_visual_properties->browser_controls_params !=
              new_visual_properties.browser_controls_params ||
          old_visual_properties->visible_viewport_size !=

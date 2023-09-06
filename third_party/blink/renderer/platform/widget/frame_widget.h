@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h"
 
 namespace cc {
@@ -113,6 +114,9 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Returns the DisplayMode in use for the widget.
   virtual mojom::blink::DisplayMode DisplayMode() const = 0;
+
+  // Returns the WindowShowState in use for the widget.
+  virtual ui::WindowShowState WindowShowState() const = 0;
 
   // Returns the window segments for the widget.
   virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;

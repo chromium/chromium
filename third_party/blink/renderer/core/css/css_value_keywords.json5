@@ -1097,6 +1097,12 @@
     "window-controls-overlay",
     "tabbed",
 
+    // (display-state:) media feature
+    // normal
+    // fullscreen
+    "minimized",
+    "maximized",
+
     // (overflow-block:) media feature
     "paged",
 

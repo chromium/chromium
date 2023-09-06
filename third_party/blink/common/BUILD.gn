@@ -334,6 +334,7 @@ source_set("common") {
     "//third_party/re2",
     "//ui/base:base",
     "//ui/base/dragdrop/mojom:mojom_shared",
+    "//ui/base/mojom",
     "//ui/display",
     "//ui/display/mojom",
     "//ui/events:events_base",

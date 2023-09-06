@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -105,7 +106,10 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            (CSSVariableParser::IsValidVariableName(feature) &&
             RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled()) ||
            (feature == media_feature_names::kScriptingMediaFeature &&
-            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled());
+            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled()) ||
+           (RuntimeEnabledFeatures::
+                DesktopPWAsAdditionalWindowingControlsEnabled() &&
+            feature == media_feature_names::kDisplayStateMediaFeature);
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

@@ -72,6 +72,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.display_mode;
   }
 
+  static const ui::WindowShowState& window_show_state(
+      const blink::VisualProperties& r) {
+    return r.window_show_state;
+  }
+
   static uint32_t capture_sequence_number(const blink::VisualProperties& r) {
     return r.capture_sequence_number;
   }

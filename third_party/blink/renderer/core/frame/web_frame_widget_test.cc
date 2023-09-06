@@ -17,6 +17,8 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -34,6 +37,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
+#include "ui/base/ui_base_types.h"
 
 namespace blink {
 
@@ -1001,6 +1005,69 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   }
 }
 
+TEST_F(WebFrameWidgetSimTest, DisplayStateMatchesWindowShowState) {
+  base::test::ScopedFeatureList feature_list(
+      ScopedDesktopPWAsAdditionalWindowingControlsForTest);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+        <!doctype html>
+        <style>
+        body {
+          background-color: white;
+        }
+        @media (display-state: normal) {
+          body {
+            background-color: yellow;
+          }
+        }
+        @media (display-state: minimized) {
+          body {
+            background-color: cyan;
+          }
+        }
+        @media (display-state: maximized) {
+          body {
+            background-color: red;
+          }
+        }
+        @media (display-state: fullscreen) {
+          body {
+            background-color: blue;
+          }
+        }
+      </style>
+      <body></body>
+      )HTML");
+
+  auto* widget = WebView().MainFrameViewWidget();
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+
+  // display-state: normal
+  // Default is set in /third_party/blink/renderer/core/frame/settings.json5.
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(Color::FromRGB(/*yellow*/ 255, 255, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+
+  WTF::Vector<std::pair<ui::WindowShowState, Color>> test_cases = {
+      {ui::SHOW_STATE_MINIMIZED, Color::FromRGB(/*cyan*/ 0, 255, 255)},
+      {ui::SHOW_STATE_MAXIMIZED, Color::FromRGB(/*red*/ 255, 0, 0)},
+      {ui::SHOW_STATE_FULLSCREEN, Color::FromRGB(/*blue*/ 0, 0, 255)}};
+
+  for (const auto& [show_state, color] : test_cases) {
+    visual_properties.window_show_state = show_state;
+    WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+    widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+    EXPECT_EQ(color,
+              GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                  GetCSSPropertyBackgroundColor()));
+  }
+}
+
 TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterLayoutChange) {
   base::test::ScopedFeatureList feature_list(
       features::kReportVisibleLineBounds);
@@ -1576,8 +1643,9 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
 
     WebInputEventResult HandleInputEvent(
         const WebCoalescedInputEvent& coalesced_event) override {
-      if (event_causes_update_)
+      if (event_causes_update_) {
         RequestUpdateIfNecessary();
+      }
       return WebInputEventResult::kHandledApplication;
     }
 
@@ -1586,8 +1654,9 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
     }
 
     void RequestUpdateIfNecessary() {
-      if (update_requested_)
+      if (update_requested_) {
         return;
+      }
 
       LayerTreeHost()->SetNeedsCommit();
       update_requested_ = true;

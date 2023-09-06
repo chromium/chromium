@@ -507,6 +507,14 @@
       type: "blink::mojom::DisplayMode",
     },
 
+    // Only used by web tests.
+    {
+      name: "windowShowState",
+      initial: "ui::WindowShowState::SHOW_STATE_DEFAULT",
+      invalidate: ["MediaQuery"],
+      type: "ui::WindowShowState",
+    },
+
     // loadsImagesAutomatically only suppresses the network load of
     // the image URL. A cached image will still be rendered if requested.
     {

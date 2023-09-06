@@ -38,6 +38,7 @@ include_rules = [
     "+third_party/icu/source/common/unicode/unistr.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/ui_base_switches_util.h",
+    "+ui/base/mojom/ui_base_types.mojom.h",
     "+ui/base/dragdrop/mojom",
     "+ui/display",
     "+ui/events/base_event_utils.h",

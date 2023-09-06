@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "ui/base/ui_base_types.h"
 
 namespace blink {
 
@@ -218,6 +219,10 @@ const String MediaValuesDynamic::MediaType() const {
 
 blink::mojom::DisplayMode MediaValuesDynamic::DisplayMode() const {
   return CalculateDisplayMode(frame_);
+}
+
+ui::WindowShowState MediaValuesDynamic::WindowShowState() const {
+  return CalculateWindowShowState(frame_);
 }
 
 bool MediaValuesDynamic::StrictMode() const {

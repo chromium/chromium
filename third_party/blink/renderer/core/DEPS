@@ -106,6 +106,7 @@ include_rules = [
     "+ui/base/pointer/pointer_device.h",
     "+ui/base/resource/resource_scale_factor.h",
     "+ui/base/ui_base_features.h",
+    "+ui/base/ui_base_types.h",
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",
     "+ui/events/event_constants.h",

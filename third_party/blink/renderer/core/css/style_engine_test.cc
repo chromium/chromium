@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
@@ -3638,6 +3639,58 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
     EXPECT_FALSE(document.GetStyleEngine().NeedsActiveStyleUpdate());
     document.DynamicViewportUnitsChanged();
     EXPECT_TRUE(document.GetStyleEngine().NeedsActiveStyleUpdate());
+  }
+}
+
+TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
+  ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      body {
+        background-color: white;
+      }
+      @media (display-state: normal) {
+        body {
+          background-color: yellow;
+        }
+      }
+      @media (display-state: minimized) {
+        body {
+          background-color: cyan;
+        }
+      }
+      @media (display-state: maximized) {
+        body {
+          background-color: red;
+        }
+      }
+      @media (display-state: fullscreen) {
+        body {
+          background-color: blue;
+        }
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  // display-state: normal
+  // Default is set in /third_party/blink/renderer/core/frame/settings.json5.
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(Color::FromRGB(/*yellow*/ 255, 255, 0),
+            GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                GetCSSPropertyBackgroundColor()));
+
+  WTF::Vector<std::pair<ui::WindowShowState, Color>> test_cases = {
+      {ui::SHOW_STATE_MINIMIZED, Color::FromRGB(/*cyan*/ 0, 255, 255)},
+      {ui::SHOW_STATE_MAXIMIZED, Color::FromRGB(/*red*/ 255, 0, 0)},
+      {ui::SHOW_STATE_FULLSCREEN, Color::FromRGB(/*blue*/ 0, 0, 255)}};
+
+  for (const auto& [show_state, color] : test_cases) {
+    GetFrame().GetSettings()->SetWindowShowState(show_state);
+    UpdateAllLifecyclePhases();
+    EXPECT_EQ(color,
+              GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
+                  GetCSSPropertyBackgroundColor()));
   }
 }
 

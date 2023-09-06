@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
@@ -206,6 +207,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the display mode for all widgets in the frame tree. Only applies
   // to frame-based widgets. Other widgets are always kBrowser.
   virtual blink::mojom::DisplayMode GetDisplayMode() const;
+
+  // Returns the window show state.
+  virtual ui::WindowShowState GetWindowShowState();
 
   // Returns the Window Control Overlay rectangle. Only applies to an
   // outermost main frame's widget. Other widgets always returns an empty rect.

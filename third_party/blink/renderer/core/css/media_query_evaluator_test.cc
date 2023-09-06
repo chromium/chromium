@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/display_color_spaces.h"
 
 namespace blink {
@@ -118,6 +119,19 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"(max-device-aspect-ratio: 0.6/0.5)", true},
     {"(min-device-aspect-ratio: 1/2)", true},
     {"(max-device-aspect-ratio: 1.5)", true},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_display_state_test_cases[] = {
+    {"(display-state)", true},
+    {"(display-state: fullscreen)", false},
+    {"(display-state: minimized)", false},
+    {"(display-state: maximized)", false},
+    {"(display-state: normal)", true},
+    {"(display-state: #normal)", false},
+    {"(display-state: @normal)", false},
+    {"(display-state: 'normal')", false},
+    {"(display-state: @junk normal)", false},
     {nullptr, false}  // Do not remove the terminator line.
 };
 
@@ -517,6 +531,15 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_screen_test_cases, media_query_evaluator);
     TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
+  }
+
+  // Default display-state values.
+  {
+    data.window_show_state = ui::SHOW_STATE_DEFAULT;
+    ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_display_state_test_cases, media_query_evaluator);
   }
 
   // Print values.
@@ -1537,6 +1560,34 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
                     IdentifiableSurface::MediaFeatureName::kDisplayMode)));
   EXPECT_EQ(entry.metrics.begin()->value,
             IdentifiableToken(blink::mojom::DisplayMode::kBrowser));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceDisplayState) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media all and (display-state: normal) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kDisplayState)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kDisplayState)));
+  EXPECT_EQ(entry.metrics.begin()->value,
+            IdentifiableToken(ui::SHOW_STATE_DEFAULT));
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,

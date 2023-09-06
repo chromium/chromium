@@ -80,6 +80,7 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -987,6 +988,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The following function is already listed under WebContents overrides:
   // bool IsFullscreen() const override;
   blink::mojom::DisplayMode GetDisplayMode() const override;
+
+#if defined(USE_AURA)
+  ui::WindowShowState GetWindowShowState() override;
+#endif
+
   void LostMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   RenderWidgetHostImpl* GetMouseLockWidget() override;
@@ -1762,6 +1768,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Returns the size that the main frame should be sized to.
   gfx::Size GetSizeForMainFrame();
+
+#if defined(USE_AURA)
+  // Sets the window's state to the given `ui::WindowShowState` and synchronizes
+  // the visual properties of the `RenderWidgetHost`.
+  void SetWindowShowState(ui::WindowShowState state);
+#endif
 
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the

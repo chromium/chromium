@@ -68,6 +68,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     three_d_enabled = MediaValues::CalculateThreeDEnabled(frame);
     strict_mode = MediaValues::CalculateStrictMode(frame);
     display_mode = MediaValues::CalculateDisplayMode(frame);
+    window_show_state = MediaValues::CalculateWindowShowState(frame);
     media_type = MediaValues::CalculateMediaType(frame);
     color_gamut = MediaValues::CalculateColorGamut(frame);
     preferred_color_scheme = MediaValues::CalculatePreferredColorScheme(frame);
@@ -269,6 +270,10 @@ const String MediaValuesCached::MediaType() const {
 
 blink::mojom::DisplayMode MediaValuesCached::DisplayMode() const {
   return data_.display_mode;
+}
+
+ui::WindowShowState MediaValuesCached::WindowShowState() const {
+  return data_.window_show_state;
 }
 
 Document* MediaValuesCached::GetDocument() const {
