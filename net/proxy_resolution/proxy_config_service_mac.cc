@@ -18,8 +18,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/proxy_resolution/proxy_server_util_mac.h"
 
 namespace net {
 

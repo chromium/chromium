@@ -11,8 +11,8 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/proxy_resolution/proxy_server_util_mac.h"
 
 namespace net {
 

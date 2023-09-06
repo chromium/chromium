@@ -19,10 +19,10 @@
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
-#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/proxy_resolver.h"
+#include "net/proxy_resolution/proxy_server_util_mac.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_IOS)
