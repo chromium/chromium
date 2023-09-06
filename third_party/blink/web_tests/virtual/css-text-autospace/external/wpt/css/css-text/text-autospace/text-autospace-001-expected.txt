@@ -2,5 +2,7 @@ This is a testharness.js-based test.
 PASS text-autospace-001
 PASS text-autospace-001 1
 PASS text-autospace-001 2
+PASS text-autospace-001 3
+PASS text-autospace-001 4
 Harness: the test ran to completion.
 
