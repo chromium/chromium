@@ -80,6 +80,7 @@ include_rules = [
   "+components/startup_metric_utils/common",
   "+components/storage_monitor",
   "+components/subresource_filter/content/browser",
+  "+components/sync/base",
   "+components/federated_learning",
   "+components/supervised_user/core/browser",
   "+components/supervised_user/core/common",

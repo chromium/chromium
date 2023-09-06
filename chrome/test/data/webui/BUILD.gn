@@ -58,6 +58,7 @@ source_set("browser_tests") {
     "side_panel/customize_chrome/customize_chrome_browsertest.cc",
     "side_panel/read_anything/read_anything_browsertest.cc",
     "side_panel/user_notes/user_notes_browsertest.cc",
+    "sync_internals/sync_internals_browsertest.cc",
     "tab_search/tab_search_browsertest.cc",
     "usb_internals/usb_internals_browsertest.cc",
     "whats_new/whats_new_browsertest.cc",
@@ -205,7 +206,6 @@ if (include_js2gtest_tests) {
     # and are handled by a rule, but in the GN build they're in a separate
     # action so need to be separated out.
     sources = [
-      "../../../browser/ui/webui/sync_internals/sync_internals_browsertest.js",
       "assertions.js",
       "async_gen.js",
       "commander/commander_browsertest.js",
@@ -438,6 +438,7 @@ ts_library("build_ts") {
     "media/media_history_test.js",
     "sandbox/gpu_test.js",
     "sandbox/sandbox_test.js",
+    "sync_internals/sync_internals_test.js",
   ]
 
   if (is_chromeos_ash) {
