@@ -317,6 +317,14 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       return;
     }
 
+    // If `window` is in transitional snapped state, `window` is going to be
+    // snapped very soon so we don't need to apply the float bounds policies.
+    // Otherwise, the bounds change request may be queued and applied after
+    // `window` is snapped.
+    if (SplitViewController::Get(window)->IsWindowInTransitionalState(window)) {
+      return;
+    }
+
     // The minimum size could change and as a result, the floated window might
     // not be floatable anymore. In this case, unfloat it.
     if (!chromeos::wm::CanFloatWindow(floated_window_)) {
