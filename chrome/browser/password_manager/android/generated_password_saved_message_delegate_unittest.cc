@@ -5,7 +5,6 @@
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "base/android/jni_android.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/grit/generated_resources.h"
@@ -13,7 +12,6 @@
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/web_contents_tester.h"
@@ -32,8 +30,7 @@ constexpr char16_t kAccountEmail[] = u"account_42@example.com";
 }  // namespace
 
 class GeneratedPasswordSavedMessageDelegateTest
-    : public base::test::WithFeatureOverride,
-      public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness {
  public:
   GeneratedPasswordSavedMessageDelegateTest();
 
@@ -59,14 +56,11 @@ class GeneratedPasswordSavedMessageDelegateTest
 };
 
 GeneratedPasswordSavedMessageDelegateTest::
-    GeneratedPasswordSavedMessageDelegateTest()
-    : base::test::WithFeatureOverride(
-          password_manager::features::kUnifiedPasswordManagerAndroid) {}
+    GeneratedPasswordSavedMessageDelegateTest() = default;
 
 void GeneratedPasswordSavedMessageDelegateTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
   NavigateAndCommit(GURL(kDefaultUrl));
-
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
 }
@@ -118,11 +112,7 @@ void GeneratedPasswordSavedMessageDelegateTest::DismissMessage() {
 
 // Tests that message properties (title, description, icon, button text) are
 // set correctly.
-TEST_P(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordManagerAndroidBranding);
-
+TEST_F(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
   SetUsernameAndPassword(kUsername, kPassword);
   auto form_manager = CreateFormManager(GURL(kDefaultUrl));
   EnqueueMessage(std::move(form_manager));
@@ -131,8 +121,6 @@ TEST_P(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_OK),
             GetMessageWrapper()->GetPrimaryButtonText());
-  if (IsParamFeatureEnabled()) {
-    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
     EXPECT_EQ(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_GENERATED_PASSWORD_SAVED_MESSAGE_DESCRIPTION),
@@ -140,19 +128,5 @@ TEST_P(GeneratedPasswordSavedMessageDelegateTest, MessagePropertyValues) {
     EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
                   IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
               GetMessageWrapper()->GetIconResourceId());
-  } else {
-    EXPECT_NE(std::u16string::npos,
-              GetMessageWrapper()->GetDescription().find(kUsername));
-    EXPECT_EQ(std::u16string::npos,
-              GetMessageWrapper()->GetDescription().find(kPassword));
-    EXPECT_EQ(std::u16string::npos,
-              GetMessageWrapper()->GetDescription().find(kAccountEmail));
-    EXPECT_EQ(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD),
-        GetMessageWrapper()->GetIconResourceId());
-  }
   DismissMessage();
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    GeneratedPasswordSavedMessageDelegateTest);

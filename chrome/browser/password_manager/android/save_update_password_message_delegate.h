@@ -102,13 +102,9 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleSaveMessageMenuItemClick(int item_id);
 
   // Returns the message description depending on whether the password is being
-  // saved or updated and if unified password manager is enabled.
+  // saved or updated.
   std::u16string GetMessageDescription(
       const password_manager::PasswordForm& pending_credentials,
-      bool update_password,
-      bool unified_password_manager);
-
-  std::u16string GetUnifiedPasswordManagerMessageDescription(
       bool update_password);
 
   // Returns string id for the message primary button. Takes into account

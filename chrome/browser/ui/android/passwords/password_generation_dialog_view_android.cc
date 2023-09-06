@@ -19,9 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -61,9 +59,7 @@ void PasswordGenerationDialogViewAndroid::Show(
   std::u16string explanation_text;
   if (account_info.has_value()) {
     explanation_text = l10n_util::GetStringFUTF16(
-        password_manager::features::UsesUnifiedPasswordManagerBranding()
-            ? IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_UPM_BRANDED
-            : IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION,
+        IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_BRANDED,
         base::UTF8ToUTF16(account_info.value().email));
   } else {
     explanation_text =

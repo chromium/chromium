@@ -372,7 +372,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kPasskeyManagementUsingAccountSettingsAndroid,
     &password_manager::features::kPasswordEditDialogWithDetails,
     &password_manager::features::kRecoverFromNeverSaveAndroid,
-    &password_manager::features::kUnifiedPasswordManagerAndroidBranding,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
     &permissions::features::kBlockMidiByDefault,

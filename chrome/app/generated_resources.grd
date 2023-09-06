@@ -6789,12 +6789,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_UPDATE_PASSWORD_DIFFERENT_DOMAINS_TITLE" desc="The title of the update password bubble when the submitted form origin isn't equal to saved credentials origin.">
         Update password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>?
       </message>
-      <message name="IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT" desc="The description of save password message when the user is signed in.">
-        Save it in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
-      </message>
-      <message name="IDS_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT" desc="The description of update password message when the signed-in user updates the password.">
-        Update it in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>
-      </message>
       <message name="IDS_SAVE_PASSWORD_FOOTER" desc="The footer text of the bubble that offers user to save a password to Chrome.">
         Passwords are saved in your Google Account so you can use them on any device
       </message>
@@ -9523,10 +9517,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name ="IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY" desc="The text of the link in the password sheet that will use a different device’s passkey. This string also exists for desktop password manager and translations should match. See IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY in components/password_manager_strings.grdp.">
           Use a passkey on a different device
         </message>
-        <message name="IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION" desc="Text for password generation dialog, explaining that the password will be saved in Google Account.">
-          Password will be saved in your Google Account, <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>. You won’t have to remember it.
-        </message>
-        <message name="IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_UPM_BRANDED" desc="Text for password generation dialog, explaining that the password will be saved in Google Account. Unified Password Manager branded variant.">
+        <message name="IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_BRANDED" desc="Text for password generation dialog, explaining that the password will be saved in Google Account. Unified Password Manager branded variant.">
           You won’t need to remember this password. It will be saved to Google Password Manager for <ph name="ACCOUNT">$1<ex>user@gmail.com</ex></ph>.
         </message>
         <message name="IDS_CONFIRM_USERNAME_DIALOG_TITLE" desc="The title of the confirm username dialog." formatter_data="android_java">

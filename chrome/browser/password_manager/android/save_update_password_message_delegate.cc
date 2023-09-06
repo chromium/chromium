@@ -221,9 +221,8 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   }
   message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
 
-  std::u16string description = GetMessageDescription(
-      pending_credentials, update_password,
-      password_manager::features::UsesUnifiedPasswordManagerBranding());
+  std::u16string description =
+      GetMessageDescription(pending_credentials, update_password);
   message_->SetDescription(description);
 
   update_password_ = update_password;
@@ -232,14 +231,9 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button)));
 
-  if (password_manager::features::UsesUnifiedPasswordManagerBranding()) {
     message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
         IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
     message_->DisableIconTint();
-  } else {
-    message_->SetIconResourceId(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_SAVE_PASSWORD));
-  }
 
   // With kPasswordEditDialogWithDetails feature on: the cog button is always
   // shown for the save message and for the update message when there is
@@ -262,10 +256,9 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
     bool update_password) {
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
-  message->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
-      password_manager::features::UsesUnifiedPasswordManagerBranding()
-          ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
-          : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
+  message->SetSecondaryButtonMenuText(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM));
+
   message->SetSecondaryActionCallback(base::BindRepeating(
       &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
       base::Unretained(this)));
@@ -312,48 +305,18 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
 
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
-    bool update_password,
-    bool unified_password_manager) {
-
-  if (unified_password_manager) {
-    return GetUnifiedPasswordManagerMessageDescription(update_password);
-  }
-
+    bool update_password) {
   if (!account_email_.empty()) {
     return l10n_util::GetStringFUTF16(
         update_password
-            ? IDS_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT
-            : IDS_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_GOOGLE_ACCOUNT,
+            ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
+            : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
         base::UTF8ToUTF16(account_email_));
   }
-
-    // TODO(crbug.com/1188971): There is no password when federation_origin is
-    // set. Instead we should display federated provider in the description.
-    // GetDisplayFederation() returns federation origin for a given form.
-    const std::u16string masked_password =
-        std::u16string(pending_credentials.password_value.size(), L'•');
-    std::u16string description;
-    description.append(pending_credentials.username_value)
-        .append(u" ")
-        .append(masked_password);
-    return description;
-}
-
-std::u16string
-SaveUpdatePasswordMessageDelegate::GetUnifiedPasswordManagerMessageDescription(
-    bool update_password) {
-    if (!account_email_.empty()) {
-      return l10n_util::GetStringFUTF16(
-          update_password
-              ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
-              : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
-          base::UTF8ToUTF16(account_email_));
-    }
-
-    return l10n_util::GetStringUTF16(
-        update_password
-            ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
-            : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
+  return l10n_util::GetStringUTF16(
+      update_password
+          ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
+          : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
 }
 
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
