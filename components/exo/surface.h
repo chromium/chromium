@@ -732,6 +732,9 @@ class Surface final : public ui::PropertyHandler {
 
   bool keyboard_shortcuts_inhibited_ = false;
   bool legacy_buffer_release_skippable_ = false;
+
+  // Display id state for unmapped surfaces.
+  int64_t display_id_ = display::kInvalidDisplayId;
 };
 
 class ScopedSurface {

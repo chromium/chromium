@@ -945,9 +945,11 @@ void Surface::Commit() {
 }
 
 bool Surface::UpdateDisplay(int64_t old_display, int64_t new_display) {
-  if (!leave_enter_callback_.is_null()) {
-    if (!leave_enter_callback_.Run(old_display, new_display))
+  display_id_ = new_display;
+  if (has_contents() && !leave_enter_callback_.is_null()) {
+    if (!leave_enter_callback_.Run(old_display, new_display)) {
       return false;
+    }
   }
   for (const auto& sub_surface_entry : base::Reversed(sub_surfaces_)) {
     auto* sub_surface = sub_surface_entry.first;
@@ -1061,8 +1063,19 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
         needs_update_buffer_transform = true;
 
       if (cached_state_.buffer.has_value()) {
+        bool had_contents = has_contents();
+
         state_.buffer = std::move(cached_state_.buffer);
         cached_state_.buffer.reset();
+
+        if (display_id_ != display::kInvalidDisplayId &&
+            !leave_enter_callback_.is_null()) {
+          if (!had_contents && has_contents()) {
+            leave_enter_callback_.Run(display::kInvalidDisplayId, display_id_);
+          } else if (had_contents && !has_contents()) {
+            leave_enter_callback_.Run(display_id_, display::kInvalidDisplayId);
+          }
+        }
       }
       state_.rounded_corners_bounds = cached_state_.rounded_corners_bounds;
       state_.rounded_corners_is_root_coordinates =
