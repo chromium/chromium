@@ -108,6 +108,7 @@
 #include "services/network/proxy_lookup_request.h"
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
 #include "services/network/public/cpp/cert_verifier/mojo_cert_verifier.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -531,7 +532,7 @@ NetworkContext::NetworkContext(
       // sandboxed network service on Android.
       shared_dictionary_manager_ = SharedDictionaryManager::CreateOnDisk(
           params_->file_paths->shared_dictionary_directory->path().Append(
-              FILE_PATH_LITERAL("db")),
+              kSharedDictionaryDbDirName),
           params_->file_paths->shared_dictionary_directory->path().Append(
               FILE_PATH_LITERAL("cache")),
           params_->shared_dictionary_cache_max_size,
@@ -677,6 +678,15 @@ NetworkContext::~NetworkContext() {
 #if BUILDFLAG(IS_ANDROID)
     if (params_ && params_->file_paths) {
       base::FilePath path_to_invalidate;
+      // Even though shared_dictionary_directory is a TransferableDirectory, it
+      // only needs to be mounted/unmounted on fuchsia, so we only need to worry
+      // about invalidating the path of stored by the SandboxedVfs.
+      if (params_->file_paths->shared_dictionary_directory) {
+        path_to_invalidate =
+            params_->file_paths->shared_dictionary_directory->path().Append(
+                kSharedDictionaryDbDirName);
+        network_service_->InvalidateNetworkContextPath(path_to_invalidate);
+      }
       if (GetFullDataFilePath(params_->file_paths,
                               &network::mojom::NetworkContextFilePaths::
                                   trust_token_database_name,

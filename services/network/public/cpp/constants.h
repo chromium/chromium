@@ -8,12 +8,18 @@
 #include <stddef.h>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 
 namespace network {
 
 // The default Accept header value to use if none were specified.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kDefaultAcceptHeaderValue[];
+
+// The directory name of the database in the shared dictionary directory which
+// is specified by `shared_dictionary_directory` field of NetworkContextParams.
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FilePath::CharType kSharedDictionaryDbDirName[];
 
 }  // namespace network
 
