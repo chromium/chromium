@@ -5394,6 +5394,25 @@ TEST_P(NearbySharingServiceImplTest,
   }
 }
 
+TEST_P(NearbySharingServiceImplTest,
+       UserSelectsHiddenVisibility_HiddenVisibilityOnScreenLock) {
+  if (features::IsSelfShareEnabled()) {
+    SetVisibility(nearby_share::mojom::Visibility::kNoOne);
+    std::set<std::string> empty_set;
+    contact_manager()->SetAllowedContacts(empty_set);
+
+    // Lock screen, expect Hidden visibility.
+    session_controller_->SetScreenLocked(true);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
+    EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
+
+    // Unlock screen, expect visibility to still be Hidden.
+    session_controller_->SetScreenLocked(false);
+    EXPECT_EQ(nearby_share::mojom::Visibility::kNoOne, GetVisibility());
+    EXPECT_EQ(empty_set, contact_manager()->GetAllowedContacts());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,
                          NearbySharingServiceImplTest,
                          testing::Range<size_t>(0, 1 << kTestFeatures.size()));
