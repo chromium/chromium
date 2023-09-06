@@ -4,9 +4,27 @@
 
 #include "ui/gl/scoped_restore_texture.h"
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 
 namespace gl {
+
+namespace {
+// The `restore_prev_even_if_invalid` param was introduced to support legacy
+// behavior while porting clients of duplicate solutions. Our suspicion is that
+// it's not necessary to guard restoring the previous binding with a check that
+// it's valid; that behavior was introduced as a speculative fix for a crash
+// in https://chromium-review.googlesource.com/c/chromium/src/+/3669775 but
+// didn't seem to help
+// (https://bugs.chromium.org/p/chromium/issues/detail?id=1327231#c13). This
+// killswitch guards switching to unconditionally restore the previous binding.
+// Once this change definitively lands, we will unconditionally restore the
+// previous binding and remove the `restore_prev_even_if_invalid` parameter
+// altogether.
+BASE_FEATURE(kAlwaysRestorePrevEvenIfInvalid,
+             "AlwaysRestorePrevEvenIfInvalid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 ScopedRestoreTexture::ScopedRestoreTexture(
     gl::GLApi* api,
@@ -34,7 +52,9 @@ ScopedRestoreTexture::ScopedRestoreTexture(
   api->glGetIntegervFn(get_target, &binding);
   // The bound texture could be already deleted by another context, and the
   // texture ID |binding| could be reused and points to a different texture.
-  if (api->glIsTextureFn(binding) || restore_prev_even_if_invalid) {
+  // NOTE: See comment on killswitch above.
+  if (api->glIsTextureFn(binding) || restore_prev_even_if_invalid ||
+      base::FeatureList::IsEnabled(kAlwaysRestorePrevEvenIfInvalid)) {
     prev_binding_ = binding;
   }
   if (new_binding) {
