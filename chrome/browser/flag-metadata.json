@@ -6714,7 +6714,7 @@
   {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb", "skym" ],
-    "expiry_milestone": 118
+    "expiry_milestone": 125
   },
   {
     "name": "power-bookmarks-side-panel",
