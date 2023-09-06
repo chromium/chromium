@@ -4782,28 +4782,28 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
         Hidden
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_BOOKMARK" desc="The title for the context menu item to hide Add to Bookmarks. This should match the title of the Add to Bookmarks action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Add to Bookmarks"
+        Hide Add to Bookmarks
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_CLEAR_BROWSING_DATA" desc="The title for the context menu item to hide Clear Browsing Data. This should match the title of the Clear Browsing Data action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Clear Browsing Data"
+        Hide Clear Browsing Data
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_DESKTOP_SITE" desc="The title for the context menu item to hide Request Desktop Site. This should match the title of the Request Desktop Site action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Request Desktop Site"
+        Hide Request Desktop Site
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE" desc="The title for the context menu item to hide Find in Page. This should match the title of the Find in Page action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Find in Page…"
+        Hide Find in Page
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW" desc="The title for the context menu item to hide Follow. This should match the title of the Follow action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Follow"
+        Hide Follow
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_READING_LIST" desc="The title for the context menu item to hide Add to Reading List. This should match the title of the Add to Reading List action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Add to Reading List"
+        Hide Add to Reading List
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TEXT_ZOOM" desc="The title for the context menu item to hide Zoom Text. This should match the title of the Zoom Text action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Zoom Text…"
+        Hide Zoom Text
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE" desc="The title for the context menu item to hide Translate. This should match the title of the Translate action in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        Hide "Translate"
+        Hide Translate
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_BOOKMARKS" desc="The title for the context menu item to hide Bookmarks. This should match the title of the Bookmarks destination in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Hide Bookmarks
@@ -4812,7 +4812,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
         Hide Downloads
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_HISTORY" desc="The title for the context menu item to hide History. This should match the title of the History destination in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
-        History
+        Hide History
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_READING_LIST" desc="The title for the context menu item to hide Reading List. This should match the title of the Reading List destination in the menu." meaning="[In Title case] [iOS only] [Length: Unlimited]">
         Hide Reading List
