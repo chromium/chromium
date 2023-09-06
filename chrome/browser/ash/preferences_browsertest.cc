@@ -182,7 +182,8 @@ class PreferencesTest : public LoginManagerTest {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {
+// TODO(crbug.com/1479488): Re-enable this test
+IN_PROC_BROWSER_TEST_F(PreferencesTest, DISABLED_MultiProfiles) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
   const auto& users = login_mixin_.users();
