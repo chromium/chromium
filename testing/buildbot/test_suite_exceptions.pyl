@@ -1229,10 +1229,6 @@
         },
       },
       'linux-chromeos-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 60,
           'dimensions': {
