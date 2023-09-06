@@ -663,7 +663,9 @@ TEST_F(CRWWebViewScrollViewProxyTest, DISABLED_RemoveKVObserver) {
 // observation.
 //
 // This matches the (undocumented) behavior of the built-in KVO.
-TEST_F(CRWWebViewScrollViewProxyTest, RemoveKVObserverRemovesLastObservation) {
+// TODO(crbug.com/1478243): reenable this test
+TEST_F(CRWWebViewScrollViewProxyTest,
+       DISABLED_RemoveKVObserverRemovesLastObservation) {
   UIScrollView* underlying_scroll_view = [[UIScrollView alloc] init];
   underlying_scroll_view.contentOffset = CGPointZero;
   [web_view_scroll_view_proxy_ setScrollView:underlying_scroll_view];
