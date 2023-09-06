@@ -7,12 +7,20 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -40,6 +48,19 @@ class FocusModeDetailedViewTest : public AshTestBase {
     widget_.reset();
 
     AshTestBase::TearDown();
+  }
+
+  views::Label* GetToggleRowLabel() {
+    return focus_mode_detailed_view_->toggle_view_->text_label();
+  }
+
+  views::Label* GetToggleRowSubLabel() {
+    return focus_mode_detailed_view_->toggle_view_->sub_text_label();
+  }
+
+  PillButton* GetToggleRowButton() {
+    return views::AsViewClass<PillButton>(
+        focus_mode_detailed_view_->toggle_view_->right_view());
   }
 
   Switch* GetDoNotDisturbToggleButton() {
@@ -109,6 +130,42 @@ TEST_F(FocusModeDetailedViewTest, DoNotDisturbToggleButtonAndQuietMode) {
   EXPECT_FALSE(toggle_button->GetIsOn());
   EXPECT_FALSE(focus_mode_controller->turn_on_do_not_disturb());
   EXPECT_TRUE(message_center->IsQuietMode());
+}
+
+// Tests label texts and start/stop functionalities for the toggle row.
+TEST_F(FocusModeDetailedViewTest, ToggleRow) {
+  auto* focus_mode_controller = FocusModeController::Get();
+  views::Label* label = GetToggleRowLabel();
+  views::Label* sub_label = GetToggleRowSubLabel();
+  PillButton* toggle_button = GetToggleRowButton();
+
+  auto validate_labels = [&](bool active) {
+    EXPECT_EQ(active, focus_mode_controller->in_focus_session());
+    EXPECT_EQ(active ? u"Focusing" : u"Focus", label->GetText());
+
+    const base::TimeDelta session_duration =
+        focus_mode_controller->session_duration();
+    const int remaining_minutes =
+        active ? (focus_mode_controller->end_time() - base::Time::Now())
+                     .InMinutes()
+               : session_duration.InMinutes();
+
+    EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
+                  "%d min ⋅ Until %s", remaining_minutes,
+                  base::UTF16ToUTF8(base::TimeFormatTimeOfDay(
+                                        base::Time::Now() + session_duration))
+                      .c_str())),
+              sub_label->GetText());
+    EXPECT_EQ(active ? u"End" : u"Start", toggle_button->GetText());
+  };
+
+  validate_labels(/*active=*/false);
+
+  LeftClickOn(toggle_button);
+  validate_labels(/*active=*/true);
+
+  LeftClickOn(toggle_button);
+  validate_labels(/*active=*/false);
 }
 
 }  // namespace ash

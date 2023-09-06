@@ -17,6 +17,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "ash/system/time/time_view_utils.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
@@ -52,10 +53,6 @@
 
 namespace ash {
 namespace {
-
-// Amount of slop to add into the timer to make sure we're into the next minute
-// when the timer goes off.
-const int kTimerSlopSeconds = 1;
 
 // Padding between the left edge of the shelf and the left edge of the vertical
 // clock.
@@ -452,25 +449,9 @@ void TimeView::SetupLabel(views::Label* label) {
 }
 
 void TimeView::SetTimer(const base::Time& now) {
-  // Try to set the timer to go off at the next change of the minute. We don't
-  // want to have the timer go off more than necessary since that will cause
-  // the CPU to wake up and consume power.
-  base::Time::Exploded exploded;
-  now.LocalExplode(&exploded);
-
-  // Often this will be called at minute boundaries, and we'll actually want
-  // 60 seconds from now.
-  int seconds_left = 60 - exploded.second;
-  if (seconds_left == 0)
-    seconds_left = 60;
-
-  // Make sure that the timer fires on the next minute. Without this, if it is
-  // called just a teeny bit early, then it will skip the next minute.
-  seconds_left += kTimerSlopSeconds;
-
   timer_.Stop();
-  timer_.Start(FROM_HERE, base::Seconds(seconds_left), this,
-               &TimeView::UpdateText);
+  timer_.Start(FROM_HERE, time_view_utils::GetTimeRemainingToNextMinute(now),
+               this, &TimeView::UpdateText);
 }
 
 BEGIN_METADATA(TimeView, ActionableView)

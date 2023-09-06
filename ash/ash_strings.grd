@@ -782,6 +782,18 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" translateable="false" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
       Do not disturb while in Focus
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL" translateable="false" desc="The text used for the label of the focus mode toggle row in the focus mode detailed view when focus mode is active.">
+        Focusing
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the toggle row in the focus mode detailed view.">
+        <ph name="TIME_REMAINING_EXPRESSION">$1<ex>30 min</ex></ph> ⋅ Until <ph name="END_TIME_EXPRESSION">$2<ex>1:00 PM</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is not active.">
+        Start
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is active.">
+        End
+      </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
         Restart to update

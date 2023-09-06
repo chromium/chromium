@@ -74,6 +74,8 @@ class ASH_EXPORT TriView : public views::View {
 
   ~TriView() override;
 
+  views::BoxLayout* box_layout() { return box_layout_; }
+
   // Set the minimum height for all containers to |height|.
   void SetMinHeight(int height);
 

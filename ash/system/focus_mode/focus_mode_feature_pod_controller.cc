@@ -107,8 +107,8 @@ void FocusModeFeaturePodController::UpdateUI() {
     std::u16string remaining_time;
     if (!base::TimeDurationFormatWithSeconds(
             time_remaining, base::DURATION_WIDTH_SHORT, &remaining_time)) {
-      remaining_time = base::UTF8ToUTF16(
-          base::NumberToString(std::ceil(time_remaining.InSecondsF())));
+      remaining_time =
+          base::NumberToString16(std::ceil(time_remaining.InSecondsF()));
     }
     sub_text = remaining_time;
   } else {
