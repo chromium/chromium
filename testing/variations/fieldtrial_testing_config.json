@@ -10237,6 +10237,27 @@
             ]
         }
     ],
+    "NotifierCollision": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230907_Dogfood",
+                    "enable_features": [
+                        "NotifierCollision"
+                    ]
+                },
+                {
+                    "name": "Enabled_20230907",
+                    "enable_features": [
+                        "NotifierCollision"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpHistoryClusters": [
         {
             "platforms": [
