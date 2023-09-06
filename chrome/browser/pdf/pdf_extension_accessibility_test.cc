@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
-#include "build/build_config.h"
 
 #include <map>
 #include <string>
@@ -21,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
@@ -379,9 +379,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
 }
 
 // Flaky, see crbug.com/1477361
-IN_PROC_BROWSER_TEST_F(
-    PDFExtensionAccessibilityTest,
-    DISABLED_MAYBE_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTest,
+                       DISABLED_RecordHasAccessibleTextToUmaWithAccessiblePdf) {
   MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_view);
@@ -1009,7 +1008,7 @@ class PDFExtensionAccessibilityPdfOcrTest
   }
 };
 
-// TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+// TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOnPdfOcrFromMoreActions) {
@@ -1028,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
       /*expected_bucket_count=*/1);
 }
 
-// TODO(crbug.com/1444895): Re-enable it when integrating PDF OCR with
+// TODO(b/289010799): Re-enable it when integrating PDF OCR with
 // Select-to-Speak.
 IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityPdfOcrTest,
                        DISABLED_CheckUmaWhenTurnOffPdfOcrFromMoreActions) {
