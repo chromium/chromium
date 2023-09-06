@@ -754,6 +754,26 @@ html[dir='rtl'] #search-box .clear {
   margin-inline-start: 12px;
 }
 
+.dialog-header.files-ng cr-toggle {
+  --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);
+  /* bar color above already defines the opacity, so use 100% here */
+  --cr-toggle-checked-bar-opacity: 100%;
+  --cr-toggle-checked-button-color: var(--cros-sys-primary);
+  --cr-toggle-checked-ripple-color: transparent;
+  --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
+  --cr-toggle-unchecked-button-color: var(--cros-sys-surface_variant);
+  --cr-toggle-unchecked-ripple-color: transparent;
+  --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+  --cr-toggle-ripple-diameter: 32px;
+  margin-inline: 6px;
+  margin-top: 2px;
+}
+
+/* only show the ripple ring for tab navigation */
+html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
+}
+
 /* Container for the detail and thumbnail list views. */
 .dialog-body {
   flex: auto;
