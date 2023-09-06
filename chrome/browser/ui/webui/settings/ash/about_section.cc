@@ -487,9 +487,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   std::string safetyInfoLink = GetSafetyInfoLink();
   html_source->AddBoolean("shouldShowSafetyInfo", !safetyInfoLink.empty());
 
-  html_source->AddBoolean("isOsFeedbackEnabled",
-                          base::FeatureList::IsEnabled(features::kOsFeedback));
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
   html_source->AddLocalizedString("aboutProductTos",

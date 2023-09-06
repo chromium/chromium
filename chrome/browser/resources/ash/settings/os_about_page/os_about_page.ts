@@ -719,9 +719,7 @@ class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private getReportIssueLabel_(): string {
-    return loadTimeData.getBoolean('isOsFeedbackEnabled') ?
-        this.i18n('aboutSendFeedback') :
-        this.i18n('aboutReportAnIssue');
+    return this.i18n('aboutSendFeedback');
   }
   // </if>
 

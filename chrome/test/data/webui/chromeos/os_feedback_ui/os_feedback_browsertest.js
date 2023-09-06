@@ -34,10 +34,7 @@ this.OSFeedbackBrowserTest = class extends PolymerTest {
   /** @override */
   get featureList() {
     return {
-      enabled: [
-        'ash::features::kOsFeedback', 'ash::features::kOsFeedbackJelly',
-        'chromeos::features::kJelly'
-      ]
+      enabled: ['ash::features::kOsFeedbackJelly', 'chromeos::features::kJelly']
     };
   }
 };
