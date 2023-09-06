@@ -1923,6 +1923,14 @@ _CONFIG = [
             'liburlpattern::Part',
             'liburlpattern::PartType',
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/remoteplayback/',
+        ],
+        'allowed': [
+            'media::.+',
+        ]
     }
 ]
 

@@ -4939,6 +4939,9 @@ void HTMLMediaElement::ReportCurrentTimeToMediaSource() {
 }
 
 void HTMLMediaElement::OnRemotePlaybackMetadataChange() {
+  if (remote_playback_client_) {
+    remote_playback_client_->MediaMetadataChanged(video_codec_, audio_codec_);
+  }
   for (auto& observer : media_player_observer_remote_set_->Value()) {
     observer->OnRemotePlaybackMetadataChange(
         media_session::mojom::blink::RemotePlaybackMetadata::New(

@@ -3078,8 +3078,7 @@
       name: "RemotePlaybackBackend",
       settable_from_internals: true,
       // Tracking bug for the implementation: https://crbug.com/728609
-      status: {"Android": "stable", "default": ""},
-      base_feature: "none",
+      status: {"Android": "stable", "default": "experimental"},
     },
     {
       name: "RemoveDanglingMarkupInTarget",

@@ -52,7 +52,9 @@ async_test(t => {
   const video = document.createElement('video');
   video.controls = true;
   video.src = '../content/test.ogv';
-  internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
+  video.onloadeddata = t.step_func_done(function() {
+        internals.mediaPlayerRemoteRouteAvailabilityChanged(video, true);
+    });
 
   [ '../track/captions-webvtt/captions-fast.vtt',
     '../track/captions-webvtt/captions-rtl.vtt' ].forEach(source => {

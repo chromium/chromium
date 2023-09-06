@@ -66,21 +66,29 @@ void RunRemotePlaybackTask(
   std::move(task).Run();
 }
 
-KURL GetAvailabilityUrl(const WebURL& source, bool is_source_supported) {
-  if (source.IsEmpty() || !source.IsValid() || !is_source_supported)
+KURL GetAvailabilityUrl(const WebURL& source,
+                        bool is_source_supported,
+                        media::VideoCodec video_codec,
+                        media::AudioCodec audio_codec) {
+  if (source.IsEmpty() || !source.IsValid() || !is_source_supported) {
     return KURL();
+  }
 
   // The URL for each media element's source looks like the following:
-  // remote-playback://<encoded-data> where |encoded-data| is base64 URL
-  // encoded string representation of the source URL.
+  // remote-playback://<encoded-data>?video_codec=<video_codec>&audio_codec=<audio_codec>
+  // where |encoded-data| is base64 URL encoded string representation of the
+  // source URL. |video_codec| and |audio_codec| are used for device capability
+  // filter for Media Remoting based Remote Playback on Desktop. The codec
+  // fields are optional.
   std::string source_string = source.GetString().Utf8();
   String encoded_source = WTF::Base64URLEncode(
       source_string.data(),
       base::checked_cast<unsigned>(source_string.length()));
 
-  return KURL(
-      base::StrCat({kRemotePlaybackPresentationUrlScheme, "://"}).c_str() +
-      encoded_source);
+  return KURL(StringView(kRemotePlaybackPresentationUrlScheme) + "://" +
+              encoded_source +
+              "?video_codec=" + media::GetCodecName(video_codec).c_str() +
+              "&audio_codec=" + media::GetCodecName(audio_codec).c_str());
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {
@@ -443,12 +451,22 @@ void RemotePlayback::PromptCancelled() {
 
 void RemotePlayback::SourceChanged(const WebURL& source,
                                    bool is_source_supported) {
-  if (IsBackgroundAvailabilityMonitoringDisabled())
+  source_ = source;
+  is_source_supported_ = is_source_supported;
+
+  UpdateAvailabilityUrlsAndStartListening();
+}
+
+void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
+  if (IsBackgroundAvailabilityMonitoringDisabled() ||
+      !RuntimeEnabledFeatures::RemotePlaybackBackendEnabled()) {
     return;
+  }
 
   KURL current_url =
       availability_urls_.empty() ? KURL() : availability_urls_[0];
-  KURL new_url = GetAvailabilityUrl(source, is_source_supported);
+  KURL new_url = GetAvailabilityUrl(source_, is_source_supported_, video_codec_,
+                                    audio_codec_);
 
   if (new_url == current_url)
     return;
@@ -472,6 +490,14 @@ void RemotePlayback::SourceChanged(const WebURL& source,
 
 WebString RemotePlayback::GetPresentationId() {
   return presentation_id_;
+}
+
+void RemotePlayback::MediaMetadataChanged(media::VideoCodec video_codec,
+                                          media::AudioCodec audio_codec) {
+  video_codec_ = video_codec;
+  audio_codec_ = audio_codec;
+
+  UpdateAvailabilityUrlsAndStartListening();
 }
 
 void RemotePlayback::AddObserver(RemotePlaybackObserver* observer) {

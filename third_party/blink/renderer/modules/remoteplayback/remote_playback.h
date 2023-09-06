@@ -27,6 +27,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace media {
+enum class VideoCodec;
+enum class AudioCodec;
+}  // namespace media
+
 namespace blink {
 
 class AvailabilityCallbackWrapper;
@@ -120,6 +125,8 @@ class MODULES_EXPORT RemotePlayback final
   bool RemotePlaybackAvailable() const override;
   void SourceChanged(const WebURL&, bool is_source_supported) override;
   WebString GetPresentationId() override;
+  void MediaMetadataChanged(media::VideoCodec video_codec,
+                            media::AudioCodec audio_codec) override;
 
   // RemotePlaybackController implementation.
   void AddObserver(RemotePlaybackObserver*) override;
@@ -162,6 +169,8 @@ class MODULES_EXPORT RemotePlayback final
   // May be called more than once in a row.
   void StopListeningForAvailability();
 
+  void UpdateAvailabilityUrlsAndStartListening();
+
   // Clears bindings after remote playback stops.
   void CleanupConnections();
 
@@ -175,6 +184,10 @@ class MODULES_EXPORT RemotePlayback final
 
   String presentation_id_;
   KURL presentation_url_;
+  WebURL source_;
+  bool is_source_supported_ = false;
+  media::VideoCodec video_codec_ = media::VideoCodec::kUnknown;
+  media::AudioCodec audio_codec_ = media::AudioCodec::kUnknown;
 
   HeapMojoReceiver<mojom::blink::PresentationConnection, RemotePlayback>
       presentation_connection_receiver_;

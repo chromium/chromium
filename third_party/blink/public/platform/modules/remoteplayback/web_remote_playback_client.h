@@ -5,6 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_WEB_REMOTE_PLAYBACK_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_WEB_REMOTE_PLAYBACK_CLIENT_H_
 
+namespace media {
+enum class VideoCodec;
+enum class AudioCodec;
+}  // namespace media
+
 namespace blink {
 
 class WebURL;
@@ -22,6 +27,9 @@ class WebRemotePlaybackClient {
   // Notifies the client that the source of the HTMLMediaElement has changed as
   // well as if the new source is supported for remote playback.
   virtual void SourceChanged(const WebURL&, bool is_source_supported) = 0;
+
+  virtual void MediaMetadataChanged(media::VideoCodec video_codec,
+                                    media::AudioCodec audio_codec) = 0;
 
   // Gets the presentation ID associated with the client. The presentation ID
   // may be null, empty or stale.
