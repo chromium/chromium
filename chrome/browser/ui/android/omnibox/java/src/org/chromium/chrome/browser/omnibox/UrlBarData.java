@@ -10,55 +10,32 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Encapsulates all data that is necessary for the URL bar to display its contents.
  */
 public class UrlBarData {
-    /**
-     * The URL schemes that should be displayed complete with path.
-     */
-    public static final HashSet<String> UNSUPPORTED_SCHEMES_TO_SPLIT = CollectionUtil.newHashSet(
-            ContentUrlConstants.ABOUT_SCHEME, UrlConstants.CONTENT_SCHEME, UrlConstants.DATA_SCHEME,
-            UrlConstants.FILE_SCHEME, UrlConstants.FTP_SCHEME, UrlConstants.INLINE_SCHEME,
-            UrlConstants.JAVASCRIPT_SCHEME, UrlConstants.CHROME_SCHEME);
-    /**
-     * URI schemes that ContentView can handle.
-     *
-     * Copied from UrlUtilities.java.  UrlUtilities uses a URI to check for schemes, which
-     * is more strict than Uri and causes the path stripping to fail.
-     *
-     * The following additions have been made: "chrome", "ftp".
-     */
-    private static final HashSet<String> ACCEPTED_SCHEMES = CollectionUtil.newHashSet(
-            ContentUrlConstants.ABOUT_SCHEME, UrlConstants.DATA_SCHEME, UrlConstants.FILE_SCHEME,
-            UrlConstants.FTP_SCHEME, UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME,
-            UrlConstants.INLINE_SCHEME, UrlConstants.JAVASCRIPT_SCHEME, UrlConstants.CHROME_SCHEME);
-    // Unicode "Left-To-Right Mark" (LRM) character.
-    private static final char LRM = '\u200E';
-
-    /**
-     * Represents an empty URL bar.
-     */
+    /** The URL schemes that don't need to be displayed complete with path. */
+    public static final Set<String> SCHEMES_TO_SPLIT =
+            Set.of(UrlConstants.HTTP_SCHEME, UrlConstants.HTTPS_SCHEME, UrlConstants.BLOB_SCHEME);
+    /** Represents an empty URL bar. */
     public static final UrlBarData EMPTY = forNonUrlText("");
 
-    public static UrlBarData forUrl(String url) {
-        return forUrlAndText(url, url, null);
+    public static UrlBarData forUrl(GURL url) {
+        return forUrlAndText(url, url.isValid() ? url.getSpec() : "", null);
     }
 
     public static UrlBarData forNonUrlText(String displayText) {
         return create(null, displayText, 0, 0, null);
     }
 
-    public static UrlBarData forUrlAndText(String url, String displayText) {
+    public static UrlBarData forUrlAndText(GURL url, String displayText) {
         return forUrlAndText(url, displayText, null);
     }
 
@@ -68,15 +45,17 @@ public class UrlBarData {
     }
 
     public static UrlBarData forUrlAndText(
-            String url, CharSequence displayText, @Nullable String editingText) {
+            GURL url, CharSequence displayText, @Nullable String editingText) {
+        assert url.isEmpty() || url.isValid();
         int pathSearchOffset = 0;
         String displayTextStr = displayText == null ? "" : displayText.toString();
-        String scheme = Uri.parse(displayTextStr).getScheme();
+        String scheme = url.getScheme();
 
         if (!TextUtils.isEmpty(scheme)) {
-            if (UNSUPPORTED_SCHEMES_TO_SPLIT.contains(scheme)) {
-                return create(url, displayText, 0, displayText.length(), editingText);
+            if (!SCHEMES_TO_SPLIT.contains(scheme)) {
+                return create(url, displayTextStr, 0, displayTextStr.length(), editingText);
             }
+
             if (UrlConstants.BLOB_SCHEME.equals(scheme)) {
                 int innerSchemeSearchOffset =
                         findFirstIndexAfterSchemeSeparator(displayText, scheme.length());
@@ -87,10 +66,9 @@ public class UrlBarData {
                     scheme = innerScheme;
                 }
             }
-            if (ACCEPTED_SCHEMES.contains(scheme)) {
-                pathSearchOffset = findFirstIndexAfterSchemeSeparator(
-                        displayText, displayTextStr.indexOf(scheme) + scheme.length());
-            }
+
+            pathSearchOffset = findFirstIndexAfterSchemeSeparator(
+                    displayText, displayTextStr.indexOf(scheme) + scheme.length());
         }
         int pathOffset = -1;
         if (displayText != null && pathSearchOffset < displayText.length()) {
@@ -111,7 +89,7 @@ public class UrlBarData {
         return create(url, displayText, 0, pathOffset, editingText);
     }
 
-    public static UrlBarData create(@Nullable String url, CharSequence displayText,
+    public static UrlBarData create(@Nullable GURL url, CharSequence displayText,
             int originStartIndex, int originEndIndex, @Nullable String editingText) {
         return new UrlBarData(url, displayText, originStartIndex, originEndIndex, editingText);
     }
@@ -129,7 +107,7 @@ public class UrlBarData {
      * The canonical URL that is shown in the URL bar, or null if it currently does not correspond
      * to a URL (for example, showing suggestion text).
      */
-    public final @Nullable String url;
+    public final @Nullable GURL url;
 
     /**
      * The text that should be shown in the URL bar. This can be a {@link Spanned} that contains
@@ -162,7 +140,7 @@ public class UrlBarData {
         return editingText != null ? editingText : displayText;
     }
 
-    private UrlBarData(@Nullable String url, CharSequence displayText, int originStartIndex,
+    private UrlBarData(@Nullable GURL url, CharSequence displayText, int originStartIndex,
             int originEndIndex, @Nullable String editingText) {
         this.url = url;
         this.displayText = displayText;

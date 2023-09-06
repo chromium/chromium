@@ -1326,7 +1326,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
 
             mUrlCoordinator.setUrlBarData(
-                    UrlBarData.create(url, displayText, originStart, originEnd, url),
+                    UrlBarData.create(new GURL(url), displayText, originStart, originEnd, url),
                     UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
 
             WebContents webContents = tab.getWebContents();

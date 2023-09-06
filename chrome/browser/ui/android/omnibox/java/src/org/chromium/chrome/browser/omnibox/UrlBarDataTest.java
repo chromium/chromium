@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.url.GURL;
 
 /**
  * Unit tests for {@link UrlBarData}.
@@ -21,9 +22,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class UrlBarDataTest {
     @Test
     public void forUrlAndText_nonHttpOrHttps_DisplayTextDiffersFromUrl() {
-        UrlBarData data =
-                UrlBarData.forUrlAndText("data:text/html,blah,blah", "data:text/html,blah", "BLAH");
-        Assert.assertEquals("data:text/html,blah,blah", data.url);
+        var url = new GURL("data:text/html,blah,blah");
+        UrlBarData data = UrlBarData.forUrlAndText(url, "data:text/html,blah", "BLAH");
+        Assert.assertEquals(url, data.url);
         Assert.assertEquals("data:text/html,blah", data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
@@ -32,38 +33,37 @@ public class UrlBarDataTest {
 
     @Test
     public void forUrlAndText_aboutUri_NoSlashes() {
-        final String aboutUrl = "about:blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl);
+        var aboutUrl = new GURL("about:blank#verylongurl.totallylegit.notsuspicious.url.com");
+        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl.getSpec());
         Assert.assertEquals(aboutUrl, data.url);
-        Assert.assertEquals(aboutUrl, data.displayText);
+        Assert.assertEquals(aboutUrl.getSpec(), data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
-        Assert.assertEquals(aboutUrl.length(), data.originEndIndex);
+        Assert.assertEquals(aboutUrl.getSpec().length(), data.originEndIndex);
     }
 
     @Test
     public void forUrlAndText_aboutUri_WithSlashes() {
-        final String aboutUrl = "about://blank#verylongurl.totallylegit.notsuspicious.url.com";
-        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl);
+        var aboutUrl = new GURL("about://blank#verylongurl.totallylegit.notsuspicious.url.com");
+        UrlBarData data = UrlBarData.forUrlAndText(aboutUrl, aboutUrl.getSpec());
         Assert.assertEquals(aboutUrl, data.url);
-        Assert.assertEquals(aboutUrl, data.displayText);
+        Assert.assertEquals(aboutUrl.getSpec(), data.displayText);
         Assert.assertEquals(0, data.originStartIndex);
         // Ensure that the end index is the length of the display text and not the URL.
-        Assert.assertEquals(aboutUrl.length(), data.originEndIndex);
+        Assert.assertEquals(aboutUrl.getSpec().length(), data.originEndIndex);
     }
 
     @Test
     public void originSpans() {
         verifyOriginSpan("", null, "");
-        verifyOriginSpan("https:", null, "https:");
         verifyOriginSpan("about:blank", null, "about:blank");
 
-        verifyOriginSpan("chrome://flags", null, "chrome://flags");
+        verifyOriginSpan("chrome://flags/", null, "chrome://flags");
         verifyOriginSpan("chrome://flags/?egads", null, "chrome://flags/?egads");
 
-        verifyOriginSpan("www.google.com", null, "www.google.com");
-        verifyOriginSpan("www.google.com", null, "www.google.com/");
-        verifyOriginSpan("www.google.com", "/?q=blah", "www.google.com/?q=blah");
+        verifyOriginSpan("http://www.google.com", null, "http://www.google.com");
+        verifyOriginSpan("http://www.google.com", null, "http://www.google.com/");
+        verifyOriginSpan("http://www.google.com", "/?q=blah", "http://www.google.com/?q=blah");
 
         verifyOriginSpan("https://www.google.com", null, "https://www.google.com");
         verifyOriginSpan("https://www.google.com", null, "https://www.google.com/");
@@ -100,13 +100,13 @@ public class UrlBarDataTest {
 
     private void verifyOriginSpan(
             String expectedOrigin, @Nullable String expectedOriginSuffix, String url) {
-        UrlBarData urlBarData = UrlBarData.forUrl(url);
+        UrlBarData urlBarData = UrlBarData.forUrl(new GURL(url));
         String displayText =
                 urlBarData.displayText == null ? "" : urlBarData.displayText.toString();
         Assert.assertEquals(expectedOriginSuffix == null ? expectedOrigin
                                                          : expectedOrigin + expectedOriginSuffix,
                 displayText);
-        Assert.assertEquals("Origina start index, end index did not generate expected origin",
+        Assert.assertEquals("Original start index, end index did not generate expected origin",
                 expectedOrigin,
                 displayText.substring(urlBarData.originStartIndex, urlBarData.originEndIndex));
     }
