@@ -1,0 +1,71 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_SAVE_TO_PHOTOS_SAVE_TO_PHOTOS_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_SAVE_TO_PHOTOS_SAVE_TO_PHOTOS_MEDIATOR_H_
+
+#import <Foundation/Foundation.h>
+
+class ChromeAccountManagerService;
+class GURL;
+class PhotosService;
+class PrefService;
+@protocol SaveToPhotosMediatorDelegate;
+@protocol SnackbarCommands;
+@protocol SystemIdentity;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace web {
+struct Referrer;
+class WebState;
+}  // namespace web
+
+// Save to Photos mediator. This UI is presented when the user has selected an
+// image to be saved in their Photos library e.g. Google Photos. It lets the
+// user select an account as destination and notifies the user of progress and
+// completion.
+@interface SaveToPhotosMediator : NSObject
+
+@property(nonatomic, weak) id<SaveToPhotosMediatorDelegate> delegate;
+
+// Initialization.
+- (instancetype)initWithPhotosService:(PhotosService*)photosService
+                          prefService:(PrefService*)prefService
+                accountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                      identityManager:(signin::IdentityManager*)identityManager;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Starts the process of saving the image.
+// - 1. It fetches the image from the given `webState` using `imageURL` and
+// `referrer`.
+// - 2. If the image has been fetched, it detects whether a default account
+// exists for saving to Photos.
+// - 3. a. If so, the image is uploaded to the provided `photosService` using
+// that default account.
+//      b. Otherwise, the account picker is presented through the `delegate`.
+- (void)startWithImageURL:(const GURL&)imageURL
+                 referrer:(const web::Referrer&)referrer
+                 webState:(web::WebState*)webState;
+
+// Resumes the process of saving the image with the given `identity`. If
+// `askEveryTime` is NO, then the Gaia ID of `identity` will be memorized so the
+// account picker can be skipped next time the user saves an image.
+- (void)accountPickerDidSelectIdentity:(id<SystemIdentity>)identity
+                          askEveryTime:(BOOL)askEveryTime;
+
+// Lets the mediator know that the StoreKit view has been dismissed by the user.
+// The mediator will prepare to shutdown and ask the delegate to hide Save to
+// Photos.
+- (void)storeKitDone;
+
+// Disconnect the mediator from services.
+- (void)disconnect;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_SAVE_TO_PHOTOS_SAVE_TO_PHOTOS_MEDIATOR_H_

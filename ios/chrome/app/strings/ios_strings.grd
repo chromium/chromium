@@ -5374,6 +5374,36 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK" desc="Subtitle for Safety Check (Magic Stack) module which shows the timestamp of the last check." meaning="Time when the Safety Check was last run.">
         Last run <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
       </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_THIS_FILE_COULD_NOT_BE_UPLOADED_TITLE" desc="Title of an alert that is presented if the user's attempt to upload an image to Google Photos fails. [iOS only]">
+        This File Could Not Be Uploaded
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_THIS_FILE_COULD_NOT_BE_UPLOADED_MESSAGE" desc="Message of an alert that is presented if the user's attempt to upload an image to Google Photos fails. [iOS only]">
+        <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> (<ph name="FILESIZE">$2<ex>4 MB</ex></ph>) could not be uploaded
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_THIS_FILE_COULD_NOT_BE_UPLOADED_TRY_AGAIN" desc="Button in an alert that is presented if the user's attempt to upload an image to Google Photos fails. The button lets the user try to upload the image again. [iOS only]">
+        Try Again
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_SAVING_IMAGE_MESSAGE" desc="Message of snackbar that is shown when the user started saving an image to Google Photos. [iOS only]">
+        Saving image in Google Photos for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>...
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE" desc="Message of snackbar that is shown when the image selected by the user to be saved in Google Photos has been saved successfully. [iOS only]">
+        Image saved in Google Photos for <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_OPEN_BUTTON" desc="Label of snackbar button that is shown when the image selected by the user to be saved in Google Photos has been saved successfully. The button opens the saved image i.e. it either shows the Google Photos app in the App Store if it is not installed, or opens the image in the Google Photos app. [iOS only]">
+        Open
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_TITLE" desc="Dialog title to invite the user to pick an account to save an image to Google Photos. [iOS only]">
+        Save in Google Photos
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_BODY" desc="Text when a user attempts to save an image to Google Photos, then is presented with the account picker dialog to select which account they want to use to save the image. [iOS only]">
+        Select the account you want to use to save <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> - <ph name="FILESIZE">$2<ex>4 MB</ex></ph>
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME" desc="Switch label to let the user choose whether they want to pick an account every time. [iOS only]">
+        Ask which account to use every time
+      </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT" desc="Dialog primary button label to validate the account picked to save an image to Google Photos. [iOS only]" meaning="This button saves the image to the user's Google Photos library i.e. this means 'Save' as in 'Save in Google Photos'.">
+        Save
+      </message>
     </messages>
   </release>
 </grit>
