@@ -77,9 +77,6 @@ absl::optional<base::Value::Dict> SessionTabToValue(
 base::Value::Dict BuildWindowData(base::Time modification_time,
                                   SessionID window_id) {
   base::Value::Dict dictionary;
-  // The items which are to be written into |dictionary| are also described in
-  // chrome/browser/resources/ntp4/other_sessions.js in @typedef for WindowData.
-  // Please update it whenever you add or remove any keys here.
   dictionary.Set("type", "window");
   dictionary.Set("timestamp",
                  static_cast<double>(modification_time.ToInternalValue()));

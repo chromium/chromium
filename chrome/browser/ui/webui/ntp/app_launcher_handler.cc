@@ -137,8 +137,6 @@ const char kPackagedAppKey[] = "packagedApp";
 const int kWebAppIconLargeNonDefault = 128;
 const int kWebAppIconSmallNonDefault = 16;
 
-// These Run on OS Login mode strings need to be in sync with
-// chrome/browser/resources/ntp4/apps_page.js:RUN_ON_OS_LOGIN_MODE enum.
 const char kRunOnOsLoginModeNotRun[] = "run_on_os_login_mode_not_run";
 const char kRunOnOsLoginModeWindowed[] = "run_on_os_login_mode_windowed";
 
@@ -200,9 +198,6 @@ AppLauncherHandler::~AppLauncherHandler() {
 
 base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
     const web_app::AppId& app_id) {
-  // The items which are to be in the returned Value::Dict are also described in
-  // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
-  // Please update it whenever you add or remove any keys here.
   base::Value::Dict dict;
 
   // Communicate the kiosk flag so the apps page can disable showing the
@@ -307,9 +302,6 @@ base::Value::Dict AppLauncherHandler::CreateWebAppInfo(
 
 base::Value::Dict AppLauncherHandler::CreateExtensionInfo(
     const Extension* extension) {
-  // The items which are to be written into the returned dict are also
-  // described in chrome/browser/resources/ntp4/page_list_view.js in @typedef
-  // for AppInfo. Please update it whenever you add or remove any keys here.
   base::Value::Dict dict;
 
   // Communicate the kiosk flag so the apps page can disable showing the

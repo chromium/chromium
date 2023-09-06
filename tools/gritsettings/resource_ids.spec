@@ -311,10 +311,6 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3320],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ntp4/resources.grd": {
-    "META": {"sizes": {"includes": [40]}},
-    "includes": [3340],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [3360],
