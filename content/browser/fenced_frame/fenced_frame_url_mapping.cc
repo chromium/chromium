@@ -71,7 +71,9 @@ GURL SubstituteSizeIntoURL(const blink::AdDescriptor& ad_descriptor) {
   return GURL(SubstituteMappedStrings(
       ad_descriptor.url.spec(),
       {std::make_pair("{%AD_WIDTH%}", base::NumberToString(size.width())),
-       std::make_pair("{%AD_HEIGHT%}", base::NumberToString(size.height()))}));
+       std::make_pair("{%AD_HEIGHT%}", base::NumberToString(size.height())),
+       std::make_pair("${AD_WIDTH}", base::NumberToString(size.width())),
+       std::make_pair("${AD_HEIGHT}", base::NumberToString(size.height()))}));
 }
 
 }  // namespace

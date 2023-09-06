@@ -7390,6 +7390,7 @@ IN_PROC_BROWSER_TEST_F(
 // Runs auction just like test InterestGroupBrowserTest.RunAdAuctionWithWinner,
 // but runs with the ads specified with sizes info. The ad url contains size
 // macros, which should be substituted with the size from the winning bid.
+// The size macros use the {%...%} format.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionWithSizeWithWinnerMacroSubstitution) {
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
@@ -7397,6 +7398,56 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
   GURL ad_url = https_server_->GetURL(
       "c.test", "/echo?render_cars&size={%AD_WIDTH%}x{%AD_HEIGHT%}");
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic_with_size.js"))
+                    .SetAds(/*ads=*/{{{ad_url, /*metadata=*/absl::nullopt,
+                                       /*size_group=*/"group_1"}}})
+                    .SetAdSizes(
+                        {{{"size_1",
+                           blink::AdSize(
+                               100, blink::AdSize::LengthUnit::kScreenWidth, 50,
+                               blink::AdSize::LengthUnit::kScreenHeight)}}})
+                    .SetSizeGroups({{{"group_1", {"size_1"}}}})
+                    .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+        seller: $1,
+        decisionLogicURL: $2,
+        interestGroupBuyers: [$1]
+      })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  int screen_width = static_cast<int>(display::Screen::GetScreen()
+                                          ->GetPrimaryDisplay()
+                                          .GetSizeInPixel()
+                                          .width());
+  int screen_height = static_cast<int>(0.5 * display::Screen::GetScreen()
+                                                 ->GetPrimaryDisplay()
+                                                 .GetSizeInPixel()
+                                                 .height());
+  GURL expected_url = https_server_->GetURL(
+      "c.test", base::StringPrintf("/echo?render_cars&size=%ix%i", screen_width,
+                                   screen_height));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, expected_url);
+}
+
+// Same as RunAdAuctionWithSizeWithWinnerMacroSubstitution, except the size
+// macros use the ${...} format.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionWithSizeWithWinnerMacroSubstitutionAlternateFormat) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/echo?render_cars&size=${AD_WIDTH}x${AD_HEIGHT}");
 
   EXPECT_EQ(kSuccess,
             JoinInterestGroupAndVerify(
