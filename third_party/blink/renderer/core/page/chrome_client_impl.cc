@@ -395,12 +395,18 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
                                            unsigned line_number,
                                            const String& source_id,
                                            const String& stack_trace) {
+  // [RUN-2387] Make sure that stack_trace is consistent, despite some
+  // "negligible" frames diverging.
+  std::string stack_trace_str = stack_trace.Ascii();
+  recordreplay::RecordReplayString(
+      "ChromeClientImpl::AddMessageToConsole stack_trace", stack_trace_str);
+  const String new_stack_trace =
+      String::FromUTF8(&stack_trace_str[0], stack_trace_str.length());
+
   if (!message.IsNull()) {
-    mojo::internal::AutoRecordReplayAssertBufferAllocations rraba(
-        "RUN-2387-2541");
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
-        stack_trace);
+        new_stack_trace);
   }
 
   WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(local_frame);
@@ -408,7 +414,7 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
     frame->Client()->DidAddMessageToConsole(
         WebConsoleMessage(static_cast<mojom::ConsoleMessageLevel>(level),
                           message),
-        source_id, line_number, stack_trace);
+        source_id, line_number, new_stack_trace);
   }
 }
 

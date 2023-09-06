@@ -259,13 +259,8 @@ String CSSNumericLiteralValue::CustomCSSText() const {
           if (!recordreplay::AreEventsDisallowed()) {
             // [RUN-1918] Workaround divergent floating point sprintf.
             std::string textStr = text.Ascii();
-            size_t recordedLength = recordreplay::RecordReplayValue(
-                "CSSNumericLiteralValue::CustomCSSText", textStr.length());
-            textStr.resize(recordedLength, ' ');
-            recordreplay::RecordReplayBytes(
-                "CSSNumericLiteralValue::CustomCSSText", &textStr[0],
-                recordedLength);
-            text = String::FromUTF8(&textStr[0], recordedLength);
+            recordreplay::RecordReplayString("CSSNumericLiteralValue::CustomCSSText", textStr);
+            text = String::FromUTF8(&textStr[0], textStr.length());
           }
         }
       } else {

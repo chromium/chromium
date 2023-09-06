@@ -41,6 +41,7 @@ bool AreAssertsDisabled();
 
 uintptr_t RecordReplayValue(const char* why, uintptr_t v);
 void RecordReplayBytes(const char* why, void* buf, size_t size);
+void RecordReplayString(const char* why, std::string& text);
 
 int CreateOrderedLock(const char* name);
 void OrderedLock(int lock);

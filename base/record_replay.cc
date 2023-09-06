@@ -303,6 +303,14 @@ void RecordReplayBytes(const char* why, void* buf, size_t size) {
   V8RecordReplayBytes(why, buf, size);
 }
 
+void RecordReplayString(const char* why, std::string& str) {
+  size_t length = RecordReplayValue(why, str.length());
+  str.resize(length);
+  if (length) {
+    RecordReplayBytes(why, &str[0], length);
+  }
+}
+
 int CreateOrderedLock(const char* name) {
   return (int)V8RecordReplayCreateOrderedLock(name);
 }
@@ -517,14 +525,6 @@ AutoMarkReplayCode::AutoMarkReplayCode() {
 
 AutoMarkReplayCode::~AutoMarkReplayCode() {
   V8RecordReplayExitReplayCode();
-}
-
-void RecordReplayString(const char* why, std::string& str) {
-  size_t length = RecordReplayValue(why, str.length());
-  str.resize(length);
-  if (length) {
-    RecordReplayBytes(why, &str[0], length);
-  }
 }
 
 void AddOrderedSRWLock(const char* name, void* lock) {

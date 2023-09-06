@@ -299,10 +299,6 @@ using blink::WebView;
 using blink::mojom::SelectionMenuBehavior;
 using network::mojom::ReferrerPolicy;
 
-namespace recordreplay {
-  extern void RecordReplayString(const char* why, std::string& str);
-}
-
 namespace content {
 
 namespace {
