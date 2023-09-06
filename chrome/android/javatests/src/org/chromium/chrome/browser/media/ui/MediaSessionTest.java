@@ -8,8 +8,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
@@ -53,11 +51,13 @@ public class MediaSessionTest {
     private static final String TEST_PATH = "/content/test/data/media/session/media-session.html";
     private static final String VIDEO_ID = "long-video";
 
+    private static final long LONG_TIMEOUT = 5000L;
+    private static final long DEFAULT_POLL_INTERVAL = 50L;
+
     private EmbeddedTestServer mTestServer;
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "https://crbug.com/1315419")
+    @LargeTest
     public void testPauseOnHeadsetUnplug() throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -78,7 +78,7 @@ public class MediaSessionTest {
      * with media.
      */
     @Test
-    @MediumTest
+    @LargeTest
     public void mediaSessionUrlUpdatedAfterNativePageNavigation() throws Exception {
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
@@ -111,9 +111,10 @@ public class MediaSessionTest {
     }
 
     private void waitForNotificationReady() {
+        // Extended timeout to avoid flakiness https://crbug.com/1315419
         CriteriaHelper.pollInstrumentationThread(() -> {
             return MediaNotificationManager.getController(R.id.media_playback_notification) != null;
-        });
+        }, LONG_TIMEOUT, DEFAULT_POLL_INTERVAL);
     }
 
     private void simulateHeadsetUnplug() {
