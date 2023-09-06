@@ -3748,7 +3748,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3971764089670057203">Impressões digitais nesta chave de segurança</translation>
 <translation id="3973005893595042880">O utilizador não é permitido</translation>
 <translation id="3973660817924297510">A verificar palavras-passe (<ph name="CHECKED_PASSWORDS" /> de <ph name="TOTAL_PASSWORDS" />)…</translation>
-<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardas sobre si</translation>
+<translation id="3974105241379491420">Os sites podem pedir para usar as informações guardadas sobre si</translation>
 <translation id="3974514184580396500">Use "Seguinte" para mover o foco para a frente no ecrã</translation>
 <translation id="3975201861340929143">Explicação</translation>
 <translation id="3975565978598857337">Falha ao contactar o servidor do domínio.</translation>
@@ -5409,7 +5409,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5383740867328871413">Grupo sem nome – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="538822246583124912">A política empresarial foi alterada. O botão Experiências foi adicionado à barra de ferramentas. Clique no botão para abrir uma caixa de diálogo para ativar experiências.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
-<translation id="5389626883706033615">Os sites foram impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
+<translation id="5389626883706033615">Os sites estão impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
 <translation id="5390112241331447203">Inclua o ficheiro system_logs.txt enviado nos relatórios de feedback.</translation>
 <translation id="5390677308841849479">Vermelho escuro e laranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
