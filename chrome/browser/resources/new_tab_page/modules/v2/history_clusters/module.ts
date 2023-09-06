@@ -122,6 +122,25 @@ export class HistoryClustersModuleElement extends I18nMixin
         this.cluster.id);
   }
 
+  private computeImagesEnabled_(): boolean {
+    return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
+        !!this.cart;
+  }
+
+  private computeShowRelatedSearches(): boolean {
+    return this.cluster.relatedSearches.length > 1;
+  }
+
+  private computeLabel_(): string {
+    return this.cluster.label.replace(/[“”]+/g, '');
+  }
+
+  private shouldShowCartTile_(cart: Object): boolean {
+    return loadTimeData.getBoolean(
+               'modulesChromeCartInHistoryClustersModuleEnabled') &&
+        !!cart;
+  }
+
   private onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
@@ -176,11 +195,6 @@ export class HistoryClustersModuleElement extends I18nMixin
     this.$.infoDialogRender.get().showModal();
   }
 
-  private onSuggestClick_() {
-    HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
-    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
-  }
-
   private onShowAllButtonClick_() {
     assert(this.cluster.label.length >= 2, 'Unexpected cluster label length');
     HistoryClustersProxyImpl.getInstance().handler.showJourneysSidePanel(
@@ -188,23 +202,35 @@ export class HistoryClustersModuleElement extends I18nMixin
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
-  private shouldShowCartTile_(cart: Object): boolean {
-    return loadTimeData.getBoolean(
-               'modulesChromeCartInHistoryClustersModuleEnabled') &&
-        !!cart;
+  private onSuggestTileClick_(e: Event) {
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Suggest');
+    this.recordClick_();
   }
 
-  private computeImagesEnabled_(): boolean {
-    return loadTimeData.getBoolean('historyClustersImagesEnabled') ||
-        !!this.cart;
+  private onVisitTileClick_(e: Event) {
+    this.recordTileClickIndex_(e.target as HTMLElement, 'Visit');
+    this.recordClick_();
   }
 
-  private computeShowRelatedSearches(): boolean {
-    return this.cluster.relatedSearches.length > 1;
+  private recordTileClickIndex_(tile: HTMLElement, tileType: string) {
+    const layoutType =
+        this.imagesEnabled_ ? LayoutType.kImages : LayoutType.kTextOnly;
+    const index = Array.from(tile.parentNode!.children).indexOf(tile);
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: `NewTabPage.HistoryClusters.Layout${layoutType}.${
+              tileType!}Tile.ClickIndex`,
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LINEAR,
+          min: 0,
+          max: 10,
+          buckets: 10,
+        },
+        index);
   }
 
-  private computeLabel_(): string {
-    return this.cluster.label.replace(/[“”]+/g, '');
+  private recordClick_() {
+    HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 }
 
