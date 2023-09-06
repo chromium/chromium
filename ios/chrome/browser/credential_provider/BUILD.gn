@@ -42,7 +42,6 @@ if (ios_enable_credential_provider_extension) {
       "//components/password_manager/core/common:features",
       "//components/prefs:prefs",
       "//components/signin/public/identity_manager",
-      "//components/sync/base",
       "//ios/chrome/browser/favicon",
       "//ios/chrome/browser/passwords",
       "//ios/chrome/browser/shared/model/browser_state",
