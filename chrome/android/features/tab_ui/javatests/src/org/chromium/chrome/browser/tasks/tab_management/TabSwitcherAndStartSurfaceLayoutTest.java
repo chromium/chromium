@@ -81,6 +81,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefo
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -97,8 +98,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -2059,6 +2064,46 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                        withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                ApplicationProvider.getApplicationContext())))))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
+                     ChromeFeatureList.HIDE_TAB_ON_TAB_SWITCHER})
+    @CommandLineFlags.Add({BASE_PARAMS})
+    public void testHideTabOnTabSwitcher(boolean isStartSurfaceRefactorEnabled) throws Exception {
+        // clang-format on
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrlInNewTab("about:blank");
+        final Tab currentTab = cta.getActivityTab();
+        final CallbackHelper shownHelper = new CallbackHelper();
+        final CallbackHelper hiddenHelper = new CallbackHelper();
+        TabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onShown(Tab tab, @TabSelectionType int type) {
+                assertEquals("Unexpected tab shown", tab, currentTab);
+                shownHelper.notifyCalled();
+            }
+
+            @Override
+            public void onHidden(Tab tab, @TabHidingType int type) {
+                assertEquals("Unexpected tab hidden", tab, currentTab);
+                assertEquals("Unexpected hiding type", type, TabHidingType.TAB_SWITCHER_SHOWN);
+                hiddenHelper.notifyCalled();
+            }
+        };
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { currentTab.addObserver(observer); });
+
+        enterTabSwitcher(cta);
+        hiddenHelper.waitForFirst();
+
+        leaveTabSwitcher(cta);
+        shownHelper.waitForFirst();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { currentTab.removeObserver(observer); });
     }
 
     private TabSwitcher.TabListDelegate getTabListDelegateFromUIThread() {
