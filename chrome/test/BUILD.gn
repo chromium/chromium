@@ -1933,15 +1933,6 @@ if (!is_android) {
       "//ui/webui/resources/",
     ]
 
-    if (enable_plugins) {
-      data += [
-        "//ppapi/tests/test_case.html",
-        "//ppapi/tests/test_case.html.mock-http-headers",
-        "//ppapi/tests/test_page.css",
-        "//ppapi/tests/test_page.css.mock-http-headers",
-      ]
-    }
-
     data += js2gtest_js_libraries
     data += metric_integration_jsdeps
 
@@ -10058,8 +10049,13 @@ if (!is_android) {
         "ppapi/ppapi_test_select_file_dialog_factory.cc",
         "ppapi/ppapi_test_select_file_dialog_factory.h",
       ]
-
       deps += [ "//ppapi/shared_impl" ]
+      data = [
+        "//ppapi/tests/test_case.html",
+        "//ppapi/tests/test_case.html.mock-http-headers",
+        "//ppapi/tests/test_page.css",
+        "//ppapi/tests/test_page.css.mock-http-headers",
+      ]
     }
 
     if (enable_extensions) {
@@ -10312,9 +10308,6 @@ if (!is_android && !is_chromeos_device) {
       "//ui/webui/resources/js/",
     ]
     data += js2gtest_js_libraries
-    if (is_linux || is_chromeos) {
-      data += [ "$root_out_dir/libppapi_tests.so" ]
-    }
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     ldflags = []
@@ -10446,18 +10439,6 @@ if (!is_android && !is_chromeos_device) {
     ]
     if (enable_ppapi) {
       sources += [ "ppapi/ppapi_interactive_browsertest.cc" ]
-      data += [
-        "//ppapi/tests/test_case.html",
-        "//ppapi/tests/test_case.html.mock-http-headers",
-        "//ppapi/tests/test_page.css",
-        "//ppapi/tests/test_page.css.mock-http-headers",
-
-        # Same as above; see https://codereview.chromium.org/2123093005/diff/80001/chrome/interactive_ui_tests.isolate.
-        "$root_out_dir/test_case.html",
-        "$root_out_dir/test_case.html.mock-http-headers",
-        "$root_out_dir/test_page.css",
-        "$root_out_dir/test_page.css.mock-http-headers",
-      ]
       deps += [ "//ppapi/shared_impl:test_support" ]
       data_deps += [ "//ppapi:ppapi_tests" ]
     }
