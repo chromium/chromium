@@ -4,24 +4,20 @@
 
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
-#include "base/android/build_info.h"
-#include "base/android/jni_string.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
-#include "media/gpu/android/mediacodec_stubs.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -174,30 +170,6 @@ BASE_FEATURE(kAndroidNdkVideoEncoder,
              "AndroidNdkVideoEncoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-bool InitMediaCodec() {
-  // We need at least Android P for AMediaCodec_getInputFormat(), but in
-  // Android P we have issues with CFI and dynamic linker on arm64. However
-  // GetSupportedProfiles() needs Q+, so just limit to Q.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_Q) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kAndroidNdkVideoEncoder))
-    return false;
-
-  media_gpu_android::StubPathMap paths;
-  constexpr base::FilePath::CharType kMediacodecPath[] =
-      FILE_PATH_LITERAL("libmediandk.so");
-
-  paths[media_gpu_android::kModuleMediacodec].push_back(kMediacodecPath);
-  if (!media_gpu_android::InitializeStubs(paths)) {
-    LOG(ERROR) << "Failed on loading libmediandk.so symbols";
-    return false;
-  }
-  return true;
-}
-
 absl::optional<std::string> FindMediaCodecFor(
     const VideoEncodeAccelerator::Config& config) {
   absl::optional<std::string> encoder_name;
@@ -268,8 +240,8 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
 }
 
 bool NdkVideoEncodeAccelerator::IsSupported() {
-  static const bool is_loaded = InitMediaCodec();
-  return is_loaded;
+  return base::FeatureList::IsEnabled(kAndroidNdkVideoEncoder) &&
+         NdkMediaCodecWrapper::IsSupported();
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -307,7 +279,7 @@ NdkVideoEncodeAccelerator::GetSupportedProfiles() {
 
 bool NdkVideoEncodeAccelerator::Initialize(
     const Config& config,
-    Client* client,
+    VideoEncodeAccelerator::Client* client,
     std::unique_ptr<MediaLog> media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!media_codec_);
@@ -318,8 +290,9 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  callback_weak_ptr_ = callback_weak_factory_.GetWeakPtr();
-  client_ptr_factory_ = std::make_unique<base::WeakPtrFactory<Client>>(client);
+  client_ptr_factory_ =
+      std::make_unique<base::WeakPtrFactory<VideoEncodeAccelerator::Client>>(
+          client);
   config_ = config;
   effective_bitrate_ = config.bitrate;
   log_ = std::move(media_log);
@@ -389,7 +362,7 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
                           bitrate.target_bps());
   }
   media_status_t status =
-      AMediaCodec_setParameters(media_codec_.get(), format.get());
+      AMediaCodec_setParameters(media_codec_->codec(), format.get());
 
   if (status != AMEDIA_OK) {
     NotifyMediaCodecError(EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -403,9 +376,8 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
 void NdkVideoEncodeAccelerator::Destroy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_ptr_factory_.reset();
-  callback_weak_factory_.InvalidateWeakPtrs();
   if (media_codec_) {
-    AMediaCodec_stop(media_codec_.get());
+    media_codec_->Stop();
 
     // Internally this calls AMediaFormat_delete(), and before exiting
     // AMediaFormat_delete() drains all calls on the internal thread that
@@ -436,9 +408,11 @@ bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
   DCHECK(media_codec_);
   DCHECK(!configured_size.IsEmpty());
 
-  MediaFormatPtr input_format(AMediaCodec_getInputFormat(media_codec_.get()));
-  if (!input_format)
+  MediaFormatPtr input_format(
+      AMediaCodec_getInputFormat(media_codec_->codec()));
+  if (!input_format) {
     return false;
+  }
 
   // Non 16x16 aligned resolutions don't work well with MediaCodec
   // unfortunately, see https://crbug.com/1084702 for details. It seems they
@@ -459,12 +433,14 @@ bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
     require_aligned_resolution = true;
   }
 
-  if (!require_aligned_resolution)
+  if (!require_aligned_resolution) {
     return true;
+  }
 
   // If the size is already aligned, nothing to do.
-  if (config_.input_visible_size == aligned_size)
+  if (config_.input_visible_size == aligned_size) {
     return true;
+  }
 
   // Otherwise, we need to crop to the nearest 16x16 alignment.
   if (aligned_size.IsEmpty()) {
@@ -510,15 +486,15 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   if (error_occurred_)
     return;
 
-  if (media_codec_input_buffers_.empty() || pending_frames_.empty())
+  if (!media_codec_->HasInput() || pending_frames_.empty()) {
     return;
+  }
 
   if (pending_color_space_) {
     return;
   }
 
-  size_t buffer_idx = media_codec_input_buffers_.front();
-  media_codec_input_buffers_.pop_front();
+  size_t buffer_idx = media_codec_->TakeInput();
 
   const auto frame_cs = pending_frames_.front().frame->ColorSpace();
   if (!encoder_color_space_ || *encoder_color_space_ != frame_cs) {
@@ -529,7 +505,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       // Flush codec and wait for outputs to recreate the codec.
       pending_color_space_ = frame_cs;
       media_status_t status = AMediaCodec_queueInputBuffer(
-          media_codec_.get(), buffer_idx, /*offset=*/0, 0, 0,
+          media_codec_->codec(), buffer_idx, /*offset=*/0, 0, 0,
           AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM);
       if (status != AMEDIA_OK) {
         NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
@@ -549,7 +525,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     MediaFormatPtr format(AMediaFormat_new());
     AMediaFormat_setInt32(format.get(), AMEDIACODEC_KEY_REQUEST_SYNC_FRAME, 0);
     media_status_t status =
-        AMediaCodec_setParameters(media_codec_.get(), format.get());
+        AMediaCodec_setParameters(media_codec_->codec(), format.get());
 
     if (status != AMEDIA_OK) {
       NotifyMediaCodecError(EncoderStatus::Codes::kEncoderFailedEncode, status,
@@ -560,7 +536,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
 
   size_t capacity = 0;
   uint8_t* buffer_ptr =
-      AMediaCodec_getInputBuffer(media_codec_.get(), buffer_idx, &capacity);
+      AMediaCodec_getInputBuffer(media_codec_->codec(), buffer_idx, &capacity);
   if (!buffer_ptr) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "Can't obtain input buffer from media codec"});
@@ -635,7 +611,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   auto generate_timestamp = AssignMonotonicTimestamp(frame->timestamp());
   uint64_t flags = 0;  // Unfortunately BUFFER_FLAG_KEY_FRAME has no effect here
   media_status_t status = AMediaCodec_queueInputBuffer(
-      media_codec_.get(), buffer_idx, /*offset=*/0, queued_size,
+      media_codec_->codec(), buffer_idx, /*offset=*/0, queued_size,
       generate_timestamp.InMicroseconds(), flags);
   if (status != AMEDIA_OK) {
     NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
@@ -666,64 +642,28 @@ void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   }
 }
 
-void NdkVideoEncodeAccelerator::OnAsyncInputAvailable(AMediaCodec* codec,
-                                                      void* userdata,
-                                                      int32_t index) {
-  auto* self = reinterpret_cast<NdkVideoEncodeAccelerator*>(userdata);
-  DCHECK(self);
-
-  self->task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&NdkVideoEncodeAccelerator::OnInputAvailable,
-                                self->callback_weak_ptr_, index));
-}
-
-void NdkVideoEncodeAccelerator::OnInputAvailable(int32_t index) {
+void NdkVideoEncodeAccelerator::OnInputAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  media_codec_input_buffers_.push_back(index);
   FeedInput();
 }
 
-void NdkVideoEncodeAccelerator::OnAsyncOutputAvailable(
-    AMediaCodec* codec,
-    void* userdata,
-    int32_t index,
-    AMediaCodecBufferInfo* bufferInfo) {
-  auto* self = reinterpret_cast<NdkVideoEncodeAccelerator*>(userdata);
-  DCHECK(self);
-
-  self->task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&NdkVideoEncodeAccelerator::OnOutputAvailable,
-                                self->callback_weak_ptr_, index, *bufferInfo));
-}
-
-void NdkVideoEncodeAccelerator::OnOutputAvailable(int32_t index,
-                                                  AMediaCodecBufferInfo info) {
+void NdkVideoEncodeAccelerator::OnOutputAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  media_codec_output_buffers_.push_back({index, info});
   DrainOutput();
 }
 
-void NdkVideoEncodeAccelerator::OnAsyncError(AMediaCodec* codec,
-                                             void* userdata,
-                                             media_status_t error,
-                                             int32_t actionCode,
-                                             const char* detail) {
-  auto* self = reinterpret_cast<NdkVideoEncodeAccelerator*>(userdata);
-  DCHECK(self);
-
-  self->task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NdkVideoEncodeAccelerator::NotifyMediaCodecError,
-                     self->callback_weak_ptr_,
-                     EncoderStatus::Codes::kEncoderFailedEncode, error,
-                     "Media codec async error"));
+void NdkVideoEncodeAccelerator::OnError(media_status_t error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NotifyMediaCodecError(EncoderStatus::Codes::kEncoderFailedEncode, error,
+                        "Async media codec error");
 }
 
 bool NdkVideoEncodeAccelerator::DrainConfig() {
-  if (media_codec_output_buffers_.empty())
+  if (!media_codec_->HasOutput()) {
     return false;
+  }
 
-  MCOutput output_buffer = media_codec_output_buffers_.front();
+  NdkMediaCodecWrapper::OutputInfo output_buffer = media_codec_->PeekOutput();
   AMediaCodecBufferInfo& mc_buffer_info = output_buffer.info;
   const size_t mc_buffer_size = static_cast<size_t>(mc_buffer_info.size);
 
@@ -731,10 +671,12 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
   if ((mc_buffer_info.flags & AMEDIACODEC_BUFFER_FLAG_CODEC_CONFIG) == 0)
     return false;
 
-  media_codec_output_buffers_.pop_front();
+  // We already have the info we need from `output_buffer`
+  std::ignore = media_codec_->TakeOutput();
+
   size_t capacity = 0;
   uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_.get(), output_buffer.buffer_index, &capacity);
+      media_codec_->codec(), output_buffer.buffer_index, &capacity);
 
   if (!buf_data) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
@@ -753,7 +695,7 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
 
   config_data_.resize(mc_buffer_size);
   memcpy(config_data_.data(), buf_data + mc_buffer_info.offset, mc_buffer_size);
-  AMediaCodec_releaseOutputBuffer(media_codec_.get(),
+  AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
                                   output_buffer.buffer_index, false);
   return true;
 }
@@ -768,15 +710,13 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   if (DrainConfig())
     return;
 
-  if (media_codec_output_buffers_.empty() ||
-      available_bitstream_buffers_.empty()) {
+  if (!media_codec_->HasOutput() || available_bitstream_buffers_.empty()) {
     return;
   }
 
-  MCOutput output_buffer = media_codec_output_buffers_.front();
+  NdkMediaCodecWrapper::OutputInfo output_buffer = media_codec_->TakeOutput();
   AMediaCodecBufferInfo& mc_buffer_info = output_buffer.info;
   const size_t mc_buffer_size = static_cast<size_t>(mc_buffer_info.size);
-  media_codec_output_buffers_.pop_front();
 
   if ((mc_buffer_info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) != 0) {
     if (pending_color_space_) {
@@ -814,7 +754,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
 
   size_t capacity = 0;
   uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_.get(), output_buffer.buffer_index, &capacity);
+      media_codec_->codec(), output_buffer.buffer_index, &capacity);
 
   if (!buf_data) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
@@ -863,21 +803,17 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       base::BindOnce(&VideoEncodeAccelerator::Client::BitstreamBufferReady,
                      client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
                      metadata));
-  AMediaCodec_releaseOutputBuffer(media_codec_.get(),
+  AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
                                   output_buffer.buffer_index, false);
 }
 
 bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   DCHECK(!pending_color_space_);
 
-  media_codec_input_buffers_.clear();
-  media_codec_output_buffers_.clear();
-  callback_weak_factory_.InvalidateWeakPtrs();
-  callback_weak_ptr_ = callback_weak_factory_.GetWeakPtr();
   have_encoded_frames_ = false;
 
   if (media_codec_) {
-    AMediaCodec_stop(media_codec_.get());
+    media_codec_->Stop();
     media_codec_.reset();
   }
 
@@ -899,16 +835,18 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   // We do the following in a loop since we may need to recreate the MediaCodec
   // if it doesn't unaligned resolutions.
   do {
-    media_codec_.reset(AMediaCodec_createCodecByName(name->c_str()));
+    media_codec_ =
+        NdkMediaCodecWrapper::CreateByCodecName(*name, this, task_runner_);
     if (!media_codec_) {
       MEDIA_LOG(ERROR, log_)
           << "Can't create media codec (" << name.value()
           << ") for config: " << config_.AsHumanReadableString();
       return false;
     }
-    media_status_t status =
-        AMediaCodec_configure(media_codec_.get(), media_format.get(), nullptr,
-                              nullptr, AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+    media_status_t status = AMediaCodec_configure(
+        media_codec_->codec(), media_format.get(), nullptr, nullptr,
+        AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+
     if (status != AMEDIA_OK) {
       MEDIA_LOG(ERROR, log_) << "Can't configure media codec. Error " << status;
       return false;
@@ -932,7 +870,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
 
       // We must recreate the MediaCodec now since setParameters() doesn't work
       // consistently across devices and versions of Android.
-      AMediaCodec_stop(media_codec_.get());
+      media_codec_->Stop();
       media_codec_.reset();
 
       AMediaFormat_setInt32(media_format.get(), AMEDIAFORMAT_KEY_WIDTH,
@@ -943,22 +881,7 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
     }
   } while (!media_codec_);
 
-  // Set MediaCodec callbacks and switch it to async mode
-  AMediaCodecOnAsyncNotifyCallback callbacks{
-      &NdkVideoEncodeAccelerator::OnAsyncInputAvailable,
-      &NdkVideoEncodeAccelerator::OnAsyncOutputAvailable,
-      &NdkVideoEncodeAccelerator::OnAsyncFormatChanged,
-      &NdkVideoEncodeAccelerator::OnAsyncError,
-  };
-  media_status_t status =
-      AMediaCodec_setAsyncNotifyCallback(media_codec_.get(), callbacks, this);
-  if (status != AMEDIA_OK) {
-    MEDIA_LOG(ERROR, log_) << "Can't set media codec callback. Error "
-                           << status;
-    return false;
-  }
-
-  status = AMediaCodec_start(media_codec_.get());
+  media_status_t status = media_codec_->Start();
   if (status != AMEDIA_OK) {
     MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
     return false;
@@ -982,7 +905,7 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
     return;
   }
 
-  auto status = AMediaCodec_setParameters(media_codec_.get(), format.get());
+  auto status = AMediaCodec_setParameters(media_codec_->codec(), format.get());
   if (status != AMEDIA_OK) {
     DLOG(ERROR) << "Failed to set color space parameters: " << status;
     return;

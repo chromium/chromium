@@ -4,7 +4,7 @@
 
 #ifndef MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
 #define MEDIA_GPU_ANDROID_NDK_VIDEO_ENCODE_ACCELERATOR_H_
-#include <stddef.h>
+
 #include <stdint.h>
 
 #include <media/NdkMediaCodec.h>
@@ -15,31 +15,26 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/timer/timer.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_log.h"
 #include "media/base/video_encoder.h"
+#include "media/gpu/android/ndk_media_codec_wrapper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
 
 class BitstreamBuffer;
-struct AMediaCodecDeleter {
-  inline void operator()(AMediaCodec* ptr) const {
-    if (ptr)
-      AMediaCodec_delete(ptr);
-  }
-};
 
 class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
-    : public VideoEncodeAccelerator {
+    : public VideoEncodeAccelerator,
+      public NdkMediaCodecWrapper::Client {
  public:
   // |runner| - a task runner that will be used for all callbacks and external
   // calls to this instance.
-  NdkVideoEncodeAccelerator(scoped_refptr<base::SequencedTaskRunner> runner);
+  explicit NdkVideoEncodeAccelerator(
+      scoped_refptr<base::SequencedTaskRunner> runner);
 
   NdkVideoEncodeAccelerator(const NdkVideoEncodeAccelerator&) = delete;
   NdkVideoEncodeAccelerator& operator=(const NdkVideoEncodeAccelerator&) =
@@ -51,7 +46,7 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
   bool Initialize(const Config& config,
-                  Client* client,
+                  VideoEncodeAccelerator::Client* client,
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
@@ -60,32 +55,12 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
   void Destroy() override;
   bool IsFlushSupported() override;
 
+  // MediaCodecWrapper::Client implementation.
+  void OnInputAvailable() override;
+  void OnOutputAvailable() override;
+  void OnError(media_status_t error) override;
+
  private:
-  // Called by MediaCodec when an input buffer becomes available.
-  static void OnAsyncInputAvailable(AMediaCodec* codec,
-                                    void* userdata,
-                                    int32_t index);
-  void OnInputAvailable(int32_t index);
-
-  // Called by MediaCodec when an output buffer becomes available.
-  static void OnAsyncOutputAvailable(AMediaCodec* codec,
-                                     void* userdata,
-                                     int32_t index,
-                                     AMediaCodecBufferInfo* bufferInfo);
-  void OnOutputAvailable(int32_t index, AMediaCodecBufferInfo bufferInfo);
-
-  // Called by MediaCodec when the output format has changed.
-  static void OnAsyncFormatChanged(AMediaCodec* codec,
-                                   void* userdata,
-                                   AMediaFormat* format) {}
-
-  // Called when the MediaCodec encountered an error.
-  static void OnAsyncError(AMediaCodec* codec,
-                           void* userdata,
-                           media_status_t error,
-                           int32_t actionCode,
-                           const char* detail);
-
   // Ask MediaCodec what input buffer layout it prefers and set values of
   // |input_buffer_stride_| and |input_buffer_yplane_height_|. If the codec
   // does not provide these values, sets up |aligned_size_| such that encoded
@@ -123,11 +98,10 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
   // error triggers.
-  std::unique_ptr<base::WeakPtrFactory<Client>> client_ptr_factory_;
+  std::unique_ptr<base::WeakPtrFactory<VideoEncodeAccelerator::Client>>
+      client_ptr_factory_;
 
-  using MediaCodecPtr = std::unique_ptr<AMediaCodec, AMediaCodecDeleter>;
-
-  MediaCodecPtr media_codec_;
+  std::unique_ptr<NdkMediaCodecWrapper> media_codec_;
 
   Config config_;
 
@@ -144,16 +118,6 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
 
   // A runner all for callbacks and externals calls to public methods.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // Indices of input buffers currently pending in media codec.
-  base::circular_deque<size_t> media_codec_input_buffers_;
-
-  // Info about output buffers currently pending in media codec.
-  struct MCOutput {
-    int32_t buffer_index;
-    AMediaCodecBufferInfo info;
-  };
-  base::circular_deque<MCOutput> media_codec_output_buffers_;
 
   // Frames waiting to be passed to the codec, queued until an input buffer is
   // available.
@@ -185,11 +149,6 @@ class MEDIA_GPU_EXPORT NdkVideoEncodeAccelerator final
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
-
-  // Declared last to ensure that all weak pointers are invalidated before
-  // other destructors run.
-  base::WeakPtr<NdkVideoEncodeAccelerator> callback_weak_ptr_;
-  base::WeakPtrFactory<NdkVideoEncodeAccelerator> callback_weak_factory_{this};
 };
 
 }  // namespace media
