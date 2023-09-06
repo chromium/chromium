@@ -183,10 +183,12 @@ AST_MATCHER_P(clang::NamedDecl,
   return Filter->ContainsLine(Node.getQualifiedNameAsString());
 }
 
-AST_MATCHER_P(clang::Decl,
-              isInLocationListedInFilterFile,
-              const FilterFile*,
-              Filter) {
+AST_POLYMORPHIC_MATCHER_P(isInLocationListedInFilterFile,
+                          AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                          clang::Stmt,
+                                                          clang::TypeLoc),
+                          const FilterFile*,
+                          Filter) {
   clang::SourceLocation loc = getRepresentativeLocation(Node);
   if (loc.isInvalid()) {
     return false;
@@ -311,7 +313,9 @@ RawPtrToStackAllocatedTypeLoc(
     const chrome_checker::StackAllocatedPredicate* predicate);
 
 clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
-    const CastingUnsafePredicate& casting_unsafe_predicate);
+    const CastingUnsafePredicate& casting_unsafe_predicate,
+    const FilterFile& exclude_files,
+    const FilterFile& exclude_functions);
 
 // If `field_decl` declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.

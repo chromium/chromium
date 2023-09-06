@@ -33,8 +33,20 @@ std::string GetFilename(const clang::SourceManager& instance,
 inline clang::SourceLocation getRepresentativeLocation(
     const clang::Stmt& node) {
   // clang::Stmt has T::getBeginLoc() and T::getEndLoc().
-  // As the former may refer to modifiers, we use the latter one.
-  return node.getEndLoc();
+  // Usually the former one does better represent the location.
+  //
+  // e.g. clang::IfStmt
+  // if (foo) {} else {}
+  // ^                 ^
+  // |                 getEndLoc()
+  // getBeginLoc()
+  //
+  // e.g. clang::CastExpr
+  // int x = static_cast<int>(123ll);
+  //         ^                     ^
+  //         |                     getEndLoc()
+  //         getBeginLoc()
+  return node.getBeginLoc();
 }
 inline clang::SourceLocation getRepresentativeLocation(
     const clang::TypeLoc& node) {

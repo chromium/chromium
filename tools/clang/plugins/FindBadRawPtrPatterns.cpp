@@ -35,8 +35,12 @@ constexpr char kBadCastDiagnosticNoteType[] =
 
 class BadCastMatcher : public MatchFinder::MatchCallback {
  public:
-  explicit BadCastMatcher(clang::CompilerInstance& compiler)
-      : compiler_(compiler) {
+  explicit BadCastMatcher(clang::CompilerInstance& compiler,
+                          const FilterFile& exclude_files,
+                          const FilterFile& exclude_functions)
+      : compiler_(compiler),
+        exclude_files_(exclude_files),
+        exclude_functions_(exclude_functions) {
     error_bad_cast_signature_ = compiler_.getDiagnostics().getCustomDiagID(
         clang::DiagnosticsEngine::Error, kBadCastDiagnostic);
     note_bad_cast_signature_explanation_ =
@@ -47,7 +51,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
   }
 
   void Register(MatchFinder& match_finder) {
-    auto cast_matcher = BadRawPtrCastExpr(casting_unsafe_predicate_);
+    auto cast_matcher = BadRawPtrCastExpr(casting_unsafe_predicate_,
+                                          exclude_files_, exclude_functions_);
     match_finder.addMatcher(cast_matcher, this);
   }
 
@@ -101,6 +106,8 @@ class BadCastMatcher : public MatchFinder::MatchCallback {
 
  private:
   clang::CompilerInstance& compiler_;
+  const FilterFile& exclude_files_;
+  const FilterFile& exclude_functions_;
   CastingUnsafePredicate casting_unsafe_predicate_;
   unsigned error_bad_cast_signature_;
   unsigned note_bad_cast_signature_explanation_;
@@ -233,16 +240,14 @@ void FindBadRawPtrPatterns(Options options,
                            clang::CompilerInstance& compiler) {
   MatchFinder match_finder;
 
-  BadCastMatcher bad_cast_matcher(compiler);
-  if (options.check_bad_raw_ptr_cast)
-    bad_cast_matcher.Register(match_finder);
-
   std::vector<std::string> paths_to_exclude_lines;
+  std::vector<std::string> separate_repository_paths;
   for (auto* const line : kRawPtrManualPathsToIgnore) {
     paths_to_exclude_lines.push_back(line);
   }
   for (auto* const line : kSeparateRepositoryPaths) {
     paths_to_exclude_lines.push_back(line);
+    separate_repository_paths.push_back(line);
   }
   paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
                                 options.raw_ptr_paths_to_exclude_lines.begin(),
@@ -250,10 +255,19 @@ void FindBadRawPtrPatterns(Options options,
 
   FilterFile exclude_fields(options.exclude_fields_file, "exclude-fields");
   FilterFile exclude_lines(paths_to_exclude_lines);
+  FilterFile exclude_separate_repositories(separate_repository_paths);
+  FilterFile check_bad_raw_ptr_cast_exclude_funcs(
+      options.check_bad_raw_ptr_cast_exclude_funcs);
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
       &stack_allocated_predicate, options.raw_ptr_fix_crbug_1449812};
+
+  BadCastMatcher bad_cast_matcher(compiler, exclude_separate_repositories,
+                                  check_bad_raw_ptr_cast_exclude_funcs);
+  if (options.check_bad_raw_ptr_cast) {
+    bad_cast_matcher.Register(match_finder);
+  }
 
   RawPtrFieldMatcher field_matcher(compiler, exclusion_options);
   if (options.check_raw_ptr_fields) {

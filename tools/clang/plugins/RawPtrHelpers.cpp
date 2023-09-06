@@ -318,7 +318,9 @@ RawPtrToStackAllocatedTypeLoc(
 }
 
 clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
-    const CastingUnsafePredicate& casting_unsafe_predicate) {
+    const CastingUnsafePredicate& casting_unsafe_predicate,
+    const FilterFile& exclude_files,
+    const FilterFile& exclude_functions) {
   // Matches anything contains |raw_ptr<T>| / |raw_ref<T>|.
   auto src_type =
       type(isCastingUnsafe(casting_unsafe_predicate)).bind("srcType");
@@ -332,13 +334,76 @@ clang::ast_matchers::internal::Matcher<clang::Stmt> BadRawPtrCastExpr(
                                   hasCastKind(clang::CK_PointerToIntegral),
                                   hasCastKind(clang::CK_IntegralToPointer)));
 
-  // |__bit/bit_cast.h| header is excluded to perform checking on
-  // |std::bit_cast<T>|.
-  auto exclusions = anyOf(isSpellingInSystemHeader(), isInRawPtrCastHeader());
+  // Matches implicit casts happening in invocation inside template context.
+  //   void f(int v);
+  //   void f(void* p);
+  //   template <typename T>
+  //   void call_f(T t) { f(t); }
+  //                        ^ implicit cast here if |T| = |int*|
+  // We exclude this cast from check because we cannot apply
+  // |base::unsafe_raw_ptr_*_cast<void*>(t)| here.
+  auto in_template_invocation_ctx = implicitCastExpr(
+      allOf(isInTemplateInstantiation(), hasParent(invocation())));
+
+  // Matches implicit casts happening in comparison.
+  //   int* x;
+  //   void* y;
+  //   if (x < y) f();
+  //       ^~~~~ |x| is implicit casted into |void*| here
+  // This cast is guaranteed to be safe because it cannot break ref count.
+  auto in_comparison_ctx =
+      implicitCastExpr(hasParent(binaryOperator(isComparisonOperator())));
+
+  // Matches implicit casts happening in invocation to allow-listed
+  // declarations.
+  auto in_allowlisted_invocation_ctx =
+      implicitCastExpr(hasParent(invocation(hasDeclaration(
+          namedDecl(isFieldDeclListedInFilterFile(&exclude_functions))))));
+
+  // Matches casts to const pointer types pointing to built-in types.
+  // e.g. matches |const char*| and |const void*| but neither |const int**| nor
+  // |int* const*|.
+  // They are safe as long as const qualifier is kept because const means we
+  // shouldn't be writing to the memory and won't mutate the value in a way that
+  // causes BRP's refcount inconsistency.
+  auto const_builtin_pointer_type =
+      type(hasUnqualifiedDesugaredType(pointerType(
+          pointee(qualType(allOf(isConstQualified(), builtinType()))))));
+  auto cast_expr_to_const_pointer = anyOf(
+      implicitCastExpr(hasImplicitDestinationType(const_builtin_pointer_type)),
+      explicitCastExpr(hasDestinationType(const_builtin_pointer_type)));
+
+  // Unsafe castings are allowed if:
+  // - In locations developers have no control
+  //   - In system headers
+  //   - In third party libraries
+  //   - In non-source locations (e.g. <scratch space>)
+  //   - In separate repository locations (e.g. //internal)
+  // - In locations that are likely to be safe
+  //   - In pointer comparison context
+  //   - In allowlisted function/constructor invocations
+  //   - To const-qualified void/char pointers
+  // - In cases that the cast is indispensable and developers can guarantee it
+  //   will not break BRP's refcount
+  //   - In |base::unsafe_raw_ptr_static_cast<T>(...)|
+  //   - In |base::unsafe_raw_ptr_reinterpret_cast<T>(...)|
+  //   - In |base::unsafe_raw_ptr_bit_cast<T>(...)|
+  // - In cases that the cast is indispensable but developers cannot use the
+  //   cast exclusion listed above
+  //   - Implicit casts inside template context as there can be multiple
+  //     destination types depending on how template is instantiated
+  auto exclusions =
+      anyOf(isSpellingInSystemHeader(), isInThirdPartyLocation(),
+            isNotSpelledInSource(),
+            isInLocationListedInFilterFile(&exclude_files), in_comparison_ctx,
+            in_allowlisted_invocation_ctx, cast_expr_to_const_pointer,
+            isInRawPtrCastHeader(), in_template_invocation_ctx);
 
   // Implicit/explicit casting from/to |raw_ptr<T>| matches.
   // Both casting direction is unsafe.
   //   https://godbolt.org/z/zqKMzcKfo
+  // |__bit/bit_cast.h| header is configured to bypass exclusions to perform
+  // checking on |std::bit_cast<T>|.
   auto cast_matcher =
       castExpr(
           allOf(anyOf(hasSourceExpression(hasType(src_type)),

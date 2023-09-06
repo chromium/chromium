@@ -25,6 +25,14 @@ const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
 // that matches paths that should be excluded from the raw_ptr checks.
 const char kRawPtrExcludePathArgPrefix[] = "raw-ptr-exclude-path=";
 
+// Name of a cmdline parameter that can be used to add a regular expressions
+// that matches function names that should be excluded from the bad raw_ptr cast
+// checks. All implicit casts in CallExpr to the specified functions are
+// excluded from the check. Use if you know that function does not break a
+// reference count.
+const char kCheckBadRawPtrCastExcludeFuncArgPrefix[] =
+    "check-bad-raw-ptr-cast-exclude-func=";
+
 }  // namespace
 
 namespace chrome_checker {
@@ -64,6 +72,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg.startswith(kRawPtrExcludePathArgPrefix)) {
       options_.raw_ptr_paths_to_exclude_lines.push_back(
           arg.substr(strlen(kRawPtrExcludePathArgPrefix)).str());
+    } else if (arg.startswith(kCheckBadRawPtrCastExcludeFuncArgPrefix)) {
+      options_.check_bad_raw_ptr_cast_exclude_funcs.push_back(
+          arg.substr(strlen(kCheckBadRawPtrCastExcludeFuncArgPrefix)).str());
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;
