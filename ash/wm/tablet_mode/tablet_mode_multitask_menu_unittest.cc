@@ -782,6 +782,27 @@ TEST_F(TabletModeMultitaskMenuTest, NoCrashWhenExitingTabletMode) {
   TabletModeControllerTestApi().LeaveTabletMode();
 }
 
+// Tests that update drag does not cause a crash. Test for https://b/290102602.
+TEST_F(TabletModeMultitaskMenuTest, NoCrashDuringUpdateDrag) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto window = CreateAppWindow();
+
+  // Partially drag down to start an animation. `end_y` must be less than half
+  // the menu height to animate toward close.
+  GenerateScroll(/*x=*/window->bounds().CenterPoint().x(), /*start_y=*/1,
+                 /*end_y=*/50);
+  auto* multitask_menu = GetMultitaskMenu();
+  ASSERT_TRUE(multitask_menu);
+  auto* menu_layer = multitask_menu->widget()->GetContentsView()->layer();
+  EXPECT_EQ(1.f, menu_layer->GetTargetOpacity());
+
+  // Start another drag to abort the current animation.
+  multitask_menu->UpdateDrag(10, /*down=*/false);
+  ASSERT_TRUE(multitask_menu);
+  EXPECT_EQ(1.f, menu_layer->GetTargetOpacity());
+}
+
 // Test that the window is created on the target window. This can crash if
 // ET_SCROLL_FLING_START is sent quickly enough after ET_GESTURE_SCROLL_UPDATE,
 // causing the controller to create the menu on the split view divider
