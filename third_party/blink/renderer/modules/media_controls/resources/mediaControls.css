@@ -186,6 +186,7 @@ audio::-internal-media-controls-cast-button,
 video::-internal-media-controls-overflow-button,
 audio::-internal-media-controls-overflow-button,
 video::-webkit-media-controls-toggle-closed-captions-button,
+video::-webkit-media-controls-toggle-audio-descriptions-button,
 audio::-internal-media-controls-download-button,
 video::-internal-media-controls-download-button,
 audio::-internal-media-controls-playback-speed-button,
@@ -409,8 +410,16 @@ audio::-webkit-media-controls-toggle-closed-captions-button {
   display: none;
 }
 
+audio::-webkit-media-controls-toggle-audio-descriptions-button {
+  display: none;
+}
+
 video::-webkit-media-controls-toggle-closed-captions-button {
   background-image: -internal-light-dark(url(ic_subtitles.svg), url(ic_subtitles_white.svg));
+}
+
+video::-webkit-media-controls-toggle-audio-descriptions-button {
+  background-image: -internal-light-dark(url(ic_audio_descriptions.svg), url(ic_audio_descriptions.svg));
 }
 
 video::-webkit-media-controls-toggle-closed-captions-button.closed-captions {
@@ -1386,6 +1395,17 @@ video::-internal-media-controls-text-track-list-kind-captions {
     height: 18px;
     width: 18px;
     vertical-align: middle;
+}
+
+video::-internal-media-controls-text-track-list-kind-descriptions {
+  appearance: none;
+  background-image: -internal-light-dark(url(ic_audio_descriptions.svg), url(ic_audio_descriptions.svg));
+  background-size: 18px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  height: 18px;
+  width: 18px;
+  vertical-align: middle;
 }
 
 video::-internal-media-controls-text-track-list-kind-subtitles {
