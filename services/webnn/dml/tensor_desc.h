@@ -50,6 +50,10 @@ class TensorDesc final {
   // given permutation.
   void Transpose(base::span<const uint32_t> permutation);
 
+  // Change the dimensions and strides of the TensorDesc according to the target
+  // broadcasted dimensions.
+  void BroadcastTo(base::span<const uint32_t> broadcasted_dims);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescB);

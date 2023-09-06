@@ -141,6 +141,7 @@ struct Operator {
     kDiv,
     kMax,
     kMin,
+    kPow,
     kGemm,
     kAveragePool2d,
     kMaxPool2d,

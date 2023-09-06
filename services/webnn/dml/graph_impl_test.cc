@@ -79,6 +79,199 @@ struct OperandInfo {
   std::vector<uint32_t> dimensions;
 };
 
+struct ElementWiseBinaryTester {
+  OperandInfo lhs;
+  OperandInfo rhs;
+  mojom::Operator::Kind kind;
+  OperandInfo output;
+  void Test(WebNNGraphDMLImplTest& helper) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t lhs_operand_id =
+        builder.BuildInput("lhs", lhs.dimensions, lhs.type);
+    uint64_t rhs_operand_id =
+        builder.BuildInput("rhs", rhs.dimensions, rhs.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildOperator(kind, {lhs_operand_id, rhs_operand_id},
+                          {output_operand_id});
+    EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+    EXPECT_TRUE(helper.CreateAndBuildGraph(builder.GetGraphInfo()));
+  }
+};
+
+// Test building a DML graph with single operator element-wise binary.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorElementWiseBinary) {
+  // Test building a DML graph with single operator add.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .kind = mojom::Operator::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator add using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 4}},
+        .kind = mojom::Operator::Kind::kAdd,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator div.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 3, 3, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 3, 3, 1}},
+        .kind = mojom::Operator::Kind::kDiv,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 3, 3, 1}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator div using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 1, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 3, 4}},
+        .kind = mojom::Operator::Kind::kDiv,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator max.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .kind = mojom::Operator::Kind::kMax,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 3, 3}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator max using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 1, 1}},
+        .kind = mojom::Operator::Kind::kMax,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 3, 3}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator min.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 3, 3, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 3, 3, 1}},
+        .kind = mojom::Operator::Kind::kMin,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 3, 3, 1}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator min using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 3, 1, 1}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 3, 1}},
+        .kind = mojom::Operator::Kind::kMin,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 3, 3, 1}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator mul.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .kind = mojom::Operator::Kind::kMul,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 3, 3}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator mul using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 5, 3, 3}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 1}},
+        .kind = mojom::Operator::Kind::kMul,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 5, 3, 3}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator pow.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .kind = mojom::Operator::Kind::kPow,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator pow using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 4}},
+        .kind = mojom::Operator::Kind::kPow,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator sub.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .kind = mojom::Operator::Kind::kSub,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+  // Test building a DML graph with single operator sub using broadcasting.
+  {
+    ElementWiseBinaryTester{
+        .lhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 2, 3, 4}},
+        .rhs = {.type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {1, 1, 1, 4}},
+        .kind = mojom::Operator::Kind::kSub,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4}}}
+        .Test(*this);
+  }
+}
+
 struct Pool2dTester {
   OperandInfo input;
   struct Pool2dAttributes {

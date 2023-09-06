@@ -124,4 +124,37 @@ TEST_F(WebNNTensorDescTest, TransposeTensorDesc) {
   EXPECT_EQ(tensor.GetStrides(), (std::vector<uint32_t>{1, 6, 3}));
 }
 
+TEST_F(WebNNTensorDescTest, CreateAndBroadcastTensorDesc) {
+  // Test creating a TensorDesc with dimensions and broadcasting it.
+  std::vector<uint32_t> dimensions = {1, 1, 3};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, dimensions);
+  std::vector<uint32_t> broadcasted_dimensions = {1, 2, 3};
+  tensor_desc.BroadcastTo(broadcasted_dimensions);
+  EXPECT_EQ(tensor_desc.GetDimensions(), broadcasted_dimensions);
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{3, 0, 1}));
+}
+
+TEST_F(WebNNTensorDescTest, CreateTensorDescAndBroadcastTo0D) {
+  // Test creating a TensorDesc with dimensions = {1} and broadcasting it to {}.
+  std::vector<uint32_t> dimensions = {1};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, dimensions);
+  std::vector<uint32_t> broadcasted_dimensions = {};
+  tensor_desc.BroadcastTo(broadcasted_dimensions);
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{1}));
+}
+
+TEST_F(WebNNTensorDescTest, Create0DTensorDescAndBroadcastTo0D) {
+  // Test creating a TensorDesc with dimensions = {} and broadcasting it to {}.
+  std::vector<uint32_t> dimensions = {};
+  TensorDesc tensor_desc(DML_TENSOR_DATA_TYPE_FLOAT32,
+                         DML_TENSOR_FLAG_OWNED_BY_DML, dimensions);
+  std::vector<uint32_t> broadcasted_dimensions = {};
+  tensor_desc.BroadcastTo(broadcasted_dimensions);
+  EXPECT_EQ(tensor_desc.GetDimensions(), (std::vector<uint32_t>{1}));
+  EXPECT_EQ(tensor_desc.GetStrides(), (std::vector<uint32_t>{1}));
+}
+
 }  // namespace webnn::dml

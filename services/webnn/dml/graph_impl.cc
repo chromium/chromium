@@ -76,6 +76,8 @@ std::string OpKindToString(Operator::Kind kind) {
       return "max";
     case Operator::Kind::kMin:
       return "min";
+    case Operator::Kind::kPow:
+      return "pow";
     case Operator::Kind::kRelu:
       return "relu";
     case Operator::Kind::kReshape:
@@ -206,21 +208,54 @@ uint32_t CreateInputNode(const IdToOperandMap& id_to_operand_map,
   return input_node.index;
 }
 
+const NodeOutputInfo& GetInputNodeOutputInfo(
+    const OperatorPtr& operation,
+    const IdToNodeOutputMap& id_to_node_output_map,
+    uint32_t index = 0) {
+  CHECK_LT(index, operation->input_operands.size());
+  auto input_id = operation->input_operands[index];
+  const auto input_iterator = id_to_node_output_map.find(input_id);
+  CHECK(input_iterator != id_to_node_output_map.end());
+  return input_iterator->second;
+}
+
+const TensorDesc GetOutputTensorDesc(const OperatorPtr& operation,
+                                     const IdToOperandMap& id_to_operand_map,
+                                     uint32_t index = 0) {
+  CHECK_LT(index, operation->output_operands.size());
+  const auto output_id = operation->output_operands[index];
+  const auto output_iterator = id_to_operand_map.find(output_id);
+  CHECK(output_iterator != id_to_operand_map.end());
+  auto& output_operand = output_iterator->second;
+
+  return TensorDesc(GetTensorDataType(output_operand->data_type),
+                    output_operand->dimensions);
+}
+
+void CreateNodeOutput(const OperatorPtr& operation,
+                      GraphBuilder& graph_builder,
+                      const NodeInfo& operator_node,
+                      TensorDesc output_tensor_desc,
+                      IdToNodeOutputMap& id_to_node_output_map,
+                      uint32_t index = 0) {
+  CHECK_LT(index, operation->output_operands.size());
+  auto output_id = operation->output_operands[index];
+  NodeOutputInfo node_output = graph_builder.CreateNodeOutput(
+      operator_node, std::move(output_tensor_desc), index);
+  CHECK(id_to_node_output_map.find(output_id) == id_to_node_output_map.end());
+  id_to_node_output_map[output_id] = std::move(node_output);
+}
+
 bool CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
                                 const OperatorPtr& operation,
                                 GraphBuilder& graph_builder,
                                 IdToNodeOutputMap& id_to_node_output_map) {
-  uint64_t input_id = operation->input_operands[0];
-  const auto input_iterator = id_to_node_output_map.find(input_id);
-  CHECK(input_iterator != id_to_node_output_map.end());
-  NodeOutputInfo input_node_output_info = input_iterator->second;
-  TensorDesc input_tensor_desc =
+  const auto& input_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+  auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
-  uint64_t output_id = operation->output_operands[0];
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
-                                output_operand->dimensions);
+  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
 
   CHECK(operation->attributes);
   auto& clamp_attributes = operation->attributes->get_clamp();
@@ -240,9 +275,122 @@ bool CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  NodeOutputInfo clamp_output_info = graph_builder.CreateNodeOutput(
-      clamp_node_info, std::move(output_tensor_desc));
-  id_to_node_output_map[output_id] = std::move(clamp_output_info);
+  CreateNodeOutput(operation, graph_builder, clamp_node_info,
+                   output_tensor_desc, id_to_node_output_map);
+
+  return true;
+}
+
+template <typename DML_OPERATOR_DESC>
+NodeInfo CreateBinaryOperator(
+    const TensorDesc& a_tensor,
+    const TensorDesc& b_tensor,
+    const TensorDesc& output_tensor,
+    GraphBuilder& graph_builder,
+    DML_OPERATOR_TYPE operator_type,
+    const std::vector<NodeOutputInfo>& node_output_infos) {
+  DML_OPERATOR_DESC binary_operator_desc{
+      .ATensor = &a_tensor.GetDMLTensorDesc(),
+      .BTensor = &b_tensor.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor.GetDMLTensorDesc()};
+  auto node = graph_builder.CreateOperatorNode(
+      operator_type, &binary_operator_desc, node_output_infos);
+  return node;
+}
+
+bool CreateOperatorNodeForBinary(const IdToOperandMap& id_to_operand_map,
+                                 const OperatorPtr& operation,
+                                 GraphBuilder& graph_builder,
+                                 IdToNodeOutputMap& id_to_node_output_map) {
+  const auto& input_a_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 0);
+  auto input_a_tensor_desc =
+      graph_builder.GetNodeOutput(input_a_node_output_info).tensor_desc;
+  const auto& input_b_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 1);
+  auto input_b_tensor_desc =
+      graph_builder.GetNodeOutput(input_b_node_output_info).tensor_desc;
+
+  const auto output_tensor_desc =
+      GetOutputTensorDesc(operation, id_to_operand_map);
+
+  auto output_dimensions = output_tensor_desc.GetDimensions();
+  if (input_a_tensor_desc.GetDimensions() != output_dimensions) {
+    input_a_tensor_desc.BroadcastTo(output_dimensions);
+  }
+  if (input_b_tensor_desc.GetDimensions() != output_dimensions) {
+    input_b_tensor_desc.BroadcastTo(output_dimensions);
+  }
+
+  NodeInfo binary_node;
+  std::vector<NodeOutputInfo> input_node_output_infos = {
+      input_a_node_output_info, input_b_node_output_info};
+  switch (operation->kind) {
+    case mojom::Operator::Kind::kAdd: {
+      binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_ADD_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_ADD,
+          input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kDiv: {
+      binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_DIVIDE_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE,
+          input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kMax: {
+      binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MAX_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_MAX,
+          input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kMin: {
+      binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MIN_OPERATOR_DESC>(
+          input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+          graph_builder, DML_OPERATOR_ELEMENT_WISE_MIN,
+          input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kMul: {
+      binary_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_MULTIPLY,
+              input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kSub: {
+      binary_node =
+          CreateBinaryOperator<DML_ELEMENT_WISE_SUBTRACT_OPERATOR_DESC>(
+              input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
+              graph_builder, DML_OPERATOR_ELEMENT_WISE_SUBTRACT,
+              input_node_output_infos);
+      break;
+    }
+    case mojom::Operator::Kind::kPow: {
+      DML_ELEMENT_WISE_POW_OPERATOR_DESC element_wise_operator_desc{
+          .InputTensor = &input_a_tensor_desc.GetDMLTensorDesc(),
+          .ExponentTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
+          .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+      binary_node = graph_builder.CreateOperatorNode(
+          DML_OPERATOR_ELEMENT_WISE_POW, &element_wise_operator_desc,
+          input_node_output_infos);
+      break;
+    }
+    default:
+      LOG(ERROR) << "This operator type is not supported";
+      NOTREACHED_NORETURN();
+  }
+  if (binary_node.type == NodeInfo::Type::kInvalid) {
+    return false;
+  }
+
+  CreateNodeOutput(operation, graph_builder, binary_node, output_tensor_desc,
+                   id_to_node_output_map);
+
   return true;
 }
 
@@ -250,17 +398,12 @@ bool CreateOperatorNodeForPool2d(const IdToOperandMap& id_to_operand_map,
                                  const OperatorPtr& operation,
                                  GraphBuilder& graph_builder,
                                  IdToNodeOutputMap& id_to_node_output_map) {
-  uint64_t input_id = operation->input_operands[0];
-  const auto input_iterator = id_to_node_output_map.find(input_id);
-  CHECK(input_iterator != id_to_node_output_map.end());
-  NodeOutputInfo input_node_output_info = input_iterator->second;
-  TensorDesc input_tensor_desc =
+  const auto& input_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+  auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
-  uint64_t output_id = operation->output_operands[0];
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
-                                output_operand->dimensions);
+  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
 
   CHECK(operation->attributes);
   auto& pool2d_attributes = operation->attributes->get_pool2d();
@@ -372,9 +515,9 @@ bool CreateOperatorNodeForPool2d(const IdToOperandMap& id_to_operand_map,
     output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
-  NodeOutputInfo pool2d_output_info = graph_builder.CreateNodeOutput(
-      pool2d_node_info, std::move(output_tensor_desc));
-  id_to_node_output_map[output_id] = std::move(pool2d_output_info);
+  CreateNodeOutput(operation, graph_builder, pool2d_node_info,
+                   output_tensor_desc, id_to_node_output_map);
+
   return true;
 }
 
@@ -382,29 +525,28 @@ bool CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
                                const OperatorPtr& operation,
                                GraphBuilder& graph_builder,
                                IdToNodeOutputMap& id_to_node_output_map) {
-  uint64_t input_id = operation->input_operands[0];
-  const auto input_iterator = id_to_node_output_map.find(input_id);
-  CHECK(input_iterator != id_to_node_output_map.end());
-  NodeOutputInfo input_node_output = input_iterator->second;
-  TensorDesc input_tensor_desc =
-      graph_builder.GetNodeOutput(input_node_output).tensor_desc;
+  const auto& input_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+  auto input_tensor_desc =
+      graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
-  uint64_t output_id = operation->output_operands[0];
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
-                                output_operand->dimensions);
+  const auto output_tensor_desc =
+      GetOutputTensorDesc(operation, id_to_operand_map);
 
   DML_ACTIVATION_RELU_OPERATOR_DESC relu_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc()};
+
   NodeInfo relu_node = graph_builder.CreateOperatorNode(
-      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, {input_node_output});
+      DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc,
+      {input_node_output_info});
   if (relu_node.type == NodeInfo::Type::kInvalid) {
     return false;
   }
-  NodeOutputInfo relu_output =
-      graph_builder.CreateNodeOutput(relu_node, std::move(output_tensor_desc));
-  id_to_node_output_map[output_id] = std::move(relu_output);
+
+  CreateNodeOutput(operation, graph_builder, relu_node, output_tensor_desc,
+                   id_to_node_output_map);
+
   return true;
 }
 
@@ -419,22 +561,19 @@ void CreateNodeOutputForReshape(const IdToOperandMap& id_to_operand_map,
                                 const OperatorPtr& operation,
                                 GraphBuilder& graph_builder,
                                 IdToNodeOutputMap& id_to_node_output_map) {
-  uint64_t input_id = operation->input_operands[0];
-  const auto input_iterator = id_to_node_output_map.find(input_id);
-  CHECK(input_iterator != id_to_node_output_map.end());
-  NodeOutputInfo input_node_output_info = input_iterator->second;
-  NodeOutput input_node_output =
-      graph_builder.GetNodeOutput(input_node_output_info);
+  const auto& input_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map);
+  auto input_node_output = graph_builder.GetNodeOutput(input_node_output_info);
   TensorDesc input_tensor_desc = input_node_output.tensor_desc;
+
+  const auto output_tensor_desc =
+      GetOutputTensorDesc(operation, id_to_operand_map);
+
   NodeInfo input_node = input_node_output.node_info;
-  uint64_t output_id = operation->output_operands[0];
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  TensorDesc output_tensor_desc(input_tensor_desc.GetDataType(),
-                                DML_TENSOR_FLAG_NONE,
-                                output_operand->dimensions);
-  NodeOutputInfo reshaped_input_node_output =
-      graph_builder.CreateNodeOutput(input_node, std::move(output_tensor_desc));
-  id_to_node_output_map[output_id] = std::move(reshaped_input_node_output);
+  CHECK_NE(input_node.type, NodeInfo::Type::kInvalid);
+
+  CreateNodeOutput(operation, graph_builder, input_node, output_tensor_desc,
+                   id_to_node_output_map);
 }
 
 // Creates a DirectML operator for the WebNN general matrix multiplication
@@ -443,29 +582,18 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
                                const OperatorPtr& operation,
                                GraphBuilder& graph_builder,
                                IdToNodeOutputMap& id_to_node_output_map) {
-  uint64_t input_a_id = operation->input_operands[0];
-  uint64_t input_b_id = operation->input_operands[1];
+  const auto& input_a_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 0);
+  auto input_a_tensor_desc =
+      graph_builder.GetNodeOutput(input_a_node_output_info).tensor_desc;
 
-  const auto input_a_node_output_iterator =
-      id_to_node_output_map.find(input_a_id);
-  CHECK(input_a_node_output_iterator != id_to_node_output_map.end());
+  const auto& input_b_node_output_info =
+      GetInputNodeOutputInfo(operation, id_to_node_output_map, 1);
+  auto input_b_tensor_desc =
+      graph_builder.GetNodeOutput(input_b_node_output_info).tensor_desc;
 
-  const auto input_b_node_output_iterator =
-      id_to_node_output_map.find(input_b_id);
-  CHECK(input_b_node_output_iterator != id_to_node_output_map.end());
-
-  NodeOutputInfo input_a_node_output = input_a_node_output_iterator->second;
-  TensorDesc input_a_tensor_desc =
-      graph_builder.GetNodeOutput(input_a_node_output).tensor_desc;
-
-  NodeOutputInfo input_b_node_output = input_b_node_output_iterator->second;
-  TensorDesc input_b_tensor_desc =
-      graph_builder.GetNodeOutput(input_b_node_output).tensor_desc;
-
-  uint64_t output_id = operation->output_operands[0];
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
-                                output_operand->dimensions);
+  const auto output_tensor_desc =
+      GetOutputTensorDesc(operation, id_to_operand_map);
 
   absl::optional<TensorDesc> input_c_tensor_desc = absl::nullopt;
   CHECK(operation->attributes);
@@ -518,14 +646,13 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
 
   NodeInfo gemm_node_info = graph_builder.CreateOperatorNode(
       DML_OPERATOR_GEMM, &gemm_operator_desc,
-      {input_a_node_output, input_b_node_output});
+      {input_a_node_output_info, input_b_node_output_info});
   if (gemm_node_info.type == NodeInfo::Type::kInvalid) {
     return false;
   }
 
-  NodeOutputInfo gemm_output = graph_builder.CreateNodeOutput(
-      gemm_node_info, std::move(output_tensor_desc));
-  id_to_node_output_map[output_id] = std::move(gemm_output);
+  CreateNodeOutput(operation, graph_builder, gemm_node_info, output_tensor_desc,
+                   id_to_node_output_map);
 
   return true;
 }
@@ -773,6 +900,17 @@ void GraphImpl::CreateAndBuild(
       case Operator::Kind::kAveragePool2d:
       case Operator::Kind::kMaxPool2d: {
         was_creation_successful = CreateOperatorNodeForPool2d(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operator::Kind::kAdd:
+      case Operator::Kind::kDiv:
+      case Operator::Kind::kMax:
+      case Operator::Kind::kMin:
+      case Operator::Kind::kMul:
+      case Operator::Kind::kPow:
+      case Operator::Kind::kSub: {
+        was_creation_successful = CreateOperatorNodeForBinary(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }

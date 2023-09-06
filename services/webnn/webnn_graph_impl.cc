@@ -480,6 +480,7 @@ bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
     case mojom::Operator::Kind::kDiv:
     case mojom::Operator::Kind::kMax:
     case mojom::Operator::Kind::kMin:
+    case mojom::Operator::Kind::kPow:
       return ValidateElementWiseBinary(id_to_operand_map, operation);
     case mojom::Operator::Kind::kGemm:
       return ValidateGemm(id_to_operand_map, operation);
