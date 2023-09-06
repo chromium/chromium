@@ -102,7 +102,7 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
   return {interest_area_size_in_pixels, (2 * interest_area_size_in_pixels) / 3};
 }
 
-#if BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIncreaseTileMemorySizeProportionally,
              "IncreaseTileMemorySizeProportionally",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -233,7 +233,7 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   }(actual.bytes_limit_when_visible);
   DCHECK_EQ(actual.bytes_limit_when_visible, previous_value);
 
-#elif BUILDFLAG(IS_MAC)
+#else
   if (base::FeatureList::IsEnabled(kIncreaseTileMemorySizeProportionally)) {
     // This calculation will increase the tile memory size. It should apply to
     // the other plateforms if no regression on Mac.
@@ -245,6 +245,8 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
     // https://www.334-28th.com/, it seems 512 MB works fine on 1920x1080 * 2
     // (scale) and 1152 MB on 2056x1329 * 2 (scale). Use this ratio for the
     // formula to increase |bytes_limit_when_visible| proportionally.
+    // For mobile platforms with small display (roughly less than 3k x 1.6k),
+    // mb_limit will still be 512 MB.
     constexpr size_t kLargeResolution = 2056 * 1329 * 2 * 2;
     size_t display_size =
         std::round(initial_screen_size.width() * initial_device_scale_factor *
@@ -284,22 +286,6 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
       actual.bytes_limit_when_visible *= 2;
     }
   }
-#else
-  // Ignore what the system said and give all clients the same maximum
-  // allocation on desktop platforms.
-  actual.bytes_limit_when_visible = 512 * 1024 * 1024;
-  actual.priority_cutoff_when_visible =
-      gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE;
-
-  // For large monitors (4k), double the tile memory to avoid frequent out of
-  // memory problems. 4k could mean a screen width of anywhere from 3840 to 4096
-  // (see https://en.wikipedia.org/wiki/4K_resolution). We use 3500 as a proxy
-  // for "large enough".
-  static const int kLargeDisplayThreshold = 3500;
-  int display_width =
-      std::round(initial_screen_size.width() * initial_device_scale_factor);
-  if (display_width >= kLargeDisplayThreshold)
-    actual.bytes_limit_when_visible *= 2;
 #endif
 
   return actual;
