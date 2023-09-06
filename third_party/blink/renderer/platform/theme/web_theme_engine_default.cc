@@ -10,7 +10,9 @@
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
@@ -235,6 +237,18 @@ void WebThemeEngineDefault::Paint(
     const absl::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
+
+  if (ShouldPartBeAffectedByAccentColor(part, state, extra_params)) {
+    // This is used for `part`, which gets drawn adjacent to `accent_color`. In
+    // order to guarantee contrast between `part` and `accent_color`, we choose
+    // the `color_scheme` here based on the two possible color values for
+    // `part`.
+    color_scheme = CalculateColorSchemeForAccentColor(
+        accent_color, color_scheme,
+        GetContrastingColorFor(mojom::ColorScheme::kLight, part, state),
+        GetContrastingColorFor(mojom::ColorScheme::kDark, part, state));
+  }
+
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, GetColorProviderForPainting(color_scheme), NativeThemePart(part),
       NativeThemeState(state), rect, native_theme_extra_params,
@@ -317,15 +331,17 @@ void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
       {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
       {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
   };
-  EmulateForcedColors(is_dark_theme);
+  EmulateForcedColors(is_dark_theme, /*is_web_test=*/false);
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       false, true, is_dark_theme ? dark_theme : light_theme);
 }
 
-void WebThemeEngineDefault::EmulateForcedColors(bool is_dark_theme) {
+void WebThemeEngineDefault::EmulateForcedColors(bool is_dark_theme,
+                                                bool is_web_test) {
   SetEmulateForcedColors(true);
   emulated_forced_colors_provider_ =
-      ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
+      is_web_test ? ui::CreateEmulatedForcedColorsColorProviderForWebTests()
+                  : ui::CreateEmulatedForcedColorsColorProvider(is_dark_theme);
 }
 
 void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
@@ -370,6 +386,13 @@ WebThemeEngineDefault::GetSystemColorInfo() {
 bool WebThemeEngineDefault::UpdateColorProviders(
     const ui::RendererColorMap& light_colors,
     const ui::RendererColorMap& dark_colors) {
+  if (WebTestSupport::IsRunningWebTest() &&
+      GetForcedColors() == ForcedColors::kActive) {
+    // Web tests use a different set of colors when determining which system
+    // colors to render in forced colors mode.
+    EmulateForcedColors(/*is_dark_theme=*/false, /*is_web_test=*/true);
+  }
+
   // Do not create new ColorProviders if the renderer color maps match the
   // existing ColorProviders.
   if (IsRendererColorMappingEquivalent(light_color_provider_, light_colors) &&
@@ -382,6 +405,89 @@ bool WebThemeEngineDefault::UpdateColorProviders(
   dark_color_provider_ =
       ui::CreateColorProviderFromRendererColorMap(dark_colors);
   return true;
+}
+
+bool WebThemeEngineDefault::ShouldPartBeAffectedByAccentColor(
+    WebThemeEngine::Part part,
+    WebThemeEngine::State state,
+    const WebThemeEngine::ExtraParams* extra_params) const {
+  switch (part) {
+    case WebThemeEngine::kPartCheckbox:
+    case WebThemeEngine::kPartRadio: {
+      const auto& button =
+          absl::get<WebThemeEngine::ButtonExtraParams>(*extra_params);
+      return button.checked && state != WebThemeEngine::kStateDisabled;
+    }
+
+    case WebThemeEngine::kPartSliderTrack:
+    case WebThemeEngine::kPartSliderThumb:
+      return state != WebThemeEngine::kStateDisabled;
+    case WebThemeEngine::kPartProgressBar:
+      return true;
+    default:
+      return false;
+  }
+}
+
+SkColor WebThemeEngineDefault::GetContrastingColorFor(
+    mojom::ColorScheme color_scheme,
+    WebThemeEngine::Part part,
+    WebThemeEngine::State state) const {
+  const ui::ColorProvider* color_provider =
+      color_scheme == mojom::ColorScheme::kLight ? &light_color_provider_
+                                                 : &dark_color_provider_;
+  bool isDisabled = (state == WebThemeEngine::kStateDisabled);
+  switch (part) {
+    case WebThemeEngine::kPartCheckbox:
+    case WebThemeEngine::kPartRadio:
+      return isDisabled ? color_provider->GetColor(
+                              ui::kColorWebNativeControlBackgroundDisabled)
+                        : color_provider->GetColor(
+                              ui::kColorWebNativeControlBackground);
+    case WebThemeEngine::kPartSliderTrack:
+    case WebThemeEngine::kPartSliderThumb:
+    case WebThemeEngine::kPartProgressBar:
+      // We use `kStateNormal` here because the user hovering or clicking on the
+      // slider will change the state to something else, and we don't want the
+      // color-scheme to flicker back and forth when the user interacts with it.
+      return color_provider->GetColor(ui::kColorWebNativeControlFill);
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+mojom::ColorScheme WebThemeEngineDefault::CalculateColorSchemeForAccentColor(
+    absl::optional<SkColor> accent_color,
+    mojom::ColorScheme color_scheme,
+    SkColor light_contrasting_color,
+    SkColor dark_contrasting_color) const {
+  if (!accent_color) {
+    return color_scheme;
+  }
+
+  float contrast_with_light =
+      color_utils::GetContrastRatio(*accent_color, light_contrasting_color);
+  float contrast_with_dark =
+      color_utils::GetContrastRatio(*accent_color, dark_contrasting_color);
+
+  // If there is enough contrast between `accent_color` and `color_scheme`, then
+  // let's keep it the same. Otherwise, flip the `color_scheme` to guarantee
+  // contrast.
+  if (color_scheme == mojom::ColorScheme::kDark) {
+    if (contrast_with_dark < color_utils::kMinimumVisibleContrastRatio &&
+        contrast_with_dark < contrast_with_light) {
+      // TODO(crbug.com/1216137): what if `contrast_with_light` is less than
+      // `kMinimumContrast`? Should we modify `accent_color`...?
+      return mojom::ColorScheme::kLight;
+    }
+  } else {
+    if (contrast_with_light < color_utils::kMinimumVisibleContrastRatio &&
+        contrast_with_light < contrast_with_dark) {
+      return mojom::ColorScheme::kDark;
+    }
+  }
+
+  return color_scheme;
 }
 
 const ui::ColorProvider* WebThemeEngineDefault::GetColorProviderForPainting(

@@ -74,7 +74,7 @@ void NativeThemeFluent::PaintScrollbarTrack(
     outline_rect.Inset(outline_insets + gfx::InsetsF(edge_insets));
 
     const SkColor track_outline_color =
-        color_provider->GetColor(kColorScrollbarThumb);
+        color_provider->GetColor(kColorWebNativeControlScrollbarThumb);
 
     cc::PaintFlags outline_flags;
     outline_flags.setColor(track_outline_color);
@@ -89,7 +89,7 @@ void NativeThemeFluent::PaintScrollbarTrack(
   const SkColor track_color =
       extra_params.track_color.has_value()
           ? extra_params.track_color.value()
-          : color_provider->GetColor(kColorScrollbarTrack);
+          : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
   cc::PaintFlags flags;
   flags.setColor(track_color);
   canvas->drawIRect(gfx::RectToSkIRect(track_fill_rect), flags);
@@ -115,11 +115,11 @@ void NativeThemeFluent::PaintScrollbarThumb(
   path.addRRect(rrect);
   canvas->clipPath(path, true);
 
-  ColorId thumb_color_id = kColorScrollbarThumb;
+  ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
   if (state == NativeTheme::kPressed) {
-    thumb_color_id = kColorScrollbarThumbPressed;
+    thumb_color_id = kColorWebNativeControlScrollbarThumbPressed;
   } else if (state == NativeTheme::kHovered) {
-    thumb_color_id = kColorScrollbarThumbHovered;
+    thumb_color_id = kColorWebNativeControlScrollbarThumbHovered;
   }
   const SkColor thumb_color = color_provider->GetColor(thumb_color_id);
   cc::PaintFlags flags;
@@ -139,7 +139,7 @@ void NativeThemeFluent::PaintScrollbarCorner(
   const SkColor corner_color =
       extra_params.track_color.has_value()
           ? extra_params.track_color.value()
-          : color_provider->GetColor(kColorScrollbarCorner);
+          : color_provider->GetColor(kColorWebNativeControlScrollbarCorner);
   flags.setColor(corner_color);
   canvas->drawIRect(RectToSkIRect(rect), flags);
 }
@@ -182,7 +182,7 @@ void NativeThemeFluent::PaintButton(
   const SkColor button_color =
       arrow.track_color.has_value()
           ? arrow.track_color.value()
-          : color_provider->GetColor(kColorScrollbarTrack);
+          : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
   flags.setColor(button_color);
   gfx::Rect button_fill_rect = rect;
   if (InForcedColorsMode()) {
@@ -201,7 +201,7 @@ void NativeThemeFluent::PaintButton(
     gfx::RectF outline_rect(rect);
     outline_rect.Inset(outline_insets + gfx::InsetsF(edge_insets));
     const SkColor arrow_outline_color =
-        color_provider->GetColor(kColorScrollbarThumb);
+        color_provider->GetColor(kColorWebNativeControlScrollbarThumb);
 
     cc::PaintFlags outline_flags;
     outline_flags.setColor(arrow_outline_color);
@@ -228,8 +228,8 @@ void NativeThemeFluent::PaintArrow(
     const ScrollbarArrowExtraParams& arrow) const {
   const ColorId arrow_color_id =
       state == NativeTheme::kPressed || state == NativeTheme::kHovered
-          ? kColorScrollbarArrowForegroundPressed
-          : kColorScrollbarArrowForeground;
+          ? kColorWebNativeControlScrollbarArrowForegroundPressed
+          : kColorWebNativeControlScrollbarArrowForeground;
   // TODO(crbug.com/891944): Adjust thumb_color based on `state`.
   const SkColor arrow_color = arrow.thumb_color.has_value()
                                   ? arrow.thumb_color.value()

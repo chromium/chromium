@@ -397,16 +397,6 @@
   E_CPONLY(kColorRadioButtonForegroundUnchecked) \
   E_CPONLY(kColorRadioButtonForegroundDisabled) \
   E_CPONLY(kColorRadioButtonForegroundChecked) \
-  E_CPONLY(kColorScrollbarArrowBackgroundHovered) \
-  E_CPONLY(kColorScrollbarArrowBackgroundPressed) \
-  E_CPONLY(kColorScrollbarArrowForeground) \
-  E_CPONLY(kColorScrollbarArrowForegroundPressed) \
-  E_CPONLY(kColorScrollbarCorner) \
-  E_CPONLY(kColorScrollbarThumb) \
-  E_CPONLY(kColorScrollbarThumbHovered) \
-  E_CPONLY(kColorScrollbarThumbInactive) \
-  E_CPONLY(kColorScrollbarThumbPressed) \
-  E_CPONLY(kColorScrollbarTrack) \
   E_CPONLY(kColorSegmentedButtonBorder) \
   E_CPONLY(kColorSegmentedButtonFocus) \
   E_CPONLY(kColorSegmentedButtonForegroundChecked) \
@@ -511,6 +501,47 @@
   E_CPONLY(kColorTreeNodeForeground) \
   E_CPONLY(kColorTreeNodeForegroundSelectedFocused) \
   E_CPONLY(kColorTreeNodeForegroundSelectedUnfocused) \
+  /* These colors are used to paint the controls defined in */ \
+  /* ui::NativeThemeBase::ControlColorId. */ \
+  E_CPONLY(kColorWebNativeControlAccent) \
+  E_CPONLY(kColorWebNativeControlAccentDisabled) \
+  E_CPONLY(kColorWebNativeControlAccentHovered) \
+  E_CPONLY(kColorWebNativeControlAccentPressed) \
+  E_CPONLY(kColorWebNativeControlAutoCompleteBackground) \
+  E_CPONLY(kColorWebNativeControlBackground) \
+  E_CPONLY(kColorWebNativeControlBackgroundDisabled) \
+  E_CPONLY(kColorWebNativeControlBorder) \
+  E_CPONLY(kColorWebNativeControlBorderDisabled) \
+  E_CPONLY(kColorWebNativeControlBorderHovered) \
+  E_CPONLY(kColorWebNativeControlBorderPressed) \
+  E_CPONLY(kColorWebNativeControlButtonBorder) \
+  E_CPONLY(kColorWebNativeControlButtonBorderDisabled) \
+  E_CPONLY(kColorWebNativeControlButtonBorderHovered) \
+  E_CPONLY(kColorWebNativeControlButtonBorderPressed) \
+  E_CPONLY(kColorWebNativeControlButtonFill) \
+  E_CPONLY(kColorWebNativeControlButtonFillDisabled) \
+  E_CPONLY(kColorWebNativeControlButtonFillHovered) \
+  E_CPONLY(kColorWebNativeControlButtonFillPressed) \
+  E_CPONLY(kColorWebNativeControlFill) \
+  E_CPONLY(kColorWebNativeControlFillDisabled) \
+  E_CPONLY(kColorWebNativeControlFillHovered) \
+  E_CPONLY(kColorWebNativeControlFillPressed) \
+  E_CPONLY(kColorWebNativeControlLightenLayer) \
+  E_CPONLY(kColorWebNativeControlProgressValue) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundHovered) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundPressed) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForeground) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundPressed) \
+  E_CPONLY(kColorWebNativeControlScrollbarCorner) \
+  E_CPONLY(kColorWebNativeControlScrollbarThumb) \
+  E_CPONLY(kColorWebNativeControlScrollbarThumbHovered) \
+  E_CPONLY(kColorWebNativeControlScrollbarThumbInactive) \
+  E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
+  E_CPONLY(kColorWebNativeControlScrollbarTrack) \
+  E_CPONLY(kColorWebNativeControlSlider) \
+  E_CPONLY(kColorWebNativeControlSliderDisabled) \
+  E_CPONLY(kColorWebNativeControlSliderHovered) \
+  E_CPONLY(kColorWebNativeControlSliderPressed) \
   E_CPONLY(kColorWindowBackground)
 
 #if BUILDFLAG(IS_CHROMEOS)

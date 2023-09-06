@@ -295,7 +295,7 @@ class WebThemeEngine {
     SystemColorInfoState state;
     return state;
   }
-  virtual void EmulateForcedColors(bool is_dark_theme) {}
+  virtual void EmulateForcedColors(bool is_dark_theme, bool is_web_test) {}
 
   // Updates the WebThemeEngine's global light and dark ColorProvider instances
   // using the RendererColorMaps provided. Returns true if new ColorProviders

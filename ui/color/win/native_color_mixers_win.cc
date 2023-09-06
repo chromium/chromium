@@ -176,19 +176,21 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       const bool dark_mode =
           key.color_mode == ColorProviderKey::ColorMode::kDark;
 
-      mixer[kColorScrollbarArrowForeground] = {
+      mixer[kColorWebNativeControlScrollbarArrowForeground] = {
           dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
                     : SkColorSetA(SK_ColorBLACK, 0x72)};
-      mixer[kColorScrollbarArrowForegroundPressed] = {
+      mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
           dark_mode ? SkColorSetA(SK_ColorWHITE, 0xC8)
                     : SkColorSetA(SK_ColorBLACK, 0x9B)};
-      mixer[kColorScrollbarCorner] = {dark_mode
-                                          ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
-                                          : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
+      mixer[kColorWebNativeControlScrollbarCorner] = {
+          dark_mode ? SkColorSetRGB(0x2C, 0x2C, 0x2C)
+                    : SkColorSetRGB(0xFC, 0xFC, 0xFC)};
     } else {
-      mixer[kColorScrollbarArrowForeground] = {kColorNativeBtnText};
-      mixer[kColorScrollbarArrowForegroundPressed] = {kColorNativeHighlight};
-      mixer[kColorScrollbarCorner] = {kColorNativeBtnFace};
+      mixer[kColorWebNativeControlScrollbarArrowForeground] = {
+          kColorNativeBtnText};
+      mixer[kColorWebNativeControlScrollbarArrowForegroundPressed] = {
+          kColorNativeHighlight};
+      mixer[kColorWebNativeControlScrollbarCorner] = {kColorNativeBtnFace};
     }
     CompleteFluentScrollbarColorsDefinition(mixer);
   }
@@ -205,6 +207,8 @@ void AddNativeUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorNotificationInputForeground, gfx::kGoogleGreyAlpha700);
   mixer[kColorSliderTrack] = AlphaBlend(
       kColorNativeHighlight, kColorNativeWindow, gfx::kGoogleGreyAlpha400);
+
+  CompleteControlsForcedColorsDefinition(mixer);
 
   // Window Background
   mixer[kColorBubbleFooterBackground] = {kColorNativeWindow};

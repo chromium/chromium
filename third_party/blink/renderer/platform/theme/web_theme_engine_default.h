@@ -50,7 +50,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
   WebThemeEngine::SystemColorInfoState GetSystemColorInfo() override;
   bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
                             const ui::RendererColorMap& dark_colors) override;
-  void EmulateForcedColors(bool is_dark_theme) override;
+  void EmulateForcedColors(bool is_dark_theme, bool is_web_test) override;
 
  protected:
   const ui::ColorProvider* GetColorProviderForPainting(
@@ -60,6 +60,25 @@ class WebThemeEngineDefault : public WebThemeEngine {
   void SetEmulateForcedColors(bool emulate_forced_colors) {
     emulate_forced_colors_ = emulate_forced_colors;
   }
+  // Returns whether `part` should be affected by the accent color depending on
+  // the type of part and its state.
+  bool ShouldPartBeAffectedByAccentColor(
+      WebThemeEngine::Part part,
+      WebThemeEngine::State state,
+      const WebThemeEngine::ExtraParams* extra_params) const;
+  SkColor GetContrastingColorFor(mojom::ColorScheme color_scheme,
+                                 WebThemeEngine::Part part,
+                                 WebThemeEngine::State state) const;
+  // This returns a color scheme which provides enough contrast with the custom
+  // `accent_color` to make it easy to see. `light_contrasting_color` is the
+  // color which is used to paint adjacent to `accent_color` from the
+  // `light_color_provider_`, and `dark_contrasting_color` is the one used from
+  // `dark_color_provider_`.
+  mojom::ColorScheme CalculateColorSchemeForAccentColor(
+      absl::optional<SkColor> accent_color,
+      mojom::ColorScheme color_scheme,
+      SkColor light_contrasting_color,
+      SkColor dark_contrasting_color) const;
   bool emulate_forced_colors_ = false;
   // These providers are kept in sync with ColorProviders in the browser and
   // will be updated when the theme changes.
