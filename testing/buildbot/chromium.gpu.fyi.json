@@ -17413,7 +17413,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--jobs=4"
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {

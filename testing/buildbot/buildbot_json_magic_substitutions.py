@@ -194,8 +194,10 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
   # Slow Mac configs have issues with flakiness when running tests in parallel.
   is_pixel_test = (test_name == 'pixel_skia_gold_test'
                    or test_config.get('telemetry_test_name') == 'pixel')
+  is_webcodecs_test = (test_name == 'webcodecs_tests'
+                       or test_config.get('telemetry_test_name') == 'webcodecs')
   is_debug = any(s in tester_name.lower() for s in ('debug', 'dbg'))
-  if os_type == 'mac' and is_pixel_test:
+  if os_type == 'mac' and (is_pixel_test or is_webcodecs_test):
     if is_debug:
       return ['--jobs=1']
     for gpu in _GetGpusFromTestConfig(test_config):
