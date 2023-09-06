@@ -131,6 +131,8 @@ std::vector<std::string> BuildArgsToLaunchWithLinker(
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+using LastChanceHandler = bool (*)(int, siginfo_t*, ucontext_t*);
+
 // A base class for Crashpad signal handler implementations.
 class SignalHandler {
  public:
@@ -152,6 +154,10 @@ class SignalHandler {
 
   void SetFirstChanceHandler(CrashpadClient::FirstChanceHandler handler) {
     first_chance_handler_ = handler;
+  }
+
+  void SetLastChanceExceptionHandler(LastChanceHandler handler) {
+    last_chance_handler_ = handler;
   }
 
   // The base implementation for all signal handlers, suitable for calling
@@ -212,6 +218,11 @@ class SignalHandler {
     if (!handler_->disabled_.test_and_set()) {
       handler_->HandleCrash(signo, siginfo, context);
       handler_->WakeThreads();
+      if (handler_->last_chance_handler_ &&
+          handler_->last_chance_handler_(
+              signo, siginfo, static_cast<ucontext_t*>(context))) {
+        return;
+      }
     } else {
       // Processes on Android normally have several chained signal handlers that
       // co-operate to report crashes. e.g. WebView will have this signal
@@ -254,6 +265,7 @@ class SignalHandler {
   Signals::OldActions old_actions_ = {};
   ExceptionInformation exception_information_ = {};
   CrashpadClient::FirstChanceHandler first_chance_handler_ = nullptr;
+  LastChanceHandler last_chance_handler_ = nullptr;
   int32_t dump_done_futex_ = kDumpNotDone;
 #if !defined(__cpp_lib_atomic_value_initialization) || \
     __cpp_lib_atomic_value_initialization < 201911L
@@ -737,6 +749,12 @@ void CrashpadClient::SetFirstChanceExceptionHandler(
     FirstChanceHandler handler) {
   DCHECK(SignalHandler::Get());
   SignalHandler::Get()->SetFirstChanceHandler(handler);
+}
+
+// static
+void CrashpadClient::SetLastChanceExceptionHandler(LastChanceHandler handler) {
+  DCHECK(SignalHandler::Get());
+  SignalHandler::Get()->SetLastChanceExceptionHandler(handler);
 }
 
 void CrashpadClient::SetUnhandledSignals(const std::set<int>& signals) {
