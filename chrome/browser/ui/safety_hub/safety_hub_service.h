@@ -14,8 +14,11 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
 
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta
@@ -30,16 +33,27 @@ class SafetyHubService : public KeyedService,
   // thread task should be included as well.
   class Result {
    public:
-    explicit Result(base::TimeTicks timestamp = base::TimeTicks::Now());
-
     Result(const Result&) = default;
     Result& operator=(const Result&) = delete;
     virtual ~Result() = default;
 
-    base::TimeTicks timestamp() const;
+    virtual base::Value::Dict ToDictValue() = 0;
+
+    template <typename T>
+    static std::unique_ptr<T> FromDictValue(const base::Value::Dict& dict) {
+      return std::make_unique<T>(dict);
+    }
+
+    base::Time timestamp() const;
+
+   protected:
+    explicit Result(base::Time timestamp = base::Time::Now());
+    explicit Result(const base::Value::Dict& dict);
+
+    base::Value::Dict BaseToDictValue();
 
    private:
-    base::TimeTicks timestamp_;
+    base::Time timestamp_;
   };
 
   class Observer : public base::CheckedObserver {

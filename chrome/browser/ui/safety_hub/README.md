@@ -37,7 +37,7 @@ unnecessary overhead, it is suggested that the final result does not contain any
 of the intermediate results, e.g. by creating a new `SafetyHubService::Result`
 in `UpdateOnUIThread()`.
 
-In order make the latest result of the service always available just after
+In order to make the latest result of the service always available just after
 initialization of the service, the `InitializeLatestResult()` needs to be called
 in the constructor of the derived services.  This function, which also needs to
 be implemented by each service, has to set the `latest_result_` property.
@@ -59,6 +59,16 @@ In summary, each Safety Hub service should implement the following functions:
    further process the intermediate result of the background task.
  - `GetAsWeakRef()`: returns a weak pointer to the service, from the
    `WeakPtrFactory` of the derived service.
+
+## Results
+
+Each Safety Hub service has their own result type that inherits from
+`SafetyHubService::Result`. This result should include the information that is
+needed for displaying the information in the UI and being able to distinguish
+two different results. To support serialization, the `ToDictValue()` method
+needs to be implemented by the derived result classes. Furthermore, the derived
+classes should have a constructor that takes a `base::Value::Dict` as argument
+and restores the properties that are defined in the dictionary.
 
 ## Testing
 

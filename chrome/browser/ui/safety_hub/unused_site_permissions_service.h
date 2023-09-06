@@ -26,6 +26,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+constexpr char kUnusedSitePermissionsResultKey[] = "permissions";
+constexpr char kUnusedSitePermissionsResultPermissionTypesKey[] =
+    "permissionTypes";
+constexpr char kUnusedSitePermissionsResultOriginKey[] = "origin";
+constexpr char kUnusedSitePermissionsResultExpirationKey[] = "expiration";
+
 namespace url {
 class Origin;
 }
@@ -67,6 +73,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
    public:
     UnusedSitePermissionsResult();
 
+    explicit UnusedSitePermissionsResult(const base::Value::Dict& dict);
+
     UnusedSitePermissionsResult(const UnusedSitePermissionsResult&) = delete;
     UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
         delete;
@@ -89,6 +97,9 @@ class UnusedSitePermissionsService : public SafetyHubService,
     }
 
     std::list<RevokedPermission> GetRevokedPermissions();
+
+    // SafetyHubService::Result implementation
+    base::Value::Dict ToDictValue() override;
 
    private:
     std::list<RevokedPermission> revoked_permissions_;

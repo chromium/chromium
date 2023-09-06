@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/values_util.h"
 #include "base/observer_list_types.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,7 +23,14 @@ constexpr base::TimeDelta kUpdateIntervalForTest = base::Days(7);
 
 class MockSafetyHubResult : public SafetyHubService::Result {
  public:
+  explicit MockSafetyHubResult(base::Time timestamp = base::Time::Now())
+      : SafetyHubService::Result(timestamp) {}
   ~MockSafetyHubResult() override = default;
+
+  explicit MockSafetyHubResult(const base::Value::Dict& dict)
+      : SafetyHubService::Result(dict) {}
+
+  base::Value::Dict ToDictValue() override { return BaseToDictValue(); }
 
   int GetVal() { return val_; }
 
@@ -201,4 +210,18 @@ TEST_F(SafetyHubServiceTest, GetCachedResult) {
   EXPECT_TRUE(opt_result2.has_value());
   auto* result = static_cast<MockSafetyHubResult*>(opt_result2.value());
   EXPECT_EQ(result->GetVal(), 42);
+}
+
+TEST_F(SafetyHubServiceTest, ResultBaseToFromDict) {
+  base::Time time = base::Time::Now() - base::Days(5);
+  auto result = std::make_unique<MockSafetyHubResult>(time);
+  EXPECT_EQ(result->timestamp(), time);
+  // The timestamp saved in the dict should be the Value of time.
+  base::Value::Dict dict = result->ToDictValue();
+  EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
+  // When in the future we update from the dict again, the timestamp should be
+  // set to whatever is in the dict.
+  std::unique_ptr<MockSafetyHubResult> new_result =
+      MockSafetyHubResult::FromDictValue<MockSafetyHubResult>(dict);
+  EXPECT_EQ(result->timestamp(), time);
 }

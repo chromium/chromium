@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -24,6 +25,7 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -111,6 +113,31 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
 UnusedSitePermissionsService::UnusedSitePermissionsResult::
     ~UnusedSitePermissionsResult() = default;
 
+UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    UnusedSitePermissionsResult(const base::Value::Dict& dict)
+    : SafetyHubService::Result(dict) {
+  content_settings::WebsiteSettingsRegistry* registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  for (const base::Value& permission :
+       *dict.FindList(kUnusedSitePermissionsResultKey)) {
+    const base::Value::Dict& revoked_permission = permission.GetDict();
+    ContentSettingsPattern origin = ContentSettingsPattern::FromString(
+        *revoked_permission.FindString(kUnusedSitePermissionsResultOriginKey));
+    std::set<ContentSettingsType> permission_types;
+    for (const base::Value& cst : *revoked_permission.FindList(
+             kUnusedSitePermissionsResultPermissionTypesKey)) {
+      const content_settings::WebsiteSettingsInfo* info =
+          registry->GetByName(cst.GetString());
+      permission_types.insert(info->type());
+    }
+    base::Time expiration =
+        base::ValueToTime(
+            *revoked_permission.Find(kUnusedSitePermissionsResultExpirationKey))
+            .value();
+    AddRevokedPermission(origin, permission_types, expiration);
+  }
+}
+
 void UnusedSitePermissionsService::UnusedSitePermissionsResult::
     AddRevokedPermission(ContentSettingsPattern origin,
                          std::set<ContentSettingsType> permission_types,
@@ -125,6 +152,30 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
     GetRevokedPermissions() {
   std::list<UnusedSitePermissionsService::RevokedPermission> result(
       revoked_permissions_);
+  return result;
+}
+
+base::Value::Dict
+UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() {
+  base::Value::Dict result = BaseToDictValue();
+  base::Value::List revoked_permissions;
+  content_settings::WebsiteSettingsRegistry* registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  for (auto permission : revoked_permissions_) {
+    base::Value::Dict permission_dict;
+    permission_dict.Set(kUnusedSitePermissionsResultOriginKey,
+                        permission.origin.ToString());
+    base::Value::List permission_types;
+    for (ContentSettingsType cst : permission.permission_types) {
+      permission_types.Append(registry->Get(cst)->name());
+    }
+    permission_dict.Set(kUnusedSitePermissionsResultPermissionTypesKey,
+                        std::move(permission_types));
+    permission_dict.Set(kUnusedSitePermissionsResultExpirationKey,
+                        base::TimeToValue(permission.expiration));
+    revoked_permissions.Append(std::move(permission_dict));
+  }
+  result.Set(kUnusedSitePermissionsResultKey, std::move(revoked_permissions));
   return result;
 }
 

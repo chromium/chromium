@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -665,4 +667,51 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
       static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
           opt_result.value());
   EXPECT_EQ(2U, result->GetRevokedPermissions().size());
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
+  const std::string url1 = "https://example1.com:443";
+  auto origin = ContentSettingsPattern::FromString(url1);
+  std::set<ContentSettingsType> permission_types(
+      {ContentSettingsType::GEOLOCATION});
+  base::Time expiration = base::Time::Now() + base::Days(5);
+  auto result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  result->AddRevokedPermission(origin, permission_types, expiration);
+  EXPECT_EQ(1U, result->GetRevokedPermissions().size());
+  EXPECT_EQ(origin, result->GetRevokedPermissions().front().origin);
+
+  // When converting to dict, the values of the revoked permissions should be
+  // correctly converted to base::Value
+  base::Value::Dict dict = result->ToDictValue();
+  auto* revoked_perms_list = dict.FindList(kUnusedSitePermissionsResultKey);
+  EXPECT_EQ(1U, revoked_perms_list->size());
+  base::Value::Dict& revoked_perm = revoked_perms_list->front().GetDict();
+  EXPECT_EQ(url1,
+            *revoked_perm.FindString(kUnusedSitePermissionsResultOriginKey));
+  EXPECT_EQ(
+      1U, revoked_perm.FindList(kUnusedSitePermissionsResultPermissionTypesKey)
+              ->size());
+  auto* registry = content_settings::WebsiteSettingsRegistry::GetInstance();
+  EXPECT_EQ(
+      registry->Get(ContentSettingsType::GEOLOCATION)->name(),
+      revoked_perm.FindList(kUnusedSitePermissionsResultPermissionTypesKey)
+          ->front());
+  EXPECT_EQ(base::TimeToValue(expiration),
+            *revoked_perm.Find(kUnusedSitePermissionsResultExpirationKey));
+
+  // When the Dict is restored into a UnusedSitePermissionsResult, the values
+  // should be correctly created.
+  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
+      new_result = UnusedSitePermissionsService::UnusedSitePermissionsResult::
+          FromDictValue<
+              UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
+  std::list<UnusedSitePermissionsService::RevokedPermission> new_revoked_perms =
+      new_result->GetRevokedPermissions();
+  EXPECT_EQ(1U, new_revoked_perms.size());
+  EXPECT_EQ(origin, new_revoked_perms.front().origin);
+  EXPECT_EQ(1U, new_revoked_perms.front().permission_types.size());
+  EXPECT_EQ(ContentSettingsType::GEOLOCATION,
+            *new_revoked_perms.front().permission_types.begin());
+  EXPECT_EQ(expiration, new_revoked_perms.front().expiration);
 }

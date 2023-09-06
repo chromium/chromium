@@ -4,16 +4,30 @@
 
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/values_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 
-SafetyHubService::Result::Result(base::TimeTicks timestamp)
+SafetyHubService::Result::Result(base::Time timestamp)
     : timestamp_(timestamp) {}
 
-base::TimeTicks SafetyHubService::Result::timestamp() const {
+SafetyHubService::Result::Result(const base::Value::Dict& dict) {
+  timestamp_ =
+      base::ValueToTime(dict.Find(kSafetyHubTimestampResultKey)).value();
+}
+
+base::Value::Dict SafetyHubService::Result::BaseToDictValue() {
+  base::Value::Dict result;
+  result.Set(kSafetyHubTimestampResultKey, base::TimeToValue(timestamp_));
+  return result;
+}
+
+base::Time SafetyHubService::Result::timestamp() const {
   return timestamp_;
 }
 
