@@ -137,6 +137,8 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
+import org.chromium.chrome.browser.search_engines.DseNewTabUrlManager;
+import org.chromium.chrome.browser.search_engines.DseNewTabUrlManagerUtils;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -385,6 +387,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // The URL of the last active Tab read from the Tab metadata file during cold startup.
     private String mLastActiveTabUrl;
+
+    private DseNewTabUrlManager mDseNewTabUrlManager;
 
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
@@ -1680,6 +1684,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
 
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
+
+        if (DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled()) {
+            mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
+        }
     }
 
     @Override

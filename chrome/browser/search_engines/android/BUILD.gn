@@ -10,6 +10,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelper.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEnginePromoDialog.java",
+    "java/src/org/chromium/chrome/browser/search_engines/DseNewTabUrlManager.java",
+    "java/src/org/chromium/chrome/browser/search_engines/DseNewTabUrlManagerUtils.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotification.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEnginePromoState.java",
@@ -43,6 +45,7 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
+    "//components/embedder_support/android:util_java",
     "//components/location/android:location_java",
     "//components/search_engines/android:java",
     "//components/version_info/android:version_constants_java",

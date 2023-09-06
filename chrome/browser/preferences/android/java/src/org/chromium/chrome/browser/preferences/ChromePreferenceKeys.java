@@ -401,6 +401,15 @@ public final class ChromePreferenceKeys {
             "Chrome.IsolatedSplits.VersionCode";
 
     /**
+     * Whether the default search engine is Google.
+     */
+    public static final String IS_DSE_GOOGLE = "Chrome.SearchEngine.IsDSEGoogle";
+
+    /**
+     * The new_tab_url of the default search engine if it isn't Google.
+     */
+    public static final String DSE_NEW_TAB_URL = "Chrome.SearchEngine.DSENewTabUrl";
+    /**
      * When the user is shown a badge that the current Android OS version is unsupported, and they
      * tap it to display the menu (which has additional information), we store the current version
      * of Chrome to this preference to ensure we only show the badge once. The value is cleared
@@ -996,6 +1005,7 @@ public final class ChromePreferenceKeys {
                 DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,
+                DSE_NEW_TAB_URL,
                 EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 FEED_ARTICLES_LIST_VISIBLE,
                 FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP,
@@ -1017,6 +1027,7 @@ public final class ChromePreferenceKeys {
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 INCOGNITO_TAB_COUNT,
                 IS_LAST_VISITED_TAB_SRP,
+                IS_DSE_GOOGLE,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,

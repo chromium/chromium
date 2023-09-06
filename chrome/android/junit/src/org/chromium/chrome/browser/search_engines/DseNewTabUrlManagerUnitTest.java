@@ -1,0 +1,221 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.search_engines;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.DseNewTabUrlManagerUnitTest.ShadowUrlFormatter;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.url.GURL;
+
+/** Tests for {@link DseNewTabUrlManager}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE, shadows = {ShadowUrlFormatter.class})
+public class DseNewTabUrlManagerUnitTest {
+    private static final String URL = "https://testurl.com/?searchstuff={searchTerms}";
+    private static final String NEW_TAB_URL = "https://testurl.com/newtab";
+    @Rule
+    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Mock
+    private Profile mProfile;
+    private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private TemplateUrl mTemplateUrl;
+
+    private SharedPreferencesManager mSharedPreferenceManager;
+    private DseNewTabUrlManager mDseNewTabUrlManager;
+
+    @Captor
+    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+
+    @Implements(UrlFormatter.class)
+    static class ShadowUrlFormatter {
+        @Implementation
+        public static GURL fixupUrl(String uri) {
+            return new GURL(uri);
+        }
+    }
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mSharedPreferenceManager = SharedPreferencesManager.getInstance();
+
+        doReturn(URL).when(mTemplateUrl).getURL();
+        doReturn(NEW_TAB_URL).when(mTemplateUrl).getNewTabURL();
+        doReturn(mTemplateUrl).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+
+        doReturn(false).when(mProfile).isOffTheRecord();
+        Profile.setLastUsedProfileForTesting(mProfile);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+
+        mDseNewTabUrlManager = new DseNewTabUrlManager(mProfileSupplier);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testIsNewTabSearchEngineUrlAndroidEnabled() {
+        assertTrue(DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testIsNewTabSearchEngineUrlAndroidDisabled() {
+        assertFalse(DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled());
+    }
+
+    @Test
+    public void testGetDSENewTabUrl() {
+        String newTabUrl = DseNewTabUrlManagerUtils.getDSENewTabUrl(null);
+        assertNull(newTabUrl);
+
+        mSharedPreferenceManager.writeString(ChromePreferenceKeys.DSE_NEW_TAB_URL, NEW_TAB_URL);
+        assertEquals(NEW_TAB_URL, DseNewTabUrlManagerUtils.getDSENewTabUrl(null));
+
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        assertNull(DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
+
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        assertEquals(NEW_TAB_URL, DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
+
+        doReturn(null).when(mTemplateUrl).getNewTabURL();
+        assertEquals(URL, DseNewTabUrlManagerUtils.getDSENewTabUrl(mTemplateUrlService));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testShouldOverrideUrlWithNewTabSearchEngineUrlDisabled() {
+        // Verifies that shouldn't override the URL if the feature flag is disabled.
+        assertFalse(DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled());
+        assertEquals(UrlConstants.NTP_NON_NATIVE_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(
+                        /* url= */ UrlConstants.NTP_NON_NATIVE_URL, /* isIncognito= */ false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
+    public void testShouldOverrideUrlWithNewTabSearchEngineUrlEnabled() {
+        assertTrue(DseNewTabUrlManagerUtils.isNewTabSearchEngineUrlAndroidEnabled());
+
+        // Verifies the cases that shouldn't override the URL when the DSE is Google.
+        assertEquals(UrlConstants.NTP_NON_NATIVE_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(
+                        /* url= */ UrlConstants.NTP_NON_NATIVE_URL, /* isIncognito= */ false));
+        assertEquals(UrlConstants.NTP_NON_NATIVE_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(
+                        /* url= */ UrlConstants.NTP_NON_NATIVE_URL, /* isIncognito= */ true));
+        assertEquals(URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(
+                        /* url= */ URL, /* isIncognito= */ false));
+
+        // Verifies the case that should override a NTP URL.
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mProfileSupplier.set(mProfile);
+        assertEquals(NEW_TAB_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(
+                        /* url= */ UrlConstants.NTP_NON_NATIVE_URL, /* isIncognito= */ false));
+    }
+
+    @Test
+    public void testOnProfileAvailable() {
+        assertNull(mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
+        assertFalse(mSharedPreferenceManager.contains(ChromePreferenceKeys.IS_DSE_GOOGLE));
+
+        // Sets the DSE is Google.
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mProfileSupplier.set(mProfile);
+
+        // Verifies that the SharedPreference is updated once the TemplateUrlService is ready.
+        assertEquals(mTemplateUrlService, mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
+        assertTrue(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false));
+        assertFalse(mSharedPreferenceManager.contains(ChromePreferenceKeys.DSE_NEW_TAB_URL));
+    }
+
+    @Test
+    public void testOnTemplateURLServiceChanged() {
+        // Sets the DSE isn't Google.
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mProfileSupplier.set(mProfile);
+
+        // Verifies that the SharedPreference is updated once the TemplateUrlService is ready.
+        assertEquals(mTemplateUrlService, mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+        assertFalse(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, true));
+        assertEquals(NEW_TAB_URL,
+                mSharedPreferenceManager.readString(ChromePreferenceKeys.DSE_NEW_TAB_URL, null));
+
+        // Verifies that the SharedPreference is updated when the DSE is changed.
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
+        assertTrue(mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false));
+        assertFalse(mSharedPreferenceManager.contains(ChromePreferenceKeys.DSE_NEW_TAB_URL));
+
+        mDseNewTabUrlManager.destroy();
+        verify(mTemplateUrlService).removeObserver(mTemplateUrlServiceObserverCaptor.capture());
+    }
+
+    @Test
+    public void testIsDefaultSearchEngineGoogle() {
+        assertNull(mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
+
+        // Verifies the cases when mTemplateUrlService is null and the SharedPreference is read.
+        assertFalse(SharedPreferencesManager.getInstance().contains(
+                ChromePreferenceKeys.IS_DSE_GOOGLE));
+        assertTrue(mDseNewTabUrlManager.isDefaultSearchEngineGoogle());
+
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_DSE_GOOGLE, false);
+        assertFalse(mDseNewTabUrlManager.isDefaultSearchEngineGoogle());
+
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_DSE_GOOGLE, true);
+        assertTrue(mDseNewTabUrlManager.isDefaultSearchEngineGoogle());
+
+        // Verifies the cases when mTemplateUrlService is initialized.
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mProfileSupplier.set(mProfile);
+        verify(mTemplateUrlService).addObserver(mTemplateUrlServiceObserverCaptor.capture());
+
+        assertNotEquals(null, mDseNewTabUrlManager.getTemplateUrlServiceForTesting());
+        assertFalse(mDseNewTabUrlManager.isDefaultSearchEngineGoogle());
+
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
+        assertTrue(mDseNewTabUrlManager.isDefaultSearchEngineGoogle());
+    }
+}
