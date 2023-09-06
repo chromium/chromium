@@ -71,7 +71,6 @@
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/arc_quota_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_client.h"
@@ -152,7 +151,6 @@ void InitializeDBus() {
   InitializeDBusClient<ArcKeyMintClient>(bus);
   InitializeDBusClient<ArcMidisClient>(bus);
   InitializeDBusClient<ArcObbMounterClient>(bus);
-  InitializeDBusClient<ArcQuotaClient>(bus);
   InitializeDBusClient<ArcVmDataMigratorClient>(bus);
   InitializeDBusClient<AttestationClient>(bus);
   InitializeDBusClient<BiodClient>(bus);  // For device::Fingerprint.
@@ -345,7 +343,6 @@ void ShutdownDBus() {
   BiodClient::Shutdown();
   AttestationClient::Shutdown();
   ArcVmDataMigratorClient::Shutdown();
-  ArcQuotaClient::Shutdown();
   ArcObbMounterClient::Shutdown();
   ArcMidisClient::Shutdown();
   ArcKeyMintClient::Shutdown();

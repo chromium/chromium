@@ -85,7 +85,6 @@ source_set("unit_tests") {
     "biod/fake_biod_client_unittest.cc",
     "dbus_thread_manager_unittest.cc",
     "hiberman/hiberman_client_unittest.cc",
-    "userdataauth/arc_quota_client_unittest.cc",
     "userdataauth/cryptohome_misc_client_unittest.cc",
     "userdataauth/cryptohome_pkcs11_client_unittest.cc",
     "userdataauth/install_attributes_client_unittest.cc",
