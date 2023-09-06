@@ -61,6 +61,10 @@
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             regularBrowserState);
   }
+
+  self.regularViewController.regularTabsDelegate = _mediator;
+  self.regularViewController.regularTabsDragDropHandler = _mediator;
+  self.regularViewController.regularTabsShareableItemsProvider = _mediator;
 }
 
 - (void)stop {

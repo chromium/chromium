@@ -765,17 +765,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
              prefService:GetApplicationContext()->GetLocalState()];
   }
 
-  baseViewController.regularTabsDelegate = self.regularTabsMediator;
-
-  baseViewController.regularTabsDragDropHandler = self.regularTabsMediator;
   if (IsPinnedTabsEnabled()) {
     baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
   }
-
   baseViewController.priceCardDataSource = self.priceCardMediator;
 
-  baseViewController.regularTabsShareableItemsProvider =
-      self.regularTabsMediator;
 
   _incognitoGridCoordinator = [[IncognitoGridCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -876,12 +870,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self.remoteTabsMediator refreshSessionsView];
   }
 
-  _mediator.regularPageMutator = self.regularTabsMediator;
+  _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
   _mediator.remotePageMutator = self.remoteTabsMediator;
 
-  self.regularTabsMediator.toolbarsMutator =
-      _toolbarsCoordinator.toolbarsMutator;
   self.remoteTabsMediator.toolbarsMutator =
       _toolbarsCoordinator.toolbarsMutator;
 
