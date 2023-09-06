@@ -5555,11 +5555,15 @@ TEST_P(RendererPixelTest, BlurExpandsBounds) {
   pass_list.push_back(std::move(child_pass));
   pass_list.push_back(std::move(root_pass));
 
-  auto* expected_file = renderer_type() == RendererType::kSoftware
-                            ? FILE_PATH_LITERAL("blur_expands_bounds_sw.png")
-                            : FILE_PATH_LITERAL("blur_expands_bounds.png");
+  base::FilePath expected_result =
+      base::FilePath(FILE_PATH_LITERAL("blur_expands_bounds.png"));
+  if (is_software_renderer()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
+  } else if (is_skia_graphite()) {
+    expected_result = expected_result.InsertBeforeExtensionASCII(kGraphiteStr);
+  }
   EXPECT_TRUE(this->RunPixelTest(
-      &pass_list, base::FilePath(expected_file),
+      &pass_list, expected_result,
       // Allow 55/200 ~= 28% of pixels to be off by a small amount in each
       // channel to permit some small difference between renderers.
       cc::FuzzyPixelComparator()

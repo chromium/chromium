@@ -18,10 +18,12 @@
 //components/test/data/viz/backdrop_filter_blur_off_axis_skia_vk.png
 //components/test/data/viz/backdrop_filter_blur_outsets.png
 //components/test/data/viz/backdrop_filter_blur_radius_skia_gl.png
+//components/test/data/viz/backdrop_filter_blur_radius_skia_graphite.png
 //components/test/data/viz/backdrop_filter_blur_radius_skia_vk.png
 //components/test/data/viz/backdrop_filter_blur_rounded.png
 //components/test/data/viz/backdrop_filter_blur_rounded_sw.png
 //components/test/data/viz/backdrop_filter_blur_skia_gl.png
+//components/test/data/viz/backdrop_filter_blur_skia_graphite.png
 //components/test/data/viz/backdrop_filter_blur_skia_vk.png
 //components/test/data/viz/backdrop_filter_blur_sw.png
 //components/test/data/viz/backdrop_filter_bounds_with_children.png
@@ -34,6 +36,7 @@
 //components/test/data/viz/backdrop_filter_on_scaled_layer_skia_vk.png
 //components/test/data/viz/backdrop_filter_on_scaled_layer_sw.png
 //components/test/data/viz/backdrop_filter_rotated_skia_gl.png
+//components/test/data/viz/backdrop_filter_rotated_skia_graphite.png
 //components/test/data/viz/backdrop_filter_rotated_skia_vk.png
 //components/test/data/viz/backdrop_filter_rotated_sw.png
 //components/test/data/viz/backdrop_filter_zoom.png
@@ -48,13 +51,16 @@
 //components/test/data/viz/blue_yellow_partial_flipped.png
 //components/test/data/viz/blue_yellow_partial_flipped_dither.png
 //components/test/data/viz/blur_expands_bounds.png
+//components/test/data/viz/blur_expands_bounds_graphite.png
 //components/test/data/viz/blur_expands_bounds_sw.png
 //components/test/data/viz/blur_filter_with_clip_skia_gl.png
+//components/test/data/viz/blur_filter_with_clip_skia_graphite.png
 //components/test/data/viz/blur_filter_with_clip_skia_vk.png
 //components/test/data/viz/blur_filter_with_clip_sw.png
 //components/test/data/viz/bypass_render_pass.png
 //components/test/data/viz/bypass_texture.png
 //components/test/data/viz/bypass_texture_rotated.png
+//components/test/data/viz/bypass_texture_rotated_graphite.png
 //components/test/data/viz/dark_grey.png
 //components/test/data/viz/delegated_ink_one_trail.png
 //components/test/data/viz/delegated_ink_one_trail_graphite.png
