@@ -37,32 +37,29 @@ namespace {
 base::Value::Dict NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
                                               int net_error,
                                               base::StringPiece description) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("net_error", ErrorToShortString(net_error));
-  dict.Set("description", description);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("net_error", ErrorToShortString(net_error))
+      .Set("description", description);
 }
 
 base::Value::Dict NetLogSpdyStreamWindowUpdateParams(
     spdy::SpdyStreamId stream_id,
     int32_t delta,
     int32_t window_size) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("delta", delta);
-  dict.Set("window_size", window_size);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("delta", delta)
+      .Set("window_size", window_size);
 }
 
 base::Value::Dict NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
                                        int size,
                                        bool fin) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("size", size);
-  dict.Set("fin", fin);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("size", size)
+      .Set("fin", fin);
 }
 
 }  // namespace

@@ -27,14 +27,13 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                          const char* error_message) {
   net_log.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_INVALID_HEADER,
                    [&](NetLogCaptureMode capture_mode) {
-                     base::Value::Dict dict;
-                     dict.Set("header_name", NetLogStringValue(header_name));
-                     dict.Set("header_value",
+                     return base::Value::Dict()
+                         .Set("header_name", NetLogStringValue(header_name))
+                         .Set("header_value",
                               NetLogStringValue(ElideHeaderValueForNetLog(
                                   capture_mode, std::string(header_name),
-                                  std::string(header_value))));
-                     dict.Set("error", error_message);
-                     return dict;
+                                  std::string(header_value))))
+                         .Set("error", error_message);
                    });
 }
 

@@ -182,11 +182,12 @@ base::Value::Dict NetLogSpdyHeadersSentParams(
     bool exclusive,
     NetLogSource source_dependency,
     NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.Set("fin", fin);
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("has_priority", has_priority);
+  auto dict = base::Value::Dict()
+                  .Set("headers",
+                       ElideHttp2HeaderBlockForNetLog(*headers, capture_mode))
+                  .Set("fin", fin)
+                  .Set("stream_id", static_cast<int>(stream_id))
+                  .Set("has_priority", has_priority);
   if (has_priority) {
     dict.Set("parent_stream_id", static_cast<int>(parent_stream_id));
     dict.Set("weight", weight);
@@ -203,26 +204,23 @@ base::Value::Dict NetLogSpdyHeadersReceivedParams(
     bool fin,
     spdy::SpdyStreamId stream_id,
     NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
-  dict.Set("fin", fin);
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  return dict;
+  return base::Value::Dict()
+      .Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode))
+      .Set("fin", fin)
+      .Set("stream_id", static_cast<int>(stream_id));
 }
 
 base::Value::Dict NetLogSpdySessionCloseParams(int net_error,
                                                const std::string& description) {
-  base::Value::Dict dict;
-  dict.Set("net_error", net_error);
-  dict.Set("description", description);
-  return dict;
+  return base::Value::Dict()
+      .Set("net_error", net_error)
+      .Set("description", description);
 }
 
 base::Value::Dict NetLogSpdySessionParams(const HostPortProxyPair& host_pair) {
-  base::Value::Dict dict;
-  dict.Set("host", host_pair.first.ToString());
-  dict.Set("proxy", ProxyServerToPacResultElement(host_pair.second));
-  return dict;
+  return base::Value::Dict()
+      .Set("host", host_pair.first.ToString())
+      .Set("proxy", ProxyServerToPacResultElement(host_pair.second));
 }
 
 base::Value::Dict NetLogSpdyInitializedParams(NetLogSource source) {
@@ -236,7 +234,6 @@ base::Value::Dict NetLogSpdyInitializedParams(NetLogSource source) {
 
 base::Value::Dict NetLogSpdySendSettingsParams(
     const spdy::SettingsMap* settings) {
-  base::Value::Dict dict;
   base::Value::List settings_list;
   for (const auto& setting : *settings) {
     const spdy::SpdySettingsId id = setting.first;
@@ -245,84 +242,76 @@ base::Value::Dict NetLogSpdySendSettingsParams(
         base::StringPrintf("[id:%u (%s) value:%u]", id,
                            spdy::SettingsIdToString(id).c_str(), value));
   }
-  dict.Set("settings", std::move(settings_list));
-  return dict;
+
+  return base::Value::Dict().Set("settings", std::move(settings_list));
 }
 
 base::Value::Dict NetLogSpdyRecvAcceptChParams(
     spdy::AcceptChOriginValuePair entry) {
-  base::Value::Dict dict;
-  dict.Set("origin", entry.origin);
-  dict.Set("accept_ch", entry.value);
-  return dict;
+  return base::Value::Dict()
+      .Set("origin", entry.origin)
+      .Set("accept_ch", entry.value);
 }
 
 base::Value::Dict NetLogSpdyRecvSettingParams(spdy::SpdySettingsId id,
                                               uint32_t value) {
-  base::Value::Dict dict;
-  dict.Set("id", base::StringPrintf("%u (%s)", id,
-                                    spdy::SettingsIdToString(id).c_str()));
-  dict.Set("value", static_cast<int>(value));
-  return dict;
+  return base::Value::Dict()
+      .Set("id", base::StringPrintf("%u (%s)", id,
+                                    spdy::SettingsIdToString(id).c_str()))
+      .Set("value", static_cast<int>(value));
 }
 
 base::Value::Dict NetLogSpdyWindowUpdateFrameParams(
     spdy::SpdyStreamId stream_id,
     uint32_t delta) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("delta", static_cast<int>(delta));
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("delta", static_cast<int>(delta));
 }
 
 base::Value::Dict NetLogSpdySessionWindowUpdateParams(int32_t delta,
                                                       int32_t window_size) {
-  base::Value::Dict dict;
-  dict.Set("delta", delta);
-  dict.Set("window_size", window_size);
-  return dict;
+  return base::Value::Dict()
+      .Set("delta", delta)
+      .Set("window_size", window_size);
 }
 
 base::Value::Dict NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
                                        int size,
                                        bool fin) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("size", size);
-  dict.Set("fin", fin);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("size", size)
+      .Set("fin", fin);
 }
 
 base::Value::Dict NetLogSpdyRecvRstStreamParams(
     spdy::SpdyStreamId stream_id,
     spdy::SpdyErrorCode error_code) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("error_code", base::StringPrintf("%u (%s)", error_code,
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("error_code", base::StringPrintf("%u (%s)", error_code,
                                             ErrorCodeToString(error_code)));
-  return dict;
 }
 
 base::Value::Dict NetLogSpdySendRstStreamParams(
     spdy::SpdyStreamId stream_id,
     spdy::SpdyErrorCode error_code,
     const std::string& description) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("error_code", base::StringPrintf("%u (%s)", error_code,
-                                            ErrorCodeToString(error_code)));
-  dict.Set("description", description);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("error_code", base::StringPrintf("%u (%s)", error_code,
+                                            ErrorCodeToString(error_code)))
+      .Set("description", description);
 }
 
 base::Value::Dict NetLogSpdyPingParams(spdy::SpdyPingId unique_id,
                                        bool is_ack,
                                        const char* type) {
-  base::Value::Dict dict;
-  dict.Set("unique_id", static_cast<int>(unique_id));
-  dict.Set("type", type);
-  dict.Set("is_ack", is_ack);
-  return dict;
+  return base::Value::Dict()
+      .Set("unique_id", static_cast<int>(unique_id))
+      .Set("type", type)
+      .Set("is_ack", is_ack);
 }
 
 base::Value::Dict NetLogSpdyRecvGoAwayParams(spdy::SpdyStreamId last_stream_id,
@@ -330,38 +319,35 @@ base::Value::Dict NetLogSpdyRecvGoAwayParams(spdy::SpdyStreamId last_stream_id,
                                              spdy::SpdyErrorCode error_code,
                                              base::StringPiece debug_data,
                                              NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
-  dict.Set("last_accepted_stream_id", static_cast<int>(last_stream_id));
-  dict.Set("active_streams", active_streams);
-  dict.Set("error_code", base::StringPrintf("%u (%s)", error_code,
-                                            ErrorCodeToString(error_code)));
-  dict.Set("debug_data",
+  return base::Value::Dict()
+      .Set("last_accepted_stream_id", static_cast<int>(last_stream_id))
+      .Set("active_streams", active_streams)
+      .Set("error_code", base::StringPrintf("%u (%s)", error_code,
+                                            ErrorCodeToString(error_code)))
+      .Set("debug_data",
            ElideGoAwayDebugDataForNetLog(capture_mode, debug_data));
-  return dict;
 }
 
 base::Value::Dict NetLogSpdySessionStalledParams(size_t num_active_streams,
                                                  size_t num_created_streams,
                                                  size_t max_concurrent_streams,
                                                  const std::string& url) {
-  base::Value::Dict dict;
-  dict.Set("num_active_streams", static_cast<int>(num_active_streams));
-  dict.Set("num_created_streams", static_cast<int>(num_created_streams));
-  dict.Set("max_concurrent_streams", static_cast<int>(max_concurrent_streams));
-  dict.Set("url", url);
-  return dict;
+  return base::Value::Dict()
+      .Set("num_active_streams", static_cast<int>(num_active_streams))
+      .Set("num_created_streams", static_cast<int>(num_created_streams))
+      .Set("max_concurrent_streams", static_cast<int>(max_concurrent_streams))
+      .Set("url", url);
 }
 
 base::Value::Dict NetLogSpdyPriorityParams(spdy::SpdyStreamId stream_id,
                                            spdy::SpdyStreamId parent_stream_id,
                                            int weight,
                                            bool exclusive) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("parent_stream_id", static_cast<int>(parent_stream_id));
-  dict.Set("weight", weight);
-  dict.Set("exclusive", exclusive);
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("parent_stream_id", static_cast<int>(parent_stream_id))
+      .Set("weight", weight)
+      .Set("exclusive", exclusive);
 }
 
 base::Value::Dict NetLogSpdyGreasedFrameParams(spdy::SpdyStreamId stream_id,
@@ -369,13 +355,12 @@ base::Value::Dict NetLogSpdyGreasedFrameParams(spdy::SpdyStreamId stream_id,
                                                uint8_t flags,
                                                size_t length,
                                                RequestPriority priority) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("type", type);
-  dict.Set("flags", flags);
-  dict.Set("length", static_cast<int>(length));
-  dict.Set("priority", RequestPriorityToString(priority));
-  return dict;
+  return base::Value::Dict()
+      .Set("stream_id", static_cast<int>(stream_id))
+      .Set("type", type)
+      .Set("flags", flags)
+      .Set("length", static_cast<int>(length))
+      .Set("priority", RequestPriorityToString(priority));
 }
 
 // Helper function to return the total size of an array of objects
@@ -1392,11 +1377,28 @@ void SpdySession::MaybeFinishGoingAway() {
 }
 
 base::Value::Dict SpdySession::GetInfoAsValue() const {
-  base::Value::Dict dict;
+  DCHECK(buffered_spdy_framer_.get());
 
-  dict.Set("source_id", static_cast<int>(net_log_.source().id));
+  auto dict =
+      base::Value::Dict()
+          .Set("source_id", static_cast<int>(net_log_.source().id))
+          .Set("host_port_pair", host_port_pair().ToString())
+          .Set("proxy", ProxyServerToProxyUri(host_port_proxy_pair().second))
+          .Set("network_anonymization_key",
+               spdy_session_key_.network_anonymization_key().ToDebugString())
+          .Set("active_streams", static_cast<int>(active_streams_.size()))
+          .Set("negotiated_protocol",
+               NextProtoToString(socket_->GetNegotiatedProtocol()))
+          .Set("error", error_on_close_)
+          .Set("max_concurrent_streams",
+               static_cast<int>(max_concurrent_streams_))
+          .Set("streams_initiated_count", streams_initiated_count_)
+          .Set("streams_abandoned_count", streams_abandoned_count_)
+          .Set("frames_received", buffered_spdy_framer_->frames_received())
+          .Set("send_window_size", session_send_window_size_)
+          .Set("recv_window_size", session_recv_window_size_)
+          .Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_);
 
-  dict.Set("host_port_pair", host_port_pair().ToString());
   if (!pooled_aliases_.empty()) {
     base::Value::List alias_list;
     for (const auto& alias : pooled_aliases_) {
@@ -1404,26 +1406,6 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
     }
     dict.Set("aliases", std::move(alias_list));
   }
-  dict.Set("proxy", ProxyServerToProxyUri(host_port_proxy_pair().second));
-  dict.Set("network_anonymization_key",
-           spdy_session_key_.network_anonymization_key().ToDebugString());
-
-  dict.Set("active_streams", static_cast<int>(active_streams_.size()));
-
-  dict.Set("negotiated_protocol",
-           NextProtoToString(socket_->GetNegotiatedProtocol()));
-
-  dict.Set("error", error_on_close_);
-  dict.Set("max_concurrent_streams", static_cast<int>(max_concurrent_streams_));
-
-  dict.Set("streams_initiated_count", streams_initiated_count_);
-  dict.Set("streams_abandoned_count", streams_abandoned_count_);
-  DCHECK(buffered_spdy_framer_.get());
-  dict.Set("frames_received", buffered_spdy_framer_->frames_received());
-
-  dict.Set("send_window_size", session_send_window_size_);
-  dict.Set("recv_window_size", session_recv_window_size_);
-  dict.Set("unacked_recv_window_bytes", session_unacked_recv_window_bytes_);
   return dict;
 }
 
