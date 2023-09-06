@@ -90,3 +90,38 @@ async def test_browsingContext_userPromptClosed_event(websocket, context_id):
             "accepted": True
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_userPromptOpened_event_default_value(
+        websocket, context_id):
+
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+
+    message = 'Prompt Opened'
+    default = 'Prompt Default'
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""prompt('{message}', '{default}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
+            }
+        })
+
+    response = await wait_for_event(websocket,
+                                    "browsingContext.userPromptOpened")
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.userPromptOpened",
+        "params": {
+            "context": context_id,
+            "type": 'prompt',
+            "message": message,
+            "defaultValue": default,
+        }
+    }
