@@ -22,6 +22,10 @@ export interface SiteInfo {
   detail: string;
 }
 
+export interface SiteInfoWithTarget extends SiteInfo {
+  target: EventTarget;
+}
+
 export class SettingsSafetyHubModuleElement extends PolymerElement {
   static get is() {
     return 'settings-safety-hub-module';
@@ -47,6 +51,12 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
 
       // The icon for button of the list item.
       buttonIcon: String,
+
+      // Whether the more action button is visible.
+      moreActionVisible: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -54,12 +64,22 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
   header: string;
   subheader: string;
   buttonIcon: string;
+  moreActionVisible: boolean;
 
   private onItemButtonClick_(e: DomRepeatEvent<SiteInfo>) {
     const item = e.model.item;
     this.dispatchEvent(new CustomEvent(
         'sh-module-item-button-click',
         {bubbles: true, composed: true, detail: item}));
+  }
+
+  private onMoreActionClick_(e: DomRepeatEvent<SiteInfo>) {
+    const item: SiteInfoWithTarget = {...e.model.item, target: e.target!};
+    this.dispatchEvent(new CustomEvent('sh-module-more-action-button-click', {
+      bubbles: true,
+      composed: true,
+      detail: item,
+    }));
   }
 }
 

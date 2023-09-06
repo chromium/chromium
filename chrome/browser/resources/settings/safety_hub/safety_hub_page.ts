@@ -19,7 +19,7 @@ import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwor
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {CardInfo, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {CardInfo, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_page.html.js';
 
 export interface SettingsSafetyHubPageElement {
@@ -54,6 +54,12 @@ export class SettingsSafetyHubPageElement extends
       // The object that holds data of Safe Browsing card.
       safeBrowsingCardData_: Object,
 
+      // Whether Notification Permissions module should be visible.
+      showNotificationPermissions_: {
+        type: Boolean,
+        value: false,
+      },
+
       // Whether Unused Site Permissions module should be visible.
       showUnusedSitePermissions_: {
         type: Boolean,
@@ -63,7 +69,7 @@ export class SettingsSafetyHubPageElement extends
       showNoRecommendationsState_: {
         type: Boolean,
         computed:
-            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*)',
+            'computeShowNoRecommendationsState_(showUnusedSitePermissions_.*, showNotificationPermissions_.*)',
       },
     };
   }
@@ -71,6 +77,7 @@ export class SettingsSafetyHubPageElement extends
   private passwordCardData_: CardInfo;
   private versionCardData_: CardInfo;
   private safeBrowsingCardData_: CardInfo;
+  private showNotificationPermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private showNoRecommendationsState_: boolean;
   private browserProxy_: SafetyHubBrowserProxy =
@@ -99,9 +106,18 @@ export class SettingsSafetyHubPageElement extends
 
   private initializeModules_() {
     this.addWebUiListener(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        (sites: NotificationPermission[]) =>
+            this.onNotificationPermissionListChanged_(sites));
+
+    this.addWebUiListener(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
+
+    this.browserProxy_.getNotificationPermissionReview().then(
+        (sites: NotificationPermission[]) =>
+            this.onNotificationPermissionListChanged_(sites));
 
     this.browserProxy_.getRevokedUnusedSitePermissionsList().then(
         (sites: UnusedSitePermissions[]) =>
@@ -125,6 +141,14 @@ export class SettingsSafetyHubPageElement extends
         /* removeSearch= */ true);
   }
 
+  private onNotificationPermissionListChanged_(permissions:
+                                                   NotificationPermission[]) {
+    // The module should be visible if there is any item on the list, or if
+    // there is no item on the list but the list was shown before.
+    this.showNotificationPermissions_ =
+        permissions.length > 0 || this.showNotificationPermissions_;
+  }
+
   private onUnusedSitePermissionListChanged_(permissions:
                                                  UnusedSitePermissions[]) {
     // The module should be visible if there is any item on the list, or if
@@ -134,7 +158,8 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private computeShowNoRecommendationsState_(): boolean {
-    return !this.showUnusedSitePermissions_;
+    return !(
+        this.showUnusedSitePermissions_ || this.showNotificationPermissions_);
   }
 }
 

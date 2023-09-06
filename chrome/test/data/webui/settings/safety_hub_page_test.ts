@@ -21,6 +21,11 @@ suite('SafetyHubPage', function() {
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
 
+  const notificationPermissionMockData = [{
+    origin: 'www.example.com',
+    notificationInfoString: 'About 1 notifications a day',
+  }];
+
   const unusedSitePermissionMockData = [{
     origin: 'www.example.com',
     permissions: [ContentSettingsTypes.CAMERA],
@@ -61,31 +66,51 @@ suite('SafetyHubPage', function() {
     return flushTasks();
   });
 
-  test('No Recommendation State Visibility', async function() {
-    // The element is visible when there is nothing to review.
-    assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+  test(
+      'No Recommendation State Visibility With Unused Site Permissions Module',
+      async function() {
+        // The element is visible when there is nothing to review.
+        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
 
-    // The element becomes hidden if the is any module that needs attention.
-    webUIListenerCallback(
-        SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
-        unusedSitePermissionMockData);
-    await flushTasks();
-    assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+        // The element becomes hidden if the is any module that needs attention.
+        webUIListenerCallback(
+            SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+            unusedSitePermissionMockData);
+        await flushTasks();
+        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
 
-    // Once hidden, it remains hidden as other modules are visible.
-    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
-    await flushTasks();
-    assertFalse(isChildVisible(testElement, '#emptyStateModule'));
-  });
+        // Once hidden, it remains hidden as other modules are visible.
+        webUIListenerCallback(
+            SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+        await flushTasks();
+        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+      });
+
+  test(
+      'No Recommendation State Visibility With Notification Permissions Module',
+      async function() {
+        // The element is visible when there is nothing to review.
+        assertTrue(isChildVisible(testElement, '#emptyStateModule'));
+
+        // The element becomes hidden if the is any module that needs attention.
+        webUIListenerCallback(
+            SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+            notificationPermissionMockData);
+        await flushTasks();
+        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+
+        // Once hidden, it remains hidden as other modules are visible.
+        webUIListenerCallback(
+            SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
+        await flushTasks();
+        assertFalse(isChildVisible(testElement, '#emptyStateModule'));
+      });
 
   test('Unused Site Permissions Module Visibility', async function() {
     // The element is not visible when there is nothing to review.
-    safetyHubBrowserProxy.setUnusedSitePermissions([]);
-    testElement = document.createElement('settings-safety-hub-page');
-    document.body.appendChild(testElement);
-    await flushTasks();
-    assertFalse(
-        isChildVisible(testElement, 'settings-unused-site-permissions'));
+    const unusedSitePermissionsElementTag =
+        'settings-safety-hub-unused-site-permissions';
+    assertFalse(isChildVisible(testElement, unusedSitePermissionsElementTag));
 
     // The element becomes visible if the list of permissions is no longer
     // empty.
@@ -93,21 +118,45 @@ suite('SafetyHubPage', function() {
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
-    assertTrue(isChildVisible(
-        testElement, 'settings-safety-hub-unused-site-permissions'));
+    assertTrue(isChildVisible(testElement, unusedSitePermissionsElementTag));
 
     // Once visible, it remains visible regardless of list length.
     webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
     await flushTasks();
-    assertTrue(isChildVisible(
-        testElement, 'settings-safety-hub-unused-site-permissions'));
+    assertTrue(isChildVisible(testElement, unusedSitePermissionsElementTag));
 
     webUIListenerCallback(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         unusedSitePermissionMockData);
     await flushTasks();
-    assertTrue(isChildVisible(
-        testElement, 'settings-safety-hub-unused-site-permissions'));
+    assertTrue(isChildVisible(testElement, unusedSitePermissionsElementTag));
+  });
+
+  test('Notification Permissions Module Visibility', async function() {
+    // The element is not visible when there is nothing to review.
+    const notificationPermissionsElementTag =
+        'settings-safety-hub-notification-permissions-module';
+    assertFalse(isChildVisible(testElement, notificationPermissionsElementTag));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        notificationPermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
+
+    webUIListenerCallback(
+        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
+        notificationPermissionMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
   });
 
   test('Password Card', async function() {
@@ -115,11 +164,11 @@ suite('SafetyHubPage', function() {
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
-        testElement.$.passwords!.shadowRoot!.querySelector(
-                                                '#header')!.textContent!.trim(),
+        testElement.$.passwords.shadowRoot!.querySelector(
+                                               '#header')!.textContent!.trim(),
         passwordCardMockData.header);
     assertEquals(
-        testElement.$.passwords!.shadowRoot!.querySelector('#subheader')!
+        testElement.$.passwords.shadowRoot!.querySelector('#subheader')!
             .textContent!.trim(),
         passwordCardMockData.subheader);
   });
@@ -137,12 +186,12 @@ suite('SafetyHubPage', function() {
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
-        testElement.$.version!.shadowRoot!.querySelector(
-                                              '#header')!.textContent!.trim(),
+        testElement.$.version.shadowRoot!.querySelector(
+                                             '#header')!.textContent!.trim(),
         versionCardMockData.header);
     assertEquals(
-        testElement.$.version!.shadowRoot!.querySelector('#subheader')!
-            .textContent!.trim(),
+        testElement.$.version.shadowRoot!.querySelector(
+                                             '#subheader')!.textContent!.trim(),
         versionCardMockData.subheader);
   });
 
@@ -158,11 +207,11 @@ suite('SafetyHubPage', function() {
 
     // Card header and subheader should be what the browser proxy provides.
     assertEquals(
-        testElement.$.safeBrowsing!.shadowRoot!.querySelector('#header')!
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#header')!
             .textContent!.trim(),
         safeBrowsingCardMockData.header);
     assertEquals(
-        testElement.$.safeBrowsing!.shadowRoot!.querySelector('#subheader')!
+        testElement.$.safeBrowsing.shadowRoot!.querySelector('#subheader')!
             .textContent!.trim(),
         safeBrowsingCardMockData.subheader);
   });

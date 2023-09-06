@@ -54,6 +54,10 @@
 <div class="section-header cr-secondary-text">
   $i18n{safetyHubPageModuleSectionHeader}
 </div>
+<template is="dom-if" if="[[showNotificationPermissions_]]">
+  <settings-safety-hub-notification-permissions-module class="module box">
+  </settings-safety-hub-notification-permissions-module>
+</template>
 <template is="dom-if" if="[[showUnusedSitePermissions_]]">
   <settings-safety-hub-unused-site-permissions class="module box">
   </settings-safety-hub-unused-site-permissions>

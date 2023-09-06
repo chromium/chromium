@@ -167,6 +167,7 @@ build_webui("build") {
     "safety_hub/safety_hub_entry_point.ts",
     "safety_hub/safety_hub_module.ts",
     "safety_hub/safety_hub_page.ts",
+    "safety_hub/notification_permissions_module.ts",
     "safety_hub/unused_site_permissions_module.ts",
     "search_engines_page/omnibox_extension_entry.ts",
     "search_engines_page/search_engine_edit_dialog.ts",

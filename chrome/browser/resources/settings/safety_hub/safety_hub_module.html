@@ -64,9 +64,15 @@
           <div class="site-representation">[[item.origin]]</div>
           <div class="cr-secondary-text">[[item.detail]]</div>
         </div>
-        <cr-icon-button iron-icon="[[buttonIcon]]"
+        <cr-icon-button iron-icon="[[buttonIcon]]" id="mainButton"
             on-click="onItemButtonClick_" actionable>
         </cr-icon-button>
+        <template is="dom-if" if="[[moreActionVisible]]">
+          <cr-icon-button class="icon-more-vert" id="moreActionButton"
+              on-click="onMoreActionClick_" title="$i18n{moreActions}"
+              actionable>
+          </cr-icon-button>
+        </template>
       </div>
     </template>
   </div>

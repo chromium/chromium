@@ -1013,8 +1013,13 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubEntryPoint) {
   RunTest("settings/safety_hub_entry_point_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, All) {
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, UnusedSitePermissionsModule) {
   RunTest("settings/safety_hub_unused_site_permissions_module_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, NotificationPermissionsModule) {
+  RunTest("settings/safety_hub_notification_permissions_module_test.js",
           "mocha.run()");
 }
 
