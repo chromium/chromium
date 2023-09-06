@@ -376,30 +376,16 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
  public:
-  EncodeOutput(uint32_t size,
-               bool key_frame,
-               base::TimeDelta timestamp,
-               int temporal_id,
-               gfx::ColorSpace color_space)
-      : keyframe(key_frame),
-        capture_timestamp(timestamp),
-        temporal_layer_id(temporal_id),
-        color_space(color_space),
-        data_(size) {}
+  EncodeOutput(uint32_t size, const BitstreamBufferMetadata& md)
+      : metadata(md), data_(size) {}
 
   EncodeOutput(const EncodeOutput&) = delete;
   EncodeOutput& operator=(const EncodeOutput&) = delete;
 
   uint8_t* memory() { return data_.data(); }
-
   int size() const { return static_cast<int>(data_.size()); }
-  void SetQp(int32_t qp_val) { frame_qp.emplace(qp_val); }
 
-  const bool keyframe;
-  const base::TimeDelta capture_timestamp;
-  const int temporal_layer_id;
-  absl::optional<int32_t> frame_qp;
-  const gfx::ColorSpace color_space;
+  BitstreamBufferMetadata metadata;
 
  private:
   std::vector<uint8_t> data_;
@@ -829,19 +815,7 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   memcpy(buffer_ref->mapping.memory(), encode_output->memory(),
          encode_output->size());
 
-  BitstreamBufferMetadata md(encode_output->size(), encode_output->keyframe,
-                             encode_output->capture_timestamp);
-  if (encode_output->frame_qp) {
-    md.qp = *encode_output->frame_qp;
-  }
-  if (temporal_scalable_coding()) {
-    md.h264.emplace().temporal_idx = encode_output->temporal_layer_id;
-  }
-  if (encode_output->color_space.IsValid()) {
-    md.encoded_color_space = encode_output->color_space;
-  }
-
-  client_->BitstreamBufferReady(buffer_ref->id, md);
+  client_->BitstreamBufferReady(buffer_ref->id, encode_output->metadata);
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -1853,19 +1827,29 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
   DVLOG(3) << "Encoded data with size:" << size << " keyframe " << keyframe;
 
+  BitstreamBufferMetadata md(size, keyframe, timestamp);
+  if (frame_qp.has_value() && IsValidQp(codec_, *frame_qp)) {
+    md.qp = *frame_qp;
+  }
+  if (temporal_scalable_coding()) {
+    if (codec_ == VideoCodec::kH264) {
+      md.h264.emplace().temporal_idx = temporal_id;
+    } else if (codec_ == VideoCodec::kHEVC) {
+      md.h265.emplace().temporal_idx = temporal_id;
+    }
+  }
+  if (metadata.color_space.IsValid()) {
+    md.encoded_color_space = metadata.color_space;
+  }
   // If no bit stream buffer presents, queue the output first.
   if (bitstream_buffer_queue_.empty()) {
     DVLOG(3) << "No bitstream buffers.";
 
     // We need to copy the output so that encoding can continue.
-    auto encode_output = std::make_unique<EncodeOutput>(
-        size, keyframe, timestamp, temporal_id, metadata.color_space);
+    auto encode_output = std::make_unique<EncodeOutput>(size, md);
     {
       MediaBufferScopedPointer scoped_buffer(output_buffer.Get());
       memcpy(encode_output->memory(), scoped_buffer.get(), size);
-      if (frame_qp.has_value() && IsValidQp(codec_, *frame_qp)) {
-        encode_output->SetQp(*frame_qp);
-      }
     }
     encoder_output_queue_.push_back(std::move(encode_output));
     output_data_buffer.pSample->Release();
@@ -1889,22 +1873,6 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
 
   output_data_buffer.pSample->Release();
   output_data_buffer.pSample = nullptr;
-
-  BitstreamBufferMetadata md(size, keyframe, timestamp);
-  if (frame_qp.has_value() && IsValidQp(codec_, *frame_qp)) {
-    md.qp = *frame_qp;
-  }
-
-  if (temporal_scalable_coding()) {
-    if (codec_ == VideoCodec::kH264) {
-      md.h264.emplace().temporal_idx = temporal_id;
-    } else if (codec_ == VideoCodec::kHEVC) {
-      md.h265.emplace().temporal_idx = temporal_id;
-    }
-  }
-  if (metadata.color_space.IsValid()) {
-    md.encoded_color_space = metadata.color_space;
-  }
 
   client_->BitstreamBufferReady(buffer_ref->id, md);
 }
