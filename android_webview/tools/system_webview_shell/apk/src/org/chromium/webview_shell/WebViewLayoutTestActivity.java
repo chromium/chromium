@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -100,6 +101,26 @@ public class WebViewLayoutTestActivity extends Activity {
                 return true;
             }
         });
+
+        // The WebView permissions layout tests depend on results from the console and permissions
+        // logs which is highly order specific.
+        // WebChromeClient#onConsoleMessage is async so using it would result in flaky tests for our
+        // WebView specific tests that have permission prompts.
+        // To get around this we can create our own "synchronous" console that really just calls a
+        // javascript interface.
+        // We still need to use WebChromeClient#onConsoleMessage because most blink tests will
+        // not be impacted by this and adding a synchronous call to every single console.log is
+        // super costly.
+        // Those tests are in blink so they shouldn't be a problem because those are blink tests
+        // and don't rely on our WebView specific permission prompt logs.
+        class SynchronousConsole {
+            @JavascriptInterface
+            public void log(String message) {
+                mConsoleLog.append(message + "\n");
+            }
+        }
+
+        mWebView.addJavascriptInterface(new SynchronousConsole(), "awConsole");
     }
 
     public void waitForFinish(long timeout, TimeUnit unit) throws InterruptedException,
