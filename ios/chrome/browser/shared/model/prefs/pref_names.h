@@ -50,6 +50,8 @@ extern const char kIosDiscoverFeedLastUnseenRefreshTime[];
 extern const char kIosLatestMostVisitedSites[];
 extern const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[];
 extern const char
+    kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness[];
+extern const char
     kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[];
 extern const char
     kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[];

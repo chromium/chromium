@@ -189,6 +189,7 @@ const char kMostVisitedTilesFreshness[] = "most_visited_tiles_freshness";
 const char kShortcutsFreshness[] = "shortcuts_freshness";
 const char kSafetyCheckFreshness[] = "safety_check_freshness";
 const char kTabResumptionFreshness[] = "tab_resumption_freshness";
+const char kParcelTrackingFreshness[] = "parcel_tracking_freshness";
 
 // Labels for desktop new tab page drive module model.
 // Any updates to these strings need to also update the field trials allowlist

@@ -123,6 +123,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
   int shortcuts_freshness_impression_count = 0;
   int safety_check_freshness_impression_count = 0;
   int tab_resumption_freshness_impression_count = 0;
+  int parcel_tracking_freshness_impression_count = 0;
   input_context->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -139,6 +140,10 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
       segmentation_platform::kTabResumptionFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           tab_resumption_freshness_impression_count));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kParcelTrackingFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          parcel_tracking_freshness_impression_count));
 
   base::RunLoop loop;
   service->GetClassificationResult(

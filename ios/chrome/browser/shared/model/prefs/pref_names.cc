@@ -175,6 +175,11 @@ const char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 const char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[] =
     "ios.magic_stack_segmentation.most_visited_sites_freshness";
 
+// Integer representing the number of impressions of the Parcel Tracking module
+// since a freshness signal.
+const char kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness[] =
+    "ios.magic_stack_segmentation.parcel_tracking_freshness";
+
 // Integer representing the number of impressions of Shortcuts since a freshness
 // signal.
 const char kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[] =
