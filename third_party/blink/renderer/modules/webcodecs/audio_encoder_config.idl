@@ -17,6 +17,8 @@ dictionary AudioEncoderConfig {
 
   [EnforceRange] unsigned long long bitrate;
 
+  BitrateMode bitrateMode = "variable";
+
   // Codec-specific extensions
   AacEncoderConfig aac;
   OpusEncoderConfig opus;

@@ -241,6 +241,15 @@ const validConfigs = [
     sampleRate: 48000,
     numberOfChannels: 2,
     bitrate: 128000,
+    bitrateMode: "constant",
+    bogus: 123
+  },
+  {
+    codec: 'opus',
+    sampleRate: 48000,
+    numberOfChannels: 2,
+    bitrate: 128000,
+    bitrateMode: "variable",
     bogus: 123
   },
   {

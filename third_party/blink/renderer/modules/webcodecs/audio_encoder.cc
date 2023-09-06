@@ -213,6 +213,13 @@ AudioEncoderTraits::ParsedConfig* ParseConfigStatic(
     result->options.bitrate = static_cast<int>(config->bitrate());
   }
 
+  if (config->hasBitrateMode()) {
+    result->options.bitrate_mode =
+        config->bitrateMode().AsEnum() == V8BitrateMode::Enum::kConstant
+            ? media::AudioEncoder::BitrateMode::kConstant
+            : media::AudioEncoder::BitrateMode::kVariable;
+  }
+
   switch (result->options.codec) {
     case media::AudioCodec::kOpus:
       return ParseOpusConfigStatic(
@@ -350,8 +357,13 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
   if (config.hasBitrate())
     result->setBitrate(config.bitrate());
 
-  if (config.codec() == String("opus") && config.hasOpus())
+  if (config.hasBitrateMode()) {
+    result->setBitrateMode(config.bitrateMode());
+  }
+
+  if (config.codec() == String("opus") && config.hasOpus()) {
     result->setOpus(CopyOpusConfig(*config.opus()));
+  }
   if (config.codec() == String("aac") && config.hasAac()) {
     result->setAac(CopyAacConfig(*config.aac()));
   }
