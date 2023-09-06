@@ -45,7 +45,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/views/help_bubble_views_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -73,7 +72,6 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Pair;
-using ::user_education::TutorialDescription;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -248,25 +246,6 @@ class HoldingSpaceTourControllerTest : public UserEducationAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Tests -----------------------------------------------------------------------
-
-// Verifies that `GetTutorialDescriptions()` returns expected values.
-TEST_F(HoldingSpaceTourControllerTest, GetTutorialDescriptions) {
-  auto* holding_space_tour_controller = HoldingSpaceTourController::Get();
-  ASSERT_TRUE(holding_space_tour_controller);
-
-  std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<UserEducationFeatureController*>(
-          holding_space_tour_controller)
-          ->GetTutorialDescriptions();
-
-  // TODO(http://b/275909980): Implement tutorial descriptions.
-  EXPECT_THAT(
-      tutorial_descriptions_by_id,
-      ElementsAre(Pair(Eq(TutorialId::kHoldingSpaceTourPrototype1), _),
-                  Pair(Eq(TutorialId::kHoldingSpaceTourPrototype2), _)));
-}
 
 // HoldingSpaceTourControllerDragAndDropTest -----------------------------------
 

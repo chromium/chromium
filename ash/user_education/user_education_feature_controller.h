@@ -31,7 +31,7 @@ class ASH_EXPORT UserEducationFeatureController {
   // Returns the descriptions for all feature tutorials controlled by this
   // instance, mapped to their respective identifiers.
   virtual std::map<TutorialId, user_education::TutorialDescription>
-  GetTutorialDescriptions() = 0;
+  GetTutorialDescriptions();
 
  protected:
   UserEducationFeatureController();

@@ -222,38 +222,6 @@ TEST_P(UserEducationControllerUserTypeTest, RegistersTutorials) {
   // Expect tutorials to be registered with user education services in the
   // browser if and only if the user is associated with a regular profile.
   if (GetUserType() == user_manager::USER_TYPE_REGULAR) {
-    // Expect Capture Mode Tour tutorials to be registered with user education
-    // services in the browser iff the Capture Mode Tour feature is enabled.
-    if (IsCaptureModeTourEnabled()) {
-      auto* capture_mode_tour_controller = CaptureModeTourController::Get();
-      ASSERT_TRUE(capture_mode_tour_controller);
-      for (const auto& [tutorial_id, ignore] :
-           static_cast<UserEducationFeatureController*>(
-               capture_mode_tour_controller)
-               ->GetTutorialDescriptions()) {
-        EXPECT_CALL(
-            *user_education_delegate,
-            RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
-            .RetiresOnSaturation();
-      }
-    }
-
-    // Expect Holding Space Tour tutorials to be registered with user education
-    // services in the browser iff the Holding Space Tour feature is enabled.
-    if (IsHoldingSpaceTourEnabled()) {
-      auto* holding_space_tour_controller = HoldingSpaceTourController::Get();
-      ASSERT_TRUE(holding_space_tour_controller);
-      for (const auto& [tutorial_id, ignore] :
-           static_cast<UserEducationFeatureController*>(
-               holding_space_tour_controller)
-               ->GetTutorialDescriptions()) {
-        EXPECT_CALL(
-            *user_education_delegate,
-            RegisterTutorial(Eq(primary_user_account_id), Eq(tutorial_id), _))
-            .RetiresOnSaturation();
-      }
-    }
-
     // Expect Welcome Tour tutorials to be registered with user education
     // services in the browser iff the Welcome Tour feature is enabled.
     if (IsWelcomeTourEnabled()) {

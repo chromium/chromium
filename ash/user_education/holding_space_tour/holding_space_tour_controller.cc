@@ -33,7 +33,6 @@
 #include "base/files/file_path.h"
 #include "base/pickle.h"
 #include "base/scoped_observation.h"
-#include "components/user_education/common/tutorial_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -424,22 +423,6 @@ HoldingSpaceTourController::~HoldingSpaceTourController() {
 // static
 HoldingSpaceTourController* HoldingSpaceTourController::Get() {
   return g_instance;
-}
-
-// TODO(http://b/275909980): Implement tutorial descriptions.
-std::map<TutorialId, user_education::TutorialDescription>
-HoldingSpaceTourController::GetTutorialDescriptions() {
-  std::map<TutorialId, user_education::TutorialDescription>
-      tutorial_descriptions_by_id;
-  tutorial_descriptions_by_id.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(TutorialId::kHoldingSpaceTourPrototype1),
-      std::forward_as_tuple());
-  tutorial_descriptions_by_id.emplace(
-      std::piecewise_construct,
-      std::forward_as_tuple(TutorialId::kHoldingSpaceTourPrototype2),
-      std::forward_as_tuple());
-  return tutorial_descriptions_by_id;
 }
 
 }  // namespace ash
