@@ -7,10 +7,12 @@
 
 #include "base/functional/callback.h"
 #include "ui/views/view.h"
+#include "ui/views/view_targeter_delegate.h"
 
 // Creates and manages the content setting overlay for autopip.  This is used
 // both for video-only and document pip on desktop.  It is not used on Android.
-class AutoPipSettingOverlayView : public views::View {
+class AutoPipSettingOverlayView : public views::View,
+                                  public views::ViewTargeterDelegate {
  public:
   enum class UiResult {
     // User selected 'Allow'.
@@ -30,6 +32,11 @@ class AutoPipSettingOverlayView : public views::View {
 
   AutoPipSettingOverlayView(const AutoPipSettingOverlayView&) = delete;
   AutoPipSettingOverlayView(AutoPipSettingOverlayView&&) = delete;
+
+  // views::ViewTargeterDelegate
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override;
+  views::View* TargetForRect(views::View* root, const gfx::Rect& rect) override;
 
   const views::View* get_block_button_for_testing() const {
     return block_button_;

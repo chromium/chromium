@@ -19,6 +19,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(ResultCb result_cb)
   // Create the content setting UI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // Add the semi-opaque background layer.
   auto* background =
@@ -72,4 +73,36 @@ void AutoPipSettingOverlayView::OnButtonPressed(UiResult result) {
   // Hide the UI to prevent a second click.
   SetVisible(false);
   std::move(result_cb_).Run(result);
+}
+
+bool AutoPipSettingOverlayView::DoesIntersectRect(const views::View* target,
+                                                  const gfx::Rect& rect) const {
+  DCHECK_EQ(target, this);
+  if (allow_button_->HitTestRect(
+          ConvertRectToTarget(target, allow_button_, rect))) {
+    return true;
+  }
+
+  if (block_button_->HitTestRect(
+          ConvertRectToTarget(this, block_button_, rect))) {
+    return true;
+  }
+
+  return false;
+}
+
+views::View* AutoPipSettingOverlayView::TargetForRect(views::View* root,
+                                                      const gfx::Rect& rect) {
+  // The background does not consume events.
+  if (allow_button_->HitTestRect(
+          ConvertRectToTarget(root, allow_button_, rect))) {
+    return allow_button_;
+  }
+
+  if (block_button_->HitTestRect(
+          ConvertRectToTarget(root, block_button_, rect))) {
+    return block_button_;
+  }
+
+  return nullptr;
 }

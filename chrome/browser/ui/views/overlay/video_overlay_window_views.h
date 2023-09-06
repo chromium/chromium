@@ -37,6 +37,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
                                 public views::Widget,
                                 public display::DisplayObserver {
  public:
+  using GetOverlayViewCb =
+      base::RepeatingCallback<std::unique_ptr<views::View>()>;
+
   static std::unique_ptr<VideoOverlayWindowViews> Create(
       content::VideoPictureInPictureWindowController* controller);
 
@@ -157,6 +160,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   void ForceControlsVisibleForTesting(bool visible);
 
+  void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
+    get_overlay_view_cb_ = std::move(get_overlay_view_cb);
+  }
+
   // Determines whether a layout of the window controls has been scheduled but
   // is not done yet.
   bool IsLayoutPendingForTesting() const;
@@ -234,6 +241,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // visibility to the last requested state.
   void ReEnableControlsAfterMove();
 
+  // Returns true if and only if `overlay_view_` is currently shown.  In
+  // practice, the is the allow / block UI for auto-pip.
+  bool IsOverlayViewShown() const;
+
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 
@@ -300,6 +311,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view_ =
       nullptr;
   raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
+  raw_ptr<views::View> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Generates a nine patch layer painted with a highlight border for ChromeOS
@@ -347,6 +359,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Whether or not the current frame sink for the surface displayed in the
   // |video_view_| is registered as the child of the overlay window frame sink.
   bool has_registered_frame_sink_hierarchy_ = false;
+
+  // Callback to get / create an overlay view.  This is a callback to let tests
+  // provide alternate implementations.
+  GetOverlayViewCb get_overlay_view_cb_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_VIDEO_OVERLAY_WINDOW_VIEWS_H_
