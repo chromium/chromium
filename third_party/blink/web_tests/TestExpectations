@@ -6693,3 +6693,5 @@ crbug.com/1478891 [ Linux ] fast/events/middleClickAutoscroll-nested-divs-forbid
 # Gardener 2023-09-06
 crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/SharedWorker/same-origin.html [ Failure Pass ]
 crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/Worker/same-origin.html [ Failure Pass ]
+crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
+crbug.com/1479485 [ Linux ] fast/events/middleClickAutoscroll-event-fired.html [ Failure Pass ]
