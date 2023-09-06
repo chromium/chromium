@@ -22,17 +22,28 @@
   }
 
   #container {
+    background-color: var(--color-new-tab-page-module-item-background);
+    border: none;
     border-radius: var(--ntp-module-item-border-radius);
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    padding: 0;
+  }
+
+  ntp-module-header-v2 {
+    width: 100%;
+  }
+
+  h2 {
+    text-align: start;
   }
 
   .label-container {
     color: var(--color-new-tab-page-primary-foreground);
-    display: flex;
     font-size: 20px;
     height: 48px;
     line-height: 24px;
-    margin-top: 8px;
     padding: 0 16px;
   }
 
@@ -59,8 +70,8 @@
     border-radius: var(--ntp-module-item-border-radius);
   }
 
-  :host([suggestion-chip-header-enabled_][format='wide']:not([show-related-searches]))
-      .label-container {
+  :host([suggestion-chip-header-enabled_][format='wide']
+      :not([show-related-searches])) .label-container {
     align-items: start;
   }
 
@@ -111,25 +122,32 @@
     line-height: 20px;
   }
 </style>
-<div id="container" tabindex$="[[containerTabIndex_]]">
-  <div class="hover-layer" hidden="[[suggestionChipHeaderEnabled_]]"></div>
+
+<template is="dom-if" if="[[!suggestionChipHeaderEnabled_]]">
+  <div class="hover-layer"></div>
+  <button id="container" on-click="onClick_">
+    <ntp-module-header-v2
+        header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
+        on-menu-button-click="onMenuButtonClick_"
+        menu-item-groups="[[getMenuItemGroups_()]]"
+        more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
+    </ntp-module-header-v2>
+    <h2 id="label" class="label-container">
+    [[clusterLabel]]
+    </h2>
+  </button>
+</template>
+<template is="dom-if" if="[[suggestionChipHeaderEnabled_]]">
   <ntp-module-header-v2
-      id="moduleHeaderElementV2"
       header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
       on-menu-button-click="onMenuButtonClick_"
       menu-item-groups="[[getMenuItemGroups_()]]"
       more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
   </ntp-module-header-v2>
-  <h2 id="label" class="label-container"
-      hidden="[[suggestionChipHeaderEnabled_]]">
-  [[clusterLabel]]
-  </h2>
-  <template is="dom-if" if="[[suggestionChipHeaderEnabled_]]">
-    <a id="suggestion-chip" class="label-container" href="[[normalizedUrl.url]]"
-        on-click="onSuggestClick_">
-      <div class="hover-layer"></div>
-      <div id="suggestion-chip-icon" class="cr-icon"></div>
-      <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
-    </a>
-  </template>
-</div>
+  <a id="suggestion-chip" class="label-container" href="[[normalizedUrl.url]]"
+      on-click="onSuggestClick_">
+    <div class="hover-layer"></div>
+    <div id="suggestion-chip-icon" class="cr-icon"></div>
+    <h2 id="suggestion-chip-label">[[clusterLabel]]</h2>
+  </a>
+</template>

@@ -137,8 +137,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     });
 
     test(
-        'Search suggestion header contains chip that is not hidden',
-        async () => {
+        'Search suggestion header contains chip', async () => {
           // Arrange.
           loadTimeData.overrideValues({
             historyClustersSuggestionChipHeaderEnabled: true,
@@ -146,18 +145,13 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           const moduleElements = await initializeModule(
               [createSampleCluster(2, {label: '"Sample Journey"'})]);
           const moduleElement = moduleElements[0];
-
-          // Act.
           assertTrue(!!moduleElement);
-          const headerElement = $$(moduleElement, 'history-clusters-header-v2');
-          assertTrue(!!headerElement);
-          const label = $$(headerElement, '#label');
-          assertTrue(!!label);
-          const suggestionChip = $$(headerElement, '#suggestion-chip');
-          assertTrue(!!suggestionChip);
 
           // Assert.
-          assertEquals((label as HTMLElement).hidden, true);
+          const headerElement = $$(moduleElement, 'history-clusters-header-v2');
+          assertTrue(!!headerElement);
+          const suggestionChip = $$(headerElement, '#suggestion-chip');
+          assertTrue(!!suggestionChip);
           assertEquals((suggestionChip as HTMLElement).hidden, false);
         });
 
@@ -267,11 +261,14 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           [createSampleCluster(2, {label: sampleClusterLabel})]);
       const moduleElement = moduleElements[0];
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'history-clusters-header-v2');
+      const headerElement =
+          $$<HTMLElement>(moduleElement, 'history-clusters-header-v2');
       assertTrue(!!headerElement);
+      const buttonElement = $$<HTMLElement>(headerElement, 'button');
+      assertTrue(!!buttonElement);
 
       const waitForUsageEvent = eventToPromise('usage', moduleElement);
-      headerElement.click();
+      buttonElement.click();
 
       assertEquals(
           sampleClusterLabel.substring(1, sampleClusterLabel.length - 1),
