@@ -61,13 +61,15 @@ class ExtensionTelemetryServiceBrowserTest
  public:
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {kExtensionTelemetry, kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
          kExtensionTelemetryCookiesGetAllSignal,
          kExtensionTelemetryCookiesGetSignal,
          kExtensionTelemetryDeclarativeNetRequestSignal,
          kExtensionTelemetryTabsApiSignal},
-        {});
+        /*disabled_features=*/
+        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
         test_extension_dir_.AppendASCII("safe_browsing/extension_telemetry");
@@ -587,9 +589,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 }
 
 // Test fixture with kExtensionTelemetryInterceptRemoteHostsContactedInRenderer
-// enabled, and
-// kExtensionTelemetryReportContactedHosts/kExtensionTelemetryReportHostsContactedViaWebSocket
-// disabled.
+// enabled.
 class
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
     : public ExtensionTelemetryServiceBrowserTest {
@@ -597,10 +597,13 @@ class
   ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
         {kExtensionTelemetry,
-         kExtensionTelemetryInterceptRemoteHostsContactedInRenderer},
-        {kExtensionTelemetryReportContactedHosts,
-         kExtensionTelemetryReportHostsContactedViaWebSocket});
+         kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+         kExtensionTelemetryReportContactedHosts,
+         kExtensionTelemetryReportHostsContactedViaWebSocket},
+        /*disabled_features=*/
+        {});
   }
 };
 
