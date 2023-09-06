@@ -38,6 +38,7 @@ config("xnnpack_config") {
     "XNN_ENABLE_ASSEMBLY=1",
     "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
     "XNN_ENABLE_MEMOPT=1",
+    "XNN_ENABLE_CPUINFO=1",
     "XNN_ENABLE_SPARSE=1",
     "XNN_LOG_LEVEL=0",
     "XNN_LOG_TO_STDIO=0",
@@ -52,24 +53,10 @@ source_set("xnnpack") {
 
   sources = [
     "src/src/allocator.c",
-    "src/src/argmaxpool-config.c",
-    "src/src/avgpool-config.c",
-    "src/src/binary-elementwise-config.c",
     "src/src/cache.c",
-    "src/src/conv-hwc2chw-config.c",
-    "src/src/dwconv-config.c",
-    "src/src/dwconv2d-chw-config.c",
-    "src/src/gavgpool-config.c",
-    "src/src/gavgpool-cw-config.c",
-    "src/src/gemm-config.c",
-    "src/src/hardware-config.c",
-    "src/src/ibilinear-chw-config.c",
-    "src/src/ibilinear-config.c",
     "src/src/indirection.c",
     "src/src/init.c",
     "src/src/log.c",
-    "src/src/lut32norm-config.c",
-    "src/src/maxpool-config.c",
     "src/src/memory-planner.c",
     "src/src/memory.c",
     "src/src/microkernel-utils.c",
@@ -81,37 +68,25 @@ source_set("xnnpack") {
     "src/src/operator-utils.c",
     "src/src/packing.c",
     "src/src/params.c",
-    "src/src/pavgpool-config.c",
-    "src/src/prelu-config.c",
-    "src/src/raddstoreexpminusmax-config.c",
-    "src/src/rmax-config.c",
     "src/src/runtime.c",
-    "src/src/spmm-config.c",
     "src/src/subgraph.c",
     "src/src/tensor.c",
-    "src/src/transpose-config.c",
-    "src/src/unary-elementwise-config.c",
-    "src/src/unpool-config.c",
-    "src/src/vmulcaddc-config.c",
-    "src/src/x8-lut-config.c",
-    "src/src/xx-fill-config.c",
-    "src/src/xx-pad-config.c",
-    "src/src/zip-config.c",
   ]
 
   deps = [
     ":amalgam",
-    ":amalgam_avx",
+    ":amalgam_avx-no-avx2-no-f16c-no-fma",
     ":amalgam_avx512f",
     ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
-    ":amalgam_f16c",
-    ":amalgam_f16c-fma",
     ":amalgam_f16c-fma-avx2",
-    ":amalgam_sse2",
-    ":amalgam_sse4.1",
-    ":amalgam_ssse3",
-    ":amalgam_xop",
+    ":amalgam_f16c-fma-no-avx2",
+    ":amalgam_f16c-no-avx2-no-fma",
+    ":amalgam_sse2-no-sse3",
+    ":amalgam_sse4.1-no-sse4.2",
+    ":amalgam_ssse3-no-sse4.1",
+    ":amalgam_xop-no-avx2",
+    ":configs",
     ":enums",
     ":jit",
     ":operators",
@@ -136,24 +111,10 @@ source_set("xnnpack_standalone") {
 
   sources = [
     "src/src/allocator.c",
-    "src/src/argmaxpool-config.c",
-    "src/src/avgpool-config.c",
-    "src/src/binary-elementwise-config.c",
     "src/src/cache.c",
-    "src/src/conv-hwc2chw-config.c",
-    "src/src/dwconv-config.c",
-    "src/src/dwconv2d-chw-config.c",
-    "src/src/gavgpool-config.c",
-    "src/src/gavgpool-cw-config.c",
-    "src/src/gemm-config.c",
-    "src/src/hardware-config.c",
-    "src/src/ibilinear-chw-config.c",
-    "src/src/ibilinear-config.c",
     "src/src/indirection.c",
     "src/src/init.c",
     "src/src/log.c",
-    "src/src/lut32norm-config.c",
-    "src/src/maxpool-config.c",
     "src/src/memory-planner.c",
     "src/src/memory.c",
     "src/src/microkernel-utils.c",
@@ -165,37 +126,25 @@ source_set("xnnpack_standalone") {
     "src/src/operator-utils.c",
     "src/src/packing.c",
     "src/src/params.c",
-    "src/src/pavgpool-config.c",
-    "src/src/prelu-config.c",
-    "src/src/raddstoreexpminusmax-config.c",
-    "src/src/rmax-config.c",
     "src/src/runtime.c",
-    "src/src/spmm-config.c",
     "src/src/subgraph.c",
     "src/src/tensor.c",
-    "src/src/transpose-config.c",
-    "src/src/unary-elementwise-config.c",
-    "src/src/unpool-config.c",
-    "src/src/vmulcaddc-config.c",
-    "src/src/x8-lut-config.c",
-    "src/src/xx-fill-config.c",
-    "src/src/xx-pad-config.c",
-    "src/src/zip-config.c",
   ]
 
   deps = [
+    ":amalgam_avx-no-avx2-no-f16c-no-fma_standalone",
     ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone",
     ":amalgam_avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
     ":amalgam_avx512f_standalone",
-    ":amalgam_avx_standalone",
     ":amalgam_f16c-fma-avx2_standalone",
-    ":amalgam_f16c-fma_standalone",
-    ":amalgam_f16c_standalone",
-    ":amalgam_sse2_standalone",
-    ":amalgam_sse4.1_standalone",
-    ":amalgam_ssse3_standalone",
+    ":amalgam_f16c-fma-no-avx2_standalone",
+    ":amalgam_f16c-no-avx2-no-fma_standalone",
+    ":amalgam_sse2-no-sse3_standalone",
+    ":amalgam_sse4.1-no-sse4.2_standalone",
+    ":amalgam_ssse3-no-sse4.1_standalone",
     ":amalgam_standalone",
-    ":amalgam_xop_standalone",
+    ":amalgam_xop-no-avx2_standalone",
+    ":configs_standalone",
     ":enums_standalone",
     ":jit_standalone",
     ":operators_standalone",
@@ -257,8 +206,13 @@ source_set("amalgam_standalone") {
   }
 }
 
-source_set("amalgam_avx") {
-  cflags = [ "-mavx" ]
+source_set("amalgam_avx-no-avx2-no-f16c-no-fma") {
+  cflags = [
+    "-mavx",
+    "-mno-avx2",
+    "-mno-f16c",
+    "-mno-fma",
+  ]
 
   sources = [ "src/src/amalgam/gen/avx.c" ]
 
@@ -277,8 +231,13 @@ source_set("amalgam_avx") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("amalgam_avx_standalone") {
-  cflags = [ "-mavx" ]
+source_set("amalgam_avx-no-avx2-no-f16c-no-fma_standalone") {
+  cflags = [
+    "-mavx",
+    "-mno-avx2",
+    "-mno-f16c",
+    "-mno-fma",
+  ]
 
   sources = [ "src/src/amalgam/gen/avx.c" ]
 
@@ -456,98 +415,6 @@ source_set(
   }
 }
 
-source_set("amalgam_f16c") {
-  cflags = [ "-mf16c" ]
-
-  sources = [ "src/src/amalgam/gen/f16c.c" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool",
-  ]
-
-  public_configs = [ ":xnnpack_config" ]
-}
-
-# This is a target that cannot depend on //base.
-source_set("amalgam_f16c_standalone") {
-  cflags = [ "-mf16c" ]
-
-  sources = [ "src/src/amalgam/gen/f16c.c" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool:pthreadpool_standalone",
-  ]
-
-  public_configs = [ ":xnnpack_config" ]
-
-  if (!(is_android && use_order_profiling)) {
-    assert_no_deps = [ "//base" ]
-  }
-}
-
-source_set("amalgam_f16c-fma") {
-  cflags = [
-    "-mf16c",
-    "-mfma",
-  ]
-
-  sources = [ "src/src/amalgam/gen/fma3.c" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool",
-  ]
-
-  public_configs = [ ":xnnpack_config" ]
-}
-
-# This is a target that cannot depend on //base.
-source_set("amalgam_f16c-fma_standalone") {
-  cflags = [
-    "-mf16c",
-    "-mfma",
-  ]
-
-  sources = [ "src/src/amalgam/gen/fma3.c" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-  deps = [
-    "//third_party/cpuinfo",
-    "//third_party/fp16",
-    "//third_party/fxdiv",
-    "//third_party/pthreadpool:pthreadpool_standalone",
-  ]
-
-  public_configs = [ ":xnnpack_config" ]
-
-  if (!(is_android && use_order_profiling)) {
-    assert_no_deps = [ "//base" ]
-  }
-}
-
 source_set("amalgam_f16c-fma-avx2") {
   cflags = [
     "-mavx2",
@@ -599,8 +466,113 @@ source_set("amalgam_f16c-fma-avx2_standalone") {
   }
 }
 
-source_set("amalgam_sse2") {
-  cflags = [ "-msse2" ]
+source_set("amalgam_f16c-fma-no-avx2") {
+  cflags = [
+    "-mf16c",
+    "-mfma",
+    "-mno-avx2",
+  ]
+
+  sources = [ "src/src/amalgam/gen/fma3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_f16c-fma-no-avx2_standalone") {
+  cflags = [
+    "-mf16c",
+    "-mfma",
+    "-mno-avx2",
+  ]
+
+  sources = [ "src/src/amalgam/gen/fma3.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
+source_set("amalgam_f16c-no-avx2-no-fma") {
+  cflags = [
+    "-mf16c",
+    "-mno-avx2",
+    "-mno-fma",
+  ]
+
+  sources = [ "src/src/amalgam/gen/f16c.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("amalgam_f16c-no-avx2-no-fma_standalone") {
+  cflags = [
+    "-mf16c",
+    "-mno-avx2",
+    "-mno-fma",
+  ]
+
+  sources = [ "src/src/amalgam/gen/f16c.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
+source_set("amalgam_sse2-no-sse3") {
+  cflags = [
+    "-mno-sse3",
+    "-msse2",
+  ]
 
   sources = [
     "src/src/amalgam/gen/sse.c",
@@ -622,8 +594,11 @@ source_set("amalgam_sse2") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("amalgam_sse2_standalone") {
-  cflags = [ "-msse2" ]
+source_set("amalgam_sse2-no-sse3_standalone") {
+  cflags = [
+    "-mno-sse3",
+    "-msse2",
+  ]
 
   sources = [
     "src/src/amalgam/gen/sse.c",
@@ -648,8 +623,11 @@ source_set("amalgam_sse2_standalone") {
   }
 }
 
-source_set("amalgam_sse4.1") {
-  cflags = [ "-msse4.1" ]
+source_set("amalgam_sse4.1-no-sse4.2") {
+  cflags = [
+    "-mno-sse4.2",
+    "-msse4.1",
+  ]
 
   sources = [ "src/src/amalgam/gen/sse41.c" ]
 
@@ -668,8 +646,11 @@ source_set("amalgam_sse4.1") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("amalgam_sse4.1_standalone") {
-  cflags = [ "-msse4.1" ]
+source_set("amalgam_sse4.1-no-sse4.2_standalone") {
+  cflags = [
+    "-mno-sse4.2",
+    "-msse4.1",
+  ]
 
   sources = [ "src/src/amalgam/gen/sse41.c" ]
 
@@ -691,8 +672,11 @@ source_set("amalgam_sse4.1_standalone") {
   }
 }
 
-source_set("amalgam_ssse3") {
-  cflags = [ "-mssse3" ]
+source_set("amalgam_ssse3-no-sse4.1") {
+  cflags = [
+    "-mno-sse4.1",
+    "-mssse3",
+  ]
 
   sources = [ "src/src/amalgam/gen/ssse3.c" ]
 
@@ -711,8 +695,11 @@ source_set("amalgam_ssse3") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("amalgam_ssse3_standalone") {
-  cflags = [ "-mssse3" ]
+source_set("amalgam_ssse3-no-sse4.1_standalone") {
+  cflags = [
+    "-mno-sse4.1",
+    "-mssse3",
+  ]
 
   sources = [ "src/src/amalgam/gen/ssse3.c" ]
 
@@ -734,8 +721,11 @@ source_set("amalgam_ssse3_standalone") {
   }
 }
 
-source_set("amalgam_xop") {
-  cflags = [ "-mxop" ]
+source_set("amalgam_xop-no-avx2") {
+  cflags = [
+    "-mno-avx2",
+    "-mxop",
+  ]
 
   sources = [ "src/src/amalgam/gen/xop.c" ]
 
@@ -754,10 +744,116 @@ source_set("amalgam_xop") {
 }
 
 # This is a target that cannot depend on //base.
-source_set("amalgam_xop_standalone") {
-  cflags = [ "-mxop" ]
+source_set("amalgam_xop-no-avx2_standalone") {
+  cflags = [
+    "-mno-avx2",
+    "-mxop",
+  ]
 
   sources = [ "src/src/amalgam/gen/xop.c" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool:pthreadpool_standalone",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+
+  if (!(is_android && use_order_profiling)) {
+    assert_no_deps = [ "//base" ]
+  }
+}
+
+source_set("configs") {
+  cflags = []
+
+  sources = [
+    "src/src/configs/argmaxpool-config.c",
+    "src/src/configs/avgpool-config.c",
+    "src/src/configs/binary-elementwise-config.c",
+    "src/src/configs/cmul-config.c",
+    "src/src/configs/conv-hwc2chw-config.c",
+    "src/src/configs/dwconv-config.c",
+    "src/src/configs/dwconv2d-chw-config.c",
+    "src/src/configs/gavgpool-config.c",
+    "src/src/configs/gavgpool-cw-config.c",
+    "src/src/configs/gemm-config.c",
+    "src/src/configs/hardware-config.c",
+    "src/src/configs/ibilinear-chw-config.c",
+    "src/src/configs/ibilinear-config.c",
+    "src/src/configs/lut32norm-config.c",
+    "src/src/configs/maxpool-config.c",
+    "src/src/configs/pavgpool-config.c",
+    "src/src/configs/prelu-config.c",
+    "src/src/configs/raddstoreexpminusmax-config.c",
+    "src/src/configs/reduce-config.c",
+    "src/src/configs/rmax-config.c",
+    "src/src/configs/spmm-config.c",
+    "src/src/configs/transpose-config.c",
+    "src/src/configs/unary-elementwise-config.c",
+    "src/src/configs/unpool-config.c",
+    "src/src/configs/vmulcaddc-config.c",
+    "src/src/configs/x8-lut-config.c",
+    "src/src/configs/xx-fill-config.c",
+    "src/src/configs/xx-pad-config.c",
+    "src/src/configs/zip-config.c",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+  deps = [
+    "//third_party/cpuinfo",
+    "//third_party/fp16",
+    "//third_party/fxdiv",
+    "//third_party/pthreadpool",
+  ]
+
+  public_configs = [ ":xnnpack_config" ]
+}
+
+# This is a target that cannot depend on //base.
+source_set("configs_standalone") {
+  cflags = []
+
+  sources = [
+    "src/src/configs/argmaxpool-config.c",
+    "src/src/configs/avgpool-config.c",
+    "src/src/configs/binary-elementwise-config.c",
+    "src/src/configs/cmul-config.c",
+    "src/src/configs/conv-hwc2chw-config.c",
+    "src/src/configs/dwconv-config.c",
+    "src/src/configs/dwconv2d-chw-config.c",
+    "src/src/configs/gavgpool-config.c",
+    "src/src/configs/gavgpool-cw-config.c",
+    "src/src/configs/gemm-config.c",
+    "src/src/configs/hardware-config.c",
+    "src/src/configs/ibilinear-chw-config.c",
+    "src/src/configs/ibilinear-config.c",
+    "src/src/configs/lut32norm-config.c",
+    "src/src/configs/maxpool-config.c",
+    "src/src/configs/pavgpool-config.c",
+    "src/src/configs/prelu-config.c",
+    "src/src/configs/raddstoreexpminusmax-config.c",
+    "src/src/configs/reduce-config.c",
+    "src/src/configs/rmax-config.c",
+    "src/src/configs/spmm-config.c",
+    "src/src/configs/transpose-config.c",
+    "src/src/configs/unary-elementwise-config.c",
+    "src/src/configs/unpool-config.c",
+    "src/src/configs/vmulcaddc-config.c",
+    "src/src/configs/x8-lut-config.c",
+    "src/src/configs/xx-fill-config.c",
+    "src/src/configs/xx-pad-config.c",
+    "src/src/configs/zip-config.c",
+  ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -837,6 +933,7 @@ source_set("jit") {
     "src/src/jit/aarch32-assembler.cc",
     "src/src/jit/aarch64-assembler.cc",
     "src/src/jit/assembler.cc",
+    "src/src/jit/wasm-assembler.cc",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -861,6 +958,7 @@ source_set("jit_standalone") {
     "src/src/jit/aarch32-assembler.cc",
     "src/src/jit/aarch64-assembler.cc",
     "src/src/jit/assembler.cc",
+    "src/src/jit/wasm-assembler.cc",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -887,6 +985,7 @@ source_set("operators") {
   sources = [
     "src/src/operators/argmax-pooling-nhwc.c",
     "src/src/operators/average-pooling-nhwc.c",
+    "src/src/operators/batch-matrix-multiply-nc.c",
     "src/src/operators/binary-elementwise-nd.c",
     "src/src/operators/channel-shuffle-nc.c",
     "src/src/operators/constant-pad-nd.c",
@@ -901,8 +1000,11 @@ source_set("operators") {
     "src/src/operators/max-pooling-nhwc.c",
     "src/src/operators/post-operation.c",
     "src/src/operators/prelu-nc.c",
+    "src/src/operators/reduce-nd.c",
     "src/src/operators/resize-bilinear-nchw.c",
     "src/src/operators/resize-bilinear-nhwc.c",
+    "src/src/operators/rope-nthc.c",
+    "src/src/operators/scaled-dot-product-attention-nhtc.c",
     "src/src/operators/slice-nd.c",
     "src/src/operators/softmax-nc.c",
     "src/src/operators/transpose-nd.c",
@@ -931,6 +1033,7 @@ source_set("operators_standalone") {
   sources = [
     "src/src/operators/argmax-pooling-nhwc.c",
     "src/src/operators/average-pooling-nhwc.c",
+    "src/src/operators/batch-matrix-multiply-nc.c",
     "src/src/operators/binary-elementwise-nd.c",
     "src/src/operators/channel-shuffle-nc.c",
     "src/src/operators/constant-pad-nd.c",
@@ -945,8 +1048,11 @@ source_set("operators_standalone") {
     "src/src/operators/max-pooling-nhwc.c",
     "src/src/operators/post-operation.c",
     "src/src/operators/prelu-nc.c",
+    "src/src/operators/reduce-nd.c",
     "src/src/operators/resize-bilinear-nchw.c",
     "src/src/operators/resize-bilinear-nhwc.c",
+    "src/src/operators/rope-nthc.c",
+    "src/src/operators/scaled-dot-product-attention-nhtc.c",
     "src/src/operators/slice-nd.c",
     "src/src/operators/softmax-nc.c",
     "src/src/operators/transpose-nd.c",
@@ -981,6 +1087,7 @@ source_set("subgraph") {
     "src/src/subgraph/argmax-pooling-2d.c",
     "src/src/subgraph/average-pooling-2d.c",
     "src/src/subgraph/bankers-rounding.c",
+    "src/src/subgraph/batch-matrix-multiply.c",
     "src/src/subgraph/ceiling.c",
     "src/src/subgraph/clamp.c",
     "src/src/subgraph/concatenate.c",
@@ -988,12 +1095,13 @@ source_set("subgraph") {
     "src/src/subgraph/convolution-2d.c",
     "src/src/subgraph/copy.c",
     "src/src/subgraph/deconvolution-2d.c",
-    "src/src/subgraph/depth-to-space.c",
+    "src/src/subgraph/depth-to-space-2d.c",
     "src/src/subgraph/depthwise-convolution-2d.c",
     "src/src/subgraph/divide.c",
     "src/src/subgraph/elu.c",
     "src/src/subgraph/even-split.c",
     "src/src/subgraph/floor.c",
+    "src/src/subgraph/fully-connected-sparse.c",
     "src/src/subgraph/fully-connected.c",
     "src/src/subgraph/global-average-pooling.c",
     "src/src/subgraph/global-sum-pooling.c",
@@ -1005,6 +1113,8 @@ source_set("subgraph") {
     "src/src/subgraph/multiply2.c",
     "src/src/subgraph/negate.c",
     "src/src/subgraph/prelu.c",
+    "src/src/subgraph/rope.c",
+    "src/src/subgraph/scaled-dot-product-attention.c",
     "src/src/subgraph/sigmoid.c",
     "src/src/subgraph/softmax.c",
     "src/src/subgraph/space-to-depth-2d.c",
@@ -1012,6 +1122,7 @@ source_set("subgraph") {
     "src/src/subgraph/square.c",
     "src/src/subgraph/squared-difference.c",
     "src/src/subgraph/static-constant-pad.c",
+    "src/src/subgraph/static-mean.c",
     "src/src/subgraph/static-reshape.c",
     "src/src/subgraph/static-resize-bilinear-2d.c",
     "src/src/subgraph/static-slice.c",
@@ -1046,6 +1157,7 @@ source_set("subgraph_standalone") {
     "src/src/subgraph/argmax-pooling-2d.c",
     "src/src/subgraph/average-pooling-2d.c",
     "src/src/subgraph/bankers-rounding.c",
+    "src/src/subgraph/batch-matrix-multiply.c",
     "src/src/subgraph/ceiling.c",
     "src/src/subgraph/clamp.c",
     "src/src/subgraph/concatenate.c",
@@ -1053,12 +1165,13 @@ source_set("subgraph_standalone") {
     "src/src/subgraph/convolution-2d.c",
     "src/src/subgraph/copy.c",
     "src/src/subgraph/deconvolution-2d.c",
-    "src/src/subgraph/depth-to-space.c",
+    "src/src/subgraph/depth-to-space-2d.c",
     "src/src/subgraph/depthwise-convolution-2d.c",
     "src/src/subgraph/divide.c",
     "src/src/subgraph/elu.c",
     "src/src/subgraph/even-split.c",
     "src/src/subgraph/floor.c",
+    "src/src/subgraph/fully-connected-sparse.c",
     "src/src/subgraph/fully-connected.c",
     "src/src/subgraph/global-average-pooling.c",
     "src/src/subgraph/global-sum-pooling.c",
@@ -1070,6 +1183,8 @@ source_set("subgraph_standalone") {
     "src/src/subgraph/multiply2.c",
     "src/src/subgraph/negate.c",
     "src/src/subgraph/prelu.c",
+    "src/src/subgraph/rope.c",
+    "src/src/subgraph/scaled-dot-product-attention.c",
     "src/src/subgraph/sigmoid.c",
     "src/src/subgraph/softmax.c",
     "src/src/subgraph/space-to-depth-2d.c",
@@ -1077,6 +1192,7 @@ source_set("subgraph_standalone") {
     "src/src/subgraph/square.c",
     "src/src/subgraph/squared-difference.c",
     "src/src/subgraph/static-constant-pad.c",
+    "src/src/subgraph/static-mean.c",
     "src/src/subgraph/static-reshape.c",
     "src/src/subgraph/static-resize-bilinear-2d.c",
     "src/src/subgraph/static-slice.c",

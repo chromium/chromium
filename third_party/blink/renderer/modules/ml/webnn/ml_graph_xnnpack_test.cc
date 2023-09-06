@@ -730,9 +730,11 @@ struct EluTester {
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
     ASSERT_EQ(xnn_status_success,
-              xnn_setup_elu_nc_f32(elu_op, batch_size, xnnpack_input.data(),
-                                   xnnpack_output.data(),
-                                   /*threadpool=*/nullptr));
+              xnn_reshape_elu_nc_f32(elu_op, batch_size,
+                                     /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_setup_elu_nc_f32(elu_op, xnnpack_input.data(),
+                                   xnnpack_output.data()));
 
     ASSERT_EQ(xnn_status_success,
               xnn_run_operator(elu_op, /*threadpool=*/nullptr));
@@ -825,11 +827,12 @@ struct SoftmaxTester {
     xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
-    ASSERT_EQ(
-        xnn_status_success,
-        xnn_setup_softmax_nc_f32(softmax_op, batch_size, xnnpack_input.data(),
-                                 xnnpack_output.data(),
-                                 /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_reshape_softmax_nc_f32(softmax_op, batch_size,
+                                         /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_setup_softmax_nc_f32(softmax_op, xnnpack_input.data(),
+                                       xnnpack_output.data()));
 
     ASSERT_EQ(xnn_status_success,
               xnn_run_operator(softmax_op, /*threadpool=*/nullptr));
@@ -922,11 +925,12 @@ struct SigmoidTester {
     xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
-    ASSERT_EQ(
-        xnn_status_success,
-        xnn_setup_sigmoid_nc_f32(sigmoid_op, batch_size, xnnpack_input.data(),
-                                 xnnpack_output.data(),
-                                 /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_reshape_sigmoid_nc_f32(sigmoid_op, batch_size,
+                                         /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_setup_sigmoid_nc_f32(sigmoid_op, xnnpack_input.data(),
+                                       xnnpack_output.data()));
 
     ASSERT_EQ(xnn_status_success,
               xnn_run_operator(sigmoid_op, /*threadpool=*/nullptr));
@@ -1034,9 +1038,11 @@ struct TanhTester {
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
     ASSERT_EQ(xnn_status_success,
-              xnn_setup_tanh_nc_f32(tanh_op, batch_size, xnnpack_input.data(),
-                                    xnnpack_output.data(),
-                                    /*threadpool=*/nullptr));
+              xnn_reshape_tanh_nc_f32(tanh_op, batch_size,
+                                      /*threadpool=*/nullptr));
+    ASSERT_EQ(xnn_status_success,
+              xnn_setup_tanh_nc_f32(tanh_op, xnnpack_input.data(),
+                                    xnnpack_output.data()));
 
     ASSERT_EQ(xnn_status_success,
               xnn_run_operator(tanh_op, /*threadpool=*/nullptr));

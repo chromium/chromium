@@ -124,6 +124,10 @@ String XnnDataTypeToString(xnn_datatype datatype) {
       return "xnn_datatype_qcint8";
     case xnn_datatype_qcint32:
       return "xnn_datatype_qcint32";
+    case xnn_datatype_qcint4:
+      return "xnn_datatype_qcint4";
+    case xnn_datatype_qdint8:
+      return "xnn_datatype_qdint8";
   }
 }
 

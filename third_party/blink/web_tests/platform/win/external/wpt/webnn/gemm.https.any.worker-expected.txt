@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL gemm two float32 2D tensors (b is non-constant) default options / sync assert_true: assert_array_approx_equals_ulp: test gemm float32 actual 12284.3408203125 should be close enough to expected 8161.14697265625 by the acceptable 8 ULP distance, but they have 4253744 ULP distance expected true got false
+PASS gemm two float32 2D tensors (b is non-constant) default options / sync
 PASS gemm two float32 2D tensors default options / sync
 FAIL gemm two float32 2D tensors options.c / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
 FAIL gemm two float32 2D tensors broadcast options.c [1, 5] => [3, 5] / sync Failed to execute 'buildSync' on 'MLGraphBuilder': The dimensions of bias must be [5].
