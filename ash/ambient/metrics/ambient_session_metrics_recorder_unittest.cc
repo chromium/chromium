@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -79,16 +79,21 @@ INSTANTIATE_TEST_SUITE_P(
     AmbientSessionMetricsRecorderTest,
     // Just one sample for each category of ui settings
     // is needed.
-    testing::Values(AmbientUiSettings(AmbientTheme::kSlideshow),
-                    AmbientUiSettings(AmbientTheme::kFeelTheBreeze),
-                    AmbientUiSettings(AmbientTheme::kVideo,
-                                      AmbientVideo::kNewMexico)));
+    testing::Values(
+        AmbientUiSettings(personalization_app::mojom::AmbientTheme::kSlideshow),
+        AmbientUiSettings(
+            personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
+        AmbientUiSettings(personalization_app::mojom::AmbientTheme::kVideo,
+                          AmbientVideo::kNewMexico)));
 
 INSTANTIATE_TEST_SUITE_P(
     AllLottieAnimations,
     AmbientSessionMetricsRecorderLottieAnimationTest,
-    testing::Values(AmbientUiSettings(AmbientTheme::kFeelTheBreeze),
-                    AmbientUiSettings(AmbientTheme::kFloatOnBy)));
+    testing::Values(
+        AmbientUiSettings(
+            personalization_app::mojom::AmbientTheme::kFeelTheBreeze),
+        AmbientUiSettings(
+            personalization_app::mojom::AmbientTheme::kFloatOnBy)));
 
 TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   constexpr base::TimeDelta kExpectedEngagementTime = base::Minutes(5);

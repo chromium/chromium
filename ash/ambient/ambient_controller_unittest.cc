@@ -20,8 +20,8 @@
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
+#include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
@@ -36,6 +36,7 @@
 #include "ash/shell.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
@@ -70,6 +71,7 @@
 namespace ash {
 namespace {
 
+using ash::personalization_app::mojom::AmbientTheme;
 using assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
@@ -237,7 +239,8 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
                         ),
     [](const ::testing::TestParamInfo<AmbientUiSettings>& param_info) {
-      return std::string(ToString(param_info.param.theme()));
+      return std::string(
+          ambient::util::AmbientThemeToString(param_info.param.theme()));
     });
 
 TEST_P(AmbientControllerTestForAnyUiSettings, ShowAmbientScreenUponLock) {

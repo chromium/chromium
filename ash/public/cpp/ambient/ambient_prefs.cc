@@ -4,9 +4,9 @@
 
 #include <string>
 
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/logging.h"
 #include "components/prefs/pref_service.h"
 
@@ -65,8 +65,9 @@ constexpr char kAmbientModeRunningDurationMinutes[] =
 void MigrateDeprecatedPrefs(PrefService& pref_service) {
   // The largest |AmbientTheme| value possible with the old pref
   // |kAmbientTheme|.
-  static constexpr ash::AmbientTheme kLegacyMaxAmbientTheme =
-      ash::AmbientTheme::kFloatOnBy;
+  static constexpr personalization_app::mojom::AmbientTheme
+      kLegacyMaxAmbientTheme =
+          personalization_app::mojom::AmbientTheme::kFloatOnBy;
 
   if (pref_service.HasPrefPath(ash::ambient::prefs::kAmbientUiSettings)) {
     DVLOG(4) << "PrefService has already been migrated to new scheme.";

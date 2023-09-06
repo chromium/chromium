@@ -25,6 +25,7 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/shell.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -81,7 +82,7 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
     AmbientAshTestBase::SetUp();
     // Force the `AmbientUiSettings` to be any setting that has photos, or
     // `photo_controller()` will be null and the tests will crash.
-    SetAmbientTheme(AmbientTheme::kSlideshow);
+    SetAmbientTheme(personalization_app::mojom::AmbientTheme::kSlideshow);
     // This is common to all AmbientPhotoConfigs and mimics real-world behavior:
     // When OnImagesReady() is called, the UI synchronously starts rendering.
     ON_CALL(images_ready_observer_, OnImagesReady)

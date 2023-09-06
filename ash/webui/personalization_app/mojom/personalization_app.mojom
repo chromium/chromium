@@ -561,8 +561,11 @@ interface UserProvider {
   SelectLastExternalUserImage();
 };
 
-// The ambient theme for screen saver. Should be kept in sync with
-// |ash::AmbientTheme|.
+// The ambient theme for screen saver. Each corresponds to a distinct UI in
+// ambient mode that can be selected by the user.
+//
+// These values are persisted in user pref storage and logs, so they should
+// never be renumbered or reused.
 enum AmbientTheme {
   kSlideshow = 0,
   kFeelTheBreeze = 1,

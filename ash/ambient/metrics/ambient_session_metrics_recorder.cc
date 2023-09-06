@@ -11,6 +11,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/shell.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -116,16 +117,16 @@ void AmbientSessionMetricsRecorder::AnimationFramePainted(
 #define MUTLISCREEN_OFFSET_NAME(theme) \
   "Ash.AmbientMode.MultiScreenOffset." theme
   switch (ui_settings_.theme()) {
-    case AmbientTheme::kFeelTheBreeze:
+    case personalization_app::mojom::AmbientTheme::kFeelTheBreeze:
       UMA_HISTOGRAM_TIMES(MUTLISCREEN_OFFSET_NAME("FeelTheBreeze"),
                           *largest_timestamp_offset);
       break;
-    case AmbientTheme::kFloatOnBy:
+    case personalization_app::mojom::AmbientTheme::kFloatOnBy:
       UMA_HISTOGRAM_TIMES(MUTLISCREEN_OFFSET_NAME("FloatOnBy"),
                           *largest_timestamp_offset);
       break;
-    case AmbientTheme::kSlideshow:
-    case AmbientTheme::kVideo:
+    case personalization_app::mojom::AmbientTheme::kSlideshow:
+    case personalization_app::mojom::AmbientTheme::kVideo:
       LOG(DFATAL) << "Should not be recording animation metrics for "
                   << ui_settings_.ToString();
       break;

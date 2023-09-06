@@ -4,12 +4,13 @@
 
 #include "ash/ambient/ambient_ui_settings.h"
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,6 +20,7 @@
 namespace ash {
 namespace {
 
+using ash::personalization_app::mojom::AmbientTheme;
 using ::testing::Eq;
 
 }  // namespace

@@ -13,6 +13,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -99,7 +100,7 @@ class AmbientSlideshowPixelTest
     scoped_features_.InitWithFeatureState(chromeos::features::kJelly,
                                           IsJellyEnabled(GetParam()));
     AmbientAshTestBase::SetUp();
-    SetAmbientTheme(AmbientTheme::kSlideshow);
+    SetAmbientTheme(personalization_app::mojom::AmbientTheme::kSlideshow);
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
         IsDarkMode(GetParam()));

@@ -11,12 +11,12 @@
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/test_ash_web_view.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -36,6 +36,7 @@
 
 namespace ash {
 
+using ash::personalization_app::mojom::AmbientTheme;
 using ::testing::NotNull;
 
 constexpr base::TimeDelta kVideoPlaybackTimeout = base::Seconds(10);

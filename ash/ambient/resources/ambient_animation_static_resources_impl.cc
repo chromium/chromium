@@ -11,6 +11,8 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/ambient/resources/grit/ash_ambient_lottie_resources.h"
+#include "ash/ambient/util/ambient_util.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -21,6 +23,7 @@
 namespace ash {
 namespace {
 
+using ash::personalization_app::mojom::AmbientTheme;
 using AmbientThemeToResourceIdMap = base::flat_map<AmbientTheme, int>;
 using AssetIdToResourceIdMap = base::flat_map<base::StringPiece, int>;
 
@@ -86,8 +89,8 @@ AssetIdToResourceIdMap GetAssetIdToResourceIdMapForTheme(AmbientTheme theme) {
       }
       // End Themes
   };
-  DCHECK(m.contains(theme))
-      << "Asset/resource ids missing for " << ToString(theme);
+  DCHECK(m.contains(theme)) << "Asset/resource ids missing for "
+                            << ambient::util::AmbientThemeToString(theme);
   return m.at(theme);
 }
 
