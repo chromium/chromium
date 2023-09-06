@@ -361,7 +361,7 @@ export class FakeESimManagerRemote {
   }
 
   /**
-   * @param {FakeProfile} profile
+   * @param {FakeProfile|null} profile
    */
   notifyProfileChangedForTest(profile) {
     for (const observer of this.observers_) {

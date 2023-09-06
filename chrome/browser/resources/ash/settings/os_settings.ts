@@ -149,6 +149,7 @@ export {EsimRenameDialogElement} from './internet_page/esim_rename_dialog.js';
 export {HotspotConfigDialogElement, WiFiSecurityType} from './internet_page/hotspot_config_dialog.js';
 export {HotspotSummaryItemElement} from './internet_page/hotspot_summary_item.js';
 export {InternetConfigElement} from './internet_page/internet_config.js';
+export {SettingsInternetDetailMenuElement} from './internet_page/internet_detail_menu.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';

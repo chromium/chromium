@@ -4,51 +4,53 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {Router, routes} from 'chrome://os-settings/os_settings.js';
+import {CrActionMenuElement, Router, routes, SettingsInternetDetailMenuElement} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-suite('InternetDetailMenu', function() {
-  let internetDetailMenu;
-  let mojoApi_;
-  let eSimManagerRemote;
+suite('<settings-internet-detail-menu>', () => {
+  let internetDetailMenu: SettingsInternetDetailMenuElement;
+  let mojoApi: FakeNetworkConfig;
+  let eSimManagerRemote: FakeESimManagerRemote;
 
-  setup(function() {
-    mojoApi_ = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
-    mojoApi_.resetForTest();
+  setup(() => {
+    mojoApi = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi);
+    mojoApi.resetForTest();
 
     eSimManagerRemote = new FakeESimManagerRemote();
-    setESimManagerRemoteForTesting(eSimManagerRemote);
+    setESimManagerRemoteForTesting(
+        eSimManagerRemote as unknown as ESimManagerRemote);
 
-    mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+    mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
   });
 
-  teardown(function() {
+  teardown(() => {
     internetDetailMenu.remove();
-    internetDetailMenu = null;
+    Router.getInstance().resetRouteForTesting();
   });
 
-  function getManagedProperties(type, name) {
+  function getManagedProperties(type: number, name: string): ManagedProperties {
     const result =
         OncMojo.getDefaultManagedProperties(type, name + '_guid', name);
     return result;
   }
 
-  /** @param {boolean=} opt_isGuest */
-  async function init(opt_isGuest) {
-    const isGuest = !!opt_isGuest;
-    loadTimeData.overrideValues({isGuest: isGuest});
+  async function init(isGuestParam?: boolean): Promise<void> {
+    const isGuest = !!isGuestParam;
+    loadTimeData.overrideValues({isGuest});
 
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
@@ -59,69 +61,65 @@ suite('InternetDetailMenu', function() {
 
     document.body.appendChild(internetDetailMenu);
     assertTrue(!!internetDetailMenu);
-    await flushAsync();
+    await flushTasks();
   }
 
-  async function addEsimCellularNetwork(iccid, eid, is_managed) {
+  async function addEsimCellularNetwork(
+      iccid: string, eid: string, isManaged?: boolean): Promise<void> {
     const cellular = getManagedProperties(NetworkType.kCellular, 'cellular');
-    cellular.typeProperties.cellular.iccid = iccid;
-    cellular.typeProperties.cellular.eid = eid;
-    if (is_managed) {
+    cellular.typeProperties.cellular!.iccid = iccid;
+    cellular.typeProperties.cellular!.eid = eid;
+    if (isManaged) {
       cellular.source = OncSource.kDevicePolicy;
     }
-    mojoApi_.setManagedPropertiesForTest(cellular);
-    await flushAsync();
+    mojoApi.setManagedPropertiesForTest(cellular);
+    await flushTasks();
   }
 
   /**
    * Asserts that current UI element with id |elementId| is focused
    * when |deepLinkId| is search params.
-   * @param {number} deepLinkId
-   * @param {string} elementId
    */
-  async function assertElementIsDeepLinked(deepLinkId, elementId) {
+  async function assertElementIsDeepLinked(
+      deepLinkId: number, elementId: string): Promise<void> {
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
-    params.append('settingId', deepLinkId);
+    params.append('settingId', deepLinkId.toString());
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
     await waitAfterNextRender(internetDetailMenu);
     const actionMenu =
-        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+        internetDetailMenu.shadowRoot!.querySelector<CrActionMenuElement>(
+            'cr-action-menu');
     assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
-    const deepLinkElement = actionMenu.querySelector(`#${elementId}`);
+    const deepLinkElement =
+        actionMenu.querySelector<HTMLElement>(`#${elementId}`);
     assertTrue(!!deepLinkElement);
 
     await waitAfterNextRender(deepLinkElement);
     assertEquals(deepLinkElement, getDeepActiveElement());
   }
 
-  function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
-
-  test('Deep link to remove profile', async function() {
+  test('Deep link to remove profile', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
     await assertElementIsDeepLinked(27, 'removeBtn');
   });
 
-  test('Deep link to rename profile', async function() {
+  test('Deep link to rename profile', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
     await assertElementIsDeepLinked(28, 'renameBtn');
   });
 
-  test('Do not show triple dot when no iccid is present', async function() {
-    addEsimCellularNetwork(null, '11111111111111111111111111111111');
+  test('Do not show triple dot when no iccid is present', async () => {
+    addEsimCellularNetwork('', '11111111111111111111111111111111');
     await init();
 
     let tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
-    assertFalse(!!tripleDot);
+        internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail');
+    assertNull(tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
@@ -129,19 +127,19 @@ suite('InternetDetailMenu', function() {
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
   });
 
-  test('Do not show triple dot when no eid is present', async function() {
-    addEsimCellularNetwork('100000', null);
+  test('Do not show triple dot when no eid is present', async () => {
+    addEsimCellularNetwork('100000', '');
     await init();
 
     let tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
-    assertFalse(!!tripleDot);
+        internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail');
+    assertNull(tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
@@ -149,27 +147,27 @@ suite('InternetDetailMenu', function() {
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail');
     assertTrue(!!tripleDot);
   });
 
-  test('Do not show triple dot menu in guest mode', async function() {
+  test('Do not show triple dot menu in guest mode', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    await init(/*opt_isGuest=*/ true);
+    await init(/*isGuestParam=*/ true);
 
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
-    await flushAsync();
+    await flushTasks();
 
     // Has ICCID and EID, but not shown since the user is in guest mode.
-    assertFalse(
-        !!internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail'));
+    assertNull(
+        internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail'));
   });
 
-  test('Rename menu click', async function() {
+  test('Rename menu click', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
 
@@ -177,20 +175,21 @@ suite('InternetDetailMenu', function() {
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     const tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#moreNetworkDetail');
     assertTrue(!!tripleDot);
 
     tripleDot.click();
-    await flushAsync();
+    await flushTasks();
 
     const actionMenu =
-        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+        internetDetailMenu.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
-    const renameBtn = actionMenu.querySelector('#renameBtn');
+    const renameBtn = actionMenu.querySelector<HTMLButtonElement>('#renameBtn');
     assertTrue(!!renameBtn);
 
     const renameProfilePromise =
@@ -201,7 +200,7 @@ suite('InternetDetailMenu', function() {
     assertFalse(actionMenu.open);
   });
 
-  test('Remove menu button click', async function() {
+  test('Remove menu button click', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
     await init();
 
@@ -209,20 +208,21 @@ suite('InternetDetailMenu', function() {
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     const tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#moreNetworkDetail');
     assertTrue(!!tripleDot);
 
     tripleDot.click();
-    await flushAsync();
+    await flushTasks();
 
     const actionMenu =
-        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+        internetDetailMenu.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
-    const removeBtn = actionMenu.querySelector('#removeBtn');
+    const removeBtn = actionMenu.querySelector<HTMLButtonElement>('#removeBtn');
     assertTrue(!!removeBtn);
 
     const removeProfilePromise =
@@ -233,17 +233,18 @@ suite('InternetDetailMenu', function() {
     assertFalse(actionMenu.open);
   });
 
-  test('Menu is disabled when inhibited', async function() {
+  test('Menu is disabled when inhibited', async () => {
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
-    init();
+    await init();
 
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     const tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#moreNetworkDetail');
     assertTrue(!!tripleDot);
     assertFalse(tripleDot.disabled);
 
@@ -251,70 +252,81 @@ suite('InternetDetailMenu', function() {
       type: NetworkType.kCellular,
       deviceState: DeviceStateType.kEnabled,
       inhibitReason: InhibitReason.kConnectingToProfile,
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: '',
+      macAddress: '',
+      scanning: false,
+      simLockStatus: undefined,
+      simInfos: [],
+      simAbsent: false,
+      managedNetworkAvailable: false,
     };
     assertTrue(tripleDot.disabled);
 
     internetDetailMenu.deviceState = {
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
+      ...internetDetailMenu.deviceState,
       inhibitReason: InhibitReason.kNotInhibited,
     };
     assertFalse(tripleDot.disabled);
   });
 
-  test('Menu is disabled on managed profile', async function() {
+  test('Menu is disabled on managed profile', async () => {
     addEsimCellularNetwork(
-        '100000', '11111111111111111111111111111111', /*is_managed=*/ true);
-    init();
+        '100000', '11111111111111111111111111111111', /*isManaged=*/ true);
+    await init();
 
     const params = new URLSearchParams();
     params.append('guid', 'cellular_guid');
     Router.getInstance().navigateTo(routes.NETWORK_DETAIL, params);
 
-    await flushAsync();
+    await flushTasks();
     const tripleDot =
-        internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+        internetDetailMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#moreNetworkDetail');
     assertTrue(!!tripleDot);
     assertTrue(tripleDot.disabled);
   });
 
   test(
       'Esim profile name is updated when value changes in eSIM manager',
-      async function() {
+      async () => {
         const profileName = 'test profile name';
         const iccid = '100000';
         const eid = '1111111111';
 
         addEsimCellularNetwork(iccid, eid);
-        init();
-        await flushAsync();
+        await init();
+        await flushTasks();
         const tripleDot =
-            internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+            internetDetailMenu.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#moreNetworkDetail');
         assertTrue(!!tripleDot);
         assertFalse(tripleDot.disabled);
 
         // Change esim profile name.
         const cellular =
             getManagedProperties(NetworkType.kCellular, 'cellular');
-        cellular.typeProperties.cellular.iccid = iccid;
-        cellular.typeProperties.cellular.eid = eid;
-        cellular.name.activeValue = profileName;
-        mojoApi_.setManagedPropertiesForTest(cellular);
-        await flushAsync();
+        cellular.typeProperties.cellular!.iccid = iccid;
+        cellular.typeProperties.cellular!.eid = eid;
+        cellular.name!.activeValue = profileName;
+        mojoApi.setManagedPropertiesForTest(cellular);
+        await flushTasks();
 
         // Trigger change in esim manager listener
         eSimManagerRemote.notifyProfileChangedForTest(null);
-        await flushAsync();
+        await flushTasks();
 
         tripleDot.click();
-        await flushAsync();
+        await flushTasks();
 
         const actionMenu =
-            internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+            internetDetailMenu.shadowRoot!.querySelector('cr-action-menu');
         assertTrue(!!actionMenu);
         assertTrue(actionMenu.open);
 
-        const renameBtn = actionMenu.querySelector('#renameBtn');
+        const renameBtn =
+            actionMenu.querySelector<HTMLButtonElement>('#renameBtn');
         assertTrue(!!renameBtn);
 
         const renameProfilePromise = eventToPromise(
@@ -324,22 +336,22 @@ suite('InternetDetailMenu', function() {
         assertEquals(profileName, event.detail.networkState.name);
       });
 
-  test('Network state is null if no profile is found', async function() {
+  test('Network state is null if no profile is found', async () => {
     const getTrippleDot = () => {
-      return internetDetailMenu.shadowRoot.querySelector('#moreNetworkDetail');
+      return internetDetailMenu.shadowRoot!.querySelector('#moreNetworkDetail');
     };
     addEsimCellularNetwork('1', '1');
     await init();
     assertTrue(!!getTrippleDot());
 
     // Remove current eSIM profile.
-    mojoApi_.resetForTest();
-    await flushAsync();
+    mojoApi.resetForTest();
+    await flushTasks();
 
     // Trigger change in esim manager listener
     eSimManagerRemote.notifyProfileChangedForTest(null);
-    await flushAsync();
+    await flushTasks();
 
-    assertFalse(!!getTrippleDot());
+    assertNull(getTrippleDot());
   });
 });
