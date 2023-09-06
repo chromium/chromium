@@ -157,7 +157,6 @@ class AppServiceProxyTest : public testing::Test {
 
    private:
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        AppType app_type,
         const std::string& app_id,
         const IconKey& icon_key,
         IconType icon_type,

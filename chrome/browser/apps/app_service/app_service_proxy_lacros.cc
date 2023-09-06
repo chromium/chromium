@@ -118,6 +118,18 @@ absl::optional<IconKey> AppServiceProxyLacros::GetIconKey(
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
+AppServiceProxyLacros::LoadIconFromIconKey(const std::string& app_id,
+                                           const IconKey& icon_key,
+                                           IconType icon_type,
+                                           int32_t size_hint_in_dip,
+                                           bool allow_placeholder_icon,
+                                           apps::LoadIconCallback callback) {
+  return outer_icon_loader_.LoadIconFromIconKey(
+      app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+      std::move(callback));
+}
+
+std::unique_ptr<apps::IconLoader::Releaser>
 AppServiceProxyLacros::LoadIconFromIconKey(AppType app_type,
                                            const std::string& app_id,
                                            const IconKey& icon_key,
@@ -125,9 +137,8 @@ AppServiceProxyLacros::LoadIconFromIconKey(AppType app_type,
                                            int32_t size_hint_in_dip,
                                            bool allow_placeholder_icon,
                                            apps::LoadIconCallback callback) {
-  return outer_icon_loader_.LoadIconFromIconKey(
-      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-      allow_placeholder_icon, std::move(callback));
+  return LoadIconFromIconKey(app_id, icon_key, icon_type, size_hint_in_dip,
+                             allow_placeholder_icon, std::move(callback));
 }
 
 void AppServiceProxyLacros::Launch(const std::string& app_id,
@@ -459,7 +470,6 @@ absl::optional<IconKey> AppServiceProxyLacros::InnerIconLoader::GetIconKey(
 
 std::unique_ptr<IconLoader::Releaser>
 AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
-    AppType app_type,
     const std::string& app_id,
     const IconKey& icon_key,
     IconType icon_type,
@@ -468,8 +478,8 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     apps::LoadIconCallback callback) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
-        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-        allow_placeholder_icon, std::move(callback));
+        app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        std::move(callback));
   }
 
   if (!host_->remote_crosapi_app_service_proxy_) {

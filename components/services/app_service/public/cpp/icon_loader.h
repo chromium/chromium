@@ -59,7 +59,6 @@ class IconLoader {
   // the icon is no longer actively used by the caller. `callback` may be
   // dispatched synchronously if it's possible to quickly return a result.
   virtual std::unique_ptr<Releaser> LoadIconFromIconKey(
-      AppType app_type,
       const std::string& app_id,
       const IconKey& icon_key,
       IconType icon_type,
@@ -87,7 +86,6 @@ class IconLoader {
   // callers, are expected to refer to a Key.
   class Key {
    public:
-    AppType app_type_;
     std::string app_id_;
     // IconKey fields.
     uint64_t timeline_;
@@ -98,8 +96,7 @@ class IconLoader {
     int32_t size_hint_in_dip_;
     bool allow_placeholder_icon_;
 
-    Key(AppType app_type,
-        const std::string& app_id,
+    Key(const std::string& app_id,
         const IconKey& icon_key,
         IconType icon_type,
         int32_t size_hint_in_dip,

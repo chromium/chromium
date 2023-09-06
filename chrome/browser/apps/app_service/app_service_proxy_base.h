@@ -115,13 +115,20 @@ class AppServiceProxyBase : public KeyedService,
   // apps::IconLoader overrides.
   absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
   std::unique_ptr<Releaser> LoadIconFromIconKey(
-      AppType app_type,
       const std::string& app_id,
       const IconKey& icon_key,
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,
       LoadIconCallback callback) override;
+
+  std::unique_ptr<Releaser> LoadIconFromIconKey(AppType app_type,
+                                                const std::string& app_id,
+                                                const IconKey& icon_key,
+                                                IconType icon_type,
+                                                int32_t size_hint_in_dip,
+                                                bool allow_placeholder_icon,
+                                                LoadIconCallback callback);
 
   // Launches the app for the given `app_id`.
   //
@@ -347,7 +354,6 @@ class AppServiceProxyBase : public KeyedService,
     // apps::IconLoader overrides.
     absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        AppType app_type,
         const std::string& app_id,
         const IconKey& icon_key,
         IconType icon_type,

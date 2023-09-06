@@ -18,14 +18,12 @@ IconLoader::Releaser::~Releaser() {
   std::move(closure_).Run();
 }
 
-IconLoader::Key::Key(AppType app_type,
-                     const std::string& app_id,
+IconLoader::Key::Key(const std::string& app_id,
                      const IconKey& icon_key,
                      IconType icon_type,
                      int32_t size_hint_in_dip,
                      bool allow_placeholder_icon)
-    : app_type_(app_type),
-      app_id_(app_id),
+    : app_id_(app_id),
       timeline_(icon_key.timeline),
       resource_id_(icon_key.resource_id),
       icon_effects_(icon_key.icon_effects),
@@ -36,9 +34,6 @@ IconLoader::Key::Key(AppType app_type,
 IconLoader::Key::Key(const Key& other) = default;
 
 bool IconLoader::Key::operator<(const Key& that) const {
-  if (this->app_type_ != that.app_type_) {
-    return this->app_type_ < that.app_type_;
-  }
   if (this->timeline_ != that.timeline_) {
     return this->timeline_ < that.timeline_;
   }
@@ -81,7 +76,7 @@ std::unique_ptr<IconLoader::Releaser> IconLoader::LoadIcon(
     return nullptr;
   }
 
-  return LoadIconFromIconKey(app_type, app_id, icon_key.value(), icon_type,
+  return LoadIconFromIconKey(app_id, icon_key.value(), icon_type,
                              size_hint_in_dip, allow_placeholder_icon,
                              std::move(callback));
 }

@@ -74,7 +74,6 @@ absl::optional<IconKey> AppServiceProxyBase::InnerIconLoader::GetIconKey(
 
 std::unique_ptr<IconLoader::Releaser>
 AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
-    AppType app_type,
     const std::string& app_id,
     const IconKey& icon_key,
     IconType icon_type,
@@ -83,10 +82,11 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
     apps::LoadIconCallback callback) {
   if (overriding_icon_loader_for_testing_) {
     return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
-        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-        allow_placeholder_icon, std::move(callback));
+        app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        std::move(callback));
   }
 
+  AppType app_type = host_->AppRegistryCache().GetAppType(app_id);
   if (host_->ShouldReadIcons(app_type)) {
     host_->ReadIcons(app_type, app_id, size_hint_in_dip, icon_key.Clone(),
                      icon_type, std::move(callback));
@@ -213,6 +213,18 @@ absl::optional<IconKey> AppServiceProxyBase::GetIconKey(
 }
 
 std::unique_ptr<apps::IconLoader::Releaser>
+AppServiceProxyBase::LoadIconFromIconKey(const std::string& app_id,
+                                         const IconKey& icon_key,
+                                         IconType icon_type,
+                                         int32_t size_hint_in_dip,
+                                         bool allow_placeholder_icon,
+                                         LoadIconCallback callback) {
+  return outer_icon_loader_.LoadIconFromIconKey(
+      app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+      std::move(callback));
+}
+
+std::unique_ptr<apps::IconLoader::Releaser>
 AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
                                          const std::string& app_id,
                                          const IconKey& icon_key,
@@ -220,9 +232,8 @@ AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
                                          int32_t size_hint_in_dip,
                                          bool allow_placeholder_icon,
                                          LoadIconCallback callback) {
-  return outer_icon_loader_.LoadIconFromIconKey(
-      app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-      allow_placeholder_icon, std::move(callback));
+  return LoadIconFromIconKey(app_id, icon_key, icon_type, size_hint_in_dip,
+                             allow_placeholder_icon, std::move(callback));
 }
 
 void AppServiceProxyBase::Launch(const std::string& app_id,

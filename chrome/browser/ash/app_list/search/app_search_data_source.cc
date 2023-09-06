@@ -451,7 +451,7 @@ void AppSearchDataSource::Refresh() {
 
 void AppSearchDataSource::OnAppUpdate(const apps::AppUpdate& update) {
   if (!apps_util::IsInstalled(update.Readiness()) || update.IconKeyChanged()) {
-    icon_cache_.RemoveIcon(update.AppType(), update.AppId());
+    icon_cache_.RemoveIcon(update.AppId());
   }
 
   if (update.Readiness() == apps::Readiness::kReady) {

@@ -58,7 +58,7 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
 
   // Currently ARC apps only support 48*48 native icon.
   icon_loader->LoadIconFromIconKey(
-      app_type_, app_id_, icon_key, IconType::kStandard, kUninstallIconSize,
+      app_id_, icon_key, IconType::kStandard, kUninstallIconSize,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&UninstallDialog::OnLoadIcon,
                      weak_ptr_factory_.GetWeakPtr()));

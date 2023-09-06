@@ -990,6 +990,17 @@ class AppServiceWebAppIconTest : public WebAppIconFactoryTest {
                                /*should_notify_initialized=*/false);
   }
 
+  void RegisterApp(std::unique_ptr<web_app::WebApp> web_app) {
+    std::vector<AppPtr> apps;
+    AppPtr app = std::make_unique<App>(AppType::kWeb, web_app->app_id());
+    app->readiness = Readiness::kReady;
+    apps.push_back(std::move(app));
+
+    WebAppIconFactoryTest ::RegisterApp(std::move(web_app));
+    app_service_proxy().OnApps(std::move(apps), AppType::kWeb,
+                               /*should_notify_initialized=*/false);
+  }
+
   AppServiceProxy& app_service_proxy() { return *proxy_; }
 
  private:
@@ -1328,7 +1339,6 @@ TEST_F(AppServiceWebAppIconTest, GetMaskableCompressedIcon) {
   web_app->SetDownloadedIconSizes(IconPurpose::MASKABLE, {kIconSize2});
 
   RegisterApp(std::move(web_app));
-
   apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize2},
                                            {2.0, kIconSize2}};
   std::vector<uint8_t> src_data = GenerateWebAppCompressedIcon(

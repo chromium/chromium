@@ -85,7 +85,6 @@ class AppTimeControllerTest : public testing::Test {
     ~FakeIconLoader() override = default;
 
     std::unique_ptr<apps::IconLoader::Releaser> LoadIconFromIconKey(
-        apps::AppType app_type,
         const std::string& app_id,
         const apps::IconKey& icon_key,
         apps::IconType icon_type,

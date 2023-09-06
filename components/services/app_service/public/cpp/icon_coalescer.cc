@@ -50,7 +50,6 @@ absl::optional<IconKey> IconCoalescer::GetIconKey(const std::string& app_id) {
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
-    AppType app_type,
     const std::string& app_id,
     const IconKey& icon_key,
     IconType icon_type,
@@ -66,12 +65,12 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
   if (icon_type != IconType::kUncompressed &&
       icon_type != IconType::kStandard) {
     return wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-        allow_placeholder_icon, std::move(callback));
+        app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
+        std::move(callback));
   }
 
   scoped_refptr<RefCountedReleaser> shared_releaser;
-  IconLoader::Key key(app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+  IconLoader::Key key(app_id, icon_key, icon_type, size_hint_in_dip,
                       allow_placeholder_icon);
 
   auto iter = non_immediate_requests_.find(key);
@@ -117,7 +116,7 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
     std::unique_ptr<IconLoader::Releaser> unique_releaser =
         wrapped_loader_->LoadIconFromIconKey(
-            app_type, app_id, icon_key, icon_type, size_hint_in_dip,
+            app_id, icon_key, icon_type, size_hint_in_dip,
             allow_placeholder_icon,
             base::BindOnce(&IconCoalescer::OnLoadIcon,
                            weak_ptr_factory_.GetWeakPtr(), key, seq_num));

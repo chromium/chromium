@@ -45,7 +45,6 @@ class AppsIconCoalescerTest : public testing::Test {
 
    private:
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::AppType app_type,
         const std::string& app_id,
         const apps::IconKey& icon_key,
         apps::IconType icon_type,

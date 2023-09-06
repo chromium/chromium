@@ -26,7 +26,6 @@ absl::optional<IconKey> StubIconLoader::GetIconKey(const std::string& app_id) {
 }
 
 std::unique_ptr<IconLoader::Releaser> StubIconLoader::LoadIconFromIconKey(
-    AppType app_type,
     const std::string& app_id,
     const IconKey& icon_key,
     IconType icon_type,
