@@ -80,7 +80,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -10747,7 +10746,6 @@ class BrowserAutofillManagerPlusAddressTest
         .WillByDefault(Return(mock_plus_address_service_.get()));
   }
   std::unique_ptr<NiceMock<MockPlusAddressService>> mock_plus_address_service_;
-  base::test::ScopedFeatureList features_{plus_addresses::kFeature};
 };
 
 // Ensure that plus address options aren't shown unexpectedly.
