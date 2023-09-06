@@ -1010,7 +1010,7 @@
       "newcomer",
       "cros-status-area-eng@google.com"
     ],
-    "expiry_milestone": 118
+    "expiry_milestone": 119
   },
   {
     "name": "calendar-view-debug-mode",
@@ -6925,7 +6925,7 @@
   {
     "name": "qs-revamp",
     "owners": ["jiamingc","amehfooz", "newcomer"],
-    "expiry_milestone" : 118
+    "expiry_milestone" : 119
   },
   {
     "name": "query-tiles",
