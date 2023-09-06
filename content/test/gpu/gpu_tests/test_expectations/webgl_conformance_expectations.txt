@@ -410,9 +410,6 @@ crbug.com/849572 [ angle-vulkan passthrough ] conformance/extensions/angle-insta
 crbug.com/849572 [ angle-swiftshader passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/849572 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
-# Nvidia bugs fixed in latest driver
-# TODO(http://crbug.com/887241): Upgrade the drivers on the bots.
-crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
@@ -510,8 +507,6 @@ crbug.com/1435021 [ mac amd-0x67ef angle-metal ] conformance/canvas/draw-webgl-t
 
 ## Mac Retina NVidia failures / flakes ##
 
-crbug.com/996344 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop.html [ Failure ]
-crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
 
 ## Mac / Passthrough command decoder / OpenGL / NVIDIA ##
 
