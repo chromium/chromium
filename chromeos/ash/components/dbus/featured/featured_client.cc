@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_is_test.h"
+#include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
@@ -40,26 +41,17 @@ class FeaturedClientImpl : public FeaturedClient {
   ~FeaturedClientImpl() override = default;
 
   void Init(dbus::Bus* const bus) {
-    featured_service_proxy_ =
-        bus->GetObjectProxy(::featured::kFeaturedServiceName,
-                            dbus::ObjectPath(::featured::kFeaturedServicePath));
-
-    listen_callback_ =
+    InitWithCallback(
+        bus, base::FilePath(feature::kActiveTrialFileDirectory),
         base::BindRepeating(&FeaturedClientImpl::RecordEarlyBootTrialInUMA,
-                            weak_ptr_factory_.GetWeakPtr());
-    ListenForActiveEarlyBootTrials();
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void InitWithCallbackForTesting(dbus::Bus* const bus,  // IN-TEST
-                                  const base::FilePath& expected_dir,
-                                  ListenForTrialCallback callback) {
+  void InitForTesting(dbus::Bus* const bus,  // IN-TEST
+                      const base::FilePath& expected_dir,
+                      ListenForTrialCallback callback) {
     CHECK_IS_TEST();
-    featured_service_proxy_ =
-        bus->GetObjectProxy(::featured::kFeaturedServiceName,
-                            dbus::ObjectPath(::featured::kFeaturedServicePath));
-    expected_dir_ = expected_dir;
-    listen_callback_ = callback;
-    ListenForActiveEarlyBootTrials();
+    InitWithCallback(bus, expected_dir, callback);
   }
 
   void HandleSeedFetchedResponse(
@@ -90,6 +82,18 @@ class FeaturedClientImpl : public FeaturedClient {
   }
 
  private:
+  void InitWithCallback(dbus::Bus* const bus,
+                        const base::FilePath& expected_dir,
+                        ListenForTrialCallback callback) {
+    featured_service_proxy_ =
+        bus->GetObjectProxy(::featured::kFeaturedServiceName,
+                            dbus::ObjectPath(::featured::kFeaturedServicePath));
+    expected_dir_ = expected_dir;
+    listen_callback_ = callback;
+    ListenForActiveEarlyBootTrials();
+    ReadTrialsActivatedBeforeChromeStartup();
+  }
+
   void RecordEarlyBootTrialInUMA(const std::string& trial_name,
                                  const std::string& group_name) {
     base::FieldTrial* trial =
@@ -98,17 +102,26 @@ class FeaturedClientImpl : public FeaturedClient {
     trial->Activate();
   }
 
-  void RecordEarlyBootTrialInChrome(const base::FilePath& path, bool error) {
+  // Assumes |filename| is valid (that its directory name is correct).
+  bool RecordEarlyBootTrialInChrome(const base::FilePath& filename) {
+    base::FieldTrial::ActiveGroup active_group;
+    if (!ParseTrialFilename(filename, active_group)) {
+      return false;
+    }
+    listen_callback_.Run(active_group.trial_name, active_group.group_name);
+    return true;
+  }
+
+  void RecordEarlyBootTrialAfterChromeStartup(const base::FilePath& path,
+                                              bool error) {
     if (error || path.DirName() != expected_dir_) {
       // TODO(b/296394808): Add UMA metric if we enter this code path since it
       // is not expected.
       return;
     }
-
-    base::FieldTrial::ActiveGroup active_group;
-    if (ParseTrialFilename(path, active_group)) {
-      listen_callback_.Run(active_group.trial_name, active_group.group_name);
-    }
+    // TODO(b/296394808): Add UMA metric if unable to record trial due to parse
+    // error.
+    RecordEarlyBootTrialInChrome(path);
   }
 
   void ListenForActiveEarlyBootTrials() {
@@ -120,8 +133,28 @@ class FeaturedClientImpl : public FeaturedClient {
 
     watcher_.WatchWithOptions(
         expected_dir_, options,
-        base::BindRepeating(&FeaturedClientImpl::RecordEarlyBootTrialInChrome,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &FeaturedClientImpl::RecordEarlyBootTrialAfterChromeStartup,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void ReadTrialsActivatedBeforeChromeStartup() {
+    base::DirReaderPosix reader(expected_dir_.value().c_str());
+    if (!reader.IsValid()) {
+      // TODO(b/296394808): Add UMA metric if we are unable to enumerate trials
+      // activated before Chrome startup.
+      return;
+    }
+
+    while (reader.Next()) {
+      if (std::string(reader.name()) == "." ||
+          std::string(reader.name()) == "..") {
+        continue;
+      }
+      // TODO(b/296394808): Add UMA metric if unable to record trial due to
+      // parse error.
+      RecordEarlyBootTrialInChrome(base::FilePath(reader.name()));
+    }
   }
 
   // Watches for early-boot trial files written to `expected_dir_`.
@@ -130,11 +163,8 @@ class FeaturedClientImpl : public FeaturedClient {
   // Callback used when early-boot trial files are written to `expected_dir_`.
   FeaturedClient::ListenForTrialCallback listen_callback_;
 
-  // Directory where active trial files on platform are written to, defaulting
-  // to feature::kActiveTrialFileDirectory. The default value can be overridden
-  // with InitializeForTesting().
-  base::FilePath expected_dir_ =
-      base::FilePath(feature::kActiveTrialFileDirectory);
+  // Directory where active trial files on platform are written to.
+  base::FilePath expected_dir_;
 
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> featured_service_proxy_ = nullptr;
 
@@ -172,7 +202,7 @@ void FeaturedClient::InitializeForTesting(dbus::Bus* bus,
                                           ListenForTrialCallback callback) {
   DCHECK(bus);
   (new FeaturedClientImpl())
-      ->InitWithCallbackForTesting(bus, expected_dir, callback);  // IN-TEST
+      ->InitForTesting(bus, expected_dir, callback);  // IN-TEST
 }
 
 // static
