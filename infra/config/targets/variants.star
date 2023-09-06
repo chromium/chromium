@@ -455,6 +455,10 @@ targets.variant(
         "--board=eve",
         "--flash",
     ],
+    # TODO: crbug.com/1479528 - We have limited eve ChromeOS capacity in
+    # swarming, switch the try builders to use skylab or add additional ChromeOS
+    # capacity if we want to test eve on the CQ
+    ci_only = True,
     swarming = targets.swarming(
         dimensions = {
             "os": "ChromeOS",

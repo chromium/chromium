@@ -706,6 +706,7 @@
       '--board=eve',
       '--flash',
     ],
+    'ci_only': True,
     'swarming': {
       'dimensions': {
         'os': 'ChromeOS',
