@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -77,8 +76,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
-  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
-  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

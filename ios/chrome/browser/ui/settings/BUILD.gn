@@ -240,8 +240,6 @@ source_set("test_support") {
     "passphrase_table_view_controller_test.mm",
     "personal_data_manager_finished_profile_tasks_waiter.cc",
     "personal_data_manager_finished_profile_tasks_waiter.h",
-    "signin_settings_app_interface.h",
-    "signin_settings_app_interface.mm",
   ]
   deps = [
     ":settings",
@@ -373,8 +371,6 @@ source_set("eg_app_support+eg2") {
   sources = [
     "settings_app_interface.h",
     "settings_app_interface.mm",
-    "signin_settings_app_interface.h",
-    "signin_settings_app_interface.mm",
     "supervised_user_settings_app_interface.h",
     "supervised_user_settings_app_interface.mm",
   ]
@@ -406,8 +402,6 @@ source_set("eg_test_support+eg2") {
   sources = [
     "settings_app_interface.h",
     "settings_app_interface_stub.mm",
-    "signin_settings_app_interface.h",
-    "signin_settings_app_interface_stub.mm",
     "supervised_user_settings_app_interface.h",
     "supervised_user_settings_app_interface_stub.mm",
   ]
@@ -426,8 +420,7 @@ source_set("eg2_tests") {
     "search_engine_settings_egtest.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",
-    "signin_settings_with_legacy_promo_egtest.mm",
-    "signin_settings_without_legacy_promo_egtest.mm",
+    "signin_settings_egtest.mm",
   ]
   deps = [
     ":eg_test_support+eg2",

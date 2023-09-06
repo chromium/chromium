@@ -26,10 +26,10 @@
 using chrome_test_util::GoogleSyncSettingsButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
-@interface SigninSettingsWithoutLegacyPromoTestCase : ChromeTestCase
+@interface SigninSettingsTestCase : ChromeTestCase
 @end
 
-@implementation SigninSettingsWithoutLegacyPromoTestCase
+@implementation SigninSettingsTestCase
 
 - (void)tearDown {
   [PolicyAppInterface clearPolicies];
@@ -39,7 +39,6 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kHideSettingsSyncPromo);
 
   if ([self isRunningTest:@selector
             (testSigninRowOpensSyncDialogIfSignedOutAndNoDeviceAccounts)] ||

@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -95,8 +94,6 @@ void WaitForSettingDoneButton() {
 
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
   [BookmarkEarlGrey clearBookmarks];
-  // TODO(crbug.com/1450472): Remove when kHideSettingsSyncPromo is launched.
-  [SigninSettingsAppInterface setSettingsSigninPromoDisplayedCount:INT_MAX];
 }
 
 - (void)tearDown {
