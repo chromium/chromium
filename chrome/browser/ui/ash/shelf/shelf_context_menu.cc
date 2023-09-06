@@ -62,6 +62,8 @@ void UninstallApp(Profile* profile, const std::string& app_id) {
 
 }  // namespace
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfCloseMenuItem);
+
 // static
 std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
     ChromeShelfController* controller,
@@ -314,6 +316,10 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
         type, string_id,
         ui::ImageModel::FromVectorIcon(icon, ui::kColorAshSystemUIMenuIcon,
                                        ash::kAppContextMenuIconSize));
+    if (type == ash::MENU_CLOSE) {
+      menu_model->SetElementIdentifierAt(
+          menu_model->GetIndexOfCommandId(type).value(), kShelfCloseMenuItem);
+    }
     return;
   }
   // If the MenuType is a check item.

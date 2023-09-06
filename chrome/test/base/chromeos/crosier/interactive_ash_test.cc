@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "ui/aura/test/find_window.h"
 #include "url/gurl.h"
@@ -71,69 +71,6 @@ class FakeSessionManagerClientBrowserHelper
       scoped_fake_session_manager_client_;
 };
 #endif
-
-// Watches for windows created with a given title.
-class AuraWindowTitleObserver
-    : public ui::test::
-          ObservationStateObserver<bool, aura::Env, aura::EnvObserver>,
-      public aura::WindowObserver {
- public:
-  AuraWindowTitleObserver(aura::Env* env, std::u16string expected_title)
-      : ObservationStateObserver(env),
-        env_(env),
-        expected_title_(std::move(expected_title)) {}
-
-  // ui::test::StateObserver:
-  bool GetStateObserverInitialState() const override {
-    // Compute the initial state by checking for existing windows.
-    return aura::test::FindWindowWithTitle(env_, expected_title_);
-  }
-
-  // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* window) override {
-    if (found_) {
-      return;
-    }
-
-    if (window->GetTitle() == expected_title_) {
-      found_ = true;
-      windows_.clear();
-      OnStateObserverStateChanged(true);
-    } else {
-      auto [iter, inserted] = windows_.emplace(std::piecewise_construct,
-                                               std::forward_as_tuple(window),
-                                               std::forward_as_tuple(this));
-      CHECK(inserted);
-      iter->second.Observe(window);
-    }
-  }
-  void OnWillDestroyEnv() override {
-    env_ = nullptr;
-    OnObservationStateObserverSourceDestroyed();
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override {
-    windows_.erase(window);
-  }
-  void OnWindowTitleChanged(aura::Window* window) override {
-    if (window->GetTitle() == expected_title_) {
-      found_ = true;
-      windows_.clear();
-      OnStateObserverStateChanged(true);
-    }
-  }
-
- private:
-  raw_ptr<aura::Env> env_;
-  bool found_ = false;
-  const std::u16string expected_title_;
-
-  using ScopedWindowObservation =
-      base::ScopedObservation<aura::Window, aura::WindowObserver>;
-
-  std::map<aura::Window*, ScopedWindowObservation> windows_;
-};
 
 }  // namespace
 

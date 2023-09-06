@@ -654,6 +654,8 @@ static_library("test_support") {
       "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_test_utils.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
+      "base/chromeos/crosier/aura_window_title_observer.cc",
+      "base/chromeos/crosier/aura_window_title_observer.h",
     ]
     deps += [
       "base/chromeos/crosier:proto",
@@ -974,13 +976,17 @@ if (is_chromeos && is_chromeos_device) {
       "base/chromeos/crosier/chromeos_tests_main.cc",
       "base/chromeos/crosier/demo_integration_test.cc",
     ]
-    deps = [ ":test_support" ]
+    deps = [
+      ":test_support",
+      "//components/app_constants",
+    ]
     if (is_chromeos_ash) {
       sources += [
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
         "../browser/ash/external_metrics_integration_test.cc",
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
+        "../browser/ui/ash/shelf/shelf_integration_test.cc",
 
         # These cannot live in ":test_support" because they use
         # InProcessBrowserTest which requires HAS_OUT_OF_PROC_TEST_RUNNER.
@@ -10646,6 +10652,7 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+          "//components/app_constants",
         ]
       } else {
         sources += [
