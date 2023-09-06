@@ -1886,6 +1886,8 @@ enum HistogramValue {
   USERSCRIPTS_UNREGISTER = 1824,
   AUTOTESTPRIVATE_SETARCINTERACTIVESTATE = 1825,
   OS_DIAGNOSTICS_CREATEMEMORYROUTINE = 1826,
+  OS_DIAGNOSTICS_STARTROUTINE = 1827,
+  OS_DIAGNOSTICS_CANCELROUTINE = 1828,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

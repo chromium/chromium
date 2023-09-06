@@ -300,6 +300,18 @@ namespace os.diagnostics {
 
   callback CreateMemoryRoutineCallback = void (CreateMemoryRoutineResponse response);
 
+  dictionary StartRoutineRequest {
+    DOMString uuid;
+  };
+
+  callback StartRoutineCallback = void ();
+
+  dictionary CancelRoutineRequest {
+    DOMString uuid;
+  };
+
+  callback CancelRoutineCallback = void ();
+
   interface Functions {
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
 
@@ -376,6 +388,13 @@ namespace os.diagnostics {
     [supportsPromises] static void runAudioDriverRoutine(RunRoutineCallback callback);
 
     // ----------------- DIAGNOSTICS API V2 -----------------
+
+    // Starts execution of a routine. This can only be expected to work after
+    // `onRoutineInitialized` was emitted for the routine with `UUID`.
+    [supportsPromises] static void startRoutine(StartRoutineRequest request, StartRoutineCallback callback);
+
+    // Stops executing the routine identified by `UUID` and removes all related resources from the system.
+    [supportsPromises] static void cancelRoutine(CancelRoutineRequest request, CancelRoutineCallback callback);
 
     [supportsPromises] static void createMemoryRoutine(RunMemoryRoutineArguments args,
                                                           CreateMemoryRoutineCallback callback);

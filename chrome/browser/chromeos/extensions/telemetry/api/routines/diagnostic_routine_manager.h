@@ -62,6 +62,13 @@ class DiagnosticRoutineManager : public extensions::BrowserContextKeyedAPI,
   base::expected<base::Uuid, Error> CreateRoutine(
       extensions::ExtensionId extension_id,
       crosapi::mojom::TelemetryDiagnosticRoutineArgumentPtr routine_argument);
+  // Tries to start the routine with `routine_id`, returns true if successful,
+  // otherwise false.
+  bool StartRoutineForExtension(extensions::ExtensionId extension_id,
+                                base::Uuid routine_id);
+  // Stops the routine with `routine_id`.
+  void CancelRoutineForExtension(extensions::ExtensionId extension_id,
+                                 base::Uuid routine_id);
 
   // `ExtensionRegistryObserver`:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

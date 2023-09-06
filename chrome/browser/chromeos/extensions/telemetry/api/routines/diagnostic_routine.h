@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_observation.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -52,6 +53,8 @@ class DiagnosticRoutine {
   ~DiagnosticRoutine();
 
   mojo::Remote<crosapi::mojom::TelemetryDiagnosticRoutineControl>& GetRemote();
+
+  base::Uuid& uuid() { return info_.uuid; }
 
   // Called when the `mojo::Remote` for the RoutineControl interface
   // disconnects. This triggers the `onRoutineException` event with the

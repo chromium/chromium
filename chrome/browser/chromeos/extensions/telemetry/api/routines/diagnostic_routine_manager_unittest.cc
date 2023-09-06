@@ -64,6 +64,8 @@ constexpr char kExtensionId2[] = "alnedpmllcfpgldkagbfbjkloonjlfjb";
 constexpr char kPwaPattern2[] = "https://hpcs-appschr.hpcloud.hp.com/*";
 constexpr char kPwaUrl2[] = "https://hpcs-appschr.hpcloud.hp.com";
 
+constexpr char kUnmappedUuid[] = "41976e88-b067-476f-9e1e-3ec47b6959af";
+
 }  // namespace
 
 class TelemetryExtensionDiagnosticRoutinesManagerTest
@@ -171,7 +173,7 @@ class TelemetryExtensionDiagnosticRoutinesManagerTest
                      [uuid](const std::unique_ptr<DiagnosticRoutine>& elem) {
                        return elem->info_.uuid == uuid;
                      });
-    return found_uuid == it->second.end();
+    return found_uuid != it->second.end();
   }
 
  private:
@@ -358,6 +360,50 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
       base::unexpected(DiagnosticRoutineManager::Error::kExtensionUnloaded));
   EXPECT_FALSE(app_ui_observers().contains(kExtensionId1));
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       StartRoutineNoExtension) {
+  EXPECT_FALSE(routine_manager().StartRoutineForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, StartRoutineNoRoutine) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+
+  EXPECT_FALSE(routine_manager().StartRoutineForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, StartRoutineSuccess) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
+                                          /*cert_status=*/net::OK);
+
+  auto create_result =
+      routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument());
+  EXPECT_TRUE(create_result.has_value());
+
+  EXPECT_TRUE(routine_manager().StartRoutineForExtension(
+      kExtensionId1, create_result.value()));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CancelRoutineSuccess) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
+                                          /*cert_status=*/net::OK);
+
+  auto create_result =
+      routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument());
+  EXPECT_TRUE(create_result.has_value());
+
+  EXPECT_TRUE(
+      IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
+
+  routine_manager().CancelRoutineForExtension(kExtensionId1,
+                                              create_result.value());
+  EXPECT_FALSE(
+      IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
 }
 
 }  // namespace chromeos

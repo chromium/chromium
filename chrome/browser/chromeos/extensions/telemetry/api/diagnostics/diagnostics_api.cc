@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
@@ -33,6 +34,19 @@ namespace cx_diag = api::os_diagnostics;
 
 }  // namespace
 
+// DiagnosticsApiFunctionV1AndV2Base -------------------------------------------
+
+template <class Params>
+absl::optional<Params> DiagnosticsApiFunctionV1AndV2Base::GetParams() {
+  auto params = Params::Create(args());
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+  }
+
+  return params;
+}
+
 // DiagnosticsApiFunctionBase --------------------------------------------------
 
 DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
@@ -45,17 +59,6 @@ mojo::Remote<crosapi::mojom::DiagnosticsService>&
 DiagnosticsApiFunctionBase::GetRemoteService() {
   DCHECK(remote_diagnostics_service_strategy_);
   return remote_diagnostics_service_strategy_->GetRemoteService();
-}
-
-template <class Params>
-absl::optional<Params> DiagnosticsApiFunctionBase::GetParams() {
-  auto params = Params::Create(args());
-  if (!params) {
-    SetBadMessage();
-    Respond(BadMessage());
-  }
-
-  return params;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -505,6 +508,41 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
   response.uuid = result->AsLowercaseString();
   Respond(
       ArgumentList(cx_diag::CreateMemoryRoutine::Results::Create(response)));
+}
+
+// OsDiagnosticsStartRoutineFunction -------------------------------------------
+
+void OsDiagnosticsStartRoutineFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::StartRoutine::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  bool result = routines_manager->StartRoutineForExtension(
+      extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid));
+
+  if (!result) {
+    RespondWithError("Unknown routine id.");
+    return;
+  }
+
+  Respond(NoArguments());
+}
+
+// OsDiagnosticsCancelRoutineFunction ------------------------------------------
+
+void OsDiagnosticsCancelRoutineFunction::RunIfAllowed() {
+  auto params = GetParams<cx_diag::CancelRoutine::Params>();
+  if (!params.has_value()) {
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  routines_manager->CancelRoutineForExtension(
+      extension_id(), base::Uuid::ParseLowercase(params.value().request.uuid));
+
+  Respond(NoArguments());
 }
 
 }  // namespace chromeos

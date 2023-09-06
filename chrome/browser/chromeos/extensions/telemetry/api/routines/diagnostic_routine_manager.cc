@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -103,6 +104,45 @@ DiagnosticRoutineManager::CreateRoutine(
                      base::Unretained(this))));
 
   return base::ok(uuid);
+}
+
+bool DiagnosticRoutineManager::StartRoutineForExtension(
+    extensions::ExtensionId extension_id,
+    base::Uuid routine_id) {
+  auto it = routines_per_extension_.find(extension_id);
+  if (it == routines_per_extension_.end()) {
+    return false;
+  }
+
+  auto routine = std::find_if(
+      it->second.begin(), it->second.end(),
+      [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
+        return routine->uuid() == routine_id;
+      });
+
+  if (routine == it->second.end()) {
+    return false;
+  }
+
+  routine->get()->GetRemote()->Start();
+  return true;
+}
+
+void DiagnosticRoutineManager::CancelRoutineForExtension(
+    extensions::ExtensionId extension_id,
+    base::Uuid routine_id) {
+  auto it = routines_per_extension_.find(extension_id);
+  if (it == routines_per_extension_.end()) {
+    return;
+  }
+
+  // We can just remove the corresponding routine object, this will cut the
+  // `RoutineControl` connection signalling to stop the routine.
+  base::EraseIf(
+      it->second,
+      [routine_id](const std::unique_ptr<DiagnosticRoutine>& routine) {
+        return routine->uuid() == routine_id;
+      });
 }
 
 void DiagnosticRoutineManager::OnExtensionUnloaded(

@@ -108,6 +108,44 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       StartRoutineWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function startRoutineFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.startRoutine({
+            uuid: 123,
+          });
+        }, [],
+          'chrome.os.diagnostics.startRoutine is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiV2BrowserTest,
+                       CancelRoutineWithoutFeatureFlagError) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function cancelRoutineFail() {
+        chrome.test.assertThrows(() => {
+          chrome.os.diagnostics.cancelRoutine({
+            uuid: 123,
+          });
+        }, [],
+          'chrome.os.diagnostics.cancelRoutine is not a function'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval
     : public TelemetryExtensionDiagnosticsApiV2BrowserTest {
  public:
@@ -257,6 +295,104 @@ IN_PROC_BROWSER_TEST_F(
         });
         chrome.test.assertTrue(response !== undefined);
         resolver(response.uuid);
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    StartRoutineWithFeatureFlagUnknownUuidError) {
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startRoutineFail() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.startRoutine({
+              uuid: '123',
+            }),
+            'Error: Unknown routine id.'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+    )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    StartRoutineWithFeatureFlagSuccess) {
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+       async function createMemoryRoutine() {
+        let resolver;
+        // Set later once the routine was created.
+        var uuid = new Promise((resolve) => {
+          resolver = resolve;
+        });
+
+        let onInitCalled = false;
+        chrome.os.diagnostics.onRoutineInitialized.addListener(
+          async (status) => {
+            chrome.test.assertEq(status.uuid, await uuid);
+            onInitCalled = true;
+          }
+        );
+
+        // Only resolve the test once we got the final event.
+        chrome.os.diagnostics.onRoutineRunning.addListener(
+          async (status) => {
+            chrome.test.assertEq(status.uuid, await uuid);
+            chrome.test.assertTrue(onInitCalled);
+
+            chrome.test.succeed();
+          }
+        );
+
+        const response = await chrome.os.diagnostics.createMemoryRoutine({
+          maxTestingMemKib: 42,
+        });
+        chrome.test.assertTrue(response !== undefined);
+        resolver(response.uuid);
+
+        await chrome.os.diagnostics.startRoutine({ uuid: response.uuid });
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiV2BrowserTestPendingApproval,
+    CancelRoutineWithFeatureFlagSuccess) {
+  OpenAppUiAndMakeItSecure();
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function cancelRoutine() {
+        const response = await chrome.os.diagnostics.createMemoryRoutine({
+          maxTestingMemKib: 42,
+        });
+        chrome.test.assertTrue(response !== undefined);
+
+        // Start the routine.
+        await chrome.os.diagnostics.startRoutine({ uuid: response.uuid });
+
+        // Now cancel the routine.
+        await chrome.os.diagnostics.cancelRoutine({ uuid: response.uuid });
+
+        // Test that we were successful by starting again and failing.
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.startRoutine({
+              uuid: response.uuid,
+            }),
+            'Error: Unknown routine id.'
+        );
+
+        chrome.test.succeed();
       }
     ]);
   )");

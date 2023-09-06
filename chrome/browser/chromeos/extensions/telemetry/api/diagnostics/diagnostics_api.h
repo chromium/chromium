@@ -18,8 +18,19 @@
 
 namespace chromeos {
 
-class DiagnosticsApiFunctionBase
+class DiagnosticsApiFunctionV1AndV2Base
     : public BaseTelemetryExtensionApiGuardFunction {
+ protected:
+  ~DiagnosticsApiFunctionV1AndV2Base() override = default;
+
+  // Gets the parameters passed to the JavaScript call and tries to convert it
+  // to the `Params` type. If the `Params` can't be created, this resolves the
+  // corresponding JavaScript call with an error and returns `nullptr`.
+  template <class Params>
+  absl::optional<Params> GetParams();
+};
+
+class DiagnosticsApiFunctionBase : public DiagnosticsApiFunctionV1AndV2Base {
  public:
   DiagnosticsApiFunctionBase();
 
@@ -27,12 +38,6 @@ class DiagnosticsApiFunctionBase
   ~DiagnosticsApiFunctionBase() override;
 
   mojo::Remote<crosapi::mojom::DiagnosticsService>& GetRemoteService();
-
-  // Gets the parameters passed to the JavaScript call and tries to convert it
-  // to the `Params` type. If the `Params` can't be created, this resolves the
-  // corresponding JavaScript call with an error and returns `nullptr`.
-  template <class Params>
-  absl::optional<Params> GetParams();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsCrosApiAvailable() override;
@@ -43,8 +48,7 @@ class DiagnosticsApiFunctionBase
       remote_diagnostics_service_strategy_;
 };
 
-class DiagnosticsApiFunctionBaseV2
-    : public BaseTelemetryExtensionApiGuardFunction {
+class DiagnosticsApiFunctionBaseV2 : public DiagnosticsApiFunctionV1AndV2Base {
  public:
   DiagnosticsApiFunctionBaseV2() = default;
 
@@ -426,6 +430,26 @@ class OsDiagnosticsCreateMemoryRoutineFunction
                              OS_DIAGNOSTICS_CREATEMEMORYROUTINE)
  private:
   ~OsDiagnosticsCreateMemoryRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsStartRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.startRoutine",
+                             OS_DIAGNOSTICS_STARTROUTINE)
+ private:
+  ~OsDiagnosticsStartRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsCancelRoutineFunction : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.cancelRoutine",
+                             OS_DIAGNOSTICS_CANCELROUTINE)
+ private:
+  ~OsDiagnosticsCancelRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
