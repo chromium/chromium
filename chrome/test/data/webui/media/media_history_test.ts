@@ -4,14 +4,23 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+
+declare global {
+  interface Window {
+    // Exported by the prod code.
+    whenPageIsPopulatedForTest(): Promise<void>;
+  }
+}
+
 suite('Stats', function() {
   suiteSetup(function() {
-    return whenPageIsPopulatedForTest();
+    return window.whenPageIsPopulatedForTest();
   });
 
   test('check table is loaded', () => {
     const statsRows =
-        Array.from(document.getElementById('stats-table-body').children);
+        Array.from(getRequiredElement('stats-table-body').children);
 
     assertDeepEquals(
         [
@@ -23,18 +32,18 @@ suite('Stats', function() {
           ['sessionImage', '0'],
         ],
         statsRows.map(
-            x => [x.children[0].textContent, x.children[1].textContent]));
+            x => [x.children[0]!.textContent, x.children[1]!.textContent]));
   });
 });
 
 suite('Origins', function() {
   suiteSetup(function() {
-    return whenPageIsPopulatedForTest();
+    return window.whenPageIsPopulatedForTest();
   });
 
   test('check table is loaded', () => {
-    const dataHeaderRows =
-        Array.from(document.querySelector('#origins-table thead tr').children);
+    const dataHeaderRows = Array.from(
+        document.body.querySelector('#origins-table thead tr')!.children);
 
     assertDeepEquals(
         [
@@ -43,33 +52,33 @@ suite('Origins', function() {
           'Audio + Video Watchtime (secs, cached)',
           'Audio + Video Watchtime (secs, actual)',
         ],
-        dataHeaderRows.map(x => x.textContent.trim()));
+        dataHeaderRows.map(x => x.textContent!.trim()));
   });
 });
 
 suite('Playbacks', function() {
   suiteSetup(function() {
-    return whenPageIsPopulatedForTest();
+    return window.whenPageIsPopulatedForTest();
   });
 
   test('check table is loaded', () => {
     const dataHeaderRows = Array.from(
-        document.querySelector('#playbacks-table thead tr').children);
+        document.body.querySelector('#playbacks-table thead tr')!.children);
 
     assertDeepEquals(
         ['URL', 'Last Updated', 'Has Audio', 'Has Video', 'Watchtime (secs)'],
-        dataHeaderRows.map(x => x.textContent.trim()));
+        dataHeaderRows.map(x => x.textContent!.trim()));
   });
 });
 
 suite('Sessions', function() {
   suiteSetup(function() {
-    return whenPageIsPopulatedForTest();
+    return window.whenPageIsPopulatedForTest();
   });
 
   test('check table is loaded', () => {
-    const dataHeaderRows =
-        Array.from(document.querySelector('#sessions-table thead tr').children);
+    const dataHeaderRows = Array.from(
+        document.body.querySelector('#sessions-table thead tr')!.children);
 
     assertDeepEquals(
         [
@@ -83,6 +92,6 @@ suite('Sessions', function() {
           'Source Title',
           'Artwork',
         ],
-        dataHeaderRows.map(x => x.textContent.trim()));
+        dataHeaderRows.map(x => x.textContent!.trim()));
   });
 });
