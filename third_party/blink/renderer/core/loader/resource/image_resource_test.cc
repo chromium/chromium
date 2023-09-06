@@ -32,6 +32,7 @@
 
 #include <memory>
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -68,7 +69,6 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
@@ -1182,7 +1182,7 @@ TEST_F(ImageResourceCounterTest, InstanceCounters_UserAgent) {
 }
 
 TEST_F(ImageResourceCounterTest, RevalidationPolicyMetrics) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   auto* fetcher = CreateFetcher();
 
   KURL test_url("http://127.0.0.1:8000/img.png");

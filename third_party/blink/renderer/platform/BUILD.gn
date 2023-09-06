@@ -1886,8 +1886,6 @@ static_library("test_support") {
     "testing/font_test_base.h",
     "testing/font_test_helpers.cc",
     "testing/font_test_helpers.h",
-    "testing/histogram_tester.cc",
-    "testing/histogram_tester.h",
     "testing/io_task_runner_testing_platform_support.cc",
     "testing/io_task_runner_testing_platform_support.h",
     "testing/layer_tree_host_embedder.cc",

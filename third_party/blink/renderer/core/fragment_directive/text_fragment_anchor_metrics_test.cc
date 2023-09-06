@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor_metrics.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -48,7 +48,7 @@ class TextFragmentAnchorMetricsTest : public TextFragmentAnchorTestBase {
     return scoped_fake_ukm_recorder_.recorder();
   }
 
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
   ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 };
 

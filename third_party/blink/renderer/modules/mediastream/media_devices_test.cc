@@ -380,7 +380,7 @@ class MediaDevicesTest : public PageTestBase {
   Persistent<MediaDeviceInfos> device_infos_;
   bool listener_connection_error_ = false;
   Persistent<MediaDevices> media_devices_;
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {

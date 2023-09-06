@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 
 namespace blink {
 
@@ -134,7 +134,7 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
 };
 
 TEST_F(ReportingContextTest, CountQueuedReports) {
-  HistogramTester tester;
+  base::HistogramTester tester;
   auto dummy_page_holder = std::make_unique<DummyPageHolder>();
   tester.ExpectTotalCount("Blink.UseCounter.Features.DeprecationReport", 0);
   // Checking the feature state with reporting intent should record a potential

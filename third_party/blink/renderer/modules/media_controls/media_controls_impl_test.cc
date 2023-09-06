@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -275,7 +275,7 @@ class MediaControlsImplTest : public PageTestBase,
         MediaControls().MediaElement().GetWebMediaPlayer());
   }
 
-  HistogramTester& GetHistogramTester() { return histogram_tester_; }
+  base::HistogramTester& GetHistogramTester() { return histogram_tester_; }
 
   void LoadMediaWithDuration(double duration) {
     MediaControls().MediaElement().SetSrc(
@@ -341,7 +341,7 @@ class MediaControlsImplTest : public PageTestBase,
 
  private:
   Persistent<MediaControlsImpl> media_controls_;
-  HistogramTester histogram_tester_;
+  base::HistogramTester histogram_tester_;
 };
 
 void MediaControlsImplTest::MouseDownAt(gfx::PointF pos) {

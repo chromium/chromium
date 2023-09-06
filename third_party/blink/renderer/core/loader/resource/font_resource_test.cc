@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -24,7 +25,6 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -137,7 +137,7 @@ TEST_F(FontResourceTest,
 
 // Tests if the RevalidationPolicy UMA works properly for fonts.
 TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "media/base/output_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -91,7 +91,7 @@ class AudioContextAutoplayTest
     GetWindow().GetFrame()->GetSettings()->SetAutoplayPolicy(GetParam());
     ChildWindow().GetFrame()->GetSettings()->SetAutoplayPolicy(GetParam());
 
-    histogram_tester_ = std::make_unique<HistogramTester>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   LocalDOMWindow& GetWindow() {
@@ -116,14 +116,14 @@ class AudioContextAutoplayTest
     audio_context->RecordAutoplayMetrics();
   }
 
-  HistogramTester* GetHistogramTester() {
+  base::HistogramTester* GetHistogramTester() {
     return histogram_tester_.get();
   }
 
  private:
   ScopedTestingPlatformSupport<AudioContextAutoplayTestPlatform> platform_;
   frame_test_helpers::WebViewHelper helper_;
-  std::unique_ptr<HistogramTester> histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Creates an AudioContext without a gesture inside a x-origin child frame.

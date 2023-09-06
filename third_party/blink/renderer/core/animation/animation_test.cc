@@ -34,6 +34,7 @@
 #include <tuple>
 
 #include "base/bits.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/trees/target_property.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +72,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -1430,7 +1430,7 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
 
   // Initially the animation in this test has no target, so it is invalid.
   {
-    HistogramTester histogram;
+    base::HistogramTester histogram;
     ASSERT_TRUE(animation->PreCommit(0, nullptr, true));
     histogram.ExpectBucketCount(
         histogram_name,
@@ -1440,7 +1440,7 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
 
   // Restart the animation with a target and compositing state.
   {
-    HistogramTester histogram;
+    base::HistogramTester histogram;
     ResetWithCompositedAnimation();
     histogram.ExpectBucketCount(
         histogram_name,
@@ -1452,7 +1452,7 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
   animation->setPlaybackRate(0);
   animation->NotifyReady(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   {
-    HistogramTester histogram;
+    base::HistogramTester histogram;
     ASSERT_TRUE(animation->PreCommit(0, nullptr, true));
     histogram.ExpectBucketCount(
         histogram_name,
@@ -1479,7 +1479,7 @@ TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
       ->SetKeyframes({start_keyframe, end_keyframe});
   UpdateAllLifecyclePhasesForTest();
   {
-    HistogramTester histogram;
+    base::HistogramTester histogram;
     ASSERT_TRUE(animation->PreCommit(0, nullptr, true));
     histogram.ExpectBucketCount(
         histogram_name,

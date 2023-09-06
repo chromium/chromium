@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -150,7 +150,7 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  absl::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   // Test touch scroll.
@@ -196,7 +196,7 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  absl::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -241,7 +241,7 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("box"));
-  absl::optional<HistogramTester> histogram_tester;
+  absl::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);
@@ -300,7 +300,7 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   )HTML");
 
   Element* box = GetDocument().getElementById(AtomicString("inner"));
-  absl::optional<HistogramTester> histogram_tester;
+  absl::optional<base::HistogramTester> histogram_tester;
   histogram_tester.emplace();
 
   Scroll(box, WebGestureDevice::kTouchpad);

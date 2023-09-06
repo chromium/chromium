@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -26,7 +27,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -89,7 +89,7 @@ TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
 }
 
 TEST_F(LazyLoadImagesSimTest, LazyLoadedImageSizeHistograms) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   SimRequest lazy_a_resource("https://example.com/lazy_a.png", "image/png");
   SimRequest eager_resource("https://example.com/eager.png", "image/png");
   SimRequest lazy_b_resource("https://example.com/lazy_b.png", "image/png");
@@ -650,7 +650,7 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
 }
 
 TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.png",
@@ -694,7 +694,7 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
 
 // A fully above-the-fold cached image should not report below-the-fold metrics.
 TEST_F(LazyLoadImagesTest, AboveTheFoldCachedImageMetrics) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.png",
                                        "image/png");
@@ -748,7 +748,7 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldCachedImageMetrics) {
 // An image that loads immediately due to being cached should not report
 // Blink.VisibleBeforeLoaded.LazyLoadImages metrics.
 TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   SimRequest main_resource("https://a.com/", "text/html");
   SimSubresourceRequest image_resource("https://a.com/image.png", "image/png");
   LoadURL("https://a.com/");
@@ -798,7 +798,7 @@ TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
 }
 
 TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
   SimSubresourceRequest image_resource("https://example.com/image.png",
@@ -844,7 +844,7 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
 }
 
 TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -905,7 +905,7 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
 }
 
 TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -965,7 +965,7 @@ TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
 
 // LazyLoadImages metrics should not be recorded for non-lazy image loads.
 TEST_F(LazyLoadImagesTest, NonLazyIgnoredForLazyLoadImagesMetrics) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://aa.com/", "text/html");
   SimSubresourceRequest above_resource("https://aa.com/above.png", "image/png");

@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,6 @@
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -125,8 +125,7 @@ class OriginTrialContextTest : public testing::Test {
  protected:
   OriginTrialContextTest()
       : token_validator_(new MockTokenValidator()),
-        execution_context_(MakeGarbageCollected<NullExecutionContext>()),
-        histogram_tester_(new HistogramTester()) {
+        execution_context_(MakeGarbageCollected<NullExecutionContext>()) {
     execution_context_->GetOriginTrialContext()
         ->SetTrialTokenValidatorForTesting(
             std::unique_ptr<MockTokenValidator>(token_validator_));
@@ -197,18 +196,18 @@ class OriginTrialContextTest : public testing::Test {
   }
 
   void ExpectStatusCount(OriginTrialTokenStatus status, int count) {
-    histogram_tester_->ExpectBucketCount(kResultHistogram,
-                                         static_cast<int>(status), count);
+    histogram_tester_.ExpectBucketCount(kResultHistogram,
+                                        static_cast<int>(status), count);
   }
 
   void ExpectStatusTotalMetric(int total) {
-    histogram_tester_->ExpectTotalCount(kResultHistogram, total);
+    histogram_tester_.ExpectTotalCount(kResultHistogram, total);
   }
 
  protected:
   MockTokenValidator* token_validator_;
   Persistent<NullExecutionContext> execution_context_;
-  std::unique_ptr<HistogramTester> histogram_tester_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Check that validation status gets logged to the histogram

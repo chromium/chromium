@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -909,7 +909,7 @@ TEST_F(PermissionsPolicyParserTest, ParseTooLongPolicy) {
 // Test histogram counting the use of permissions policies in header.
 TEST_F(PermissionsPolicyParserTest, HeaderHistogram) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
-  HistogramTester tester;
+  base::HistogramTester tester;
   PolicyParserMessageBuffer logger;
 
   PermissionsPolicyParser::ParseFeaturePolicyForTest(
@@ -930,7 +930,7 @@ TEST_F(PermissionsPolicyParserTest, HeaderHistogram) {
 // Test counting the use of each permissions policy only once per header.
 TEST_F(PermissionsPolicyParserTest, HistogramMultiple) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
-  HistogramTester tester;
+  base::HistogramTester tester;
   PolicyParserMessageBuffer logger;
 
   // If the same feature is listed multiple times, it should only be counted

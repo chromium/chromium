@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
@@ -9,7 +10,6 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -241,7 +241,7 @@ TEST_F(DocumentPolicySimTest,
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest::Params params;
   params.response_http_headers = {
@@ -261,7 +261,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
@@ -287,7 +287,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
@@ -316,7 +316,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   SimRequest::Params params;
   params.response_http_headers = {

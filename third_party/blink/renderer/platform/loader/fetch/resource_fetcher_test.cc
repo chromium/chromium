@@ -35,6 +35,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
@@ -69,7 +70,6 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
@@ -232,7 +232,7 @@ TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
 }
 
 TEST_F(ResourceFetcherTest, UseExistingResource) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -281,7 +281,7 @@ TEST_F(ResourceFetcherTest, UseExistingResource) {
 }
 
 TEST_F(ResourceFetcherTest, MemoryCachePerContextUseExistingResource) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kScopeMemoryCachePerContext);
@@ -352,7 +352,7 @@ TEST_F(ResourceFetcherTest, MemoryCachePerContextUseExistingResource) {
 }
 
 TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
@@ -421,7 +421,7 @@ TEST_F(ResourceFetcherTest, MetricsPerTopFrameSite) {
 }
 
 TEST_F(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
-  blink::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
 
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
