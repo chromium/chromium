@@ -34,7 +34,7 @@ class DMPolicyManager : public PolicyManagerInterface {
   absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
-  absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;
+  absl::optional<std::string> GetDownloadPreference() const override;
   absl::optional<int> GetPackageCacheSizeLimitMBytes() const override;
   absl::optional<int> GetPackageCacheExpirationTimeDays() const override;
   absl::optional<int> GetEffectivePolicyForAppInstalls(

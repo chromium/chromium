@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -202,11 +203,14 @@ PolicyStatus<UpdatesSuppressedTimes> PolicyService::GetUpdatesSuppressedTimes()
       base::BindRepeating(&PolicyManagerInterface::GetUpdatesSuppressedTimes));
 }
 
-PolicyStatus<std::string> PolicyService::GetDownloadPreferenceGroupPolicy()
-    const {
+PolicyStatus<std::string> PolicyService::GetDownloadPreference() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryPolicy(base::BindRepeating(
-      &PolicyManagerInterface::GetDownloadPreferenceGroupPolicy));
+  return QueryPolicy(
+      base::BindRepeating(&PolicyManagerInterface::GetDownloadPreference),
+      base::BindRepeating([](const std::string& download_preference) {
+        return base::EqualsCaseInsensitiveASCII(download_preference,
+                                                kDownloadPreferenceCacheable);
+      }));
 }
 
 PolicyStatus<int> PolicyService::GetPackageCacheSizeLimitMBytes() const {
@@ -266,7 +270,14 @@ PolicyStatus<bool> PolicyService::IsRollbackToTargetVersionAllowed(
 PolicyStatus<std::string> PolicyService::GetProxyMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return QueryPolicy(
-      base::BindRepeating(&PolicyManagerInterface::GetProxyMode));
+      base::BindRepeating(&PolicyManagerInterface::GetProxyMode),
+      base::BindRepeating([](const std::string& proxy_mode) {
+        return base::Contains(
+            std::vector<std::string>(
+                {kProxyModeDirect, kProxyModeSystem, kProxyModeFixedServers,
+                 kProxyModePacScript, kProxyModeAutoDetect}),
+            base::ToLowerASCII(proxy_mode));
+      }));
 }
 
 PolicyStatus<std::string> PolicyService::GetProxyPacUrl() const {
@@ -338,8 +349,7 @@ std::string PolicyService::GetAllPoliciesAsString() const {
         update_supressed_times.effective_policy()->source.c_str()));
   }
 
-  PolicyStatus<std::string> download_preference =
-      GetDownloadPreferenceGroupPolicy();
+  PolicyStatus<std::string> download_preference = GetDownloadPreference();
   if (download_preference) {
     policies.push_back(base::StringPrintf(
         "DownloadPreference = %s (%s)", download_preference.policy().c_str(),
@@ -449,15 +459,18 @@ bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
 template <typename T>
 PolicyStatus<T> PolicyService::QueryPolicy(
     const base::RepeatingCallback<absl::optional<T>(
-        const PolicyManagerInterface*)>& policy_query_callback) const {
+        const PolicyManagerInterface*)>& policy_query_callback,
+    const base::RepeatingCallback<bool(const T&)>& validator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::optional<T> query_result;
   PolicyStatus<T> status;
   for (const scoped_refptr<PolicyManagerInterface>& policy_manager :
        policy_managers_.vector) {
     query_result = policy_query_callback.Run(policy_manager.get());
-    if (!query_result)
+    if (!query_result ||
+        (!validator.is_null() && !validator.Run(*query_result))) {
       continue;
+    }
     status.AddPolicyIfNeeded(policy_manager->HasActiveDevicePolicies(),
                              policy_manager->source(), query_result.value());
   }

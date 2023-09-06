@@ -1649,6 +1649,8 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_install_default(
       enterprise_management::INSTALL_DEFAULT_DISABLED);
+  omaha_settings.set_download_preference("not-cacheable");
+  omaha_settings.set_proxy_mode("system");
   omaha_settings.set_proxy_server("test.proxy.server");
   ApplicationSettings app;
   app.set_app_guid(kAppId1);
@@ -1669,6 +1671,8 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 
   std::unique_ptr<OmahaSettingsClientProto> omaha_policy =
       GetDefaultDMStorage()->GetOmahaPolicySettings();
+  EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
+  EXPECT_EQ(omaha_policy->proxy_mode(), "system");
   EXPECT_EQ(omaha_policy->proxy_server(), "test.proxy.server");
   const ApplicationSettings& app_policy =
       omaha_policy->application_settings()[0];

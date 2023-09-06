@@ -115,8 +115,7 @@ PolicyManager::GetUpdatesSuppressedTimes() const {
   return supressed_times;
 }
 
-absl::optional<std::string> PolicyManager::GetDownloadPreferenceGroupPolicy()
-    const {
+absl::optional<std::string> PolicyManager::GetDownloadPreference() const {
   return GetStringPolicy(kDownloadPreference);
 }
 

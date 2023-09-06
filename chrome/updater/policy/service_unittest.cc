@@ -56,14 +56,12 @@ class FakePolicyManager : public PolicyManagerInterface {
       const UpdatesSuppressedTimes& suppressed_times) {
     suppressed_times_ = suppressed_times;
   }
-  absl::optional<std::string> GetDownloadPreferenceGroupPolicy()
-      const override {
-    if (download_preference_.empty())
-      return absl::nullopt;
-
-    return download_preference_;
+  absl::optional<std::string> GetDownloadPreference() const override {
+    return download_preference_.empty()
+               ? absl::nullopt
+               : absl::make_optional(download_preference_);
   }
-  void SetDownloadPreferenceGroupPolicy(const std::string& preference) {
+  void SetDownloadPreference(const std::string& preference) {
     download_preference_ = preference;
   }
   absl::optional<int> GetPackageCacheSizeLimitMBytes() const override {
@@ -95,8 +93,10 @@ class FakePolicyManager : public PolicyManagerInterface {
     return absl::nullopt;
   }
   absl::optional<std::string> GetProxyMode() const override {
-    return absl::nullopt;
+    return proxy_mode_.empty() ? absl::nullopt
+                               : absl::make_optional(proxy_mode_);
   }
+  void SetProxyMode(const std::string& proxy_mode) { proxy_mode_ = proxy_mode; }
   absl::optional<std::string> GetProxyPacUrl() const override {
     return absl::nullopt;
   }
@@ -136,6 +136,7 @@ class FakePolicyManager : public PolicyManagerInterface {
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
   std::string download_preference_;
+  std::string proxy_mode_;
   std::map<std::string, std::string> channels_;
   std::map<std::string, int> update_policies_;
 };
@@ -170,6 +171,38 @@ TEST(PolicyService, DefaultPolicyValue) {
       policy_service->IsRollbackToTargetVersionAllowed("test1");
   ASSERT_TRUE(rollback_allowed);
   EXPECT_EQ(rollback_allowed.policy(), false);
+}
+
+TEST(PolicyService, ValidatePolicyValues) {
+  {
+    PolicyService::PolicyManagerVector managers;
+    auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
+    manager->SetDownloadPreference("unknown-download-preferences");
+    manager->SetProxyMode("random-value");
+    managers.push_back(std::move(manager));
+    managers.push_back(GetDefaultValuesPolicyManager());
+
+    auto policy_service =
+        base::MakeRefCounted<PolicyService>(std::move(managers));
+    EXPECT_FALSE(policy_service->GetDownloadPreference());
+    EXPECT_FALSE(policy_service->GetProxyMode());
+  }
+
+  {
+    PolicyService::PolicyManagerVector managers;
+    auto manager = base::MakeRefCounted<FakePolicyManager>(true, "manager");
+    manager->SetDownloadPreference("cacheable");
+    manager->SetProxyMode("auto_detect");
+    managers.push_back(std::move(manager));
+    managers.push_back(GetDefaultValuesPolicyManager());
+
+    auto policy_service =
+        base::MakeRefCounted<PolicyService>(std::move(managers));
+    EXPECT_TRUE(policy_service->GetDownloadPreference());
+    EXPECT_EQ(policy_service->GetDownloadPreference().policy(), "cacheable");
+    EXPECT_TRUE(policy_service->GetProxyMode());
+    EXPECT_EQ(policy_service->GetProxyMode().policy(), "auto_detect");
+  }
 }
 
 TEST(PolicyService, SinglePolicyManager) {
@@ -231,7 +264,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_imaginary");
   manager->SetUpdatePolicy("app1", 2);
-  manager->SetDownloadPreferenceGroupPolicy("cacheable");
+  manager->SetDownloadPreference("cacheable");
   managers.push_back(std::move(manager));
 
   // The default policy manager.
@@ -292,7 +325,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
   EXPECT_EQ(app2_update_status.conflict_policy(), absl::nullopt);
 
   PolicyStatus<std::string> download_preference_status =
-      policy_service->GetDownloadPreferenceGroupPolicy();
+      policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
   const PolicyStatus<std::string>::Entry& download_preference_policy =
       download_preference_status.effective_policy().value();
@@ -343,7 +376,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_imaginary");
   manager->SetUpdatePolicy("app1", 2);
-  manager->SetDownloadPreferenceGroupPolicy("cacheable");
+  manager->SetDownloadPreference("cacheable");
   managers.push_back(std::move(manager));
 
   managers.push_back(GetDefaultValuesPolicyManager());
@@ -409,7 +442,7 @@ TEST(PolicyService, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(app2_update_status.policy(), 1);
 
   PolicyStatus<std::string> download_preference_status =
-      policy_service->GetDownloadPreferenceGroupPolicy();
+      policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
   EXPECT_EQ(download_preference_status.effective_policy().value().source,
             "imaginary");

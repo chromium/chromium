@@ -63,8 +63,7 @@ class PolicyManagerInterface
       const = 0;
 
   // Returns the policy for the download preference.
-  virtual absl::optional<std::string> GetDownloadPreferenceGroupPolicy()
-      const = 0;
+  virtual absl::optional<std::string> GetDownloadPreference() const = 0;
 
   // Returns the policy for the package cache size limit in megabytes.
   virtual absl::optional<int> GetPackageCacheSizeLimitMBytes() const = 0;

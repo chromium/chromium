@@ -119,8 +119,7 @@ DMPolicyManager::GetUpdatesSuppressedTimes() const {
   return suppressed_times;
 }
 
-absl::optional<std::string> DMPolicyManager::GetDownloadPreferenceGroupPolicy()
-    const {
+absl::optional<std::string> DMPolicyManager::GetDownloadPreference() const {
   if (!omaha_settings_.has_download_preference())
     return absl::nullopt;
 

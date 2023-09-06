@@ -169,7 +169,7 @@ void OmahaPolicyValidator::ValidateProxyPolicies(
         base::ToLowerASCII(omaha_settings_.proxy_mode());
     if (!base::Contains(kProxyModeValidValues, proxy_mode)) {
       validation_result.issues.emplace_back(
-          "proxy_mode", PolicyValueValidationIssue::Severity::kError,
+          "proxy_mode", PolicyValueValidationIssue::Severity::kWarning,
           "Unrecognized proxy mode: " + omaha_settings_.proxy_mode());
     }
   }

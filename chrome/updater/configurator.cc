@@ -138,7 +138,7 @@ base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()
 
 std::string Configurator::GetDownloadPreference() const {
   PolicyStatus<std::string> preference =
-      policy_service_->GetDownloadPreferenceGroupPolicy();
+      policy_service_->GetDownloadPreference();
   return preference ? preference.policy() : std::string();
 }
 

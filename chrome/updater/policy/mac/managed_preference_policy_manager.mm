@@ -42,7 +42,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   absl::optional<base::TimeDelta> GetLastCheckPeriod() const override;
   absl::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override;
-  absl::optional<std::string> GetDownloadPreferenceGroupPolicy() const override;
+  absl::optional<std::string> GetDownloadPreference() const override;
   absl::optional<int> GetPackageCacheSizeLimitMBytes() const override;
   absl::optional<int> GetPackageCacheExpirationTimeDays() const override;
   absl::optional<int> GetEffectivePolicyForAppInstalls(
@@ -103,7 +103,7 @@ ManagedPreferencePolicyManager::GetUpdatesSuppressedTimes() const {
 }
 
 absl::optional<std::string>
-ManagedPreferencePolicyManager::GetDownloadPreferenceGroupPolicy() const {
+ManagedPreferencePolicyManager::GetDownloadPreference() const {
   NSString* value = [impl_ downloadPreference];
   return value ? absl::optional<std::string>(base::SysNSStringToUTF8(value))
                : absl::nullopt;

@@ -31,7 +31,7 @@ TEST_F(PolicyManagerTests, NoPolicySet) {
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
@@ -97,7 +97,7 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   EXPECT_EQ(suppressed_times->start_minute_, 30);
   EXPECT_EQ(suppressed_times->duration_minute_, 500);
 
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), "cacheable");
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), "cacheable");
 
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), 100);
   EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), 45);
@@ -169,7 +169,7 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);

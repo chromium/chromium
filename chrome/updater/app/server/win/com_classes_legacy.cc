@@ -985,7 +985,7 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(BSTR* pref) {
   CHECK(pref);
 
   PolicyStatus<std::string> download_preference =
-      policy_service_->GetDownloadPreferenceGroupPolicy();
+      policy_service_->GetDownloadPreference();
   if (!download_preference) {
     return E_FAIL;
   }
@@ -1240,7 +1240,7 @@ STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
     IPolicyStatusValue** value) {
   CHECK(value);
   auto policy_status = PolicyStatusResult<std::string>::Get(base::BindRepeating(
-      &PolicyService::GetDownloadPreferenceGroupPolicy, policy_service_));
+      &PolicyService::GetDownloadPreference, policy_service_));
   return policy_status.has_value()
              ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;

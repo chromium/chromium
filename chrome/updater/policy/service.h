@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -107,7 +108,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // These methods call and aggregate the results from the policy managers.
   PolicyStatus<base::TimeDelta> GetLastCheckPeriod() const;
   PolicyStatus<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes() const;
-  PolicyStatus<std::string> GetDownloadPreferenceGroupPolicy() const;
+  PolicyStatus<std::string> GetDownloadPreference() const;
   PolicyStatus<int> GetPackageCacheSizeLimitMBytes() const;
   PolicyStatus<int> GetPackageCacheExpirationTimeDays() const;
   PolicyStatus<int> GetPolicyForAppInstalls(const std::string& app_id) const;
@@ -161,7 +162,9 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   template <typename T>
   PolicyStatus<T> QueryPolicy(
       const base::RepeatingCallback<absl::optional<T>(
-          const PolicyManagerInterface*)>& policy_query_callback) const;
+          const PolicyManagerInterface*)>& policy_query_callback,
+      const base::RepeatingCallback<bool(const T&)>& validator =
+          base::NullCallback()) const;
 
   // Helper function to query app policy from the managed policy providers and
   // determines the policy status.

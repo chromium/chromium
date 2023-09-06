@@ -125,7 +125,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
@@ -211,7 +211,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_EQ(suppressed_times->start_minute_, 30);
   EXPECT_EQ(suppressed_times->duration_minute_, 120);
 
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(),
+  EXPECT_EQ(policy_manager->GetDownloadPreference(),
             "test_download_preference");
 
   EXPECT_EQ(policy_manager->GetProxyServer(), "test_proxy_server");
@@ -291,7 +291,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetUpdatesSuppressedTimes(), absl::nullopt);
-  EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetDownloadPreference(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyMode(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyPacUrl(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
