@@ -118,4 +118,16 @@ public class BookmarkSearchBoxRowRenderTest {
                                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true));
         mRenderTestRule.render(mContentView, "withShoppingChip");
     }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testWithSearchText() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPropertyModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "foo");
+            mPropertyModel.set(
+                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, true);
+        });
+        mRenderTestRule.render(mContentView, "searchText");
+    }
 }
