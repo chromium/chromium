@@ -3629,6 +3629,15 @@ fuzzer_test("net_cert_parse_certificate_fuzzer") {
   ]
 }
 
+fuzzer_test("net_cert_parse_crldp_fuzzer") {
+  sources = [ "cert/pki/parse_crldp_fuzzer.cc" ]
+  seed_corpus = "data/fuzzer_data/parse_crldp_fuzzer"
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
 fuzzer_test("net_canonical_cookie_fuzzer") {
   sources = [ "cookies/canonical_cookie_fuzzer.cc" ]
   deps = [
