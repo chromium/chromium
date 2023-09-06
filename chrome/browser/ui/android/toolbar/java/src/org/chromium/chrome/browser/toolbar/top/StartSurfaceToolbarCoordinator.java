@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.content.res.Resources;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -15,7 +16,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -61,6 +64,15 @@ public class StartSurfaceToolbarCoordinator {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mIsNativeInitialized;
+    private final boolean mIsSurfacePolishEnabled;
+    private final boolean mIsSurfacePolishMoveDownLogoEnabled;
+    private final boolean mIsSurfacePolishLessBrandSpaceEnabled;
+    // This is used for 2 cases for the surface polish project, one is when the logo is moved down
+    // from the toolbar, and the other is when the logo is moved down from the toolbar with less
+    // brand space.
+    private int mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo;
+    // This is used for the surface polish project for the case when the logo stays in the toolbar.
+    private int mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar;
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             UserEducationHelper userEducationHelper, ButtonDataProvider identityDiscController,
@@ -71,6 +83,15 @@ public class StartSurfaceToolbarCoordinator {
             boolean shouldCreateLogoInToolbar, Callback<Boolean> finishedTransitionCallback,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mStub = startSurfaceToolbarStub;
+        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsSurfacePolishMoveDownLogoEnabled = mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
+        mIsSurfacePolishLessBrandSpaceEnabled = mIsSurfacePolishMoveDownLogoEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
+
+        if (mIsSurfacePolishEnabled) {
+            setFakeSearchBoxToScreenTopOffsetForSurfacePolish();
+        }
 
         mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
@@ -227,13 +248,22 @@ public class StartSurfaceToolbarCoordinator {
         boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar && mIsNativeInitialized
                 && TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
                            .doesDefaultSearchEngineHaveLogo();
-        // This value should be equal to
-        // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in
-        // StartSurfaceCoordinator#initializeOffsetChangedListener
-        int fakeSearchBoxMarginToScreenTop = getDimenPixel(R.dimen.toolbar_height_no_shadow)
-                + (isBigLogoShownInContent
-                                ? getDimenPixel(R.dimen.start_surface_content_logo_height)
-                                : getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin));
+        int fakeSearchBoxMarginToScreenTop;
+        if (mIsSurfacePolishEnabled) {
+            fakeSearchBoxMarginToScreenTop =
+                    isBigLogoShownInContent && mIsSurfacePolishMoveDownLogoEnabled
+                    ? mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo
+                    : mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar;
+        } else {
+            // This value should be equal to
+            // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in
+            // StartSurfaceCoordinator#initializeOffsetChangedListener
+            fakeSearchBoxMarginToScreenTop = getDimenPixel(R.dimen.toolbar_height_no_shadow)
+                    + (isBigLogoShownInContent
+                                    ? getDimenPixel(R.dimen.start_surface_content_logo_height)
+                                    : getDimenPixel(
+                                            R.dimen.start_surface_fake_search_box_top_margin));
+        }
         return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
@@ -297,6 +327,42 @@ public class StartSurfaceToolbarCoordinator {
 
     private int getDimenPixel(int id) {
         return mStub.getResources().getDimensionPixelOffset(id);
+    }
+
+    /**
+     * Set the distance to be added for the offset which indicated where the toolbar phone layout
+     * view should be shown when the user scrolls up the screen for Surface Polish.
+     */
+    private void setFakeSearchBoxToScreenTopOffsetForSurfacePolish() {
+        assert mIsSurfacePolishEnabled;
+
+        // Ensure the fake search box reaches the top of the screen.
+        Resources resources = mStub.getResources();
+        int toolbarPlaceholderHeight = getDimenPixel(R.dimen.toolbar_height_no_shadow);
+        if (mIsSurfacePolishLessBrandSpaceEnabled) {
+            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo = toolbarPlaceholderHeight
+                    + LogoUtils.getLogoHeightPolishedShort(resources)
+                    + LogoUtils.getTopMarginPolishedSmall(resources)
+                    + LogoUtils.getBottomMarginPolishedSmall(resources);
+        } else if (mIsSurfacePolishMoveDownLogoEnabled) {
+            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo = toolbarPlaceholderHeight
+                    + LogoUtils.getLogoHeightPolished(resources)
+                    + LogoUtils.getTopMarginPolished(resources)
+                    + LogoUtils.getBottomMarginPolished(resources);
+        }
+        mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar = toolbarPlaceholderHeight
+                + getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin);
+
+        // Add the vertical distance, which equals the height of the fake omnibox minus the
+        // height of the real omnibox, and the top margin of the real omnibox.
+        // This ensures that the bottom edges of both the fake and real search boxes align
+        // perfectly. In this way, the fake omnibox overlaps with the real one and
+        // can be smoothly replaced by it.
+        int heightDifference = getDimenPixel(R.dimen.ntp_search_box_height_polish)
+                - getDimenPixel(R.dimen.modern_toolbar_background_size)
+                - getDimenPixel(R.dimen.location_bar_vertical_margin);
+        mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo += heightDifference;
+        mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar += heightDifference;
     }
 
     public TabCountProvider getIncognitoToggleTabCountProviderForTesting() {

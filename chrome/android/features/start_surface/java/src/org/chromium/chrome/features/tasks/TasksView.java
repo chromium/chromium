@@ -92,6 +92,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
                 (FrameLayout) findViewById(R.id.tab_switcher_module_container);
         mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
+        updateSearchBoxHeight();
 
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
 
@@ -100,6 +101,16 @@ public class TasksView extends CoordinatorLayoutForPointer {
         mUiConfig = new UiConfig(this);
         setHeaderPadding();
         setTabCarouselTitleStyle();
+    }
+
+    /**
+     * Updates the height of the fake search box for surface polish.
+     */
+    public void updateSearchBoxHeight() {
+        if (mIsSurfacePolishEnabled) {
+            mSearchBoxCoordinator.getView().getLayoutParams().height =
+                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height_polish);
+        }
     }
 
     @Override

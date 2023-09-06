@@ -1130,6 +1130,24 @@ public class StartSurfaceTest {
         testStatusBarColorImpl(expectedPolishedStandardColor, expectedDefaultStandardColor);
     }
 
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testFakeOmniboxPolish() {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        assertEquals(cta.getResources().getDimensionPixelSize(
+                             org.chromium.chrome.R.dimen.ntp_search_box_height_polish),
+                cta.findViewById(org.chromium.chrome.R.id.search_box).getLayoutParams().height);
+    }
+
     private void testStatusBarColorImpl(
             int expectedStartSurfaceColor, int expectedTabSwitcherColor) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
