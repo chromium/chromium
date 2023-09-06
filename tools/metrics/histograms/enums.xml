@@ -97224,6 +97224,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 <enum name="ServiceWorkerRouterSourceType">
   <int value="0" label="kNetwork"/>
   <int value="1" label="kRace"/>
+  <int value="2" label="kFetchEvent"/>
+  <int value="3" label="kCache"/>
 </enum>
 
 <enum name="ServiceWorkerSite">
