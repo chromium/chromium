@@ -36,6 +36,7 @@ source_set("browser_tests") {
     "css/css_browsertest.cc",
     "downloads/downloads_browsertest.cc",
     "engagement/site_engagement_browsertest.cc",
+    "histograms/histograms_internals_browsertest.cc",
     "history/history_supervised_user_browsertest.cc",
     "history/history_ui_browsertest.cc",
     "invalidations/invalidations_browsertest.cc",
@@ -208,7 +209,6 @@ if (include_js2gtest_tests) {
       "assertions.js",
       "async_gen.js",
       "commander/commander_browsertest.js",
-      "histograms/histograms_internals_ui_browsertest.js",
       "js2gtest_browsertest.js",
       "net_internals/net_internals_browsertest.js",
     ]
@@ -430,6 +430,7 @@ ts_library("build_ts") {
 
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
     # from tsconfig_base.json.
+    "histograms/histograms_internals_test.js",
     "mocha_adapter.js",
     "mojo_webui_test_support.js",
     "media/media_engagement_test.js",

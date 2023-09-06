@@ -25,6 +25,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
 namespace {
@@ -43,6 +44,9 @@ struct JsParams {
 void CreateAndAddHistogramsHTMLSource(BrowserContext* browser_context) {
   WebUIDataSource* source =
       WebUIDataSource::CreateAndAdd(browser_context, kChromeUIHistogramHost);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   source->AddResourcePaths(
       base::make_span(kHistogramsResources, kHistogramsResourcesSize));
