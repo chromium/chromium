@@ -346,8 +346,12 @@ TraceConfig BackgroundTracingConfigImpl::GetConfigForCategoryPreset(
     base::trace_event::TraceRecordMode record_mode) {
   switch (preset) {
     case BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP: {
+      // This config should match exactly the one set in
+      // TraceStartupConfig::EnableFromBackgroundTracing, otherwise the
+      // startup session will not be adopted.
       auto config =
           tracing::TraceStartupConfig::GetDefaultBrowserStartupConfig();
+      config.EnableArgumentFilter();
       config.SetTraceRecordMode(record_mode);
       return config;
     }
