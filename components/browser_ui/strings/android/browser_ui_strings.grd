@@ -993,6 +993,9 @@
       <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
         Simplified view for web pages
       </message>
+      <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" translateable="false" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
+        Saved zoom levels
+      </message>
       <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
         Get notified when an article can be shown in simplified view
       </message>

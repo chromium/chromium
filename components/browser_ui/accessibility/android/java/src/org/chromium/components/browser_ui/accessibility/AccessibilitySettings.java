@@ -32,6 +32,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
     public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
     public static final String PREF_CAPTIONS = "captions";
+    public static final String PREF_ZOOM_INFO = "zoom_info";
 
     private TextScalePreference mTextScalePref;
     private PageZoomPreference mPageZoomDefaultZoomPref;
@@ -132,6 +133,17 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
             return true;
         });
+
+        Preference zoomInfo = findPreference(PREF_ZOOM_INFO);
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+            zoomInfo.setVisible(true);
+            zoomInfo.setOnPreferenceClickListener(preference -> {
+                mDelegate.launchSiteSettingsZoomActivity(getContext());
+                return true;
+            });
+        } else {
+            zoomInfo.setVisible(false);
+        }
 
         mDelegate.addExtraPreferences(this);
     }

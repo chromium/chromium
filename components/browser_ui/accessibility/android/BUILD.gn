@@ -33,7 +33,7 @@ android_library("constants_java") {
   sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityConstants.java" ]
 }
 
-android_library("java") {
+android_library("lib_java") {
   srcjar_deps = [ ":accessibility_jni_headers" ]
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
@@ -46,19 +46,18 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
   ]
 
   deps = [
-    ":constants_java",
     ":java_resources",
+    ":page_zoom_utils_java",
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/site_settings/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
@@ -68,6 +67,21 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.accessibility"
+}
+
+android_library("page_zoom_utils_java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
+  ]
+
+  deps = [
+    ":constants_java",
+    "//base:base_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -103,7 +117,7 @@ robolectric_library("junit") {
   ]
 
   deps = [
-    ":java",
+    ":lib_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -123,8 +137,8 @@ android_library("unit_device_javatests") {
   sources = [ "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewTest.java" ]
 
   deps = [
-    ":java",
     ":java_resources",
+    ":lib_java",
     "//base:base_java_test_support",
     "//base:jni_java",
     "//content/public/android:content_java",

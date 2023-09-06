@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -49,4 +51,11 @@ public interface AccessibilitySettingsDelegate {
      * Returns whether or not the 'Zoom' feature specific UI should be shown in Settings.
      */
     boolean showPageZoomSettingsUI();
+
+    /**
+     * Launches a site settings category that displays zoom levels for each website.
+     *
+     * @param context the context from which to launch the activity from.
+     */
+    void launchSiteSettingsZoomActivity(Context context);
 }

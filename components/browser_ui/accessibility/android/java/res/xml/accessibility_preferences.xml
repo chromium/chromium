@@ -35,4 +35,8 @@ found in the LICENSE file.
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>
 
+    <Preference
+        android:key="zoom_info"
+        android:title="@string/zoom_info_preference_title"/>
+
 </PreferenceScreen>
