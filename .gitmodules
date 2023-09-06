@@ -258,6 +258,10 @@
 [submodule "third_party/harfbuzz-ng/src"]
 	path = third_party/harfbuzz-ng/src
 	url = https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git
+[submodule "third_party/jszip/src"]
+	path = third_party/jszip/src
+	url = https://chromium.googlesource.com/external/github.com/Stuk/jszip.git
+	gclient-condition = checkout_ios
 [submodule "third_party/emoji-segmenter/src"]
 	path = third_party/emoji-segmenter/src
 	url = https://chromium.googlesource.com/external/github.com/google/emoji-segmenter.git

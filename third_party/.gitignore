@@ -155,6 +155,7 @@
 /js_code_coverage/*.tar.gz
 /js_code_coverage/node_modules
 /jsr-305/src
+/jszip/src
 /junit/src
 /khronos_glcts
 /kotlinc/current
