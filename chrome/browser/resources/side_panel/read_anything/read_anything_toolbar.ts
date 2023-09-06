@@ -12,6 +12,7 @@ import './icons.html.js';
 import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './read_anything_toolbar.html.js';
@@ -75,9 +76,14 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
         type: Object,
         value: MenuStateValue,
       },
+
+      fontOptions_: Array,
       rateOptions_: Array,
     };
   }
+
+  // If you change these fonts, please also update read_anything_constants.h
+  private fontOptions_: string[] = [];
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
@@ -100,27 +106,17 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     super.connectedCallback();
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
-    const onFontClick = (fontName: string) => {
-      this.onFontClick_(fontName);
-    };
-
-    const fontNodes = Array.from(this.$.fontSubmenu.children);
-    fontNodes.forEach((element) => {
-      if (element instanceof HTMLButtonElement) {
-        if (element.classList.contains('back') || !element.innerText) {
-          return;
-        }
-        // Update the font of each button to be the same as the font text.
-        element.style.fontFamily = element.innerText;
-        // Set the onclick listener for each button so that the content
-        // page font updates when a button is clicked.
-        const callback = () => {
-          onFontClick(element.innerText);
-        };
-        element.addEventListener('click', callback);
-        this.elementCallbackMap.set(element, callback);
-      }
-    });
+    // TODO(b/1465029): Use the brower's preferred language to hide unsupported
+    // fonts.
+    this.fontOptions_.push(
+        'Poppins',
+        'Sans-serif',
+        'Serif',
+        'Comic Neue',
+        'Lexend Deca',
+        'EB Garamond',
+        'STIX Two Text',
+    );
 
     // Configure on-click listeners for line spacing.
     const onLineSpacingClick = (element: number) => {
@@ -234,6 +230,23 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.removeOnClickListeners(this.$.letterSpacingSubmenu);
   }
 
+  restoreSettingsFromPrefs() {
+    const fontNodes = Array.from(this.$.fontSubmenu.children);
+    fontNodes.forEach((element) => {
+      if (element instanceof HTMLButtonElement) {
+        if (!element.innerText) {
+          return;
+        }
+        // Update the font of each button to be the same as the font text.
+        element.style.fontFamily = element.innerText;
+      }
+    });
+
+    this.setCheckMarkForMenu_(
+        this.$.fontSubmenu,
+        this.fontOptions_.indexOf(chrome.readingMode.fontName));
+  }
+
   updateUiForPlaying() {
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
@@ -327,14 +340,16 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     });
   }
 
-  private onFontClick_(fontName: string) {
+  private onFontClick_(event: DomRepeatEvent<string>) {
     chrome.metricsPrivate.recordEnumerationValue(
         SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
         ReadAnythingSettingsChange.COUNT);
+    const fontName = event.model.item;
     chrome.readingMode.onFontChange(fontName);
     if (this.contentPage) {
       this.contentPage.updateFont(fontName);
     }
+    this.setCheckMarkForMenu_(this.$.fontSubmenu, event.model.index);
 
     this.closeMenus_();
   }
@@ -354,6 +369,18 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     const button = shadowRoot.getElementById('rate');
     assert(button);
     button.setAttribute('iron-icon', 'voice-rate:' + rate);
+  }
+
+  private setCheckMarkForMenu_(menu: CrActionMenuElement, index: number) {
+    const checkMarks = Array.from(menu.getElementsByClassName('check-mark'));
+    assert((index < checkMarks.length) && (index >= 0));
+    checkMarks.forEach((element) => {
+      assert(element instanceof HTMLElement);
+      // TODO(crbug.com/1465029): Ensure this works with screen readers
+      element.style.visibility = 'hidden';
+    });
+    const checkMark = checkMarks[index] as IronIconElement;
+    checkMark.style.visibility = 'visible';
   }
 
   private onFontSizeIncreaseClick_() {

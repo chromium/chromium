@@ -68,6 +68,10 @@ class ReadAnythingAppToolbarTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest, Checkmarks_Visible) {
+  ASSERT_TRUE(RunTest("checkmark_visible_on_selected.js"));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppToolbarTest,
                        ReadAnythingToolbar_Visible) {
   ASSERT_TRUE(RunTest("toolbar_visible_with_flag.js"));

@@ -1,6 +1,6 @@
 <style include="cr-icons">
   iron-icon {
-    --icon-size: 20px;
+    --icon-size: 16px;
     height: var(--icon-size);
     width: var(--icon-size);
     padding: 0 8px 0 0;
@@ -23,7 +23,6 @@
   }
   .dropdown-item {
     display: block;
-    padding: 6px 0 6px 16px;
   }
   /* TODO(b/1465029): Investigate why chrome refresh colors don't always
      work on first launch. */
@@ -41,6 +40,9 @@
   }
   .text-button {
     border: none;
+  }
+  .check-mark {
+    visibility: hidden;
   }
 </style>
 <div class="toolbar-container">
@@ -163,33 +165,13 @@
       $i18n{letterSpacingVeryWideTitle}
     </button>
   </cr-action-menu>
-  <!-- TODO(b/1465029): Use the brower's preferred language to hide unsupported
-       fonts.
-  -->
-  <!-- If you change these fonts, please also update
-       read_anything_constants.h -->
   <cr-action-menu id="fontSubmenu">
-  <!-- TODO(1266555): Each button should be styled in its own font. -->
-    <button class="dropdown-item">
-      Poppins
+  <template is="dom-repeat" items="[[fontOptions_]]">
+    <button class="dropdown-item" on-click="onFontClick_">
+      <iron-icon class="button-image check-mark"
+          icon="read-anything:check-mark"></iron-icon>
+      [[item]]
     </button>
-    <button class="dropdown-item">
-      Sans-serif
-    </button>
-    <button class="dropdown-item">
-      Serif
-    </button>
-    <button class="dropdown-item">
-      Comic Neue
-    </button>
-    <button class="dropdown-item">
-      Lexend Deca
-    </button>
-    <button class="dropdown-item">
-      EB Garamond
-    </button>
-    <button class="dropdown-item">
-      STIX Two Text
-    </button>
+  </template>
   </cr-action-menu>
 </div>
