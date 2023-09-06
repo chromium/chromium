@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -40,6 +41,12 @@ base::FilePath AddCopyOrMoveIOTask(
     const base::FilePath& dir,
     const std::string& file,
     const blink::StorageKey key);
+
+// Verifies warning UMAs against the expected buckets passed as parameters.
+void VerifyFilesWarningUMAs(const base::HistogramTester& histogram_tester,
+                            std::vector<base::Bucket> action_warned_buckets,
+                            std::vector<base::Bucket> warning_count_buckets,
+                            std::vector<base::Bucket> action_timedout_buckets);
 
 }  // namespace policy
 

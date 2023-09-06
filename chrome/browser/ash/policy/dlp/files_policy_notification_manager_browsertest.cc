@@ -250,6 +250,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(1, 1)},
+                         /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
 // Tests that closing the warning notification (e.g. by X or Dismiss all)
@@ -277,6 +281,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(1, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // Tests that clicking the OK button on a warning notification for a single
@@ -312,6 +320,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(1, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // This is a test for b/277594200. Tests that clicking the OK button on a
@@ -395,6 +407,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   // The warning timeout notifications should be shown.
   ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_2").has_value());
   ASSERT_TRUE(bridge_->GetDisplayedNotification("dlp_files_3").has_value());
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 2)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 2)},
+                         /*action_timedout_buckets=*/{base::Bucket(action, 2)});
 }
 
 // Tests that clicking the OK button on a warning notification for multiple
@@ -469,6 +485,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // Tests that clicking the Cancel button on a warning notification cancels the
@@ -504,6 +524,10 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 INSTANTIATE_TEST_SUITE_P(FPNM,
@@ -964,6 +988,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 1)},
+                         /*action_timedout_buckets=*/{base::Bucket(action, 1)});
 }
 
 // Tests that clicking the OK button on a warning notification shown for copy or
@@ -1068,6 +1096,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 2)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 2)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // Tests that clicking the Cancel button on a warning notification shown for
@@ -1114,6 +1146,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissCancels_Warning) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(2, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // Tests that clicking the OK button on a warning notification shown for
@@ -1162,6 +1198,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(1, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 // Tests that clicking the OK button on an error notification shown for copy or
@@ -1431,6 +1471,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Mix) {
   EXPECT_THAT(histogram_tester_.GetAllSamples(GetDlpHistogramPrefix() +
                                               dlp::kFilesBlockedCountUMA),
               testing::ElementsAre(base::Bucket(1, 1)));
+  VerifyFilesWarningUMAs(histogram_tester_,
+                         /*action_warned_buckets=*/{base::Bucket(action, 1)},
+                         /*warning_count_buckets=*/{base::Bucket(1, 1)},
+                         /*action_timedout_buckets=*/{});
 }
 
 INSTANTIATE_TEST_SUITE_P(

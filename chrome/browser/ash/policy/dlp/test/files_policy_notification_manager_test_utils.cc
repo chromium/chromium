@@ -10,7 +10,9 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -60,6 +62,25 @@ base::FilePath AddCopyOrMoveIOTask(
           profile, file_system_context));
 
   return src_file_path;
+}
+
+void VerifyFilesWarningUMAs(const base::HistogramTester& histogram_tester,
+                            std::vector<base::Bucket> action_warned_buckets,
+                            std::vector<base::Bucket> warning_count_buckets,
+                            std::vector<base::Bucket> action_timedout_buckets) {
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                     std::string(dlp::kFileActionWarnedUMA)),
+      testing::ElementsAreArray(action_warned_buckets.data(),
+                                action_warned_buckets.size()));
+  EXPECT_THAT(histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                             dlp::kFilesWarnedCountUMA),
+              testing::ElementsAreArray(warning_count_buckets.data(),
+                                        warning_count_buckets.size()));
+  EXPECT_THAT(histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
+                                             dlp::kFileActionWarnTimedOutUMA),
+              testing::ElementsAreArray(action_timedout_buckets.data(),
+                                        action_timedout_buckets.size()));
 }
 
 }  // namespace policy

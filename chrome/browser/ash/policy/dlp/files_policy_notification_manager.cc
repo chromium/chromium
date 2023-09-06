@@ -315,6 +315,9 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
+  DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, action);
+  DlpCountHistogram10000(dlp::kFilesWarnedCountUMA, warning_files.size());
+
   // If `task_id` has value, the corresponding IOTask should be paused.
   if (task_id.has_value()) {
     PauseIOTask(task_id.value(), std::move(callback), std::move(warning_files),
@@ -1294,6 +1297,9 @@ void FilesPolicyNotificationManager::OnIOTaskWarningTimedOut(
   // Close the warning dialog if there's any.
   io_tasks_.at(task_id).CloseWidget();
 
+  DlpHistogramEnumeration(dlp::kFileActionWarnTimedOutUMA,
+                          io_tasks_.at(task_id).action());
+
   // Abort the IOtask. No need to run the warning callback here as it will be
   // called in OnIOTaskStatus when there's an update sent that the task
   // completed with error.
@@ -1315,6 +1321,9 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningTimedOut(
 
   // Close the warning dialog if there's any.
   non_io_tasks_.at(notification_id).CloseWidget();
+
+  DlpHistogramEnumeration(dlp::kFileActionWarnTimedOutUMA,
+                          non_io_tasks_.at(notification_id).action());
 
   // Run the warning callback with false.
   std::move(

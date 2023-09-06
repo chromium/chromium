@@ -1094,13 +1094,6 @@ TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsDlpPolicyMatched) {
   for (size_t i = 0; i < events.size(); ++i) {
     EXPECT_THAT(events[i], IsDlpPolicyEvent(*expected_events[i]));
   }
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionWarnedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kUnknown, 3),
-                       base::Bucket(dlp::FileAction::kDownload, 0),
-                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckReportingOnIsFilesTransferRestricted) {
@@ -1751,12 +1744,6 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
   if (choice_result) {
     EXPECT_THAT(events[1], IsDlpPolicyEvent(CreateEvent(absl::nullopt)));
   }
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(GetDlpHistogramPrefix() +
-                                     std::string(dlp::kFileActionWarnedUMA)),
-      base::BucketsAre(base::Bucket(dlp::FileAction::kDownload, 1),
-                       base::Bucket(dlp::FileAction::kTransfer, 0)));
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(

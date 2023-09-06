@@ -74,6 +74,7 @@ class FilesPolicyDialogBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  const base::HistogramTester histogram_tester_;
 };
 
 class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {
@@ -111,6 +112,11 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
       .Times(1);
   dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  GetDlpHistogramPrefix() +
+                  std::string(dlp::kFileActionWarnReviewedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
 }
 
 // Tests that the warning dialog is created as a window modal if a Files app
@@ -142,6 +148,11 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
       .Times(1);
   dialog->CancelDialog();
   EXPECT_TRUE(widget->IsClosed());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  GetDlpHistogramPrefix() +
+                  std::string(dlp::kFileActionWarnReviewedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesPolicyDialog,
@@ -167,7 +178,6 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 
  protected:
   std::map<DlpConfidentialFile, Policy> blocked_files_;
-  const base::HistogramTester histogram_tester_;
 };
 
 // Tests that the error dialog is created as a system modal if no parent is

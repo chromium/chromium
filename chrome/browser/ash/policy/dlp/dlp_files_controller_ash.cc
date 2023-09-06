@@ -756,7 +756,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
         warned_files.push_back(file);
         warned_source_patterns.emplace_back(source_pattern);
         warned_rules_metadata.emplace_back(rule_metadata);
-        DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, files_action);
         break;
       }
     }
@@ -863,9 +862,7 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
       restricted = true;
       break;
     case policy::DlpRulesManager::Level::kWarn:
-      DlpHistogramEnumeration(dlp::kFileActionWarnedUMA,
-                              dlp::FileAction::kUnknown);
-      // TODO(crbug.com/1172959): Implement Warning mode for Files restriction
+      // TODO(b/298950702): Show warning if applicable.
       break;
     default:
       break;

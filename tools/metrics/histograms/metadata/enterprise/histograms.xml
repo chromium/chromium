@@ -1385,13 +1385,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.Dlp.FileActionWarned"
+<histogram name="Enterprise.Dlp.FileActionWarned2"
     enum="EnterpriseDlpPolicyFileAction" expires_after="2023-12-01">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
-    Records which file action is warned because of Data Leak Prevention policy
-    restrictions.
+    Records when a file action is warned because of Data Leak Prevention policy
+    Files restriction. Identifies which file action was warned.
   </summary>
 </histogram>
 
@@ -1402,6 +1402,26 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which file action was warned because of Data Leak Prevention policy
     restrictions and proceeded by the user.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FileActionWarnReviewed"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2024-03-01">
+  <owner>ayaelattar@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action warning by Data Leak Prevention policy was
+    reviewed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FileActionWarnTimedOut"
+    enum="EnterpriseDlpPolicyFileAction" expires_after="2024-03-01">
+  <owner>ayaelattar@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which file action was warned because of Data Leak Prevention policy
+    and the warning timed out.
   </summary>
 </histogram>
 
@@ -1432,6 +1452,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when Data Leak Prevention policy contains Files restrictions and
     DLP Files daemon is started because of that.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FilesWarnedCount" units="entries"
+    expires_after="2024-03-01">
+  <owner>ayaelattar@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records the number of files warned by Data Leak Prevention policy per file
+    action.
   </summary>
 </histogram>
 
