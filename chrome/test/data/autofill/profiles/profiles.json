@@ -16,7 +16,7 @@
       "ADDRESS_HOME_CITY" : "Mountain View",
       "ADDRESS_HOME_STATE" : "CA",
       "EMAIL_ADDRESS" : "test@example.us",
-      "PHONE_HOME_CITY_AND_NUMBER" : "601-952-1325"
+      "PHONE_HOME_WHOLE_NUMBER" : "601-952-1325"
     }
   ]
 }
