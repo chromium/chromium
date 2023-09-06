@@ -4,6 +4,8 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <sstream>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -28,12 +30,37 @@
 #include "ui/views/views_delegate.h"
 
 namespace {
+
 // Since we enforce a 1:1 correspondence between ElementIdentifiers and
 // WebContents defaulting to ContextMode::kAny prevents accidentally missing the
 // correct context, which is a common mistake that causes tests to mysteriously
 // time out looking in the wrong place.
 constexpr ui::InteractionSequence::ContextMode kDefaultWebContentsContextMode =
     ui::InteractionSequence::ContextMode::kAny;
+
+std::string DescribeStateChange(
+    const WebContentsInteractionTestUtil::StateChange& state_change) {
+  std::ostringstream oss;
+  oss << "StateChange{ ";
+  switch (state_change.type) {
+    case WebContentsInteractionTestUtil::StateChange::Type::kDoesNotExist:
+      oss << "does not exist: " << state_change.where << " }";
+      break;
+    case WebContentsInteractionTestUtil::StateChange::Type::kExists:
+      oss << "exists: " << state_change.where << " }";
+      break;
+    case WebContentsInteractionTestUtil::StateChange::Type::
+        kExistsAndConditionTrue:
+      oss << "exists: " << state_change.where << " and condition true:\n"
+          << state_change.test_function << "\n}";
+      break;
+    case WebContentsInteractionTestUtil::StateChange::Type::kConditionTrue:
+      oss << "condition true:\n" << state_change.test_function << "\n}";
+      break;
+  }
+  return oss.str();
+}
+
 }  // namespace
 
 InteractiveBrowserTestApi::InteractiveBrowserTestApi()
@@ -292,8 +319,9 @@ InteractiveBrowserTestApi::WaitForStateChange(
   ui::CustomElementEventType event_type =
       expect_timeout ? state_change.timeout_event : state_change.event;
   CHECK(event_type);
-  const auto desc =
-      base::StringPrintf("WaitForStateChange( %d )", expect_timeout);
+  const auto desc = base::StringPrintf(
+      "WaitForStateChange( %s, %s )", DescribeStateChange(state_change).c_str(),
+      expect_timeout ? "true" : "false");
   return Steps(
       std::move(StepBuilder()
                     .SetDescription(base::StrCat({desc, ": Queue Event"}))
