@@ -4699,6 +4699,7 @@ if (!is_android) {
         "//chrome/browser/nearby_sharing/common",
         "//chrome/browser/policy:onc",
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
+        "//chrome/browser/scalable_iph:scalable_iph_factory",
         "//chrome/browser/ui:ash_test_support",
         "//chrome/browser/ui/ash/holding_space:browser_tests",
         "//chrome/browser/ui/ash/system_web_apps",

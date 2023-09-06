@@ -5,14 +5,9 @@
 #ifndef CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
 #define CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/no_destructor.h"
-#include "base/scoped_observation.h"
+#include "base/component_export.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -20,21 +15,13 @@
 // release this feature via channel based release. Those CHECKs should be caught
 // during the process. Note that DCHECK and a fail-safe behavior should be
 // used/implemented if a constraint is coming from server side or a config.
-class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
+class COMPONENT_EXPORT(SCALABLE_IPH_FACTORY) ScalableIphFactory
+    : public BrowserContextKeyedServiceFactory {
  public:
-  using DelegateTestingFactory = base::RepeatingCallback<std::unique_ptr<
-      scalable_iph::ScalableIphDelegate>(Profile*, scalable_iph::Logger*)>;
-
   static ScalableIphFactory* GetInstance();
+
   static scalable_iph::ScalableIph* GetForBrowserContext(
       content::BrowserContext* browser_context);
-
-  void SetDelegateFactoryForTesting(
-      DelegateTestingFactory delegate_testing_factory);
-
-  bool has_delegate_factory_for_testing() const {
-    return !delegate_testing_factory_.is_null();
-  }
 
   // `ScalableIph` service has a repeating timer in it to invoke time tick
   // events. We want to start this service after a user login (but not during
@@ -43,23 +30,8 @@ class ScalableIphFactory : public BrowserContextKeyedServiceFactory {
   void InitializeServiceForProfile(Profile* profile);
 
  protected:
-  // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* browser_context) const override;
-
- private:
-  friend base::NoDestructor<ScalableIphFactory>;
-
-  std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateScalableIphDelegate(
-      Profile* profile,
-      scalable_iph::Logger* logger) const;
-
   ScalableIphFactory();
   ~ScalableIphFactory() override;
-
-  DelegateTestingFactory delegate_testing_factory_;
 };
 
 #endif  // CHROME_BROWSER_SCALABLE_IPH_SCALABLE_IPH_FACTORY_H_

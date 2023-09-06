@@ -3925,6 +3925,7 @@ source_set("ash") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/chromeos:app_icon_resources",
+    "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings_shared",

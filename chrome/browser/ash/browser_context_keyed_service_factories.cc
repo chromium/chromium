@@ -108,7 +108,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
@@ -231,7 +231,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   quick_unlock::QuickUnlockFactory::GetInstance();
   RecentModelFactory::GetInstance();
   RemoteAppsManagerFactory::GetInstance();
-  ScalableIphFactory::GetInstance();
+  ScalableIphFactoryImpl::BuildInstance();
   ScanServiceFactory::GetInstance();
   ScreenTimeControllerFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();

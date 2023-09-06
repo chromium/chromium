@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -110,7 +111,12 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
 
   ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
 
-  CHECK(ScalableIphFactory::GetInstance()->has_delegate_factory_for_testing())
+  // The static cast is necessary to access the delegate functions declared in
+  // the `ScalableIphFactoryImpl` class.
+  ScalableIphFactoryImpl* scalable_iph_factory =
+      static_cast<ScalableIphFactoryImpl*>(ScalableIphFactory::GetInstance());
+  CHECK(scalable_iph_factory);
+  CHECK(scalable_iph_factory->has_delegate_factory_for_testing())
       << "This test uses MockScalableIphDelegate. A factory for testing must "
          "be set.";
   scalable_iph::ScalableIph* scalable_iph =
@@ -328,7 +334,10 @@ void ScalableIphBrowserTestBase::SetTestingFactories(
       browser_context,
       base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker));
 
-  ScalableIphFactory* scalable_iph_factory = ScalableIphFactory::GetInstance();
+  // The static cast is necessary to access the delegate functions declared in
+  // the `ScalableIphFactoryImpl` class.
+  ScalableIphFactoryImpl* scalable_iph_factory =
+      static_cast<ScalableIphFactoryImpl*>(ScalableIphFactory::GetInstance());
   CHECK(scalable_iph_factory);
 
   // This method can be called more than once for a single browser context.
