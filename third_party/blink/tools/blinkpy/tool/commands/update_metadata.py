@@ -784,13 +784,8 @@ class MetadataUpdater:
     def _merge_retry_reports(self, retry_reports):
         report, results_by_test = {}, collections.defaultdict(list)
         for retry_report in retry_reports:
-            retry_report['run_info'] = config = self._reduce_config(
+            retry_report['run_info'] = base_run_info = self._reduce_config(
                 retry_report['run_info'])
-            retry_report.setdefault('subsuites', {})
-            retry_report['subsuites'].setdefault('', {'virtual_suite': ''})
-            if config != report.get('run_info', config):
-                raise ValueError('run info values should be identical '
-                                 'across retries')
             report.update(retry_report)
             for result in retry_report['results']:
                 # The upstream tool `wpt update-expectations` has a quirk where,
@@ -805,6 +800,16 @@ class MetadataUpdater:
                 # [0]: https://github.com/web-platform-tests/wpt/blob/78a04906/tools/wptrunner/wptrunner/metadata.py#L260
                 result.pop('expected', None)
                 results_by_test[result['test']].append(result)
+
+            subsuites = retry_report.get('subsuites', {})
+            for subsuite_run_info in subsuites.values():
+                run_info_props = set(base_run_info) | set(subsuite_run_info)
+                missing_props = self._properties - run_info_props
+                if missing_props:
+                    raise UpdateAbortError(
+                        'wptreport `run_info` is missing update properties: ' +
+                        ', '.join(sorted(missing_props)))
+
         report['results'] = []
         for test_id, results in results_by_test.items():
             if len(results) >= self.min_results_for_update:
@@ -812,12 +817,15 @@ class MetadataUpdater:
         return report
 
     def _reduce_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
-        properties = frozenset(self._primary_properties).union(
-            *self._dependent_properties.values())
         return {
             prop: value
-            for prop, value in config.items() if prop in properties
+            for prop, value in config.items() if prop in self._properties
         }
+
+    @functools.cached_property
+    def _properties(self):
+        return frozenset(self._primary_properties).union(
+            *self._dependent_properties.values())
 
     def test_files_to_update(self) -> List[metadata.TestFileData]:
         test_files = {

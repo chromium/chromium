@@ -16,6 +16,7 @@ from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
+    UpdateAbortError,
     UpdateMetadata,
     MetadataUpdater,
     load_and_update_manifests,
@@ -471,7 +472,14 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
     def test_execute_warn_absent_tests(self):
         url = 'https://cr.dev/123/wptreport.json?token=abc'
         self.tool.web.urls[url] = json.dumps({
-            'run_info': {},
+            'run_info': {
+                'os': 'mac',
+                'port': 'mac12',
+                'product': 'content_shell',
+                'flag_specific': '',
+                'virtual_suite': '',
+                'debug': False,
+            },
             'results': [{
                 'test': '/new-test-on-tot.html',
                 'subtests': [],
@@ -639,6 +647,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     'port': 'mac12',
                     'flag_specific': '',
                     'debug': False,
+                    'virtual_suite': '',
                     **(report.get('run_info') or {}),
                 }
                 report['results'] = [{
@@ -695,6 +704,21 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             [fail.html]
               expected: [OK, FAIL]
             """)
+
+    def test_missing_update_properties(self):
+        with self.assertRaisesRegex(UpdateAbortError, 'missing1, missing2'):
+            self.update(
+                {
+                    'subsuites': {
+                        '': {},
+                    },
+                    'results': [{
+                        'test': '/fail.html',
+                        'status': 'FAIL',
+                    }],
+                },
+                primary_properties=['missing1'],
+                dependent_properties={'missing1': ['missing2']})
 
     def test_migrate_comments(self):
         self.write_contents(
