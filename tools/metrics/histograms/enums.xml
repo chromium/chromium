@@ -32607,6 +32607,15 @@ Called by update_document_policy_enum.py.-->
   <int value="62" label="Too many requests">
     Too many requests are uploaded within a short time.
   </int>
+  <int value="63" label="Illegal account for packaged EDU license">
+    Illegal account for packaged EDU license.
+  </int>
+  <int value="64" label="May not block dev mode">
+    Dev mode would be blocked but this is prevented by a command-line switch.
+  </int>
+  <int value="65" label="Invalid packaged device for kiosk">
+    Packaged license device invalid for kiosk.
+  </int>
 </enum>
 
 <enum name="EnterpriseExistingInstallAttributesLockType">

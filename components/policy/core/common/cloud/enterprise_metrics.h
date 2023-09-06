@@ -13,7 +13,8 @@ namespace policy {
 // Metrics collected for enterprise events.
 
 // Events related to device enrollment.
-// This enum is used to define the buckets for an enumerated UMA histogram.
+// This enum is used to define the buckets for an enumerated UMA histogram with
+// the name of EnterpriseEnrollmentType.
 // Hence,
 //   (a) existing enumerated constants should never be deleted or reordered, and
 //   (b) new constants should only be appended at the end of the enumeration
