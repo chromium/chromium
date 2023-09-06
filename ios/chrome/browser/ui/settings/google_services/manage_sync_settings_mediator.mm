@@ -626,7 +626,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
         [model removeSectionWithIdentifier:SignOutSectionIdentifier];
         self.signOutAndTurnOffSyncItem = nil;
         [self.consumer
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+              deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+            withRowAnimation:NO];
       }
       break;
   }
@@ -790,7 +791,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
   // Remove the batch upload section from the table view model.
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-  [self.consumer deleteSections:indexSet];
+  [self.consumer deleteSections:indexSet withRowAnimation:YES];
 }
 
 // This is always called after the model is loaded, so it will always notify the
@@ -1338,7 +1339,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // Remove the sync error section from the table view model.
   if (notifyConsumer) {
     NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-    [self.consumer deleteSections:indexSet];
+    [self.consumer deleteSections:indexSet withRowAnimation:NO];
   }
 }
 

@@ -139,18 +139,24 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                 withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)deleteSections:(NSIndexSet*)sections {
+- (void)deleteSections:(NSIndexSet*)sections
+      withRowAnimation:(BOOL)withRowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  // To avoid animation glitches related to crbug.com/1469539.
-  [UIView performWithoutAnimation:^{
-    [self.tableView beginUpdates];
+  if (withRowAnimation) {
     [self.tableView deleteSections:sections
-                  withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView endUpdates];
-  }];
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    // To avoid animation glitches related to crbug.com/1469539.
+    [UIView performWithoutAnimation:^{
+      [self.tableView beginUpdates];
+      [self.tableView deleteSections:sections
+                    withRowAnimation:UITableViewRowAnimationNone];
+      [self.tableView endUpdates];
+    }];
+  }
 }
 
 - (void)reloadItem:(TableViewItem*)item {
