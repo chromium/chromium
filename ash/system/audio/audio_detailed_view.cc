@@ -71,11 +71,13 @@ namespace {
 
 const int kLabelFontSizeDelta = 1;
 const int kToggleButtonRowViewSpacing = 18;
+const int kToggleButtonRowRightPadding = 16;
 const int kNbsWarningMinHeight = 80;
 constexpr auto kLiveCaptionContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
 constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
 constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
-constexpr auto kQsToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 32, 0, 24);
+constexpr auto kQsToggleButtonRowViewPadding =
+    gfx::Insets::TLBR(0, 32, 0, kToggleButtonRowRightPadding);
 constexpr auto kQsToggleButtonRowPreferredSize = gfx::Size(0, 32);
 constexpr auto kQsToggleButtonRowLabelPadding = gfx::Insets::VH(8, 12);
 constexpr auto kQsToggleButtonRowMargins = gfx::Insets::VH(4, 0);
@@ -481,7 +483,8 @@ void AudioDetailedView::CreateLiveCaptionView() {
 
   // Allows the row to be taller than a typical tray menu item.
   live_caption_view_->SetExpandable(true);
-  live_caption_view_->tri_view()->SetInsets(kTextRowInsets);
+  live_caption_view_->tri_view()->SetInsets(
+      gfx::Insets::TLBR(8, 24, 8, kToggleButtonRowRightPadding));
 }
 
 std::unique_ptr<views::View>
