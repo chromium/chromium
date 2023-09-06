@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -33,7 +29,6 @@ public class TabBuilder {
     private boolean mInitiallyHidden;
     private boolean mInitializeRenderer;
     private TabState mTabState;
-    private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
     private Callback<Tab> mPreInitializeAction;
 
     /**
@@ -160,19 +155,6 @@ public class TabBuilder {
         return this;
     }
 
-    /**
-     * Sets a serialized {@link CriticalPersistedTabData} object containing information about the
-     * tab, if it was persisted
-     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
-     * @return {@link TabBuilder} creating the Tab
-     * TODO(b/298692614) Deprecate CriticalPersistedTabData in TabBuilder.
-     */
-    public TabBuilder setSerializedCriticalPersistedTabData(
-            @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
-        mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
-        return this;
-    }
-
     public Tab build() {
         // Pre-condition check
         if (mCreationType != null) {
@@ -186,16 +168,12 @@ public class TabBuilder {
             if (mFromFrozenState) assert mLaunchType == TabLaunchType.FROM_RESTORE;
         }
 
-        TabImpl tab =
-                new TabImpl(mId, mIncognito, mLaunchType, mSerializedCriticalPersistedTabData);
+        TabImpl tab = new TabImpl(mId, mIncognito, mLaunchType, null);
         Tab parent = null;
         if (mParent != null) {
             parent = mParent;
         } else if (mTabResolver != null) {
-            if (!CriticalPersistedTabData.isEmptySerialization(
-                        mSerializedCriticalPersistedTabData)) {
-                parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
-            } else if (mTabState != null) {
+            if (mTabState != null) {
                 parent = mTabResolver.resolve(mTabState.parentId);
             }
         }
