@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/stringprintf.h"
@@ -37,9 +36,7 @@ CreateAssignmentsWithStringForStudents(
 
 }  // namespace
 
-FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient(
-    GlanceablesClassroomClient* client)
-    : original_client_(client) {}
+FakeGlanceablesClassroomClient::FakeGlanceablesClassroomClient() = default;
 
 FakeGlanceablesClassroomClient::~FakeGlanceablesClassroomClient() = default;
 
@@ -90,10 +87,6 @@ void FakeGlanceablesClassroomClient::GetTeacherAssignmentsWithoutDueDate(
 
 void FakeGlanceablesClassroomClient::GetGradedTeacherAssignments(
     GetAssignmentsCallback callback) {}
-
-void FakeGlanceablesClassroomClient::OpenUrl(const GURL& url) const {
-  original_client_->OpenUrl(url);
-}
 
 void FakeGlanceablesClassroomClient::OnGlanceablesBubbleClosed() {}
 

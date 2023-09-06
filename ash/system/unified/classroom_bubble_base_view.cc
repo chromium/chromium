@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
@@ -15,6 +14,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -207,11 +207,9 @@ void ClassroomBubbleBaseView::OnGetAssignments(
 }
 
 void ClassroomBubbleBaseView::OpenUrl(const GURL& url) const {
-  const auto* const client =
-      Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
-  if (client) {
-    client->OpenUrl(url);
-  }
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void ClassroomBubbleBaseView::AnnounceListStateOnComboBoxAccessibility() {

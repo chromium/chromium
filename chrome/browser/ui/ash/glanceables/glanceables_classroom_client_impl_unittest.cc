@@ -122,7 +122,7 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
               "test-user-agent", TRAFFIC_ANNOTATION_FOR_TESTS);
         });
     client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-        /*profile=*/nullptr, &test_clock_, create_request_sender_callback,
+        &test_clock_, create_request_sender_callback,
         /*use_best_effort_prefetch_task_runner=*/false);
 
     test_server_.RegisterRequestHandler(

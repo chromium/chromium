@@ -11,6 +11,7 @@
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
@@ -88,7 +89,6 @@ class TestClient : public GlanceablesClassroomClient {
               (GlanceablesClassroomClient::GetAssignmentsCallback),
               (override));
 
-  MOCK_METHOD(void, OpenUrl, (const GURL&), (const override));
   MOCK_METHOD(void, OnGlanceablesBubbleClosed, (), (override));
 };
 
@@ -174,6 +174,7 @@ class ClassroomBubbleViewTest : public AshTestBase {
   raw_ptr<ClassroomBubbleBaseView, FlakyDanglingUntriaged | ExperimentalAsh>
       view_;
   DetailedViewDelegate detailed_view_delegate_{nullptr};
+  const GlanceablesTestNewWindowDelegate new_window_delegate_;
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
@@ -365,11 +366,10 @@ TEST_F(ClassroomBubbleStudentViewTest,
   histogram_tester.ExpectBucketCount(
       "Ash.Glanceables.Classroom.Student.ListSelected", 1,
       /*expected_bucket_count=*/1);
-  EXPECT_CALL(
-      classroom_client_,
-      OpenUrl(GURL("https://classroom.google.com/u/0/a/not-turned-in/all")));
   EXPECT_TRUE(GetListFooter()->GetVisible());
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/a/not-turned-in/all");
 
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithMissedDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
@@ -381,9 +381,9 @@ TEST_F(ClassroomBubbleStudentViewTest,
   histogram_tester.ExpectBucketCount(
       "Ash.Glanceables.Classroom.Student.ListSelected", 2,
       /*expected_bucket_count=*/1);
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/u/0/a/missing/all")));
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/a/missing/all");
 
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
@@ -395,10 +395,10 @@ TEST_F(ClassroomBubbleStudentViewTest,
       /*expected_bucket_count=*/1);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL(
-      classroom_client_,
-      OpenUrl(GURL("https://classroom.google.com/u/0/a/turned-in/all")));
+
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/a/turned-in/all");
 
   // Switch from the final assignment list back to no due date list.
   EXPECT_CALL(classroom_client_, GetStudentAssignmentsWithoutDueDate(_))
@@ -443,10 +443,10 @@ TEST_F(ClassroomBubbleTeacherViewTest,
   GetComboBoxView()->SelectMenuItemForTest(1);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL(
-      classroom_client_,
-      OpenUrl(GURL("https://classroom.google.com/u/0/ta/not-reviewed/all")));
+
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/ta/not-reviewed/all");
 
   EXPECT_CALL(classroom_client_, GetTeacherAssignmentsWithoutDueDate(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
@@ -455,10 +455,10 @@ TEST_F(ClassroomBubbleTeacherViewTest,
   GetComboBoxView()->SelectMenuItemForTest(2);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL(
-      classroom_client_,
-      OpenUrl(GURL("https://classroom.google.com/u/0/ta/not-reviewed/all")));
+
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/ta/not-reviewed/all");
 
   EXPECT_CALL(classroom_client_, GetGradedTeacherAssignments(_))
       .WillOnce([](GlanceablesClassroomClient::GetAssignmentsCallback cb) {
@@ -467,10 +467,10 @@ TEST_F(ClassroomBubbleTeacherViewTest,
   GetComboBoxView()->SelectMenuItemForTest(3);
   // Trigger layout after receiving new items.
   widget_->LayoutRootViewIfNecessary();
-  EXPECT_CALL(
-      classroom_client_,
-      OpenUrl(GURL("https://classroom.google.com/u/0/ta/reviewed/all")));
+
   LeftClickOn(GetListFooterSeeAllButton());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/ta/reviewed/all");
 
   EXPECT_EQ(3,
             user_actions.GetActionCount("Glanceables_Classroom_SeeAllPressed"));
@@ -584,9 +584,9 @@ TEST_F(ClassroomBubbleStudentViewTest, OpensClassroomUrlForListItem) {
   ASSERT_TRUE(GetListContainerView());
   ASSERT_EQ(GetListContainerView()->children().size(), 1u);
 
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/test-link-1")));
   LeftClickOn(GetListContainerView()->children().at(0));
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/test-link-1");
 
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Classroom_AssignmentPressed"));
@@ -606,9 +606,9 @@ TEST_F(ClassroomBubbleTeacherViewTest, OpensClassroomUrlForListItem) {
   ASSERT_TRUE(GetListContainerView());
   ASSERT_EQ(GetListContainerView()->children().size(), 1u);
 
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/test-link-1")));
   LeftClickOn(GetListContainerView()->children().at(0));
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/test-link-1");
 }
 
 TEST_F(ClassroomBubbleStudentViewTest, ShowsProgressBar) {
@@ -648,9 +648,9 @@ TEST_F(ClassroomBubbleTeacherViewTest, ShowsProgressBar) {
 TEST_F(ClassroomBubbleStudentViewTest, ClickHeaderIconButton) {
   base::UserActionTester user_actions;
 
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/u/0/h")));
   LeftClickOn(GetHeaderIcon());
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/u/0/h");
 
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Classroom_HeaderIconPressed"));
@@ -660,9 +660,9 @@ TEST_F(ClassroomBubbleStudentViewTest, ClickItemViewUserAction) {
   base::UserActionTester user_actions;
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/test-link-1")));
   LeftClickOn(GetListContainerView()->children().at(0));
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/test-link-1");
 
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Classroom_AssignmentPressed_DefaultList"));
@@ -674,9 +674,9 @@ TEST_F(ClassroomBubbleStudentViewTest, ClickItemViewUserAction) {
   ASSERT_TRUE(GetComboBoxView());
   GetComboBoxView()->SelectMenuItemForTest(3);
 
-  EXPECT_CALL(classroom_client_,
-              OpenUrl(GURL("https://classroom.google.com/test-link-2")));
   LeftClickOn(GetListContainerView()->children().at(1));
+  EXPECT_EQ(new_window_delegate_.GetLastOpenedUrl(),
+            "https://classroom.google.com/test-link-2");
 
   EXPECT_EQ(2, user_actions.GetActionCount(
                    "Glanceables_Classroom_AssignmentPressed"));

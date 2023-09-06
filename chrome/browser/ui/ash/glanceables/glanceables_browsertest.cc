@@ -50,7 +50,6 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_utils.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -194,8 +193,7 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
     fake_glanceables_tasks_client_ =
         std::make_unique<FakeGlanceablesTasksClient>(date);
     fake_glanceables_classroom_client_ =
-        std::make_unique<FakeGlanceablesClassroomClient>(
-            glanceables_controller()->GetClassroomClient());
+        std::make_unique<FakeGlanceablesClassroomClient>();
 
     Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
         account_id_,

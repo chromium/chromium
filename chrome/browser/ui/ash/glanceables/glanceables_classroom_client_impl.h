@@ -24,9 +24,6 @@
 #include "google_apis/common/request_sender.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class GURL;
-class Profile;
-
 namespace base {
 class Clock;
 class Time;
@@ -59,7 +56,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
   GlanceablesClassroomClientImpl(
-      Profile* profile,
       base::Clock* clock,
       const CreateRequestSenderCallback& create_request_sender_callback,
       bool use_best_effort_prefetch_task_runner = true);
@@ -86,7 +82,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   void GetTeacherAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) override;
   void GetGradedTeacherAssignments(GetAssignmentsCallback callback) override;
-  void OpenUrl(const GURL& url) const override;
   void OnGlanceablesBubbleClosed() override;
 
   void set_number_of_assignments_prioritized_for_display_for_testing(
@@ -481,9 +476,6 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
-
-  // The profile for which this client was created.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   // Clock to be used to retrieve current time - expected to be default clock in
   // production.

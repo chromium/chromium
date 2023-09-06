@@ -119,7 +119,6 @@ class TestGlanceablesClassroomClient : public GlanceablesClassroomClient {
       GlanceablesClassroomClient::GetAssignmentsCallback cb) override {
     pending_teacher_assignments_callbacks_.push_back(std::move(cb));
   }
-  void OpenUrl(const GURL& url) const override {}
   void OnGlanceablesBubbleClosed() override { ++bubble_closed_count_; }
 
   // Returns `bubble_closed_count_`, while also resetting the counter.

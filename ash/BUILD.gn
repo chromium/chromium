@@ -4217,6 +4217,8 @@ static_library("test_support") {
     "game_dashboard/test_game_dashboard_delegate.h",
     "glanceables/classroom/fake_glanceables_classroom_client.cc",
     "glanceables/classroom/fake_glanceables_classroom_client.h",
+    "glanceables/common/test/glanceables_test_new_window_delegate.cc",
+    "glanceables/common/test/glanceables_test_new_window_delegate.h",
     "glanceables/tasks/fake_glanceables_tasks_client.cc",
     "glanceables/tasks/fake_glanceables_tasks_client.h",
     "glanceables/test_glanceables_delegate.cc",

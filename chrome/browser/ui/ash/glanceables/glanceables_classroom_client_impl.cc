@@ -25,9 +25,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
-#include "chrome/browser/ui/singleton_tabs.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
@@ -40,7 +38,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -222,13 +219,11 @@ bool GlanceablesClassroomClientImpl::CourseWorkRequest::RespondIfComplete() {
 }
 
 GlanceablesClassroomClientImpl::GlanceablesClassroomClientImpl(
-    Profile* profile,
     base::Clock* clock,
     const GlanceablesClassroomClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback,
     bool use_best_effort_prefetch_task_runner)
-    : profile_(profile),
-      clock_(clock),
+    : clock_(clock),
       create_request_sender_callback_(create_request_sender_callback),
       number_of_assignments_prioritized_for_display_(3) {
   if (features::IsGlanceablesV2ClassroomTeacherViewEnabled()) {
@@ -503,15 +498,6 @@ void GlanceablesClassroomClientImpl::GetGradedTeacherAssignments(
       base::Unretained(this), std::move(due_predicate),
       std::move(submissions_state_predicate), std::move(sort_comparator),
       /*allow_submissions_refresh=*/true, std::move(callback)));
-}
-
-void GlanceablesClassroomClientImpl::OpenUrl(const GURL& url) const {
-  if (!url.is_valid()) {
-    return;
-  }
-
-  // TODO(b/283370862): consider opening PWA if installed.
-  ShowSingletonTabOverwritingNTP(profile_, url);
 }
 
 void GlanceablesClassroomClientImpl::OnGlanceablesBubbleClosed() {

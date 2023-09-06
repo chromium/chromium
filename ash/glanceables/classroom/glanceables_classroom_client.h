@@ -11,8 +11,6 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 
-class GURL;
-
 namespace ash {
 
 struct GlanceablesClassroomAssignment;
@@ -59,9 +57,6 @@ class ASH_EXPORT GlanceablesClassroomClient {
   virtual void GetTeacherAssignmentsWithoutDueDate(
       GetAssignmentsCallback callback) = 0;
   virtual void GetGradedTeacherAssignments(GetAssignmentsCallback callback) = 0;
-
-  // Opens classroom url.
-  virtual void OpenUrl(const GURL& url) const = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached classroom data.
