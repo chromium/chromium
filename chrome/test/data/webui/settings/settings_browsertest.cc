@@ -631,11 +631,21 @@ IN_PROC_BROWSER_TEST_F(SettingsPerformancePageDiscardExceptionImprovementsTest,
           "runMochaSuite('TabDiscardExceptionList')");
 }
 
-using SettingsPersonalizationOptionsTest = SettingsBrowserTest;
+class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPageContentOptIn};
+};
 
 IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, AllBuilds) {
   RunTest("settings/personalization_options_test.js",
           "runMochaSuite('AllBuilds')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest,
+                       PageContentSettingOff) {
+  RunTest("settings/personalization_options_test.js",
+          "runMochaSuite('PageContentSettingOff')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

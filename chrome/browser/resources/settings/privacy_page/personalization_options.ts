@@ -29,6 +29,7 @@ import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_to
 import {StatusAction, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PrivacyPageVisibility} from '../page_visibility.js';
@@ -36,7 +37,6 @@ import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './personalization_options.html.js';
-
 
 export interface SettingsPersonalizationOptionsElement {
   $: {
@@ -48,7 +48,7 @@ export interface SettingsPersonalizationOptionsElement {
 }
 
 const SettingsPersonalizationOptionsElementBase =
-    RelaunchMixin(WebUiListenerMixin(PrefsMixin(PolymerElement)));
+    RelaunchMixin(WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {
@@ -100,6 +100,13 @@ export class SettingsPersonalizationOptionsElement extends
         value: () => loadTimeData.getBoolean('signinAvailable'),
       },
       // </if>
+
+      enablePageContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePageContentSetting');
+        },
+      },
     };
   }
 
@@ -298,6 +305,15 @@ export class SettingsPersonalizationOptionsElement extends
   private onRestartClick_(e: Event) {
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);
+  }
+
+  private onPageContentRowClick_() {
+    // TODO(crbug/1476887): Navigate to page content subpage.
+  }
+
+  private computePageContentRowSublabel_() {
+    // TODO(crbug/1476887): Return label based on pref state.
+    return this.i18n('pageContentLinkRowSublabelOff');
   }
 }
 

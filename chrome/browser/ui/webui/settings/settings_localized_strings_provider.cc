@@ -1339,6 +1339,11 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
     {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
     {"priceEmailNotificationsPrefDesc",
      IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
+    {"pageContentLinkRowSublabelOn",
+     IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON},
+    {"pageContentLinkRowSublabelOff",
+     IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF},
+    {"pageContentToggleLabel", IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

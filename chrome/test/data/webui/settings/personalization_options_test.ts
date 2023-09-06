@@ -12,9 +12,9 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome and chromeos_ash">
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // </if>
 
@@ -281,6 +281,39 @@ suite('AllBuilds', function() {
     flush();
     assertFalse(!!testElement.shadowRoot!.querySelector(
         '#priceEmailNotificationsToggle'));
+  });
+
+  // TODO(crbug/1476887): Remove once crbug/1476887 launched.
+  test('pageContentRowVisible', function() {
+    assertTrue(
+        isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
+  });
+});
+
+// TODO(crbug/1476887): Remove once crbug/1476887 launched.
+suite('PageContentSettingOff', function() {
+  let testElement: SettingsPersonalizationOptionsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enablePageContentSetting: false,
+    });
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('settings-personalization-options');
+    document.body.appendChild(testElement);
+    flush();
+  });
+
+  teardown(function() {
+    testElement.remove();
+  });
+
+  test('pageContentRowNotVisible', function() {
+    assertFalse(
+        isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
   });
 });
 

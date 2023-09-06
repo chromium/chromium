@@ -3859,6 +3859,17 @@
     </message>
   </if>
 
+  <!-- Page content -->
+  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_ON" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is enabled.">
+    Contextual help is on. These features can send open pages to Google.
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_LINK_ROW_SUBLABEL_OFF" desc="Sublabel of the entry point that leads to the setting that enables features that provide contextual help for currently opened pages. This label is shown when the setting is disabled.">
+    Contextual help is off
+  </message>
+  <message name="IDS_SETTINGS_PAGE_CONTENT_TOGGLE_LABEL" desc="Label of the setting that enables features that provide contextual help for currently opened pages.">
+    Get contextual help from some features
+  </message>
+
   <!-- Web Content -->
   <message name="IDS_SETTINGS_PAGE_ZOOM_LABEL" desc="Label for the page zoom dropdown menu in settings.">
     Page zoom
