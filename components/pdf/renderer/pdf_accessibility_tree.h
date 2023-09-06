@@ -114,11 +114,9 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 
     // If the OCR Service is created before the PDF is loaded or reloaded, i.e.
     // before `PdfAccessibilityTree::SetAccessibilityDocInfo` is called,
-    // `PdfAccessibilityTree::page_count_` would be wrong, hence we need to
-    // reset the page count in this class, i.e. the `remaining_page_count_`
-    // field, to its correct value.
-    void ResetPageCount(uint32_t page_count);
-    void ComputeAndSetPagesPerBatch(uint32_t page_count);
+    // `PdfAccessibilityTree::remaining_page_count_` would be wrong, hence
+    // PdfAccessibilityTree must call this method to keep it up to date.
+    void SetPageCount(uint32_t page_count);
     void OcrPage(base::queue<PdfOcrRequest> page_requests);
     bool AreAllPagesOcred() const;
     bool AreAllPagesInBatchOcred() const;
@@ -126,11 +124,10 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
         mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
             screen_ai_annotator);
     void ResetRemainingPageCountForTesting();
-    uint32_t pages_per_batch_for_testing() { return pages_per_batch_; }
+    uint32_t pages_per_batch_for_testing() const { return pages_per_batch_; }
 
    private:
-    uint32_t pages_per_batch_ = 20u;
-
+    static uint32_t ComputePagesPerBatch(uint32_t page_count);
     void OcrNextImage();
     void ReceiveOcrResultsForImage(PdfOcrRequest request,
                                    const ui::AXTreeUpdate& tree_update);
@@ -138,7 +135,9 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     // `image_fetcher_` owns `this`.
     chrome_pdf::PdfAccessibilityImageFetcher* const image_fetcher_;
 
+    uint32_t pages_per_batch_;
     uint32_t remaining_page_count_;
+
     // True if there are pending OCR requests. Used to determine if `OcrPage`
     // should call `OcrNextImage` or if the next call to
     // `ReceiveOcrResultsForImage` should do it instead. This avoids the

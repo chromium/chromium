@@ -80,29 +80,31 @@ PdfOcrService::PdfOcrService(
     uint32_t page_count,
     OnOcrDataReceivedCallback callback)
     : image_fetcher_(image_fetcher),
+      pages_per_batch_(ComputePagesPerBatch(page_count)),
       remaining_page_count_(page_count),
       on_ocr_data_received_callback_(std::move(callback)) {
   CHECK(features::IsPdfOcrEnabled());
   render_frame.GetBrowserInterfaceBroker()->GetInterface(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
-  ComputeAndSetPagesPerBatch(page_count);
 }
 
 PdfOcrService::~PdfOcrService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PdfOcrService::ResetPageCount(uint32_t page_count) {
+void PdfOcrService::SetPageCount(uint32_t page_count) {
   CHECK_GT(page_count, 0u);
+  pages_per_batch_ = ComputePagesPerBatch(page_count);
   remaining_page_count_ = page_count;
 }
 
-void PdfOcrService::ComputeAndSetPagesPerBatch(uint32_t page_count) {
+// static
+uint32_t PdfOcrService::ComputePagesPerBatch(uint32_t page_count) {
   constexpr uint32_t kMinPagesPerBatch = 1u;
   constexpr uint32_t kMaxPagesPerBatch = 20u;
 
-  pages_per_batch_ = std::clamp<uint32_t>(page_count * 0.1, kMinPagesPerBatch,
-                                          kMaxPagesPerBatch);
+  return std::clamp<uint32_t>(page_count * 0.1, kMinPagesPerBatch,
+                              kMaxPagesPerBatch);
 }
 
 void PdfOcrService::OcrPage(base::queue<PdfOcrRequest> page_requests) {
@@ -1672,8 +1674,7 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   page_count_ = doc_info.page_count;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (ocr_service_) {
-    ocr_service_->ResetPageCount(page_count_);
-    ocr_service_->ComputeAndSetPagesPerBatch(page_count_);
+    ocr_service_->SetPageCount(page_count_);
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

@@ -2210,12 +2210,16 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+struct PdfOcrServiceTestBatchData {
+  uint32_t page_count;
+  uint32_t expected_batch_size;
+};
+
 class PdfOcrServiceTest
     : public PdfAccessibilityTreeTest,
       public testing::WithParamInterface<std::tuple<
           /* is_ocr_service_started_before_pdf_loads */ bool,
-          /* (page_count, expected_batch_size) */ std::pair<uint32_t,
-                                                            uint32_t>>> {
+          PdfOcrServiceTestBatchData>> {
  public:
   PdfOcrServiceTest() : feature_list_(::features::kPdfOcr) {}
   PdfOcrServiceTest(const PdfOcrServiceTest&) = delete;
@@ -2291,13 +2295,15 @@ class PdfOcrServiceTest
     }
   }
 
-  bool GetIsOcrServiceStartedBeforePdfLoads() {
+  bool GetIsOcrServiceStartedBeforePdfLoads() const {
     return std::get<0>(GetParam());
   }
 
-  uint32_t GetPageCount() { return std::get<1>(GetParam()).first; }
+  uint32_t GetPageCount() const { return std::get<1>(GetParam()).page_count; }
 
-  uint32_t GetExpectedBatchSize() { return std::get<1>(GetParam()).second; }
+  uint32_t GetExpectedBatchSize() const {
+    return std::get<1>(GetParam()).expected_batch_size;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2568,9 +2574,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         /* is_ocr_service_started_before_pdf_loads */ testing::Bool(),
         /* (page_count, expected_batch_size) */ testing::Values(
-            std::make_pair(5u, 1u),
-            std::make_pair(105u, 10u),
-            std::make_pair(280u, 20u))));
+            PdfOcrServiceTestBatchData(5u, 1u),
+            PdfOcrServiceTestBatchData(105u, 10u),
+            PdfOcrServiceTestBatchData(280u, 20u))));
 
 // TODO(crbug.com/1443341): Add test for end result on a non-synthetic
 // multi-page PDF.
