@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
+#define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
+
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
+
+namespace privacy_sandbox {
+
+// A Service which controls the onboarding onto tracking protection - namely
+// Third Party Cookie Deprecation. It is meant to be called from the Mode B/B'
+// Experiment service, as well as the Cookie Settings service.
+class TrackingProtectionOnboarding : public KeyedService {
+ public:
+  // Enum value interfacing with the TrackingProtectionOnboarding service
+  // callers, to indicate the status the onboarding is at.
+  enum class OnboardingStatus {
+    kIneligible = 0,
+    kEligible = 1,
+    kOnboarded = 2,
+    kMaxValue = kOnboarded,
+  };
+
+  class Observer {
+   public:
+    // Fired when a profile is onboarded (shown the TrackingProtection
+    // onboarding notice)
+    virtual void OnTrackingProtectionOnboarded() {}
+  };
+
+  explicit TrackingProtectionOnboarding(PrefService* pref_service);
+  ~TrackingProtectionOnboarding() override;
+
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
+
+  // Indicates the onboarding status for the user. Return value is the enum
+  // defined above.
+  OnboardingStatus GetOnboardingStatus() const;
+
+ private:
+  // Called when the underlying onboarding pref is changed.
+  virtual void OnOnboardingPrefChanged() const;
+  base::ObserverList<Observer>::Unchecked observers_;
+  raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
+};
+
+}  // namespace privacy_sandbox
+
+#endif  // COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_

@@ -24,6 +24,11 @@ inline constexpr char kTrackingProtectionLevel[] =
 inline constexpr char kTrackingProtection3pcdEnabled[] =
     "tracking_protection.tracking_protection_3pcd_enabled";
 
+// Unsynced boolean that indicates what status the profile is at with regards to
+// tracking protections (3PCD Onboarding Notice).
+inline constexpr char kTrackingProtectionOnboardingStatus[] =
+    "tracking_protection.tracking_protection_onboarding_status";
+
 }  // namespace prefs
 
 namespace privacy_sandbox::tracking_protection {
@@ -34,6 +39,14 @@ enum class TrackingProtectionLevel {
   kStandard = 0,
   kCustom = 1,
   kMaxValue = kCustom,
+};
+
+// Different tracking protection onboarding statuses stored in the pref above.
+enum class TrackingProtectionOnboardingStatus {
+  kIneligible = 0,
+  kEligible = 1,
+  kOnboarded = 2,
+  kMaxValue = kOnboarded,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
