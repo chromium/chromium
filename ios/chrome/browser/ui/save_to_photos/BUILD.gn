@@ -4,6 +4,8 @@
 
 source_set("save_to_photos") {
   sources = [
+    "save_to_photos_coordinator.h",
+    "save_to_photos_coordinator.mm",
     "save_to_photos_mediator.h",
     "save_to_photos_mediator.mm",
     "save_to_photos_mediator_delegate.h",
@@ -36,7 +38,10 @@ source_set("save_to_photos") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "save_to_photos_mediator_unittest.mm" ]
+  sources = [
+    "save_to_photos_coordinator_unittest.mm",
+    "save_to_photos_mediator_unittest.mm",
+  ]
   deps = [
     ":save_to_photos",
     "//base",
