@@ -39,6 +39,16 @@ class SafetyHubService : public KeyedService,
 
     virtual base::Value::Dict ToDictValue() = 0;
 
+    // Determines whether the current result meets the bar for showing a
+    // notification to the user in the Chrome menu.
+    virtual bool IsTriggerForMenuNotification() = 0;
+
+    // Determines whether the previous result is sufficiently different that for
+    // the current result a new notification should be shown. This indication is
+    // just based on the comparison of the two results, and thus irrelevant to
+    // how frequently a menu notification has already been shown.
+    virtual bool WarrantsNewMenuNotification(const Result& previousResult) = 0;
+
     template <typename T>
     static std::unique_ptr<T> FromDictValue(const base::Value::Dict& dict) {
       return std::make_unique<T>(dict);

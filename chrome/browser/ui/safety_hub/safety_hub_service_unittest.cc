@@ -32,6 +32,12 @@ class MockSafetyHubResult : public SafetyHubService::Result {
 
   base::Value::Dict ToDictValue() override { return BaseToDictValue(); }
 
+  bool IsTriggerForMenuNotification() override { return true; }
+
+  bool WarrantsNewMenuNotification(const Result& previousResult) override {
+    return true;
+  }
+
   int GetVal() { return val_; }
 
   void SetVal(int val) { val_ = val; }

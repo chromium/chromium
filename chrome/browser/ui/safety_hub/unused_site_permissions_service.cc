@@ -155,6 +155,16 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
   return result;
 }
 
+std::set<ContentSettingsPattern>
+UnusedSitePermissionsService::UnusedSitePermissionsResult::GetRevokedOrigins()
+    const {
+  std::set<ContentSettingsPattern> origins;
+  for (auto permission : revoked_permissions_) {
+    origins.insert(permission.origin);
+  }
+  return origins;
+}
+
 base::Value::Dict
 UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() {
   base::Value::Dict result = BaseToDictValue();
@@ -177,6 +187,30 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() {
   }
   result.Set(kUnusedSitePermissionsResultKey, std::move(revoked_permissions));
   return result;
+}
+
+bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    IsTriggerForMenuNotification() {
+  // A menu notification should be shown when there is at least one permission
+  // that was revoked.
+  return revoked_permissions_.size() > 0;
+}
+
+bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    WarrantsNewMenuNotification(const Result& previousResult) {
+  const auto& previous = static_cast<
+      const UnusedSitePermissionsService::UnusedSitePermissionsResult&>(
+      previousResult);
+  std::set<ContentSettingsPattern> old_origins = previous.GetRevokedOrigins();
+  std::set<ContentSettingsPattern> new_origins = GetRevokedOrigins();
+  for (auto new_origin : new_origins) {
+    // A new notification should be shown whenever there is a new origin for
+    // which permissions were revoked.
+    if (!old_origins.contains(new_origin)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void UnusedSitePermissionsService::TabHelper::PrimaryPageChanged(

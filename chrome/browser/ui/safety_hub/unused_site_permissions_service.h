@@ -98,8 +98,14 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
     std::list<RevokedPermission> GetRevokedPermissions();
 
+    std::set<ContentSettingsPattern> GetRevokedOrigins() const;
+
     // SafetyHubService::Result implementation
     base::Value::Dict ToDictValue() override;
+
+    bool IsTriggerForMenuNotification() override;
+
+    bool WarrantsNewMenuNotification(const Result& previousResult) override;
 
    private:
     std::list<RevokedPermission> revoked_permissions_;

@@ -715,3 +715,61 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
             *new_revoked_perms.front().permission_types.begin());
   EXPECT_EQ(expiration, new_revoked_perms.front().expiration);
 }
+
+TEST_F(UnusedSitePermissionsServiceTest, ResultGetRevokedOrigins) {
+  auto origin1 = ContentSettingsPattern::FromString("https://example1.com:443");
+  auto origin2 = ContentSettingsPattern::FromString("https://example2.com:443");
+  base::Time expiration = base::Time::Now();
+  std::set<ContentSettingsType> permission_types(
+      {ContentSettingsType::GEOLOCATION});
+  auto result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  EXPECT_EQ(0U, result->GetRevokedOrigins().size());
+  result->AddRevokedPermission(origin1, permission_types, expiration);
+  EXPECT_EQ(1U, result->GetRevokedOrigins().size());
+  EXPECT_EQ(origin1, *result->GetRevokedOrigins().begin());
+  result->AddRevokedPermission(origin2, permission_types, expiration);
+  EXPECT_EQ(2U, result->GetRevokedOrigins().size());
+  EXPECT_TRUE(result->GetRevokedOrigins().contains(origin1));
+  EXPECT_TRUE(result->GetRevokedOrigins().contains(origin2));
+  result->AddRevokedPermission(origin2, {ContentSettingsType::MEDIASTREAM_MIC},
+                               expiration);
+  EXPECT_EQ(2U, result->GetRevokedOrigins().size());
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, ResultIsTriggerForMenuNotification) {
+  auto origin = ContentSettingsPattern::FromString("https://example1.com:443");
+  base::Time expiration = base::Time::Now();
+  std::set<ContentSettingsType> permission_types(
+      {ContentSettingsType::GEOLOCATION});
+  auto result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  EXPECT_FALSE(result->IsTriggerForMenuNotification());
+  result->AddRevokedPermission(origin, permission_types, expiration);
+  EXPECT_TRUE(result->IsTriggerForMenuNotification());
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, ResultWarrantsNewMenuNotification) {
+  auto origin1 = ContentSettingsPattern::FromString("https://example1.com:443");
+  auto origin2 = ContentSettingsPattern::FromString("https://example2.com:443");
+  base::Time expiration = base::Time::Now();
+  std::set<ContentSettingsType> permission_types(
+      {ContentSettingsType::GEOLOCATION});
+  auto old_result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  auto new_result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  // origin1 revoked in new, but not in old -> warrants notification
+  new_result->AddRevokedPermission(origin1, permission_types, expiration);
+  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  // origin1 in both new and old -> no notification
+  old_result->AddRevokedPermission(origin1, permission_types, expiration);
+  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  // origin1 in both, origin2 in new -> warrants notification
+  new_result->AddRevokedPermission(origin2, permission_types, expiration);
+  EXPECT_TRUE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+  // origin1 and origin2 in both new and old -> no notification
+  old_result->AddRevokedPermission(origin2, permission_types, expiration);
+  EXPECT_FALSE(new_result->WarrantsNewMenuNotification(*old_result.get()));
+}
