@@ -3453,6 +3453,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                                    bool is_inherited_property) const;
   CORE_EXPORT StyleInheritedVariables& MutableInheritedVariables();
   CORE_EXPORT StyleNonInheritedVariables& MutableNonInheritedVariables();
+  void CopyInheritedVariablesFrom(const ComputedStyle*);
+  void CopyNonInheritedVariablesFrom(const ComputedStyle*);
   CORE_EXPORT void SetVariableData(const AtomicString& name,
                                    scoped_refptr<CSSVariableData> value,
                                    bool is_inherited_property) {

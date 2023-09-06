@@ -2814,6 +2814,19 @@ ComputedStyleBuilder::MutableNonInheritedVariables() {
   return *variables;
 }
 
+void ComputedStyleBuilder::CopyInheritedVariablesFrom(
+    const ComputedStyle* style) {
+  MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
+}
+
+void ComputedStyleBuilder::CopyNonInheritedVariablesFrom(
+    const ComputedStyle* style) {
+  if (style->NonInheritedVariablesInternal()) {
+    MutableNonInheritedVariablesInternal() =
+        style->NonInheritedVariablesInternal()->Clone();
+  }
+}
+
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,

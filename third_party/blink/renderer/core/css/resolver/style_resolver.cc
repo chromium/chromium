@@ -1113,6 +1113,27 @@ void StyleResolver::InitStyle(Element& element,
     // the element has rules but no matched properties, we currently clone.
 
     state.SetStyle(*parent_style);
+
+    // Custom Properties on highlight pseudos are taken from :root, due to the
+    // standard practice of putting document wide custom properties on :root.
+    // The highlight pseudo that requires the variables will have a non-pseudo
+    // parent style (as the root of the highlight inheritance chain).
+    bool parent_is_initial_style = parent_style->StyleType() == kPseudoIdNone;
+    DCHECK(parent_style->StyleType() == style_request.pseudo_id ||
+           parent_is_initial_style);
+
+    if (parent_is_initial_style) {
+      DCHECK(!parent_style->InheritedVariables());
+      DCHECK(!parent_style->NonInheritedVariables());
+      // Style on the root itself has no root element, so use the originating
+      // element which will be the root.
+      const ComputedStyle* source_style = state.RootElementStyle()
+                                              ? state.RootElementStyle()
+                                              : state.OriginatingElementStyle();
+      DCHECK(source_style);
+      state.StyleBuilder().CopyInheritedVariablesFrom(source_style);
+      state.StyleBuilder().CopyNonInheritedVariablesFrom(source_style);
+    }
   } else {
     state.CreateNewStyle(
         source_for_noninherited, *parent_style,
@@ -1134,15 +1155,14 @@ void StyleResolver::InitStyle(Element& element,
   state.StyleBuilder().SetStyleType(style_request.pseudo_id);
   state.StyleBuilder().SetPseudoArgument(style_request.pseudo_argument);
 
-  // For highlight inheritance, propagate link visitedness, forced-colors
-  // status, and font properties (for font- or glyph-relative offsets in
-  // ‘text-shadow’) from the originating element, even if we have no parent
-  // highlight ComputedStyle we can inherit from.
+  // For highlight inheritance, propagate link visitedness and forced-colors
+  // status.
   if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
     state.StyleBuilder().SetInForcedColorsMode(
         style_request.originating_element_style->InForcedColorsMode());
     state.StyleBuilder().SetForcedColorAdjust(
         style_request.originating_element_style->ForcedColorAdjust());
+    // TODO(schenney): Remove these when a better solution is found
     state.StyleBuilder().SetFont(
         style_request.originating_element_style->GetFont());
     state.StyleBuilder().SetLineHeight(

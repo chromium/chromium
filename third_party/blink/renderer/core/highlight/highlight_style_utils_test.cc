@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -194,6 +195,90 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
 
   EXPECT_EQ(Color(0, 128, 0), paint_style.fill_color);
   EXPECT_TRUE(paint_style.shadow);
+}
+
+TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      :root {
+        --root-color: green;
+      }
+      ::selection {
+        --selection-color: blue;
+      }
+      div::selection {
+        color: var(--selection-color, red);
+        background-color: var(--root-color, red);
+      }
+    </style>
+    <div>Selected</div>
+  )HTML");
+
+  // Select some text.
+  auto* div_node =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  Window().getSelection()->setBaseAndExtent(div_node, 0, div_node, 1);
+  Compositor().BeginFrame();
+  absl::optional<Color> previous_layer_color;
+
+  std::unique_ptr<PaintController> controller{
+      std::make_unique<PaintController>()};
+  GraphicsContext context(*controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  TextPaintStyle paint_style;
+  const ComputedStyle& div_style = div_node->ComputedStyleRef();
+
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
+      GetDocument(), div_style, div_node, kPseudoIdSelection, paint_style,
+      paint_info);
+
+  EXPECT_EQ(Color(0, 0, 255), paint_style.fill_color);
+
+  Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
+      GetDocument(), div_style, div_node, previous_layer_color,
+      kPseudoIdSelection);
+
+  EXPECT_EQ(Color(0, 128, 0), background_color);
+}
+
+TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
+  ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      :root {
+        --background-color: green;
+      }
+      div::selection {
+        background-color: var(--background-color, red);
+      }
+    </style>
+    <div>Selected</div>
+  )HTML");
+
+  // Select some text.
+  auto* div_node =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  Window().getSelection()->setBaseAndExtent(div_node, 0, div_node, 1);
+  Compositor().BeginFrame();
+
+  const ComputedStyle& div_style = div_node->ComputedStyleRef();
+  absl::optional<Color> previous_layer_color;
+  Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
+      GetDocument(), div_style, div_node, previous_layer_color,
+      kPseudoIdSelection);
+
+  EXPECT_EQ(Color(0, 128, 0), background_color);
 }
 
 }  // namespace blink
