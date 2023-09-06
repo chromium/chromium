@@ -1335,11 +1335,8 @@ void PrefetchService::OnPrefetchResponseCompleted(
     RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
   }
 
-  if (!prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
-    // If the prefetch from the streaming URL loader cannot be served at this
-    // point, then it can be discarded.
-    prefetch_container->ResetAllStreamingURLLoaders();
-  } else {
+  if (prefetch_container->GetPrefetchStatus() ==
+      PrefetchStatus::kPrefetchSuccessful) {
     PrefetchDocumentManager* prefetch_document_manager =
         prefetch_container->GetPrefetchDocumentManager();
     if (prefetch_document_manager) {

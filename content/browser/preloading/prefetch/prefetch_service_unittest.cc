@@ -3580,8 +3580,7 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  // TODO(crbug.com/1478875): prefetch_successful_count should be 1.
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
 
   serving_page_metrics = GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
@@ -4963,8 +4962,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  // TODO(crbug.com/1478875): prefetch_successful_count should be 1.
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
@@ -5081,8 +5079,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  // TODO(crbug.com/1478875): prefetch_successful_count should be 1.
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 1);
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
