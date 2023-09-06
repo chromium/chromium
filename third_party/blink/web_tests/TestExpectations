@@ -6693,3 +6693,7 @@ crbug.com/1478028 [ Linux ] external/wpt/pointerevents/coalesced_events_attribut
 # Gardener 2023-09-05
 # Flaky on Webkit Linux Leak
 crbug.com/1478891 [ Linux ] fast/events/middleClickAutoscroll-nested-divs-forbidden.html [ Failure Pass ]
+
+# Gardener 2023-09-06
+crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/SharedWorker/same-origin.html [ Failure Pass ]
+crbug.com/1479476 [ Mac ] external/wpt/workers/constructors/Worker/same-origin.html [ Failure Pass ]
