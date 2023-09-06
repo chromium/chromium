@@ -120,7 +120,6 @@ constexpr const char* kReservedNamespaces[] = {
     kHeartbeatNamespace,
     kConnectionNamespace,
     kReceiverNamespace,
-    kBroadcastNamespace,
     kMediaNamespace,
 
     // mirroring::mojom::kRemotingNamespace
@@ -433,34 +432,6 @@ CastMessage CreateReceiverStatusRequest(const std::string& source_id,
            EnumToString<CastMessageType, CastMessageType::kGetStatus>());
   dict.Set("requestId", request_id);
   return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
-                           source_id, kPlatformReceiverId);
-}
-
-BroadcastRequest::BroadcastRequest(const std::string& broadcast_namespace,
-                                   const std::string& message)
-    : broadcast_namespace(broadcast_namespace), message(message) {}
-BroadcastRequest::~BroadcastRequest() = default;
-
-bool BroadcastRequest::operator==(const BroadcastRequest& other) const {
-  return broadcast_namespace == other.broadcast_namespace &&
-         message == other.message;
-}
-
-CastMessage CreateBroadcastRequest(const std::string& source_id,
-                                   int request_id,
-                                   const std::vector<std::string>& app_ids,
-                                   const BroadcastRequest& request) {
-  Value::Dict dict;
-  dict.Set("type",
-           EnumToString<CastMessageType, CastMessageType::kBroadcast>());
-  base::Value::List app_ids_value;
-  for (const std::string& app_id : app_ids)
-    app_ids_value.Append(app_id);
-
-  dict.Set("appIds", std::move(app_ids_value));
-  dict.Set("namespace", request.broadcast_namespace);
-  dict.Set("message", request.message);
-  return CreateCastMessage(kBroadcastNamespace, base::Value(std::move(dict)),
                            source_id, kPlatformReceiverId);
 }
 

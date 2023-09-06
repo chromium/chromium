@@ -47,14 +47,6 @@ std::vector<T> MakeVector(const Field& field) {
 DEFINE_PROTO_FUZZER(const CastMessageUtilInputs& input_union) {
   // TODO(crbug.com/796717): Add test for CreateAuthChallengeMessage()
   switch (input_union.input_case()) {
-    case CastMessageUtilInputs::kCreateBroadcastRequestInput: {
-      const auto& input = input_union.create_broadcast_request_input();
-      CreateBroadcastRequest(input.source_id(), input.request_id(),
-                             MakeVector(input.app_id()),
-                             BroadcastRequest(input.broadcast_namespace(),
-                                              input.broadcast_message()));
-      break;
-    }
     case CastMessageUtilInputs::kCreateLaunchRequestInput: {
       const auto& input = input_union.create_launch_request_input();
       absl::optional<base::Value> app_params;

@@ -35,8 +35,6 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
   const CastAppInfo& app_info = source->app_infos()[0];
   EXPECT_EQ("ABCDEFAB", app_info.app_id);
   EXPECT_TRUE(app_info.required_capabilities.empty());
-  const auto& broadcast_request = source->broadcast_request();
-  EXPECT_FALSE(broadcast_request);
   EXPECT_EQ(absl::nullopt, source->target_playout_delay());
   EXPECT_EQ(true, source->site_requested_audio_capture());
   EXPECT_EQ(cast_channel::VirtualConnectionType::kStrong,
@@ -47,8 +45,6 @@ TEST(CastMediaSourceTest, FromCastURLWithDefaults) {
 TEST(CastMediaSourceTest, FromCastURL) {
   MediaSource::Id source_id(
       "cast:ABCDEFAB?capabilities=video_out,audio_out"
-      "&broadcastNamespace=namespace"
-      "&broadcastMessage=message%25"
       "&clientId=12345"
       "&launchTimeout=30000"
       "&autoJoinPolicy=tab_and_origin_scoped"
@@ -68,10 +64,6 @@ TEST(CastMediaSourceTest, FromCastURL) {
   EXPECT_EQ((BitwiseOr<CastDeviceCapability>{CastDeviceCapability::VIDEO_OUT,
                                              CastDeviceCapability::AUDIO_OUT}),
             app_info.required_capabilities);
-  const auto& broadcast_request = source->broadcast_request();
-  ASSERT_TRUE(broadcast_request);
-  EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
-  EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
   EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kTabAndOriginScoped, source->auto_join_policy());
@@ -90,8 +82,6 @@ TEST(CastMediaSourceTest, FromLegacyCastURL) {
       "https://google.com/cast"
       "#__castAppId__=ABCDEFAB(video_out,audio_out)"
       "/__castAppId__=otherAppId"
-      "/__castBroadcastNamespace__=namespace"
-      "/__castBroadcastMessage__=message%25"
       "/__castClientId__=12345"
       "/__castLaunchTimeout__=30000"
       "/__castAutoJoinPolicy__=origin_scoped"
@@ -107,10 +97,6 @@ TEST(CastMediaSourceTest, FromLegacyCastURL) {
                                              CastDeviceCapability::AUDIO_OUT}),
             app_info.required_capabilities);
   EXPECT_EQ("otherAppId", source->app_infos()[1].app_id);
-  const auto& broadcast_request = source->broadcast_request();
-  ASSERT_TRUE(broadcast_request);
-  EXPECT_EQ("namespace", broadcast_request->broadcast_namespace);
-  EXPECT_EQ("message%", broadcast_request->message);
   EXPECT_EQ("12345", source->client_id());
   EXPECT_EQ(base::Milliseconds(30000), source->launch_timeout());
   EXPECT_EQ(AutoJoinPolicy::kOriginScoped, source->auto_join_policy());

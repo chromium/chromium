@@ -571,31 +571,6 @@ TEST_F(CastMessageHandlerTest, SendMediaRequest) {
   EXPECT_EQ(1, request_id);
 }
 
-TEST_F(CastMessageHandlerTest, SendBroadcastMessage) {
-  BroadcastRequest request = BroadcastRequest("namespace", "message");
-  CastMessage message = CreateBroadcastRequest(
-      "theSourceId", /* request_id */ 1, {kAppId1}, request);
-  {
-    InSequence dummy;
-    ExpectEnsureConnection();
-    EXPECT_CALL(*transport_,
-                SendMessage_(HasPayloadUtf8(message.payload_utf8()), _));
-  }
-
-  EXPECT_EQ(Result::kOk,
-            handler_.SendBroadcastMessage(channel_id_, {kAppId1}, request));
-}
-
-TEST_F(CastMessageHandlerTest, SendBroadcastMessageExceedsSizeLimit) {
-  BroadcastRequest request =
-      BroadcastRequest("namespace", std::string(kMaxProtocolMessageSize, 'a'));
-  CastMessage message = CreateBroadcastRequest(
-      "theSourceId", /* request_id */ 1, {kAppId1}, request);
-
-  EXPECT_EQ(Result::kFailed,
-            handler_.SendBroadcastMessage(channel_id_, {kAppId1}, request));
-}
-
 // Check that SendVolumeCommand sends a message created by CreateVolumeRequest
 // and registers a pending request.
 TEST_F(CastMessageHandlerTest, SendVolumeCommand) {

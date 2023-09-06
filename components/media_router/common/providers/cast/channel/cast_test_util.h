@@ -193,10 +193,6 @@ class MockCastMessageHandler : public CastMessageHandler {
                     const std::string& app_id,
                     GetAppAvailabilityCallback callback));
   MOCK_METHOD1(RequestReceiverStatus, void(int channel_id));
-  MOCK_METHOD3(SendBroadcastMessage,
-               Result(int,
-                      const std::vector<std::string>&,
-                      const BroadcastRequest&));
   MOCK_METHOD6(LaunchSession,
                void(int,
                     const std::string&,

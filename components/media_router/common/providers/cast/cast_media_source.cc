@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 #include "url/url_util.h"
 
-using cast_channel::BroadcastRequest;
 using cast_channel::CastDeviceCapability;
 using cast_channel::ReceiverAppType;
 
@@ -157,20 +156,6 @@ base::flat_map<std::string, std::string> MakeQueryMap(const GURL& url) {
   return result;
 }
 
-// TODO(crbug.com/1291718): Move to common utils?  Should this use
-// base::UnescapeURLComponent instead of url::DecodeURLEscapeSequences?
-std::string DecodeURLComponent(const std::string& encoded) {
-  url::RawCanonOutputT<char16_t> unescaped;
-  std::string output;
-  url::DecodeURLEscapeSequences(encoded.data(), encoded.size(),
-                                url::DecodeURLMode::kUTF8OrIsomorphic,
-                                &unescaped);
-  if (base::UTF16ToUTF8(unescaped.data(), unescaped.length(), &output))
-    return output;
-
-  return std::string();
-}
-
 // Converts a string containing a comma-separated list of capabilities into a
 // bitwise OR of CastDeviceCapability values.
 BitwiseOr<CastDeviceCapability> CastDeviceCapabilitiesFromString(
@@ -237,8 +222,6 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
     const std::string& auto_join_policy_str,
     const std::string& default_action_policy_str,
     const std::string& client_id,
-    const std::string& broadcast_namespace,
-    const std::string& encoded_broadcast_message,
     const std::string& launch_timeout_str,
     const std::string& target_playout_delay_millis_str,
     const std::string& audio_capture_str,
@@ -255,10 +238,6 @@ std::unique_ptr<CastMediaSource> CreateFromURLParams(
       cast_util::StringToEnum<DefaultActionPolicy>(default_action_policy_str)
           .value_or(DefaultActionPolicy::kCreateSession));
   cast_source->set_client_id(client_id);
-  if (!broadcast_namespace.empty() && !encoded_broadcast_message.empty()) {
-    cast_source->set_broadcast_request(BroadcastRequest(
-        broadcast_namespace, DecodeURLComponent(encoded_broadcast_message)));
-  }
 
   int launch_timeout_millis = 0;
   if (base::StringToInt(launch_timeout_str, &launch_timeout_millis) &&
@@ -304,8 +283,6 @@ std::unique_ptr<CastMediaSource> ParseCastUrl(const MediaSource::Id& source_id,
       FindValueOr(params, "autoJoinPolicy", ""),
       FindValueOr(params, "defaultActionPolicy", ""),
       FindValueOr(params, "clientId", ""),
-      FindValueOr(params, "broadcastNamespace", ""),
-      FindValueOr(params, "broadcastMessage", ""),
       FindValueOr(params, "launchTimeout", ""),
       FindValueOr(params, "streamingTargetPlayoutDelayMillis", ""),
       FindValueOr(params, "streamingCaptureAudio", ""),
@@ -366,8 +343,6 @@ std::unique_ptr<CastMediaSource> ParseLegacyCastUrl(
       source_id, app_infos, FindValueOr(params, "__castAutoJoinPolicy__", ""),
       FindValueOr(params, "__castDefaultActionPolicy__", ""),
       FindValueOr(params, "__castClientId__", ""),
-      FindValueOr(params, "__castBroadcastNamespace__", ""),
-      FindValueOr(params, "__castBroadcastMessage__", ""),
       FindValueOr(params, "__castLaunchTimeout__", ""),
       /* target_playout_delay_millis_str */ "",
       /* audio_capture */ "",

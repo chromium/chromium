@@ -273,15 +273,6 @@ void CastMediaRouteProvider::StartObservingMediaSinks(
   if (!cast_source)
     return;
 
-  // A broadcast request is not an actual sink query; it is used to send a
-  // app precache message to receivers.
-  if (cast_source->broadcast_request()) {
-    // TODO(imcheng): Add metric to record broadcast usage.
-    BroadcastMessageToSinks(cast_source->GetAppIds(),
-                            *cast_source->broadcast_request());
-    return;
-  }
-
   sink_queries_[media_source] =
       app_discovery_service_->StartObservingMediaSinks(
           *cast_source,
@@ -374,16 +365,6 @@ void CastMediaRouteProvider::OnSinkQueryUpdated(
       mojom::MediaRouteProviderId::CAST, source_id,
       GetRemotePlaybackMediaSourceCompatibleSinks(media_source, sinks),
       GetOrigins(source_id));
-}
-
-void CastMediaRouteProvider::BroadcastMessageToSinks(
-    const std::vector<std::string>& app_ids,
-    const cast_channel::BroadcastRequest& request) {
-  for (const auto& id_and_sink : media_sink_service_->GetSinks()) {
-    const MediaSinkInternal& sink = id_and_sink.second;
-    message_handler_->SendBroadcastMessage(sink.cast_data().cast_channel_id,
-                                           app_ids, request);
-  }
 }
 
 }  // namespace media_router

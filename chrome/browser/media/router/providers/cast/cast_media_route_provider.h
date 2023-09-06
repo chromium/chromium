@@ -108,10 +108,6 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void OnSinkQueryUpdated(const MediaSource::Id& source_id,
                           const std::vector<MediaSinkInternal>& sinks);
 
-  // Broadcasts a message with |app_ids| and |requests| to all sinks.
-  void BroadcastMessageToSinks(const std::vector<std::string>& app_ids,
-                               const cast_channel::BroadcastRequest& request);
-
   // Binds |this| to the Mojo receiver passed into the ctor.
   mojo::Receiver<mojom::MediaRouteProvider> receiver_{this};
 

@@ -26,8 +26,6 @@ static constexpr char kConnectionNamespace[] =
     "urn:x-cast:com.google.cast.tp.connection";
 static constexpr char kReceiverNamespace[] =
     "urn:x-cast:com.google.cast.receiver";
-static constexpr char kBroadcastNamespace[] =
-    "urn:x-cast:com.google.cast.broadcast";
 static constexpr char kMediaNamespace[] = "urn:x-cast:com.google.cast.media";
 
 // Sender and receiver IDs to use for platform messages.
@@ -60,7 +58,7 @@ enum class CastMessageType {
   // Close virtual connection
   kCloseConnection,
 
-  // Application broadcast / precache
+  // Application broadcast/precache. No longer used.
   kBroadcast,
 
   // Session launch request
@@ -243,24 +241,6 @@ CastMessage CreateGetAppAvailabilityRequest(const std::string& source_id,
 
 CastMessage CreateReceiverStatusRequest(const std::string& source_id,
                                         int request_id);
-
-// Represents a broadcast request. Currently it is used for precaching data
-// on a receiver.
-struct BroadcastRequest {
-  BroadcastRequest(const std::string& broadcast_namespace,
-                   const std::string& message);
-  ~BroadcastRequest();
-  bool operator==(const BroadcastRequest& other) const;
-
-  std::string broadcast_namespace;
-  std::string message;
-};
-
-// Creates a broadcast request with the given parameters.
-CastMessage CreateBroadcastRequest(const std::string& source_id,
-                                   int request_id,
-                                   const std::vector<std::string>& app_ids,
-                                   const BroadcastRequest& request);
 
 // Creates a session launch request with the given parameters.
 CastMessage CreateLaunchRequest(

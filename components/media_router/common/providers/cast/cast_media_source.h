@@ -181,13 +181,6 @@ class CastMediaSource {
   void set_launch_timeout(base::TimeDelta launch_timeout) {
     launch_timeout_ = launch_timeout;
   }
-  const absl::optional<cast_channel::BroadcastRequest>& broadcast_request()
-      const {
-    return broadcast_request_;
-  }
-  void set_broadcast_request(const cast_channel::BroadcastRequest& request) {
-    broadcast_request_ = request;
-  }
   AutoJoinPolicy auto_join_policy() const { return auto_join_policy_; }
   DefaultActionPolicy default_action_policy() const {
     return default_action_policy_;
@@ -230,7 +223,6 @@ class CastMediaSource {
   base::TimeDelta launch_timeout_ = kDefaultLaunchTimeout;
   // Optional parameters.
   std::string client_id_;
-  absl::optional<cast_channel::BroadcastRequest> broadcast_request_;
   absl::optional<base::TimeDelta> target_playout_delay_;
   bool site_requested_audio_capture_ = true;
   std::vector<ReceiverAppType> supported_app_types_ = {ReceiverAppType::kWeb};

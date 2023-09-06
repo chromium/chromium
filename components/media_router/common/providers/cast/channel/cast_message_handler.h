@@ -211,12 +211,6 @@ class CastMessageHandler : public CastSocket::Observer {
   // Sends a receiver status request to the socket given by |channel_id|.
   virtual void RequestReceiverStatus(int channel_id);
 
-  // Sends a broadcast message containing |app_ids| and |request| to the socket
-  // given by |channel_id|.
-  virtual Result SendBroadcastMessage(int channel_id,
-                                      const std::vector<std::string>& app_ids,
-                                      const BroadcastRequest& request);
-
   // Requests a session launch for |app_id| on the device given by |channel_id|.
   // |callback| will be invoked with the response or with a timed out result if
   // no response comes back before |launch_timeout|.
