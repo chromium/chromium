@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
@@ -174,6 +175,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Incognito grid coordinator.
   IncognitoGridCoordinator* _incognitoGridCoordinator;
+
+  // Regular grid coordinator.
+  RegularGridCoordinator* _regularGridCoordinator;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -723,8 +727,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
 
-  self.regularTabsMediator = [[RegularGridMediator alloc]
-      initWithConsumer:baseViewController.regularTabsConsumer];
+  _regularGridCoordinator = [[RegularGridCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:_regularBrowser
+                 toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
+            gridMediatorDelegate:self];
+  // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
+  // it should be a RegularViewController instead of a TabGridViewController.
+  _regularGridCoordinator.regularViewController = self.baseViewController;
+  [_regularGridCoordinator start];
+  self.regularTabsMediator = _regularGridCoordinator.regularGridMediator;
+
   ChromeBrowserState* regularBrowserState =
       _regularBrowser ? _regularBrowser->GetBrowserState() : nullptr;
   WebStateList* regularWebStateList =
@@ -732,16 +745,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.priceCardMediator =
       [[PriceCardMediator alloc] initWithWebStateList:regularWebStateList];
 
-  self.regularTabsMediator.browser = _regularBrowser;
-  // TODO(crbug.com/1457146): The action wrangler should be the regular grid
-  // view controller.
-  self.regularTabsMediator.actionWrangler = self.baseViewController;
-  self.regularTabsMediator.delegate = self;
-  if (regularBrowserState) {
-    self.regularTabsMediator.tabRestoreService =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            regularBrowserState);
-  }
 
   if (IsPinnedTabsEnabled()) {
     self.pinnedTabsMediator = [[PinnedTabsMediator alloc]
