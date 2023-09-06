@@ -236,6 +236,45 @@ suite('CrostiniPageTests', function() {
           'Enable Crostini button should be focused for settingId=800.');
     });
 
+    test('Install Bruschetta', async () => {
+      setCrostiniPrefs(false, {bruschettaInstalled: false});
+      crostiniPage.set('showBruschetta_', true);
+      flush();
+
+      const installSelector = '#bruschettaEnable';
+      const subpageSelector = '#bruschetta .subpage-arrow';
+      const installButton =
+          crostiniPage.shadowRoot.querySelector(installSelector);
+      assertTrue(!!installButton);
+      assertFalse(installButton.disabled);
+      assertFalse(!!crostiniPage.shadowRoot.querySelector(subpageSelector));
+
+      installButton.click();
+      flush();
+
+      assertEquals(
+          1,
+          crostiniBrowserProxy.getCallCount('requestBruschettaInstallerView'));
+      setCrostiniPrefs(false, {bruschettaInstalled: true});
+
+      assertTrue(!!crostiniPage.shadowRoot.querySelector(subpageSelector));
+    });
+
+    test('Navigate to bruschetta subpage', async () => {
+      setCrostiniPrefs(false, {bruschettaInstalled: true});
+      crostiniPage.set('showBruschetta_', true);
+      flush();
+
+      const subpageSelector = '#bruschetta .subpage-arrow';
+      const subpageButton =
+          crostiniPage.shadowRoot.querySelector(subpageSelector);
+      assertTrue(!!subpageButton);
+
+      subpageButton.click();
+      assertEquals(
+          routes.BRUSCHETTA_DETAILS, Router.getInstance().currentRoute);
+    });
+
     test(
         'Crostini details row is focused when returning from subpage',
         async () => {
@@ -1359,6 +1398,93 @@ suite('CrostiniPageTests', function() {
         assertFalse(!!subpage.shadowRoot.querySelector(
             'settings-crostini-disk-resize-dialog'));
       });
+    });
+  });
+
+  suite('BruschettaSubpage', function() {
+    /** @type {?BruschettaSubpageElement} */
+    let subpage;
+
+    setup(async function() {
+      crostiniPage.set('showBruschetta_', true);
+      setCrostiniPrefs(false, {bruschettaInstalled: true});
+      flush();
+
+      Router.getInstance().navigateTo(routes.CROSTINI);
+      crostiniPage.shadowRoot.querySelector('#bruschetta').click();
+
+      await flushTasks();
+      subpage =
+          crostiniPage.shadowRoot.querySelector('settings-bruschetta-subpage');
+      assertTrue(!!subpage);
+    });
+
+    test('Navigate to shared USB devices', async function() {
+      const link =
+          subpage.shadowRoot.querySelector('#bruschettaSharedUsbDevicesRow');
+      assertTrue(!!link);
+      link.click();
+      flush();
+
+      assertEquals(
+          routes.BRUSCHETTA_SHARED_USB_DEVICES,
+          Router.getInstance().currentRoute);
+
+      assertTrue(!!crostiniPage.shadowRoot.querySelector(
+          'settings-guest-os-shared-usb-devices[guest-os-type="bruschetta"]'));
+      // Functionality is tested in guest_os_shared_usb_devices_test.js
+
+      // Navigate back
+      const popStateEventPromise = eventToPromise('popstate', window);
+      Router.getInstance().navigateToPreviousRoute();
+      await popStateEventPromise;
+      await waitAfterNextRender(subpage);
+
+      assertEquals(
+          link, subpage.shadowRoot.activeElement, `${link} should be focused.`);
+    });
+
+    test('Navigate to shared paths', async function() {
+      const link =
+          subpage.shadowRoot.querySelector('#bruschettaSharedPathsRow');
+      assertTrue(!!link);
+      link.click();
+      flush();
+
+      assertEquals(
+          routes.BRUSCHETTA_SHARED_PATHS, Router.getInstance().currentRoute);
+
+      assertTrue(!!crostiniPage.shadowRoot.querySelector(
+          'settings-guest-os-shared-paths[guest-os-type="bruschetta"]'));
+      // Functionality is tested in guest_os_shared_paths_test.js
+
+      // Navigate back
+      const popStateEventPromise = eventToPromise('popstate', window);
+      Router.getInstance().navigateToPreviousRoute();
+      await popStateEventPromise;
+      await waitAfterNextRender(subpage);
+
+      assertEquals(
+          link, subpage.shadowRoot.activeElement, `${link} should be focused.`);
+    });
+
+    test('Remove bruschetta', async function() {
+      const button = subpage.shadowRoot.querySelector('#remove cr-button');
+      assertTrue(!!button);
+      assertFalse(!!button.disabled);
+      button.click();
+      flush();
+
+      assertEquals(
+          1,
+          crostiniBrowserProxy.getCallCount(
+              'requestBruschettaUninstallerView'));
+      setCrostiniPrefs(false, {bruschettaInstalled: false});
+
+      await eventToPromise('popstate', window);
+
+      assertEquals(Router.getInstance().currentRoute, routes.CROSTINI);
+      assertTrue(!!crostiniPage.shadowRoot.querySelector('#bruschettaEnable'));
     });
   });
 

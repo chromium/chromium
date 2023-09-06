@@ -52,7 +52,7 @@
             on-click="onBruschettaSubpageClick_">
           <div class="start">
             $i18n{bruschettaPageLabel}
-            <div class="secondary" id="secondaryText">
+            <div class="secondary" id="bruschettaSecondaryText">
               <localized-link
                   localized-string="[[i18nAdvanced('bruschettaSubtext')]]">
               </localized-link>
@@ -69,7 +69,7 @@
           </template>
           <template is="dom-if" if="[[!prefs.bruschetta.installed.value]]">
             <div class="separator"></div>
-            <cr-button id="enable"
+            <cr-button id="bruschettaEnable"
                 on-click="onBruschettaEnableClick_"
                 aria-describedby="secondaryText">
               $i18n{bruschettaEnable}
