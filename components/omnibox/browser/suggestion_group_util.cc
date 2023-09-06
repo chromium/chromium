@@ -4,28 +4,48 @@
 
 #include "components/omnibox/browser/suggestion_group_util.h"
 
+#include "base/feature_list.h"
+#include "base/lazy_instance.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
+namespace omnibox {
 namespace {
-omnibox::GroupConfig CreateGroup(omnibox::GroupSection section) {
-  omnibox::GroupConfig group;
+GroupConfig CreateGroup(GroupSection section,
+                        GroupConfig::RenderType render_type =
+                            GroupConfig_RenderType_DEFAULT_VERTICAL) {
+  GroupConfig group;
   group.set_section(section);
+  group.set_render_type(render_type);
   return group;
 }
+
+base::LazyInstance<GroupConfigMap>::DestructorAtExit g_default_groups =
+    LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
-namespace omnibox {
+const GroupConfigMap& BuildDefaultGroups() {
+  if (g_default_groups.Get().empty()) {
+    g_default_groups.Get() = {
+        // clang-format off
+        {GROUP_MOBILE_SEARCH_READY_OMNIBOX, CreateGroup(SECTION_MOBILE_VERBATIM)},
+        {GROUP_MOBILE_CLIPBOARD,            CreateGroup(SECTION_MOBILE_CLIPBOARD)},
+        {GROUP_PERSONALIZED_ZERO_SUGGEST,   CreateGroup(SECTION_PERSONALIZED_ZERO_SUGGEST)},
+        {GROUP_MOBILE_MOST_VISITED,
+         CreateGroup(SECTION_MOBILE_MOST_VISITED,
+                     base::FeatureList::IsEnabled(
+                         kMostVisitedTilesHorizontalRenderGroup)
+                         ? GroupConfig_RenderType_HORIZONTAL
+                         : GroupConfig_RenderType_DEFAULT_VERTICAL)},
 
-const omnibox::GroupConfigMap& BuildDefaultGroups() {
-  static omnibox::GroupConfigMap groups = {
-      // clang-format off
-      {omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX, CreateGroup(omnibox::SECTION_MOBILE_VERBATIM)},
-      {omnibox::GROUP_MOBILE_MOST_VISITED,         CreateGroup(omnibox::SECTION_MOBILE_MOST_VISITED)},
-      {omnibox::GROUP_MOBILE_CLIPBOARD,            CreateGroup(omnibox::SECTION_MOBILE_CLIPBOARD)},
-      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,   CreateGroup(omnibox::SECTION_PERSONALIZED_ZERO_SUGGEST)},
-      // clang-format on
-  };
-  return groups;
+        // clang-format on
+    };
+  }
+  return g_default_groups.Get();
+}
+
+void ResetDefaultGroupsForTest() {
+  g_default_groups.Get().clear();
 }
 
 GroupId GroupIdForNumber(int value) {

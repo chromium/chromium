@@ -4,7 +4,10 @@
 
 #include "components/omnibox/browser/suggestion_group_util.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 // Ensures that accessing unset fields is safe and verifies the default values.
 // https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
@@ -42,4 +45,36 @@ TEST(SuggestionGroupTest, GroupIdForNumber) {
   ASSERT_EQ(omnibox::GROUP_INVALID, omnibox::GroupIdForNumber(-1));
   ASSERT_EQ(omnibox::GROUP_INVALID, omnibox::GroupIdForNumber(0));
   ASSERT_EQ(omnibox::GROUP_INVALID, omnibox::GroupIdForNumber(123456789));
+}
+
+TEST(SuggestionGroupTest, SectionMobileMostVisited_HorizontalRenderType) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({omnibox::kMostVisitedTilesHorizontalRenderGroup},
+                            {});
+
+  auto default_groups = omnibox::BuildDefaultGroups();
+  auto most_visited_group_config =
+      default_groups.find(omnibox::GROUP_MOBILE_MOST_VISITED);
+
+  ASSERT_NE(most_visited_group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_HORIZONTAL,
+            most_visited_group_config->second.render_type());
+}
+
+TEST(SuggestionGroupTest, SectionMobileMostVisited_VerticalRenderType) {
+  omnibox::ResetDefaultGroupsForTest();
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({},
+                            {omnibox::kMostVisitedTilesHorizontalRenderGroup});
+
+  auto default_groups = omnibox::BuildDefaultGroups();
+  auto most_visited_group_config =
+      default_groups.find(omnibox::GROUP_MOBILE_MOST_VISITED);
+
+  ASSERT_NE(most_visited_group_config, default_groups.end());
+  ASSERT_EQ(omnibox::GroupConfig_RenderType_DEFAULT_VERTICAL,
+            most_visited_group_config->second.render_type());
 }
