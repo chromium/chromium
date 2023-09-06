@@ -592,6 +592,7 @@ export namespace BrowsingContext {
     context: BrowsingContext.BrowsingContext;
     type: 'alert' | 'confirm' | 'prompt' | 'beforeunload';
     message: string;
+    defaultValue?: string;
   };
 }
 export type NetworkCommand =

@@ -721,6 +721,7 @@ export namespace BrowsingContext {
       context: BrowsingContext.BrowsingContextSchema,
       type: z.enum(['alert', 'confirm', 'prompt', 'beforeunload']),
       message: z.string(),
+      defaultValue: z.string().optional(),
     })
   );
 }
