@@ -945,7 +945,7 @@
         },
         {
           "comment": "8280 QC chipset",
-          "vendor_id": "0x5143",
+          "vendor_id": "0x4d4f4351",
           "device_id": [ "0x36333630" ],
           "driver_version": {
             "op": ">=",
@@ -953,7 +953,7 @@
           }
         },
         {
-          "vendor_id": "0x5143",
+          "vendor_id": "0x4d4f4351",
           "driver_version": {
             "op": ">=",
             "value": "31.0.2.0"
