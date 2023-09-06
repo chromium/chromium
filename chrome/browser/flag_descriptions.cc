@@ -7018,6 +7018,10 @@ const char kWifiConnectMacAddressRandomizationDescription[] =
     "Randomize MAC address when connecting to unmanaged (non-enterprise) "
     "WiFi networks.";
 
+const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
+const char kWindowSplittingDescription[] =
+    "Enables splitting windows by dragging one over another.";
+
 const char kLauncherGameSearchName[] = "Enable launcher game search";
 const char kLauncherGameSearchDescription[] =
     "Enables cloud game search results in the launcher.";

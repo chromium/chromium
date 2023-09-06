@@ -4033,6 +4033,9 @@ extern const char kWelcomeTourForceUserEligibilityDescription[];
 extern const char kWifiConnectMacAddressRandomizationName[];
 extern const char kWifiConnectMacAddressRandomizationDescription[];
 
+extern const char kWindowSplittingName[];
+extern const char kWindowSplittingDescription[];
+
 extern const char kLauncherGameSearchName[];
 extern const char kLauncherGameSearchDescription[];
 

@@ -62962,6 +62962,7 @@ from previous Chrome versions.
   <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>
   <int value="-815616832"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:enabled"/>
+  <int value="-815487797" label="WindowSplitting:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
@@ -65730,6 +65731,7 @@ from previous Chrome versions.
   <int value="578695119" label="ImprovedCookieControls:disabled"/>
   <int value="578894559" label="IPH_Snooze:enabled"/>
   <int value="580288865" label="ClipboardMaximumAge:disabled"/>
+  <int value="580546202" label="WindowSplitting:disabled"/>
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>

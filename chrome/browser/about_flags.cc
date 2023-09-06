@@ -10717,6 +10717,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-labs-window-splitting", flag_descriptions::kWindowSplittingName,
+     flag_descriptions::kWindowSplittingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWindowSplitting)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"speak-on-mute-opt-in-nudge-prefs-reset",
      flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetName,
      flag_descriptions::kSpeakOnMuteOptInNudgePrefsResetDescription, kOsCrOS,

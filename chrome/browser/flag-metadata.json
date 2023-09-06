@@ -1428,6 +1428,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cros-labs-window-splitting",
+    "owners": [ "aluh", "homi" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cros-libassistant-v2-migration",
     "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
     "expiry_milestone": 112
