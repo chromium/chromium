@@ -22,6 +22,8 @@ void FakeCompositorFrameSinkClient::OnBeginFrame(
     const FrameTimingDetailsMap& timing_details,
     bool frame_ack,
     std::vector<ReturnedResource> resources) {
+  begin_frame_count_++;
+
   if (features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {
       DidReceiveCompositorFrameAck(std::move(resources));

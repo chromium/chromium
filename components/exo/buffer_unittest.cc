@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
-#include "components/exo/frame_sink_resource_manager.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_tree_host.h"
 #include "components/exo/test/exo_test_base.h"
@@ -31,16 +30,13 @@
 namespace exo {
 namespace {
 
-class BufferTest : public test::ExoTestBase,
-                   public testing::WithParamInterface<bool> {
+class BufferTest
+    : public test::ExoTestBase,
+      public testing::WithParamInterface<test::FrameSubmissionType> {
  public:
   BufferTest()
       : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
-    } else {
-      feature_list_.InitAndDisableFeature(kExoReactiveFrameSubmission);
-    }
+    test::SetFrameSubmissionFeatureFlags(&feature_list_, GetParam());
   }
 
  private:
@@ -107,9 +103,13 @@ viz::CompositorFrame CreateCompositorFrame(
   return frame;
 }
 
-// Instantiate the values of disabling/enabling reactive frame submission in the
-// parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All, BufferTest, testing::Values(false, true));
+// Instantiate the values of frame submission types in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BufferTest,
+    testing::Values(test::FrameSubmissionType::kNoReactive,
+                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
 
 TEST_P(BufferTest, ReleaseCallback) {
   gfx::Size buffer_size(256, 256);
@@ -433,11 +433,13 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
 }
 
 // Tests that only apply if ExoReactiveFrameSubmission is enabled.
-class ReactiveFrameSubmissionBufferTest : public test::ExoTestBase {
+class ReactiveFrameSubmissionBufferTest
+    : public test::ExoTestBase,
+      public testing::WithParamInterface<test::FrameSubmissionType> {
  public:
   ReactiveFrameSubmissionBufferTest()
       : test::ExoTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
+    test::SetFrameSubmissionFeatureFlags(&feature_list_, GetParam());
   }
 
  private:
@@ -479,7 +481,14 @@ class TestLayerTreeFrameSinkHolder : public LayerTreeFrameSinkHolder {
   base::RepeatingClosure post_reclaim_callback_;
 };
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+// Instantiate the values of frame submission types in the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReactiveFrameSubmissionBufferTest,
+    testing::Values(test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostNotReclaimCachedFrameResources) {
   gfx::Size buffer_size(256, 256);
 
@@ -580,7 +589,7 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   ASSERT_EQ(release_resource_count, 1);
 }
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostDiscardFrameNotReclaimNewFrameResources) {
   gfx::Size buffer_size(256, 256);
 
@@ -655,7 +664,7 @@ TEST_F(ReactiveFrameSubmissionBufferTest,
   ASSERT_EQ(release_resource_count, 1);
 }
 
-TEST_F(ReactiveFrameSubmissionBufferTest,
+TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostDiscardFrameNotReclaimInUseResources) {
   gfx::Size buffer_size(256, 256);
 

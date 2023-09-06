@@ -323,6 +323,11 @@ class OnBeginFrameAcksCompositorFrameSinkSupportTest
     return support->pending_frames_.size();
   }
 
+  bool client_needs_begin_frame(
+      const CompositorFrameSinkSupport* support) const {
+    return support->client_needs_begin_frame_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1283,6 +1288,38 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   begin_frame_source_.TestOnBeginFrame(args);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
   EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
+}
+
+// Validates that if AutoNeedsBeginFrame is enabled, an unsolicited frame
+// indicates the client wants to receive subsequent BeginFrames, as if
+// SetNeedsBeginFrame(true) is called.
+TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
+       AutoNeedsBeginFrameOnUnsolicitedFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAutoNeedsBeginFrame);
+
+  EXPECT_FALSE(client_needs_begin_frame(support_.get()));
+
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 1);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 0);
+
+  CompositorFrame unsolicited_frame =
+      MakeDefaultCompositorFrame(BeginFrameArgs::kManualSourceId);
+  support_->SubmitCompositorFrame(local_surface_id_,
+                                  std::move(unsolicited_frame));
+
+  EXPECT_TRUE(client_needs_begin_frame(support_.get()));
+
+  // BeginFrame is not sent synchronously while processing unsolicited frame.
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 0);
+
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 2, 2);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  EXPECT_EQ(fake_support_client_.begin_frame_count(), 1);
 }
 
 TEST_F(CompositorFrameSinkSupportTest, FrameIndexCarriedOverToNewSurface) {

@@ -89,16 +89,13 @@ std::string TransformToString(Transform transform) {
   return prefix + name;
 }
 
-class SurfaceTest
-    : public test::ExoTestBase,
-      public ::testing::WithParamInterface<std::tuple<bool, float>> {
+class SurfaceTest : public test::ExoTestBase,
+                    public ::testing::WithParamInterface<
+                        std::tuple<test::FrameSubmissionType, float>> {
  public:
   SurfaceTest() {
-    if (reactive_frame_submission_enabled()) {
-      feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
-    } else {
-      feature_list_.InitAndDisableFeature(kExoReactiveFrameSubmission);
-    }
+    test::SetFrameSubmissionFeatureFlags(&feature_list_,
+                                         GetFrameSubmissionType());
   }
 
   SurfaceTest(const SurfaceTest&) = delete;
@@ -119,7 +116,7 @@ class SurfaceTest
     display::Display::ResetForceDeviceScaleFactorForTesting();
   }
 
-  bool reactive_frame_submission_enabled() const {
+  test::FrameSubmissionType GetFrameSubmissionType() const {
     return std::get<0>(GetParam());
   }
   float device_scale_factor() const { return std::get<1>(GetParam()); }
@@ -193,11 +190,17 @@ void ExplicitReleaseBuffer(int* release_buffer_call_count,
   (*release_buffer_call_count)++;
 }
 
-// Instantiate the values of device scale factor in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         SurfaceTest,
-                         testing::Combine(testing::Values(false, true),
-                                          testing::Values(1.0f, 1.25f, 2.0f)));
+// Instantiate the values of frame submission types and device scale factor in
+// the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SurfaceTest,
+    testing::Combine(
+        testing::Values(
+            test::FrameSubmissionType::kNoReactive,
+            test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+            test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame),
+        testing::Values(1.0f, 1.25f, 2.0f)));
 
 TEST_P(SurfaceTest, Damage) {
   gfx::Size buffer_size(256, 256);
@@ -1795,7 +1798,10 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
 class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
  public:
   ReactiveFrameSubmissionSurfaceTest() {
-    DCHECK(reactive_frame_submission_enabled());
+    DCHECK(GetFrameSubmissionType() ==
+               test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame ||
+           GetFrameSubmissionType() ==
+               test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame);
   }
 
   ReactiveFrameSubmissionSurfaceTest(
@@ -1806,11 +1812,16 @@ class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
   ~ReactiveFrameSubmissionSurfaceTest() override = default;
 };
 
-// Instantiate the values of device scale factor in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ReactiveFrameSubmissionSurfaceTest,
-                         testing::Combine(testing::Values(true),
-                                          testing::Values(1.0f, 1.25f, 2.0f)));
+// Instantiate the values of frame submission types and device scale factor in
+// the parameterized tests.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReactiveFrameSubmissionSurfaceTest,
+    testing::Combine(
+        testing::Values(
+            test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
+            test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame),
+        testing::Values(1.0f, 1.25f, 2.0f)));
 
 TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
   gfx::Size buffer_size(256, 256);
@@ -1825,8 +1836,13 @@ TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
       ->ClearPendingBeginFramesForTesting();
 
   // This will result in a cached frame in LayerTreeFrameSinkHolder.
-  surface->Damage(gfx::Rect(10, 10, 10, 10));
-  surface->Commit();
+  // Do the action twice is necessary when AutoNeedsBeginFrame is enabled,
+  // because the first commit will be an unsolicited frame submission and
+  // therefore not cached.
+  for (int i = 0; i < 2; ++i) {
+    surface->Damage(gfx::Rect(10, 10, 10, 10));
+    surface->Commit();
+  }
 
   // Commit a frame without any damage. It will cause the previously cached
   // frame to be discarded.

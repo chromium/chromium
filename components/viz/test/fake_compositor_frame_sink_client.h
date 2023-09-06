@@ -44,6 +44,9 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
     return returned_resources_;
   }
 
+  void clear_begin_frame_count() { begin_frame_count_ = 0; }
+  int begin_frame_count() const { return begin_frame_count_; }
+
   const FrameTimingDetailsMap& all_frame_timing_details() const {
     return all_frame_timing_details_;
   }
@@ -51,6 +54,7 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
  private:
   void InsertResources(std::vector<ReturnedResource> resources);
 
+  int begin_frame_count_ = 0;
   std::vector<ReturnedResource> returned_resources_;
 
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
