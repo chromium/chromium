@@ -210,6 +210,13 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 }
 
 - (void)settingsWillBeDismissed {
+  if (!_dismissAccountDetailsViewController.is_null()) {
+    DCHECK(self.presentedViewController);
+    DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
+    DCHECK(!self.removeAccountCoordinator);
+    DCHECK(!self.signoutCoordinator);
+    std::move(_dismissAccountDetailsViewController).Run(/*animated=*/false);
+  }
   [self dismissRemoveOrMyGoogleChooserAlert];
   [self.signoutCoordinator stop];
   self.signoutCoordinator = nil;

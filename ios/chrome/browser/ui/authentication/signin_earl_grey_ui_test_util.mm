@@ -322,30 +322,13 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 }
 
 + (void)openMyGoogleDialogWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // With ReplaceSyncWithSignin, we're now in the "manage sync" view, and
-    // the "manage your google account" button is at the very bottom. Scroll
-    // there.
-    id<GREYMatcher> scrollViewMatcher =
-        grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
-    [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
-
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_text(l10n_util::GetNSString(
-                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM))]
-        performAction:grey_tap()];
-
-  } else {
-    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                            fakeIdentity.userEmail)]
-        performAction:grey_tap()];
-    [[EarlGrey selectElementWithMatcher:
-                   ButtonWithAccessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
+                                          fakeIdentity.userEmail)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
+      performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
