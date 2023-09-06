@@ -602,6 +602,13 @@ void TabManagerDelegate::LowMemoryKillImpl(
         continue;
       }
 
+      if (candidate.lifecycle_unit()->GetState() ==
+          LifecycleUnitState::DISCARDED) {
+        MEMORY_LOG(ERROR) << "Skipped tab that is already discarded (id: "
+                          << candidate.lifecycle_unit()->GetID() << ")";
+        continue;
+      }
+
       // The estimation is problematic since multiple tabs may share the same
       // process, while the calculation counts memory used by the whole process.
       // So |estimated_memory_freed_kb| is an over-estimation.

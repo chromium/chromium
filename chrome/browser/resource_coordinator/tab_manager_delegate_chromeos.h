@@ -121,6 +121,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, IsRecentlyKilledArcProcess);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, KillMultipleProcesses);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, SetOomScoreAdj);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, TestDiscardedTabsAreSkipped);
 
   using OptionalArcProcessList = arc::ArcProcessService::OptionalArcProcessList;
 

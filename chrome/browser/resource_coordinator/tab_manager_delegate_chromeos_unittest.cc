@@ -429,4 +429,32 @@ TEST_F(TabManagerDelegateTest, KillMultipleProcesses) {
   EXPECT_EQ(1U, processes_map.count("visible2"));
 }
 
+TEST_F(TabManagerDelegateTest, TestDiscardedTabsAreSkipped) {
+  // Not owned.
+  MockMemoryStat* memory_stat = new MockMemoryStat();
+
+  // Instantiate the mock instance.
+  MockTabManagerDelegate tab_manager_delegate(memory_stat);
+
+  TestLifecycleUnit tab1(base::TimeTicks() + base::Seconds(3), 11);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks::Max(), 12);
+  tab2.SetState(LifecycleUnitState::DISCARDED,
+                LifecycleUnitStateChangeReason::USER_INITIATED);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+
+  memory_stat->SetTargetMemoryToFreeKB(100);
+
+  tab_manager_delegate.LowMemoryKillImpl(
+      base::TimeTicks::Now(), ::mojom::LifecycleUnitDiscardReason::EXTERNAL,
+      TabManager::TabDiscardDoneCB(base::DoNothing()), {});
+
+  auto killed_tabs = tab_manager_delegate.GetKilledTabs();
+
+  // Even though tab1 was more recently viewed, it should be killed because tab2
+  // was already discarded.
+  ASSERT_EQ(1U, killed_tabs.size());
+  ASSERT_EQ(&tab1, killed_tabs[0]);
+}
+
 }  // namespace resource_coordinator
