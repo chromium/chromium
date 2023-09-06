@@ -178,62 +178,13 @@ bool DeserializeSection11(base::PickleIterator* iter,
   return iter->ReadString16(&field_data->name_attribute);
 }
 
-// LabelInfo is used to implement that "a.label == b.label" can be weakened to
-// "a.label == b.label OR a certain feature is enabled and {a,b}.label_source !=
-// kLabelTag and a.label_source == b.label_source".
-// Beware of the StringPiece member and resulting lifetime issues. Deleted copy
-// and move ctors/operators to reduce risk potential.
-struct LabelInfo {
-  explicit LabelInfo(const FormFieldData& f)
-      : label(f.label), source(f.label_source) {}
-  LabelInfo(const LabelInfo&) = delete;
-  LabelInfo& operator=(const LabelInfo&) = delete;
-  LabelInfo(LabelInfo&&) = default;
-  LabelInfo& operator=(LabelInfo&&) = default;
-
-  bool operator==(const LabelInfo& that) const {
-    if (label == that.label)
-      return true;
-
-    // Feature |kAutofillSkipComparingInferredLabels| weakens equivalence of
-    // labels: two labels are equivalent if they were inferred from the same
-    // type of tag other than a LABEL tag.
-    // TODO(crbug.com/1211834): The experiment seems dead; remove?
-    return base::FeatureList::IsEnabled(
-               features::kAutofillSkipComparingInferredLabels) &&
-           source != FormFieldData::LabelSource::kLabelTag &&
-           source == that.source;
-  }
-
-  bool operator<(const LabelInfo& that) const { return label < that.label; }
-
-  base::StringPiece16 label;
-  FormFieldData::LabelSource source = FormFieldData::LabelSource::kLabelTag;
-};
-
-// `CommonTuple()`, `SimilarityTuple()`, and `IdentityTuple()` return values
-// should be used as temporaries only because they include a `std::string_view`.
-
-auto CommonTuple(const FormFieldData& f) {
-  return std::tuple_cat(
-      std::make_tuple(LabelInfo(f)),
-      std::tie(f.name, f.name_attribute, f.id_attribute, f.form_control_type));
-}
-
-auto SimilarityTuple(const FormFieldData& f) {
-  return std::tuple_cat(CommonTuple(f),
-                        std::make_tuple(IsCheckable(f.check_status)));
-}
-
 auto IdentityTuple(const FormFieldData& f) {
-  // |unique_renderer_id| uniquely identifies the field, if and only if it is
-  // set; the other members compared below (excluding label_source) together
-  // uniquely identify the field as well.
   return std::tuple_cat(
-      SimilarityTuple(f),
-      std::tie(f.autocomplete_attribute, f.placeholder, f.max_length,
-               f.css_classes, f.is_focusable, f.should_autocomplete, f.role,
-               f.text_direction, f.options));
+      std::tie(f.label, f.name, f.name_attribute, f.id_attribute,
+               f.form_control_type, f.autocomplete_attribute, f.placeholder,
+               f.max_length, f.css_classes, f.is_focusable,
+               f.should_autocomplete, f.role, f.text_direction, f.options),
+      std::make_tuple(IsCheckable(f.check_status)));
 }
 
 }  // namespace
@@ -388,10 +339,6 @@ FormFieldData::~FormFieldData() = default;
 
 bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
   return IdentityTuple(*this) == IdentityTuple(field);
-}
-
-bool FormFieldData::SimilarFieldAs(const FormFieldData& field) const {
-  return SimilarityTuple(*this) == SimilarityTuple(field);
 }
 
 bool FormFieldData::IsTextInputElement() const {

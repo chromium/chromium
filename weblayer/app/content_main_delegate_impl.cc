@@ -204,8 +204,6 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
       base::android::SDK_VERSION_OREO) {
     enabled_features.push_back(
         &autofill::features::kAutofillExtractAllDatalists);
-    enabled_features.push_back(
-        &autofill::features::kAutofillSkipComparingInferredLabels);
   }
 
   if (GetApplicationMetadataAsBoolean(

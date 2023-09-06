@@ -4,6 +4,10 @@
 
 #include "components/android_autofill/browser/form_field_data_android.h"
 
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/android_autofill/browser/jni_headers/FormFieldData_jni.h"
@@ -138,7 +142,25 @@ void FormFieldDataAndroid::OnFormFieldDidChange(const std::u16string& value) {
 }
 
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
-  return field_ptr_->SimilarFieldAs(field);
+  auto SimilarityTuple = [](const FormFieldData& f) {
+    return std::tuple_cat(
+        std::tie(f.name, f.name_attribute, f.id_attribute, f.form_control_type),
+        std::make_tuple(IsCheckable(f.check_status)));
+  };
+
+  // For Android Autofill, labels are considered similar if they meet one of the
+  // following two conditions:
+  // 1. The labels have the same value.
+  // 2. The labels were inferred from the same type of source and that source
+  //    was not `LabelSource::kLabelTag`.
+  auto LabelsAreSimilar = [](const FormFieldData& f1, const FormFieldData& f2) {
+    return f1.label == f2.label ||
+           (f1.label_source != FormFieldData::LabelSource::kLabelTag &&
+            f1.label_source == f2.label_source);
+  };
+
+  return SimilarityTuple(*field_ptr_) == SimilarityTuple(field) &&
+         LabelsAreSimilar(*field_ptr_, field);
 }
 
 void FormFieldDataAndroid::UpdateAutofillTypes(

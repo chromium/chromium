@@ -177,20 +177,14 @@ struct FormData {
   // Returns a pointer to the field if found, otherwise returns nullptr.
   FormFieldData* FindFieldByName(const base::StringPiece16 name_or_id);
 
-  // TODO(crbug/1211834): This function is deprecated.
-  // Same as SameFormAs() except calling FormFieldData.SimilarFieldAs() to
-  // compare fields.
-  bool SimilarFormAs(const FormData& other) const;
-
   // The id attribute of the form.
   std::u16string id_attribute;
 
   // The name attribute of the form.
   std::u16string name_attribute;
 
-  // NOTE: update SameFormAs()            if needed when adding new a member.
-  // NOTE: update SimilarFormAs()         if needed when adding new a member.
-  // NOTE: update DynamicallySameFormAs() if needed when adding new a member.
+  // NOTE: Update `SameFormAs()` and `FormDataAndroid::SimilarFormAs()` if
+  // needed when adding new a member.
 
   // The name by which autofill knows this form. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with

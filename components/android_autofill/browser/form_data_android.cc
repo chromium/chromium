@@ -5,6 +5,7 @@
 #include "components/android_autofill/browser/form_data_android.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -24,6 +25,7 @@ using base::android::ScopedJavaLocalRef;
 
 constexpr char kFormFieldDataAndroidClassname[] =
     "org/chromium/components/autofill/FormFieldData";
+
 }  // namespace
 
 FormDataAndroid::FormDataAndroid(const FormData& form) : form_(form) {}
@@ -90,7 +92,7 @@ bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
 bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
                                            size_t* index) {
   for (size_t i = 0; i < form_.fields.size(); ++i) {
-    if (form_.fields[i].SimilarFieldAs(field)) {
+    if (fields_[i]->SimilarFieldAs(field)) {
       *index = i;
       return true;
     }
@@ -99,7 +101,29 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
 }
 
 bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
-  return form_.SimilarFormAs(form);
+  // `SimilarFormAs` checks `FormData` members that are unlikely to have been
+  // changed by direct user input. If they differ, the form has changed enough
+  // (e.g. by adding or removing fields) warrant starting a new Autofill
+  // session.
+  // Note that Comparing unique renderer ids is not a strict enough check, since
+  // these remain constant even if the page has dynamically modified its fields
+  // to have different labels, form control types, etc.
+  auto SimilarityTuple = [](const FormData& f) {
+    return std::tuple_cat(
+        std::tie(f.name, f.id_attribute, f.name_attribute, f.url, f.action,
+                 f.is_action_empty, f.is_form_tag),
+        std::make_tuple(f.fields.size()));
+  };
+
+  if (SimilarityTuple(form_) != SimilarityTuple(form)) {
+    return false;
+  }
+  for (size_t i = 0; i < fields_.size(); ++i) {
+    if (!fields_[i]->SimilarFieldAs(form.fields[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {

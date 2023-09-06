@@ -201,8 +201,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_OREO) {
       features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
-      features.EnableIfNotSet(
-          autofill::features::kAutofillSkipComparingInferredLabels);
     }
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {

@@ -616,13 +616,6 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether inferred label is considered for comparing in
-// FormFieldData.SimilarFieldAs.
-// TODO(crbug.com/1211834): The experiment seems dead; remove?
-BASE_FEATURE(kAutofillSkipComparingInferredLabels,
-             "AutofillSkipComparingInferredLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
 BASE_FEATURE(kAutofillTokenPrefixMatching,
