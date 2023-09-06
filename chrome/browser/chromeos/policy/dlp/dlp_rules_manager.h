@@ -10,6 +10,7 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/enterprise/data_controls/dlp_rules_manager_base.h"
 #include "url/gurl.h"
@@ -22,7 +23,7 @@ class DlpFilesController;
 // DlpRulesManager is the CrOS-specific parser for the rules set by the
 // DataLeakPreventionRulesList policy and serves as an available service which
 // can be queried anytime about the restrictions set by the policy.
-class DlpRulesManager : public policy::DlpRulesManagerBase {
+class DlpRulesManager : public data_controls::ChromeDlpRulesManager {
  public:
   // List of all possible component values, used to simplify iterating over all
   // the options.

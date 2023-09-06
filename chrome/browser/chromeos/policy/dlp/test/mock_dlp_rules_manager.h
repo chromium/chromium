@@ -72,6 +72,8 @@ class MockDlpRulesManager : public DlpRulesManager {
       GetDisallowedFileTransfers,
       std::vector<uint64_t>(const std::vector<FileMetadata>& files_entries,
                             const GURL& destination));
+
+  MOCK_METHOD(void, OnPolicyUpdate, (), (override));
 };
 
 }  // namespace policy
