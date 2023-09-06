@@ -1154,10 +1154,6 @@
     "label": "//components/minidump_uploader:minidump_uploader_test",
     "type": "console_test_launcher",
   },
-  "model_validation_tests": {
-    "label": "//components/optimization_guide/internal/testing:model_validation_tests",
-    "type": "generated_script",
-  },
   "module_installer_junit_tests": {
     "label": "//components/module_installer/android:module_installer_junit_tests",
     "type": "generated_script",
@@ -1276,10 +1272,6 @@
   },
   "openscreen_unittests": {
     "label": "//chrome/browser/media/router:openscreen_unittests",
-    "type": "console_test_launcher",
-  },
-  "optimization_guide_unittests": {
-    "label": "//components/optimization_guide/internal:optimization_guide_unittests",
     "type": "console_test_launcher",
   },
   "ozone_gl_unittests": {

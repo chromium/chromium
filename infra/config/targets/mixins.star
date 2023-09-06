@@ -152,16 +152,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "android",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Android",
-            "cpu": None,
-        },
-    ),
-)
-
-targets.mixin(
     name = "android_r",
     swarming = targets.swarming(
         dimensions = {
@@ -219,15 +209,6 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "pool": "chrome.tests.finch",
-        },
-    ),
-)
-
-targets.mixin(
-    name = "chrome-intelligence-swarming-pool",
-    swarming = targets.swarming(
-        dimensions = {
-            "pool": "chrome.tests.intelligence",
         },
     ),
 )

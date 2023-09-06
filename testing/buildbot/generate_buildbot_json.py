@@ -1660,7 +1660,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # waterfalls defined in internal configs.
     return [
         'chrome', 'chrome.pgo', 'chrome.gpu.fyi', 'internal.chrome.fyi',
-        'internal.chromeos.fyi', 'internal.optimization_guide', 'internal.soda'
+        'internal.chromeos.fyi', 'internal.soda'
     ]
 
   def check_input_file_consistency(self, verbose=False):
