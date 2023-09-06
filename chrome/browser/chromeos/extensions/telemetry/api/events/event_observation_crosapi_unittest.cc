@@ -29,6 +29,7 @@ class EventDelegate : public EventObservationCrosapi::Delegate {
 
   // EventManager::Delegate:
   void OnEvent(const extensions::ExtensionId& extension_id,
+               EventRouter* event_router,
                crosapi::TelemetryEventInfoPtr info) override {
     future_.AddValue(std::make_tuple(extension_id, std::move(info)));
   }
@@ -53,9 +54,9 @@ class TelemetryExtensionEventObservationCrosapiTest
 
   void SetUp() override {
     extensions::ApiUnitTest::SetUp();
-
+    event_router_ = new EventRouter(browser_context());
     event_observation_ = std::make_unique<EventObservationCrosapi>(
-        extension()->id(), browser_context());
+        extension()->id(), event_router_, browser_context());
 
     event_delegate_ = new EventDelegate();
     event_observation_->SetDelegateForTesting(event_delegate_);
@@ -77,6 +78,7 @@ class TelemetryExtensionEventObservationCrosapiTest
   // The observation and its delegate live as long as the test itself.
   std::unique_ptr<EventObservationCrosapi> event_observation_;
   raw_ptr<EventDelegate> event_delegate_;
+  raw_ptr<EventRouter> event_router_;
 
   mojo::Remote<crosapi::TelemetryEventObserver> remote_;
 };
@@ -104,5 +106,7 @@ TEST_F(TelemetryExtensionEventObservationCrosapiTest,
                 crosapi::TelemetryAudioJackEventInfo::New(
                     crosapi::TelemetryAudioJackEventInfo::State::kAdd)));
 }
+
+// TODO(b/284428237): Add unittest for blocked events.
 
 }  // namespace chromeos

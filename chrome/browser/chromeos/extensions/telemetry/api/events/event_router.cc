@@ -43,7 +43,7 @@ EventRouter::GetPendingRemoteForCategoryAndExtension(
         iter_category, std::piecewise_construct,
         std::forward_as_tuple(category),
         std::forward_as_tuple(std::make_unique<EventObservationCrosapi>(
-            extension_id, browser_context_)));
+            extension_id, this, browser_context_)));
   }
 
   return iter_category->second->GetRemote();
@@ -68,6 +68,16 @@ void EventRouter::ResetReceiversOfExtensionByCategory(
   }
 }
 
+void EventRouter::RestrictReceiversOfExtension(
+    extensions::ExtensionId extension_id) {
+  restricted_extensions_.insert(extension_id);
+}
+
+void EventRouter::UnrestrictReceiversOfExtension(
+    extensions::ExtensionId extension_id) {
+  restricted_extensions_.erase(extension_id);
+}
+
 bool EventRouter::IsExtensionObserving(extensions::ExtensionId extension_id) {
   return observers_.find(extension_id) != observers_.end();
 }
@@ -81,5 +91,16 @@ bool EventRouter::IsExtensionObservingForCategory(
   }
 
   return it->second.contains(category);
+}
+
+bool EventRouter::IsExtensionRestricted(extensions::ExtensionId extension_id) {
+  return restricted_extensions_.contains(extension_id);
+}
+
+bool EventRouter::IsExtensionAllowedForCategory(
+    extensions::ExtensionId extension_id,
+    crosapi::TelemetryEventCategoryEnum category) {
+  return !kCategoriesWithFocusRestriction.contains(category) ||
+         !restricted_extensions_.contains(extension_id);
 }
 }  // namespace chromeos

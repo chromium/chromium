@@ -353,6 +353,155 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       StartListeningToRegularEvents_SuccessPwaUnfocused) {
+  OpenAppUiAndMakeItSecure();
+  AddBlankTabAndShow(browser());
+
+  // Emit an event as soon as the subscription is registered with the fake.
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto audio_jack_info = crosapi::TelemetryAudioJackEventInfo::New();
+        audio_jack_info->state =
+            crosapi::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack,
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
+                std::move(audio_jack_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onAudioJackEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected',
+            deviceType: 'headphone'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("audio_jack");
+      }
+    ]);
+  )");
+
+  base::test::TestFuture<size_t> remote_set_size;
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this, &remote_set_size]() {
+        auto* remote_set = GetFakeService()->GetObserversByCategory(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack);
+        ASSERT_TRUE(remote_set);
+
+        remote_set->FlushForTesting();
+        remote_set_size.SetValue(remote_set->size());
+      }));
+
+  // Calling `stopCapturingEvents` will result in the connection being cut.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function stopCapturingEvents() {
+        await chrome.os.events.stopCapturingEvents("audio_jack");
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+
+  EXPECT_EQ(remote_set_size.Get(), 0UL);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventsApiBrowserTest,
+    StartListeningToFocusRestrictedEvents_ErrorPwaUnfocused) {
+  OpenAppUiAndMakeItSecure();
+  AddBlankTabAndShow(browser());
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.events.startCapturingEvents("touchpad_connected"),
+            'Error: Companion app UI is not focused.'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+// TODO(b/284428237): Add more browser tests regarding focus changes.
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionEventsApiBrowserTest,
+    StartListeningToRegularAndFocusRestrictedEvents_Success) {
+  OpenAppUiAndMakeItSecure();
+
+  // Emit an event as soon as the subscription is registered with the fake.
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto audio_jack_info = crosapi::TelemetryAudioJackEventInfo::New();
+        audio_jack_info->state =
+            crosapi::TelemetryAudioJackEventInfo::State::kAdd;
+        audio_jack_info->device_type =
+            crosapi::TelemetryAudioJackEventInfo::DeviceType::kHeadphone;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kAudioJack,
+            crosapi::TelemetryEventInfo::NewAudioJackEventInfo(
+                std::move(audio_jack_info)));
+      }));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        std::vector<crosapi::TelemetryInputTouchButton> buttons{
+            crosapi::TelemetryInputTouchButton::kLeft,
+            crosapi::TelemetryInputTouchButton::kMiddle,
+            crosapi::TelemetryInputTouchButton::kRight};
+
+        auto connected_event =
+            crosapi::TelemetryTouchpadConnectedEventInfo::New(
+                1, 2, 3, std::move(buttons));
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kTouchpadConnected,
+            crosapi::TelemetryEventInfo::NewTouchpadConnectedEventInfo(
+                std::move(connected_event)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onAudioJackEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'connected',
+            deviceType: 'headphone'
+          });
+        });
+
+        chrome.os.events.onTouchpadConnectedEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            maxX: 1,
+            maxY: 2,
+            maxPressure: 3,
+            buttons: [
+              'left',
+              'middle',
+              'right'
+            ]
+          });
+        });
+
+        await chrome.os.events.startCapturingEvents("audio_jack");
+        await chrome.os.events.startCapturingEvents("touchpad_connected");
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        StopListeningToEvents) {
   OpenAppUiAndMakeItSecure();
 
