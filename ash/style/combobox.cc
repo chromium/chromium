@@ -42,6 +42,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -70,7 +71,8 @@ constexpr gfx::Insets kMenuBorderInsets = gfx::Insets::TLBR(16, 0, 12, 0);
 constexpr gfx::Insets kMenuItemInnerPadding = gfx::Insets::VH(8, 16);
 constexpr int kArrowIconSize = 20;
 constexpr int kCheckmarkLabelSpacing = 16;
-constexpr int kMinMenuWidth = 256;
+constexpr int kMaxMenuWidth = 168;
+constexpr int kMaxMenuHeight = 172;
 constexpr gfx::Vector2d kMenuOffset(0, 8);
 constexpr int kMenuShadowElevation = 12;
 
@@ -111,7 +113,7 @@ class ComboboxMenuOption : public RadioButton {
 class ComboboxMenuOptionGroup : public RadioButtonGroup {
  public:
   ComboboxMenuOptionGroup()
-      : RadioButtonGroup(kMinMenuWidth,
+      : RadioButtonGroup(kMaxMenuWidth,
                          kMenuBorderInsets,
                          0,
                          RadioButton::IconDirection::kLeading,
@@ -182,7 +184,7 @@ class Combobox::ComboboxMenuView : public views::View {
 
   void SelectItem(int index) { menu_item_group_->SelectButtonAtIndex(index); }
 
-  const OptionButtonBase* GetSelectedItemView() const {
+  OptionButtonBase* GetSelectedItemView() const {
     auto selected_views = menu_item_group_->GetSelectedButtons();
     if (selected_views.empty()) {
       return nullptr;
@@ -201,8 +203,29 @@ class Combobox::ComboboxMenuView : public views::View {
           combobox_->model_->GetDropDownTextAt(i));
       item->SetLabelStyle(TypographyToken::kCrosButton2);
       item->SetLabelColorId(kMenuTextColorId);
-      item->SetSelected(combobox_->selected_index_.value() == i);
+      item->SetSelected(combobox_->selected_index_.value_or(-1) == i);
     }
+    GetSelectedItemView()->ScrollViewToVisible();
+  }
+
+  void ScrollToSelectedView() {
+    if (GetSelectedItemView()) {
+      GetSelectedItemView()->ScrollViewToVisible();
+    }
+  }
+
+  views::View* MenuItemAtIndex(int index) const {
+    if (index >= 0 &&
+        index < static_cast<int>(menu_item_group_->children().size())) {
+      return menu_item_group_->children()[index];
+    }
+    return nullptr;
+  }
+
+  gfx::Size CalculatePreferredSize() const override {
+    gfx::Size size = views::View::CalculatePreferredSize();
+    size.SetToMin(gfx::Size(kMaxMenuWidth, kMaxMenuHeight));
+    return size;
   }
 
  private:
@@ -389,6 +412,24 @@ bool Combobox::IsMenuRunning() const {
   return !!menu_;
 }
 
+gfx::Size Combobox::GetMenuViewSize() const {
+  if (!menu_) {
+    return gfx::Size();
+  }
+  return menu_view_->size();
+}
+
+views::View* Combobox::MenuItemAtIndex(int index) const {
+  if (!menu_) {
+    return nullptr;
+  }
+  return menu_view_->MenuItemAtIndex(index);
+}
+
+views::View* Combobox::MenuView() const {
+  return menu_view_;
+}
+
 void Combobox::SetCallback(PressedCallback callback) {
   NOTREACHED() << "Clients shouldn't modify this. Maybe you want to use "
                   "SetSelectionChangedCallback?";
@@ -546,6 +587,7 @@ void Combobox::ShowDropDownMenu() {
   menu_ = std::make_unique<views::Widget>(std::move(params));
   menu_->SetContentsView(std::move(menu_view));
   menu_->Show();
+  menu_view_->ScrollToSelectedView();
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       kComboboxActiveColorId, kComboboxRoundedCorners,

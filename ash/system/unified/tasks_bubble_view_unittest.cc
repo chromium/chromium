@@ -174,6 +174,12 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsMenuRunning());
 
+  EXPECT_EQ(gfx::Size(168, 172), GetComboBoxView()->GetMenuViewSize());
+  EXPECT_TRUE(GetComboBoxView()->MenuView()->GetBoundsInScreen().Intersects(
+      GetComboBoxView()->MenuItemAtIndex(0)->GetBoundsInScreen()));
+  EXPECT_FALSE(GetComboBoxView()->MenuView()->GetBoundsInScreen().Intersects(
+      GetComboBoxView()->MenuItemAtIndex(5)->GetBoundsInScreen()));
+
   // Select the second task list using keyboard navigation.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -200,13 +206,27 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsMenuRunning());
 
-  // Select the third task list using keyboard navigation.
+  // Select the sixth task list using keyboard navigation.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
+  WaitForTimeBetweenButtonOnClicks();
+  // Verify that tapping on combobox opens the selection menu.
+  GestureTapOn(GetComboBoxView());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsMenuRunning());
+
   // Verify the number of items in task_items_container_view()->children().
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 0u);
+  EXPECT_EQ(gfx::Size(168, 172), GetComboBoxView()->GetMenuViewSize());
+  EXPECT_FALSE(GetComboBoxView()->MenuView()->GetBoundsInScreen().Intersects(
+      GetComboBoxView()->MenuItemAtIndex(0)->GetBoundsInScreen()));
+  EXPECT_TRUE(GetComboBoxView()->MenuView()->GetBoundsInScreen().Intersects(
+      GetComboBoxView()->MenuItemAtIndex(5)->GetBoundsInScreen()));
 }
 
 TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {

@@ -54,6 +54,10 @@ class ASH_EXPORT Combobox : public views::Button,
 
   // Returns whether or not the menu is currently running.
   bool IsMenuRunning() const;
+  gfx::Size GetMenuViewSize() const;
+
+  views::View* MenuItemAtIndex(int index) const;
+  views::View* MenuView() const;
 
   // views::Button:
   void SetCallback(PressedCallback callback) override;
