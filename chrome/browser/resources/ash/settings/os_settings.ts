@@ -24,6 +24,7 @@ import './device_page/display_layout.js';
 import './device_page/display_overscan_dialog.js';
 import './device_page/fake_input_device_data.js';
 import './device_page/fake_input_device_settings_provider.js';
+import './device_page/fkey_row.js';
 import './device_page/input_device_mojo_interface_provider.js';
 import './device_page/input_device_settings_types.js';
 import './device_page/graphics_tablet_subpage.js';
@@ -129,6 +130,7 @@ export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClo
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
 export {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeKeyboards, fakeKeyboards2, fakeMice, fakeMice2, fakeMouseButtonActions, fakePointingSticks, fakePointingSticks2, fakeStyluses, fakeTouchpads, fakeTouchpads2} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
+export {FkeyRowElement} from './device_page/fkey_row.js';
 export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, MetaKey, ModifierKey, Mouse, PolicyStatus, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './device_page/input_device_settings_types.js';

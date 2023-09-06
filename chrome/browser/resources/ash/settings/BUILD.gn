@@ -93,6 +93,7 @@ build_webui("build") {
     "device_page/display_layout.ts",
     "device_page/display_night_light.ts",
     "device_page/display_overscan_dialog.ts",
+    "device_page/fkey_row.ts",
     "device_page/graphics_tablet_subpage.ts",
     "device_page/keyboard.ts",
     "device_page/per_device_keyboard.ts",

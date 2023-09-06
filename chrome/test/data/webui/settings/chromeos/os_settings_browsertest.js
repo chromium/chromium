@@ -16,6 +16,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "components/app_restore/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
+GEN('#include "ui/base/ui_base_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
 var OSSettingsBrowserTest = class extends PolymerTest {
@@ -302,6 +303,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'DevicePagePerDevicePointingStickSubsection',
    'device_page/per_device_pointing_stick_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+ ],
+ [
+   'DevicePageFKeyRow', 'device_page/fkey_row_test.js', {
+     enabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+       'ash::features::kAltClickAndSixPackCustomization',
+       'features::kSupportF11AndF12KeyShortcuts',
+     ]
+   }
  ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
