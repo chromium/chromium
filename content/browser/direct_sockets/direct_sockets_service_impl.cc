@@ -230,6 +230,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
           blink::mojom::PermissionsPolicyFeature::kDirectSockets)) {
     mojo::ReportBadMessage(
         "Permissions policy blocks access to Direct Sockets.");
+    return;
   }
   if (!IsFrameSufficientlyIsolated(render_frame_host)) {
     mojo::ReportBadMessage(
