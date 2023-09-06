@@ -4977,6 +4977,22 @@ chromium-metrics-reviews@google.com.
   <summary>Size of HTML5 media (when known), in MB.</summary>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.{Type}"
+    units="count" expires_after="2024-09-01">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    Record how many sources of type {Type} were available for the user to choose
+    from. Recorded when the dialog is closed (user selected a source, cancelled,
+    or closed the tab that owns the dialog).
+  </summary>
+  <token key="Type">
+    <variant name="Screens" summary=""/>
+    <variant name="Tabs" summary=""/>
+    <variant name="Windows" summary=""/>
+  </token>
+</histogram>
+
 <histogram name="Media.Ui.GetDisplayMedia.BasicFlow.UserInteraction"
     enum="MediaUiGetDisplayMediaBasicFlowUserInteraction"
     expires_after="2024-01-14">

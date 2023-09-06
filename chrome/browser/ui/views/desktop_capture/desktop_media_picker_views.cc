@@ -928,6 +928,52 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
           categories_[index].pane->IsAudioSharingApprovedByUser());
 }
 
+void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
+  // Note that tabs are counted up to 1000, and windows/screens up to 100.
+
+  const absl::optional<int> tab_count =
+      CountSourcesOfType(DesktopMediaList::Type::kWebContents);
+  if (tab_count.has_value()) {
+    base::UmaHistogramCounts1000(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Tabs",
+        tab_count.value());
+  }
+
+  const absl::optional<int> window_count =
+      CountSourcesOfType(DesktopMediaList::Type::kWindow);
+  if (window_count.has_value()) {
+    base::UmaHistogramCounts100(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Windows",
+        window_count.value());
+  }
+
+  const absl::optional<int> screen_count =
+      CountSourcesOfType(DesktopMediaList::Type::kScreen);
+  if (screen_count.has_value()) {
+    base::UmaHistogramCounts100(
+        "Media.Ui.GetDisplayMedia.BasicFlow.SourceCount.Screens",
+        screen_count.value());
+  }
+}
+
+absl::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
+    DesktopMediaList::Type type) {
+  absl::optional<int> count;
+
+  for (const DisplaySurfaceCategory& category : categories_) {
+    if (category.type != type) {
+      continue;
+    }
+
+    if (!count.has_value()) {
+      count = 0;
+    }
+    *count += static_cast<int>(category.controller->GetSourceCount());
+  }
+
+  return count;
+}
+
 void DesktopMediaPickerDialogView::DetachParent() {
   parent_ = nullptr;
 }
@@ -977,6 +1023,7 @@ views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
 
 bool DesktopMediaPickerDialogView::Accept() {
   DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
   // Ok button should only be enabled when a source is selected.
   absl::optional<DesktopMediaID> source_optional =
       accepted_source_.has_value() ? accepted_source_
@@ -986,10 +1033,12 @@ bool DesktopMediaPickerDialogView::Accept() {
       (audio_share_checkbox_ && audio_share_checkbox_->GetVisible() &&
        audio_share_checkbox_->GetChecked()) ||
       IsAudioSharingApprovedByUser();
+
   if (is_get_display_media_call_) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
                        GetSelectedSourceListType(), dialog_open_time_);
   }
+  RecordSourceCountsUma();
 
   if (parent_)
     parent_->NotifyDialogResult(source);
@@ -1002,6 +1051,8 @@ bool DesktopMediaPickerDialogView::Cancel() {
   if (is_get_display_media_call_) {
     RecordUmaCancellation(dialog_type_, dialog_open_time_);
   }
+  RecordSourceCountsUma();
+
   return views::DialogDelegateView::Cancel();
 }
 
@@ -1030,6 +1081,7 @@ void DesktopMediaPickerDialogView::AcceptSpecificSource(
 }
 
 void DesktopMediaPickerDialogView::Reject() {
+  RecordSourceCountsUma();
   CancelDialog();
 }
 

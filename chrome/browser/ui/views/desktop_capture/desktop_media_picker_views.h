@@ -137,6 +137,23 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaList::Type GetSelectedSourceListType() const;
   bool IsAudioSharingApprovedByUser() const;
 
+  // Records the number of tabs, windows and screens that were available
+  // for the user to choose from when they eventually made their selection
+  // of which tab/window/screen to capture.
+  //
+  // Note: The number of sources available can flactuate over time while
+  // the media-picker is open. We only record the number at the end,
+  // when the user either chooses what to capture, or chooses
+  // not to capture anything.
+  void RecordSourceCountsUma();
+
+  // Counts the number of sources of a given type.
+  // * Returns nullopt if such sources are not offered to the user due to
+  //   a configuration of the picker.
+  // * Returns 0 if such sources were supposed to be offered to the user,
+  //   but no such sources were available.
+  absl::optional<int> CountSourcesOfType(DesktopMediaList::Type type);
+
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
       web_contents_;
   const bool is_get_display_media_call_;
