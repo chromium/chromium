@@ -1560,7 +1560,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithBefore) {
   RunHtmlTest(FILE_PATH_LITERAL("a-with-before.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAWithImg) {
+// TODO(crbug.com/1479326): Fix flaky test on Linux MSan
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_AccessibilityAWithImg DISABLED_AccessibilityAWithImg
+#else
+#define MAYBE_AccessibilityAWithImg AccessibilityAWithImg
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilityAWithImg) {
   RunHtmlTest(FILE_PATH_LITERAL("a-with-img.html"));
 }
 
