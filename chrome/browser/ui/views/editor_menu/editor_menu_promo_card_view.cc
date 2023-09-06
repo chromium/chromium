@@ -14,12 +14,14 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -73,6 +75,7 @@ views::UniqueWidgetPtr EditorMenuPromoCardView::CreateWidget(
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
   views::Widget::InitParams params;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
@@ -146,6 +149,10 @@ void EditorMenuPromoCardView::UpdateBounds(
 }
 
 void EditorMenuPromoCardView::InitLayout() {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      ui::kColorSysSurface, views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                                views::ShapeContextTokens::kMenuRadius)));
+
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
