@@ -5666,6 +5666,8 @@ static_library("ui") {
       "views/toolbar/toolbar_actions_bar_bubble_views.h",
       "views/toolbar/toolbar_button.cc",
       "views/toolbar/toolbar_button.h",
+      "views/toolbar/toolbar_controller.cc",
+      "views/toolbar/toolbar_controller.h",
       "views/toolbar/toolbar_icon_container_view.cc",
       "views/toolbar/toolbar_icon_container_view.h",
       "views/toolbar/toolbar_ink_drop_util.cc",

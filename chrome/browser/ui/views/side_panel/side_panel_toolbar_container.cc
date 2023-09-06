@@ -137,8 +137,11 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
       ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
                   hide_icon_flex_specification.WithOrder(3));
-  side_panel_button_->SetProperty(views::kFlexBehaviorKey,
-                                  views::FlexSpecification());
+  side_panel_button_->SetProperty(
+      views::kFlexBehaviorKey,
+      base::FeatureList::IsEnabled(features::kResponsiveToolbar)
+          ? hide_icon_flex_specification.WithOrder(1)
+          : views::FlexSpecification());
   AddMainItem(side_panel_button_);
   // Before creating the pinned buttons, verify that the pref value is correct
   // and update it if not. If the user has been moved into a different default
