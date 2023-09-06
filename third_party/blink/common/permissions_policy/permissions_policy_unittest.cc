@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include <unordered_set>
 
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
@@ -11,6 +12,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
@@ -3168,6 +3170,13 @@ TEST_F(PermissionsPolicyTest, UnloadDefaultEnabledForNone) {
   }
 }
 
+blink::PermissionsPolicyFeatureDefault GetDefaultForUnload(
+    const url::Origin& origin) {
+  return GetPermissionsPolicyFeatureList(origin)
+      .find(mojom::PermissionsPolicyFeature::kUnload)
+      ->second;
+}
+
 // Test that for a given URL and rollout-percent, that all buckets get the
 // correct fraction of EnabledForNone vs EnableForAll.
 TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
@@ -3188,9 +3197,7 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
               base::StringPrintf("%d", bucket)}}}},
           /*disabled_features=*/{});
       const PermissionsPolicyFeatureDefault unload_default =
-          GetPermissionsPolicyFeatureList(origin)
-              .find(mojom::PermissionsPolicyFeature::kUnload)
-              ->second;
+          GetDefaultForUnload(origin);
       if (unload_default == PermissionsPolicyFeatureDefault::EnableForNone) {
         count++;
       } else {
@@ -3209,4 +3216,82 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
   ASSERT_NEAR(total_count, 99 * 100 / 2, 71);
 }
 
+// Test that parameter parsing works.
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHosts) {
+  EXPECT_EQ(std::unordered_set<std::string>({}),
+            UnloadDeprecationAllowedHosts());
+
+  // Now set the parameter and try again.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
+      /*disabled_features=*/{});
+
+  EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
+            UnloadDeprecationAllowedHosts());
+}
+
+// Test that parameter parsing handles empty hosts.
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHostsEmpty) {
+  EXPECT_EQ(std::unordered_set<std::string>({}),
+            UnloadDeprecationAllowedHosts());
+
+  // Now set the parameter and try again.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kDeprecateUnload,
+        {{features::kDeprecateUnloadAllowlist.name,
+          "testing1,, testing2,testing1"}}}},
+      /*disabled_features=*/{});
+
+  EXPECT_EQ(std::unordered_set<std::string>({"testing1", "testing2"}),
+            UnloadDeprecationAllowedHosts());
+}
+
+// Test that the UnloadDeprecationAllowedForOrigin works correctly with an empty
+// and a non-empty allowlist.
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin) {
+  const url::Origin http_origin1 =
+      url::Origin::Create(GURL("http://testing1/"));
+  const url::Origin https_origin1 =
+      url::Origin::Create(GURL("https://testing1/"));
+  const url::Origin http_origin2 =
+      url::Origin::Create(GURL("http://testing2/"));
+  const url::Origin https_origin2 =
+      url::Origin::Create(GURL("https://testing2/"));
+  const url::Origin http_origin3 =
+      url::Origin::Create(GURL("http://testing3/"));
+  const url::Origin https_origin3 =
+      url::Origin::Create(GURL("https://testing3/"));
+
+  {
+    const auto hosts = UnloadDeprecationAllowedHosts();
+    // With no allowlist, every origin is allowed.
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin1, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin2, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin3, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin3, hosts));
+  }
+
+  // Now set an allowlist and check that only the allowed domains see
+  // deprecation.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kDeprecateUnload,
+          {{features::kDeprecateUnloadAllowlist.name, "testing1,testing2"}}}},
+        /*disabled_features=*/{});
+
+    const auto hosts = UnloadDeprecationAllowedHosts();
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin1, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin2, hosts));
+    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin3, hosts));
+    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(https_origin3, hosts));
+  }
+}
 }  // namespace blink

@@ -732,6 +732,11 @@ const base::FeatureParam<int> kDeprecateUnloadPercent{&kDeprecateUnload,
 const base::FeatureParam<int> kDeprecateUnloadBucket{&kDeprecateUnload,
                                                      "rollout_bucket", 0};
 
+// A list of hosts for which deprecation of unload is allowed. If it's empty
+// the all hosts are allowed.
+const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
+    &kDeprecateUnload, "allowlist", ""};
+
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
 // minimum number of bits of encoded image data used to encode each rendered

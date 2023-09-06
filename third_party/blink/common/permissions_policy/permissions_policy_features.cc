@@ -5,7 +5,9 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_util.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_features_generated.h"
+#include "third_party/blink/common/permissions_policy/permissions_policy_features_internal.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "url/origin.h"
@@ -55,7 +57,8 @@ const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList(
   }
 
   // Consider the finch flags and params.
-  if (!base::FeatureList::IsEnabled(features::kDeprecateUnload)) {
+  if (!base::FeatureList::IsEnabled(features::kDeprecateUnload) ||
+      !UnloadDeprecationAllowedForOrigin(origin)) {
     return GetPermissionsPolicyFeatureListUnloadAll();
   }
   if (ShouldUnloadBeNone(origin, features::kDeprecateUnloadPercent.Get(),
