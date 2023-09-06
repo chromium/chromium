@@ -126,6 +126,29 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertTrue(!!$$(headerElement, 'ntp-module-header-v2'));
     });
 
+    test('Header element has expected action menu items', async () => {
+      const moduleElements = await initializeModule(
+          [createSampleCluster(2, {label: '"Sample Journey"'})]);
+      const moduleElement = moduleElements[0];
+      assertTrue(!!moduleElement);
+
+      const headerTileElement = $$(moduleElement, 'history-clusters-header-v2');
+      assertTrue(!!headerTileElement);
+      const moduleHeaderElement = $$(headerTileElement, 'ntp-module-header-v2');
+      assertTrue(!!moduleHeaderElement);
+      const actionMenu = $$(moduleHeaderElement, 'cr-action-menu');
+      assertTrue(!!actionMenu);
+
+      const actionMenuItems =
+          [...actionMenu.querySelectorAll('button.dropdown-item')];
+      assertEquals(6, actionMenuItems.length);
+      ['done', 'dismiss', 'disable', 'show-all', 'info', 'customize-module']
+          .forEach((action, index) => {
+            assertEquals(
+                action, actionMenuItems[index]!.getAttribute('data-action'));
+          });
+    });
+
     test('Header info button click opens info dialog', async () => {
       const moduleElements = await initializeModule(
           [createSampleCluster(2, {label: '"Sample Journey"'})]);
