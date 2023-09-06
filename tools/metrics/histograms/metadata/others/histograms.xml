@@ -13341,12 +13341,15 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="Uptime.DBusCrash" units="ms" expires_after="M85">
+<histogram name="Uptime.DBusCrash" units="ms" expires_after="2024-02-11">
   <owner>satorux@chromium.org</owner>
   <owner>hashimoto@chromium.org</owner>
   <summary>
     The system uptime on Chrome OS when the dbus-daemon process crashes,
     resulting in a reboot.
+
+    Warning: this histogram was expired from M85 to M118 some data may be
+    missing.
   </summary>
 </histogram>
 
