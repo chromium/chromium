@@ -334,8 +334,9 @@ void LayerTreeView::DidPresentCompositorFrame(
     const auto& front = presentation_callbacks_.begin();
 
     recordreplay::Assert(
-        "[RUN-2317-2366] LayerTreeView::DidPresentCompositorFrame B %u %zu",
-        front->first, front->second.size());
+        "[RUN-2317-2570] LayerTreeView::DidPresentCompositorFrame B %u %zu %d",
+        front->first, front->second.size(),
+        viz::FrameTokenGT(front->first, frame_token));
 
     if (viz::FrameTokenGT(front->first, frame_token))
       break;
@@ -343,6 +344,9 @@ void LayerTreeView::DidPresentCompositorFrame(
       std::move(callback).Run(feedback.timestamp);
     presentation_callbacks_.erase(front);
   }
+
+  recordreplay::Assert(
+      "[RUN-2317-2570] LayerTreeView::DidPresentCompositorFrame C");
 
 #if BUILDFLAG(IS_MAC)
   while (!core_animation_error_code_callbacks_.empty()) {

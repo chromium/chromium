@@ -3085,11 +3085,15 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         !presentation_time.is_null() && (presentation_time > swap_time);
     UMA_HISTOGRAM_BOOLEAN("PageLoad.Internal.Renderer.PresentationTime.Valid",
                           presentation_time_is_valid);
+    recordreplay::Assert(
+      "[RUN-2317-2570] ReportTimeSwapPromise::RunCallbackAfterPresentation A %d",presentation_time_is_valid);
     if (presentation_time_is_valid) {
       // This measures from 1ms to 10seconds.
       UMA_HISTOGRAM_TIMES(
           "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime",
           presentation_time - swap_time);
+      recordreplay::Assert(
+          "[RUN-2317-2570] ReportTimeSwapPromise::RunCallbackAfterPresentation B");
     }
     ReportTime(std::move(presentation_time_callback),
                presentation_time_is_valid ? presentation_time : swap_time);
@@ -3097,8 +3101,12 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 
   static void ReportTime(base::OnceCallback<void(base::TimeTicks)> callback,
                          base::TimeTicks time) {
+    recordreplay::Assert("[RUN-2317-2570] WebFrameWidgetImpl::ReportTime A %d %lld",
+                         !!callback, time.ToInternalValue());
     if (callback)
       std::move(callback).Run(time);
+
+    recordreplay::Assert("[RUN-2317-2570] WebFrameWidgetImpl::ReportTime B");
   }
 
 #if BUILDFLAG(IS_MAC)
