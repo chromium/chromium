@@ -70,6 +70,7 @@ export class CustomizeButtonsSubsectionElement extends
   buttonRemappingList: ButtonRemapping[];
   actionList: ActionChoice[];
   private selectedButton_: ButtonRemapping;
+  private selectedButtonIndex_: number;
   private shouldShowRenamingDialog_: boolean;
   private selectedButtonName_: string;
 
@@ -79,8 +80,8 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private showRenamingDialog_(e: ShowRenamingDialogEvent): void {
-    const selectedIndex = e.detail.buttonIndex;
-    this.selectedButton_ = this.buttonRemappingList[selectedIndex];
+    this.selectedButtonIndex_ = e.detail.buttonIndex;
+    this.selectedButton_ = this.buttonRemappingList[this.selectedButtonIndex_];
     this.selectedButtonName_ = this.selectedButton_.name;
     this.shouldShowRenamingDialog_ = true;
   }
@@ -90,15 +91,22 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private saveRenamingDialogClicked_(): void {
-    if (this.selectedButton_.name !== this.selectedButtonName_) {
-      this.onSettingsChanged();
-    }
-    this.selectedButtonName_ = '';
+    this.updateButtonName_();
     this.shouldShowRenamingDialog_ = false;
   }
 
-  onSettingsChanged(): void {
-    // TODO(yyhyyh@): Update changed buttonRemapping.
+  private updateButtonName_(): void {
+    if (!!this.selectedButtonName_ &&
+        this.selectedButton_.name !== this.selectedButtonName_) {
+      this.set(
+          `buttonRemappingList.${this.selectedButtonIndex_}.name`,
+          this.selectedButtonName_);
+      this.dispatchEvent(new CustomEvent('button-remapping-changed', {
+        bubbles: true,
+        composed: true,
+      }));
+    }
+    this.selectedButtonName_ = '';
   }
 }
 

@@ -20,6 +20,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_tablet_buttons_subpage.html.js';
+import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 
@@ -59,6 +60,19 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
   private buttonActionList_: ActionChoice[];
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addEventListener('button-remapping-changed', this.onSettingsChanged);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.removeEventListener(
+        'button-remapping-changed', this.onSettingsChanged);
+  }
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
@@ -116,6 +130,15 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return;
     }
     this.initializeTablet();
+  }
+
+  onSettingsChanged(): void {
+    // TODO(yyhyyh@): Remove the if-condition after mojo api is done.
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
+          this.selectedTablet!.id, this.selectedTablet!.settings);
+    }
   }
 }
 

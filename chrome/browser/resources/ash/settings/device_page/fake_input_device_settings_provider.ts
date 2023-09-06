@@ -85,6 +85,10 @@ export class FakeInputDeviceSettingsProvider implements
   private touchpadObservers: TouchpadObserverInterface[] = [];
   private stylusObservers: StylusObserverInterface[] = [];
   private graphicsTabletObservers: GraphicsTabletObserverInterface[] = [];
+  private callCounts_ = {
+    setGraphicsTabletSettings: 0,
+    setMouseSettings: 0,
+  };
 
   constructor() {
     // Setup method resolvers.
@@ -192,6 +196,12 @@ export class FakeInputDeviceSettingsProvider implements
       }
     }
     this.methods.setResult('fakeMice', mice);
+    this.notifyMouseListUpdated();
+    this.callCounts_.setMouseSettings++;
+  }
+
+  getSetMouseSettingsCallCount(): number {
+    return this.callCounts_.setMouseSettings;
   }
 
   setTouchpadSettings(id: number, settings: TouchpadSettings): void {
@@ -224,6 +234,11 @@ export class FakeInputDeviceSettingsProvider implements
     }
     this.methods.setResult('fakeGraphicsTablets', graphicsTablets);
     this.notifyGraphicsTabletListUpdated();
+    this.callCounts_.setGraphicsTabletSettings++;
+  }
+
+  getSetGraphicsTabletSettingsCallCount(): number {
+    return this.callCounts_.setGraphicsTabletSettings;
   }
 
   notifyKeboardListUpdated(): void {

@@ -54,4 +54,23 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     const expectedActionList = fakeMouseButtonActions;
     assertDeepEquals(buttonActionList, expectedActionList);
   });
+
+
+  test('button name change triggers settings update', async () => {
+    const provider = page.get('inputDeviceSettingsProvider_');
+    assertTrue(!!provider);
+    assertEquals(provider.getSetMouseSettingsCallCount(), 0);
+    const buttonName = page!.selectedMouse!.settings!.buttonRemappings[0]!.name;
+    assertEquals(buttonName, 'Back Button');
+    page.set(
+        `selectedMouse.settings.buttonRemappings.0.name`, 'new button name');
+    await flushTasks();
+    assertEquals(provider.getSetMouseSettingsCallCount(), 0);
+    page.dispatchEvent(new CustomEvent('button-remapping-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+    await flushTasks();
+    assertEquals(provider.getSetMouseSettingsCallCount(), 1);
+  });
 });

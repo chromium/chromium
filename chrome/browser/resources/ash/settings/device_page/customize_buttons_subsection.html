@@ -33,10 +33,11 @@
     <div slot="title">$i18n{buttonRenamingDialogTitle}</div>
     <div slot="body">
       <div id="inputContainer">
-        <cr-input label="$i18n{buttonRemappingDialogInputLabel}"
+        <cr-input id="renamingDialogInput"
+          label="$i18n{buttonRemappingDialogInputLabel}"
           value="{{selectedButtonName_}}"
           aria-label="$i18n{buttonRenamingDialogTitle}">
-      </cr-input>
+        </cr-input>
       </div>
     </div>
     <div slot="button-container">

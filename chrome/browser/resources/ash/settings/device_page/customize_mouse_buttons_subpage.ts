@@ -64,6 +64,19 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addEventListener('button-remapping-changed', this.onSettingsChanged);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.removeEventListener(
+        'button-remapping-changed', this.onSettingsChanged);
+  }
+
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.CUSTOMIZE_MOUSE_BUTTONS) {
@@ -116,6 +129,11 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
     this.initializeMouse();
+  }
+
+  onSettingsChanged(): void {
+    this.inputDeviceSettingsProvider_.setMouseSettings(
+        this.selectedMouse!.id, this.selectedMouse!.settings);
   }
 }
 

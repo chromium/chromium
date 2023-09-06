@@ -52,4 +52,24 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
     const expectedActionList = fakeGraphicsTabletButtonActions;
     assertDeepEquals(buttonActionList, expectedActionList);
   });
+
+  test('button name change triggers settings update', async () => {
+    const provider = page.get('inputDeviceSettingsProvider_');
+    assertTrue(!!provider);
+    assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 0);
+    const buttonName =
+        page!.selectedTablet!.settings!.tabletButtonRemappings[0]!.name;
+    assertEquals(buttonName, 'Back Button');
+    page.set(
+        `selectedTablet.settings.tabletButtonRemappings.0.name`,
+        'new button name');
+    await flushTasks();
+    assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 0);
+    page.dispatchEvent(new CustomEvent('button-remapping-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+    await flushTasks();
+    assertEquals(provider.getSetGraphicsTabletSettingsCallCount(), 1);
+  });
 });

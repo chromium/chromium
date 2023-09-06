@@ -146,6 +146,16 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         value: KEY_COMBINATION_OPTION_LABEL,
         readOnly: true,
       },
+
+      /**
+       * Name of the remapping.
+       */
+      buttonRemappingName_: {
+        type: String,
+        value: '',
+        computed:
+            'getButtonRemappingName_(buttonRemappingList.*, remappingIndex)',
+      },
     };
   }
 
@@ -165,6 +175,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   private noRemappingOptionValue_: string;
   private keyCombinationOptionValue_: string;
   private keyCombinationLabel_: string;
+  private buttonRemappingName_: string;
 
   /**
    * Populate dropdown menu choices.
@@ -257,6 +268,17 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       composed: true,
       detail: {buttonIndex: this.remappingIndex},
     }));
+  }
+
+  /**
+   * Get the button remapping name when initializing or users updated it.
+   */
+  private getButtonRemappingName_(): string {
+    if (!!this.buttonRemappingList &&
+        !!this.buttonRemappingList[this.remappingIndex]) {
+      return this.buttonRemappingList[this.remappingIndex].name;
+    }
+    return '';
   }
 }
 
