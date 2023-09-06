@@ -1519,23 +1519,23 @@ bool LoginDatabase::RemoveLogin(const PasswordForm& form,
 bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
                                             PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
-  PasswordForm form;
-  if (changes) {
-    changes->clear();
-    sql::Statement s1(db_.GetCachedStatement(
-        SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
-    s1.BindInt(0, primary_key.value());
-    if (!s1.Step()) {
-      return false;
-    }
-    EncryptionResult result = InitPasswordFormFromStatement(
-        s1, /*decrypt_and_fill_password_value=*/false, &form);
-    DCHECK_EQ(result, ENCRYPTION_RESULT_SUCCESS);
-    DCHECK_EQ(form.primary_key.value(), primary_key);
+  CHECK(changes);
+
+  changes->clear();
+  sql::Statement s1(db_.GetCachedStatement(
+      SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
+  s1.BindInt(0, primary_key.value());
+  if (!s1.Step()) {
+    return false;
   }
+  PasswordForm form;
+  EncryptionResult result = InitPasswordFormFromStatement(
+      s1, /*decrypt_and_fill_password_value=*/false, &form);
+  DCHECK_EQ(result, ENCRYPTION_RESULT_SUCCESS);
+  DCHECK_EQ(form.primary_key.value(), primary_key);
 
 #if BUILDFLAG(IS_IOS)
-  DeleteKeychainItemByPrimaryId(primary_key.value());
+  DeleteEncryptedPasswordFromKeychain(form.keychain_identifier);
 #endif
   DCHECK(!delete_by_id_statement_.empty());
   sql::Statement s2(
@@ -1568,7 +1568,7 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
 
 #if BUILDFLAG(IS_IOS)
   for (const auto& form : forms) {
-    DeleteKeychainItemByPrimaryId(form->primary_key.value().value());
+    DeleteEncryptedPasswordFromKeychain(form->keychain_identifier);
   }
 #endif
 
@@ -2285,9 +2285,6 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   blocklisted_statement_ =
       "SELECT " + all_column_names +
       " FROM logins WHERE blacklisted_by_user == ? ORDER BY origin_url";
-  DCHECK(keychain_identifier_statement_by_id_.empty());
-  keychain_identifier_statement_by_id_ =
-      "SELECT keychain_identifier FROM logins WHERE id=?";
   DCHECK(id_and_password_statement_.empty());
   id_and_password_statement_ =
       "SELECT id, password_value, keychain_identifier FROM logins WHERE " +

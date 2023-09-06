@@ -163,18 +163,4 @@ void DeleteEncryptedPasswordFromKeychain(
   password_manager::DeletePasswordsDirectory();
 }
 
-void LoginDatabase::DeleteKeychainItemByPrimaryId(int id) {
-  CHECK(!keychain_identifier_statement_by_id_.empty());
-  sql::Statement s(db_.GetCachedStatement(
-      SQL_FROM_HERE, keychain_identifier_statement_by_id_.c_str()));
-
-  s.BindInt(0, id);
-
-  std::string keychain_identifier;
-  if (s.Step()) {
-    s.ColumnBlobAsString(0, &keychain_identifier);
-  }
-  DeleteEncryptedPasswordFromKeychain(keychain_identifier);
-}
-
 }  // namespace password_manager

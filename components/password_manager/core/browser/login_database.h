@@ -266,19 +266,6 @@ class LoginDatabase {
         password_deletions_have_synced_callback_;
   };
 
-  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest, AddLoginWithEncryptedPassword);
-  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest,
-                           AddLoginWithEncryptedPasswordAndValue);
-
-#if BUILDFLAG(IS_IOS)
-  friend class LoginDatabaseIOSTest;
-  FRIEND_TEST_ALL_PREFIXES(LoginDatabaseIOSTest, KeychainStorage);
-
-  // On iOS, removes the keychain item that is used to store the encrypted
-  // password for the supplied primary key |id|.
-  void DeleteKeychainItemByPrimaryId(int id);
-#endif  // BUILDFLAG(IS_IOS)
-
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);
   void ReportSyncingAccountStateMetrics(const std::string& sync_username);
@@ -376,7 +363,6 @@ class LoginDatabase {
   std::string get_statement_username_;
   std::string created_statement_;
   std::string blocklisted_statement_;
-  std::string keychain_identifier_statement_by_id_;
   std::string id_and_password_statement_;
 };
 
