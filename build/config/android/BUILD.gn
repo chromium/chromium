@@ -143,10 +143,6 @@ config("default_orderfile_instrumentation") {
   }
 }
 
-config("jni_include_dir") {
-  include_dirs = [ jni_headers_dir ]
-}
-
 if (current_toolchain == default_toolchain) {
   pool("goma_javac_pool") {
     # Override action_pool when goma is enabled for javac.
