@@ -76,8 +76,6 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   // The hit target window for the virtual keyboard isn't the same as its
   // views::Widget.
   aura::Window* target = static_cast<aura::Window*>(event.target());
-  const views::Widget* target_widget =
-      views::Widget::GetTopLevelWidgetForNativeView(target);
   const aura::Window* container =
       target ? GetContainerForWindow(target) : nullptr;
   // TODO(https://crbug.com/1208083): Replace some of this logic with
@@ -87,14 +85,6 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     // Don't process events that occurred inside an embedded menu, for example
     // the right-click menu in a popup notification.
     if (container_id == kShellWindowId_MenuContainer) {
-      return;
-    }
-    // Don't process events that occurred inside a popup notification
-    // from message center.
-    if (container_id == kShellWindowId_ShelfContainer &&
-        target->GetType() == aura::client::WINDOW_TYPE_POPUP &&
-        target_widget->GetName() ==
-            AshMessagePopupCollection::kMessagePopupWidgetName) {
       return;
     }
     // Don't process events that occurred inside a virtual keyboard.
@@ -117,65 +107,50 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
 
     gfx::Rect bounds = bubble_widget->GetWindowBoundsInScreen();
     bounds.Inset(bubble->GetBubbleView()->GetBorderInsets());
-    // System tray can be dragged to show the bubble if it is in tablet mode.
-    // During the drag, the bubble's logical bounds can extend outside of the
-    // work area, but its visual bounds are only within the work area. Restrict
-    // |bounds| so that events located outside the bubble's visual bounds are
-    // treated as outside of the bubble.
-    int bubble_container_id =
-        GetContainerForWindow(bubble_widget->GetNativeWindow())->GetId();
-    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-        bubble_container_id == kShellWindowId_SettingBubbleContainer) {
-      bounds.Intersect(bubble_widget->GetWorkAreaBoundsInScreen());
-    }
+
+    int64_t display_id = display::Screen::GetScreen()
+                             ->GetDisplayNearestPoint(screen_location)
+                             .id();
+    StatusAreaWidget* status_area =
+        Shell::GetRootWindowControllerWithDisplayId(display_id)
+            ->shelf()
+            ->GetStatusAreaWidget();
 
     TrayBackgroundView* tray = bubble->GetTray();
+    CHECK(tray);
 
-    if (bubble_container_id == kShellWindowId_SettingBubbleContainer) {
-      int64_t display_id = display::Screen::GetScreen()
-                               ->GetDisplayNearestPoint(screen_location)
-                               .id();
-      StatusAreaWidget* status_area =
-          Shell::GetRootWindowControllerWithDisplayId(display_id)
-              ->shelf()
-              ->GetStatusAreaWidget();
+    // When Quick Settings bubble is opened and the date tray is clicked, the
+    // bubble should not be closed since it will transition to show calendar.
+    if (tray->catalog_name() == TrayBackgroundViewCatalogName::kUnifiedSystem &&
+        status_area->date_tray()->GetBoundsInScreen().Contains(
+            screen_location)) {
+      continue;
+    }
 
-      // When Quick Settings bubble is opened and the date tray is clicked, the
-      // bubble should not be closed since it will transition to show calendar.
-      if (tray->catalog_name() ==
-              TrayBackgroundViewCatalogName::kUnifiedSystem &&
-          status_area->date_tray()->GetBoundsInScreen().Contains(
-              screen_location)) {
-        continue;
-      }
+    // The system tray and message center are separate bubbles but they need
+    // to stay open together. We need to make sure to check if a click falls
+    // with in both their bounds and not close them both in this case.
+    UnifiedSystemTray* unified_system_tray = status_area->unified_system_tray();
+    TrayBubbleBase* system_tray_bubble = unified_system_tray->bubble();
+    if (unified_system_tray->IsBubbleShown() && system_tray_bubble != bubble) {
+      bounds.Union(
+          system_tray_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
+    } else if (unified_system_tray->IsMessageCenterBubbleShown()) {
+      TrayBubbleBase* message_center_bubble =
+          unified_system_tray->message_center_bubble();
+      bounds.Union(
+          message_center_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
+    }
 
-      // The system tray and message center are separate bubbles but they need
-      // to stay open together. We need to make sure to check if a click falls
-      // with in both their bounds and not close them both in this case.
-      UnifiedSystemTray* unified_system_tray =
-          status_area->unified_system_tray();
-      TrayBubbleBase* system_tray_bubble = unified_system_tray->bubble();
-      if (unified_system_tray->IsBubbleShown() &&
-          system_tray_bubble != bubble) {
-        bounds.Union(
-            system_tray_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
-      } else if (unified_system_tray->IsMessageCenterBubbleShown()) {
-        TrayBubbleBase* message_center_bubble =
-            unified_system_tray->message_center_bubble();
-        bounds.Union(message_center_bubble->GetBubbleWidget()
-                         ->GetWindowBoundsInScreen());
-      }
-
-      // If the bubble is anchored to the shelf corner, the notification popup
-      // will be shown on top of that bubble. In that case, we should not filter
-      // out the events happening on the popup notification.
-      if (features::IsNotifierCollisionEnabled() &&
-          bubble->GetBubbleView()->IsAnchoredToShelfCorner() &&
-          unified_system_tray->GetMessagePopupCollection()
-              ->popup_collection_bounds()
-              .Contains(screen_location)) {
-        continue;
-      }
+    // If the bubble is anchored to the shelf corner, the notification popup
+    // will be shown on top of that bubble. In that case, we should not filter
+    // out the events happening on the popup notification.
+    if (features::IsNotifierCollisionEnabled() &&
+        bubble->GetBubbleView()->IsAnchoredToShelfCorner() &&
+        unified_system_tray->GetMessagePopupCollection()
+            ->popup_collection_bounds()
+            .Contains(screen_location)) {
+      continue;
     }
 
     if (bounds.Contains(screen_location)) {
