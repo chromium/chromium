@@ -904,22 +904,27 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
           flags, ash::ArcGameControlsFlag::kEnabled);
       SetTouchInjectorEnable(is_enabled);
 
-      SetInputMappingVisible(ash::game_dashboard_utils::IsFlagSet(
-          flags, ash::ArcGameControlsFlag::kHint));
-
       bool is_edit_mode = ash::game_dashboard_utils::IsFlagSet(
           touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey),
           ash::ArcGameControlsFlag::kEdit);
+
+      // Call `SetDisplayMode` before `SetInputMappingVisible` since
+      // `input_mapping_widget_` is created or destroyed in `SetDisplayMode`.
       SetDisplayMode(
           is_enabled ? (is_edit_mode ? DisplayMode::kEdit : DisplayMode::kView)
                      : DisplayMode::kNone);
 
-      bool is_showing_menu = ash::game_dashboard_utils::IsFlagSet(
-          flags, ash::ArcGameControlsFlag::kMenu);
+      // `input_mapping_widget_` is always visible in edit mode.
+      SetInputMappingVisible(is_edit_mode
+                                 ? true
+                                 : ash::game_dashboard_utils::IsFlagSet(
+                                       flags, ash::ArcGameControlsFlag::kHint));
+
       // Save the menu states upon menu closing.
       if (ash::game_dashboard_utils::IsFlagChanged(
               flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
-          !is_showing_menu) {
+          !ash::game_dashboard_utils::IsFlagSet(
+              flags, ash::ArcGameControlsFlag::kMenu)) {
         touch_injector_->OnInputMenuViewRemoved();
       }
 
