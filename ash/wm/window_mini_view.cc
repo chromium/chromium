@@ -66,6 +66,9 @@ gfx::RoundedCornersF GetRoundedCornerForPreviewView(
   }
 
   if (preview_view_rounded_corners.has_value()) {
+    // `window1` is guaranteed to be the primary snapped window in a snap
+    // group and `window2` is guaranteed to be the secondary snapped window in
+    // a snap group.
     // TODO(b/294294344): Return a different set of rounded corners if it is
     // for vertical split view.
     const auto raw_value = preview_view_rounded_corners.value();
