@@ -41,6 +41,8 @@ blink_core_sources_scroll = [
   "scrollbar_theme_overlay_mock.h",
   "smooth_scroll_sequencer.cc",
   "smooth_scroll_sequencer.h",
+  "snap_event.cc",
+  "snap_event.h",
 ]
 
 if (is_android) {

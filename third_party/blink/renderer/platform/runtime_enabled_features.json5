@@ -1074,7 +1074,11 @@
       status: "stable",
     },
     {
-      // https://drafts.csswg.org/css-scroll-snap-2
+      // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
+      name: "CSSScrollSnapEvents",
+    },
+    {
+      // https://drafts.csswg.org/css-scroll-snap-2#scroll-start
       name: "CSSScrollStart",
       status: "test",
     },
