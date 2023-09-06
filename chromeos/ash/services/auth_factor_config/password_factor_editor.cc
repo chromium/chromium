@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -19,6 +20,30 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
+
+namespace {
+
+const std::size_t kLocalPasswordMinimumLength = 8;
+
+// The synchronous implementation of `CheckLocalPasswordComplexity`. The
+// provided `password` string must be valid UTF-8.
+mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
+    const std::string& password) {
+  // We're counting unicode points here because we already have a function for
+  // that, but graphemes might be closer to the user's understanding of what
+  // the length of a string is.
+  absl::optional<size_t> unicode_size =
+      base::CountUnicodeCharacters(password.data(), password.size());
+  CHECK(unicode_size.has_value());
+
+  const mojom::PasswordComplexity complexity =
+      *unicode_size < kLocalPasswordMinimumLength
+          ? mojom::PasswordComplexity::kTooShort
+          : mojom::PasswordComplexity::kOk;
+  return complexity;
+}
+
+}  // namespace
 
 PasswordFactorEditor::PasswordFactorEditor(AuthFactorConfig* auth_factor_config,
                                            QuickUnlockStorageDelegate* storage)
@@ -35,6 +60,14 @@ void PasswordFactorEditor::SetLocalPassword(
     const std::string& auth_token,
     const std::string& new_password,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
+  // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
+  // call is OK.
+  if (CheckLocalPasswordComplexityImpl(new_password) !=
+      mojom::PasswordComplexity::kOk) {
+    std::move(callback).Run(mojom::ConfigureResult::kFatalError);
+    return;
+  }
+
   std::unique_ptr<UserContext> user_context;
 
   if (ash::features::ShouldUseAuthSessionStorage()) {
@@ -90,6 +123,14 @@ void PasswordFactorEditor::SetLocalPassword(
       base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      auth_token));
+}
+
+void PasswordFactorEditor::CheckLocalPasswordComplexity(
+    const std::string& password,
+    base::OnceCallback<void(mojom::PasswordComplexity)> callback) {
+  // Mojo strings are valid UTF-8, so the `CheckLocalPasswordComplexityImpl`
+  // call is OK.
+  std::move(callback).Run(CheckLocalPasswordComplexityImpl(password));
 }
 
 void PasswordFactorEditor::BindReceiver(

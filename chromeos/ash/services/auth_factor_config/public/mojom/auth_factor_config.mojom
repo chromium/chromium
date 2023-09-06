@@ -106,6 +106,12 @@ interface PinFactorEditor {
   RemovePin(string auth_token) => (ConfigureResult result);
 };
 
+// A value describing the complexity of a password.
+enum PasswordComplexity {
+  kOk,
+  kTooShort,
+};
+
 // Interface for methods specific to password authentication. Served from chrome
 // ash, intended to be consumed by the following trusted webuis:
 //
@@ -117,7 +123,10 @@ interface PinFactorEditor {
 // authentication factors.
 interface PasswordFactorEditor {
   // Sets the user's local password to the desired value. This will overwrite
-  // the user's current password, if any.
+  // the user's current password, if any. Callers must provide a sufficiently
+  // complex password. A password is considered sufficiently complex if the
+  // `CheckLocalPasswordComplexity` call returns `kOk` for the password.
+  //
   // TODO(b/290916811): For now, callers of this method must ensure that a local
   // password is already configured for that user, i.e. `GetPasswordFactorType`
   // must return `kLocal`. Eventually, calling this method should also be
@@ -125,4 +134,8 @@ interface PasswordFactorEditor {
   // replaced by the provided local password) or no password at all.
   SetLocalPassword(string auth_token, string new_password) =>
       (ConfigureResult result);
+
+  // Returns a value describing the complexity of the provided password value.
+  CheckLocalPasswordComplexity(string password) =>
+      (PasswordComplexity complexity);
 };

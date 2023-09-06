@@ -40,6 +40,8 @@ void BindToPinFactorEditor(
 void BindToPasswordFactorEditor(
     mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver,
     QuickUnlockStorageDelegate&);
+mojom::PasswordFactorEditor& GetPasswordFactorEditor(
+    QuickUnlockStorageDelegate& delegate);
 
 }  // namespace ash::auth
 

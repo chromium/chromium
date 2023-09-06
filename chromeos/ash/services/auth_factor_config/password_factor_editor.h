@@ -32,6 +32,10 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       const std::string& new_password,
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
 
+  void CheckLocalPasswordComplexity(
+      const std::string& password,
+      base::OnceCallback<void(mojom::PasswordComplexity)> callback) override;
+
   void BindReceiver(
       mojo::PendingReceiver<mojom::PasswordFactorEditor> receiver);
 

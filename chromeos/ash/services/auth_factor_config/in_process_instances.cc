@@ -82,4 +82,9 @@ void BindToPasswordFactorEditor(
   GetPasswordFactorEditorImpl(storage).BindReceiver(std::move(receiver));
 }
 
+mojom::PasswordFactorEditor& GetPasswordFactorEditor(
+    QuickUnlockStorageDelegate& delegate) {
+  return GetPasswordFactorEditorImpl(delegate);
+}
+
 }  // namespace ash::auth
